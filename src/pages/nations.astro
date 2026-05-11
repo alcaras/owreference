@@ -53,13 +53,26 @@ const rows: Row[] = [
 
 const ordered = [...nations].sort((a, b) => a.name.localeCompare(b.name));
 
-const totalFamilies = nations.reduce((sum, n) => sum + (n.families?.length ?? 0), 0);
-const totalShrines = nations.reduce((sum, n) => sum + (n.shrineXml?.length ?? 0), 0);
-
 const SHRINE_GLYPH: Record<string, string> = {
   LOVE: '♥', WAR: '⚔', WATER: '≋', FIRE: '🜂',
   KINGSHIP: '♔', SUN: '☀', WISDOM: '✦',
   HEARTH: '◔', HEALING: '✚', HUNTING: '⌬', UNDERWORLD: '⚱',
+};
+
+// Family class → cell color class. Signature yield comes from each class's
+// dowry in familyClass.xml. Riders/Clerics both produce ORDERS in-game; we
+// give Riders a distinct token so the cells stay scannable.
+const FAMILY_CLASS_COLOR: Record<string, string> = {
+  Champions:  'fc-training',
+  Hunters:    'fc-food',
+  Riders:     'fc-riders',
+  Artisans:   'fc-iron',
+  Patrons:    'fc-stone',
+  Traders:    'fc-money',
+  Sages:      'fc-science',
+  Statesmen:  'fc-civics',
+  Landowners: 'fc-wood',
+  Clerics:    'fc-orders',
 };
 
 // Pre-classify each cell's yield so we can serialize a search blob per nation.
@@ -75,8 +88,6 @@ for (const n of nations) {
   pageMark="👑"
   pageStats={[
     { label: 'nations', value: nations.length },
-    { label: 'families', value: totalFamilies },
-    { label: 'shrines', value: totalShrines },
   ]}
 >
   <div class="grid" id="nations-grid">
@@ -149,8 +160,9 @@ for (const n of nations) {
                 }
 
                 if (row.kind === 'family') {
+                  const famClass = FAMILY_CLASS_COLOR[v.class] || '';
                   return (
-                    <td class={`cell n-${n.slug}`} data-nation={n.slug}>
+                    <td class={`cell n-${n.slug} ${famClass}`} data-nation={n.slug}>
                       <div class="fam">
                         <span class="fam__class"><LinkedText text={v.class} showIcons={false} /></span>
                         <span class="fam__name">{v.name}</span>
@@ -187,7 +199,10 @@ for (const n of nations) {
       ))}
     </div>
     <div class="legend">
-      <span class="legend__label">Cell color = what a bonus <em>gives</em>.</span>
+      <span class="legend__label">Families</span>
+      {Object.entries(FAMILY_CLASS_COLOR).map(([cls, fc]) => (
+        <span class={`chip ${fc}`}>{cls}</span>
+      ))}
     </div>
   </div>
 

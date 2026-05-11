@@ -373,6 +373,20 @@ h1, h2, h3 {
 .yield-divine_favor{ --yield-bg: #e3c45f; --yield-fg: #1a1408; }
 .yield-wrath       { --yield-bg: #a83838; --yield-fg: #fff; }
 
+/* Family-class color tokens — applied to family cells. Each class's color
+   maps to its signature dowry yield from familyClass.xml. Riders gets its
+   own token so it doesn't collide with Clerics (both produce ORDERS). */
+.fc-training  { --yield-bg: #c25555; --yield-fg: #fff; }   /* Champions  */
+.fc-food      { --yield-bg: #5e8c43; --yield-fg: #fff; }   /* Hunters    */
+.fc-riders    { --yield-bg: #8a6a3f; --yield-fg: #fff; }   /* Riders     — distinct tan */
+.fc-iron      { --yield-bg: #8a8a8e; --yield-fg: #14161b; } /* Artisans   */
+.fc-stone     { --yield-bg: #b3b3b8; --yield-fg: #14161b; } /* Patrons    */
+.fc-money     { --yield-bg: #d9b13a; --yield-fg: #1a1408; } /* Traders    */
+.fc-science   { --yield-bg: #6b5ea6; --yield-fg: #fff; }   /* Sages      */
+.fc-civics    { --yield-bg: #c98b46; --yield-fg: #fff; }   /* Statesmen  */
+.fc-wood      { --yield-bg: #8a4a08; --yield-fg: #fff; }   /* Landowners */
+.fc-orders    { --yield-bg: #b8b8c0; --yield-fg: #14161b; } /* Clerics    */
+
 /* Legend chip — solid pastel pill */
 .chip {
   display: inline-flex; align-items: center; gap: 0.35rem;
