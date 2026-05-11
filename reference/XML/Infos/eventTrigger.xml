@@ -1,0 +1,1026 @@
+<?xml version="1.0"?>
+<!-- edited with XMLSpy v2014 rel. 2 (x64) (http://www.altova.com) by Soren Johnson (private) -->
+<Root>
+	<Entry>
+		<zType/>
+		<Text/>
+		<FallbackText/>
+		<Data comment="The Event requires this Data type"/>
+		<SubjectClasses/>
+		<iMinTurns comment="The minimum turns for this trigger to fire any Event"/>
+		<iProb comment="The probability of an Event if this Trigger occurs"/>
+		<iSortOrder comment="The order in which Events are sorted (higher means earlier)"/>
+		<bLevel comment="The probability of an Event is modified by EventLevel"/>
+		<bModal comment="The event will popup immediately"/>
+		<bHidden comment="The trigger text is only displayed with the Debug UI option"/>
+	</Entry>
+	<Entry>
+		<zType>EVENTTRIGGER_START_GAME</zType>
+		<iSortOrder>10</iSortOrder>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Data = VictoryType">
+		<zType>EVENTTRIGGER_VICTORY_COMPLETED</zType>
+		<Data>VICTORY</Data>
+		<iSortOrder>10</iSortOrder>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Data = VictoryType">
+		<zType>EVENTTRIGGER_WIN_GAME</zType>
+		<Text>TEXT_UI_EVENT_STORY_WON_GAME</Text>
+		<Data>VICTORY</Data>
+		<iSortOrder>10</iSortOrder>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry>
+		<zType>EVENTTRIGGER_LOSE_GAME</zType>
+		<Text>TEXT_UI_EVENT_STORY_LOST_GAME</Text>
+		<iSortOrder>10</iSortOrder>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry>
+		<zType>EVENTTRIGGER_NEW_TURN</zType>
+	</Entry>
+	<Entry comment="Subject = Character">
+		<zType>EVENTTRIGGER_NEW_TURN_CHARACTER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry>
+		<zType>EVENTTRIGGER_NEW_YEAR_CHARACTER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Data = TechType">
+		<zType>EVENTTRIGGER_TECHNOLOGY</zType>
+		<Text>TEXT_UI_EVENT_STORY_DISCOVERED</Text>
+		<Data>TECH</Data>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Religion">
+		<zType>EVENTTRIGGER_RELIGION_FOUNDED_US</zType>
+		<Text>TEXT_UI_EVENT_STORY_RELIGION_FOUNDED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_RELIGION</zValue>
+		</SubjectClasses>
+		<iSortOrder>5</iSortOrder>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Religion">
+		<zType>EVENTTRIGGER_RELIGION_FOUNDED_THEM</zType>
+		<Text>TEXT_UI_EVENT_STORY_RELIGION_FOUNDED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_RELIGION</zValue>
+		</SubjectClasses>
+		<iProb>50</iProb>
+		<iSortOrder>5</iSortOrder>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry>
+		<zType>EVENTTRIGGER_RELIGION_FOUNDED_TIE_LOST</zType>
+		<Text>TEXT_UI_EVENT_STORY_RELIGION_FOUNDED_TIE_LOST</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_RELIGION</zValue>
+		</SubjectClasses>
+		<iSortOrder>6</iSortOrder>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Religion">
+		<zType>EVENTTRIGGER_RELIGION_SPREAD</zType>
+		<Text>TEXT_UI_EVENT_STORY_RELIGION_SPREAD</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_RELIGION</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Religion">
+		<zType>EVENTTRIGGER_RELIGION_REMOVE</zType>
+		<Text>TEXT_UI_EVENT_STORY_RELIGION_REMOVED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_RELIGION</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Theology">
+		<zType>EVENTTRIGGER_THEOLOGY_ESTABLISHED</zType>
+		<Text>TEXT_UI_EVENT_STORY_THEOLOGY_ESTABLISHED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_RELIGION</zValue>
+			<zValue>SUBJECTCLASS_THEOLOGY</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Tribe, Extra = Tile">
+		<zType>EVENTTRIGGER_TRIBE_CONTACT</zType>
+		<Text>TEXT_UI_EVENT_STORY_TRIBE_CONTACTED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Tribe">
+		<zType>EVENTTRIGGER_TRIBE_PEACE_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Tribe">
+		<zType>EVENTTRIGGER_TRIBE_TRUCE_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Tribe">
+		<zType>EVENTTRIGGER_TRIBE_WAR_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+		</SubjectClasses>
+		<iSortOrder>2</iSortOrder>
+	</Entry>
+	<Entry comment="Subject = Tribe">
+		<zType>EVENTTRIGGER_TRIBE_END_ALLIANCE</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Tribe, Extra = Tile">
+		<zType>EVENTTRIGGER_TRIBE_RAID</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Tribe">
+		<zType>EVENTTRIGGER_TRIBE_DIPLOMACY_CHANGED</zType>
+		<Data>DIPLOMACY</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = Tile">
+		<zType>EVENTTRIGGER_PLAYER_CONTACT</zType>
+		<Text>TEXT_UI_EVENT_STORY_PLAYER_CONTACTED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Player">
+		<zType>EVENTTRIGGER_PLAYER_PEACE_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Player">
+		<zType>EVENTTRIGGER_PLAYER_TRUCE_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Player">
+		<zType>EVENTTRIGGER_PLAYER_WAR_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iSortOrder>2</iSortOrder>
+	</Entry>
+	<Entry comment="Subject = Player">
+		<zType>EVENTTRIGGER_PLAYER_ALLIANCE_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Player">
+		<zType>EVENTTRIGGER_PLAYER_END_ALLIANCE</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Player (Ally), Extra = Player (Enemy)">
+		<zType>EVENTTRIGGER_PLAYER_ALLY_DECLARED_WAR</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Player">
+		<zType>EVENTTRIGGER_PLAYER_WAR_DECLARE</zType>
+		<Text>TEXT_UI_EVENT_STORY_PLAYER_WAR_DECLARE</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iSortOrder>3</iSortOrder>
+	</Entry>
+	<Entry comment="Subject = Player">
+		<zType>EVENTTRIGGER_PLAYER_DIPLOMACY_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry>
+		<zType>EVENTTRIGGER_PLAYER_DIPLOMACY_CHANGED</zType>
+		<Data>DIPLOMACY</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = City">
+		<zType>EVENTTRIGGER_PLAYER_POACHED_CITY</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = Tile">
+		<zType>EVENTTRIGGER_PLAYER_STOLE_CITY_SITE</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = Tile">
+		<zType>EVENTTRIGGER_AI_FORFEIT_CITY_SITE</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = City">
+		<zType>EVENTTRIGGER_CITY_FOUNDED</zType>
+		<Text>TEXT_UI_EVENT_STORY_CITY_FOUNDED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = City">
+		<zType>EVENTTRIGGER_CITY_LOST</zType>
+		<Text>TEXT_UI_EVENT_STORY_CITY_LOST</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+		<iProb>50</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = City">
+		<zType>EVENTTRIGGER_CITY_BREACHED</zType>
+		<Text>TEXT_UI_EVENT_STORY_CITY_BREACHED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = Tile">
+		<zType>EVENTTRIGGER_CITY_RAZED</zType>
+		<Text>TEXT_UI_EVENT_STORY_CITY_RAZED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Player (previous owner)">
+		<zType>EVENTTRIGGER_CITY_CAPTURED</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>20</iProb>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = City">
+		<zType>EVENTTRIGGER_CITY_CULTURE</zType>
+		<Text>TEXT_UI_EVENT_STORY_CULTURE_EVENT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = City">
+		<zType>EVENTTRIGGER_CITY_DISTANT_RAID</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+		<iProb>50</iProb>
+	</Entry>
+	<Entry comment="Subject = City, Data = ProjectType">
+		<zType>EVENTTRIGGER_PRODUCTION_PROJECT</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_FINISHED</Text>
+		<Data>PROJECT</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+		<iProb>20</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = City, Data = SpecialistType">
+		<zType>EVENTTRIGGER_PRODUCTION_SPECIALIST</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_FINISHED</Text>
+		<Data>SPECIALIST</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+		<iProb>20</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Unit, Data = UnitType">
+		<zType>EVENTTRIGGER_PRODUCTION_UNIT</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_FINISHED</Text>
+		<Data>UNIT</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>20</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Tile, Data = ImprovementType">
+		<zType>EVENTTRIGGER_IMPROVEMENT_FINISHED</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_FINISHED</Text>
+		<Data>IMPROVEMENT</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Tribe, Extra = Tile">
+		<zType>EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE</zType>
+		<Text>TEXT_UI_EVENT_STORY_IMPROVEMENT_PILLAGED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+		<iProb>20</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = Tile">
+		<zType>EVENTTRIGGER_IMPROVEMENT_PILLAGED_ENEMY</zType>
+		<Text>TEXT_UI_EVENT_STORY_IMPROVEMENT_PILLAGED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+		<iProb>20</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = Tile">
+		<zType>EVENTTRIGGER_IMPROVEMENT_PILLAGED_US</zType>
+		<Text>TEXT_UI_EVENT_STORY_IMPROVEMENT_PILLAGED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+		<iProb>20</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = Tile">
+		<zType>EVENTTRIGGER_IMPROVEMENT_REPAIRED</zType>
+		<Text>TEXT_UI_EVENT_STORY_IMPROVEMENT_REPAIRED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+		<iProb>20</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry>
+		<zType>EVENTTRIGGER_CHOOSE_AMBITION</zType>
+		<iProb>100</iProb>
+	</Entry>
+	<Entry comment="Data = GoalType">
+		<zType>EVENTTRIGGER_AMBITION_FINISHED</zType>
+		<Text>TEXT_UI_EVENT_STORY_AMBITION_FINISHED</Text>
+		<Data>GOAL</Data>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Goal">
+		<zType>EVENTTRIGGER_THRESHOLD_GOAL_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_GOAL</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Data = GoalType">
+		<zType>EVENTTRIGGER_GOAL_FINISHED</zType>
+		<Text>TEXT_UI_EVENT_STORY_GOAL_FINISHED</Text>
+		<Data>GOAL</Data>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Data = GoalType">
+		<zType>EVENTTRIGGER_GOAL_FAILED</zType>
+		<Text>TEXT_UI_EVENT_STORY_GOAL_FAILED</Text>
+		<Data>GOAL</Data>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Extra = Character, Data = MissionType">
+		<zType>EVENTTRIGGER_MISSION_FINISHED</zType>
+		<Text>TEXT_UI_EVENT_STORY_MISSION_FINISHED</Text>
+		<Data>MISSION_RESULT</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_WILDCARD</zValue>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iSortOrder>4</iSortOrder>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character">
+		<zType>EVENTTRIGGER_MARRIAGE_OFFER</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Character">
+		<zType>EVENTTRIGGER_MARRIAGE</zType>
+		<Text>TEXT_UI_EVENT_STORY_MARRIES</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>25</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character">
+		<zType>EVENTTRIGGER_BIRTH</zType>
+		<Text>TEXT_UI_EVENT_STORY_BORN</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>25</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character">
+		<zType>EVENTTRIGGER_DEATH</zType>
+		<Text>TEXT_UI_EVENT_STORY_DIES</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iSortOrder>4</iSortOrder>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character">
+		<zType>EVENTTRIGGER_ADULTHOOD</zType>
+		<Text>TEXT_UI_EVENT_STORY_ADULT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>25</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character">
+		<zType>EVENTTRIGGER_COURTIER</zType>
+		<Text>TEXT_UI_EVENT_STORY_COURTIER</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character">
+		<zType>EVENTTRIGGER_ADOPTED</zType>
+		<Text>TEXT_UI_EVENT_STORY_ADOPTED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>25</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Character">
+		<zType>EVENTTRIGGER_DIVORCE</zType>
+		<Text>TEXT_UI_EVENT_STORY_DIVORCES</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>25</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character, Data = CognomenType">
+		<zType>EVENTTRIGGER_COGNOMEN</zType>
+		<Text>TEXT_UI_EVENT_STORY_COGNOMEN</Text>
+		<Data>COGNOMEN</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character">
+		<zType>EVENTTRIGGER_UPGRADE_CHARACTER</zType>
+		<Text>TEXT_UI_EVENT_STORY_UPGRADE_CHARACTER</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Data = Trait, Subject = Character. Specifically for when traits are removed outside of event bonuses, such as via iRemoveProb or iRemoveTurns.">
+		<zType>EVENTTRIGGER_LOSE_TRAIT</zType>
+		<Text>TEXT_UI_EVENT_STORY_LOSE_TRAIT</Text>
+		<Data>TRAIT</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Character">
+		<zType>EVENTTRIGGER_SUCCESSION_FAIL</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iSortOrder>7</iSortOrder>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Character">
+		<zType>EVENTTRIGGER_SUCCESSION_US</zType>
+		<Text>TEXT_UI_EVENT_STORY_SUCCESSION</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iSortOrder>6</iSortOrder>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Character">
+		<zType>EVENTTRIGGER_SUCCESSION_THEM</zType>
+		<Text>TEXT_UI_EVENT_STORY_SUCCESSION</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Character">
+		<zType>EVENTTRIGGER_SUCCESSION_TRIBE</zType>
+		<Text>TEXT_UI_EVENT_STORY_SUCCESSION</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>50</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Unit, Extra = Unit">
+		<zType>EVENTTRIGGER_UNIT_COMBAT</zType>
+		<Text>TEXT_UI_EVENT_STORY_UNIT_COMBAT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>1</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit, Extra = Unit">
+		<zType>EVENTTRIGGER_UNIT_COMBAT_WATER</zType>
+		<Text>TEXT_UI_EVENT_STORY_UNIT_COMBAT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>1</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Unit">
+		<zType>EVENTTRIGGER_ATTACKED_CITY</zType>
+		<Text>TEXT_UI_EVENT_STORY_ATTACKED_CITY</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>5</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = City, Extra = Player">
+		<zType>EVENTTRIGGER_CITY_ATTACKED</zType>
+		<Text>TEXT_UI_EVENT_STORY_CITY_ATTACKED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>5</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Unit, Extra = Player">
+		<zType>EVENTTRIGGER_UNIT_KILL</zType>
+		<Text>TEXT_UI_EVENT_STORY_KILLED_UNIT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>1</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit, Extra = Player">
+		<zType>EVENTTRIGGER_UNIT_KILL_WATER</zType>
+		<Text>TEXT_UI_EVENT_STORY_KILLED_UNIT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>1</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit">
+		<zType>EVENTTRIGGER_UNIT_ROUT</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>1</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit">
+		<zType>EVENTTRIGGER_UNIT_CAPTURED</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>1</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit">
+		<zType>EVENTTRIGGER_TUTORIAL_UNIT_ATTACK_WEAK</zType>
+		<Data>TUTORIAL_COMBAT_EVENT</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_KILL</zType>
+		<Text>TEXT_UI_EVENT_STORY_KILLED_UNIT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>5</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_KILL_WATER</zType>
+		<Text>TEXT_UI_EVENT_STORY_KILLED_UNIT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>5</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_ATTACK</zType>
+		<Text>TEXT_UI_EVENT_STORY_GENERAL_ATTACK</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>5</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_ATTACK_WATER</zType>
+		<Text>TEXT_UI_EVENT_STORY_GENERAL_ATTACK</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>5</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_DUEL</zType>
+		<Text>TEXT_UI_EVENT_STORY_GENERAL_DUEL</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>25</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_DUEL_WATER</zType>
+		<Text>TEXT_UI_EVENT_STORY_GENERAL_DUEL</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+		</SubjectClasses>
+		<iProb>25</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_CRITICAL</zType>
+		<Text>TEXT_UI_EVENT_STORY_CRITICAL_HIT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_CRITICAL_WATER</zType>
+		<Text>TEXT_UI_EVENT_STORY_CRITICAL_HIT</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_INJURY_MELEE</zType>
+		<Text>TEXT_UI_EVENT_STORY_GENERAL_INJURY</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_INJURY_RANGED</zType>
+		<Text>TEXT_UI_EVENT_STORY_GENERAL_INJURY</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_INJURY_WATER</zType>
+		<Text>TEXT_UI_EVENT_STORY_GENERAL_INJURY</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_UNIT_KILLED_MELEE</zType>
+		<Text>TEXT_UI_EVENT_STORY_UNIT_KILLED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_UNIT_KILLED_RANGED</zType>
+		<Text>TEXT_UI_EVENT_STORY_UNIT_KILLED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Character, Extra = Player">
+		<zType>EVENTTRIGGER_GENERAL_UNIT_KILLED_WATER</zType>
+		<Text>TEXT_UI_EVENT_STORY_UNIT_KILLED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_CHARACTER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+	</Entry>
+	<Entry comment="Subject = Unit, Data = PromotionType">
+		<zType>EVENTTRIGGER_UNIT_PROMOTION</zType>
+		<Text>TEXT_UI_EVENT_STORY_UNIT_PROMOTION</Text>
+		<Data>PROMOTION</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit, Extra = Tile">
+		<zType>EVENTTRIGGER_SET_TILE</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit, Extra = Tile">
+		<zType>EVENTTRIGGER_EVENT_TILE</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+		<iSortOrder>1</iSortOrder>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Tile, Extra = Unit">
+		<zType>EVENTTRIGGER_RESOURCE_HARVESTED</zType>
+		<Text>TEXT_UI_EVENT_STORY_RESOURCE_HARVESTED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Tile, Extra = Unit">
+		<zType>EVENTTRIGGER_RUINS_EXPLORED</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iSortOrder>1</iSortOrder>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Tile, Extra = Unit">
+		<zType>EVENTTRIGGER_LANDMARK_DISCOVERED</zType>
+		<Text>TEXT_UI_EVENT_STORY_LANDMARK_DISCOVERED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>10</iProb>
+		<bLevel>1</bLevel>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Tile, Extra = Unit">
+		<zType>EVENTTRIGGER_IMPROVEMENT_REVEALED</zType>
+		<Text>TEXT_UI_EVENT_STORY_IMPROVEMENT_REVEALED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Tile, Extra = City">
+		<zType>EVENTTRIGGER_IMPROVEMENT_ACQUIRED</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_CITY</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Tile, Extra = Unit. To require a tribe, use SUBJECT_TILE_TRIBE_SITE. Using SUBJECT_TILE will allow, but not require, Barbarian camps">
+		<zType>EVENTTRIGGER_TRIBE_CLEARED</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Tile, Extra = Unit">
+		<zType>EVENTTRIGGER_TRIBE_ELIMINATED</zType>
+		<Text>TEXT_UI_EVENT_STORY_RIVAL_ELIMINATED_TRIBE</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+			<zValue>SUBJECTCLASS_TRIBE</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Player, Extra = Player">
+		<zType>EVENTTRIGGER_PLAYER_ELIMINATED</zType>
+		<Text>TEXT_UI_EVENT_STORY_RIVAL_ELIMINATED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit, Data = UnitType">
+		<zType>EVENTTRIGGER_UNIT_SELECTED</zType>
+		<Data>UNIT</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit">
+		<zType>EVENTTRIGGER_UNIT_ATTACK_COOLDOWN</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit">
+		<zType>EVENTTRIGGER_UNIT_MOVE_COOLDOWN</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit">
+		<zType>EVENTTRIGGER_UNIT_IS_FATIGUED</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit">
+		<zType>EVENTTRIGGER_UNIT_NO_ORDERS</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Unit">
+		<zType>EVENTTRIGGER_UNIT_SEEN</zType>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<bModal>1</bModal>
+	</Entry>
+	<Entry comment="Subject = Occurrence">
+		<zType>EVENTTRIGGER_OCCURRENCE_READY</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_READY</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_OCCURRENCE</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+		<bHidden>1</bHidden>
+	</Entry>
+	<Entry comment="Subject = Occurrence">
+		<zType>EVENTTRIGGER_OCCURRENCE_START</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_STARTED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_OCCURRENCE</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Occurrence, Extra = Tile">
+		<zType>EVENTTRIGGER_OCCURRENCE_START_THEM</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_STARTED_FOREIGN</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_OCCURRENCE</zValue>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry comment="Subject = Occurrence">
+		<zType>EVENTTRIGGER_OCCURRENCE_END</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_ENDED</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_OCCURRENCE</zValue>
+			<zValue>SUBJECTCLASS_PLAYER</zValue>
+		</SubjectClasses>
+	</Entry>
+	<Entry>
+		<zType>EVENTTRIGGER_STAT_INCREMENTED</zType>
+		<Data>STAT</Data>
+	</Entry>
+	<Entry comment="Subject = New Family, Extra = Old Family">
+		<zType>EVENTTRIGGER_FAMILY_SUPREMACY</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_BIDS_FOR_FAMILY_SUPREMACY</Text>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_FAMILY</zValue>
+			<zValue>SUBJECTCLASS_FAMILY</zValue>
+		</SubjectClasses>
+		<iMinTurns>10</iMinTurns>
+		<iSortOrder>6</iSortOrder>
+	</Entry>
+	<Entry comment="Subject = Tile, Extra = Unit, Data = Vegetation">
+		<zType>EVENTTRIGGER_VEGETATION_CUT</zType>
+		<Text>TEXT_UI_EVENT_STORY_X_CUT</Text>
+		<Data>VEGETATION</Data>
+		<SubjectClasses>
+			<zValue>SUBJECTCLASS_TILE</zValue>
+			<zValue>SUBJECTCLASS_UNIT</zValue>
+		</SubjectClasses>
+		<iProb>2</iProb>
+		<bModal>1</bModal>
+	</Entry>
+</Root>

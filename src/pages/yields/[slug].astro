@@ -1,0 +1,136 @@
+---
+import Base from '../../layouts/Base.astro';
+import { entities, type Entity } from '../../lib/entities';
+import backlinksData from '../../data/backlinks.json';
+
+const base = import.meta.env.BASE_URL;
+const backlinks = backlinksData as Record<string, Array<{ page: string; anchor: string; context: string; text: string }>>;
+
+export function getStaticPaths() {
+  const yields = entities.filter(e => e.type === 'yield' || e.type === 'concept');
+  // Group concept aliases onto their yield (so /yields/orders shows Order, Orders)
+  const seen = new Set<string>();
+  const paths = [];
+  for (const e of yields) {
+    if (seen.has(e.slug)) continue;
+    seen.add(e.slug);
+    paths.push({ params: { slug: e.slug }, props: { entity: e } });
+  }
+  return paths;
+}
+
+const { entity } = Astro.props as { entity: Entity };
+
+// Find backlinks for this slug across both YIELD_* and CONCEPT_* ids
+const ids = entities.filter(e => e.slug === entity.slug).map(e => e.id);
+const refs = ids.flatMap(id => backlinks[id] || []);
+const byPage = refs.reduce<Record<string, typeof refs>>((acc, r) => {
+  (acc[r.page] ??= []).push(r);
+  return acc;
+}, {});
+---
+
+<Base title={entity.name} active="yields">
+  <div class="meta-row">
+    <h1>
+      {entity.icon && <img src={`${base}${entity.icon}`} alt="" style="width:1.4em; height:1.4em; vertical-align:-0.2em; margin-right:0.3em" />}
+      {entity.name}
+    </h1>
+    <span class="patch-tag">{entity.type}</span>
+  </div>
+
+  <div class={`yield-card yield-${entity.slug}`}>
+    <p class="yield-card__desc">
+      Yield / concept used across the game. {refs.length} reference{refs.length === 1 ? '' : 's'} in the reference site.
+    </p>
+  </div>
+
+  <section style="margin-top: 1.5rem;">
+    <h2 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 0.75rem;">
+      Referenced by
+    </h2>
+
+    {refs.length === 0 ? (
+      <p style="color: var(--text-faint)">No references yet — more pages coming online.</p>
+    ) : (
+      Object.entries(byPage).map(([page, list]) => (
+        <div class="backlink-group">
+          <h3 class="backlink-group__page">
+            <a href={`${base}${page}`}>{page}</a>
+            <span class="backlink-group__count">{list.length}</span>
+          </h3>
+          <ul class="backlink-list">
+            {list.map(r => (
+              <li>
+                <a href={`${base}${r.page}#${r.anchor}`} class="backlink">
+                  <span class="backlink__ctx">{r.context}</span>
+                  <span class="backlink__text">{r.text}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    )}
+  </section>
+</Base>
+
+<style>
+  .yield-card {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25));
+    border: 1px solid color-mix(in srgb, var(--yield-bg) 60%, #000 40%);
+  }
+  .yield-card__desc { margin: 0; }
+
+  .backlink-group { margin: 1rem 0; }
+  .backlink-group__page {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin: 0 0 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .backlink-group__count {
+    font-size: 0.65rem;
+    padding: 0.05rem 0.5rem;
+    background: var(--bg-elev);
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .backlink-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.3rem; }
+  .backlink {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+  .backlink:hover { border-color: var(--accent); }
+  .backlink__ctx {
+    font-weight: 500;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .backlink__text {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>

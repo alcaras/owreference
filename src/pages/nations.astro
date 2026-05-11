@@ -1,0 +1,209 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import Term from '../components/Term.astro';
+import nations from '../data/nations.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Row = { label: string; kind: 'section' | 'data' | 'shrine'; field?: (n: typeof nations[number]) => any };
+
+const rows: Row[] = [
+  { label: 'Bonuses', kind: 'section' },
+  { label: 'Bonus 1', kind: 'data', field: n => n.bonuses?.[0] },
+  { label: 'Bonus 2', kind: 'data', field: n => n.bonuses?.[1] },
+  { label: 'Bonus 3', kind: 'data', field: n => n.bonuses?.[2] },
+
+  { label: 'Shrines', kind: 'section' },
+  { label: 'Shrine 1', kind: 'shrine', field: n => n.shrines?.[0] },
+  { label: 'Shrine 2', kind: 'shrine', field: n => n.shrines?.[1] },
+  { label: 'Shrine 3', kind: 'shrine', field: n => n.shrines?.[2] },
+  { label: 'Shrine 4', kind: 'shrine', field: n => n.shrines?.[3] },
+
+  { label: 'Unique Unit', kind: 'section' },
+  { label: 'Names',      kind: 'data', field: n => n.uniqueUnit?.names },
+  { label: 'Traits',     kind: 'data', field: n => n.uniqueUnit?.traits },
+  { label: 'Cost',       kind: 'data', field: n => n.uniqueUnit?.cost },
+  { label: 'Upkeep',     kind: 'data', field: n => n.uniqueUnit?.upkeep },
+  { label: 'Move/Sight', kind: 'data', field: n => n.uniqueUnit?.moveSight },
+  { label: 'U6 Card',    kind: 'data', field: n => n.uniqueUnit?.u6Card },
+  { label: 'U8 Card',    kind: 'data', field: n => n.uniqueUnit?.u8Card },
+
+  { label: 'Starting Techs', kind: 'section' },
+  { label: 'Tech 1', kind: 'data', field: n => n.startingTech?.[0] },
+  { label: 'Tech 2', kind: 'data', field: n => n.startingTech?.[1] },
+  { label: 'Tech 3', kind: 'data', field: n => n.startingTech?.[2] },
+
+  { label: 'Families', kind: 'section' },
+  { label: 'Family 1', kind: 'data', field: n => fam(n, 0) },
+  { label: 'Family 2', kind: 'data', field: n => fam(n, 1) },
+  { label: 'Family 3', kind: 'data', field: n => fam(n, 2) },
+  { label: 'Family 4', kind: 'data', field: n => fam(n, 3) },
+  { label: 'Family 5', kind: 'data', field: n => fam(n, 4) },
+  { label: 'Family 6', kind: 'data', field: n => fam(n, 5) },
+
+  { label: 'Royal Family', kind: 'section' },
+  { label: 'Leader', kind: 'data', field: n => n.leader?.name },
+  { label: 'Spouse', kind: 'data', field: n => n.leader?.spouse },
+  { label: 'Heir 1', kind: 'data', field: n => n.leader?.heir1 },
+  { label: 'Heir 2', kind: 'data', field: n => n.leader?.heir2 },
+];
+
+function fam(n: typeof nations[number], idx: number): { main: string; sub: string } | null {
+  const f = n.families?.[idx];
+  if (!f) return null;
+  return { main: f.class, sub: f.name };
+}
+
+const ordered = [...nations].sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<Base title="Nations" active="nations">
+  <div class="meta-row">
+    <h1>👑 Nations</h1>
+    <span class="patch-tag">cells colored by yield · nation in column tint</span>
+  </div>
+
+  <div class="table-scroll">
+    <table class="nations-grid">
+      <thead>
+        <tr>
+          <th class="rowlabel" scope="col">Nation</th>
+          {ordered.map(n => (
+            <th class={`nation-header n-${n.slug}`} scope="col" id={n.slug} title={n.id}>
+              <a href={`${base}nations#${n.slug}`} class="nation-header__link">
+                <img class="crest"
+                     src={`${base}img/crests/${n.slug}.png`}
+                     alt={n.name}
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <span class="crest-fallback" style="display:none">{n.name[0]}</span>
+                <span class="name">{n.name}</span>
+              </a>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(row => (
+          row.kind === 'section' ? (
+            <tr class="section-row">
+              <th class="rowlabel" colspan={ordered.length + 1}>{row.label}</th>
+            </tr>
+          ) : (
+            <tr>
+              <th class="rowlabel" scope="row">{row.label}</th>
+              {ordered.map(n => {
+                const v = row.field!(n);
+                if (v == null || v === '') {
+                  return <td class={`cell n-${n.slug} empty`}><span>—</span></td>;
+                }
+                if (row.kind === 'shrine') {
+                  // Shrine cell: type tag + deity name + effect
+                  const shrine = v.shrine;
+                  const effect = v.effect || '';
+                  const yieldKey = classifyYield(effect);
+                  const yieldClass = yieldKey ? `yield-${yieldKey.toLowerCase()}` : '';
+                  return (
+                    <td class={`cell n-${n.slug} ${yieldClass}`}>
+                      {shrine && (
+                        <div class="shrine-head">
+                          <span class={`shrine-type shrine-type--${shrine.type.toLowerCase()}`}>{shrine.typeLabel}</span>
+                          <span class="shrine-name">{shrine.name}</span>
+                        </div>
+                      )}
+                      <LinkedText text={effect} />
+                    </td>
+                  );
+                }
+                if (typeof v === 'object' && 'main' in v) {
+                  return (
+                    <td class={`cell n-${n.slug}`}>
+                      <LinkedText text={v.main} />
+                      <span class="sub">{v.sub}</span>
+                    </td>
+                  );
+                }
+                const text = String(v);
+                const yieldKey = classifyYield(text);
+                const yieldClass = yieldKey ? `yield-${yieldKey.toLowerCase()}` : '';
+                return (
+                  <td class={`cell n-${n.slug} ${yieldClass}`}>
+                    <LinkedText text={text} />
+                  </td>
+                );
+              })}
+            </tr>
+          )
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span class="legend__label">Nations:</span>
+    {ordered.map(n => (
+      <a class="chip" href={`#${n.slug}`}>
+        <span class="swatch" style={`background:${n.color.bg}`}></span>
+        {n.name}
+      </a>
+    ))}
+  </div>
+  <div class="legend" style="margin-top: 0.4rem">
+    <span class="legend__label">Yields:</span>
+    {['orders','science','civics','culture','money','training','food','growth','wood','stone','iron'].map(y => (
+      <span class={`chip yield-${y}`}>
+        <img class="chip__icon" src={`${base}img/icons/yields/${y}.png`} alt="" onerror="this.style.display='none'" />
+        {y[0].toUpperCase() + y.slice(1)}
+      </span>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .nation-header__link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+  }
+  .nation-header__link:hover { text-decoration: none; }
+  .nation-header__link:hover .name { text-decoration: underline; }
+
+  .chip { color: var(--text); text-decoration: none; }
+  .chip__icon { width: 1em; height: 1em; object-fit: contain; }
+  .legend__label { color: var(--text-faint); font-size: 0.75rem; align-self: center; margin-right: 0.25rem; }
+
+  .nations-grid td.cell { font-size: 0.82rem; line-height: 1.35; }
+  .nations-grid td.cell .sub {
+    display: block;
+    font-size: 0.72rem;
+    opacity: 0.8;
+    margin-top: 0.1rem;
+    font-style: italic;
+  }
+
+  .shrine-head {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.25rem;
+  }
+  .shrine-type {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.35);
+    color: inherit;
+    border: 1px solid rgba(255,255,255,0.18);
+  }
+  .shrine-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+</style>

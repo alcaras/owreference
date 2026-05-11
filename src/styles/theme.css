@@ -1,0 +1,270 @@
+/* Dark base palette. Nation tokens are written by build-data.py into nation-tokens.css. */
+:root {
+  color-scheme: dark;
+  --bg: #0e0f12;
+  --bg-elev: #16181d;
+  --bg-elev-2: #1d2027;
+  --border: #2a2e37;
+  --border-strong: #3a3f4b;
+  --text: #e8e9ec;
+  --text-dim: #a8acb6;
+  --text-faint: #6c707a;
+  --accent: #c9a04a;            /* parchment gold, evokes old-world UI */
+  --accent-2: #6ea7d4;
+  --danger: #d46e6e;
+
+  --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Trajan Pro", "Cinzel", "EB Garamond", Georgia, serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-1: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+code { font-family: var(--font-mono); font-size: 0.92em; }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.2rem; color: var(--text); }
+h3 { font-size: 1rem; color: var(--text-dim); }
+
+.container {
+  max-width: min(100vw - 2rem, 1600px);
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #14161b, var(--bg));
+  padding: 0.75rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: saturate(140%) blur(6px);
+}
+.site-header .title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+.site-header .title .accent { color: var(--accent); }
+.site-header nav { display: flex; gap: 1rem; }
+.site-header nav a { color: var(--text-dim); font-size: 0.9rem; }
+.site-header nav a.active { color: var(--text); }
+
+/* ────────────────────────────────────────────────────────────
+   Nations grid — full-bg-fill style, matching the spreadsheet
+   ──────────────────────────────────────────────────────────── */
+
+.nations-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-size: 0.85rem;
+}
+.nations-grid th, .nations-grid td {
+  padding: 0.55rem 0.6rem;
+  border-radius: 4px;
+  vertical-align: top;
+  font-weight: 500;
+}
+
+/* Row label column */
+.nations-grid th.rowlabel {
+  background: var(--bg-elev);
+  color: var(--text-dim);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-align: left;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  border: 1px solid var(--border);
+  min-width: 8rem;
+}
+
+/* Section header rows ("Bonuses", "Shrines", etc.) */
+.nations-grid tr.section-row th {
+  background: var(--bg-elev-2);
+  color: var(--accent);
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  padding-top: 1rem;
+}
+
+/* Nation header cells — full bg color, crest, name */
+.nations-grid th.nation-header {
+  background: var(--nation-bg, var(--bg-elev));
+  color: var(--nation-fg, var(--text));
+  border: 1px solid color-mix(in srgb, var(--nation-bg) 60%, #000 40%);
+  text-align: center;
+  vertical-align: middle;
+  position: sticky;
+  top: 3.25rem;
+  z-index: 1;
+}
+.nation-header .crest {
+  width: 36px;
+  height: 36px;
+  display: block;
+  margin: 0 auto 0.25rem;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+}
+.nation-header .crest-fallback {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 0.25rem;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+.nation-header .name {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+/* Data cells — colored by what they GIVE (yield/bonus type), not by nation.
+   Nation color shows only in the column header strip above. */
+.nations-grid td.cell {
+  background: var(--yield-bg, var(--bg-elev));
+  color: var(--yield-fg, var(--text));
+  border: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 60%, #000 40%);
+  background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25));
+  /* Subtle left-edge tint in the nation's color so columns stay readable */
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--nation-bg, transparent) 60%, transparent 40%);
+}
+.nations-grid td.cell.empty {
+  background: var(--bg-elev);
+  background-image: none;
+  border-color: var(--border);
+  color: var(--text-faint);
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--nation-bg, transparent) 40%, transparent 60%);
+}
+
+/* Yield color tokens — based on the spreadsheet Intro tab's legend.
+   Each token has two layers:
+     --yield-bg-pastel: the spreadsheet's exact pastel (light mode reference)
+     --yield-bg:        dark-mode adapted (the pastel toned for the dark theme)
+   Cells get a 25% black scrim over --yield-bg (defined on td.cell). */
+.yield-science     { --yield-bg-pastel: #D9D2E9; --yield-bg: #6b5ea6; --yield-fg: #fff; }   /* light purple */
+.yield-civics      { --yield-bg-pastel: #FCE5CD; --yield-bg: #c98b46; --yield-fg: #fff; }   /* peach */
+.yield-training    { --yield-bg-pastel: #F4CCCC; --yield-bg: #c25555; --yield-fg: #fff; }   /* light pink */
+.yield-money       { --yield-bg-pastel: #FFF2CC; --yield-bg: #d9b13a; --yield-fg: #1a1408; } /* light yellow */
+.yield-food        { --yield-bg-pastel: #93C47D; --yield-bg: #5e8c43; --yield-fg: #fff; }   /* green */
+.yield-iron        { --yield-bg-pastel: #999999; --yield-bg: #8a8a8e; --yield-fg: #14161b; } /* grey */
+.yield-stone       { --yield-bg-pastel: #D9D9D9; --yield-bg: #b3b3b8; --yield-fg: #14161b; } /* light grey */
+.yield-wood        { --yield-bg-pastel: #B45F06; --yield-bg: #8a4a08; --yield-fg: #fff; }   /* brown */
+.yield-culture     { --yield-bg-pastel: #CFE2F3; --yield-bg: #4e84b8; --yield-fg: #fff; }   /* light blue */
+.yield-growth      { --yield-bg-pastel: #D9EAD3; --yield-bg: #6ba368; --yield-fg: #fff; }   /* light green */
+.yield-orders      { --yield-bg-pastel: #F3F3F3; --yield-bg: #b8b8c0; --yield-fg: #14161b; } /* white/grey */
+.yield-discontent  { --yield-bg-pastel: #B4A7D6; --yield-bg: #7a6ea3; --yield-fg: #fff; }   /* lavender */
+.yield-happiness   { --yield-bg-pastel: #FFD966; --yield-bg: #d9b13a; --yield-fg: #1a1408; } /* gold */
+.yield-maintenance { --yield-bg-pastel: #EA9999; --yield-bg: #a35858; --yield-fg: #fff; }   /* red-salmon */
+
+/* Yields not in the Intro legend — kept from my earlier choices */
+.yield-influence   { --yield-bg: #c8c9d3; --yield-fg: #14161b; }
+.yield-intrigue    { --yield-bg: #735483; --yield-fg: #fff; }
+.yield-legitimacy  { --yield-bg: #c9a04a; --yield-fg: #1a1408; }
+.yield-divine_favor{ --yield-bg: #e3c45f; --yield-fg: #1a1408; }
+.yield-wrath       { --yield-bg: #a83838; --yield-fg: #fff; }
+
+/* Conceptual / non-yield categories from Intro tab */
+.cat-military      { --yield-bg-pastel: #E6B8AF; --yield-bg: #b56a5a; --yield-fg: #fff; }
+.cat-economic      { --yield-bg-pastel: #FFE599; --yield-bg: #c9a04a; --yield-fg: #1a1408; }
+.stat-wisdom       { --yield-bg-pastel: #D9D2E9; --yield-bg: #6b5ea6; --yield-fg: #fff; }
+.stat-charisma     { --yield-bg-pastel: #FCE5CD; --yield-bg: #c98b46; --yield-fg: #fff; }
+.stat-courage      { --yield-bg-pastel: #F4CCCC; --yield-bg: #c25555; --yield-fg: #fff; }
+.stat-discipline   { --yield-bg-pastel: #FFF2CC; --yield-bg: #d9b13a; --yield-fg: #1a1408; }
+.nations-grid td.cell .sub {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-top: 0.15rem;
+}
+
+/* Hover ring for cells */
+.nations-grid td.cell:hover {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* Responsive: horizontal scroll on small screens, sticky col still works */
+.table-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  border-radius: var(--radius);
+}
+
+/* Legend / footer */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+.legend .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elev);
+}
+.legend .swatch {
+  width: 10px; height: 10px; border-radius: 2px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+.meta-row .patch-tag {
+  font-family: var(--font-mono);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  color: var(--text);
+}

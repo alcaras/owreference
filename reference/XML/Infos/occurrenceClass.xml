@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Root>
+	<Entry>
+		<zType/>
+		<GameContentRequired/>
+		<Name/>
+		<Description/>
+		<iMinRepeatPlayer comment="Base minimum turns between Occurrences of this class for each player. Can be modified by Occurrence Level"/>
+		<iMaxPendingTurns comment="Pending Occurrences will expire after this many turns"/>
+		<bBalanceDistribution comment="If enabled, the game will attempt to more evenly distribute Occurrence types as well as players affected"/>
+		<DefaultOccurrenceLevel/>
+		<aeOccurrenceLevels comment="A list of OccurrenceLevels that will be available as game options when starting a new game"/>
+	</Entry>
+	<Entry>
+		<zType>OCCURRENCECLASS_CALAMITIES</zType>
+		<GameContentRequired>CALAMITIES</GameContentRequired>
+		<Name>TEXT_OCCURRENCECLASS_CALAMITIES</Name>
+		<iMinRepeatPlayer>5</iMinRepeatPlayer>
+		<iMaxPendingTurns>3</iMaxPendingTurns>
+		<bBalanceDistribution>1</bBalanceDistribution>
+		<DefaultOccurrenceLevel>OCCURRENCELEVEL_CALAMITIES_NORMAL</DefaultOccurrenceLevel>
+		<aeOccurrenceLevels>
+			<zValue>OCCURRENCELEVEL_CALAMITIES_NONE</zValue>
+			<zValue>OCCURRENCELEVEL_CALAMITIES_VERY_LOW</zValue>
+			<zValue>OCCURRENCELEVEL_CALAMITIES_LOW</zValue>
+			<zValue>OCCURRENCELEVEL_CALAMITIES_NORMAL</zValue>
+			<zValue>OCCURRENCELEVEL_CALAMITIES_HIGH</zValue>
+			<zValue>OCCURRENCELEVEL_CALAMITIES_VERY_HIGH</zValue>
+		</aeOccurrenceLevels>
+	</Entry>
+</Root>

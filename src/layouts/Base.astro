@@ -1,0 +1,51 @@
+---
+import '../styles/theme.css';
+import '../styles/nation-tokens.css';
+
+interface Props {
+  title: string;
+  active?: string;
+}
+const { title, active } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const nav = [
+  { href: '', label: 'Index' },
+  { href: 'nations', label: 'Nations' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Old World Reference</title>
+    <meta name="description" content="Dark-mode reference for Old World — auto-updated each patch from the game's own files." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style is:global>
+      :root {
+        --font-ui: "Inter", ui-sans-serif, system-ui, sans-serif;
+        --font-display: "Cinzel", "Trajan Pro", Georgia, serif;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div style="display:flex; align-items:center; justify-content:space-between; max-width:1600px; margin:0 auto;">
+        <a href={base} class="title" style="text-decoration:none;">
+          <span class="accent">⚜</span> Old World <span style="color:var(--text-dim)">Reference</span>
+        </a>
+        <nav>
+          {nav.map(n => (
+            <a href={`${base}${n.href}`} class={active === n.label.toLowerCase() ? 'active' : ''}>{n.label}</a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <slot />
+    </main>
+  </body>
+</html>

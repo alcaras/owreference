@@ -1,0 +1,69 @@
+﻿<Root>
+    <!-- this is a template, ignore it. -->
+    <Entry>
+        <zType comment="unique name for the bank"/>
+        <zBankFile comment="name of a file for a soundbank that will be loaded. leave off the .bnk extension"/>
+        <bStayLoadedPermanently comment="set true for core built-in banks that will always remain loaded. set false for mods"/>
+        <bBuiltin comment="if false, assume it's for a mod. modifies things like path search settings"/>
+    </Entry>
+
+    <Entry>
+        <zType>SOUNDBANK_BUILTIN_EVENTS</zType>
+        <zBankFile>Events</zBankFile>
+        <bStayLoadedPermanently>1</bStayLoadedPermanently>
+        <bBuiltin>1</bBuiltin>
+    </Entry>
+    <Entry>
+        <zType>SOUNDBANK_BUILTIN_AUDIO_GLOBAL</zType>
+        <zBankFile>Audio_Global</zBankFile>
+        <bStayLoadedPermanently>1</bStayLoadedPermanently>
+        <bBuiltin>1</bBuiltin>
+    </Entry>
+    
+    <Entry>
+        <zType>SOUNDBANK_BUILTIN_AUDIO_2D</zType>
+        <zBankFile>Audio_2D</zBankFile>
+        <bStayLoadedPermanently>1</bStayLoadedPermanently>
+        <bBuiltin>1</bBuiltin>
+    </Entry>
+    <Entry>
+        <zType>SOUNDBANK_BUILTIN_AUDIO_3D</zType>
+        <zBankFile>Audio_3D</zBankFile>
+        <bStayLoadedPermanently>1</bStayLoadedPermanently>
+        <bBuiltin>1</bBuiltin>
+    </Entry>
+    <Entry>
+        <zType>SOUNDBANK_BUILTIN_AUDIO_AMBIENCE</zType>
+        <zBankFile>Audio_Ambience</zBankFile>
+        <bStayLoadedPermanently>1</bStayLoadedPermanently>
+        <bBuiltin>1</bBuiltin>
+    </Entry>
+    <Entry>
+        <zType>SOUNDBANK_BUILTIN_AUDIO_ANIMATION</zType>
+        <zBankFile>Audio_Animation</zBankFile>
+        <bStayLoadedPermanently>1</bStayLoadedPermanently>
+        <bBuiltin>1</bBuiltin>
+    </Entry>
+    <Entry>
+        <!--    
+            notes: 
+            1. music soundbanks contain very little actual audio data because music is usually marked as "streaming". 
+            that means, most of it is in .wem files which are loose and in the streamingassets directory.
+            
+            2. music in mods doesn't have to be marked for streaming, it can be put inside a bank 
+        -->
+        <zType>SOUNDBANK_BUILTIN_AUDIO_MUSIC</zType>
+        <zBankFile>Audio_Music</zBankFile>
+        <bStayLoadedPermanently>1</bStayLoadedPermanently>
+        <bBuiltin>1</bBuiltin>
+    </Entry>
+</Root>
+
+        
+        
+        
+        
+        
+        
+
+        

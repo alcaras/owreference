@@ -1,0 +1,19 @@
+---
+// Auto-links every known entity alias inside a free-text string.
+import { linkify } from '../lib/entities';
+import Term from './Term.astro';
+
+interface Props {
+  text: string;
+  showIcons?: boolean;
+}
+
+const { text, showIcons = true } = Astro.props;
+const segments = linkify(text || '');
+---
+
+{segments.map(s => (
+  s.entity
+    ? <Term entity={s.entity} label={s.text} showIcon={showIcons} />
+    : <Fragment>{s.text}</Fragment>
+))}
