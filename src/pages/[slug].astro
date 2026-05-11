@@ -16,12 +16,12 @@ const { tab } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
 
-<Base title={tab.label} active={tab.slug}>
-  <div class="meta-row">
-    <h1>{tab.icon} {tab.label}</h1>
-    <span class="patch-tag">{tab.section}</span>
-  </div>
-
+<Base
+  title={tab.label}
+  active={tab.slug}
+  pageMark={tab.icon}
+  pageStats={[{ label: tab.section.toLowerCase(), value: 'section' }]}
+>
   <div class="placeholder">
     <div class="placeholder__badge">Placeholder</div>
     <p class="placeholder__summary">{tab.summary}</p>

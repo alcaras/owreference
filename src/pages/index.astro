@@ -15,18 +15,15 @@ const totals = {
 };
 ---
 
-<Base title="Index" active="index">
-  <div class="meta-row">
-    <div>
-      <h1 style="margin-bottom: 0.25rem">Old World Reference</h1>
-      <p style="color: var(--text-dim); margin: 0">
-        Dark-mode reference for <a href="https://mohawkgames.com/oldworld/">Old World</a>, auto-updated each patch.
-        Successor to the legacy spreadsheet.
-      </p>
-    </div>
-    <span class="patch-tag">{totals.built} built · {totals.placeholder} pending</span>
-  </div>
-
+<Base
+  title="Old World Reference"
+  active="index"
+  pageMark="⚜"
+  pageStats={[
+    { label: 'built', value: totals.built },
+    { label: 'pending', value: totals.placeholder },
+  ]}
+>
   {bySection.map(s => (
     <section class="section">
       <h2 class="section__title">{s.name}</h2>

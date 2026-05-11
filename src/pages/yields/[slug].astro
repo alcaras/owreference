@@ -30,15 +30,14 @@ const byPage = refs.reduce<Record<string, typeof refs>>((acc, r) => {
 }, {});
 ---
 
-<Base title={entity.name} active="yields">
-  <div class="meta-row">
-    <h1>
-      {entity.icon && <img src={`${base}${entity.icon}`} alt="" style="width:1.4em; height:1.4em; vertical-align:-0.2em; margin-right:0.3em" />}
-      {entity.name}
-    </h1>
-    <span class="patch-tag">{entity.type}</span>
-  </div>
-
+<Base
+  title={entity.name}
+  active="yields"
+  pageStats={[
+    { label: 'type', value: entity.type },
+    { label: 'references', value: refs.length },
+  ]}
+>
   <div class={`yield-card yield-${entity.slug}`}>
     <p class="yield-card__desc">
       Yield / concept used across the game. {refs.length} reference{refs.length === 1 ? '' : 's'} in the reference site.

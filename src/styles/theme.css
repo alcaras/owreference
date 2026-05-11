@@ -1,31 +1,33 @@
-/* Dark base palette. Nation tokens are written by build-data.py into nation-tokens.css. */
+/* Old World Reference — main theme. Dark mode, in-game-styled.
+   Ported from from-design/design_handoff_nations_table/styles.css.
+   Production ships only the "refined + micro" variant — no Tweaks. */
+
 :root {
   color-scheme: dark;
   --bg: #0e0f12;
   --bg-elev: #16181d;
   --bg-elev-2: #1d2027;
+  --bg-elev-3: #23262f;
   --border: #2a2e37;
   --border-strong: #3a3f4b;
   --text: #e8e9ec;
   --text-dim: #a8acb6;
   --text-faint: #6c707a;
-  --accent: #c9a04a;            /* parchment gold, evokes old-world UI */
+  --accent: #c9a04a;
   --accent-2: #6ea7d4;
-  --danger: #d46e6e;
 
-  --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Trajan Pro", "Cinzel", "EB Garamond", Georgia, serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-ui: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --radius: 6px;
+  --radius-sm: 4px;
   --radius-lg: 10px;
-  --shadow-1: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.4);
 }
 
 * { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
+html, body { margin: 0; padding: 0; min-height: 100vh; }
+body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
@@ -42,229 +44,402 @@ code { font-family: var(--font-mono); font-size: 0.92em; }
 h1, h2, h3 {
   font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   margin: 0;
 }
-h1 { font-size: 1.6rem; }
-h2 { font-size: 1.2rem; color: var(--text); }
-h3 { font-size: 1rem; color: var(--text-dim); }
 
-.container {
-  max-width: min(100vw - 2rem, 1600px);
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
-}
-
-.site-header {
+/* ──────────────────────────────────────────────────────────
+   Header
+   ────────────────────────────────────────────────────────── */
+.hdr {
+  position: sticky; top: 0; z-index: 20;
+  background: linear-gradient(180deg, #14161b, color-mix(in srgb, var(--bg) 92%, transparent));
+  backdrop-filter: saturate(140%) blur(8px);
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, #14161b, var(--bg));
-  padding: 0.75rem 1rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: saturate(140%) blur(6px);
 }
-.site-header .title {
+.hdr__inner {
+  max-width: 1700px; margin: 0 auto;
+  padding: 0.7rem 1.1rem;
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; gap: 1.5rem;
+}
+.hdr__brand {
+  display: inline-flex; align-items: baseline; gap: 0.5rem;
+  color: var(--text); text-decoration: none;
   font-family: var(--font-display);
-  font-size: 1.1rem;
   letter-spacing: 0.04em;
-  color: var(--text);
 }
-.site-header .title .accent { color: var(--accent); }
-.site-header nav { display: flex; gap: 1rem; }
-.site-header nav a { color: var(--text-dim); font-size: 0.9rem; }
-.site-header nav a.active { color: var(--text); }
+.hdr__brand:hover { text-decoration: none; }
+.hdr__mark { color: var(--accent); font-size: 1.1rem; }
+.hdr__title { font-size: 1.05rem; font-weight: 600; }
+.hdr__sub   { color: var(--text-dim); font-size: 0.95rem; font-weight: 500; }
 
-/* ────────────────────────────────────────────────────────────
-   Nations grid — full-bg-fill style, matching the spreadsheet
-   ──────────────────────────────────────────────────────────── */
+.hdr__nav { display: flex; gap: 0.15rem; flex-wrap: wrap; }
+.hdr__navlink {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  position: relative;
+  text-decoration: none;
+}
+.hdr__navlink:hover { color: var(--text); background: var(--bg-elev); text-decoration: none; }
+.hdr__navlink.is-active {
+  color: var(--text);
+  background: var(--bg-elev);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
 
-.nations-grid {
+.hdr__search {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  min-width: 280px;
+}
+.hdr__search:focus-within {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.hdr__search-ico { color: var(--text-faint); font-size: 1rem; }
+.hdr__search input {
+  flex: 1; background: transparent; border: 0; outline: 0;
+  color: var(--text); font: inherit;
+  min-width: 0;
+}
+.hdr__search input::placeholder { color: var(--text-faint); }
+.hdr__search input::-webkit-search-cancel-button { display: none; }
+.hdr__search kbd {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-faint);
+}
+
+/* ──────────────────────────────────────────────────────────
+   Page chrome
+   ────────────────────────────────────────────────────────── */
+.main {
+  max-width: 1700px;
+  margin: 0 auto;
+  padding: 1.25rem 1.1rem 4rem;
+}
+.page-meta {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.25rem;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.page-title__mark { font-size: 1.2rem; }
+.page-stats { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.stat {
+  font-size: 0.72rem; color: var(--text-dim);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.stat b { color: var(--text); font-weight: 700; margin-right: 0.2rem; }
+
+/* ──────────────────────────────────────────────────────────
+   Nations grid scroll wrapper
+   ────────────────────────────────────────────────────────── */
+.grid { position: relative; }
+.grid__scroll {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+.grid__searchnote {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  padding: 0.5rem 0.2rem 0;
+}
+.is-hidden { display: none !important; }
+
+/* ──────────────────────────────────────────────────────────
+   Nations table — refined + micro variant only
+   ────────────────────────────────────────────────────────── */
+.ntbl {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 2px;
-  font-size: 0.85rem;
+  border-spacing: 0;
+  font-size: 0.82rem;
 }
-.nations-grid th, .nations-grid td {
-  padding: 0.55rem 0.6rem;
-  border-radius: 4px;
-  vertical-align: top;
-  font-weight: 500;
-}
+.ntbl thead th { font-weight: 500; }
+.ntbl th, .ntbl td { vertical-align: top; }
 
-/* Row label column */
-.nations-grid th.rowlabel {
+/* Sticky row-label column */
+.rowlabel {
   background: var(--bg-elev);
   color: var(--text-dim);
   font-family: var(--font-display);
   font-weight: 600;
   text-align: left;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
   position: sticky;
   left: 0;
-  z-index: 2;
-  border: 1px solid var(--border);
-  min-width: 8rem;
+  z-index: 3;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  min-width: 7rem;
+  padding: 0.3rem 0.55rem;
 }
+.rowlabel--corner {
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--text-faint);
+  z-index: 5;
+  position: sticky; top: 0; left: 0;
+  border-bottom: 1px solid var(--border);
+  font-weight: 400;
+}
+.rowlabel--corner .rowlabel__small { display: block; opacity: 0.85; }
+.rowlabel--corner .rowlabel__big   { display: block; color: var(--text-dim); margin-top: 2px; }
 
-/* Section header rows ("Bonuses", "Shrines", etc.) */
-.nations-grid tr.section-row th {
-  background: var(--bg-elev-2);
+/* Section header rows */
+.srow__th {
+  background: var(--bg);
   color: var(--accent);
   font-family: var(--font-display);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 0.72rem;
-  padding-top: 1rem;
+  letter-spacing: 0.04em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 1.1rem 0.7rem 0.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border) 65%);
+  position: sticky; left: 0;
+}
+.srow__chevron {
+  display: inline-block;
+  color: var(--accent);
+  opacity: 0.55;
+  margin-right: 0.4rem;
+  font-size: 0.65em;
 }
 
-/* Nation header cells — full bg color, crest, name */
-.nations-grid th.nation-header {
+/* Nation column headers (sticky-top) */
+.nhdr {
   background: var(--nation-bg, var(--bg-elev));
   color: var(--nation-fg, var(--text));
-  border: 1px solid color-mix(in srgb, var(--nation-bg) 60%, #000 40%);
+  border-bottom: 2px solid color-mix(in srgb, var(--nation-bg) 50%, #000 50%);
   text-align: center;
-  vertical-align: middle;
-  position: sticky;
-  top: 3.25rem;
-  z-index: 1;
+  vertical-align: bottom;
+  position: sticky; top: 0;
+  z-index: 2;
+  padding: 0.4rem 0.4rem;
+  min-width: 9rem;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
 }
-.nation-header .crest {
-  width: 36px;
-  height: 36px;
-  display: block;
-  margin: 0 auto 0.25rem;
+.nhdr__inner { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.nhdr__link {
+  display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+  color: inherit; text-decoration: none;
+}
+.nhdr__link:hover { text-decoration: none; }
+.nhdr__link:hover .nhdr__name { text-decoration: underline; }
+.nhdr__crest {
+  width: 26px; height: 26px;
   object-fit: contain;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
 }
-.nation-header .crest-fallback {
-  width: 36px;
-  height: 36px;
-  margin: 0 auto 0.25rem;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.nhdr__name {
   font-family: var(--font-display);
-  font-weight: 700;
-}
-.nation-header .name {
-  font-family: var(--font-display);
-  letter-spacing: 0.05em;
-  font-size: 0.95rem;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.18);
 }
 
-/* Data cells — colored by what they GIVE (yield/bonus type), not by nation.
-   Nation color shows only in the column header strip above. */
-.nations-grid td.cell {
+/* Data cells */
+.cell {
+  position: relative;
   background: var(--yield-bg, var(--bg-elev));
   color: var(--yield-fg, var(--text));
-  border: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 60%, #000 40%);
-  background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25));
-  /* Subtle left-edge tint in the nation's color so columns stay readable */
-  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--nation-bg, transparent) 60%, transparent 40%);
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
+  border-right: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
+  border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
+  padding: 0.28rem 0.45rem;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  transition: filter 0.12s;
 }
-.nations-grid td.cell.empty {
+.cell.is-empty {
   background: var(--bg-elev);
   background-image: none;
-  border-color: var(--border);
   color: var(--text-faint);
-  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--nation-bg, transparent) 40%, transparent 60%);
+  border-color: var(--border);
+}
+.cell__dash { opacity: 0.5; font-family: var(--font-mono); }
+
+.cell a, .cell .term {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  border-bottom: 0;
+}
+.cell a:hover, .cell .term:hover {
+  text-decoration-color: currentColor;
+  border-bottom: 0;
+}
+.cell .term__icon {
+  width: 0.95em; height: 0.95em;
+  vertical-align: -0.1em;
+  margin-right: 0.15em;
+  object-fit: contain;
 }
 
-/* Yield color tokens — based on the spreadsheet Intro tab's legend.
-   Each token has two layers:
-     --yield-bg-pastel: the spreadsheet's exact pastel (light mode reference)
-     --yield-bg:        dark-mode adapted (the pastel toned for the dark theme)
-   Cells get a 25% black scrim over --yield-bg (defined on td.cell). */
-.yield-science     { --yield-bg-pastel: #D9D2E9; --yield-bg: #6b5ea6; --yield-fg: #fff; }   /* light purple */
-.yield-civics      { --yield-bg-pastel: #FCE5CD; --yield-bg: #c98b46; --yield-fg: #fff; }   /* peach */
-.yield-training    { --yield-bg-pastel: #F4CCCC; --yield-bg: #c25555; --yield-fg: #fff; }   /* light pink */
-.yield-money       { --yield-bg-pastel: #FFF2CC; --yield-bg: #d9b13a; --yield-fg: #1a1408; } /* light yellow */
-.yield-food        { --yield-bg-pastel: #93C47D; --yield-bg: #5e8c43; --yield-fg: #fff; }   /* green */
-.yield-iron        { --yield-bg-pastel: #999999; --yield-bg: #8a8a8e; --yield-fg: #14161b; } /* grey */
-.yield-stone       { --yield-bg-pastel: #D9D9D9; --yield-bg: #b3b3b8; --yield-fg: #14161b; } /* light grey */
-.yield-wood        { --yield-bg-pastel: #B45F06; --yield-bg: #8a4a08; --yield-fg: #fff; }   /* brown */
-.yield-culture     { --yield-bg-pastel: #CFE2F3; --yield-bg: #4e84b8; --yield-fg: #fff; }   /* light blue */
-.yield-growth      { --yield-bg-pastel: #D9EAD3; --yield-bg: #6ba368; --yield-fg: #fff; }   /* light green */
-.yield-orders      { --yield-bg-pastel: #F3F3F3; --yield-bg: #b8b8c0; --yield-fg: #14161b; } /* white/grey */
-.yield-discontent  { --yield-bg-pastel: #B4A7D6; --yield-bg: #7a6ea3; --yield-fg: #fff; }   /* lavender */
-.yield-happiness   { --yield-bg-pastel: #FFD966; --yield-bg: #d9b13a; --yield-fg: #1a1408; } /* gold */
-.yield-maintenance { --yield-bg-pastel: #EA9999; --yield-bg: #a35858; --yield-fg: #fff; }   /* red-salmon */
+/* Shrine cell internals — type is the headline, deity is flavor */
+.shrine {
+  display: flex; flex-direction: column;
+  margin-bottom: 0.2rem;
+}
+.shrine__type {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.84rem;
+  letter-spacing: 0.03em;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  color: inherit;
+}
+.shrine__glyph { font-size: 0.95em; opacity: 0.85; }
+.shrine__name {
+  font-size: 0.64rem;
+  font-style: italic;
+  opacity: 0.72;
+  letter-spacing: 0.02em;
+  margin-top: 0.05rem;
+  font-family: var(--font-ui);
+  font-weight: 400;
+}
 
-/* Yields not in the Intro legend — kept from my earlier choices */
+/* Family cell internals — class is the headline, name is flavor */
+.fam { display: flex; flex-direction: column; }
+.fam__class {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+.fam__name {
+  margin-top: 0.05rem;
+  font-style: italic;
+  font-size: 0.64rem;
+  opacity: 0.72;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Yield color tokens — applied via .yield-{key} class
+   ────────────────────────────────────────────────────────── */
+.yield-science     { --yield-bg: #6b5ea6; --yield-fg: #fff; }
+.yield-civics      { --yield-bg: #c98b46; --yield-fg: #fff; }
+.yield-training    { --yield-bg: #c25555; --yield-fg: #fff; }
+.yield-money       { --yield-bg: #d9b13a; --yield-fg: #1a1408; }
+.yield-food        { --yield-bg: #5e8c43; --yield-fg: #fff; }
+.yield-iron        { --yield-bg: #8a8a8e; --yield-fg: #14161b; }
+.yield-stone       { --yield-bg: #b3b3b8; --yield-fg: #14161b; }
+.yield-wood        { --yield-bg: #8a4a08; --yield-fg: #fff; }
+.yield-culture     { --yield-bg: #4e84b8; --yield-fg: #fff; }
+.yield-growth      { --yield-bg: #6ba368; --yield-fg: #fff; }
+.yield-orders      { --yield-bg: #b8b8c0; --yield-fg: #14161b; }
+.yield-discontent  { --yield-bg: #7a6ea3; --yield-fg: #fff; }
+.yield-happiness   { --yield-bg: #d9b13a; --yield-fg: #1a1408; }
 .yield-influence   { --yield-bg: #c8c9d3; --yield-fg: #14161b; }
 .yield-intrigue    { --yield-bg: #735483; --yield-fg: #fff; }
 .yield-legitimacy  { --yield-bg: #c9a04a; --yield-fg: #1a1408; }
+.yield-maintenance { --yield-bg: #a35858; --yield-fg: #fff; }
 .yield-divine_favor{ --yield-bg: #e3c45f; --yield-fg: #1a1408; }
 .yield-wrath       { --yield-bg: #a83838; --yield-fg: #fff; }
 
-/* Conceptual / non-yield categories from Intro tab */
-.cat-military      { --yield-bg-pastel: #E6B8AF; --yield-bg: #b56a5a; --yield-fg: #fff; }
-.cat-economic      { --yield-bg-pastel: #FFE599; --yield-bg: #c9a04a; --yield-fg: #1a1408; }
-.stat-wisdom       { --yield-bg-pastel: #D9D2E9; --yield-bg: #6b5ea6; --yield-fg: #fff; }
-.stat-charisma     { --yield-bg-pastel: #FCE5CD; --yield-bg: #c98b46; --yield-fg: #fff; }
-.stat-courage      { --yield-bg-pastel: #F4CCCC; --yield-bg: #c25555; --yield-fg: #fff; }
-.stat-discipline   { --yield-bg-pastel: #FFF2CC; --yield-bg: #d9b13a; --yield-fg: #1a1408; }
-.nations-grid td.cell .sub {
-  display: block;
-  font-size: 0.75rem;
-  opacity: 0.75;
-  margin-top: 0.15rem;
-}
-
-/* Hover ring for cells */
-.nations-grid td.cell:hover {
-  outline: 1px solid var(--accent);
-  outline-offset: -1px;
-}
-
-/* Responsive: horizontal scroll on small screens, sticky col still works */
-.table-scroll {
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-  border-radius: var(--radius);
-}
-
-/* Legend / footer */
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  font-size: 0.75rem;
-  color: var(--text-dim);
-}
-.legend .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.15rem 0.55rem;
-  border: 1px solid var(--border);
+/* Legend chip — solid pastel pill */
+.chip {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.18rem 0.55rem;
   border-radius: 999px;
-  background: var(--bg-elev);
+  background: var(--yield-bg, var(--bg-elev));
+  color: var(--yield-fg, var(--text));
+  border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 70%, #000 30%);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
 }
-.legend .swatch {
-  width: 10px; height: 10px; border-radius: 2px;
-}
+.chip:hover { text-decoration: none; filter: brightness(1.1); }
+.chip__glyph { font-size: 0.9em; opacity: 0.85; }
+.chip__icon { width: 1em; height: 1em; object-fit: contain; }
 
-.meta-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 1rem;
-  color: var(--text-dim);
-  font-size: 0.8rem;
+/* ──────────────────────────────────────────────────────────
+   Legends / footer
+   ────────────────────────────────────────────────────────── */
+.legends {
+  margin-top: 1rem;
+  display: flex; flex-direction: column; gap: 0.4rem;
 }
-.meta-row .patch-tag {
+.legend {
+  display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center;
+  font-size: 0.72rem; color: var(--text-dim);
+}
+.legend__label {
   font-family: var(--font-mono);
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  padding: 0.1rem 0.5rem;
-  border-radius: 4px;
-  color: var(--text);
+  font-size: 0.66rem;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+  margin-right: 0.4rem;
+}
+.legend__label em { font-style: italic; color: var(--accent); font-weight: 500; }
+
+.foot {
+  margin-top: 2rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 0.6rem 1.2rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+.foot__col { display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.foot__label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-right: 0.2rem;
+}
+.foot__val { color: var(--text); font-variant-numeric: tabular-nums; }
+.foot__val--dim { color: var(--text-dim); }
+.foot__dot { color: var(--text-faint); opacity: 0.6; }
+.foot a { color: var(--text-dim); text-decoration: none; }
+.foot a:hover { color: var(--accent); text-decoration: underline; }
+
+/* ──────────────────────────────────────────────────────────
+   Mobile fallback
+   ────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hdr__inner { grid-template-columns: 1fr; gap: 0.6rem; }
+  .hdr__nav { flex-wrap: nowrap; overflow-x: auto; }
+  .hdr__search { min-width: 0; }
+  .page-meta { flex-direction: column; align-items: flex-start; }
 }
