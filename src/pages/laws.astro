@@ -1,0 +1,262 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import laws from '../data/laws.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+// Pre-classify each law's text for the in-page search.
+const searchBlobs: Record<string, string> = {};
+for (const g of laws.groups) {
+  for (const c of g.classes) {
+    for (const l of c.laws) {
+      searchBlobs[l.slug] = JSON.stringify({ tier: g.label, class: c.id, law: l }).toLowerCase();
+    }
+  }
+}
+---
+
+<Base
+  title="Laws"
+  active="laws"
+  pageMark="⚖️"
+  pageStats={[
+    { label: 'laws', value: laws.totalLaws },
+    { label: 'pair classes', value: laws.totalPairs },
+    { label: 'tiers', value: laws.groups.length },
+  ]}
+>
+  <div class="laws" id="laws-grid">
+    {laws.groups.map(group => (
+      <section class="laws__tier" id={`tier-${group.tier}`}>
+        <h2 class="laws__tier-label">
+          <span class="laws__tier-num">Tier {group.tier}</span>
+          <span class="laws__tier-name">{group.label.replace(/^Tier \d \(?|\)?$/g, '')}</span>
+        </h2>
+        <div class={`laws__row laws__row--${group.classes[0]?.isSuccession ? 'succession' : 'pairs'}`}>
+          {group.classes.map(cls => (
+            <div class="lawpair" data-class={cls.slug}>
+              <header class="lawpair__hdr">
+                {cls.techPrereqLabel ? (
+                  <span class="lawpair__tech">requires <b>{cls.techPrereqLabel}</b></span>
+                ) : (
+                  <span class="lawpair__tech lawpair__tech--free">Available from start — pick one</span>
+                )}
+              </header>
+              <div class={`lawpair__cards lawpair__cards--n${cls.laws.length}`}>
+                {cls.laws.map(law => (
+                  <article class="lawcard" data-law={law.slug} id={law.slug}>
+                    <h3 class="lawcard__name">{law.name}</h3>
+                    {law.successionOrder && (
+                      <div class="lawcard__order">{law.successionOrder}</div>
+                    )}
+                    {law.effects.length === 0 ? (
+                      <div class="lawcard__empty"><span class="cell__dash">—</span></div>
+                    ) : (
+                      <ul class="lawcard__effects">
+                        {law.effects.map(text => {
+                          const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                          return (
+                            <li class={`effect yield-${yieldKey}`}>
+                              <LinkedText text={text} showIcons={false} />
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                    {law.cost > 0 && (
+                      <footer class="lawcard__cost">
+                        <span class="lawcard__cost-chip" title="Civics cost to adopt">
+                          <img class="chip__icon" src={`${base}img/icons/yields/civics.png`} alt="" onerror="this.style.display='none'" />
+                          <b>{law.cost}</b> adopt
+                        </span>
+                        {law.switchCost > 0 && law.switchCost !== law.cost && (
+                          <span class="lawcard__cost-chip" title="Civics cost to switch later">
+                            <b>{law.switchCost}</b> switch
+                          </span>
+                        )}
+                      </footer>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <div class="legends">
+    <div class="legend">
+      <span class="legend__label">Tiers</span>
+      {laws.groups.map(g => (
+        <a class="chip chip--neutral" href={`#tier-${g.tier}`}>
+          Tier {g.tier}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <script type="application/json" id="law-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    // Highlights matching law cards, dims the rest. Mirrors families.astro.
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('law-search-blobs');
+      const grid = document.getElementById('laws-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-law="' + slug + '"]')) {
+            el.classList.toggle('is-dimmed', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .laws { display: flex; flex-direction: column; gap: 1.4rem; max-width: 1700px; margin: 0 auto; padding: 0 1rem; }
+  .laws__tier { display: flex; flex-direction: column; gap: 0.6rem; }
+  .laws__tier-label {
+    display: flex; align-items: baseline; gap: 0.6rem;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding-bottom: 0.3rem;
+  }
+  .laws__tier-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .laws__tier-name { color: var(--accent); }
+
+  /* A row holds 1..3 pair-classes side-by-side. Each pair has its own header + cards. */
+  .laws__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+    gap: 0.8rem;
+  }
+  .laws__row--succession {
+    /* Succession laws are 5 single cards in a row — let them flow more compact */
+    grid-template-columns: 1fr;
+  }
+
+  .lawpair {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.55rem 0.65rem 0.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .lawpair__hdr {
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .lawpair__tech {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+  .lawpair__tech b { color: var(--accent-2); font-weight: 600; font-family: var(--font-ui); }
+  .lawpair__tech--free { color: var(--text-faint); font-style: italic; }
+
+  /* Two cards side by side (the common pair case); five cards wrap (succession) */
+  .lawpair__cards {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .lawpair__cards--n2 { grid-template-columns: 1fr 1fr; }
+  .lawpair__cards--n5 {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .lawcard {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.55rem 0.45rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    transition: opacity 0.15s, filter 0.15s;
+  }
+  .lawcard.is-dimmed { opacity: 0.25; filter: saturate(0.4); }
+  .lawcard__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin: 0;
+  }
+  .lawcard__order {
+    font-size: 0.66rem;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: -0.2rem;
+  }
+  .lawcard__effects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .lawcard__effects .effect {
+    padding: 0.25rem 0.45rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.74rem;
+    line-height: 1.3;
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.32));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
+  }
+  .lawcard__effects .effect a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  }
+  .lawcard__empty { color: var(--text-faint); font-size: 0.72rem; padding: 0.3rem 0; }
+
+  .lawcard__cost {
+    display: flex; gap: 0.3rem; flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 0.2rem;
+    border-top: 1px dashed var(--border);
+  }
+  .lawcard__cost-chip {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    background: var(--bg-elev-3);
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+  }
+  .lawcard__cost-chip b {
+    color: var(--text);
+    font-weight: 700;
+  }
+</style>

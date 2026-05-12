@@ -1,0 +1,183 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import jobs from '../data/jobs.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Job = typeof jobs[number];
+
+const SLOT_GLYPH: Record<string, string> = {
+  Council: '⚜', General: '⚔', Governor: '🏛', Agent: '⌬', Explorer: '⌖', Misc: '·',
+};
+
+// Group by slot type for the table sections
+const grouped: Record<string, Job[]> = {};
+for (const j of jobs) {
+  (grouped[j.slotType] ||= []).push(j);
+}
+const sections = ['Council', 'General', 'Governor', 'Agent', 'Explorer', 'Misc'].filter(s => grouped[s]?.length);
+
+const searchBlobs: Record<string, string> = {};
+for (const j of jobs) searchBlobs[j.slug] = JSON.stringify(j).toLowerCase();
+---
+
+<Base title="Jobs" active="jobs" pageMark="💼" pageStats={[
+  { label: 'jobs', value: jobs.length },
+  { label: 'council seats', value: grouped['Council']?.length ?? 0 },
+]}>
+  <div class="grid" id="jobs-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Job →</span>
+              <span class="rowlabel__big">Field ↓</span>
+            </th>
+            <th class="nhdr nhdr--family">Name</th>
+            <th class="nhdr nhdr--family">Slot</th>
+            <th class="nhdr nhdr--family">Tech Prereq</th>
+            <th class="nhdr nhdr--family">Trait Prereqs</th>
+            <th class="nhdr nhdr--family">Assignment Opinion</th>
+            <th class="nhdr nhdr--family">Effects</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sections.map(section => (
+            <>
+              <tr class="srow">
+                <th class="srow__th" colspan={7}>
+                  <span class="srow__chevron">▸</span>
+                  <span class="srow__icon">{SLOT_GLYPH[section]}</span> {section} Jobs
+                </th>
+              </tr>
+              {grouped[section].map(j => (
+                <tr data-job={j.slug}>
+                  <th class="rowlabel" scope="row" id={j.slug}>{j.name}</th>
+                  <td class="cell yield-misc">
+                    <span class="job__title">{j.name}</span>
+                    {j.dlc && <span class="job__dlc">{j.dlc.replace('EVENTPACK_', '').replace('_', ' ').toLowerCase()}</span>}
+                  </td>
+                  <td class="cell yield-misc">
+                    <span class="slot-tag" data-slot={j.slotType.toLowerCase()}>
+                      <span class="slot-tag__glyph">{SLOT_GLYPH[j.slotType]}</span>
+                      {j.slotType}
+                    </span>
+                  </td>
+                  <td class={`cell ${j.techPrereq ? 'yield-science' : 'is-empty'}`}>
+                    {j.techPrereq ? <LinkedText text={j.techPrereq} /> : <span class="cell__dash">—</span>}
+                  </td>
+                  <td class={`cell ${j.traitPrereqs.length ? 'yield-misc' : 'is-empty'}`}>
+                    {j.traitPrereqs.length ? (
+                      <div class="chiplist">
+                        {j.traitPrereqs.map(t => <span class="chip chip--neutral">{t}</span>)}
+                      </div>
+                    ) : <span class="cell__dash">—</span>}
+                  </td>
+                  <td class={`cell ${j.iOpinion ? 'yield-legitimacy' : 'is-empty'}`}>
+                    {j.iOpinion ? <span class="opinion__val opinion--pos">+{j.iOpinion}</span> : <span class="cell__dash">—</span>}
+                  </td>
+                  <td class={`cell ${j.effects.length ? 'cell--effects' : 'is-empty'}`}>
+                    {j.effects.length ? j.effects.map(text => {
+                      const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                      return (
+                        <div class={`effect yield-${yieldKey}`}>
+                          <LinkedText text={text} showIcons={false} />
+                        </div>
+                      );
+                    }) : <span class="cell__dash">—</span>}
+                  </td>
+                </tr>
+              ))}
+            </>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="application/json" id="job-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('job-search-blobs');
+      const grid = document.getElementById('jobs-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-job="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .job__title {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .job__dlc {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    font-style: italic;
+    text-transform: lowercase;
+  }
+  .slot-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    color: var(--text);
+  }
+  .slot-tag__glyph { color: var(--accent); opacity: 0.85; }
+  .slot-tag[data-slot="council"]  { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
+  .slot-tag[data-slot="general"]  { border-color: color-mix(in srgb, #c25555 50%, var(--border)); }
+  .slot-tag[data-slot="governor"] { border-color: color-mix(in srgb, #4e84b8 50%, var(--border)); }
+  .slot-tag[data-slot="agent"]    { border-color: color-mix(in srgb, #735483 50%, var(--border)); }
+
+  .chiplist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+  .chiplist .chip {
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+  }
+
+  .srow__icon { color: var(--accent); margin-right: 0.3rem; }
+
+  /* Wider job-name column for legibility */
+  .ntbl .nhdr:nth-child(2) { min-width: 8rem; }
+  /* Pull the effects column wider so multi-line bonuses don't get cramped */
+  .ntbl .nhdr:last-child { min-width: 18rem; }
+</style>

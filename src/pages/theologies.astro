@@ -1,0 +1,214 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import data from '../data/theologies.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+const { religions, tiers } = data;
+
+// Pre-classify each theology's primary yield color so each card gets a
+// deterministic background. Falls through to `misc` when an effect doesn't
+// reference a yield (e.g., Veneration → "-5% Rebellion Chance").
+function theologyYield(eff: string[]): string {
+  for (const e of eff) {
+    const k = classifyYield(e);
+    if (k) return k.toLowerCase();
+  }
+  return 'misc';
+}
+---
+
+<Base
+  title="Theologies"
+  active="theologies"
+  pageMark="🙏"
+  pageStats={[
+    { label: 'theologies', value: data.totals.theologies },
+    { label: 'tiers',      value: tiers.length },
+    { label: 'world religions', value: religions.length },
+  ]}
+>
+  <p class="lede">
+    Theologies are a shared pool of 8 picks across all <b>World Religions</b>.
+    To establish a theology you must adopt the religion as your State Religion
+    and spend a <LinkedText text="Disciple" /> on the founding mission. The
+    effect then applies <em>globally</em> to every nation following that
+    religion, and the slot is locked — no other player can pick it.
+  </p>
+
+  <div class="legend legend--audience">
+    <span class="legend__label">Available to</span>
+    {religions.map(r => (
+      <a class="chip chip--neutral" href={`${base}world-religion-buildings#${r.slug}`}>
+        <img class="chip__icon" src={`${base}img/yields/divine_favor.png`} alt="" onerror="this.style.display='none'" />
+        {r.name}
+      </a>
+    ))}
+  </div>
+
+  {tiers.map(tier => (
+    <section class="tier" id={`tier-${tier.tier}`}>
+      <h2 class="tier__title">
+        <span class="tier__chevron">▸</span>
+        {tier.label}
+        <span class="tier__cost">· {tier.theologies[0]?.cost} <LinkedText text="Civics" showIcons={false} /></span>
+      </h2>
+      <div class="theology-grid">
+        {tier.theologies.map(th => {
+          const yk = theologyYield(th.effects);
+          return (
+            <article class={`theology yield-${yk}`} id={th.slug}>
+              <header class="theology__head">
+                <h3 class="theology__name">{th.name}</h3>
+                {th.techLabel && (
+                  <span class="theology__prereq">
+                    <LinkedText text={th.techLabel} showIcons={false} />
+                  </span>
+                )}
+              </header>
+
+              {th.effects.length > 0 ? (
+                <ul class="theology__effects">
+                  {th.effects.map(e => (
+                    <li class="theology__effect">
+                      <LinkedText text={e} showIcons={false} />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p class="theology__effect theology__effect--empty">No direct city effect.</p>
+              )}
+
+              <footer class="theology__foot">
+                {th.lawOpinion.map(l => (
+                  <span class={`opinion-tag opinion-tag--${l.value >= 0 ? 'pos' : 'neg'}`}>
+                    <LinkedText text={l.label} showIcons={false} />
+                    <b>{l.value >= 0 ? '+' : ''}{l.value}</b>
+                  </span>
+                ))}
+                {th.spreadChange !== 0 && (
+                  <span class="spread-tag">
+                    Spread <b>{th.spreadChange >= 0 ? '+' : ''}{th.spreadChange}%</b>
+                  </span>
+                )}
+              </footer>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  ))}
+</Base>
+
+<style>
+  .lede {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 64ch;
+    margin: 0.4rem 0 1.2rem;
+  }
+  .lede b { color: var(--text); }
+
+  .legend--audience { margin-bottom: 1.4rem; }
+
+  .tier { margin-top: 1.4rem; }
+  .tier__title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    margin: 0 0 0.55rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .tier__chevron { color: var(--accent); opacity: 0.7; }
+  .tier__cost {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    font-family: var(--font-ui);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .theology-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.5rem;
+  }
+  .theology {
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.34));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
+    border-radius: 6px;
+    padding: 0.55rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .theology__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .theology__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    color: inherit;
+  }
+  .theology__prereq {
+    font-size: 0.65rem;
+    opacity: 0.75;
+    font-style: italic;
+  }
+  .theology__effects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .theology__effect {
+    font-size: 0.78rem;
+    line-height: 1.3;
+  }
+  .theology__effect--empty {
+    margin: 0;
+    opacity: 0.7;
+    font-style: italic;
+  }
+  .theology__foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: auto;
+    padding-top: 0.25rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  }
+  .opinion-tag,
+  .spread-tag {
+    font-size: 0.66rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.22);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+  .opinion-tag b,
+  .spread-tag b {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .opinion-tag--pos b { color: #aef2c9; }
+  .opinion-tag--neg b { color: #f2aeae; }
+</style>

@@ -1,0 +1,195 @@
+---
+import Base from '../layouts/Base.astro';
+import units from '../data/units.json';
+
+const base = import.meta.env.BASE_URL;
+
+type Unit = typeof units[number];
+
+// Rock-paper-scissors matrix. Each row is "Attacker class" → which trait it
+// counters and by how much (averaged across that class's signature units).
+// Built from the XML counter modifiers attached to each unit's effect tree.
+
+const ATTACKER_CLASSES = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege'];
+const DEFENDER_TARGETS = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Melee', 'Siege'];
+
+// Pick a small set of "iconic" units per class for the row legend.
+function pickIconic(cls: string): Unit[] {
+  return (units as Unit[])
+    .filter(u => u.isCombat && u.primaryLabel === cls && !u.nationPrereq)
+    .sort((a, b) => a.strength - b.strength)
+    .slice(0, 3);
+}
+
+interface Cell {
+  best: number;       // largest positive modifier any unit of this class has vs this target
+  worst: number;      // largest negative
+  sources: string[];  // representative unit names
+}
+
+function cellFor(attackerClass: string, defender: string): Cell {
+  const matchers: Unit[] = (units as Unit[])
+    .filter(u => u.isCombat && u.primaryLabel === attackerClass);
+  let best = 0;
+  let worst = 0;
+  const sources: string[] = [];
+  for (const u of matchers) {
+    for (const c of u.counters) {
+      if (c.target !== defender) continue;
+      if (c.kind !== 'vs' && c.kind !== 'melee vs') continue;
+      if (c.value > best) { best = c.value; }
+      if (c.value < worst) { worst = c.value; }
+      if (c.value !== 0 && !sources.includes(u.name)) sources.push(u.name);
+    }
+  }
+  return { best, worst, sources: sources.slice(0, 3) };
+}
+
+const matrix = ATTACKER_CLASSES.map(cls => ({
+  cls,
+  iconic: pickIconic(cls),
+  cells: DEFENDER_TARGETS.map(d => ({ defender: d, ...cellFor(cls, d) })),
+}));
+---
+
+<Base
+  title="Unit Counters at-a-glance"
+  active="unit-counters"
+  pageMark="⚔️"
+  pageStats={[
+    { label: 'attacker classes', value: ATTACKER_CLASSES.length },
+    { label: 'targets',           value: DEFENDER_TARGETS.length },
+  ]}
+>
+  <p class="lede">
+    A quick rock-paper-scissors view: each cell shows the biggest combat
+    modifier units of that <em>attacker</em> class have against units carrying
+    the listed <em>target</em> trait. Numbers are pulled directly from the
+    game's <code>EffectUnit</code> entries — anti-trait effects on
+    <code>aiUnitTraitModifier</code>.
+  </p>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          {DEFENDER_TARGETS.map(d => <col data-target={d} />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Target →</span>
+              <span class="rowlabel__big">Attacker ↓</span>
+            </th>
+            {DEFENDER_TARGETS.map(d => (
+              <th class="nhdr nhdr--family" data-target={d}>
+                <div class="nhdr__inner">
+                  <span class="nhdr__name">{d}</span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {matrix.map(row => (
+            <tr>
+              <th class="rowlabel" scope="row">
+                <div class="rl">
+                  <span class="rl__name">{row.cls}</span>
+                  <span class="rl__sources">
+                    {row.iconic.map(u => u.name).join(', ')}
+                  </span>
+                </div>
+              </th>
+              {row.cells.map(cell => {
+                const v = cell.best || cell.worst;
+                if (v === 0) {
+                  return (
+                    <td class="cell is-empty" data-target={cell.defender}>
+                      <span class="cell__dash">—</span>
+                    </td>
+                  );
+                }
+                const cls = v > 0 ? 'yield-training' : 'yield-misc';
+                return (
+                  <td class={`cell ${cls}`} data-target={cell.defender}>
+                    <div class="counter">
+                      <span class="counter__val">{v > 0 ? '+' : ''}{v}%</span>
+                      {cell.sources.length > 0 && (
+                        <span class="counter__sources">{cell.sources.join(' · ')}</span>
+                      )}
+                    </div>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="legends">
+    <div class="legend">
+      <span class="legend__label">Read it</span>
+      <span>Row = which class is attacking. Column = the defender's trait. A "+50% vs Mounted" cell means Polearm units (Spearman etc.) get +50% strength when fighting any Mounted-trait unit.</span>
+    </div>
+    <div class="legend">
+      <span class="legend__label">Classic rules of thumb</span>
+      <span class="chip yield-training">Polearm beats Mounted</span>
+      <span class="chip yield-training">Mounted beats Ranged</span>
+      <span class="chip yield-training">Infantry beats Polearm</span>
+      <span class="chip yield-misc">Ranged softens before melee</span>
+    </div>
+  </div>
+
+  <style>
+    .lede {
+      color: var(--text-dim);
+      max-width: 64ch;
+      margin: 0 0 1rem;
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .lede code {
+      background: var(--bg-elev);
+      padding: 0.05rem 0.35rem;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+    }
+    .rl { display: flex; flex-direction: column; gap: 0.1rem; }
+    .rl__name {
+      font-family: var(--font-display);
+      font-size: 0.84rem;
+      color: var(--text);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .rl__sources {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-faint);
+      letter-spacing: 0.04em;
+      text-transform: none;
+    }
+    .counter { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; }
+    .counter__val {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .counter__sources {
+      font-size: 0.6rem;
+      opacity: 0.85;
+      letter-spacing: 0.02em;
+    }
+    .nhdr--family {
+      background: var(--bg-elev-2);
+      color: var(--text);
+      border-bottom: 2px solid var(--border-strong);
+      background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    }
+  </style>
+</Base>

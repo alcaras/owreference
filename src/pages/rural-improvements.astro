@@ -1,0 +1,236 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import improvements from '../data/rural_improvements.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Improvement = typeof improvements[number];
+
+type Col =
+  | { key: 'name';        label: 'Improvement' }
+  | { key: 'tech';        label: 'Tech' }
+  | { key: 'cost';        label: 'Cost' }
+  | { key: 'output';      label: 'Base Yield' }
+  | { key: 'terrains';    label: 'Terrain' }
+  | { key: 'adjacency';   label: 'Adjacency' }
+  | { key: 'terrainMods'; label: 'Terrain Modifiers' }
+  | { key: 'specialist';  label: 'Specialist Slot' }
+  | { key: 'restrict';    label: 'Notes' };
+
+const cols: Col[] = [
+  { key: 'name',        label: 'Improvement' },
+  { key: 'tech',        label: 'Tech' },
+  { key: 'cost',        label: 'Cost' },
+  { key: 'output',      label: 'Base Yield' },
+  { key: 'terrains',    label: 'Terrain' },
+  { key: 'adjacency',   label: 'Adjacency' },
+  { key: 'terrainMods', label: 'Terrain Modifiers' },
+  { key: 'specialist',  label: 'Specialist Slot' },
+  { key: 'restrict',    label: 'Notes' },
+];
+
+const searchBlobs: Record<string, string> = {};
+for (const it of improvements) {
+  searchBlobs[it.slug] = JSON.stringify(it).toLowerCase();
+}
+---
+
+<Base title="Rural Improvements" active="rural-improvements" pageMark="⛏️" pageStats={[
+  { label: 'improvements', value: improvements.length },
+]}>
+  <div class="grid" id="ri-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            {cols.map(c => (
+              <th class="nhdr nhdr--col" data-col={c.key}>
+                <div class="nhdr__inner"><span class="nhdr__name">{c.label}</span></div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {improvements.map(it => (
+            <tr data-row={it.slug}>
+              <th class="rowlabel rowlabel--item" scope="row" id={it.slug}>
+                <div class="item__name">{it.name}</div>
+                <div class="item__sub">{it.class}</div>
+              </th>
+
+              {it.tech ? (
+                <td class="cell yield-misc">
+                  <a class="tech-chip" href={`${base}technologies#${it.tech.slug}`} title={it.tech.name}>
+                    <img class="tech-chip__icon" src={`${base}img/icons/techs/${it.tech.slug}.png`} alt="" onerror="this.style.display='none'" />
+                    <span>{it.tech.name}</span>
+                  </a>
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.cost && it.cost.length > 0 ? (
+                <td class="cell cell--effects">
+                  {it.cost.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                  })}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.output && it.output.length > 0 ? (
+                <td class="cell cell--effects">
+                  {it.output.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                  })}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.terrains && it.terrains.length > 0 ? (
+                <td class="cell yield-misc">
+                  {it.terrains.map(t => <div class="terrain-tag">{t}</div>)}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.adjacency && it.adjacency.length > 0 ? (
+                <td class="cell cell--effects">
+                  {it.adjacency.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                  })}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.terrainMods && it.terrainMods.length > 0 ? (
+                <td class="cell cell--effects">
+                  {it.terrainMods.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                  })}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.specialist ? (
+                <td class="cell yield-misc">
+                  <a class="spec-chip" href={`${base}specialists#${it.specialist.slug}`} title={it.specialist.name}>
+                    <img class="spec-chip__icon" src={`${base}img/icons/specialists/${it.specialist.slug}.png`} alt="" onerror="this.style.display='none'" />
+                    <span>{it.specialist.name}</span>
+                  </a>
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.restrictions && it.restrictions.length > 0 ? (
+                <td class="cell yield-misc">
+                  {it.restrictions.map(r => <div class="listitem">{r}</div>)}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="application/json" id="ri-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('ri-search-blobs');
+      const grid = document.getElementById('ri-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const row = grid.querySelector('tr[data-row="' + slug + '"]');
+          if (!row) continue;
+          row.classList.toggle('is-hidden', !!q && !blobs[slug].includes(q));
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .nhdr--col {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    text-align: left;
+    padding: 0.45rem 0.6rem;
+    min-width: 8rem;
+  }
+  .nhdr--col .nhdr__name {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  .rowlabel--item {
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    padding: 0.45rem 0.6rem;
+    background: var(--bg-elev);
+    min-width: 10rem;
+    border-right: 1px solid var(--border);
+  }
+  .item__name {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .item__sub {
+    font-style: italic;
+    color: var(--text-faint);
+    font-size: 0.66rem;
+    margin-top: 0.1rem;
+  }
+  .tech-chip, .spec-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem 0.15rem 0.3rem;
+    background: var(--bg-elev-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+  .tech-chip:hover, .spec-chip:hover { filter: brightness(1.15); text-decoration: none; }
+  .tech-chip__icon, .spec-chip__icon { width: 14px; height: 14px; object-fit: contain; }
+  .terrain-tag {
+    display: inline-block;
+    padding: 0.05rem 0.4rem;
+    margin: 0.1rem 0.2rem 0.1rem 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    background: var(--bg);
+  }
+  .listitem { font-size: 0.72rem; padding: 0.06rem 0; }
+</style>

@@ -1,0 +1,225 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+
+const base = import.meta.env.BASE_URL;
+
+// Constants from reference/XML/Infos/globalsInt.xml. These are the canonical
+// values the game engine uses for Hurry cost arithmetic. Kept here as a small
+// hand-curated mirror; if they drift in a future patch, the build will still
+// pass and we'll catch it by glancing at this list.
+//
+//   HURRY_DISCONTENT_COST_BASE  =  100  (per Hurry)
+//   HURRY_DISCONTENT_COST_PER   =   10  (per item turn skipped)
+//   HURRY_CIVICS_COST_BASE      =  100
+//   HURRY_CIVICS_COST_MODIFIER  =   50   (% on top of remaining production)
+//   HURRY_TRAINING_COST_BASE    =  100
+//   HURRY_TRAINING_COST_MODIFIER=   50
+//   HURRY_MONEY_COST_BASE       =   10
+//   HURRY_MONEY_COST_PER        =    5
+//   HURRY_POPULATION_COST_BASE  =    1
+//   HURRY_POPULATION_COST_PER   =   80
+//   HURRY_ORDERS_COST_BASE      =    2
+//   HURRY_ORDERS_COST_MODIFIER  =  -90  (% reduction)
+
+type HurryRow = {
+  yieldKey: string;
+  name: string;
+  unlock: string;
+  formula: string;
+  notes: string;
+};
+
+const rows: HurryRow[] = [
+  {
+    yieldKey: 'civics',
+    name: 'Civics',
+    unlock: 'All Cities (default)',
+    formula: '100 Civics base + 50% of remaining production cost',
+    notes: 'Universal hurry channel. Available to every city as soon as it has Developing Culture.',
+  },
+  {
+    yieldKey: 'training',
+    name: 'Training',
+    unlock: 'Riders family · Statesman archetype · certain Laws',
+    formula: '100 Training base + 50% of remaining production cost',
+    notes: 'Mirrors Civics but spends Training. Best on military units in a Riders seat.',
+  },
+  {
+    yieldKey: 'money',
+    name: 'Money',
+    unlock: 'Patrons family · certain Laws',
+    formula: '10 Money base + 5 per remaining production turn',
+    notes: 'Linear in turns remaining (not in production cost). Cheap on long projects.',
+  },
+  {
+    yieldKey: 'orders',
+    name: 'Orders',
+    unlock: 'Champions archetype · certain Laws',
+    formula: '2 Orders base, reduced by 90% of remaining production',
+    notes: 'A flat, very cheap "bonus" hurry. The modifier is negative, so big projects get nearly free.',
+  },
+  {
+    yieldKey: 'growth',
+    name: 'Population',
+    unlock: 'Volunteers law',
+    formula: '1 City Population base + 80 per remaining production turn',
+    notes: 'Spends actual citizens. Last-resort hurry for emergency production.',
+  },
+];
+
+const totalChannels = rows.length;
+
+// Discontent is the universal side-cost across every channel.
+const discontentRow = {
+  base: 100,
+  per: 10,
+  desc: 'Every Hurry adds Discontent: +1 per Hurry, plus an extra +0.1 for each production turn you skipped.',
+};
+---
+
+<Base title="Hurrying Production" active="hurrying" pageMark="⏩" pageStats={[
+  { label: 'channels', value: totalChannels },
+  { label: 'discontent cost', value: 'always' },
+]}>
+  <section class="hurry-intro">
+    <p>
+      <strong>Hurry Production</strong> lets a City finish whatever it is building in one turn,
+      paying a Yield (and always some <a href={`${base}yields/discontent`}>Discontent</a>) instead
+      of waiting for the production timer. A City may Hurry only if it has at least <em>Developing</em>
+      <a href={`${base}yields/culture`}>Culture</a>. The item is delivered on the <strong>following</strong>
+      turn — not instantly.
+    </p>
+    <p class="hurry-intro__note">
+      Every City can Hurry with Civics from the start. Other channels (Training, Money, Orders, Population)
+      unlock through family classes, character archetypes, or specific Laws. The formulas come straight from
+      <code>globalsInt.xml</code>, which is the engine's single source of truth.
+    </p>
+  </section>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Channel</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Unlocked By</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Formula</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Notes</span></div></th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(r => (
+            <tr>
+              <th class="rowlabel rowlabel--item" scope="row">
+                <div class={`hurry-pill yield-${r.yieldKey}`}>{r.name}</div>
+              </th>
+              <td class="cell yield-misc"><LinkedText text={r.unlock} /></td>
+              <td class={`cell yield-${r.yieldKey}`}>
+                <code class="formula"><LinkedText text={r.formula} /></code>
+              </td>
+              <td class="cell yield-misc"><LinkedText text={r.notes} /></td>
+            </tr>
+          ))}
+          <tr>
+            <th class="rowlabel rowlabel--item" scope="row">
+              <div class="hurry-pill yield-discontent">Discontent</div>
+            </th>
+            <td class="cell yield-misc" colspan="3">
+              <strong>Always charged on top of the chosen channel.</strong>{' '}
+              {discontentRow.base / 10} Discontent base, plus {discontentRow.per / 10} per remaining production turn skipped.
+              <span class="hurry-note"> ({discontentRow.desc})</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <section class="hurry-tips">
+    <h2>How to think about it</h2>
+    <ul>
+      <li><strong>Civics</strong> is the default — every City has it, and it scales with the cost of what you're building.</li>
+      <li><strong>Money</strong> and <strong>Population</strong> scale with <em>turns remaining</em>, so they shine when the project is far from done.</li>
+      <li><strong>Orders</strong> is almost free in raw Yield but it eats your turn's action budget — best used to crash-finish something already close to done.</li>
+      <li><strong>Training</strong> mirrors Civics but spends Training instead — natural for military-focused cities.</li>
+      <li>Stacking multiple Hurries in one turn is allowed; each one re-rolls the Discontent surcharge.</li>
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .hurry-intro {
+    max-width: 920px;
+    margin: 0 0 1rem;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .hurry-intro p { margin: 0 0 0.6rem; }
+  .hurry-intro__note { font-size: 0.82rem; color: var(--text-faint); }
+  .hurry-intro code, .formula {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.05rem 0.4rem;
+    color: var(--text);
+    font-size: 0.9em;
+  }
+  .formula {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+  }
+
+  .nhdr--col {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    text-align: left;
+    padding: 0.45rem 0.6rem;
+    min-width: 8rem;
+  }
+  .nhdr--col .nhdr__name {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  .rowlabel--item {
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    background: var(--bg-elev);
+    border-right: 1px solid var(--border);
+    min-width: 8rem;
+  }
+  .hurry-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.8rem;
+    background: var(--yield-bg);
+    color: var(--yield-fg);
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.2));
+  }
+
+  .hurry-note { color: var(--text-faint); font-size: 0.85em; }
+
+  .hurry-tips {
+    margin-top: 1.5rem;
+    max-width: 920px;
+  }
+  .hurry-tips h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin: 0 0 0.6rem;
+  }
+  .hurry-tips ul { margin: 0; padding-left: 1.2rem; }
+  .hurry-tips li { margin: 0.3rem 0; font-size: 0.86rem; line-height: 1.5; }
+</style>

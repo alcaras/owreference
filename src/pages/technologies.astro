@@ -1,0 +1,271 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import technologies from '../data/technologies.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Tech = typeof technologies[number];
+
+// Group techs by era (column 0..7). Each tier becomes its own section.
+const byEra = new Map<string, Tech[]>();
+for (const t of technologies) {
+  if (!byEra.has(t.era)) byEra.set(t.era, []);
+  byEra.get(t.era)!.push(t);
+}
+const eras = Array.from(byEra.entries()).sort((a, b) => {
+  // Sort by the column the first tech in the era reports.
+  const colA = byEra.get(a[0])![0].column;
+  const colB = byEra.get(b[0])![0].column;
+  return colA - colB;
+});
+
+// Pre-compute a search blob per tech for the header search box.
+const searchBlobs: Record<string, string> = {};
+for (const t of technologies) {
+  searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
+}
+---
+
+<Base
+  title="Technologies"
+  active="techs"
+  pageMark="🔮"
+  pageStats={[
+    { label: 'techs', value: technologies.length },
+    { label: 'eras',  value: eras.length },
+  ]}
+>
+  <div id="tech-grid">
+    {eras.map(([era, techs]) => (
+      <section class="tech-era" data-era={era}>
+        <h2 class="tech-era__title">
+          <span class="tech-era__num">{techs[0].column}</span>
+          <span class="tech-era__name">{era}</span>
+          <span class="tech-era__count">{techs.length} techs</span>
+        </h2>
+        <ul class="tech-list">
+          {techs.sort((a, b) => a.row - b.row).map(t => (
+            <li class="tech" id={t.slug} data-tech={t.slug}>
+              <div class="tech__head">
+                <img class="tech__icon" src={`${base}${t.icon}`} alt="" onerror="this.style.visibility='hidden'" />
+                <div class="tech__title">
+                  <span class="tech__name">{t.name}</span>
+                  <span class="tech__cost"><span class="tech__cost-num">{t.cost}</span> Science</span>
+                </div>
+              </div>
+              {t.prereqs.length > 0 && (
+                <div class="tech__prereqs">
+                  <span class="tech__label">Requires</span>
+                  {t.prereqs.map(p => (
+                    <a class="chip chip--neutral" href={`#${p.slug}`}>
+                      <img class="chip__icon" src={`${base}img/icons/techs/${p.slug}.png`} alt="" onerror="this.style.display='none'" />
+                      {p.name}
+                    </a>
+                  ))}
+                </div>
+              )}
+              {t.unlocks.length > 0 && (
+                <div class="tech__unlocks">
+                  <span class="tech__label">Effect</span>
+                  <div class="tech__effects">
+                    {t.unlocks.map(line => {
+                      const yieldKey = classifyYield(line)?.toLowerCase() || 'misc';
+                      return (
+                        <div class={`effect yield-${yieldKey}`}>
+                          <LinkedText text={line} showIcons={false} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {t.unlocksByCategory && Object.keys(t.unlocksByCategory).length > 0 && (
+                <div class="tech__unlocks">
+                  {Object.entries(t.unlocksByCategory).map(([cat, items]) => (
+                    <div class="tech__cat">
+                      <span class="tech__label">{cat}</span>
+                      <span class="tech__cat-items">
+                        {(items as string[]).map(name => (
+                          <span class="chip chip--neutral chip--mini">{name}</span>
+                        ))}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+
+  <script type="application/json" id="tech-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    // Search-filter the tech cards: hide any card whose JSON blob doesn't match.
+    (function () {
+      const input = document.getElementById('site-search');
+      const grid = document.getElementById('tech-grid');
+      const blobNode = document.getElementById('tech-search-blobs');
+      if (!input || !grid || !blobNode) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-tech="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+        // Hide eras that have no visible techs
+        for (const era of grid.querySelectorAll('.tech-era')) {
+          const visible = era.querySelectorAll('.tech:not(.is-hidden)').length;
+          era.classList.toggle('is-hidden', visible === 0);
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .tech-era {
+    margin: 1.4rem 0;
+  }
+  .tech-era__title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0 0 0.6rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+    padding-bottom: 0.35rem;
+  }
+  .tech-era__num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: var(--bg-elev);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+    padding: 0.05rem 0.45rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .tech-era__name { flex: 1; }
+  .tech-era__count {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  .tech-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.5rem;
+  }
+  .tech {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.55rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .tech:target {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent);
+  }
+  .tech__head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .tech__icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    flex-shrink: 0;
+  }
+  .tech__title { display: flex; flex-direction: column; flex: 1; gap: 0.05rem; }
+  .tech__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+  .tech__cost {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+  .tech__cost-num { color: var(--accent); font-weight: 500; }
+
+  .tech__label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin-bottom: 0.15rem;
+  }
+  .tech__prereqs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+  }
+  .tech__prereqs .tech__label { flex-basis: 100%; }
+  .tech__prereqs .chip {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.4rem 0.1rem 0.3rem;
+  }
+  .tech__prereqs .chip__icon { width: 0.95em; height: 0.95em; }
+
+  .tech__effects {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .tech__cat {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    align-items: center;
+    margin-top: 0.15rem;
+  }
+  .tech__cat .tech__label { margin-right: 0.2rem; }
+  .tech__cat-items { display: inline-flex; flex-wrap: wrap; gap: 0.2rem; }
+  .chip--mini {
+    font-size: 0.6rem;
+    padding: 0.05rem 0.4rem;
+    text-transform: none;
+    font-weight: 500;
+  }
+  .tech__effects .effect {
+    background: var(--yield-bg, var(--bg-elev-2));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    line-height: 1.25;
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
+  }
+</style>

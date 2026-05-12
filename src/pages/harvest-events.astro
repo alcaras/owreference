@@ -1,0 +1,241 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import events from '../data/harvest_events.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Event = typeof events[number];
+
+// Friendlier label for the bonus token: BONUS_CULTURE_GAIN_LARGE → "Large Culture Gain"
+function bonusLabel(tok: string): string {
+  let s = tok.replace(/^BONUS_/, '').replace(/^EVENTOPTION_/, '');
+  s = s.replace(/_/g, ' ');
+  s = s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  return s;
+}
+
+function classifyBonus(tok: string): string {
+  // Map common bonus tokens to a yield color
+  const t = tok.toUpperCase();
+  if (t.includes('CULTURE'))     return 'culture';
+  if (t.includes('SCIENCE'))     return 'science';
+  if (t.includes('CIVICS'))      return 'civics';
+  if (t.includes('TRAINING'))    return 'training';
+  if (t.includes('MONEY') || t.includes('GOLD')) return 'money';
+  if (t.includes('FOOD'))        return 'food';
+  if (t.includes('GROWTH'))      return 'growth';
+  if (t.includes('ORDERS'))      return 'orders';
+  if (t.includes('HAPPINESS'))   return 'happiness';
+  if (t.includes('DISCONTENT'))  return 'discontent';
+  if (t.includes('LEGITIMACY'))  return 'legitimacy';
+  if (t.includes('INFLUENCE'))   return 'influence';
+  if (t.includes('INTRIGUE'))    return 'intrigue';
+  if (t.includes('IRON'))        return 'iron';
+  if (t.includes('WOOD'))        return 'wood';
+  if (t.includes('STONE'))       return 'stone';
+  if (t.includes('TRAIT'))       return 'misc';
+  return 'misc';
+}
+
+// Sort by resource then title for some sense of grouping
+const sorted = [...events].sort((a, b) => {
+  const r = (a.resource || 'zzz').localeCompare(b.resource || 'zzz');
+  return r !== 0 ? r : a.title.localeCompare(b.title);
+});
+
+const searchBlobs: Record<string, string> = {};
+for (const e of events) {
+  searchBlobs[e.slug] = JSON.stringify(e).toLowerCase();
+}
+
+const resourceCount = new Set(events.map(e => e.resource).filter(Boolean)).size;
+---
+
+<Base title="Harvest Events" active="harvest-events" pageMark="🌾" pageStats={[
+  { label: 'events', value: events.length },
+  { label: 'resources covered', value: resourceCount },
+]}>
+  <section class="he-intro">
+    <p>
+      A <strong>Harvest Event</strong> fires when a Worker finishes gathering a tile Resource — the
+      tile yields its stockpile and a story-frame asks the leader to choose what to do with it.
+      Each option grants different <a href={`${base}yields/orders`}>Bonuses</a> to the player, city, or
+      family. Events are flagged in <code>eventStory*.xml</code> with <code>Class=EVENTCLASS_HARVESTING</code>
+      and trigger on <code>EVENTTRIGGER_RESOURCE_HARVESTED</code>.
+    </p>
+  </section>
+
+  <div class="grid" id="he-grid">
+    {sorted.map(ev => (
+      <article class="ev-card" data-row={ev.slug} id={ev.slug}>
+        <header class="ev-card__hdr">
+          <h3 class="ev-card__title">{ev.title}</h3>
+          {ev.resource && (
+            <span class="ev-card__res">
+              <img class="ev-card__res-icon" src={`${base}img/icons/resources/${ev.resource.toLowerCase().replace(/ /g, '_')}.png`} alt="" onerror="this.style.display='none'" />
+              {ev.resource}
+            </span>
+          )}
+        </header>
+        {ev.body && <p class="ev-card__body"><LinkedText text={ev.body} /></p>}
+        {ev.options && ev.options.length > 0 && (
+          <ol class="ev-options">
+            {ev.options.map(opt => (
+              <li class="ev-option">
+                <div class="ev-option__text"><LinkedText text={opt.text} /></div>
+                {opt.bonuses && opt.bonuses.length > 0 && (
+                  <div class="ev-option__bonuses">
+                    {opt.bonuses.map(b => (
+                      <span class={`bonus-chip yield-${classifyBonus(b)}`}>{bonusLabel(b)}</span>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ol>
+        )}
+        {ev.author && <footer class="ev-card__foot">written by {ev.author}</footer>}
+      </article>
+    ))}
+  </div>
+
+  <script type="application/json" id="he-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('he-search-blobs');
+      const grid = document.getElementById('he-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const card = grid.querySelector('[data-row="' + slug + '"]');
+          if (!card) continue;
+          card.classList.toggle('is-hidden', !!q && !blobs[slug].includes(q));
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .he-intro {
+    max-width: 920px;
+    margin: 0 0 1.2rem;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .he-intro code {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.05rem 0.4rem;
+    color: var(--text);
+    font-size: 0.86em;
+  }
+
+  #he-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .ev-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem 0.95rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .ev-card__hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+  .ev-card__title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: 0.02em;
+    font-weight: 600;
+  }
+  .ev-card__res {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    padding: 0.15rem 0.5rem 0.15rem 0.3rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg);
+    white-space: nowrap;
+  }
+  .ev-card__res-icon { width: 14px; height: 14px; object-fit: contain; }
+
+  .ev-card__body {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .ev-options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .ev-option {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0.35rem 0.5rem;
+    counter-increment: opt;
+  }
+  .ev-option__text {
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.35;
+  }
+  .ev-option__bonuses {
+    margin-top: 0.3rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .bonus-chip {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: var(--yield-bg);
+    color: var(--yield-fg);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.2));
+  }
+
+  .ev-card__foot {
+    color: var(--text-faint);
+    font-size: 0.66rem;
+    font-style: italic;
+    margin-top: 0.2rem;
+    border-top: 1px dashed var(--border);
+    padding-top: 0.3rem;
+  }
+</style>

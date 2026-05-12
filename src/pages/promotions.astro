@@ -1,0 +1,253 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import promotions from '../data/promotions.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Promotion = typeof promotions[number];
+
+// Group by tier (1..3 for chained, "extras" for single-shot promos with tier 1
+// but no prereq class siblings — we keep them in tier 1).
+const tiers = [1, 2, 3, 4];
+
+const byTier = new Map<number, Promotion[]>();
+for (const p of promotions) {
+  const t = p.tier || 1;
+  if (!byTier.has(t)) byTier.set(t, []);
+  byTier.get(t)!.push(p);
+}
+
+// For visual chain-grouping inside a tier: sort by class label, then by name.
+for (const arr of byTier.values()) {
+  arr.sort((a, b) => (a.class || '').localeCompare(b.class || '') || a.name.localeCompare(b.name));
+}
+
+const searchBlobs: Record<string, string> = {};
+for (const p of promotions) {
+  searchBlobs[p.slug] = JSON.stringify(p).toLowerCase();
+}
+---
+
+<Base
+  title="Promotions"
+  active="promotions"
+  pageMark="🎖️"
+  pageStats={[
+    { label: 'promotions', value: promotions.length },
+    { label: 'tiers',      value: byTier.size },
+  ]}
+>
+  <div id="prom-grid">
+    {tiers.filter(t => byTier.has(t)).map(t => (
+      <section class="prom-tier" data-tier={t}>
+        <h2 class="prom-tier__title">
+          <span class="prom-tier__num">Tier {t}</span>
+          <span class="prom-tier__count">{byTier.get(t)!.length} promotions</span>
+        </h2>
+        <ul class="prom-list">
+          {byTier.get(t)!.map(p => (
+            <li class="prom" id={p.slug} data-prom={p.slug}>
+              <div class="prom__head">
+                <div class="prom__title">
+                  <span class="prom__name">{p.name}</span>
+                  <span class="prom__class">{p.class}</span>
+                </div>
+                <span class="prom__tier-badge">T{p.tier}</span>
+              </div>
+              {p.prereqId && (
+                <div class="prom__chain">
+                  <span class="prom__label">After</span>
+                  <a class="chip chip--neutral" href={`#${p.prereqId.replace('PROMOTION_', '').toLowerCase()}`}>
+                    {p.prereqName}
+                  </a>
+                </div>
+              )}
+              {p.effects.length > 0 && (
+                <div class="prom__effects">
+                  {p.effects.map(line => {
+                    const yieldKey = classifyYield(line)?.toLowerCase() || 'misc';
+                    return (
+                      <div class={`effect yield-${yieldKey}`}>
+                        <LinkedText text={line} showIcons={false} />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {(p.validTraits.length > 0 || p.invalidTraits.length > 0) && (
+                <div class="prom__traits">
+                  {p.validTraits.length > 0 && (
+                    <span class="prom__traits-row">
+                      <span class="prom__label">For</span>
+                      {p.validTraits.map(tr => <span class="chip chip--neutral chip--mini">{tr}</span>)}
+                    </span>
+                  )}
+                  {p.invalidTraits.length > 0 && (
+                    <span class="prom__traits-row">
+                      <span class="prom__label">Not</span>
+                      {p.invalidTraits.map(tr => <span class="chip chip--neutral chip--mini chip--neg">{tr}</span>)}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+
+  <script type="application/json" id="prom-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const grid = document.getElementById('prom-grid');
+      const blobNode = document.getElementById('prom-search-blobs');
+      if (!input || !grid || !blobNode) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-prom="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+        for (const tier of grid.querySelectorAll('.prom-tier')) {
+          const visible = tier.querySelectorAll('.prom:not(.is-hidden)').length;
+          tier.classList.toggle('is-hidden', visible === 0);
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .prom-tier { margin: 1.4rem 0; }
+  .prom-tier__title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0 0 0.6rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+    padding-bottom: 0.35rem;
+    color: var(--text);
+  }
+  .prom-tier__num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: var(--bg-elev);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+    padding: 0.05rem 0.45rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .prom-tier__count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    font-weight: 400;
+  }
+
+  .prom-list {
+    list-style: none; margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.5rem;
+  }
+  .prom {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.55rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .prom:target {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent);
+  }
+  .prom__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .prom__title { display: flex; flex-direction: column; flex: 1; gap: 0.05rem; }
+  .prom__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+  .prom__class {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+  }
+  .prom__tier-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--accent);
+    background: var(--bg-elev-2);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+    padding: 0.05rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .prom__chain { display: flex; align-items: center; flex-wrap: wrap; gap: 0.25rem; }
+  .prom__chain .chip { font-size: 0.65rem; padding: 0.1rem 0.4rem; }
+
+  .prom__label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin-right: 0.25rem;
+  }
+
+  .prom__effects {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .prom__effects .effect {
+    background: var(--yield-bg, var(--bg-elev-2));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    line-height: 1.25;
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
+  }
+
+  .prom__traits {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .prom__traits-row { display: inline-flex; flex-wrap: wrap; gap: 0.2rem; align-items: center; }
+  .chip--mini {
+    font-size: 0.6rem;
+    padding: 0.05rem 0.35rem;
+    text-transform: none;
+    font-weight: 500;
+  }
+  .chip--neg { color: var(--text-faint); opacity: 0.75; }
+</style>

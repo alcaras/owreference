@@ -1,0 +1,220 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import events from '../data/study_events.json';
+import { classifyYield } from '../lib/entities';
+
+type Event = typeof events[number];
+
+const searchBlobs: Record<string, string> = {};
+for (const e of events) searchBlobs[e.slug] = JSON.stringify(e).toLowerCase();
+
+// Group by author for a section header — easier to skim
+const authors = Array.from(new Set(events.map(e => e.author).filter(Boolean))).sort();
+---
+
+<Base title="Study Events" active="study-events" pageMark="🎓" pageStats={[
+  { label: 'events', value: events.length },
+  { label: 'authors', value: authors.length },
+]}>
+  <p class="se-intro">
+    Every <code>EVENTCLASS_STUDY</code> event in the game files — the heir
+    education vignettes that fire while a child is being tutored. Each row lists
+    the event's prerequisites (study type, age, parent relationship) and the
+    bonuses each option grants. Pulled from <code>eventStory.xml</code> and the
+    BTT / SAP / WD / WoG content packs.
+  </p>
+
+  <div class="grid" id="se-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Event →</span>
+              <span class="rowlabel__big">Field ↓</span>
+            </th>
+            <th class="nhdr nhdr--family">Title</th>
+            <th class="nhdr nhdr--family">Prerequisites</th>
+            <th class="nhdr nhdr--family">Options & Outcomes</th>
+            <th class="nhdr nhdr--family">Weight × Prob</th>
+            <th class="nhdr nhdr--family">Repeat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {events.map(e => (
+            <tr data-event={e.slug}>
+              <th class="rowlabel" scope="row" id={e.slug}>{e.title}</th>
+              <td class="cell yield-misc">
+                <span class="se__title">{e.title}</span>
+                {e.author && <span class="se__author">by {e.author}</span>}
+              </td>
+              <td class={`cell ${e.prereqs.length ? 'yield-misc' : 'is-empty'}`}>
+                {e.prereqs.length ? (
+                  <div class="chiplist">
+                    {e.prereqs.map(p => <span class="chip chip--neutral">{p}</span>)}
+                  </div>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${e.options.length ? 'se__opts' : 'is-empty'}`}>
+                {e.options.length ? e.options.map((opt, i) => (
+                  <div class="se-opt">
+                    <div class="se-opt__text">
+                      <span class="se-opt__num">{i + 1}.</span>
+                      <span class="se-opt__t"><LinkedText text={opt.text} showIcons={false} /></span>
+                    </div>
+                    {opt.outcomes.length > 0 && (
+                      <div class="se-opt__outs">
+                        {opt.outcomes.map(o => {
+                          const yieldKey = classifyYield(o)?.toLowerCase() || 'misc';
+                          return (
+                            <span class={`effect-pill yield-${yieldKey}`}>
+                              <LinkedText text={o} showIcons={false} />
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )) : <span class="cell__dash">—</span>}
+              </td>
+              <td class="cell yield-misc">
+                <span class="se__num">w{e.weight}</span>
+                <span class="se__num se__num--dim">{e.prob}%</span>
+              </td>
+              <td class="cell yield-misc">
+                {e.repeat === '-1' ? <span class="se__once">Once</span> :
+                 e.repeat ? <span class="se__num">{e.repeat}t</span> :
+                 <span class="cell__dash">—</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="application/json" id="se-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('se-search-blobs');
+      const grid = document.getElementById('se-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-event="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .se-intro {
+    max-width: 820px;
+    color: var(--text-dim);
+    font-size: 0.86rem;
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .se-intro code {
+    background: var(--bg-elev);
+    padding: 0.05rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .se__title {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    display: block;
+  }
+  .se__author {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.62rem;
+    font-style: italic;
+    color: var(--text-faint);
+  }
+
+  .chiplist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+  .chiplist .chip {
+    padding: 0.08rem 0.4rem;
+    font-size: 0.66rem;
+  }
+
+  .se__opts {
+    background: var(--bg-elev);
+    background-image: none;
+    padding: 0.3rem 0.4rem;
+  }
+  .se-opt {
+    padding: 0.3rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .se-opt:first-child { padding-top: 0; }
+  .se-opt:last-child { padding-bottom: 0; border-bottom: 0; }
+  .se-opt__text {
+    display: flex;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
+  .se-opt__num {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .se-opt__t { color: var(--text); }
+  .se-opt__outs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    margin-top: 0.2rem;
+  }
+  .effect-pill {
+    display: inline-block;
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.66rem;
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 60%, #000 40%);
+  }
+
+  .se__num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.72rem;
+    color: var(--text);
+    display: block;
+  }
+  .se__num--dim { color: var(--text-dim); margin-top: 0.1rem; }
+  .se__once {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+
+  .ntbl .nhdr:nth-child(2) { min-width: 10rem; }
+  .ntbl .nhdr:nth-child(3) { min-width: 9rem; }
+  .ntbl .nhdr:nth-child(4) { min-width: 20rem; }
+</style>

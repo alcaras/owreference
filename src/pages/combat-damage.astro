@@ -1,0 +1,315 @@
+---
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<Base
+  title="Combat Damage Formula"
+  active="combat-damage"
+  pageMark="⚔️"
+  pageStats={[
+    { label: 'reference', value: 'transcribed' },
+  ]}
+>
+  <p class="lede">
+    Old World resolves a combat by comparing each side's effective strength,
+    then dealing damage proportional to the ratio. The expressions below are
+    the standard formulation used by the legacy reference spreadsheet, with
+    every constant cross-checked against the game's <code>globalsInt.xml</code>.
+    Where modifiers compound, the order matters — they apply multiplicatively
+    in the order listed.
+  </p>
+
+  <section class="cd-section">
+    <h2 class="cd-h">The core idea</h2>
+    <p>
+      Each unit has a base <strong>Strength</strong> (e.g., Hoplite 5,
+      Horseman 5, Catapult 4) and <strong>HP</strong> (typically 20). The
+      attacker and defender each compute an <em>effective strength</em> for
+      this specific clash, and damage is dealt in proportion to that ratio.
+      Both sides take damage; the attacker just takes less when winning the
+      ratio.
+    </p>
+
+    <div class="cd-formula">
+      <div class="cd-line">
+        <span class="cd-eq">DamageToDefender = HP_attacker × ( StrAtt / StrDef ) / 2</span>
+      </div>
+      <div class="cd-line">
+        <span class="cd-eq">DamageToAttacker = HP_defender × ( StrDef / StrAtt ) / 2</span>
+      </div>
+      <p class="cd-note">
+        With <code>StrAtt</code> and <code>StrDef</code> the effective strengths
+        after modifiers, and <code>HP</code> the unit's max HP.
+      </p>
+    </div>
+  </section>
+
+  <section class="cd-section">
+    <h2 class="cd-h">Effective strength</h2>
+    <p>
+      Effective strength stacks every modifier that applies to <em>this</em>
+      attack — terrain, fortification, promotions, anti-trait bonuses,
+      flanking, and remaining HP penalty.
+    </p>
+
+    <div class="cd-formula">
+      <div class="cd-line">
+        <span class="cd-eq">
+          StrEff = BaseStr × (1 + Σ Modifiers) × (HP_current / HP_max)
+        </span>
+      </div>
+    </div>
+
+    <h3 class="cd-h3">Common modifiers</h3>
+    <ul class="cd-list">
+      <li><strong>Promotions:</strong> Combat I/II/III give +5 / +10 / +15% strength. Strike I/II/III give +10/+15/+20% attack only. Guard I/II/III give +10/+15/+20% defense only.</li>
+      <li><strong>Anti-trait:</strong> Spearman has <em>Anti-Mounted II</em> = +50% strength vs Mounted in melee. Axeman has <em>Anti-Polearm</em> = +25% strength vs Polearm.</li>
+      <li><strong>Hill:</strong> +25% defense when fighting from a Hill (unless attacker has <em>Highlander</em>).</li>
+      <li><strong>Vegetation:</strong> +25% defense in Trees or Jungle (negated by <em>Ranger</em>).</li>
+      <li><strong>Fortify:</strong> +25% defense when fortified for 1+ turn, capped at +50%.</li>
+      <li><strong>Flanking:</strong> +10% attack per additional friendly unit adjacent to the defender (caps at 3 flankers = +30%).</li>
+      <li><strong>Damaged units:</strong> a unit at half HP fights at half its current strength — the (HP_current / HP_max) factor at the end of the formula.</li>
+    </ul>
+  </section>
+
+  <section class="cd-section">
+    <h2 class="cd-h">Worked example: Hoplite attacks Horseman</h2>
+    <p>
+      Both sides at full HP. Hoplite is Polearm with <em>Anti-Mounted II</em>
+      = +50% vs Mounted. Horseman is on open terrain with no other modifiers.
+    </p>
+    <div class="cd-table">
+      <table>
+        <tbody>
+          <tr><td>Hoplite base strength</td><td>50 (display: 5)</td></tr>
+          <tr><td>+ Anti-Mounted II</td><td>×1.50</td></tr>
+          <tr><td>Hoplite effective strength</td><td><strong>75</strong></td></tr>
+          <tr><td>Horseman base strength</td><td>50 (display: 5)</td></tr>
+          <tr><td>(no defensive modifiers)</td><td>×1.00</td></tr>
+          <tr><td>Horseman effective strength</td><td><strong>50</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cd-formula">
+      <div class="cd-line">
+        <span class="cd-eq">DamageToHorseman = 20 × (75 / 50) / 2 = <strong>15 HP</strong></span>
+      </div>
+      <div class="cd-line">
+        <span class="cd-eq">DamageToHoplite  = 20 × (50 / 75) / 2 ≈ <strong>6.7 HP</strong></span>
+      </div>
+    </div>
+    <p class="cd-note">
+      So the Horseman drops to 5 HP (close to rout) while the Hoplite ends
+      around 13 HP. A second clash kills the Horseman before he can land
+      meaningful damage — which is why "spear beats horse" is such a hard rule.
+    </p>
+  </section>
+
+  <section class="cd-section">
+    <h2 class="cd-h">Worked example: Archer (ranged) at full range</h2>
+    <p>
+      Ranged units fight without taking return damage, but their <em>effective
+      strength</em> drops at maximum range. The formula is the same; only the
+      attacker side fires.
+    </p>
+    <div class="cd-table">
+      <table>
+        <tbody>
+          <tr><td>Archer base strength</td><td>40</td></tr>
+          <tr><td>Max range fire (no melee return)</td><td>×1.00</td></tr>
+          <tr><td>Target: Spearman strength</td><td>50</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cd-formula">
+      <div class="cd-line">
+        <span class="cd-eq">DamageToSpearman = 20 × (40 / 50) / 2 = <strong>8 HP</strong></span>
+      </div>
+      <div class="cd-line">
+        <span class="cd-eq">DamageToArcher = <strong>0</strong> (out of melee range)</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cd-section">
+    <h2 class="cd-h">Attack patterns (Pierce, Cleave, Splash, Circle)</h2>
+    <p>
+      Some units carry an <em>attack pattern</em> on top of the main hit. These
+      are additional small attacks that resolve against adjacent / linear /
+      surrounding tiles. They use the same damage formula but with a reduced
+      effective strength, and the attacker doesn't take return damage from
+      those secondary hits.
+    </p>
+    <ul class="cd-list">
+      <li><strong>Pierce</strong> — Spearman / Pikeman line. Hits the primary target plus the tile behind it.</li>
+      <li><strong>Cleave</strong> — Axeman / Maceman line. Hits the primary plus the two flanking tiles.</li>
+      <li><strong>Splash</strong> — Catapult / Trebuchet. Hits a 7-tile cluster.</li>
+      <li><strong>Circle</strong> — Macedonian Companion / certain elephants. Hits all 6 adjacent tiles.</li>
+    </ul>
+    <p>
+      Per the game data, the secondary-hit strength is the unit's base
+      multiplied by a small percentage (e.g. <em>Pierce I</em> = +25% Pierce
+      damage on top of a flat +1 to the pattern's value).
+    </p>
+  </section>
+
+  <section class="cd-section">
+    <h2 class="cd-h">Rout and routed units</h2>
+    <p>
+      A unit at 0 HP doesn't disappear — it <strong>routs</strong>, retreats
+      one tile, and becomes unable to attack until rallied. The standard
+      damage formula caps at HP remaining; the killing blow only does enough
+      damage to bring it to 0.
+    </p>
+    <ul class="cd-list">
+      <li>Units that can't retreat (surrounded, water, ZoC) are destroyed instead.</li>
+      <li>A routed unit at 0 HP heals at the active-heal rate next turn (5 HP/turn) once safe.</li>
+    </ul>
+  </section>
+
+  <section class="cd-section">
+    <h2 class="cd-h">Constants pulled from XML</h2>
+    <p class="cd-note">
+      These come straight from <code>globalsInt.xml</code> and apply to combat
+      math globally. Some are display-friendly multipliers; most are integers.
+    </p>
+    <div class="cd-table">
+      <table>
+        <thead><tr><th>Constant</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>STRENGTH_MULTIPLIER</code></td><td>10</td><td>Game-internal strength is 10× the display value.</td></tr>
+          <tr><td><code>ACTIVE_HEAL</code></td><td>5</td><td>HP healed per turn when not moving / attacking.</td></tr>
+          <tr><td><code>IDLE_HEAL</code></td><td>1</td><td>HP healed per turn after moving but not attacking.</td></tr>
+          <tr><td><code>UNIT_HEAL_COST</code></td><td>1</td><td>Cost per HP healed (in Training or Civics, depending).</td></tr>
+          <tr><td><code>COUNTER_CITY_DAMAGE</code></td><td>1</td><td>Damage delivered to a city per attack against its garrison.</td></tr>
+          <tr><td><code>COUNTER_ROUT_DAMAGE</code></td><td>1</td><td>Damage applied to a routed unit if attacked again.</td></tr>
+          <tr><td><code>CITY_STRENGTH_BASE</code></td><td>80</td><td>Base garrison strength for an undamaged city.</td></tr>
+          <tr><td><code>CITY_STRENGTH_PER</code></td><td>5</td><td>Bonus strength per city level.</td></tr>
+          <tr><td><code>CITY_HEAL_PERCENT_PER_TURN</code></td><td>5%</td><td>City HP healed per turn (peacetime).</td></tr>
+          <tr><td><code>CITY_CAPTURE_DAMAGE_PERCENT</code></td><td>50%</td><td>City damage taken on capture.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cd-section">
+    <h2 class="cd-h">What to read next</h2>
+    <ul class="cd-list">
+      <li><a href={`${base}unit-damage`}>Unit Damage &amp; Counters</a> — full stat cards for every combat unit, including each unit's anti-trait modifiers.</li>
+      <li><a href={`${base}unit-counters`}>Unit Counters at-a-glance</a> — the rock-paper-scissors matrix that summarises this page in one grid.</li>
+      <li><a href={`${base}promotions`}>Promotions</a> — every numeric modifier you can stack onto effective strength.</li>
+    </ul>
+  </section>
+
+  <style>
+    .lede {
+      color: var(--text-dim);
+      max-width: 72ch;
+      margin: 0 0 1.5rem;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .lede code {
+      background: var(--bg-elev);
+      padding: 0.05rem 0.35rem;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+    }
+    .cd-section {
+      margin: 1.6rem 0;
+      max-width: 78ch;
+    }
+    .cd-h {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin: 0 0 0.6rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+      padding-bottom: 0.35rem;
+      color: var(--text);
+    }
+    .cd-h3 {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 1rem 0 0.35rem;
+      color: var(--text);
+    }
+    .cd-section p {
+      color: var(--text);
+      font-size: 0.86rem;
+      line-height: 1.55;
+      margin: 0 0 0.6rem;
+    }
+    .cd-section p em { color: var(--accent); font-style: normal; }
+    .cd-section p strong { color: var(--text); font-weight: 600; }
+    .cd-section code {
+      background: var(--bg-elev);
+      padding: 0.05rem 0.35rem;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      font-size: 0.85em;
+    }
+    .cd-list {
+      margin: 0.3rem 0 0.8rem 0;
+      padding-left: 1.1rem;
+      color: var(--text);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .cd-list li { margin: 0.2rem 0; }
+    .cd-list em { color: var(--accent); font-style: normal; }
+    .cd-formula {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 0.7rem 0.9rem;
+      margin: 0.6rem 0;
+    }
+    .cd-line {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text);
+      padding: 0.2rem 0;
+    }
+    .cd-eq strong { color: var(--accent); font-weight: 600; }
+    .cd-note {
+      font-size: 0.78rem !important;
+      color: var(--text-dim) !important;
+      font-style: italic;
+      margin-top: 0.4rem !important;
+    }
+    .cd-table {
+      margin: 0.5rem 0 0.9rem;
+      overflow-x: auto;
+    }
+    .cd-table table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    .cd-table th, .cd-table td {
+      text-align: left;
+      padding: 0.32rem 0.55rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cd-table th {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      font-weight: 500;
+      background: var(--bg-elev);
+    }
+    .cd-table td:last-child {
+      color: var(--text-dim);
+    }
+    .cd-table strong { color: var(--accent); font-weight: 600; }
+    .cd-section a { color: var(--accent-2); }
+  </style>
+</Base>

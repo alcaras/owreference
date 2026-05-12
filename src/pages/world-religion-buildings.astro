@@ -1,0 +1,175 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import data from '../data/world_religion_buildings.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+const { religions, rows } = data;
+
+// Pick the cell's color from its first yield output (canonical "what it
+// gives"). Monasteries → Science, Temples → Orders+Culture, Cathedrals →
+// Legitimacy, Holy Sites → VP/misc.
+function cellYield(cell: any): string {
+  if (!cell) return 'misc';
+  for (const o of cell.outputs || []) {
+    const k = classifyYield(o);
+    if (k) return k.toLowerCase();
+  }
+  for (const e of cell.effects || []) {
+    const k = classifyYield(e);
+    if (k) return k.toLowerCase();
+  }
+  return 'misc';
+}
+---
+
+<Base
+  title="World Religion Buildings"
+  active="world-religion-buildings"
+  pageMark="🕍"
+  pageStats={[
+    { label: 'buildings', value: data.totals.buildings },
+    { label: 'religions', value: religions.length },
+    { label: 'tiers',     value: rows.length },
+  ]}
+>
+  <p class="lede">
+    The four worship buildings of the <b>World Religions</b> — built by
+    <LinkedText text="Disciple" /> units once a city has the matching religion.
+    Monasteries provide Science, Temples give Orders + Culture, Cathedrals add
+    Legitimacy, and a Holy Site is unique to the religion's birthplace.
+  </p>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          {religions.map(r => <col data-religion={r.slug} />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Religion →</span>
+              <span class="rowlabel__big">Building ↓</span>
+            </th>
+            {religions.map(r => (
+              <th class="nhdr nhdr--religion" data-religion={r.slug} id={r.slug} title={r.id}>
+                <div class="nhdr__inner">
+                  <span class="nhdr__name">{r.name}</span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(row => (
+            <tr>
+              <th class="rowlabel" scope="row">{row.label}</th>
+              {row.cells.map((cell, i) => {
+                const r = religions[i];
+                if (!cell) {
+                  return (
+                    <td class="cell is-empty" data-religion={r.slug}>
+                      <span class="cell__dash">—</span>
+                    </td>
+                  );
+                }
+                const yk = cellYield(cell);
+                return (
+                  <td class={`cell yield-${yk}`} data-religion={r.slug}>
+                    <div class="bld">
+                      <span class="bld__name">{cell.name}</span>
+                      {cell.specialist && (
+                        <span class="bld__spec">{cell.specialist}</span>
+                      )}
+                    </div>
+                    {cell.outputs.length > 0 && (
+                      <ul class="bld__yields">
+                        {cell.outputs.map(o => (
+                          <li><LinkedText text={o} showIcons={false} /></li>
+                        ))}
+                      </ul>
+                    )}
+                    {cell.effects.length > 0 && (
+                      <ul class="bld__effects">
+                        {cell.effects.map(e => (
+                          <li><LinkedText text={e} showIcons={false} /></li>
+                        ))}
+                      </ul>
+                    )}
+                    <footer class="bld__foot">
+                      {cell.costs.map(c => (
+                        <span class="bld__cost"><LinkedText text={c} showIcons={false} /></span>
+                      ))}
+                      {cell.culturePrereq && (
+                        <span class="bld__culture">{cell.culturePrereq} culture</span>
+                      )}
+                    </footer>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lede {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 68ch;
+    margin: 0.4rem 0 1.2rem;
+  }
+  .lede b { color: var(--text); }
+
+  .nhdr--religion {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    border-bottom: 2px solid var(--border-strong);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+  }
+
+  .bld { display: flex; flex-direction: column; margin-bottom: 0.25rem; }
+  .bld__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: inherit;
+  }
+  .bld__spec {
+    font-size: 0.62rem;
+    font-style: italic;
+    opacity: 0.7;
+    margin-top: 0.05rem;
+  }
+  .bld__yields,
+  .bld__effects {
+    list-style: none;
+    margin: 0 0 0.2rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    font-size: 0.72rem;
+  }
+  .bld__effects { font-size: 0.68rem; opacity: 0.88; }
+  .bld__foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    margin-top: 0.2rem;
+    padding-top: 0.2rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+    font-size: 0.62rem;
+    opacity: 0.85;
+  }
+  .bld__culture { font-style: italic; }
+</style>

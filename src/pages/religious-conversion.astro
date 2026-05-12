@@ -1,0 +1,372 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import theologyData from '../data/theologies.json';
+import worldRelData from '../data/world_religion_buildings.json';
+
+const base = import.meta.env.BASE_URL;
+
+const { religions, tiers } = theologyData;
+
+// Theology spread modifiers — already in the theologies dataset; isolated
+// here as a quick reference next to the spread formula.
+const spreadModifiers = tiers
+  .flatMap(t => t.theologies.map(th => ({
+    name: th.name,
+    spread: th.spreadChange,
+    tier: t.label,
+  })))
+  .filter(s => s.spread !== 0)
+  .sort((a, b) => b.spread - a.spread);
+
+// Total worship buildings per religion — feeds the founding-prereq sidebar.
+const buildingCount: Record<string, number> = {};
+for (const row of worldRelData.rows) {
+  for (let i = 0; i < worldRelData.religions.length; i++) {
+    const r = worldRelData.religions[i];
+    if (row.cells[i]) {
+      buildingCount[r.slug] = (buildingCount[r.slug] || 0) + 1;
+    }
+  }
+}
+
+// Built-in foundation requirements — pulled from religion.xml via the
+// theology builder. Renders the founder's prerequisite as a chip list.
+function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 'citizens' | 'spec' | 'religion' }[] {
+  const out: { label: string; tone: any }[] = [];
+  if (r.requiresTech) {
+    out.push({ label: r.requiresTech.replace('TECH_', '').replace(/_/g, ' '), tone: 'tech' });
+  }
+  if (r.requiresLaw) {
+    out.push({ label: r.requiresLaw.replace('LAW_', '').replace(/_/g, ' '), tone: 'law' });
+  }
+  if (r.requiresTheologies > 0) {
+    out.push({ label: `${r.requiresTheologies} Theologies`, tone: 'theology' });
+  }
+  if (r.requiresCitizens > 0) {
+    out.push({ label: `${r.requiresCitizens} Citizens (city)`, tone: 'citizens' });
+  }
+  for (const s of r.requiresSpecialists) {
+    out.push({ label: `${s.count}× ${s.label}`, tone: 'spec' });
+  }
+  for (const rr of r.requiresReligions) {
+    const target = religions.find(x => x.id === rr.id);
+    out.push({
+      label: `${rr.count} cities w/ ${target?.name || rr.id.replace('RELIGION_', '').toLowerCase()}`,
+      tone: 'religion',
+    });
+  }
+  if (out.length === 0) out.push({ label: 'No prereqs', tone: 'spec' });
+  return out;
+}
+---
+
+<Base
+  title="Religious Conversion"
+  active="religious-conversion"
+  pageMark="🙏"
+  pageStats={[
+    { label: 'world religions', value: religions.length },
+    { label: 'spread modifiers', value: spreadModifiers.length },
+  ]}
+>
+  <p class="lede">
+    Religion spreads two ways in Old World. <b>World Religions</b> spread
+    passively via a per-turn % chance and actively via
+    <LinkedText text="Disciple" /> units. <b>Pagan Religions</b> spread only by
+    building <LinkedText text="Shrines" />.
+  </p>
+
+  <section class="rc-section">
+    <h2 class="rc-h2">Passive Spread — World Religions</h2>
+    <p>
+      Each turn, every World Religion rolls a <b>specific % chance</b> to spread
+      to one random City or Tribal Site. The base chance comes from
+      <code>iSpreadPercent</code> in <code>religion.xml</code>:
+    </p>
+
+    <table class="rc-table">
+      <thead>
+        <tr>
+          <th>Religion</th>
+          <th class="rc-num">Base %/turn</th>
+          <th class="rc-num">Cost (base + per&nbsp;change)</th>
+          <th>Founding prereqs</th>
+        </tr>
+      </thead>
+      <tbody>
+        {religions.map(r => (
+          <tr id={`r-${r.slug}`}>
+            <td>
+              <a href={`${base}world-religion-buildings#${r.slug}`} class="rc-religion">
+                {r.name}
+              </a>
+            </td>
+            <td class="rc-num"><b>{r.spreadPercent}%</b></td>
+            <td class="rc-num">
+              {r.costBase} + {r.costPerChange}
+              <span class="rc-dim"><LinkedText text="Civics" showIcons={false} /></span>
+            </td>
+            <td>
+              <div class="rc-chips">
+                {reqChips(r).map(c => (
+                  <span class={`rc-chip rc-chip--${c.tone}`}>{c.label}</span>
+                ))}
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <p class="rc-fineprint">
+      A city is <b>more likely</b> to convert if it is close to the religion's
+      <LinkedText text="Holy City" /> and <b>less likely</b> if it already has
+      one or more religions present. Pagan religions don't roll passive spread
+      (<code>bNoSpread=1</code>); they require a new Shrine on each city.
+    </p>
+  </section>
+
+  <section class="rc-section">
+    <h2 class="rc-h2">Active Spread — Disciples & Shrines</h2>
+    <div class="rc-twocol">
+      <div class="rc-card">
+        <h3 class="rc-h3"><LinkedText text="Disciple" /> (World Religions)</h3>
+        <p>
+          Disciples can <b>spread</b> their religion to a settlement, build the
+          religion's <LinkedText text="Monastery" />, <LinkedText text="Temple" />,
+          <LinkedText text="Cathedral" />, and <LinkedText text="Holy Site" />,
+          and (with <LinkedText text="Orthodoxy" />) <b>Purge</b> rival religions.
+        </p>
+        <p class="rc-fineprint">
+          A Disciple can only be trained in a city of its religion if the city is
+          the Holy City, the religion is your State Religion, or the nation has
+          <LinkedText text="Tolerance" />. Disciples are also used to establish
+          <a href={`${base}theologies`}>Theologies</a>.
+        </p>
+      </div>
+
+      <div class="rc-card">
+        <h3 class="rc-h3"><LinkedText text="Shrine" /> (Pagan Religions)</h3>
+        <p>
+          Each nation has 4 unique Pagan Shrines drawn from a pool of 11 types
+          (War, Kingship, Wisdom, …). Building the <b>first</b> shrine founds
+          the nation's pagan religion; each subsequent shrine in another city
+          spreads it. See the full <a href={`${base}shrines`}>Shrines table</a>.
+        </p>
+        <p class="rc-fineprint">
+          <LinkedText text="Polytheism" /> removes the one-shrine-per-city
+          limit. <LinkedText text="Divine Rule" /> lets a pagan religion serve
+          as your State Religion.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="rc-section">
+    <h2 class="rc-h2">Theology Spread Modifiers</h2>
+    <p>
+      Establishing a Theology can permanently shift a World Religion's per-turn
+      spread chance, globally and for all followers. Effects compound across
+      tiers — pick aggressive theologies if you intend to evangelize.
+    </p>
+    <table class="rc-table rc-table--narrow">
+      <thead>
+        <tr>
+          <th>Theology</th>
+          <th>Tier</th>
+          <th class="rc-num">Spread %</th>
+        </tr>
+      </thead>
+      <tbody>
+        {spreadModifiers.map(m => (
+          <tr>
+            <td>{m.name}</td>
+            <td class="rc-dim">{m.tier}</td>
+            <td class="rc-num">
+              <b class={m.spread > 0 ? 'rc-pos' : 'rc-neg'}>
+                {m.spread > 0 ? '+' : ''}{m.spread}%
+              </b>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="rc-section">
+    <h2 class="rc-h2">State Religion</h2>
+    <p>
+      Adopting a religion as your <b>State Religion</b> grants its followers
+      higher religious opinion, adds <LinkedText text="+1 Happiness" /> to every
+      city of that religion, and (for World Religions) <b>enables Disciple
+      training</b> there. You start with Paganism by default; switching
+      religions costs <code>iCostBase</code> + <code>iCostPerChange</code> per
+      previous switch.
+    </p>
+  </section>
+
+  <section class="rc-section">
+    <h2 class="rc-h2">Worked example — Christianity spreads to Jerusalem</h2>
+    <ol class="rc-steps">
+      <li>
+        Christianity is founded by the first nation with 3 Jewish cities + the
+        <LinkedText text="Metaphysics" /> tech. The founding city becomes its
+        <LinkedText text="Holy City" />.
+      </li>
+      <li>
+        Each turn that nation's Christianity rolls a <b>10%</b> chance to spread
+        to one random City or Tribal Site (modified by distance to the Holy
+        City and by theologies like <LinkedText text="Revelation" /> at +20%).
+      </li>
+      <li>
+        Once a city has Christianity, it can train <LinkedText text="Disciples" />
+        (provided the city qualifies — see above) which can spread Christianity
+        deterministically to new settlements and build religion buildings.
+      </li>
+      <li>
+        With the religion as State Religion, the player can establish a
+        <LinkedText text="Theology" /> (e.g., <LinkedText text="Revelation" />) —
+        which then applies globally to every Christian player and locks that
+        theology slot for the rest of the game.
+      </li>
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .lede {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    max-width: 72ch;
+    margin: 0.4rem 0 1.5rem;
+  }
+  .lede b { color: var(--text); }
+
+  .rc-section { margin-top: 2rem; }
+  .rc-h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.5rem;
+    color: var(--text);
+  }
+  .rc-h3 {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    letter-spacing: 0.03em;
+    margin: 0 0 0.4rem;
+    color: var(--text);
+  }
+  .rc-section p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 72ch;
+    margin: 0.3rem 0;
+  }
+  .rc-section p b { color: var(--text); }
+
+  .rc-table {
+    width: 100%;
+    max-width: 80ch;
+    border-collapse: collapse;
+    margin: 0.6rem 0;
+    font-size: 0.78rem;
+  }
+  .rc-table--narrow { max-width: 50ch; }
+  .rc-table thead th {
+    text-align: left;
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .rc-table tbody td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .rc-table tbody tr:hover { background: var(--bg-elev); }
+
+  .rc-num { text-align: right; font-variant-numeric: tabular-nums; }
+  .rc-num.rc-num { font-family: var(--font-mono); }
+  .rc-num b { color: var(--text); font-weight: 600; }
+  .rc-dim { color: var(--text-faint); margin-left: 0.2rem; font-size: 0.7em; }
+
+  .rc-religion {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .rc-religion:hover { color: var(--accent); }
+
+  .rc-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .rc-chip {
+    font-size: 0.68rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    color: var(--text-dim);
+  }
+  .rc-chip--tech     { color: #b1b3ff; border-color: rgba(177,179,255,0.3); }
+  .rc-chip--law      { color: #ffdc9a; border-color: rgba(255,220,154,0.3); }
+  .rc-chip--theology { color: #e4c46a; border-color: rgba(228,196,106,0.3); }
+  .rc-chip--citizens { color: #98d28a; border-color: rgba(152,210,138,0.3); }
+  .rc-chip--spec     { color: #c0c2cb; border-color: rgba(192,194,203,0.3); }
+  .rc-chip--religion { color: #d6a8e1; border-color: rgba(214,168,225,0.3); }
+
+  .rc-fineprint {
+    color: var(--text-faint) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .rc-twocol {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.7rem;
+    margin-top: 0.6rem;
+  }
+  .rc-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.7rem 0.9rem;
+  }
+  .rc-card p { font-size: 0.8rem; margin: 0.3rem 0; }
+
+  .rc-steps {
+    list-style: decimal inside;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 72ch;
+    padding: 0;
+    margin: 0.5rem 0;
+  }
+  .rc-steps li { padding: 0.25rem 0; }
+
+  .rc-pos { color: #aef2c9; }
+  .rc-neg { color: #f2aeae; }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.78em;
+    background: var(--bg-elev);
+    padding: 0 0.25rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+</style>

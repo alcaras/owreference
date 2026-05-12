@@ -1,0 +1,217 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import opinionData from '../data/opinion.json';
+import { classifyYield } from '../lib/entities';
+
+type Table = typeof opinionData[number];
+
+const KIND_GLYPH: Record<string, string> = {
+  Family: '👪', Tribe: '⛺', Character: '👤', Player: '👑',
+};
+const KIND_SUMMARY: Record<string, string> = {
+  Family: 'How a noble family treats your cities and units when you keep them happy — or not.',
+  Tribe:  'How a tribe behaves in war and peace based on the standing they have with you.',
+  Character: 'What a courtier or general delivers depending on their opinion of you.',
+  Player: 'How a foreign leader behaves toward you across the relationship spectrum.',
+};
+
+const BRACKET_TONE: Record<string, string> = {
+  FURIOUS:  'tone-furious',
+  ANGRY:    'tone-angry',
+  UPSET:    'tone-upset',
+  CAUTIOUS: 'tone-cautious',
+  PLEASED:  'tone-pleased',
+  FRIENDLY: 'tone-friendly',
+};
+---
+
+<Base title="Opinion" active="opinion" pageMark="❤️" pageStats={[
+  { label: 'tables', value: opinionData.length },
+  { label: 'brackets each', value: 6 },
+]}>
+  <div class="opinion-stack">
+    {opinionData.map(table => (
+      <section class="opinion-table" id={`tbl-${table.kind.toLowerCase()}`}>
+        <header class="opinion-table__hdr">
+          <h2 class="opinion-table__title">
+            <span class="opinion-table__mark">{KIND_GLYPH[table.kind]}</span>
+            {table.label} Opinion
+          </h2>
+          <p class="opinion-table__sub">{KIND_SUMMARY[table.kind]}</p>
+        </header>
+
+        <div class="grid">
+          <div class="grid__scroll">
+            <table class="ntbl">
+              <thead>
+                <tr>
+                  <th class="rowlabel rowlabel--corner">
+                    <span class="rowlabel__small">Bracket →</span>
+                    <span class="rowlabel__big">Effect ↓</span>
+                  </th>
+                  {table.brackets.map(b => (
+                    <th class={`nhdr ${BRACKET_TONE[b.bracket]}`}>
+                      <div class="nhdr__inner">
+                        <span class="nhdr__name">{b.label}</span>
+                        <span class="opinion-range">{b.range}</span>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {(
+                  <>
+                    {/* Family table has city + unit effect lists */}
+                    {table.brackets.some(b => b.cityEffects.length > 0) && (
+                      <>
+                        <tr class="srow">
+                          <th class="srow__th" colspan={table.brackets.length + 1}>
+                            <span class="srow__chevron">▸</span>Per City
+                          </th>
+                        </tr>
+                        <tr>
+                          <th class="rowlabel" scope="row">City Effects</th>
+                          {table.brackets.map(b => (
+                            b.cityEffects.length === 0 ? (
+                              <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                            ) : (
+                              <td class="cell cell--effects">
+                                {b.cityEffects.map(text => {
+                                  const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                                  return (
+                                    <div class={`effect yield-${yieldKey}`}>
+                                      <LinkedText text={text} showIcons={false} />
+                                    </div>
+                                  );
+                                })}
+                              </td>
+                            )
+                          ))}
+                        </tr>
+                      </>
+                    )}
+                    {table.brackets.some(b => b.unitEffects.length > 0) && (
+                      <>
+                        <tr class="srow">
+                          <th class="srow__th" colspan={table.brackets.length + 1}>
+                            <span class="srow__chevron">▸</span>Per Unit
+                          </th>
+                        </tr>
+                        <tr>
+                          <th class="rowlabel" scope="row">Unit Effects</th>
+                          {table.brackets.map(b => (
+                            b.unitEffects.length === 0 ? (
+                              <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                            ) : (
+                              <td class="cell cell--effects">
+                                {b.unitEffects.map(text => {
+                                  const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                                  return (
+                                    <div class={`effect yield-${yieldKey}`}>
+                                      <LinkedText text={text} showIcons={false} />
+                                    </div>
+                                  );
+                                })}
+                              </td>
+                            )
+                          ))}
+                        </tr>
+                      </>
+                    )}
+
+                    {/* Tribe / Character / Player have scalar fields */}
+                    {table.brackets.some(b => b.scalars.length > 0) && (
+                      <>
+                        {/* Collect the union of field labels across brackets */}
+                        {Array.from(new Set(table.brackets.flatMap(b => b.scalars.map(s => s.label)))).map(label => (
+                          <tr>
+                            <th class="rowlabel" scope="row">{label}</th>
+                            {table.brackets.map(b => {
+                              const s = b.scalars.find(x => x.label === label);
+                              if (!s) return (
+                                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                              );
+                              // Classify by sign for the misc tone
+                              const num = parseInt(s.value);
+                              const tone = isNaN(num) || num === 0 ? 'yield-misc' :
+                                num > 0 ? 'yield-growth' : 'yield-maintenance';
+                              return (
+                                <td class={`cell ${tone}`}><span class="opinion__val">{s.value}</span></td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .opinion-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .opinion-table__hdr {
+    margin-bottom: 0.6rem;
+  }
+  .opinion-table__title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0 0 0.2rem;
+  }
+  .opinion-table__mark { color: var(--accent); }
+  .opinion-table__sub {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    margin: 0;
+    max-width: 720px;
+  }
+
+  /* Bracket-level tonal headers — keyed off the in-game COLOR_OPINION_* but
+     dialed down to fit the dark theme. */
+  .tone-furious  { background: linear-gradient(180deg, #6e2222, #401414); color: #fff; }
+  .tone-angry    { background: linear-gradient(180deg, #8a3838, #5a2222); color: #fff; }
+  .tone-upset    { background: linear-gradient(180deg, #8a6a3a, #5a4422); color: #fff; }
+  .tone-cautious { background: linear-gradient(180deg, #5a5a64, #34343a); color: var(--text); }
+  .tone-pleased  { background: linear-gradient(180deg, #4e7d4e, #2e4e2e); color: #fff; }
+  .tone-friendly { background: linear-gradient(180deg, #3d6db8, #224080); color: #fff; }
+  .tone-furious, .tone-angry, .tone-upset, .tone-cautious, .tone-pleased, .tone-friendly {
+    border-bottom: 2px solid rgba(0,0,0,0.4);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.20));
+  }
+
+  .opinion-range {
+    margin-top: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    opacity: 0.85;
+    letter-spacing: 0.02em;
+  }
+
+  .opinion__val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+
+  /* Slightly narrower columns since opinion tables only have 6 brackets */
+  .opinion-table .ntbl .nhdr { min-width: 7rem; }
+</style>

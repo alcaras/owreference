@@ -157,8 +157,10 @@ def condition_name(zindex: str | None) -> str:
 SCALAR_LABELS: list[tuple[str, str, str]] = [
     # (xml_tag, when_bool_or_template, kind)
     # kind = "bool" → render label as-is when value is "1"
-    # kind = "pct"  → render "+{val}% label"
-    # kind = "int"  → render "{val} label"
+    # kind = "pct"  → render "+{val}% label"  (value is positive int)
+    # kind = "pct_signed" → render "{sign}{val}% label"
+    # kind = "int"  → render "{sign}{val} label"
+    # kind = "rate" → game value/10, signed
     ("bHireMercenaries",       "Can hire Mercenaries from Tribes", "bool"),
     ("bAlwaysConnected",       "Cities always Connected",          "bool"),
     ("bAdjacentToOwn",         "Anyone can build adjacent",        "bool"),
@@ -175,6 +177,38 @@ SCALAR_LABELS: list[tuple[str, str, str]] = [
     ("iPillageYieldModifier",  "Pillage Yield",                    "pct"),
     ("iSettlerCostModifier",   "Settler Cost",                     "pct_signed"),
     ("iRangedCostModifier",    "Ranged Cost",                      "pct_signed"),
+    # Wonder / law scalar fields
+    ("iVP",                    "Victory Points",                   "int"),
+    ("iStartLawModifier",      "Start Law Cost",                   "pct_signed"),
+    ("iTechsAvailableChange",  "Tech Card Hand Size",              "int"),
+    ("iReligionOpinionChange", "Opinion with all Religions",       "int"),
+    ("iConsumptionModifier",   "Unit Consumption",                 "pct_signed"),
+    ("iWonderModifier",        "Wonder Cost",                      "pct_signed"),
+    ("iXPModifier",            "XP for All Units",                 "pct_signed"),
+    ("iMaxActions",            "Max Actions",                      "int"),
+    ("iStateReligionSpread",   "State Religion Spread Chance",     "pct"),
+    ("bNoUnitConsumption",     "Units consume no Resources",       "bool"),
+    ("bBuildAllReligions",     "Can build Non-State Religion Disciples", "bool"),
+    ("bRiverMovement",         "Movement bonus along Rivers",      "bool"),
+    ("bRiverBridging",         "Can cross Rivers without penalty", "bool"),
+    ("bNoSellPenalty",         "Sell at the same price as buying", "bool"),
+    ("bPurgeReligions",        "Disciples can purge World Religions", "bool"),
+    ("bPaganStateReligion",    "Can adopt Pagan State Religions",  "bool"),
+]
+
+
+# Per-city conditional yield fields: <tag>/Pair → "{val} Y/{label}"
+PER_CITY_YIELD_RATE_FIELDS: list[tuple[str, str]] = [
+    ("aiYieldRateCulture",             "Culture Level"),
+    ("aiYieldRateReligion",            "Religion"),
+    ("aiYieldRatePaganReligion",       "Pagan Religion"),
+    ("aiYieldRateReligionNonState",    "Non-State Religion"),
+    ("aiYieldRatePopulation",          "Pop"),
+    ("aiYieldRateSpecialist",          "Specialist"),
+    ("aiYieldRateSpecialistUrban",     "Urban Specialist"),
+    ("aiYieldRateMilitary",            "Military Unit"),
+    ("aiYieldRateHolyCityWorld",       "Holy City"),
+    ("aiYieldRateSpecialistClass",     "Specialist Class"),
 ]
 
 
@@ -283,6 +317,100 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | 
         # Fallback: raw token
         out.append(f"{condition_name(trigger)} → {condition_name(result)}")
 
+    # Conditional per-X yield rates (e.g., +1 Science/Forum, +2 Culture/Specialist)
+    for tag, label in PER_CITY_YIELD_RATE_FIELDS:
+        for pair in e.findall(f"{tag}/Pair"):
+            y = yield_name(pair.findtext("zIndex"))
+            v = int(pair.findtext("iValue") or "0") / 10
+            out.append(f"{fmt_decimal(v)} {y}/{label}")
+
+    # Per-improvement modifier (e.g., +20% Mine, +20% Quarry)
+    for pair in e.findall("aiImprovementModifier/Pair"):
+        imp = (pair.findtext("zIndex") or "").replace("IMPROVEMENT_", "").replace("_", " ").title()
+        v = int(pair.findtext("iValue") or "0")
+        out.append(f"{fmt_decimal(v)}% {imp}")
+
+    # Provides a free resource via an EffectCityResource trigger
+    # (e.g., Autarky Extra → HORSE/CAMEL/ELEPHANT)
+    res_names: list[str] = []
+    for r in e.findall("aeFreeUnitEffectCity/zValue"):
+        token = r.text or ""
+        if token.startswith("EFFECTCITY_RESOURCE_"):
+            res_names.append(token.replace("EFFECTCITY_RESOURCE_", "").replace("_", " ").title())
+    if res_names:
+        out.append(f"Provides: {', '.join(res_names)}")
+
+    # Luxury resources directly listed (e.g., Al Khazneh)
+    luxes = [r.text.replace("RESOURCE_", "").replace("_", " ").title()
+             for r in e.findall("aeLuxuryResources/zValue") if r.text]
+    if luxes:
+        out.append(f"Provides Luxuries: {', '.join(luxes)}")
+
+    # No max-count limit lifted for improvement class (e.g., Polytheism → shrines)
+    for pair in e.findall("abNoImprovementClassMax/Pair"):
+        if (pair.findtext("bValue") or "0") == "1":
+            cls = (pair.findtext("zIndex") or "").replace("IMPROVEMENTCLASS_", "").title()
+            out.append(f"No max count for {cls}")
+
+    # Allow building specific improvement on specific terrain
+    # (e.g., Centralization → Farm on Marsh)
+    for pair in e.findall("TerrainImprovementValid/Pair"):
+        terrain = (pair.findtext("First") or "").replace("TERRAIN_TARGET_", "").replace("_", " ").title()
+        imp = (pair.findtext("Second") or "").replace("IMPROVEMENT_", "").replace("_", " ").title()
+        if terrain and imp:
+            out.append(f"Can build {imp} on {terrain}")
+
+    # Hurry production with money
+    for r in e.findall("aeHurryMoney/zValue"):
+        token = (r.text or "")
+        thing = token.replace("BUILD_", "").replace("_", " ").title() if token else "Production"
+        out.append(f"Can hurry {thing} with Money")
+
+    # Specialist unlock with no prerequisite (e.g., Guilds → Elder)
+    sp = e.findtext("SpecialistNoPrereq") or ""
+    if sp:
+        nice = sp.replace("EFFECTCITY_SPECIALIST_", "").replace("_", " ").title()
+        out.append(f"Can build {nice} Specialist without prereq")
+
+    # Per-trait level boost (e.g., Mausoleum: +1 Level for Guard units)
+    for pair in e.findall("aiUnitTraitLevel/Pair"):
+        trait = (pair.findtext("zIndex") or "").replace("UNITTRAIT_", "").replace("_", " ").title()
+        v = int(pair.findtext("iValue") or "0")
+        out.append(f"{fmt_decimal(v)} Level for new {trait} units")
+
+    # Scalar EffectCity-only fields. NOTE: iStrengthModifier and
+    # iSpecialistCostModifier are deliberately handled in build_families.py
+    # so its City Defense / Specialist Cost lines control phrasing and order.
+    _ec_scalars: list[tuple[str, str, str]] = [
+        ("iCityHP",                           "City HP",                   "int"),
+        ("iUnitHealAlways",                   "Unit Heal/Turn in Territory","int"),
+        ("iUnitLevel",                        "Level for new Units",       "int"),
+        ("iSpecialistUrbanTrainTimeModifier", "Urban Specialist Production Time", "pct_signed"),
+        ("iImprovementCostModifier",          "Improvement Cost",          "pct_signed"),
+        ("iRebelProb",                        "Rebel Chance",              "pct_signed"),
+        ("iRandomPromotions",                 "Random Promotions for new Units", "int"),
+        ("iHurryDiscontentModifier",         "Hurry Discontent",          "pct_signed"),
+    ]
+    for tag, label, kind in _ec_scalars:
+        v = e.findtext(tag)
+        if not v or v == "0":
+            continue
+        iv = int(v)
+        if kind == "int":
+            out.append(f"{fmt_decimal(iv)} {label}")
+        elif kind == "pct_signed":
+            out.append(f"{fmt_decimal(iv)}% {label}")
+
+    # Booleans
+    _ec_bools: list[tuple[str, str]] = [
+        ("bHurryOrders",      "Can hurry production with Orders"),
+        ("bHurryPopulation",  "Can hurry production with Population"),
+        ("bNoReligionSpread", "No random Non-State Religion spread"),
+    ]
+    for tag, label in _ec_bools:
+        if (e.findtext(tag) or "") == "1":
+            out.append(label)
+
     return out
 
 
@@ -344,7 +472,53 @@ def render_effect_player_scalars(e: ET.Element) -> list[str]:
     if tfc and tfc != "0":
         out.append(f"{fmt_decimal(int(tfc))} Tribe Fatigue Change")
 
+    # Player-scope yield rates (e.g., Ziggurat: +20 Civics/Turn globally)
+    for pair in e.findall("aiYieldRate/Pair"):
+        y = yield_name(pair.findtext("zIndex"))
+        v = int(pair.findtext("iValue") or "0") / 10
+        out.append(f"{fmt_decimal(v)} {y}/Turn")
+
+    # Per-active-law yield (Legal Code: +10 Civics/Active Law)
+    for pair in e.findall("aiYieldRateLaws/Pair"):
+        y = yield_name(pair.findtext("zIndex"))
+        v = int(pair.findtext("iValue") or "0") / 10
+        out.append(f"{fmt_decimal(v)} {y}/Active Law")
+
+    # Per-war yield (Volunteers: +20 Training per War)
+    for pair in e.findall("aiWarYield/Pair"):
+        y = yield_name(pair.findtext("zIndex"))
+        v = int(pair.findtext("iValue") or "0") / 10
+        out.append(f"{fmt_decimal(v)} {y} per War")
+
+    # Trade yields (Coin Debasement: Orders ↔ Money)
+    trade_yields = [yield_name(v.text or "") for v in e.findall("aeTradeYield/zValue") if v.text]
+    if trade_yields:
+        out.append(f"Can buy/sell {', '.join(trade_yields)} for Money")
+
+    # Units that can move on water (Exploration → Scout)
+    for u in e.findall("aeWaterUnit/zValue"):
+        unit = (u.text or "").replace("UNIT_", "").title()
+        if unit:
+            out.append(f"{unit}s can move on Water")
+
+    # Buy tiles with money (Colonies)
+    bt = [v.text for v in e.findall("aeBuyTile/zValue") if v.text]
+    if bt or (e.findtext("bBuyTile") == "1"):
+        out.append("Can buy Tiles with Money")
+
     return out
+
+
+def render_effect_city_state_religion(e: ET.Element, *, indexes: dict | None = None) -> list[str]:
+    """Render an EffectCity as 'State Religion: ...' lines (used by laws)."""
+    base = render_effect_city(e, per_city=True, indexes=indexes)
+    return [f"[State Religion] {line}" for line in base]
+
+
+def render_effect_city_capital(e: ET.Element, *, indexes: dict | None = None) -> list[str]:
+    """Render an EffectCity scoped to the Capital only."""
+    base = render_effect_city(e, per_city=True, indexes=indexes)
+    return [f"[Capital] {line}" for line in base]
 
 
 def render_bonus(e: ET.Element, indexes: dict | None = None) -> list[str]:
@@ -441,6 +615,91 @@ def render_nation_effects(
                 lines.append(f"Unlocks {condition_name(sub)}")
         # Always recurse to capture any concrete modifiers on the nested entry too
         for line in render_nation_effects(sub, indexes):
+            lines.append(line)
+
+    # Deduplicate while preserving order
+    seen = set()
+    deduped: list[str] = []
+    for ln in lines:
+        if ln not in seen:
+            seen.add(ln)
+            deduped.append(ln)
+    return deduped
+
+
+def render_effect_player(
+    effect_player_id: str,
+    indexes: dict[str, dict[str, ET.Element]],
+) -> list[str]:
+    """Generic renderer for any EFFECTPLAYER_* entry.
+
+    Like `render_nation_effects` but follows extra side-channels used by
+    laws and wonders: StateReligionEffectCity, CapitalEffectCity.
+    """
+    ep = indexes.get("effectPlayer.xml", {}).get(effect_player_id)
+    if ep is None:
+        return []
+
+    lines: list[str] = []
+    lines.extend(render_effect_player_scalars(ep))
+
+    # Per-city effect
+    ec_id = ep.findtext("EffectCity")
+    if ec_id:
+        ec = indexes.get("effectCity.xml", {}).get(ec_id)
+        if ec is not None:
+            lines.extend(render_effect_city(ec, per_city=True, indexes=indexes))
+
+    # Extra per-city effect
+    ece_id = ep.findtext("EffectCityExtra")
+    if ece_id:
+        ec = indexes.get("effectCity.xml", {}).get(ece_id)
+        if ec is not None:
+            lines.extend(render_effect_city(ec, per_city=True, indexes=indexes))
+
+    # State-religion-only per-city effect
+    srec_id = ep.findtext("StateReligionEffectCity")
+    if srec_id:
+        ec = indexes.get("effectCity.xml", {}).get(srec_id)
+        if ec is not None:
+            lines.extend(render_effect_city_state_religion(ec, indexes=indexes))
+
+    # Capital-only per-city effect (e.g., Centralization)
+    cap_id = ep.findtext("CapitalEffectCity")
+    if cap_id:
+        ec = indexes.get("effectCity.xml", {}).get(cap_id)
+        if ec is not None:
+            lines.extend(render_effect_city_capital(ec, indexes=indexes))
+
+    # One-time bonuses
+    for tag, prefix in (("StartBonus", "Start: "), ("FoundBonus", "Found: "), ("Bonus", "On completion: ")):
+        b_id = ep.findtext(tag)
+        if not b_id:
+            continue
+        b = indexes.get("bonus.xml", {}).get(b_id)
+        if b is not None:
+            for line in render_bonus(b, indexes):
+                if line.startswith("Unlocks "):
+                    lines.append(line)
+                else:
+                    lines.append(prefix + line.lstrip("+"))
+
+    # Unit effects
+    eu_id = ep.findtext("EffectUnit")
+    if eu_id:
+        eu = indexes.get("effectUnit.xml", {}).get(eu_id)
+        if eu is not None:
+            lines.extend(render_effect_unit(eu))
+
+    # Nested EffectPlayer (e.g., Constitution → Decree, etc.)
+    sub = ep.findtext("EffectPlayer")
+    if sub:
+        sub_entry = indexes.get("effectPlayer.xml", {}).get(sub)
+        sub_name_key = sub_entry.findtext("Name") if sub_entry is not None else ""
+        if sub_name_key and sub_name_key.startswith("TEXT_PROJECT_"):
+            nice = _lookup_name(indexes, sub_name_key)
+            lines.append(f"Unlocks {nice or condition_name(sub)}")
+        for line in render_effect_player(sub, indexes):
             lines.append(line)
 
     # Deduplicate while preserving order

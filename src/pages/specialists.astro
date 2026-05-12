@@ -1,0 +1,220 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import specialists from '../data/specialists.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Spec = typeof specialists[number];
+
+// Group by class so each row shows all tiers side-by-side.
+const byClass = new Map<string, Spec[]>();
+for (const s of specialists) {
+  const arr = byClass.get(s.classSlug) || [];
+  arr.push(s);
+  byClass.set(s.classSlug, arr);
+}
+for (const arr of byClass.values()) arr.sort((a, b) => a.tier - b.tier);
+
+// Order: rural classes (tier 0) first, then urban (tiers 1-3) by class name.
+const groups = Array.from(byClass.entries());
+groups.sort((a, b) => {
+  const ta = a[1][0].tier, tb = b[1][0].tier;
+  if (ta !== tb) return ta - tb;
+  return a[1][0].class.localeCompare(b[1][0].class);
+});
+
+const searchBlobs: Record<string, string> = {};
+for (const [slug, arr] of groups) {
+  searchBlobs[slug] = JSON.stringify(arr).toLowerCase();
+}
+
+const ruralCount = groups.filter(g => g[1][0].tier === 0).length;
+const urbanCount = groups.filter(g => g[1][0].tier > 0).length;
+---
+
+<Base title="Specialists" active="specialists" pageMark="👨‍🌾" pageStats={[
+  { label: 'specialist types', value: specialists.length },
+  { label: 'classes', value: groups.length },
+]}>
+  <div class="grid" id="sp-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Specialist</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Slots Into</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Tier I</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Tier II</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Tier III</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Cost</span></div></th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Rural specialists section */}
+          <tr class="srow"><th class="srow__th" colspan="6"><span class="srow__chevron">▸</span>Rural Specialists</th></tr>
+          {groups.filter(g => g[1][0].tier === 0).map(([slug, arr]) => {
+            const s0 = arr[0];
+            const allLines = [...(s0.yieldsMain || []), ...(s0.yieldsExtra || []), ...(s0.classModifiers || [])];
+            return (
+              <tr data-row={slug}>
+                <th class="rowlabel rowlabel--item" scope="row" id={slug}>
+                  <div class="spec-head">
+                    <img class="spec-head__icon" src={`${base}${s0.icon}`} alt="" onerror="this.style.display='none'" />
+                    <div class="spec-head__text">
+                      <div class="item__name">{s0.class}</div>
+                      <div class="item__sub">rural</div>
+                    </div>
+                  </div>
+                </th>
+                <td class="cell yield-misc">
+                  {s0.slotImprovementClasses && s0.slotImprovementClasses.length > 0
+                    ? s0.slotImprovementClasses.map(c => <div class="terrain-tag">{c}</div>)
+                    : <span class="cell__dash">—</span>}
+                </td>
+                <td class="cell cell--effects" colspan="3">
+                  {allLines.length > 0 ? allLines.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                  }) : <span class="cell__dash">—</span>}
+                </td>
+                <td class="cell yield-misc">
+                  <div class="cost-row"><span class="cost-num">{s0.civicsCost}</span> Civics</div>
+                  <div class="cost-row"><span class="cost-num">{s0.foodCost}</span> Food</div>
+                </td>
+              </tr>
+            );
+          })}
+
+          {/* Urban specialists section */}
+          <tr class="srow"><th class="srow__th" colspan="6"><span class="srow__chevron">▸</span>Urban Specialists</th></tr>
+          {groups.filter(g => g[1][0].tier > 0).map(([slug, arr]) => {
+            const byTier: (Spec | undefined)[] = [undefined, undefined, undefined, undefined];
+            for (const s of arr) byTier[s.tier] = s;
+            return (
+              <tr data-row={slug}>
+                <th class="rowlabel rowlabel--item" scope="row" id={slug}>
+                  <div class="spec-head">
+                    <img class="spec-head__icon" src={`${base}${arr[0].icon}`} alt="" onerror="this.style.display='none'" />
+                    <div class="spec-head__text">
+                      <div class="item__name">{arr[0].class}</div>
+                      <div class="item__sub">urban · 3 tiers</div>
+                    </div>
+                  </div>
+                </th>
+                <td class="cell yield-misc">
+                  {arr[0].slotImprovementClasses && arr[0].slotImprovementClasses.length > 0
+                    ? arr[0].slotImprovementClasses.map(c => <div class="terrain-tag">{c}</div>)
+                    : <span class="cell__dash">—</span>}
+                </td>
+                {[1, 2, 3].map(tier => {
+                  const s = byTier[tier];
+                  if (!s) return <td class="cell is-empty"><span class="cell__dash">—</span></td>;
+                  const lines = [...(s.yieldsMain || []), ...(s.yieldsExtra || []), ...(s.classModifiers || [])];
+                  return (
+                    <td class="cell cell--effects">
+                      {lines.length > 0 ? lines.map(line => {
+                        const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                        return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                      }) : <span class="cell__dash">—</span>}
+                    </td>
+                  );
+                })}
+                <td class="cell yield-misc">
+                  {[1, 2, 3].map(tier => {
+                    const s = byTier[tier];
+                    if (!s) return null;
+                    return <div class="cost-row">T{tier}: <span class="cost-num">{s.civicsCost}</span> Civ · <span class="cost-num">{s.foodCost}</span> Food</div>;
+                  })}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="application/json" id="sp-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('sp-search-blobs');
+      const grid = document.getElementById('sp-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const row = grid.querySelector('tr[data-row="' + slug + '"]');
+          if (!row) continue;
+          row.classList.toggle('is-hidden', !!q && !blobs[slug].includes(q));
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .nhdr--col {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    text-align: left;
+    padding: 0.45rem 0.6rem;
+    min-width: 8rem;
+  }
+  .nhdr--col .nhdr__name {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  .rowlabel--item {
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    padding: 0.45rem 0.6rem;
+    background: var(--bg-elev);
+    min-width: 11rem;
+    border-right: 1px solid var(--border);
+  }
+  .spec-head { display: flex; align-items: center; gap: 0.5rem; }
+  .spec-head__icon {
+    width: 28px; height: 28px; object-fit: contain;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4));
+  }
+  .item__name {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .item__sub {
+    font-style: italic;
+    color: var(--text-faint);
+    font-size: 0.66rem;
+    margin-top: 0.1rem;
+  }
+  .terrain-tag {
+    display: inline-block;
+    padding: 0.05rem 0.4rem;
+    margin: 0.1rem 0.2rem 0.1rem 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    background: var(--bg);
+  }
+  .cost-row { font-size: 0.7rem; color: var(--text-dim); padding: 0.05rem 0; }
+  .cost-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,283 @@
+{
+  "religions": [
+    {
+      "costBase": 400,
+      "costPerChange": 200,
+      "id": "RELIGION_ZOROASTRIANISM",
+      "name": "Zoroastrianism",
+      "requiresCitizens": 0,
+      "requiresLaw": "",
+      "requiresReligions": [],
+      "requiresSpecialists": [
+        {
+          "count": 2,
+          "id": "SPECIALISTCLASS_ACOLYTE",
+          "label": "Acolyte"
+        }
+      ],
+      "requiresTech": "",
+      "requiresTheologies": 0,
+      "slug": "zoroastrianism",
+      "spreadPercent": 5
+    },
+    {
+      "costBase": 400,
+      "costPerChange": 200,
+      "id": "RELIGION_JUDAISM",
+      "name": "Judaism",
+      "requiresCitizens": 0,
+      "requiresLaw": "",
+      "requiresReligions": [],
+      "requiresSpecialists": [
+        {
+          "count": 2,
+          "id": "SPECIALIST_RANCHER",
+          "label": "Rancher"
+        }
+      ],
+      "requiresTech": "",
+      "requiresTheologies": 0,
+      "slug": "judaism",
+      "spreadPercent": 5
+    },
+    {
+      "costBase": 400,
+      "costPerChange": 200,
+      "id": "RELIGION_CHRISTIANITY",
+      "name": "Christianity",
+      "requiresCitizens": 12,
+      "requiresLaw": "",
+      "requiresReligions": [
+        {
+          "count": 3,
+          "id": "RELIGION_JUDAISM"
+        }
+      ],
+      "requiresSpecialists": [],
+      "requiresTech": "TECH_METAPHYSICS",
+      "requiresTheologies": 0,
+      "slug": "christianity",
+      "spreadPercent": 10
+    },
+    {
+      "costBase": 400,
+      "costPerChange": 200,
+      "id": "RELIGION_MANICHAEISM",
+      "name": "Manichaeism",
+      "requiresCitizens": 0,
+      "requiresLaw": "",
+      "requiresReligions": [
+        {
+          "count": 2,
+          "id": "RELIGION_ZOROASTRIANISM"
+        },
+        {
+          "count": 2,
+          "id": "RELIGION_CHRISTIANITY"
+        }
+      ],
+      "requiresSpecialists": [],
+      "requiresTech": "TECH_MONASTICISM",
+      "requiresTheologies": 0,
+      "slug": "manichaeism",
+      "spreadPercent": 10
+    },
+    {
+      "costBase": 400,
+      "costPerChange": 200,
+      "id": "RELIGION_BUDDHISM",
+      "name": "Buddhism",
+      "requiresCitizens": 0,
+      "requiresLaw": "LAW_PHILOSOPHY",
+      "requiresReligions": [],
+      "requiresSpecialists": [],
+      "requiresTech": "",
+      "requiresTheologies": 4,
+      "slug": "buddhism",
+      "spreadPercent": 10
+    }
+  ],
+  "tiers": [
+    {
+      "label": "Tier 1",
+      "theologies": [
+        {
+          "cost": 200,
+          "effects": [
+            "-10% Maintenance"
+          ],
+          "id": "THEOLOGY_LEGALISM",
+          "lawOpinion": [
+            {
+              "id": "LAW_CENTRALIZATION",
+              "label": "Centralization",
+              "value": 20
+            }
+          ],
+          "name": "Legalism",
+          "slug": "legalism",
+          "spreadChange": 5,
+          "techLabel": "",
+          "techPrereq": "",
+          "tier": 0
+        },
+        {
+          "cost": 200,
+          "effects": [
+            "+2 Culture/Shrine"
+          ],
+          "id": "THEOLOGY_MYTHOLOGY",
+          "lawOpinion": [
+            {
+              "id": "LAW_POLYTHEISM",
+              "label": "Polytheism",
+              "value": 20
+            }
+          ],
+          "name": "Mythology",
+          "slug": "mythology",
+          "spreadChange": 5,
+          "techLabel": "",
+          "techPrereq": "",
+          "tier": 0
+        },
+        {
+          "cost": 200,
+          "effects": [
+            "-5% Rebel Chance",
+            "-5% Rebellion Chance"
+          ],
+          "id": "THEOLOGY_VENERATION",
+          "lawOpinion": [
+            {
+              "id": "LAW_ICONOGRAPHY",
+              "label": "Iconography",
+              "value": 20
+            }
+          ],
+          "name": "Veneration",
+          "slug": "veneration",
+          "spreadChange": 10,
+          "techLabel": "",
+          "techPrereq": "",
+          "tier": 0
+        }
+      ],
+      "tier": 0
+    },
+    {
+      "label": "Tier 2",
+      "theologies": [
+        {
+          "cost": 400,
+          "effects": [
+            "+1 Science/Religion",
+            "+1 Science/Religion"
+          ],
+          "id": "THEOLOGY_DUALISM",
+          "lawOpinion": [
+            {
+              "id": "LAW_TOLERANCE",
+              "label": "Tolerance",
+              "value": 20
+            }
+          ],
+          "name": "Dualism",
+          "slug": "dualism",
+          "spreadChange": 5,
+          "techLabel": "Rhetoric",
+          "techPrereq": "TECH_RHETORIC",
+          "tier": 1
+        },
+        {
+          "cost": 400,
+          "effects": [
+            "+2 Civics/Archive"
+          ],
+          "id": "THEOLOGY_GNOSTICISM",
+          "lawOpinion": [
+            {
+              "id": "LAW_MONOTHEISM",
+              "label": "Monotheism",
+              "value": 20
+            }
+          ],
+          "name": "Gnosticism",
+          "slug": "gnosticism",
+          "spreadChange": 5,
+          "techLabel": "Drama",
+          "techPrereq": "TECH_DRAMA",
+          "tier": 1
+        },
+        {
+          "cost": 400,
+          "effects": [],
+          "id": "THEOLOGY_REVELATION",
+          "lawOpinion": [
+            {
+              "id": "LAW_ORTHODOXY",
+              "label": "Orthodoxy",
+              "value": 20
+            }
+          ],
+          "name": "Revelation",
+          "slug": "revelation",
+          "spreadChange": 20,
+          "techLabel": "Labor_Force",
+          "techPrereq": "TECH_LABOR_FORCE",
+          "tier": 1
+        }
+      ],
+      "tier": 1
+    },
+    {
+      "label": "Tier 3",
+      "theologies": [
+        {
+          "cost": 600,
+          "effects": [],
+          "id": "THEOLOGY_ENLIGHTENMENT",
+          "lawOpinion": [
+            {
+              "id": "LAW_PILGRIMAGE",
+              "label": "Pilgrimage",
+              "value": 20
+            }
+          ],
+          "name": "Enlightenment",
+          "slug": "enlightenment",
+          "spreadChange": 5,
+          "techLabel": "Forestry",
+          "techPrereq": "TECH_FORESTRY",
+          "tier": 2
+        },
+        {
+          "cost": 600,
+          "effects": [
+            "+50% Harbor",
+            "+50% Hamlet"
+          ],
+          "id": "THEOLOGY_REDEMPTION",
+          "lawOpinion": [
+            {
+              "id": "LAW_FREEDOM",
+              "label": "Freedom",
+              "value": 20
+            }
+          ],
+          "name": "Redemption",
+          "slug": "redemption",
+          "spreadChange": 5,
+          "techLabel": "Metaphysics",
+          "techPrereq": "TECH_METAPHYSICS",
+          "tier": 2
+        }
+      ],
+      "tier": 2
+    }
+  ],
+  "totals": {
+    "religions": 5,
+    "theologies": 8
+  }
+}

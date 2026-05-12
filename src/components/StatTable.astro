@@ -1,0 +1,179 @@
+---
+// Render the per-rating curve for one stat in one mode (Base or CM).
+// Rows are rating levels (−3 .. +15); columns are the five court roles.
+//
+// Each cell is colored by the column's signature yield, except the
+// rating-0 row which is rendered as a neutral "baseline" stripe.
+import LinkedText from './LinkedText.astro';
+
+interface Col {
+  role: string;
+  label: string;
+  header: string;
+  unit: 'flat' | 'pct' | 'raw';
+  yieldKey: string;
+}
+
+interface Row {
+  rating: number;
+  cells: (number | string | null)[];
+}
+
+interface Props {
+  columns: Col[];
+  rows: Row[];
+  /** Color tint for the rating column itself (e.g. 'science' for Wisdom). */
+  ratingYieldKey: string;
+  /** Mode label rendered in the corner cell. */
+  modeLabel: string;
+  /** Unique table id so multiple StatTables on one page don't collide. */
+  tableId: string;
+}
+
+const { columns, rows, ratingYieldKey, modeLabel, tableId } = Astro.props as Props;
+
+// Format a numeric cell honoring the column's unit convention.
+function fmtCell(v: number | string | null, unit: 'flat' | 'pct' | 'raw'): string {
+  if (v === null || v === undefined || v === '') return '';
+  if (typeof v === 'string') return v;
+  if (v === 0) return '0';
+  if (unit === 'pct') {
+    // Spreadsheet stores percents as fractions (0.2 → 20%).
+    const pct = Math.round(v * 1000) / 10;   // 1-dp without trailing zero noise
+    const s = pct === Math.trunc(pct) ? `${Math.trunc(pct)}` : `${pct}`;
+    return (v > 0 ? '+' : '') + s + '%';
+  }
+  // flat: just a signed number, trim trailing .0
+  const s = Number.isInteger(v) ? `${v}` : `${v}`;
+  return (v > 0 ? '+' : '') + s;
+}
+---
+
+<table class="ntbl stat-curve" id={tableId}>
+  <colgroup>
+    <col class="ntbl__rowlabel-col" />
+    {columns.map(() => <col />)}
+  </colgroup>
+  <thead>
+    <tr>
+      <th class="rowlabel rowlabel--corner">
+        <span class="rowlabel__small">Role →</span>
+        <span class="rowlabel__big">{modeLabel} ↓</span>
+      </th>
+      {columns.map(c => (
+        <th class={`nhdr nhdr--role yield-${c.yieldKey}`}>
+          <div class="nhdr__inner">
+            <span class="nhdr__name">{c.label}</span>
+            <span class="role-sub"><LinkedText text={c.header} showIcons={false} /></span>
+          </div>
+        </th>
+      ))}
+    </tr>
+  </thead>
+  <tbody>
+    {rows.map(r => {
+      const isBaseline = r.rating === 0;
+      return (
+        <tr class={isBaseline ? 'is-baseline' : ''}>
+          <th class={`rowlabel rowlabel--rating yield-${ratingYieldKey}`} scope="row">
+            <span class="rating-val">
+              {r.rating > 0 ? `+${r.rating}` : r.rating === 0 ? '0' : r.rating}
+            </span>
+          </th>
+          {columns.map((c, i) => {
+            const raw = r.cells[i];
+            const text = fmtCell(raw, c.unit);
+            if (text === '' || text === '0') {
+              return (
+                <td class="cell is-empty">
+                  <span class="cell__dash">—</span>
+                </td>
+              );
+            }
+            const isNeg = typeof raw === 'number' ? raw < 0 : /^-/.test(String(raw));
+            return (
+              <td class={`cell cell--rating yield-${c.yieldKey} ${isNeg ? 'is-neg' : 'is-pos'}`}>
+                <span class="cell__val">{text}</span>
+              </td>
+            );
+          })}
+        </tr>
+      );
+    })}
+  </tbody>
+</table>
+
+<style>
+  /* Compact rating table. The Role headers sit on the column's yield color;
+     the leftmost rating-level column carries the stat's own yield tint. */
+  .stat-curve { font-size: 0.78rem; }
+
+  .stat-curve .nhdr--role {
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.22));
+    text-align: center;
+    border-bottom: 2px solid color-mix(in srgb, var(--yield-bg) 50%, #000 50%);
+    min-width: 7rem;
+    padding: 0.45rem 0.5rem 0.4rem;
+  }
+  .stat-curve .nhdr--role .nhdr__name {
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.2);
+  }
+  .stat-curve .role-sub {
+    display: block;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.66rem;
+    margin-top: 0.1rem;
+    opacity: 0.85;
+    letter-spacing: 0.02em;
+  }
+
+  /* Sticky rating column on the left, tinted by the stat's own yield. */
+  .stat-curve .rowlabel--rating {
+    background: var(--yield-bg);
+    color: var(--yield-fg);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.22));
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 3rem;
+    padding: 0.3rem 0.3rem;
+  }
+  .stat-curve .rating-val {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.22);
+  }
+
+  /* Numeric cells: tabular, signed colors come from the column's yield tint. */
+  .stat-curve .cell--rating {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.32rem 0.4rem;
+  }
+  .stat-curve .cell--rating .cell__val {
+    text-shadow: 0 1px 0 rgba(0,0,0,0.18);
+  }
+  /* Negative values: dim the tint a notch so penalties read as penalties */
+  .stat-curve .cell--rating.is-neg {
+    filter: saturate(0.55) brightness(0.78);
+  }
+
+  /* Baseline row (rating 0) — neutral so it reads as the zero point */
+  .stat-curve tr.is-baseline .cell,
+  .stat-curve tr.is-baseline .rowlabel--rating {
+    filter: brightness(0.55) saturate(0.4);
+  }
+</style>

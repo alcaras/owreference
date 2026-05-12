@@ -1,0 +1,235 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import cognomenData from '../data/cognomens.json';
+
+const { cognomens, tracks } = cognomenData;
+type Cog = typeof cognomens[number];
+
+// Glyph per track — picks the most evocative for the track header
+const TRACK_GLYPH: Record<string, string> = {
+  'Main Line':            '👑',
+  'Killing':              '⚔',
+  'Training / Promoting': '🎖',
+  'Tribal Sites':         '⛺',
+  'Alliances & Peace':    '☮',
+  'Conquest':             '⚐',
+  'Reconquest':           '⮌',
+  'Founding Cities':      '🏛',
+  'Court & Specialists':  '👥',
+  'Tech & Wonders':       '🔮',
+  'Building':             '⛏',
+  'Religion':             '🙏',
+  'Reign':                '⏳',
+};
+
+const searchBlobs: Record<string, string> = {};
+for (const c of cognomens) searchBlobs[c.slug] = JSON.stringify(c).toLowerCase();
+---
+
+<Base title="Cognomens" active="cognomens" pageMark="👑" pageStats={[
+  { label: 'cognomens', value: cognomens.length },
+  { label: 'tracks', value: tracks.length },
+]}>
+  <p class="cog-intro">
+    A regnal title is awarded the moment a ruler clears two bars at once: the
+    Legitimacy threshold (<code>iLegitimacy</code>) and the cumulative score on
+    one of the stat tracks below (<code>iMinValue</code> against
+    <code>aiStatValue</code>). The Main Line are earned purely by ruling well or
+    badly; the side tracks reward specialists. Pulled from
+    <code>cognomen.xml</code>.
+  </p>
+
+  <div class="cog-tracks" id="cog-tracks">
+    {tracks.map(track => (
+      <section class="cog-track" id={`track-${track.name.toLowerCase().replace(/[^a-z]+/g, '-')}`}>
+        <header class="cog-track__hdr">
+          <h2 class="cog-track__title">
+            <span class="cog-track__mark">{TRACK_GLYPH[track.name] || '·'}</span>
+            {track.name}
+          </h2>
+          <span class="cog-track__count">{track.cognomens.length}</span>
+        </header>
+
+        <div class="grid">
+          <div class="grid__scroll">
+            <table class="ntbl">
+              <thead>
+                <tr>
+                  <th class="rowlabel rowlabel--corner">
+                    <span class="rowlabel__small">Cognomen →</span>
+                    <span class="rowlabel__big">Field ↓</span>
+                  </th>
+                  <th class="nhdr nhdr--family">Title</th>
+                  <th class="nhdr nhdr--family">Legitimacy</th>
+                  <th class="nhdr nhdr--family">Min Score</th>
+                  <th class="nhdr nhdr--family">Earned by</th>
+                  <th class="nhdr nhdr--family">DLC</th>
+                </tr>
+              </thead>
+              <tbody>
+                {track.cognomens.map((c: Cog) => (
+                  <tr data-cog={c.slug}>
+                    <th class="rowlabel" scope="row" id={c.slug}>{c.title}</th>
+                    <td class="cell yield-misc">
+                      <span class="cog__title">{c.title}</span>
+                    </td>
+                    <td class={`cell ${c.legitimacy ? (c.legitimacy >= 0 ? 'yield-legitimacy' : 'yield-discontent') : 'is-empty'}`}>
+                      {c.legitimacy === 0 ? <span class="cell__dash">—</span> : (
+                        <span class={`opinion__val opinion--${c.legitimacy >= 0 ? 'pos' : 'neg'}`}>
+                          {c.legitimacy >= 0 ? '≥ +' : '≤ '}{c.legitimacy}
+                        </span>
+                      )}
+                    </td>
+                    <td class={`cell ${c.minValue ? 'yield-money' : 'is-empty'}`}>
+                      {c.minValue ? <span class="opinion__val">{c.minValue.toLocaleString()}</span> : <span class="cell__dash">—</span>}
+                    </td>
+                    <td class={`cell ${c.stats.length ? 'yield-misc' : 'is-empty'}`}>
+                      {c.stats.length ? (
+                        <ul class="cog-stats">
+                          {c.stats.map(s => (
+                            <li>
+                              <span class="cog-stats__label">{s.label}</span>
+                              <span class={`opinion__val opinion--${s.value >= 0 ? 'pos' : 'neg'}`}>
+                                {s.value >= 0 ? '+' : ''}{s.value}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : <span class="cell__dash">—</span>}
+                    </td>
+                    <td class={`cell ${c.dlc ? 'yield-misc' : 'is-empty'}`}>
+                      {c.dlc ? <span class="cog__dlc">{c.dlc.replace('EVENTPACK_', '').replace('_', ' ').toLowerCase()}</span> : <span class="cell__dash">—</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <script type="application/json" id="cog-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('cog-search-blobs');
+      const grid = document.getElementById('cog-tracks');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-cog="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .cog-intro {
+    max-width: 820px;
+    color: var(--text-dim);
+    font-size: 0.86rem;
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .cog-intro code {
+    background: var(--bg-elev);
+    padding: 0.05rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .cog-tracks {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .cog-track__hdr {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin-bottom: 0.5rem;
+  }
+  .cog-track__title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+  }
+  .cog-track__mark {
+    color: var(--accent);
+    font-size: 1.05em;
+  }
+  .cog-track__count {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+  }
+
+  .cog__title {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .cog__dlc {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-faint);
+    font-style: italic;
+  }
+
+  .opinion__val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .opinion--pos { color: #b5d68f; }
+  .opinion--neg { color: #f0a8a8; }
+
+  .cog-stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cog-stats li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.66rem;
+    padding: 0.05rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .cog-stats li:last-child { border-bottom: 0; }
+  .cog-stats__label {
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  /* Slightly narrower fields for cognomen tables */
+  .cog-track .ntbl .nhdr:nth-child(2) { min-width: 9rem; }
+  .cog-track .ntbl .nhdr:nth-child(5) { min-width: 18rem; }
+</style>

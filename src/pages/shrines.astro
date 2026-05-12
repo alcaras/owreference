@@ -1,0 +1,258 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import data from '../data/shrines.json';
+
+const base = import.meta.env.BASE_URL;
+
+const { groups } = data;
+
+// Mirrors `SHRINE_GLYPH` in nations.astro — keeps the type headlines visually
+// linked across pages.
+const SHRINE_GLYPH: Record<string, string> = {
+  LOVE: '♥', WAR: '⚔', WATER: '≋', FIRE: '🜂',
+  KINGSHIP: '♔', SUN: '☀', WISDOM: '✦',
+  HEARTH: '◔', HEALING: '✚', HUNTING: '⌬', UNDERWORLD: '⚱',
+};
+
+// Pre-compute a search blob per shrine for the header-search filter.
+const searchBlobs: Record<string, string> = {};
+for (const g of groups) {
+  for (const s of g.shrines) {
+    searchBlobs[s.id] = JSON.stringify(s).toLowerCase();
+  }
+}
+---
+
+<Base
+  title="Shrines"
+  active="shrines"
+  pageMark="🔱"
+  pageStats={[
+    { label: 'shrines', value: data.totals.shrines },
+    { label: 'types',   value: groups.length },
+  ]}
+>
+  <p class="lede">
+    Every <LinkedText text="Pagan Religion" /> has a unique pool of
+    <b>Shrines</b> — one per <LinkedText text="deity" /> — that found and spread
+    that religion. Each shrine belongs to a <em>type</em> (War, Kingship,
+    Wisdom, …) which determines its signature yield and adjacency. With
+    <LinkedText text="Polytheism" /> a nation can build unlimited shrines.
+  </p>
+
+  <div class="legend legend--types">
+    <span class="legend__label">Shrine types</span>
+    {groups.map(g => (
+      <a class={`chip yield-${g.primaryYield}`} href={`#type-${g.type.toLowerCase()}`}>
+        <span class="chip__glyph">{SHRINE_GLYPH[g.type] || '✦'}</span>
+        {g.label}
+        <span class="chip__count">{g.shrines.length}</span>
+      </a>
+    ))}
+  </div>
+
+  <div id="shrines-grid">
+    {groups.map(g => (
+      <section class="stype" id={`type-${g.type.toLowerCase()}`}>
+        <h2 class={`stype__title yield-${g.primaryYield}`}>
+          <span class="stype__glyph">{SHRINE_GLYPH[g.type] || '✦'}</span>
+          {g.label}
+          <span class="stype__count">{g.shrines.length} shrines</span>
+        </h2>
+        <div class="shrine-grid">
+          {g.shrines.map(s => (
+            <article
+              class={`shrine-card yield-${g.primaryYield}`}
+              id={s.slug}
+              data-shrine={s.id}
+            >
+              <header class="shrine-card__head">
+                <span class={`shrine__type shrine__type--${s.type.toLowerCase()}`}>
+                  <span class="shrine__glyph">{SHRINE_GLYPH[s.type] || '✦'}</span>
+                  {s.typeLabel}
+                </span>
+                <span class="shrine-card__deity">{s.deity}</span>
+              </header>
+
+              <div class="shrine-card__nation">
+                <a href={`${base}nations#${s.nation.slug}`} class={`nation-tag n-${s.nation.slug}`}>
+                  <img src={`${base}img/crests/${s.nation.slug}.png`} class="nation-tag__crest" alt="" />
+                  <span class="nation-tag__name">{s.nation.name}</span>
+                </a>
+              </div>
+
+              {s.outputs.length > 0 && (
+                <ul class="shrine-card__outputs">
+                  {s.outputs.map(o => (
+                    <li><LinkedText text={o} showIcons={false} /></li>
+                  ))}
+                </ul>
+              )}
+
+              {s.effects.length > 0 && (
+                <ul class="shrine-card__effects">
+                  {s.effects.map(e => (
+                    <li><LinkedText text={e} showIcons={false} /></li>
+                  ))}
+                </ul>
+              )}
+
+              <footer class="shrine-card__foot">
+                {s.costs.map(c => (
+                  <span class="shrine-card__cost"><LinkedText text={c} showIcons={false} /></span>
+                ))}
+                {s.specialist && (
+                  <span class="shrine-card__spec">→ {s.specialist}</span>
+                )}
+              </footer>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <script type="application/json" id="shrine-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    // Hide shrine cards that don't match the global search input.
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('shrine-search-blobs');
+      const grid = document.getElementById('shrines-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const id of Object.keys(blobs)) {
+          const match = !q || blobs[id].includes(q);
+          for (const el of grid.querySelectorAll('[data-shrine="' + id + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+        // Hide section headers when all their shrines are hidden.
+        for (const sec of grid.querySelectorAll('.stype')) {
+          const visible = sec.querySelectorAll('.shrine-card:not(.is-hidden)').length;
+          sec.classList.toggle('is-hidden', visible === 0);
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .lede {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 70ch;
+    margin: 0.4rem 0 1.2rem;
+  }
+  .lede b { color: var(--text); }
+
+  .legend--types { margin-bottom: 1.2rem; }
+  .chip__glyph { margin-right: 0.2rem; font-size: 0.9em; }
+  .chip__count {
+    margin-left: 0.3rem;
+    opacity: 0.6;
+    font-family: var(--font-mono);
+    font-size: 0.7em;
+  }
+
+  .stype {
+    margin-top: 1.6rem;
+    scroll-margin-top: 4rem;
+  }
+  .stype__title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.6rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.22));
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .stype__glyph { font-size: 1.1em; }
+  .stype__count {
+    margin-left: auto;
+    font-size: 0.7rem;
+    opacity: 0.7;
+    font-family: var(--font-ui);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .shrine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.45rem;
+  }
+  .shrine-card {
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .shrine-card__head {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.1rem;
+  }
+  .shrine-card__deity {
+    font-style: italic;
+    font-size: 0.72rem;
+    opacity: 0.78;
+    margin-top: 0.05rem;
+  }
+  .shrine-card__nation { margin-bottom: 0.1rem; }
+  .nation-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1rem 0.45rem 0.1rem 0.25rem;
+    background: rgba(0,0,0,0.25);
+    color: inherit;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.66rem;
+  }
+  .nation-tag__crest { width: 12px; height: 12px; object-fit: contain; }
+  .nation-tag:hover { text-decoration: none; filter: brightness(1.15); }
+
+  .shrine-card__outputs,
+  .shrine-card__effects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    font-size: 0.74rem;
+    line-height: 1.3;
+  }
+  .shrine-card__effects { font-size: 0.7rem; opacity: 0.92; }
+  .shrine-card__foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.5rem;
+    margin-top: auto;
+    padding-top: 0.25rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+    font-size: 0.62rem;
+    opacity: 0.82;
+  }
+  .shrine-card__spec { font-style: italic; }
+</style>

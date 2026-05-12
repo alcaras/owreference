@@ -1,0 +1,322 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import archetypes from '../data/archetypes.json';
+import { classifyYield } from '../lib/entities';
+
+type Archetype = typeof archetypes[number];
+
+const RATING_TONE: Record<string, string> = {
+  Wisdom:     'yield-science',
+  Charisma:   'yield-civics',
+  Courage:    'yield-training',
+  Discipline: 'yield-orders',
+};
+
+const SLOT_GLYPH: Record<string, string> = {
+  General: '⚔', Governor: '🏛', Agent: '⌬', Leader: '⚜',
+};
+
+// Archetype "section header" emoji for the table
+const ARCHETYPE_GROUP: Record<string, string> = {
+  commander: 'General', hero: 'General', tactician: 'General', zealot: 'General',
+  builder: 'Governor', diplomat: 'Governor', judge: 'Governor', orator: 'Governor', scholar: 'Governor',
+  schemer: 'Spymaster',
+};
+
+type Row =
+  | { kind: 'section'; label: string }
+  | {
+      kind: 'list' | 'effects' | 'opposite' | 'ratings' | 'laws' | 'slots' | 'misc';
+      label: string;
+      field: (a: Archetype) => any;
+    };
+
+const rows: Row[] = [
+  { kind: 'section', label: 'Role' },
+  { kind: 'slots',   label: 'Slot Eligibility', field: a => a.slots },
+  { kind: 'ratings', label: 'Rating Bonus',     field: a => a.ratings },
+  { kind: 'opposite',label: 'Opposite (-60)',   field: a => a.opposite },
+  { kind: 'laws',    label: 'Favored Laws',     field: a => a.favoredLaws },
+
+  { kind: 'section', label: 'Leader Effects' },
+  { kind: 'effects', label: 'As Leader',        field: a => a.leaderEffects },
+
+  { kind: 'section', label: 'Slot Effects' },
+  { kind: 'effects', label: 'As General',       field: a => a.generalEffects },
+  { kind: 'effects', label: 'As Governor',      field: a => a.governorEffects },
+
+  { kind: 'section', label: 'Diplomatic Stance' },
+  { kind: 'list',    label: 'Modifiers',        field: a => a.misc },
+];
+
+const searchBlobs: Record<string, string> = {};
+for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase();
+---
+
+<Base title="Archetypes" active="archetypes" pageMark="🎓" pageStats={[
+  { label: 'archetypes', value: archetypes.length },
+]}>
+  <p class="arc-intro">
+    The ten character archetypes from <code>trait.xml</code>, with each one's
+    rating contribution, favored law, polar opposite (which carries a strong
+    -60 opinion modifier), and the bonuses that fire when the archetype holds
+    a leader, general, or governor slot.
+  </p>
+
+  <div class="grid" id="arc-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          {archetypes.map(a => <col data-archetype={a.slug} />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Archetype →</span>
+              <span class="rowlabel__big">Attribute ↓</span>
+            </th>
+            {archetypes.map(a => (
+              <th class="nhdr nhdr--family" data-archetype={a.slug} id={a.slug}>
+                <div class="nhdr__inner">
+                  <span class="arc-hdr__group">{SLOT_GLYPH[a.slots[0]] || '·'} {ARCHETYPE_GROUP[a.slug] || a.slots[0]}</span>
+                  <span class="nhdr__name">{a.name}</span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(row => row.kind === 'section' ? (
+            <tr class="srow">
+              <th class="srow__th" colspan={archetypes.length + 1}>
+                <span class="srow__chevron">▸</span>{row.label}
+              </th>
+            </tr>
+          ) : (
+            <tr>
+              <th class="rowlabel" scope="row">{row.label}</th>
+              {archetypes.map(a => {
+                const v = row.field(a);
+
+                if (row.kind === 'slots') {
+                  const items: string[] = v || [];
+                  return (
+                    <td class="cell yield-misc" data-archetype={a.slug}>
+                      <div class="chiplist">
+                        {items.map(s => <span class="chip chip--neutral">{SLOT_GLYPH[s] || ''} {s}</span>)}
+                      </div>
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'ratings') {
+                  const items: { label: string; value: number }[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-archetype={a.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell cell--effects" data-archetype={a.slug}>
+                      {items.map(r => (
+                        <div class={`effect ${RATING_TONE[r.label] || 'yield-misc'}`}>
+                          <span class="rating-label">{r.label}</span>
+                          <span class={`opinion__val opinion--${r.value >= 0 ? 'pos' : 'neg'}`}>
+                            {r.value >= 0 ? '+' : ''}{r.value}
+                          </span>
+                        </div>
+                      ))}
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'opposite') {
+                  if (!v) {
+                    return <td class="cell is-empty" data-archetype={a.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell yield-discontent" data-archetype={a.slug}>
+                      <a href={`#${v.name.toLowerCase()}`} class="opposite-link">{v.name}</a>
+                      <span class="opinion__val opinion--neg">{v.value}</span>
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'laws') {
+                  const items: { id: string; label: string; value: number }[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-archetype={a.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell yield-civics" data-archetype={a.slug}>
+                      {items.map(l => (
+                        <div class="law-row">
+                          <span class="law-row__name">{l.label}</span>
+                          <span class={`opinion__val opinion--${l.value >= 0 ? 'pos' : 'neg'}`}>
+                            {l.value >= 0 ? '+' : ''}{l.value}
+                          </span>
+                        </div>
+                      ))}
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'effects') {
+                  const items: string[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-archetype={a.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell cell--effects" data-archetype={a.slug}>
+                      {items.map(text => {
+                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                        return (
+                          <div class={`effect yield-${yieldKey}`}>
+                            <LinkedText text={text} showIcons={false} />
+                          </div>
+                        );
+                      })}
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'list') {
+                  const items: string[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-archetype={a.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell yield-misc" data-archetype={a.slug}>
+                      <ul class="modlist">
+                        {items.map(m => <li>{m}</li>)}
+                      </ul>
+                    </td>
+                  );
+                }
+
+                return <td class="cell is-empty" data-archetype={a.slug}>—</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="application/json" id="arc-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('arc-search-blobs');
+      const grid = document.getElementById('arc-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-archetype="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .arc-intro {
+    max-width: 820px;
+    color: var(--text-dim);
+    font-size: 0.86rem;
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .arc-intro code {
+    background: var(--bg-elev);
+    padding: 0.05rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .arc-hdr__group {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.1rem;
+  }
+
+  .chiplist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+  .chiplist .chip {
+    padding: 0.08rem 0.4rem;
+    font-size: 0.66rem;
+  }
+
+  .cell--effects .effect {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .cell--effects .rating-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+  }
+
+  .opposite-link {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: inherit !important;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .law-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.05rem 0;
+    font-size: 0.7rem;
+  }
+  .law-row__name {
+    color: inherit;
+    flex: 1;
+  }
+
+  .modlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .modlist li {
+    font-size: 0.66rem;
+    color: var(--text);
+    padding: 0.05rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .modlist li:last-child { border-bottom: 0; }
+
+  .opinion__val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .opinion--pos { color: #4caf7d; }
+  .opinion--neg { color: #d46e6e; }
+</style>

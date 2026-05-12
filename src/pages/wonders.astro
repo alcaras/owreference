@@ -1,0 +1,298 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import wonders from '../data/wonders.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+// Pre-classify cell yields for the column-filter search.
+const searchBlobs: Record<string, string> = {};
+for (const w of wonders) {
+  searchBlobs[w.slug] = JSON.stringify(w).toLowerCase();
+}
+
+// Group wonders by era so we get a section header per culture tier.
+type Era = 'Weak' | 'Developing' | 'Strong' | 'Legendary';
+const ERAS: Era[] = ['Weak', 'Developing', 'Strong', 'Legendary'];
+const byEra: Record<Era, typeof wonders> = {
+  Weak: [], Developing: [], Strong: [], Legendary: [],
+};
+for (const w of wonders) {
+  (byEra[w.era as Era] || byEra.Weak).push(w);
+}
+
+// Yield-icon helper for cost chips. Public/img/icons/yields/<key>.png.
+const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
+
+const dlcCount = wonders.filter(w => w.dlc).length;
+const baseCount = wonders.length - dlcCount;
+---
+
+<Base
+  title="Wonders"
+  active="wonders"
+  pageMark="🏛️"
+  pageStats={[
+    { label: 'wonders', value: wonders.length },
+    { label: 'base game', value: baseCount },
+    { label: 'DLC', value: dlcCount },
+  ]}
+>
+  <div class="grid" id="wonders-grid">
+    <div class="grid__scroll">
+      <table class="ntbl wtbl">
+        <colgroup>
+          <col class="wtbl__name-col" />
+          <col class="wtbl__loc-col" />
+          <col class="wtbl__cost-col" />
+          <col class="wtbl__effects-col" />
+          <col class="wtbl__onetime-col" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Wonder ↓</span>
+              <span class="rowlabel__big">Attribute →</span>
+            </th>
+            <th class="nhdr nhdr--family">Location</th>
+            <th class="nhdr nhdr--family">Cost</th>
+            <th class="nhdr nhdr--family">Ongoing Bonus</th>
+            <th class="nhdr nhdr--family">One-time / Tile</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ERAS.map(era => (
+            <>
+              {byEra[era].length > 0 && (
+                <tr class="srow">
+                  <th class="srow__th" colspan={5}>
+                    <span class="srow__chevron">▸</span>
+                    {era} Culture
+                    <span class="srow__hint"> — {byEra[era].length} wonders</span>
+                  </th>
+                </tr>
+              )}
+              {byEra[era].map(w => (
+                <tr data-wonder={w.slug} id={w.slug}>
+                  <th class="rowlabel rowlabel--wonder" scope="row">
+                    <div class="wname">
+                      <span class="wname__name">{w.name}</span>
+                      <div class="wname__meta">
+                        {w.vp > 0 && <span class="chip chip--vp" title="Victory Points"><b>{w.vp}</b> VP</span>}
+                        {w.dlc && <span class="chip chip--dlc" title={w.dlcLabel}>DLC</span>}
+                        {w.isHolyCity && <span class="chip chip--holy" title="Holy City Wonder">✧ Holy</span>}
+                      </div>
+                      {w.output.length > 0 && (
+                        <div class="wname__output">
+                          {w.output.map((o: any) => (
+                            <span class={`chip yield-${o.yield}`} title="Per-turn yield from the wonder tile">
+                              <img class="chip__icon" src={yieldIcon(o.yield)} alt="" onerror="this.style.display='none'" />
+                              {o.label.replace('/Turn', '')}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+
+                  {/* Location */}
+                  <td class="cell cell--loc yield-misc" data-wonder={w.slug}>
+                    <div class="cell__body"><LinkedText text={w.location} showIcons={false} /></div>
+                  </td>
+
+                  {/* Cost */}
+                  <td class="cell cell--cost" data-wonder={w.slug}>
+                    {w.cost.length === 0 ? (
+                      <span class="cell__dash">—</span>
+                    ) : (
+                      <div class="cost-list">
+                        {w.cost.map((c: any) => (
+                          <span class={`chip yield-${c.yield}`}>
+                            <img class="chip__icon" src={yieldIcon(c.yield)} alt="" onerror="this.style.display='none'" />
+                            <b>{c.value}</b>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </td>
+
+                  {/* Ongoing bonus (humanized effects) */}
+                  {w.effects.length === 0 ? (
+                    <td class="cell is-empty" data-wonder={w.slug}><span class="cell__dash">—</span></td>
+                  ) : (
+                    <td class="cell cell--effects" data-wonder={w.slug}>
+                      {w.effects.map((text: string) => {
+                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                        return (
+                          <div class={`effect yield-${yieldKey}`}>
+                            <LinkedText text={text} showIcons={false} />
+                          </div>
+                        );
+                      })}
+                    </td>
+                  )}
+
+                  {/* One-time bonus (Bonus on completion) */}
+                  {w.oneTime.length === 0 ? (
+                    <td class="cell is-empty" data-wonder={w.slug}><span class="cell__dash">—</span></td>
+                  ) : (
+                    <td class="cell cell--effects" data-wonder={w.slug}>
+                      {w.oneTime.map((text: string) => {
+                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                        return (
+                          <div class={`effect yield-${yieldKey}`}>
+                            <LinkedText text={text} showIcons={false} />
+                          </div>
+                        );
+                      })}
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="legends">
+    <div class="legend">
+      <span class="legend__label">Cost yields</span>
+      {['civics','stone','wood','iron','food'].map(y => (
+        <a class={`chip yield-${y}`} href={`${base}yields/${y}`}>
+          <img class="chip__icon" src={`${base}img/icons/yields/${y}.png`} alt="" onerror="this.style.display='none'" />
+          {y[0].toUpperCase() + y.slice(1)}
+        </a>
+      ))}
+    </div>
+    <div class="legend">
+      <span class="legend__label">Eras</span>
+      {ERAS.map(e => <span class="chip chip--neutral">{e}</span>)}
+    </div>
+  </div>
+
+  <script type="application/json" id="wonder-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    // Row-filter search: hides table rows whose JSON blob doesn't include
+    // the search query. Era section headers stay visible to preserve
+    // the layout (mirrors the families.astro filter pattern).
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('wonder-search-blobs');
+      const grid = document.getElementById('wonders-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-wonder="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  /* Section row hint after era label */
+  .srow__hint { color: var(--text-faint); font-weight: 400; font-size: 0.78em; letter-spacing: 0; }
+
+  /* Column widths for the wonders table */
+  .wtbl__name-col    { width: 16rem; }
+  .wtbl__loc-col     { width: 11rem; }
+  .wtbl__cost-col    { width: 10rem; }
+  .wtbl__effects-col { width: auto; }
+  .wtbl__onetime-col { width: 14rem; }
+
+  /* Make the wonder-name column behave like a row label but with richer content */
+  .rowlabel--wonder {
+    padding: 0.5rem 0.65rem;
+    text-align: left;
+    background: var(--bg-elev);
+  }
+  .wname { display: flex; flex-direction: column; gap: 0.3rem; }
+  .wname__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .wname__meta {
+    display: flex; gap: 0.25rem; flex-wrap: wrap; align-items: center;
+  }
+  .wname__output {
+    display: flex; gap: 0.25rem; flex-wrap: wrap;
+    margin-top: 0.15rem;
+  }
+
+  /* Cost cell layout: yield chips with the numeric amount */
+  .cell--cost {
+    padding: 0.35rem 0.45rem;
+    background: var(--bg-elev);
+    background-image: none;
+  }
+  .cost-list { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+  .cost-list .chip {
+    padding: 0.1rem 0.45rem 0.1rem 0.3rem;
+    font-size: 0.72rem;
+    gap: 0.25rem;
+  }
+  .cost-list .chip b {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  /* Smaller chip variants used in the name cell */
+  .chip--vp {
+    background: color-mix(in srgb, var(--accent) 35%, var(--bg-elev) 65%);
+    color: var(--text);
+    border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+    padding: 0.05rem 0.4rem;
+    font-size: 0.66rem;
+  }
+  .chip--vp b {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 0.2rem;
+  }
+  .chip--dlc {
+    background: var(--bg-elev-2);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 0.05rem 0.4rem;
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+  }
+  .chip--holy {
+    background: color-mix(in srgb, #6b5ea6 30%, var(--bg-elev) 70%);
+    color: var(--text);
+    border: 1px solid color-mix(in srgb, #6b5ea6 50%, transparent);
+    padding: 0.05rem 0.4rem;
+    font-size: 0.66rem;
+  }
+
+  .cell--loc { font-size: 0.78rem; }
+
+  /* Hide rows during search */
+  tr.is-hidden { display: none; }
+
+  /* Header style for non-nation columns (same trick as families.astro) */
+  .wtbl .nhdr--family {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    border-bottom: 2px solid var(--border-strong);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+  }
+</style>

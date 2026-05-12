@@ -6,7 +6,11 @@ export function getStaticPaths() {
   // Build a page for every tab that isn't already a real .astro page.
   // Astro's static route (e.g. nations.astro) wins over this dynamic one, but
   // we still skip it here so the placeholder doesn't shadow the real impl.
-  const built = new Set(['nations']);
+  const built = new Set([
+    'nations', 'families', 'wisdom', 'charisma', 'courage', 'discipline',
+    'technologies', 'promotions',
+    'unit-damage', 'unit-counters', 'combat-damage',
+  ]);
   return TABS
     .filter(t => !built.has(t.slug))
     .map(t => ({ params: { slug: t.slug }, props: { tab: t } }));

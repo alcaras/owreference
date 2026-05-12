@@ -1,0 +1,271 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import traits from '../data/trait_inheritance.json';
+
+type Trait = typeof traits[number];
+
+const strengths = traits.filter(t => t.kind === 'strength');
+const weaknesses = traits.filter(t => t.kind === 'weakness');
+
+const RATING_TONE: Record<string, string> = {
+  Wisdom:     'yield-science',
+  Charisma:   'yield-civics',
+  Courage:    'yield-training',
+  Discipline: 'yield-orders',
+};
+
+const searchBlobs: Record<string, string> = {};
+for (const t of traits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
+---
+
+<Base title="Trait Inheritance" active="trait-inheritance" pageMark="🧬" pageStats={[
+  { label: 'personality traits', value: traits.length },
+  { label: 'strengths', value: strengths.length },
+  { label: 'weaknesses', value: weaknesses.length },
+]}>
+  <p class="trait-intro">
+    The personality matrix as it ships in <code>trait.xml</code>. Each trait shows
+    its polar opposite (which it overwrites if granted), the character rating it
+    shifts, and the modifiers it applies — including the family-head opinion bump
+    so you can see at a glance which traits help a courtier rise to head their
+    family. The legacy "Inheritance Trait 1/2/3" view (which child trait a parent
+    can pass on) was community-curated; the game's actual inheritance happens via
+    the Mother's/Father's Disposition events under <a href="study-events">Study Events</a>.
+  </p>
+
+  <div class="grid" id="trait-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Trait →</span>
+              <span class="rowlabel__big">Attribute ↓</span>
+            </th>
+            <th class="nhdr nhdr--family">Trait</th>
+            <th class="nhdr nhdr--family">Opposites (replaces)</th>
+            <th class="nhdr nhdr--family">Rating</th>
+            <th class="nhdr nhdr--family">Opinion to Same</th>
+            <th class="nhdr nhdr--family">Conflicts</th>
+            <th class="nhdr nhdr--family">Other Modifiers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="srow">
+            <th class="srow__th" colspan={7}>
+              <span class="srow__chevron">▸</span>Strengths ({strengths.length})
+            </th>
+          </tr>
+          {strengths.map(t => (
+            <tr data-trait={t.slug}>
+              <th class="rowlabel" scope="row" id={t.slug}>{t.name}</th>
+              <td class="cell yield-misc">
+                <span class="trait__name">{t.name}</span>
+                <span class="trait__kind trait__kind--strength">Strength</span>
+              </td>
+              <td class={`cell ${t.opposites.length ? 'yield-maintenance' : 'is-empty'}`}>
+                {t.opposites.length ? (
+                  <div class="chiplist">
+                    {t.opposites.map(o => <span class="chip chip--neutral">{o}</span>)}
+                  </div>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${t.positiveRating ? RATING_TONE[t.positiveRating] : 'is-empty'}`}>
+                {t.positiveRating ? <span class="rating-tag">+{t.positiveRating}</span> : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${t.iOpinionSame ? 'yield-legitimacy' : 'is-empty'}`}>
+                {t.iOpinionSame ? (
+                  <span class={`opinion__val opinion--${t.iOpinionSame >= 0 ? 'pos' : 'neg'}`}>
+                    {t.iOpinionSame >= 0 ? '+' : ''}{t.iOpinionSame}
+                  </span>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${t.conflicts.length ? 'yield-discontent' : 'is-empty'}`}>
+                {t.conflicts.length ? (
+                  <div class="chiplist">
+                    {t.conflicts.map(c => <span class="chip chip--neutral">{c}</span>)}
+                  </div>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${t.modifiers.length ? 'yield-misc' : 'is-empty'}`}>
+                {t.modifiers.length ? (
+                  <ul class="modlist">
+                    {t.modifiers.map(m => (
+                      <li>
+                        <span class="modlist__label">{m.label}</span>
+                        <span class={`opinion__val opinion--${m.value >= 0 ? 'pos' : 'neg'}`}>
+                          {m.value >= 0 ? '+' : ''}{m.value}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+            </tr>
+          ))}
+
+          <tr class="srow">
+            <th class="srow__th" colspan={7}>
+              <span class="srow__chevron">▸</span>Weaknesses ({weaknesses.length})
+            </th>
+          </tr>
+          {weaknesses.map(t => (
+            <tr data-trait={t.slug}>
+              <th class="rowlabel" scope="row" id={t.slug}>{t.name}</th>
+              <td class="cell yield-misc">
+                <span class="trait__name">{t.name}</span>
+                <span class="trait__kind trait__kind--weakness">Weakness</span>
+              </td>
+              <td class={`cell ${t.opposites.length ? 'yield-growth' : 'is-empty'}`}>
+                {t.opposites.length ? (
+                  <div class="chiplist">
+                    {t.opposites.map(o => <span class="chip chip--neutral">{o}</span>)}
+                  </div>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${t.positiveRating ? RATING_TONE[t.positiveRating] : 'is-empty'}`}>
+                {t.positiveRating ? <span class="rating-tag rating-tag--neg">−{t.positiveRating}</span> : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${t.iOpinionSame ? 'yield-legitimacy' : 'is-empty'}`}>
+                {t.iOpinionSame ? (
+                  <span class={`opinion__val opinion--${t.iOpinionSame >= 0 ? 'pos' : 'neg'}`}>
+                    {t.iOpinionSame >= 0 ? '+' : ''}{t.iOpinionSame}
+                  </span>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${t.conflicts.length ? 'yield-discontent' : 'is-empty'}`}>
+                {t.conflicts.length ? (
+                  <div class="chiplist">
+                    {t.conflicts.map(c => <span class="chip chip--neutral">{c}</span>)}
+                  </div>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+              <td class={`cell ${t.modifiers.length ? 'yield-misc' : 'is-empty'}`}>
+                {t.modifiers.length ? (
+                  <ul class="modlist">
+                    {t.modifiers.map(m => (
+                      <li>
+                        <span class="modlist__label">{m.label}</span>
+                        <span class={`opinion__val opinion--${m.value >= 0 ? 'pos' : 'neg'}`}>
+                          {m.value >= 0 ? '+' : ''}{m.value}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="application/json" id="trait-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('trait-search-blobs');
+      const grid = document.getElementById('trait-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-trait="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .trait-intro {
+    max-width: 820px;
+    color: var(--text-dim);
+    font-size: 0.86rem;
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .trait-intro code {
+    background: var(--bg-elev);
+    padding: 0.05rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .trait__name {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    display: block;
+  }
+  .trait__kind {
+    display: inline-block;
+    margin-top: 0.15rem;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-family: var(--font-mono);
+    padding: 0.05rem 0.4rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .trait__kind--strength { background: color-mix(in srgb, #5e8c43 25%, var(--bg-elev)); color: #b5d68f; border-color: color-mix(in srgb, #5e8c43 40%, var(--border)); }
+  .trait__kind--weakness { background: color-mix(in srgb, #c25555 25%, var(--bg-elev)); color: #f0a8a8; border-color: color-mix(in srgb, #c25555 40%, var(--border)); }
+
+  .chiplist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+  .chiplist .chip {
+    padding: 0.08rem 0.4rem;
+    font-size: 0.66rem;
+  }
+
+  .rating-tag {
+    font-family: var(--font-display);
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .rating-tag--neg { opacity: 0.85; }
+
+  .modlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .modlist li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.05rem 0;
+    font-size: 0.68rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .modlist li:last-child { border-bottom: 0; }
+  .modlist__label { color: inherit; opacity: 0.85; }
+
+  .opinion__val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .opinion--pos { color: #4caf7d; }
+  .opinion--neg { color: #d46e6e; }
+
+  /* Narrower rowlabel column since trait names are short */
+  .ntbl .rowlabel { min-width: 6rem; }
+</style>

@@ -1,0 +1,201 @@
+---
+// Whole-page renderer for a single rating (Wisdom / Charisma / Courage /
+// Discipline). Pulls its data from src/data/stats.json and stacks two
+// StatTables (Base + CM) under a shared header. The four per-stat pages
+// are thin wrappers that just pick the slug + emoji.
+import Base from '../layouts/Base.astro';
+import LinkedText from './LinkedText.astro';
+import StatTable from './StatTable.astro';
+import stats from '../data/stats.json';
+
+interface Props {
+  slug: 'wisdom' | 'charisma' | 'courage' | 'discipline';
+  pageMark: string;
+}
+const { slug, pageMark } = Astro.props as Props;
+
+const stat = (stats as Record<string, any>)[slug];
+const base = import.meta.env.BASE_URL;
+
+const helpLines = (stat.help || '').split('\n').filter(Boolean);
+---
+
+<Base
+  title={stat.name}
+  active={slug}
+  pageMark={pageMark}
+  pageStats={[
+    { label: 'yield', value: stat.yield ? stat.yield.charAt(0).toUpperCase() + stat.yield.slice(1) : '—' },
+    { label: 'levels', value: stat.base.length },
+    { label: 'modes',  value: 2 },
+  ]}
+>
+  <section class={`stat-hero yield-${stat.yieldKey}`}>
+    <div class="stat-hero__body">
+      <h2 class="stat-hero__name">{stat.name}</h2>
+      {helpLines.length > 0 && (
+        <ul class="stat-hero__help">
+          {helpLines.map((line: string) => (
+            <li><LinkedText text={line} /></li>
+          ))}
+        </ul>
+      )}
+      {stat.perPoint && stat.perPoint.length > 0 && (
+        <div class="stat-hero__pp">
+          <span class="stat-hero__pp-label">XML per-point</span>
+          <ul>
+            {stat.perPoint.map((line: string) => (
+              <li><LinkedText text={line} /></li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+    {stat.yield && (
+      <a class={`stat-hero__yield-chip chip yield-${stat.yield}`} href={`${base}yields/${stat.yield}`}>
+        <img class="chip__icon" src={`${base}img/icons/yields/${stat.yield}.png`} alt="" onerror="this.style.display='none'" />
+        <span>{stat.yield.charAt(0).toUpperCase() + stat.yield.slice(1)}</span>
+      </a>
+    )}
+  </section>
+
+  <div class="stat-modes">
+    <section class="stat-mode">
+      <header class="stat-mode__hdr">
+        <h3 class="stat-mode__title">Base</h3>
+        <p class="stat-mode__sub">Single-player and default-rules curve.</p>
+      </header>
+      <div class="grid">
+        <div class="grid__scroll">
+          <StatTable
+            columns={stat.columns}
+            rows={stat.base}
+            ratingYieldKey={stat.yieldKey}
+            modeLabel={`${stat.name} (Base)`}
+            tableId={`${slug}-base`}
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="stat-mode">
+      <header class="stat-mode__hdr">
+        <h3 class="stat-mode__title">Competitive Mode (CM)</h3>
+        <p class="stat-mode__sub">Multiplayer-balanced curve — character yields scale flatter at the top.</p>
+      </header>
+      <div class="grid">
+        <div class="grid__scroll">
+          <StatTable
+            columns={stat.columns}
+            rows={stat.cm}
+            ratingYieldKey={stat.yieldKey}
+            modeLabel={`${stat.name} (CM)`}
+            tableId={`${slug}-cm`}
+          />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="legends">
+    <div class="legend">
+      <span class="legend__label">Cell colors by yield</span>
+      {Array.from(new Set(stat.columns.map((c: any) => c.yieldKey))).map((y: string) => (
+        <span class={`chip yield-${y}`}>
+          <img class="chip__icon" src={`${base}img/icons/yields/${y}.png`} alt="" onerror="this.style.display='none'" />
+          {y.charAt(0).toUpperCase() + y.slice(1).replace('_', ' ')}
+        </span>
+      ))}
+    </div>
+    <div class="legend">
+      <span class="legend__label">Source</span>
+      <span>rating.xml metadata + spreadsheet curve (legacy reference)</span>
+    </div>
+  </div>
+</Base>
+
+<style>
+  /* Stat hero: bigger, opinionated intro panel using the stat's signature
+     yield as a wash. */
+  .stat-hero {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-lg);
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.32));
+    margin-bottom: 1.1rem;
+    border: 1px solid color-mix(in srgb, var(--yield-bg) 55%, #000 45%);
+  }
+  .stat-hero__name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    margin: 0 0 0.25rem;
+    letter-spacing: 0.04em;
+  }
+  .stat-hero__help {
+    margin: 0; padding: 0;
+    list-style: none;
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+  .stat-hero__help li { margin-top: 0.1rem; }
+  .stat-hero__help li::before {
+    content: '›';
+    margin-right: 0.4rem;
+    opacity: 0.65;
+  }
+
+  .stat-hero__pp {
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    opacity: 0.92;
+  }
+  .stat-hero__pp-label {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-right: 0.4rem;
+  }
+  .stat-hero__pp ul {
+    display: inline;
+    list-style: none;
+    padding: 0; margin: 0;
+  }
+  .stat-hero__pp li { display: inline; }
+  .stat-hero__pp li + li::before { content: ' · '; opacity: 0.55; margin: 0 0.3rem; }
+
+  .stat-hero__yield-chip {
+    align-self: flex-start;
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.7rem;
+  }
+
+  /* The two mode blocks (Base / CM) — stacked, each with its own header */
+  .stat-modes {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .stat-mode__hdr {
+    margin-bottom: 0.5rem;
+  }
+  .stat-mode__title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    margin: 0;
+  }
+  .stat-mode__sub {
+    margin: 0.1rem 0 0;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+  }
+</style>
