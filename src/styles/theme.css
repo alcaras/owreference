@@ -338,55 +338,50 @@ h1, h2, h3 {
   font-weight: 400;
 }
 
-/* Shrine cells use the in-game shrine art as a background, with a yield-
-   tinted dark scrim for legibility. The cell's --yield-bg becomes the
-   left-edge stripe so diagonal scan-by-yield still works. */
+/* Shrine cells: in-game art as background texture, with a strong yield
+   tint everywhere and a hard dark scrim under the text area. The art is
+   visible as a subdued texture (especially in the unused right/bottom),
+   not as a competing image.
+   Layered backgrounds (top → bottom):
+     1. Strong dark scrim (text legibility)
+     2. Yield-color overlay (keeps the cell visually yield-coded)
+     3. The shrine art (de-emphasized via the layers above it) */
 .cell--shrine {
   position: relative;
-  background-color: var(--bg-elev);
-  background-image:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--yield-bg, #000) 65%, transparent) 0%,
-      color-mix(in srgb, var(--yield-bg, #000) 35%, transparent) 18%,
-      rgba(0,0,0,0.55) 55%,
-      rgba(0,0,0,0.70) 100%
-    ),
-    var(--shrine-art);
-  background-size: cover, cover;
-  background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
+  background-color: var(--yield-bg, var(--bg-elev));
+  /* The art lives in a ::before pseudo-element so we can independently
+     blur and dim it without affecting the yield-color layer. */
+  isolation: isolate;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
   border-right: 1px solid color-mix(in srgb, var(--yield-bg, #000) 50%, #000 50%);
   border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, #000) 50%, #000 50%);
-  /* Yield-colored left-edge stripe — preserves diagonal scan-by-yield. */
-  box-shadow: inset 4px 0 0 var(--yield-bg, transparent);
-  color: #fff;
+  overflow: hidden;
 }
-.cell--shrine .shrine__type {
-  text-shadow: 0 1px 2px rgba(0,0,0,0.7), 0 0 4px rgba(0,0,0,0.5);
+.cell--shrine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--shrine-art);
+  background-size: cover;
+  background-position: center 35%;
+  opacity: 0.22;
+  filter: saturate(0.7);
+  z-index: -1;
+  pointer-events: none;
 }
-.cell--shrine .shrine__name {
-  color: rgba(255,255,255,0.9);
-  opacity: 1;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
-}
+/* Slightly brighten the text on shrine cells — they sit over the same
+   yield-bg as other cells but with extra noise, so text needs more punch. */
+.cell--shrine .shrine__type,
+.cell--shrine .shrine__name,
 .cell--shrine .shrine__effect {
-  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-  color: rgba(255,255,255,0.94);
-}
-.cell--shrine .shrine__effect a,
-.cell--shrine .shrine__effect .term {
-  color: inherit;
+  position: relative;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.55);
 }
 
-/* Drop the background art at narrow widths — the cells get too small for
-   the painted illustrations to read; fall back to plain yield-bg color. */
-@media (max-width: 1000px) {
-  .cell--shrine {
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
-    background-color: var(--yield-bg, var(--bg-elev));
-    box-shadow: none;
-  }
+/* On wide viewports, let a little more art peek through — wider cells
+   can hold it without losing readability. */
+@media (min-width: 1400px) {
+  .cell--shrine::before { opacity: 0.32; }
 }
 
 /* Effect-list cells: stack of yield-colored mini-tiles, one per effect.
