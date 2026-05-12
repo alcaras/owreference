@@ -184,7 +184,12 @@ h1, h2, h3 {
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.82rem;
+  /* Lock nation columns to the widths declared on <col> so every nation
+     gets the same horizontal real estate regardless of text length. */
+  table-layout: fixed;
 }
+/* Equal-width nation columns (left rowlabel column keeps its min-width). */
+.ntbl col[data-nation] { width: 11rem; }
 .ntbl thead th { font-weight: 500; }
 .ntbl th, .ntbl td { vertical-align: top; }
 
@@ -365,9 +370,13 @@ h1, h2, h3 {
   position: relative;
   background-color: var(--yield-bg, var(--bg-elev));
   /* The art lives in a ::before pseudo-element so we can independently
-     blur and dim it without affecting the yield-color layer. */
+     blur and dim it without affecting the yield-color layer.
+     Multi-yield shrines (e.g. Wisdom → Science + Civics) set
+     --yield-fill to a diagonal gradient that draws under the scrim. */
   isolation: isolate;
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
+  background-image:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32)),
+    var(--yield-fill, none);
   border-right: 1px solid color-mix(in srgb, var(--yield-bg, #000) 50%, #000 50%);
   border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, #000) 50%, #000 50%);
   overflow: hidden;

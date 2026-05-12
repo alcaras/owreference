@@ -2,7 +2,23 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import nations from '../data/nations.json';
-import { classifyYield } from '../lib/entities';
+import { classifyYield, classifyAllYields, yieldColors } from '../lib/entities';
+
+// Build a CSS diagonal-split background image for an N-yield cell.
+// Returns null when there's <2 distinct yields (caller falls back to
+// the single-yield .yield-{key} class).
+function multiYieldFill(yields: string[]): string | null {
+  if (yields.length < 2) return null;
+  const colors = yields.map(y => yieldColors[y]).filter(Boolean);
+  if (colors.length < 2) return null;
+  // Use hard stops at evenly-spaced angles. 135deg = top-left to bottom-right.
+  const stops: string[] = [];
+  const step = 100 / colors.length;
+  colors.forEach((c, i) => {
+    stops.push(`${c} ${i * step}%`, `${c} ${(i + 1) * step}%`);
+  });
+  return `linear-gradient(135deg, ${stops.join(', ')})`;
+}
 
 const base = import.meta.env.BASE_URL;
 
@@ -221,7 +237,18 @@ for (const n of nations) {
                   const deity = sh.shrine?.name || '';
                   const glyph = SHRINE_GLYPH[type] || '✦';
                   const iconUrl = type ? `${base}img/icons/shrines/${type.toLowerCase()}.png` : '';
-                  const cellStyle = iconUrl ? `--shrine-art: url("${iconUrl}")` : undefined;
+                  // Anchor on the shrine type's primary yield, then add any
+                  // additional yields named in the effect text.
+                  const typeYield = SHRINE_TYPE_YIELD[type]?.toUpperCase();
+                  const extras = classifyAllYields(effect);
+                  const allYields = typeYield
+                    ? [typeYield, ...extras.filter(y => y !== typeYield)]
+                    : extras;
+                  const yieldFill = multiYieldFill(allYields);
+                  const styleParts: string[] = [];
+                  if (iconUrl) styleParts.push(`--shrine-art: url("${iconUrl}")`);
+                  if (yieldFill) styleParts.push(`--yield-fill: ${yieldFill}`);
+                  const cellStyle = styleParts.length ? styleParts.join('; ') : undefined;
                   // Color by shrine type — guarantees every shrine cell is
                   // colored (the effect text doesn't always name a yield).
                   const yieldKey = SHRINE_TYPE_YIELD[type] || classifyYield(effect)?.toLowerCase();

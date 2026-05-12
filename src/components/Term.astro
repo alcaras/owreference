@@ -23,8 +23,10 @@ if (!e) {
 
 {e ? (
   <a class={`term term--${e.type}`} href={`${base}${e.page}#${e.slug}`} title={e.name} data-entity-id={e.id}>
-    {showIcon && e.icon && (
-      <img class="term__icon" src={`${base}${e.icon}`} alt="" />
+    {/* Render the icon when explicitly enabled OR when this is an icon-only
+        link (otherwise the link would be empty). */}
+    {(showIcon || iconOnly) && e.icon && (
+      <img class="term__icon" src={`${base}${e.icon}`} alt={e.name} />
     )}
     {!iconOnly && <span class="term__name">{label ?? e.name}</span>}
   </a>

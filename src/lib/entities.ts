@@ -84,26 +84,48 @@ export function linkify(text: string): LinkedSegment[] {
   return segments;
 }
 
+const CONCEPT_TO_YIELD: Record<string, string> = {
+  order: 'ORDERS', training: 'TRAINING', civics: 'CIVICS', culture: 'CULTURE',
+  science: 'SCIENCE', money: 'MONEY', growth: 'GROWTH', food: 'FOOD',
+  wood: 'WOOD', stone: 'STONE', iron: 'IRON', happiness: 'HAPPINESS',
+  discontent: 'DISCONTENT', influence: 'INFLUENCE', intrigue: 'INTRIGUE',
+  legitimacy: 'LEGITIMACY',
+};
+
+function entityToYieldKey(e: Entity): string | null {
+  if (e.id.startsWith('YIELD_')) return e.id.slice(6);
+  if (e.id.startsWith('CONCEPT_')) return CONCEPT_TO_YIELD[e.slug] ?? null;
+  return null;
+}
+
 // Classify a free-text bonus by the first yield/concept it mentions.
 // Returns the yield key (e.g. "ORDERS", "SCIENCE") or null.
 export function classifyYield(text: string): string | null {
   const segs = linkify(text);
   for (const s of segs) {
     if (s.entity && (s.entity.type === 'yield' || s.entity.type === 'concept')) {
-      // Pull the underlying YIELD_ key from the id (CONCEPT_ORDER → ORDERS, YIELD_ORDERS → ORDERS)
-      if (s.entity.id.startsWith('YIELD_')) return s.entity.id.slice(6);
-      if (s.entity.id.startsWith('CONCEPT_')) {
-        // Map concept slugs to yield keys
-        const conceptToYield: Record<string, string> = {
-          order: 'ORDERS', training: 'TRAINING', civics: 'CIVICS', culture: 'CULTURE',
-          science: 'SCIENCE', money: 'MONEY', growth: 'GROWTH', food: 'FOOD',
-          wood: 'WOOD', stone: 'STONE', iron: 'IRON', happiness: 'HAPPINESS',
-          discontent: 'DISCONTENT', influence: 'INFLUENCE', intrigue: 'INTRIGUE',
-          legitimacy: 'LEGITIMACY',
-        };
-        return conceptToYield[s.entity.slug] ?? null;
-      }
+      const k = entityToYieldKey(s.entity);
+      if (k) return k;
     }
   }
   return null;
+}
+
+// Like classifyYield, but returns every unique yield mentioned in the text,
+// in order of appearance. Used to render diagonal multi-yield backgrounds
+// on cells whose effects span more than one yield (e.g. Wisdom shrines
+// produce both Science and Civics).
+export function classifyAllYields(text: string): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const s of linkify(text)) {
+    if (s.entity && (s.entity.type === 'yield' || s.entity.type === 'concept')) {
+      const k = entityToYieldKey(s.entity);
+      if (k && !seen.has(k)) {
+        out.push(k);
+        seen.add(k);
+      }
+    }
+  }
+  return out;
 }
