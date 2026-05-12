@@ -1,0 +1,258 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import { classifyYield } from '../lib/entities';
+import missions from '../data/missions.json';
+
+interface Props {
+  slug: string;
+  pageMark: string;
+}
+const { slug, pageMark } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const mission = missions.find(m => m.slug === slug)!;
+
+function pct(p: number): string {
+  return (p * 100).toFixed(0) + '%';
+}
+---
+
+<Base title={mission.name} active={slug} pageMark={pageMark} pageStats={[
+  { label: 'turns', value: mission.turns },
+  { label: 'outcomes', value: mission.outcomes.length },
+]}>
+  <section class="mission-overview">
+    <p class="mission-desc"><LinkedText text={mission.description} /></p>
+
+    <div class="mission-chips">
+      {mission.subject && (
+        <span class="chip chip--neutral">
+          <span class="chip__label">Run by</span>
+          <strong>{mission.subject}</strong>
+        </span>
+      )}
+      {mission.techPrereq && (
+        <a class="chip chip--neutral" href={`${base}technologies#${mission.techPrereq.slug}`}>
+          <span class="chip__label">Requires tech</span>
+          <strong>{mission.techPrereq.label}</strong>
+        </a>
+      )}
+      <span class="chip chip--neutral">
+        <span class="chip__label">Duration</span>
+        <strong>{mission.turns} turn{mission.turns === 1 ? '' : 's'}</strong>
+      </span>
+      {mission.cost.map(c => (
+        <span class={`chip yield-${c.yield}`}>
+          <span class="chip__label">Cost</span>
+          <strong>{c.value} {c.label}</strong>
+        </span>
+      ))}
+    </div>
+  </section>
+
+  <section class="outcomes">
+    <h2 class="outcomes__title">Outcomes</h2>
+    <p class="outcomes__sub">
+      A {mission.totalDiceWeight}-sided die rolls when the mission completes; results are weighted as shown.
+      Subject character ratings (e.g., Wisdom on Steal Research) shift the roll.
+    </p>
+
+    <div class="outcome-grid">
+      {mission.outcomes.map(o => {
+        // Color the outcome card by its primary reward yield (or fall back to misc)
+        const firstReward = o.rewards.find(r => r.value != null);
+        const yieldKey = firstReward
+          ? firstReward.yield
+          : (o.name.toLowerCase().includes('event') ? 'misc' : (classifyYield(o.name)?.toLowerCase() || 'misc'));
+        const isEvent = o.id.endsWith('_EVENT');
+        const isExposed = o.id.includes('EXPOSED');
+        return (
+          <div class={`outcome-card yield-${yieldKey} ${isEvent ? 'outcome-card--event' : ''} ${isExposed ? 'outcome-card--exposed' : ''}`}>
+            <div class="outcome-card__head">
+              <span class="outcome-card__name">{o.name}</span>
+              <span class="outcome-card__prob">
+                <span class="outcome-card__weight">{o.weight} / {mission.totalDiceWeight}</span>
+                <span class="outcome-card__pct">{pct(o.probability)}</span>
+              </span>
+            </div>
+            {o.description && (
+              <p class="outcome-card__desc"><LinkedText text={o.description} /></p>
+            )}
+            {o.ratingModifier.length > 0 && (
+              <div class="outcome-card__ratings">
+                <span class="outcome-card__ratings-label">Rating influence</span>
+                {o.ratingModifier.map(r => (
+                  <span class={`chip yield-${r.rating}`}>
+                    {r.value > 0 ? '+' : ''}{r.value} × <strong>{r.label}</strong>
+                  </span>
+                ))}
+              </div>
+            )}
+            {o.rewards.length > 0 && (
+              <ul class="outcome-card__rewards">
+                {o.rewards.map(r => (
+                  <li>
+                    {r.value == null ? (
+                      <span>{r.label}</span>
+                    ) : (
+                      <>
+                        <span class="reward-val">{r.scope.endsWith('Per') ? `+${r.value / 10} per rating` : `+${r.value / 10}`}</span>
+                        <span class="reward-yield">{r.label}</span>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })}
+    </div>
+
+    <p class="outcomes__legend">
+      <strong>Base</strong> rewards apply at rating 0. <strong>Per rating</strong> values stack with the subject's
+      relevant character rating (Charisma for Hold Court civics, Wisdom for Steal Research science, etc.).
+    </p>
+  </section>
+</Base>
+
+<style>
+  .mission-overview { margin-bottom: 1.5rem; }
+  .mission-desc {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0 0 1rem;
+    max-width: 70ch;
+  }
+  .mission-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+  .mission-chips .chip { gap: 0.5rem; padding: 0.3rem 0.7rem; font-size: 0.78rem; }
+  .chip__label {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+
+  .outcomes { margin-top: 2rem; }
+  .outcomes__title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+  .outcomes__sub {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    margin: 0 0 1rem;
+    max-width: 70ch;
+  }
+  .outcomes__legend {
+    margin-top: 1rem;
+    color: var(--text-faint);
+    font-size: 0.75rem;
+    max-width: 70ch;
+  }
+  .outcomes__legend strong { color: var(--text-dim); }
+
+  .outcome-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.6rem;
+  }
+  .outcome-card {
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.36));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border-strong)) 50%, #000 50%);
+    border-radius: var(--radius-lg);
+    padding: 0.7rem 0.9rem 0.8rem;
+  }
+  .outcome-card--event { background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.30) 60%, rgba(0,0,0,0.50)); }
+  .outcome-card--exposed { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 -2px 0 #d46e6e; }
+
+  .outcome-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+  .outcome-card__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+  }
+  .outcome-card__prob {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+  }
+  .outcome-card__pct {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .outcome-card__weight {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    opacity: 0.7;
+    letter-spacing: 0.04em;
+  }
+  .outcome-card__desc {
+    margin: 0 0 0.5rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    opacity: 0.92;
+  }
+  .outcome-card__ratings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+  }
+  .outcome-card__ratings-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.55);
+    margin-right: 0.15rem;
+  }
+  .outcome-card__ratings .chip {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.45rem;
+  }
+  .outcome-card__rewards {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .outcome-card__rewards li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.78rem;
+    gap: 0.6rem;
+    padding: 0.15rem 0;
+    border-top: 1px dashed rgba(255,255,255,0.12);
+  }
+  .outcome-card__rewards li:first-child { border-top: 0; }
+  .reward-val {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .reward-yield { opacity: 0.78; }
+</style>

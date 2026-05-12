@@ -1,0 +1,213 @@
+[
+  {
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 10.0,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Inspire the troops to gain Training",
+    "id": "MISSION_RALLY_TROOPS",
+    "name": "Rally Troops",
+    "outcomes": [
+      {
+        "description": "You have rallied the military, resulting in higher morale and discipline.",
+        "id": "MISSIONRESULT_RALLY_TROOPS",
+        "name": "Troops Rallied",
+        "probability": 0.75,
+        "ratingModifier": [],
+        "rewards": [
+          {
+            "label": "Training",
+            "scope": "aiGlobalYieldsBase",
+            "value": 90,
+            "yield": "training"
+          },
+          {
+            "label": "Training",
+            "scope": "aiGlobalYieldsPer",
+            "value": 10,
+            "yield": "training"
+          }
+        ],
+        "weight": 3
+      },
+      {
+        "description": "The Rally Troops Mission of {CHARACTER-SUBJECT} has led to an event...",
+        "id": "MISSIONRESULT_RALLY_TROOPS_EVENT",
+        "name": "Rally Troops Event",
+        "probability": 0.25,
+        "ratingModifier": [],
+        "rewards": [],
+        "weight": 1
+      }
+    ],
+    "slug": "rally",
+    "subject": "Leader Us",
+    "techPrereq": {
+      "id": "TECH_MILITARY_DRILL",
+      "label": "Military Drill",
+      "slug": "military-drill"
+    },
+    "totalDiceWeight": 4,
+    "turns": 2
+  },
+  {
+    "cost": [
+      {
+        "label": "Training",
+        "value": 10.0,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Pass judgment to gain Civics",
+    "id": "MISSION_HOLD_COURT",
+    "name": "Hold Court",
+    "outcomes": [
+      {
+        "description": "You have held court, handing out wise judgements and important reforms.",
+        "id": "MISSIONRESULT_HOLD_COURT",
+        "name": "Hold Court",
+        "probability": 0.6,
+        "ratingModifier": [],
+        "rewards": [
+          {
+            "label": "Civics",
+            "scope": "aiGlobalYieldsBase",
+            "value": 90,
+            "yield": "civics"
+          },
+          {
+            "label": "Civics",
+            "scope": "aiGlobalYieldsPer",
+            "value": 10,
+            "yield": "civics"
+          }
+        ],
+        "weight": 3
+      },
+      {
+        "description": "While holding court, you have discovered a promising new Courtier.",
+        "id": "MISSIONRESULT_HOLD_COURT_COURTIER",
+        "name": "Hold Court, New Courtier",
+        "probability": 0.2,
+        "ratingModifier": [],
+        "rewards": [
+          {
+            "label": "Gain a random Courtier",
+            "scope": "Special",
+            "value": null
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "description": "The Hold Court Mission of {CHARACTER-SUBJECT} has led to an event...",
+        "id": "MISSIONRESULT_HOLD_COURT_EVENT",
+        "name": "Hold Court Event",
+        "probability": 0.2,
+        "ratingModifier": [],
+        "rewards": [],
+        "weight": 1
+      }
+    ],
+    "slug": "hold-court",
+    "subject": "Leader Judge",
+    "techPrereq": null,
+    "totalDiceWeight": 5,
+    "turns": 2
+  },
+  {
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Steal a Nation's research to gain Science",
+    "id": "MISSION_STEAL_RESEARCH",
+    "name": "Steal Research",
+    "outcomes": [
+      {
+        "description": "{CHARACTER-SUBJECT} has successfully stolen research from your rival.",
+        "id": "MISSIONRESULT_STEAL_RESEARCH_SUCCESS",
+        "name": "Research Stolen",
+        "probability": 0.6,
+        "ratingModifier": [
+          {
+            "label": "Wisdom",
+            "rating": "wisdom",
+            "value": 24
+          }
+        ],
+        "rewards": [
+          {
+            "label": "Science",
+            "scope": "aiOtherYieldsBase",
+            "value": 30,
+            "yield": "science"
+          },
+          {
+            "label": "Science",
+            "scope": "aiOtherYieldsPer",
+            "value": 10,
+            "yield": "science"
+          }
+        ],
+        "weight": 3
+      },
+      {
+        "description": "{CHARACTER-SUBJECT} has successfully stolen research from your rival but was exposed in the process.",
+        "id": "MISSIONRESULT_STEAL_RESEARCH_SUCCESS_EXPOSED",
+        "name": "Research Stolen, Effort Exposed",
+        "probability": 0.2,
+        "ratingModifier": [],
+        "rewards": [
+          {
+            "label": "Science",
+            "scope": "aiOtherYieldsBase",
+            "value": 30,
+            "yield": "science"
+          },
+          {
+            "label": "Science",
+            "scope": "aiOtherYieldsPer",
+            "value": 10,
+            "yield": "science"
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "description": "The Steal Research Mission of {CHARACTER-SUBJECT} has led to an event...",
+        "id": "MISSIONRESULT_STEAL_RESEARCH_EVENT",
+        "name": "Steal Research Event",
+        "probability": 0.2,
+        "ratingModifier": [],
+        "rewards": [],
+        "weight": 1
+      }
+    ],
+    "slug": "steal-research",
+    "subject": "Spymaster",
+    "techPrereq": {
+      "id": "TECH_CARTOGRAPHY",
+      "label": "Cartography",
+      "slug": "cartography"
+    },
+    "totalDiceWeight": 5,
+    "turns": 3
+  }
+]

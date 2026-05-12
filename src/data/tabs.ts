@@ -176,10 +176,19 @@ export const TABS: Tab[] = [
 
   // ── Mechanics ─────────────────────────────────────────────────
   {
-    slug: 'rally-court-steal', icon: '📈', label: 'Rally / Hold Court / Steal Resources', section: 'Mechanics',
-    status: 'placeholder', sourceSheet: '📈 Rally  Hold Court  Steal Res',
-    summary: 'Mission outcome math',
-    willContain: ['Probability tables for each mission type'],
+    slug: 'rally', icon: '📯', label: 'Rally Troops', section: 'Mechanics',
+    status: 'built', sourceSheet: '📈 Rally  Hold Court  Steal Res',
+    summary: 'Leader mission: Training yields, dice outcomes',
+  },
+  {
+    slug: 'hold-court', icon: '⚖️', label: 'Hold Court', section: 'Mechanics',
+    status: 'built', sourceSheet: '📈 Rally  Hold Court  Steal Res',
+    summary: 'Judge mission: Civics, courtier chance, event chance',
+  },
+  {
+    slug: 'steal-research', icon: '🕵', label: 'Steal Research', section: 'Mechanics',
+    status: 'built', sourceSheet: '📈 Rally  Hold Court  Steal Res',
+    summary: 'Spymaster mission: Science from rival, with exposure risk',
   },
   {
     slug: 'religious-conversion', icon: '🙏', label: 'Religious Conversion', section: 'Mechanics',

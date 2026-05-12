@@ -10,6 +10,7 @@ export function getStaticPaths() {
     'nations', 'families', 'wisdom', 'charisma', 'courage', 'discipline',
     'technologies', 'promotions',
     'unit-damage', 'unit-counters', 'combat-damage',
+    'rally', 'hold-court', 'steal-research',
   ]);
   return TABS
     .filter(t => !built.has(t.slug))
