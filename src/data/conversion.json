@@ -1,0 +1,107 @@
+{
+  "character": {
+    "cityScoringNoFamily": {
+      "note": "Initial rulers, foreigners, anyone without a family. All player cities count, weighted less.",
+      "rules": [
+        {
+          "label": "Player has the holy city",
+          "points": 2
+        },
+        {
+          "label": "Religion in player cities (not the holy city)",
+          "points": 1
+        }
+      ]
+    },
+    "cityScoringWithFamily": {
+      "note": "If the character has a family, only family cities count.",
+      "rules": [
+        {
+          "label": "Family seat is the holy city",
+          "points": 4
+        },
+        {
+          "label": "Any other family city is the holy city",
+          "points": 3
+        },
+        {
+          "label": "Religion in family seat (not the holy city)",
+          "points": 2
+        },
+        {
+          "label": "Religion in other family cities (not the holy city)",
+          "points": 1
+        }
+      ]
+    },
+    "postThreshold": {
+      "note": "Only religions that passed the threshold get these final modifiers.",
+      "rules": [
+        {
+          "label": "Religion is Pagan (even if from the wrong nation)",
+          "points": 3
+        },
+        {
+          "label": "If <4 characters follow that religion, add (4 - number_of_characters) to the score",
+          "points": "0-3"
+        }
+      ]
+    },
+    "randomization": "The post-threshold sum is multiplied by a random integer 5..14. The highest result wins.",
+    "roleScoring": {
+      "note": "These stack regardless of family affiliation.",
+      "rules": [
+        {
+          "label": "Governor of the holy city",
+          "points": 3
+        },
+        {
+          "label": "Governor of a city with that religion (not the holy city)",
+          "points": 2
+        },
+        {
+          "label": "Agent in the holy city",
+          "points": 2
+        },
+        {
+          "label": "Agent in a city with that religion (not the holy city)",
+          "points": 1
+        }
+      ]
+    },
+    "threshold": {
+      "description": "A random integer 1..3 is drawn. The religion's points from *cities alone* must meet or exceed the threshold for it to be eligible. The highest- scoring eligible religion wins. If none qualify, no religion is chosen."
+    },
+    "whoRolls": [
+      "Leader characters of human players never randomly choose a religion.",
+      "Other characters skip the roll if any other 'life event' happens that turn: giving birth (after Pregnant), gaining/losing a random adult trait, fathering a child, gaining/losing a random stat point, gaining a random archetype, or a random marriage proposal.",
+      "All other characters: 10% per-turn chance to attempt a religion choice.",
+      "Adults always attempt once that 10% hurdle is cleared. Characters aged ≤17 attempt with probability 1 / (1 + YluA), where YluA = years left until adulthood."
+    ]
+  },
+  "family": {
+    "cooldownTurns": 4,
+    "scoring": [
+      {
+        "label": "Family head following that religion",
+        "points": 200
+      },
+      {
+        "label": "Other family characters",
+        "points": 100
+      },
+      {
+        "label": "Council members (additional)",
+        "points": 40
+      },
+      {
+        "label": "Non-council jobs — governor / general / agent (additional)",
+        "points": 20
+      },
+      {
+        "label": "Current religion bonus",
+        "points": 50
+      }
+    ]
+  }
+}

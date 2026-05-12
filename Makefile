@@ -34,6 +34,7 @@ data:
 	@python3 scripts/build_cognomens.py
 	@python3 scripts/build_stats.py
 	@python3 scripts/build_missions.py
+	@python3 scripts/build_conversion.py
 	@python3 scripts/build_entities.py
 	@python3 scripts/build_backlinks.py
 

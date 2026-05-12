@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import theologyData from '../data/theologies.json';
 import worldRelData from '../data/world_religion_buildings.json';
+import conversion from '../data/conversion.json';
 
 const base = import.meta.env.BASE_URL;
 
@@ -232,6 +233,118 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
       </li>
     </ol>
   </section>
+
+  <section class="rc-section">
+    <h2 class="rc-h2">Family Conversion</h2>
+    <p>
+      A family won't switch religion more than once every
+      <b>{conversion.family.cooldownTurns} turns</b>. Each turn after the
+      cooldown, every religion gets scored against the family and the
+      highest-scoring religion wins (deterministic — there's a small bonus
+      for keeping the current religion to break ties).
+    </p>
+
+    <table class="rc-table rc-table--narrow rc-table--score">
+      <thead>
+        <tr>
+          <th class="rc-num">Points</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        {conversion.family.scoring.map(s => (
+          <tr>
+            <td class="rc-num"><b>+{s.points}</b></td>
+            <td><LinkedText text={s.label} /></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <p class="rc-fineprint">
+      Source: game's compiled code; values confirmed by Mohawk (Solver,
+      2023-02-09). Not present in <code>religion.xml</code>; documented
+      in <code>src/data/annotations/conversion.yaml</code>.
+    </p>
+  </section>
+
+  <section class="rc-section">
+    <h2 class="rc-h2">Character Conversion</h2>
+
+    <h3 class="rc-h3">Who rolls</h3>
+    <ul class="rc-bullets">
+      {conversion.character.whoRolls.map(line => <li><LinkedText text={line} /></li>)}
+    </ul>
+
+    <h3 class="rc-h3">Eligibility threshold</h3>
+    <p><LinkedText text={conversion.character.threshold.description} /></p>
+
+    <div class="rc-twocol">
+      <div class="rc-card">
+        <h3 class="rc-h3" style="margin-top:0">City points — with family</h3>
+        <p class="rc-fineprint" style="font-style:normal">{conversion.character.cityScoringWithFamily.note}</p>
+        <table class="rc-table rc-table--narrow rc-table--score">
+          <tbody>
+            {conversion.character.cityScoringWithFamily.rules.map(r => (
+              <tr>
+                <td class="rc-num"><b>+{r.points}</b></td>
+                <td><LinkedText text={r.label} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rc-card">
+        <h3 class="rc-h3" style="margin-top:0">City points — no family</h3>
+        <p class="rc-fineprint" style="font-style:normal">{conversion.character.cityScoringNoFamily.note}</p>
+        <table class="rc-table rc-table--narrow rc-table--score">
+          <tbody>
+            {conversion.character.cityScoringNoFamily.rules.map(r => (
+              <tr>
+                <td class="rc-num"><b>+{r.points}</b></td>
+                <td><LinkedText text={r.label} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3 class="rc-h3">Role points</h3>
+    <p class="rc-fineprint" style="font-style:normal">{conversion.character.roleScoring.note}</p>
+    <table class="rc-table rc-table--narrow rc-table--score">
+      <tbody>
+        {conversion.character.roleScoring.rules.map(r => (
+          <tr>
+            <td class="rc-num"><b>+{r.points}</b></td>
+            <td><LinkedText text={r.label} /></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <h3 class="rc-h3">Post-threshold modifiers</h3>
+    <p class="rc-fineprint" style="font-style:normal">{conversion.character.postThreshold.note}</p>
+    <table class="rc-table rc-table--narrow rc-table--score">
+      <tbody>
+        {conversion.character.postThreshold.rules.map(r => (
+          <tr>
+            <td class="rc-num"><b>+{r.points}</b></td>
+            <td><LinkedText text={r.label} /></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <h3 class="rc-h3">Final tiebreaker</h3>
+    <p>{conversion.character.randomization}</p>
+
+    <p class="rc-fineprint">
+      Source: game's compiled code, documented in
+      <code>src/data/annotations/conversion.yaml</code>. Edit there to update.
+    </p>
+  </section>
 </Base>
 
 <style>
@@ -369,4 +482,26 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
     border-radius: 3px;
     border: 1px solid var(--border);
   }
+
+  .rc-h3 {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    color: var(--text);
+    margin: 1rem 0 0.4rem;
+    letter-spacing: 0.02em;
+  }
+  .rc-bullets {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    margin: 0.4rem 0 0.8rem;
+    padding-left: 1.2rem;
+    max-width: 80ch;
+  }
+  .rc-bullets li { padding: 0.18rem 0; }
+
+  /* Tighter score tables (Family/Character conversion) */
+  .rc-table--score { max-width: 70ch; }
+  .rc-table--score tbody td:first-child { width: 5rem; }
+  .rc-table--score b { color: var(--accent); font-weight: 700; }
 </style>
