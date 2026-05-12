@@ -45,7 +45,7 @@ for (const g of groups) {
     <span class="legend__label">Shrine types</span>
     {groups.map(g => (
       <a class={`chip yield-${g.primaryYield}`} href={`#type-${g.type.toLowerCase()}`}>
-        <span class="chip__glyph">{SHRINE_GLYPH[g.type] || '✦'}</span>
+        <img class="chip__icon" src={`${base}img/icons/shrines/${g.type.toLowerCase()}.png`} alt="" />
         {g.label}
         <span class="chip__count">{g.shrines.length}</span>
       </a>
@@ -56,7 +56,7 @@ for (const g of groups) {
     {groups.map(g => (
       <section class="stype" id={`type-${g.type.toLowerCase()}`}>
         <h2 class={`stype__title yield-${g.primaryYield}`}>
-          <span class="stype__glyph">{SHRINE_GLYPH[g.type] || '✦'}</span>
+          <img class="stype__icon" src={`${base}img/icons/shrines/${g.type.toLowerCase()}.png`} alt="" />
           {g.label}
           <span class="stype__count">{g.shrines.length} shrines</span>
         </h2>
@@ -67,9 +67,14 @@ for (const g of groups) {
               id={s.slug}
               data-shrine={s.id}
             >
+              <img
+                class="shrine-card__art"
+                src={`${base}img/icons/shrines/${s.type.toLowerCase()}.png`}
+                alt={`${s.typeLabel} shrine`}
+                loading="lazy"
+              />
               <header class="shrine-card__head">
                 <span class={`shrine__type shrine__type--${s.type.toLowerCase()}`}>
-                  <span class="shrine__glyph">{SHRINE_GLYPH[s.type] || '✦'}</span>
                   {s.typeLabel}
                 </span>
                 <span class="shrine-card__deity">{s.deity}</span>
@@ -180,7 +185,14 @@ for (const g of groups) {
     align-items: baseline;
     gap: 0.5rem;
   }
-  .stype__glyph { font-size: 1.1em; }
+  .stype__icon {
+    width: 2.2em;
+    height: 1.5em;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    vertical-align: -0.25em;
+  }
   .stype__count {
     margin-left: auto;
     font-size: 0.7rem;
@@ -201,14 +213,26 @@ for (const g of groups) {
     background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
     border: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
     border-radius: 6px;
-    padding: 0.5rem 0.65rem;
+    padding: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+  }
+  .shrine-card > :not(.shrine-card__art) { padding-left: 0.65rem; padding-right: 0.65rem; }
+  .shrine-card > :first-child { padding-top: 0; }
+  .shrine-card > :last-child { padding-bottom: 0.55rem; }
+  .shrine-card__art {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    object-position: center 30%;
+    display: block;
+    border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, #000) 60%, #000 40%);
   }
   .shrine-card__head {
     display: flex;
     flex-direction: column;
+    margin-top: 0.45rem;
     margin-bottom: 0.1rem;
   }
   .shrine-card__deity {

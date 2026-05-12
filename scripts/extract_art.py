@@ -34,6 +34,7 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^RESOURCE_([A-Z_]+?)()$"), "icons/resources"),
     (re.compile(r"^SPECIALIST_([A-Z_]+?)()$"), "icons/specialists"),
     (re.compile(r"^TECH_([A-Z_]+?)()$"), "icons/techs"),
+    (re.compile(r"^IMPROVEMENT_SHRINE_([A-Z_]+?)()$"), "icons/shrines"),
 ]
 
 

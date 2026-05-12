@@ -220,6 +220,7 @@ for (const n of nations) {
                   const typeLabel = sh.shrine?.typeLabel || '';
                   const deity = sh.shrine?.name || '';
                   const glyph = SHRINE_GLYPH[type] || '✦';
+                  const iconUrl = type ? `${base}img/icons/shrines/${type.toLowerCase()}.png` : '';
                   // Color by shrine type — guarantees every shrine cell is
                   // colored (the effect text doesn't always name a yield).
                   const yieldKey = SHRINE_TYPE_YIELD[type] || classifyYield(effect)?.toLowerCase();
@@ -229,7 +230,12 @@ for (const n of nations) {
                       {sh.shrine && (
                         <div class="shrine">
                           <span class={`shrine__type shrine__type--${type.toLowerCase()}`}>
-                            <span class="shrine__glyph">{glyph}</span>{typeLabel}
+                            {iconUrl ? (
+                              <img class="shrine__icon" src={iconUrl} alt="" />
+                            ) : (
+                              <span class="shrine__glyph">{glyph}</span>
+                            )}
+                            {typeLabel}
                           </span>
                           <span class="shrine__name">{deity}</span>
                         </div>
