@@ -53,6 +53,17 @@ if (!e) {
     vertical-align: -0.1em;
     flex-shrink: 0;
   }
+  /* Icon-only terms (used for yield mentions inside effect text — "Sci",
+     "Cult", etc. → just the yield icon) shouldn't carry the dotted-link
+     underline; the icon itself reads as a glyph. */
+  .term:has(> .term__icon:only-child) {
+    border-bottom: none;
+  }
+  .term:has(> .term__icon:only-child) .term__icon {
+    width: 1.05em;
+    height: 1.05em;
+    vertical-align: -0.18em;
+  }
   .term--nation { font-weight: 600; }
   .term--unknown { border-bottom: none; opacity: 0.7; }
 </style>

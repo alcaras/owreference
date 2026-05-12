@@ -6,14 +6,27 @@ import Term from './Term.astro';
 interface Props {
   text: string;
   showIcons?: boolean;
+  // If true, replace yield/concept aliases ("Sci", "Cult", "Civ", "Orders"…)
+  // with just their icon (label tooltip preserved). Mirrors the game's UI
+  // which shows the yield glyph rather than spelling out the yield name.
+  // Other entity types (nations, units, techs…) still render as text+icon
+  // since their names are not directly representable by a single glyph.
+  iconsForYields?: boolean;
 }
 
-const { text, showIcons = true } = Astro.props;
+const { text, showIcons = true, iconsForYields = false } = Astro.props;
 const segments = linkify(text || '');
+
+function shouldIconize(seg: typeof segments[number]): boolean {
+  if (!iconsForYields) return false;
+  if (!seg.entity) return false;
+  if (!seg.entity.icon) return false;
+  return seg.entity.type === 'yield' || seg.entity.type === 'concept';
+}
 ---
 
 {segments.map(s => (
   s.entity
-    ? <Term entity={s.entity} label={s.text} showIcon={showIcons} />
+    ? <Term entity={s.entity} label={s.text} showIcon={showIcons} iconOnly={shouldIconize(s)} />
     : <Fragment>{s.text}</Fragment>
 ))}

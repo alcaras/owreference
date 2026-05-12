@@ -206,7 +206,7 @@ for (const n of nations) {
                         const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
                         return (
                           <div class={`effect yield-${yieldKey}`}>
-                            <LinkedText text={text} showIcons={false} />
+                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
                           </div>
                         );
                       })}
@@ -237,7 +237,7 @@ for (const n of nations) {
                           </span>
                         </div>
                       )}
-                      <div class="shrine__effect"><LinkedText text={effect} showIcons={false} /></div>
+                      <div class="shrine__effect"><LinkedText text={effect} showIcons={false} iconsForYields={true} /></div>
                     </td>
                   );
                 }
@@ -266,7 +266,7 @@ for (const n of nations) {
                 const yieldClass = `yield-${yieldKey}`;
                 return (
                   <td class={`cell n-${n.slug} ${yieldClass}`} data-nation={n.slug}>
-                    <div class="cell__body"><LinkedText text={text} showIcons={false} /></div>
+                    <div class="cell__body"><LinkedText text={text} showIcons={false} iconsForYields={true} /></div>
                   </td>
                 );
               })}
