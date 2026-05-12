@@ -43,9 +43,15 @@ for (const f of families) {
 }
 ---
 
-<Base title="Families" active="families" pageMark="👪" pageStats={[
-  { label: 'classes', value: families.length },
-]}>
+<Base
+  title="Families"
+  active="families"
+  pageMark="👪"
+  description="The 10 family classes of Old World (Champions, Hunters, Riders, Statesmen, Sages, Patrons, Artisans, Landowners, Clerics, Traders) with city bonuses, seat bonuses, opinion modifiers, preferred laws, favored buildings, and which nations have each."
+  pageStats={[
+    { label: 'classes', value: families.length },
+  ]}
+>
   <div class="grid" id="families-grid">
     <div class="grid__scroll">
       <table class="ntbl">

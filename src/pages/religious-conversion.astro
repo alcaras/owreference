@@ -66,6 +66,7 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   title="Religious Conversion"
   active="religious-conversion"
   pageMark="🙏"
+  description="How religion spreads in Old World: passive city spread rates, Disciple/Shrine active spread, State Religion mechanics, and the exact family + character conversion scoring sourced from the game's source code."
   pageStats={[
     { label: 'world religions', value: religions.length },
     { label: 'spread modifiers', value: spreadModifiers.length },
@@ -198,12 +199,17 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   <section class="rc-section">
     <h2 class="rc-h2">State Religion</h2>
     <p>
-      Adopting a religion as your <b>State Religion</b> grants its followers
-      higher religious opinion, adds <LinkedText text="+1 Happiness" /> to every
-      city of that religion, and (for World Religions) <b>enables Disciple
-      training</b> there. You start with Paganism by default; switching
-      religions costs <code>iCostBase</code> + <code>iCostPerChange</code> per
-      previous switch.
+      You don't start with a state religion. Adopting one grants its
+      followers higher opinion, adds <LinkedText text="+1 Happiness" /> in
+      every city of that religion, and (for World Religions) <b>enables
+      Disciple training</b> there. Switching costs
+      <code>iCostBase</code> + <code>iCostPerChange</code> per previous
+      switch, per religion.
+    </p>
+    <p class="rc-fineprint" style="font-style:normal">
+      Pagan religions can't be a state religion by default — you need the
+      <LinkedText text="Divine Rule" /> law to enact a pagan state religion
+      (see <code>bPaganStateReligion</code> in effectPlayer.xml).
     </p>
   </section>
 

@@ -8,9 +8,30 @@ interface Props {
   active?: string;
   pageStats?: { label: string; value: string | number }[];
   pageMark?: string;
+  // Short, specific summary of this page. Used for <meta description>,
+  // og:description, and Twitter card. Aim for ~140-160 chars, keyword-rich
+  // but human-readable. Falls back to a site-wide default.
+  description?: string;
+  // Optional og:image relative path under public/ (e.g. "img/crests/rome.png").
+  ogImage?: string;
 }
-const { title, active, pageStats, pageMark } = Astro.props;
+const { title, active, pageStats, pageMark, description, ogImage } = Astro.props;
 const base = import.meta.env.BASE_URL;
+
+const SITE_NAME = "Old World Reference";
+const SITE_TAGLINE = "the alcaras spreadsheet, in your browser";
+const DEFAULT_DESC =
+  "Complete reference for Mohawk Games' Old World — every nation, family, shrine, wonder, tech, law, unit, promotion, and game mechanic, pulled directly from the game's XML and source code and updated each patch.";
+
+const pageDesc = description || DEFAULT_DESC;
+const fullTitle = `${title} · ${SITE_NAME}`;
+
+// Build canonical URL from Astro.url + base. Falls back gracefully in dev.
+const siteOrigin = Astro.site?.origin || 'https://alcaras.github.io';
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
+const ogImageUrl = ogImage
+  ? new URL(base + ogImage, siteOrigin).href
+  : new URL(base + 'img/crests/rome.png', siteOrigin).href;  // sensible fallback crest
 
 const nav = [
   { href: '',           label: 'Index' },
@@ -31,8 +52,26 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} · Old World Reference</title>
-    <meta name="description" content="Dark-mode reference for Old World — auto-updated each patch from the game's own files." />
+    <title>{fullTitle}</title>
+    <meta name="description" content={pageDesc} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph (Discord, Slack, Facebook, LinkedIn unfurls) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={pageDesc} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <meta name="keywords" content="Old World, Mohawk Games, 4X strategy, game reference, nations, families, technologies, wonders, laws, units, promotions, shrines, Old World wiki" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
