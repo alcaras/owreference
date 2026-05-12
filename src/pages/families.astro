@@ -1,0 +1,274 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import families from '../data/families.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type FamilyClass = typeof families[number];
+
+type Row =
+  | { kind: 'section'; label: string }
+  | {
+      kind: 'effects' | 'opinions' | 'list' | 'nations';
+      label: string;
+      field: (f: FamilyClass) => any;
+    };
+
+const rows: Row[] = [
+  { kind: 'section', label: 'City Bonus' },
+  { kind: 'effects', label: 'City Bonus', field: f => f.cityBonus },
+
+  { kind: 'section', label: 'Seat' },
+  { kind: 'effects', label: 'Seat Bonus', field: f => f.seatBonus },
+  { kind: 'effects', label: 'Founding', field: f => f.seatFounding },
+
+  { kind: 'section', label: 'Opinion' },
+  { kind: 'opinions', label: 'Opinion modifiers', field: f => f.opinions },
+
+  { kind: 'section', label: 'Preferences' },
+  { kind: 'list', label: 'Favored Buildings', field: f => f.favored },
+  { kind: 'list', label: 'Preferred Laws',    field: f => f.preferredLaws },
+  { kind: 'list', label: 'Luxuries (-/missing)', field: f => f.luxuries },
+
+  { kind: 'section', label: 'Nations' },
+  { kind: 'nations', label: 'Nations',        field: f => f.nations },
+];
+
+// Pre-compute a JSON blob per family for the column-filter search.
+const searchBlobs: Record<string, string> = {};
+for (const f of families) {
+  searchBlobs[f.slug] = JSON.stringify(f).toLowerCase();
+}
+---
+
+<Base title="Families" active="families" pageMark="👪" pageStats={[
+  { label: 'classes', value: families.length },
+]}>
+  <div class="grid" id="families-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          {families.map(f => <col data-family={f.slug} />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Class →</span>
+              <span class="rowlabel__big">Attribute ↓</span>
+            </th>
+            {families.map(f => (
+              <th class={`nhdr nhdr--family`} data-family={f.slug} title={f.id} id={f.slug}>
+                <div class="nhdr__inner">
+                  <img class="nhdr__crest" src={`${base}${f.icon}`} alt="" />
+                  <span class="nhdr__name">{f.name}</span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(row => row.kind === 'section' ? (
+            <tr class="srow">
+              <th class="srow__th" colspan={families.length + 1}>
+                <span class="srow__chevron">▸</span>{row.label}
+              </th>
+            </tr>
+          ) : (
+            <tr>
+              <th class="rowlabel" scope="row">{row.label}</th>
+              {families.map(f => {
+                const v = row.field(f);
+
+                if (row.kind === 'effects') {
+                  const items: string[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-family={f.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell cell--effects" data-family={f.slug}>
+                      {items.map(text => {
+                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                        return (
+                          <div class={`effect yield-${yieldKey}`}>
+                            <LinkedText text={text} showIcons={false} />
+                          </div>
+                        );
+                      })}
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'opinions') {
+                  const items: { label: string; value: number }[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-family={f.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell cell--opinions" data-family={f.slug}>
+                      {items.map(o => (
+                        <div class={`opinion opinion--${o.value >= 0 ? 'pos' : 'neg'}`}>
+                          <span class="opinion__label">{o.label}</span>
+                          <span class="opinion__val">{o.value >= 0 ? '+' : ''}{o.value}</span>
+                        </div>
+                      ))}
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'list') {
+                  const items: { label: string; value: number }[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-family={f.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell cell--list yield-misc" data-family={f.slug}>
+                      {items.map(it => (
+                        <div class="listitem">
+                          <span>{it.label}</span>
+                          <span class={`opinion__val opinion--${it.value >= 0 ? 'pos' : 'neg'}`}>{it.value >= 0 ? '+' : ''}{it.value}</span>
+                        </div>
+                      ))}
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'nations') {
+                  const nations: { slug: string; name: string }[] = v || [];
+                  if (nations.length === 0) {
+                    return <td class="cell is-empty" data-family={f.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell cell--nations yield-misc" data-family={f.slug}>
+                      {nations.map(n => (
+                        <a class={`nation-tag n-${n.slug}`} href={`${base}nations#${n.slug}`} title={n.name}>
+                          <img src={`${base}img/crests/${n.slug}.png`} alt="" class="nation-tag__crest" />
+                          <span class="nation-tag__name">{n.name}</span>
+                        </a>
+                      ))}
+                    </td>
+                  );
+                }
+
+                return <td class="cell is-empty" data-family={f.slug}>—</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="legends">
+    <div class="legend">
+      <span class="legend__label">Family classes</span>
+      {families.map(f => (
+        <a class="chip chip--neutral" href={`#${f.slug}`}>
+          <img class="chip__icon" src={`${base}${f.icon}`} alt="" />
+          {f.name}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <script type="application/json" id="family-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    // Column-filter search for the families table — mirrors the Nations
+    // page implementation, keyed by data-family instead of data-nation.
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('family-search-blobs');
+      const grid = document.getElementById('families-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-family="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  /* Family class column headers — neutral, since classes don't have a single in-game color */
+  .nhdr--family {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    border-bottom: 2px solid var(--border-strong);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+  }
+
+  /* Opinion list: label + signed value */
+  .cell--opinions {
+    padding: 0.3rem 0.45rem;
+    background: var(--bg-elev);
+    background-image: none;
+    color: var(--text);
+  }
+  .opinion {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.1rem 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.72rem;
+  }
+  .opinion:last-child { border-bottom: 0; }
+  .opinion__label { color: var(--text-dim); }
+  .opinion__val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .opinion--pos .opinion__val, .opinion--pos { color: #4caf7d; }
+  .opinion--neg .opinion__val, .opinion--neg { color: #d46e6e; }
+
+  /* List row (favored buildings, preferred laws, luxuries) */
+  .cell--list {
+    padding: 0.3rem 0.45rem;
+  }
+  .listitem {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.1rem 0;
+    font-size: 0.72rem;
+  }
+
+  /* Nation tags inside the "Nations" row */
+  .cell--nations {
+    padding: 0.3rem 0.45rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.3rem;
+    align-items: center;
+  }
+  .nation-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem 0.15rem 0.3rem;
+    background: var(--nation-bg, var(--bg-elev));
+    color: var(--nation-fg, var(--text));
+    border: 1px solid color-mix(in srgb, var(--nation-bg) 60%, #000 40%);
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2));
+  }
+  .nation-tag:hover { text-decoration: none; filter: brightness(1.12); }
+  .nation-tag__crest { width: 14px; height: 14px; object-fit: contain; }
+</style>

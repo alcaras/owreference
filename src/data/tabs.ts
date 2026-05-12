@@ -27,7 +27,7 @@ export const TABS: Tab[] = [
   },
   {
     slug: 'families', icon: '👪', label: 'Families', section: 'Civilizations',
-    status: 'placeholder', sourceSheet: '👪 Families',
+    status: 'built', sourceSheet: '👪 Families',
     summary: 'Class bonuses, opinion modifiers, signature traits',
     willContain: [
       'Family class (Champions, Hunters, Riders, …) × ability matrix',

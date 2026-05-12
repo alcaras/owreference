@@ -13,6 +13,7 @@ art:
 
 data:
 	@python3 scripts/build_data.py
+	@python3 scripts/build_families.py
 	@python3 scripts/build_entities.py
 	@python3 scripts/build_backlinks.py
 
