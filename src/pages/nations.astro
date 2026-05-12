@@ -8,8 +8,17 @@ const base = import.meta.env.BASE_URL;
 
 type Row =
   | { kind: 'section'; label: string }
-  | { kind: 'data' | 'shrine' | 'family'; label: string; field: (n: typeof nations[number]) => any };
+  | {
+      kind: 'data' | 'shrine' | 'family';
+      label: string;
+      field: (n: typeof nations[number]) => any;
+      defaultYield?: string;
+    };
 
+// defaultYield gives the row a baseline color when the text doesn't name a
+// yield directly. UU rows = training (military), Tech rows = science,
+// Royal Family rows = legitimacy. Bonus rows have no default — they really
+// vary, so we let classifyYield drive them and fall back to "misc" if needed.
 const rows: Row[] = [
   { kind: 'section', label: 'Bonuses' },
   { kind: 'data', label: 'Bonus 1', field: n => n.bonuses?.[0] },
@@ -23,18 +32,18 @@ const rows: Row[] = [
   { kind: 'shrine', label: 'Shrine 4', field: n => n.shrines?.[3] },
 
   { kind: 'section', label: 'Unique Unit' },
-  { kind: 'data', label: 'Names',      field: n => n.uniqueUnit?.names },
-  { kind: 'data', label: 'Traits',     field: n => n.uniqueUnit?.traits },
-  { kind: 'data', label: 'Cost',       field: n => n.uniqueUnit?.cost },
-  { kind: 'data', label: 'Upkeep',     field: n => n.uniqueUnit?.upkeep },
-  { kind: 'data', label: 'Move/Sight', field: n => n.uniqueUnit?.moveSight },
-  { kind: 'data', label: 'U6 Card',    field: n => n.uniqueUnit?.u6Card },
-  { kind: 'data', label: 'U8 Card',    field: n => n.uniqueUnit?.u8Card },
+  { kind: 'data', label: 'Names',      field: n => n.uniqueUnit?.names,     defaultYield: 'training' },
+  { kind: 'data', label: 'Traits',     field: n => n.uniqueUnit?.traits,    defaultYield: 'training' },
+  { kind: 'data', label: 'Cost',       field: n => n.uniqueUnit?.cost,      defaultYield: 'training' },
+  { kind: 'data', label: 'Upkeep',     field: n => n.uniqueUnit?.upkeep,    defaultYield: 'training' },
+  { kind: 'data', label: 'Move/Sight', field: n => n.uniqueUnit?.moveSight, defaultYield: 'training' },
+  { kind: 'data', label: 'U6 Card',    field: n => n.uniqueUnit?.u6Card,    defaultYield: 'training' },
+  { kind: 'data', label: 'U8 Card',    field: n => n.uniqueUnit?.u8Card,    defaultYield: 'training' },
 
   { kind: 'section', label: 'Starting Techs' },
-  { kind: 'data', label: 'Tech 1', field: n => n.startingTech?.[0] },
-  { kind: 'data', label: 'Tech 2', field: n => n.startingTech?.[1] },
-  { kind: 'data', label: 'Tech 3', field: n => n.startingTech?.[2] },
+  { kind: 'data', label: 'Tech 1', field: n => n.startingTech?.[0], defaultYield: 'science' },
+  { kind: 'data', label: 'Tech 2', field: n => n.startingTech?.[1], defaultYield: 'science' },
+  { kind: 'data', label: 'Tech 3', field: n => n.startingTech?.[2], defaultYield: 'science' },
 
   { kind: 'section', label: 'Families' },
   { kind: 'family', label: 'Family 1', field: n => n.families?.[0] },
@@ -45,10 +54,10 @@ const rows: Row[] = [
   { kind: 'family', label: 'Family 6', field: n => n.families?.[5] },
 
   { kind: 'section', label: 'Royal Family' },
-  { kind: 'data', label: 'Leader', field: n => n.leader?.name },
-  { kind: 'data', label: 'Spouse', field: n => n.leader?.spouse },
-  { kind: 'data', label: 'Heir 1', field: n => n.leader?.heir1 },
-  { kind: 'data', label: 'Heir 2', field: n => n.leader?.heir2 },
+  { kind: 'data', label: 'Leader', field: n => n.leader?.name,   defaultYield: 'legitimacy' },
+  { kind: 'data', label: 'Spouse', field: n => n.leader?.spouse, defaultYield: 'legitimacy' },
+  { kind: 'data', label: 'Heir 1', field: n => n.leader?.heir1,  defaultYield: 'legitimacy' },
+  { kind: 'data', label: 'Heir 2', field: n => n.leader?.heir2,  defaultYield: 'legitimacy' },
 ];
 
 const ordered = [...nations].sort((a, b) => a.name.localeCompare(b.name));
@@ -59,21 +68,28 @@ const SHRINE_GLYPH: Record<string, string> = {
   HEARTH: '◔', HEALING: '✚', HUNTING: '⌬', UNDERWORLD: '⚱',
 };
 
-// Family class → cell color class. Signature yield comes from each class's
-// dowry in familyClass.xml. Riders/Clerics both produce ORDERS in-game; we
-// give Riders a distinct token so the cells stay scannable.
-const FAMILY_CLASS_COLOR: Record<string, string> = {
-  Champions:  'fc-training',
-  Hunters:    'fc-food',
-  Riders:     'fc-riders',
-  Artisans:   'fc-iron',
-  Patrons:    'fc-stone',
-  Traders:    'fc-money',
-  Sages:      'fc-science',
-  Statesmen:  'fc-civics',
-  Landowners: 'fc-wood',
-  Clerics:    'fc-orders',
+// Shrine type → yield key. Most types have a direct dowry-style yield (per
+// each shrine's aiYieldOutput in improvement.xml). FIRE/HEALING/HUNTING give
+// no yield directly but boost tiles — we map them by thematic fit so every
+// shrine cell gets a deterministic color.
+const SHRINE_TYPE_YIELD: Record<string, string> = {
+  WAR:        'training',
+  KINGSHIP:   'civics',
+  WISDOM:     'science',
+  SUN:        'orders',
+  WATER:      'money',
+  LOVE:       'growth',
+  UNDERWORLD: 'culture',
+  HEARTH:     'culture',
+  FIRE:       'iron',     // Fire shrines boost mines / lumber mills
+  HEALING:    'growth',   // Healing shrines boost groves / healers
+  HUNTING:    'food',     // Hunting shrines boost camps / farms
 };
+
+const FAMILY_CLASSES = [
+  'Champions','Hunters','Riders','Artisans','Patrons',
+  'Traders','Sages','Statesmen','Landowners','Clerics',
+] as const;
 
 // Pre-classify each cell's yield so we can serialize a search blob per nation.
 const searchBlobs: Record<string, string> = {};
@@ -82,14 +98,44 @@ for (const n of nations) {
 }
 ---
 
-<Base
-  title="Nations"
-  active="nations"
-  pageMark="👑"
-  pageStats={[
-    { label: 'nations', value: nations.length },
-  ]}
->
+<Base title="Nations" active="nations">
+  <div class="page-meta">
+    <h1 class="page-title">
+      <span class="page-title__mark">👑</span>Nations
+    </h1>
+    <div class="page-stats">
+      <button
+        type="button"
+        class="stat stat--button"
+        id="nation-picker-toggle"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="nation-picker"
+      >
+        <b id="nation-visible-count">{nations.length}</b> of <b>{nations.length}</b> visible <span class="stat__chev">▾</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nation-picker" id="nation-picker" hidden role="dialog" aria-label="Filter nations">
+    <div class="nation-picker__actions">
+      <button type="button" class="nation-picker__action" data-pick="all">Select all</button>
+      <button type="button" class="nation-picker__action" data-pick="none">Clear</button>
+      <button type="button" class="nation-picker__action nation-picker__action--close" data-pick="close">Done</button>
+    </div>
+    <ul class="nation-picker__list">
+      {ordered.map(n => (
+        <li class="nation-picker__item">
+          <label class="nation-picker__row">
+            <input type="checkbox" class="nation-picker__cb" value={n.slug} checked />
+            <img class="nation-picker__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
+            <span class="nation-picker__name">{n.name}</span>
+          </label>
+        </li>
+      ))}
+    </ul>
+  </div>
+
   <div class="grid" id="nations-grid">
     <div class="grid__scroll">
       <table class="ntbl">
@@ -138,12 +184,14 @@ for (const n of nations) {
                 if (row.kind === 'shrine') {
                   const sh = v;
                   const effect = sh.effect || '';
-                  const yieldKey = classifyYield(effect);
-                  const yieldClass = yieldKey ? `yield-${yieldKey.toLowerCase()}` : '';
                   const type = sh.shrine?.type || '';
                   const typeLabel = sh.shrine?.typeLabel || '';
                   const deity = sh.shrine?.name || '';
                   const glyph = SHRINE_GLYPH[type] || '✦';
+                  // Color by shrine type — guarantees every shrine cell is
+                  // colored (the effect text doesn't always name a yield).
+                  const yieldKey = SHRINE_TYPE_YIELD[type] || classifyYield(effect)?.toLowerCase();
+                  const yieldClass = yieldKey ? `yield-${yieldKey}` : '';
                   return (
                     <td class={`cell n-${n.slug} ${yieldClass}`} data-nation={n.slug}>
                       {sh.shrine && (
@@ -160,16 +208,17 @@ for (const n of nations) {
                 }
 
                 if (row.kind === 'family') {
-                  const famClass = FAMILY_CLASS_COLOR[v.class] || '';
-                  const stripe = v.ingameColor;
+                  const bg = v.ingameColor;
+                  const fg = v.ingameFg;
+                  const iconUrl = v.classKey ? `${base}img/archetypes/${v.classKey}.png` : null;
+                  const style = bg ? `--yield-bg: ${bg}; --yield-fg: ${fg};` : undefined;
                   return (
-                    <td
-                      class={`cell cell--fam n-${n.slug} ${famClass}`}
-                      data-nation={n.slug}
-                      style={stripe ? `--fam-stripe: ${stripe}` : undefined}
-                    >
+                    <td class={`cell cell--fam n-${n.slug}`} data-nation={n.slug} style={style}>
                       <div class="fam">
-                        <span class="fam__class"><LinkedText text={v.class} showIcons={false} /></span>
+                        <span class="fam__class">
+                          {iconUrl && <img class="fam__icon" src={iconUrl} alt="" />}
+                          <LinkedText text={v.class} showIcons={false} />
+                        </span>
                         <span class="fam__name">{v.name}</span>
                       </div>
                     </td>
@@ -177,8 +226,9 @@ for (const n of nations) {
                 }
 
                 const text = String(v);
-                const yieldKey = classifyYield(text);
-                const yieldClass = yieldKey ? `yield-${yieldKey.toLowerCase()}` : '';
+                const classified = classifyYield(text)?.toLowerCase();
+                const yieldKey = classified || row.defaultYield || 'misc';
+                const yieldClass = `yield-${yieldKey}`;
                 return (
                   <td class={`cell n-${n.slug} ${yieldClass}`} data-nation={n.slug}>
                     <div class="cell__body"><LinkedText text={text} showIcons={false} /></div>
@@ -204,50 +254,119 @@ for (const n of nations) {
       ))}
     </div>
     <div class="legend">
-      <span class="legend__label">Families</span>
-      {Object.entries(FAMILY_CLASS_COLOR).map(([cls, fc]) => (
-        <span class={`chip ${fc}`}>{cls}</span>
+      <span class="legend__label">Family classes</span>
+      {FAMILY_CLASSES.map(cls => (
+        <span class="chip chip--neutral">
+          <img class="chip__icon" src={`${base}img/archetypes/${cls.toLowerCase()}.png`} alt="" />
+          {cls}
+        </span>
       ))}
     </div>
   </div>
 
   <script type="application/json" id="nation-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
-    // Column-filter search: hide nation cols whose JSON blob doesn't match.
+    // Column filtering: combines (a) header search query and (b) nation-picker
+    // checkbox state. A column is visible iff both allow it.
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('nation-search-blobs');
       const grid = document.getElementById('nations-grid');
       const note = document.getElementById('grid-searchnote');
-      if (!input || !blobNode || !grid) return;
+      const toggle = document.getElementById('nation-picker-toggle');
+      const picker = document.getElementById('nation-picker');
+      const visibleCount = document.getElementById('nation-visible-count');
+      if (!blobNode || !grid) return;
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      const slugs = Object.keys(blobs);
+      const picked = new Set(slugs);
 
-      function apply() {
-        const q = (input.value || '').trim().toLowerCase();
-        const slugs = Object.keys(blobs);
-        let hidden = 0;
+      function applyFilters() {
+        const q = ((input && input.value) || '').trim().toLowerCase();
+        let visibleN = 0, hiddenBySearch = 0;
         for (const slug of slugs) {
-          const match = !q || blobs[slug].includes(q);
-          if (!match) hidden++;
+          const matchesSearch = !q || blobs[slug].includes(q);
+          const isPicked = picked.has(slug);
+          const visible = matchesSearch && isPicked;
+          if (visible) visibleN++;
+          if (!matchesSearch) hiddenBySearch++;
           for (const el of grid.querySelectorAll('[data-nation="' + slug + '"]')) {
-            el.classList.toggle('is-hidden', !match);
+            el.classList.toggle('is-hidden', !visible);
           }
         }
+        if (visibleCount) visibleCount.textContent = String(visibleN);
         if (note) {
-          if (q && hidden > 0) {
+          if (q && hiddenBySearch > 0) {
             note.hidden = false;
             note.textContent =
-              'Showing ' + (slugs.length - hidden) + ' of ' + slugs.length +
-              ' nations matching "' + input.value + '"';
+              'Showing ' + (slugs.length - hiddenBySearch) + ' of ' + slugs.length +
+              ' nations matching "' + (input ? input.value : '') + '"';
           } else {
             note.hidden = true;
             note.textContent = '';
           }
         }
       }
-      input.addEventListener('input', apply);
-      apply();
+
+      if (input) input.addEventListener('input', applyFilters);
+
+      // Picker open/close
+      if (toggle && picker) {
+        toggle.addEventListener('click', () => {
+          const open = !picker.hidden;
+          picker.hidden = open;
+          toggle.setAttribute('aria-expanded', String(!open));
+        });
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+          if (picker.hidden) return;
+          if (picker.contains(e.target) || toggle.contains(e.target)) return;
+          picker.hidden = true;
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+        // Escape closes
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !picker.hidden) {
+            picker.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.focus();
+          }
+        });
+      }
+
+      // Checkbox handling
+      const cbs = picker ? picker.querySelectorAll('.nation-picker__cb') : [];
+      cbs.forEach((cb) => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) picked.add(cb.value);
+          else picked.delete(cb.value);
+          applyFilters();
+        });
+      });
+
+      // Action buttons
+      if (picker) {
+        picker.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-pick]');
+          if (!btn) return;
+          const action = btn.getAttribute('data-pick');
+          if (action === 'all') {
+            slugs.forEach((s) => picked.add(s));
+            cbs.forEach((cb) => (cb.checked = true));
+            applyFilters();
+          } else if (action === 'none') {
+            picked.clear();
+            cbs.forEach((cb) => (cb.checked = false));
+            applyFilters();
+          } else if (action === 'close') {
+            picker.hidden = true;
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      applyFilters();
     })();
   </script>
 </Base>

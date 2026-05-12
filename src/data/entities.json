@@ -3759,7 +3759,12 @@
       "type": "yield",
       "name": "Food",
       "aliases": [
-        "Food"
+        "Food",
+        "Harvest",
+        "Farms",
+        "Farm",
+        "Pastures",
+        "Pasture"
       ],
       "page": "yields/food",
       "icon": "img/icons/yields/food.png",
@@ -3771,7 +3776,9 @@
       "type": "yield",
       "name": "Growth",
       "aliases": [
-        "Growth"
+        "Growth",
+        "Settler",
+        "Settlers"
       ],
       "page": "yields/growth",
       "icon": "img/icons/yields/growth.png",
@@ -3819,7 +3826,9 @@
       "type": "yield",
       "name": "Iron",
       "aliases": [
-        "Iron"
+        "Iron",
+        "Mines",
+        "Mine"
       ],
       "page": "yields/iron",
       "icon": "img/icons/yields/iron.png",
@@ -3855,7 +3864,11 @@
       "type": "yield",
       "name": "Money",
       "aliases": [
-        "Money"
+        "Money",
+        "Coin",
+        "Coins",
+        "Mint",
+        "Treasury"
       ],
       "page": "yields/money",
       "icon": "img/icons/yields/money.png",
@@ -3893,7 +3906,9 @@
       "type": "yield",
       "name": "Stone",
       "aliases": [
-        "Stone"
+        "Stone",
+        "Quarry",
+        "Quarries"
       ],
       "page": "yields/stone",
       "icon": "img/icons/yields/stone.png",
@@ -3905,7 +3920,17 @@
       "type": "yield",
       "name": "Training",
       "aliases": [
-        "Training"
+        "Training",
+        "Train",
+        "Focus",
+        "Pillage",
+        "XP",
+        "Fatigue",
+        "Mercs",
+        "Mercenaries",
+        "Ranged",
+        "Forts",
+        "Fort"
       ],
       "page": "yields/training",
       "icon": "img/icons/yields/training.png",
@@ -3917,7 +3942,12 @@
       "type": "yield",
       "name": "Wood",
       "aliases": [
-        "Wood"
+        "Wood",
+        "Lumber",
+        "Chop",
+        "Chopping",
+        "Forests",
+        "Forest"
       ],
       "page": "yields/wood",
       "icon": "img/icons/yields/wood.png",
@@ -4594,6 +4624,10 @@
       "id": "YIELD_MAINTENANCE"
     },
     {
+      "alias": "Mercenaries",
+      "id": "YIELD_TRAINING"
+    },
+    {
       "alias": "Achaemenid",
       "id": "FAMILY_ACHAEMENID"
     },
@@ -4894,12 +4928,32 @@
       "id": "UNIT_SPEARMAN"
     },
     {
+      "alias": "Pastures",
+      "id": "YIELD_FOOD"
+    },
+    {
+      "alias": "Settlers",
+      "id": "YIELD_GROWTH"
+    },
+    {
       "alias": "Intrigue",
       "id": "YIELD_INTRIGUE"
     },
     {
+      "alias": "Treasury",
+      "id": "YIELD_MONEY"
+    },
+    {
+      "alias": "Quarries",
+      "id": "YIELD_STONE"
+    },
+    {
       "alias": "Training",
       "id": "YIELD_TRAINING"
+    },
+    {
+      "alias": "Chopping",
+      "id": "YIELD_WOOD"
     },
     {
       "alias": "Amorite",
@@ -5054,8 +5108,32 @@
       "id": "YIELD_CULTURE"
     },
     {
+      "alias": "Harvest",
+      "id": "YIELD_FOOD"
+    },
+    {
+      "alias": "Pasture",
+      "id": "YIELD_FOOD"
+    },
+    {
+      "alias": "Settler",
+      "id": "YIELD_GROWTH"
+    },
+    {
       "alias": "Science",
       "id": "YIELD_SCIENCE"
+    },
+    {
+      "alias": "Fatigue",
+      "id": "YIELD_TRAINING"
+    },
+    {
+      "alias": "Pillage",
+      "id": "YIELD_TRAINING"
+    },
+    {
+      "alias": "Forests",
+      "id": "YIELD_WOOD"
     },
     {
       "alias": "Amarna",
@@ -5198,6 +5276,22 @@
       "id": "YIELD_ORDERS"
     },
     {
+      "alias": "Quarry",
+      "id": "YIELD_STONE"
+    },
+    {
+      "alias": "Ranged",
+      "id": "YIELD_TRAINING"
+    },
+    {
+      "alias": "Lumber",
+      "id": "YIELD_WOOD"
+    },
+    {
+      "alias": "Forest",
+      "id": "YIELD_WOOD"
+    },
+    {
       "alias": "Adasi",
       "id": "FAMILY_ADASI"
     },
@@ -5310,7 +5404,19 @@
       "id": "YIELD_CIVICS"
     },
     {
+      "alias": "Farms",
+      "id": "YIELD_FOOD"
+    },
+    {
+      "alias": "Mines",
+      "id": "YIELD_IRON"
+    },
+    {
       "alias": "Money",
+      "id": "YIELD_MONEY"
+    },
+    {
+      "alias": "Coins",
       "id": "YIELD_MONEY"
     },
     {
@@ -5320,6 +5426,22 @@
     {
       "alias": "Stone",
       "id": "YIELD_STONE"
+    },
+    {
+      "alias": "Focus",
+      "id": "YIELD_TRAINING"
+    },
+    {
+      "alias": "Train",
+      "id": "YIELD_TRAINING"
+    },
+    {
+      "alias": "Forts",
+      "id": "YIELD_TRAINING"
+    },
+    {
+      "alias": "Mercs",
+      "id": "YIELD_TRAINING"
     },
     {
       "alias": "Wrath",
@@ -5390,6 +5512,10 @@
       "id": "YIELD_CULTURE"
     },
     {
+      "alias": "Farm",
+      "id": "YIELD_FOOD"
+    },
+    {
       "alias": "Food",
       "id": "YIELD_FOOD"
     },
@@ -5398,7 +5524,27 @@
       "id": "YIELD_IRON"
     },
     {
+      "alias": "Mine",
+      "id": "YIELD_IRON"
+    },
+    {
+      "alias": "Coin",
+      "id": "YIELD_MONEY"
+    },
+    {
+      "alias": "Mint",
+      "id": "YIELD_MONEY"
+    },
+    {
+      "alias": "Fort",
+      "id": "YIELD_TRAINING"
+    },
+    {
       "alias": "Wood",
+      "id": "YIELD_WOOD"
+    },
+    {
+      "alias": "Chop",
       "id": "YIELD_WOOD"
     },
     {
@@ -5424,6 +5570,10 @@
     {
       "alias": "Sci",
       "id": "YIELD_SCIENCE"
+    },
+    {
+      "alias": "XP",
+      "id": "YIELD_TRAINING"
     }
   ],
   "yieldColors": {

@@ -71,18 +71,22 @@ YIELD_COLORS = {
 # bonus text — give them their own canonical slug and color (mapped to yield).
 # Extra short-form aliases for yields that show up in spreadsheet text.
 # Slug must match the YIELD_ slug exactly (lowercased) so they merge.
+# These also cover mechanic words that map to a yield (Mint→money,
+# Harvest→food, Focus→training, etc.) so bonus/shrine text gets a sensible
+# color even when no literal yield word appears.
 YIELD_ALIASES: dict[str, list[str]] = {
     "orders":       ["Order", "Orders"],
-    "training":     ["Training"],
+    "training":     ["Training", "Train", "Focus", "Pillage", "XP", "Fatigue",
+                     "Mercs", "Mercenaries", "Ranged", "Forts", "Fort"],
     "civics":       ["Civics", "Civic", "Civ"],
     "culture":      ["Culture", "Cult"],
     "science":      ["Science", "Sci"],
-    "money":        ["Money"],
-    "growth":       ["Growth"],
-    "food":         ["Food"],
-    "wood":         ["Wood"],
-    "stone":        ["Stone"],
-    "iron":         ["Iron"],
+    "money":        ["Money", "Coin", "Coins", "Mint", "Treasury"],
+    "growth":       ["Growth", "Settler", "Settlers"],
+    "food":         ["Food", "Harvest", "Farms", "Farm", "Pastures", "Pasture"],
+    "wood":         ["Wood", "Lumber", "Chop", "Chopping", "Forests", "Forest"],
+    "stone":        ["Stone", "Quarry", "Quarries"],
+    "iron":         ["Iron", "Mines", "Mine"],
     "happiness":    ["Happiness"],
     "discontent":   ["Discontent"],
     "influence":    ["Influence"],

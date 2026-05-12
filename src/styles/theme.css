@@ -332,21 +332,24 @@ h1, h2, h3 {
   font-weight: 400;
 }
 
-/* Family cells: 4px left-edge stripe in the in-game family color. The cell
-   bg stays the class signature color (so all Champions read the same color
-   across nations) — the stripe encodes the per-family in-game identity. */
-.cell--fam {
-  box-shadow: inset 4px 0 0 var(--fam-stripe, transparent);
-  padding-left: 0.75rem;
-}
-
-/* Family cell internals — class is the headline, name is flavor */
+/* Family cells: the in-game per-family hex color is the cell bg (set inline
+   via --yield-bg / --yield-fg). The class icon precedes the class name. */
 .fam { display: flex; flex-direction: column; }
 .fam__class {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.82rem;
   letter-spacing: 0.02em;
+}
+.fam__icon {
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
+  flex-shrink: 0;
 }
 .fam__name {
   margin-top: 0.05rem;
@@ -381,19 +384,92 @@ h1, h2, h3 {
 .yield-divine_favor{ --yield-bg: #e3c45f; --yield-fg: #1a1408; }
 .yield-wrath       { --yield-bg: #a83838; --yield-fg: #fff; }
 
-/* Family-class color tokens — applied to family cells. Each class's color
-   maps to its signature dowry yield from familyClass.xml. Riders gets its
-   own token so it doesn't collide with Clerics (both produce ORDERS). */
-.fc-training  { --yield-bg: #c25555; --yield-fg: #fff; }   /* Champions  */
-.fc-food      { --yield-bg: #5e8c43; --yield-fg: #fff; }   /* Hunters    */
-.fc-riders    { --yield-bg: #8a6a3f; --yield-fg: #fff; }   /* Riders     — distinct tan */
-.fc-iron      { --yield-bg: #8a8a8e; --yield-fg: #14161b; } /* Artisans   */
-.fc-stone     { --yield-bg: #b3b3b8; --yield-fg: #14161b; } /* Patrons    */
-.fc-money     { --yield-bg: #d9b13a; --yield-fg: #1a1408; } /* Traders    */
-.fc-science   { --yield-bg: #6b5ea6; --yield-fg: #fff; }   /* Sages      */
-.fc-civics    { --yield-bg: #c98b46; --yield-fg: #fff; }   /* Statesmen  */
-.fc-wood      { --yield-bg: #8a4a08; --yield-fg: #fff; }   /* Landowners */
-.fc-orders    { --yield-bg: #b8b8c0; --yield-fg: #14161b; } /* Clerics    */
+/* Misc: catch-all for cells that don't classify to a known yield. A subtle
+   slate so they don't read as "missing" against the colorful neighbors. */
+.yield-misc        { --yield-bg: #3d4250; --yield-fg: #e8e9ec; }
+
+/* Neutral chip variant (used for the family-class legend, etc.) */
+.chip--neutral {
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Nation picker (popover triggered by the "X of Y visible" stat)
+   ────────────────────────────────────────────────────────── */
+.stat--button {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.stat--button:hover { border-color: var(--border-strong); color: var(--text); }
+.stat--button[aria-expanded="true"] {
+  border-color: var(--accent);
+  background: var(--bg-elev-2);
+}
+.stat__chev {
+  font-size: 0.7em;
+  color: var(--text-faint);
+  transition: transform 0.15s;
+}
+.stat--button[aria-expanded="true"] .stat__chev { transform: rotate(180deg); }
+
+.nation-picker {
+  margin-bottom: 0.75rem;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 0.6rem 0.8rem;
+  max-width: 540px;
+  margin-left: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.nation-picker[hidden] { display: none; }
+.nation-picker__actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.nation-picker__action {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.65rem;
+  background: var(--bg);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.nation-picker__action:hover { color: var(--text); border-color: var(--border-strong); }
+.nation-picker__action--close { margin-left: auto; color: var(--accent); }
+.nation-picker__list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.15rem 0.4rem;
+}
+.nation-picker__row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.3rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  user-select: none;
+}
+.nation-picker__row:hover { background: var(--bg-elev-2); }
+.nation-picker__cb { margin: 0; accent-color: var(--accent); }
+.nation-picker__crest { width: 18px; height: 18px; object-fit: contain; }
+.nation-picker__name { color: var(--text); }
+.nation-picker__row:has(input:not(:checked)) .nation-picker__name { color: var(--text-faint); text-decoration: line-through; }
+.nation-picker__row:has(input:not(:checked)) .nation-picker__crest { opacity: 0.45; }
 
 /* Legend chip — solid pastel pill */
 .chip {

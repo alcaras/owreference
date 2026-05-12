@@ -235,12 +235,15 @@ def load_nations() -> list[dict]:
         # XML uses 1-based slot numbers (FAMILY_01..04); iColorIndex is 0-based.
         slot = int(color_idx) + 1
         hex_color = family_hex.get((nation, slot))
+        class_label = text_infos.get(class_key, family_class.replace("FAMILYCLASS_", "").title())
         families_by_nation[nation].append({
             "id": zt,
             "name": text_family.get(name_key, zt.replace("FAMILY_", "").title()),
-            "class": text_infos.get(class_key, family_class.replace("FAMILYCLASS_", "").title()),
+            "class": class_label,
+            "classKey": family_class.replace("FAMILYCLASS_", "").lower(),
             "colorIndex": int(color_idx),
             "ingameColor": hex_color,
+            "ingameFg": best_fg(hex_color) if hex_color else "#f5f6f8",
         })
 
     # Build nations
