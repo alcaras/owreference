@@ -328,23 +328,65 @@ h1, h2, h3 {
   color: inherit;
 }
 .shrine__glyph { font-size: 0.95em; opacity: 0.85; }
-.shrine__icon {
-  width: 1.4em;
-  height: 1em;
-  object-fit: cover;
-  border-radius: 2px;
-  vertical-align: -0.15em;
-  flex-shrink: 0;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.4);
-}
 .shrine__name {
   font-size: 0.64rem;
   font-style: italic;
-  opacity: 0.72;
+  opacity: 0.78;
   letter-spacing: 0.02em;
   margin-top: 0.05rem;
   font-family: var(--font-ui);
   font-weight: 400;
+}
+
+/* Shrine cells use the in-game shrine art as a background, with a yield-
+   tinted dark scrim for legibility. The cell's --yield-bg becomes the
+   left-edge stripe so diagonal scan-by-yield still works. */
+.cell--shrine {
+  position: relative;
+  background-color: var(--bg-elev);
+  background-image:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--yield-bg, #000) 65%, transparent) 0%,
+      color-mix(in srgb, var(--yield-bg, #000) 35%, transparent) 18%,
+      rgba(0,0,0,0.55) 55%,
+      rgba(0,0,0,0.70) 100%
+    ),
+    var(--shrine-art);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  border-right: 1px solid color-mix(in srgb, var(--yield-bg, #000) 50%, #000 50%);
+  border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, #000) 50%, #000 50%);
+  /* Yield-colored left-edge stripe — preserves diagonal scan-by-yield. */
+  box-shadow: inset 4px 0 0 var(--yield-bg, transparent);
+  color: #fff;
+}
+.cell--shrine .shrine__type {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7), 0 0 4px rgba(0,0,0,0.5);
+}
+.cell--shrine .shrine__name {
+  color: rgba(255,255,255,0.9);
+  opacity: 1;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+}
+.cell--shrine .shrine__effect {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.94);
+}
+.cell--shrine .shrine__effect a,
+.cell--shrine .shrine__effect .term {
+  color: inherit;
+}
+
+/* Drop the background art at narrow widths — the cells get too small for
+   the painted illustrations to read; fall back to plain yield-bg color. */
+@media (max-width: 1000px) {
+  .cell--shrine {
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
+    background-color: var(--yield-bg, var(--bg-elev));
+    box-shadow: none;
+  }
 }
 
 /* Effect-list cells: stack of yield-colored mini-tiles, one per effect.
