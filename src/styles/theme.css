@@ -314,29 +314,44 @@ h1, h2, h3 {
   object-fit: contain;
 }
 
-/* Shrine cell internals — type is the headline, deity is flavor */
+/* Shrine cell internals — DEITY name is the headline (matches the in-game
+   label), TYPE is a small chip with the shrine icon underneath. */
 .shrine {
   display: flex; flex-direction: column;
+  gap: 0.05rem;
   margin-bottom: 0.2rem;
 }
-.shrine__type {
+.shrine__deity {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.84rem;
-  letter-spacing: 0.03em;
-  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
   color: inherit;
+  line-height: 1.15;
+}
+.shrine__type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.6rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+  color: inherit;
+  margin-top: 0.05rem;
+}
+.shrine__type-icon {
+  width: 1.4em;
+  height: 1em;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.4);
+}
+.shrine__type-label {
+  font-weight: 500;
 }
 .shrine__glyph { font-size: 0.95em; opacity: 0.85; }
-.shrine__name {
-  font-size: 0.64rem;
-  font-style: italic;
-  opacity: 0.78;
-  letter-spacing: 0.02em;
-  margin-top: 0.05rem;
-  font-family: var(--font-ui);
-  font-weight: 400;
-}
 
 /* Shrine cells: in-game art as background texture, with a strong yield
    tint everywhere and a hard dark scrim under the text area. The art is

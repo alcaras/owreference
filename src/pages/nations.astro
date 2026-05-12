@@ -230,10 +230,11 @@ for (const n of nations) {
                     <td class={`cell cell--shrine n-${n.slug} ${yieldClass}`} data-nation={n.slug} style={cellStyle}>
                       {sh.shrine && (
                         <div class="shrine">
+                          <span class="shrine__deity">{deity}</span>
                           <span class={`shrine__type shrine__type--${type.toLowerCase()}`}>
-                            {typeLabel}
+                            {iconUrl && <img class="shrine__type-icon" src={iconUrl} alt="" />}
+                            <span class="shrine__type-label">{typeLabel}</span>
                           </span>
-                          <span class="shrine__name">{deity}</span>
                         </div>
                       )}
                       <div class="shrine__effect"><LinkedText text={effect} showIcons={false} /></div>
