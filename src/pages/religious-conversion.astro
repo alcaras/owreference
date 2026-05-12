@@ -237,11 +237,14 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   <section class="rc-section">
     <h2 class="rc-h2">Family Conversion</h2>
     <p>
-      A family won't switch religion more than once every
-      <b>{conversion.family.cooldownTurns} turns</b>. Each turn after the
-      cooldown, every religion gets scored against the family and the
-      highest-scoring religion wins (deterministic — there's a small bonus
-      for keeping the current religion to break ties).
+      Source: <code>Player.cs::doFamilyReligion</code>. Starting turn
+      <b>{conversion.family.startTurn}</b>, each turn the game evaluates one
+      family slot — family <code>i</code> is checked when
+      <code>turn % {conversion.family.rotation} == i % {conversion.family.rotation}</code>,
+      so every family is reconsidered once every {conversion.family.rotation} turns.
+      Each religion is scored; a religion must score <b>{'>'} {conversion.family.threshold}</b>
+      to be eligible. Highest score wins (deterministic — the +50 current-religion
+      bonus is the tiebreaker that keeps families from praying to a different god every cycle).
     </p>
 
     <table class="rc-table rc-table--narrow rc-table--score">
@@ -260,16 +263,15 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
         ))}
       </tbody>
     </table>
-
-    <p class="rc-fineprint">
-      Source: game's compiled code; values confirmed by Mohawk (Solver,
-      2023-02-09). Not present in <code>religion.xml</code>; documented
-      in <code>src/data/annotations/conversion.yaml</code>.
-    </p>
   </section>
 
   <section class="rc-section">
     <h2 class="rc-h2">Character Conversion</h2>
+    <p>
+      Source: <code>Character.cs::doReligion</code> (the trigger gate at line 7950)
+      and <code>::chooseReligion</code> (the scoring at line 8509). Global constants
+      live in <code>globalsInt.xml</code>.
+    </p>
 
     <h3 class="rc-h3">Who rolls</h3>
     <ul class="rc-bullets">
@@ -301,6 +303,21 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
         <table class="rc-table rc-table--narrow rc-table--score">
           <tbody>
             {conversion.character.cityScoringNoFamily.rules.map(r => (
+              <tr>
+                <td class="rc-num"><b>+{r.points}</b></td>
+                <td><LinkedText text={r.label} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rc-card">
+        <h3 class="rc-h3" style="margin-top:0">City points — tribe character</h3>
+        <p class="rc-fineprint" style="font-style:normal">{conversion.character.cityScoringTribe.note}</p>
+        <table class="rc-table rc-table--narrow rc-table--score">
+          <tbody>
+            {conversion.character.cityScoringTribe.rules.map(r => (
               <tr>
                 <td class="rc-num"><b>+{r.points}</b></td>
                 <td><LinkedText text={r.label} /></td>
@@ -341,8 +358,10 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
     <p>{conversion.character.randomization}</p>
 
     <p class="rc-fineprint">
-      Source: game's compiled code, documented in
-      <code>src/data/annotations/conversion.yaml</code>. Edit there to update.
+      Globals (<code>globalsInt.xml</code>): roll probability
+      <b>{conversion.globals.characterReligionProb}%</b>; conversion starts turn
+      <b>{conversion.globals.characterReligionDelayTurns}</b>; minimum age
+      <b>{conversion.globals.tutorsAge}</b>; adulthood at <b>{conversion.globals.adultAge}</b>.
     </p>
   </section>
 </Base>

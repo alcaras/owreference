@@ -1,75 +1,91 @@
 # Religion-conversion scoring constants for Families and Characters.
 #
-# These values are NOT in XML — they live in the game's compiled code. The
-# spreadsheet documents them, and dev (Solver, 2023-02-09 Discord) confirmed
-# the family scoring directly: "100 points for each family character following
-# it, but the family head gets 200. Council members get an additional 40 and
-# non-council jobs get 20 points. The religion the family currently follows
-# gets an extra 50 points."
+# Source: reference/Source/Base/Game/GameCore/Player.cs::doFamilyReligion (line 17190)
+#         reference/Source/Base/Game/GameCore/Character.cs::chooseReligion (line 8509)
+#         reference/Source/Base/Game/GameCore/Character.cs::doReligion (line 7950)
+#         reference/Source/Base/Game/GameCore/Character.cs::canConvertReligion (line 8660)
+#         reference/XML/Infos/globalsInt.xml — CHARACTER_RELIGION_PROB,
+#         CHARACTER_RELIGION_DELAY_TURNS, ADULT_AGE, TUTORS_AGE
 #
-# Update if Mohawk changes the constants. Diff-friendly format.
+# These constants live in compiled game code and globalsInt.xml. They're
+# small enough to maintain by hand; verify against the source paths above
+# whenever Mohawk ships a patch that touches religion behavior.
+
+globals:
+  characterReligionProb: 10        # CHARACTER_RELIGION_PROB
+  characterReligionDelayTurns: 10  # CHARACTER_RELIGION_DELAY_TURNS — no choices before this turn
+  adultAge: 18                     # ADULT_AGE
+  tutorsAge: 10                    # TUTORS_AGE — minimum age to convert at all
 
 family:
-  cooldownTurns: 4
-  # Constants applied per character to compute each religion's score.
+  # The cooldown isn't really "4 turns since last switch" — the code
+  # evaluates one family per turn in a rotating slot: families with
+  # (familyIndex % 4) get checked when (gameTurn % 4) matches. Net effect:
+  # each family is reconsidered once every 4 turns. Starts turn 10.
+  rotation: 4
+  startTurn: 10
+  threshold: 100                   # iValue must exceed 100 to be eligible
   scoring:
-    - { points: 200, label: "Family head following that religion" }
-    - { points: 100, label: "Other family characters" }
-    - { points: 40,  label: "Council members (additional)" }
-    - { points: 20,  label: "Non-council jobs — governor / general / agent (additional)" }
-    - { points: 50,  label: "Current religion bonus" }
+    - { points: 100, label: "Each family character following that religion" }
+    - { points: 100, label: "Family head (additional, on top of the +100 above → +200 total)" }
+    - { points: 20,  label: "Council members (additional — stacks with the job bonus → +40 for a council job)" }
+    - { points: 20,  label: "Has a job — governor / general / agent / council (additional)" }
+    - { points: 50,  label: "Current religion bonus (tiebreaker so families don't churn)" }
 
 character:
-  # Who triggers a roll
+  # The trigger gate before chooseReligion() is even called
   whoRolls:
-    - "Leader characters of human players never randomly choose a religion."
+    - "Leader characters of human players never auto-convert (`isHuman() && isLeader()`)."
+    - "Anyone who already has a religion is skipped (`hasReligion()` check)."
+    - "Religion heads, characters with NoReligion trait, and anyone under age 10 (TUTORS_AGE) are ineligible."
+    - "Non-leaders with a 'locked religion' trait can only convert to that locked religion."
+    - "No conversion before turn 10 of the game (CHARACTER_RELIGION_DELAY_TURNS)."
+    - "Per turn, each eligible character rolls a 10% chance (CHARACTER_RELIGION_PROB)."
     - >-
-      Other characters skip the roll if any other 'life event' happens that
-      turn: giving birth (after Pregnant), gaining/losing a random adult trait,
-      fathering a child, gaining/losing a random stat point, gaining a random
-      archetype, or a random marriage proposal.
-    - "All other characters: 10% per-turn chance to attempt a religion choice."
-    - >-
-      Adults always attempt once that 10% hurdle is cleared. Characters aged
-      ≤17 attempt with probability 1 / (1 + YluA), where YluA = years left
-      until adulthood.
+      Adults always proceed after the 10% gate. Children (age < 18) proceed
+      with probability 1 / (ADULT_AGE − age + 1). At age 10 that's 1/9;
+      at 17, 1/2. Adulthood = 18.
 
-  # The threshold mechanic
   threshold:
     description: >-
-      A random integer 1..3 is drawn. The religion's points from *cities alone*
-      must meet or exceed the threshold for it to be eligible. The highest-
-      scoring eligible religion wins. If none qualify, no religion is chosen.
+      A random integer 1..3 is drawn at the start of evaluation. Each
+      religion's city-based + role-based score must be **strictly greater
+      than** the threshold to be eligible. The highest post-modifier
+      score among eligible religions wins; ties go nowhere.
 
-  # City-based scoring — these are the threshold-eligibility points
   cityScoringWithFamily:
-    note: "If the character has a family, only family cities count."
+    note: "Family characters: only their family's cities (player-owned and family-aligned) count."
     rules:
-      - { points: 4, label: "Family seat is the holy city" }
+      - { points: 4, label: "Family seat is the holy city of this religion" }
       - { points: 3, label: "Any other family city is the holy city" }
-      - { points: 2, label: "Religion in family seat (not the holy city)" }
-      - { points: 1, label: "Religion in other family cities (not the holy city)" }
-  cityScoringNoFamily:
-    note: "Initial rulers, foreigners, anyone without a family. All player cities count, weighted less."
-    rules:
-      - { points: 2, label: "Player has the holy city" }
-      - { points: 1, label: "Religion in player cities (not the holy city)" }
+      - { points: 2, label: "Religion present in family seat (not as holy city)" }
+      - { points: 1, label: "Religion present in other family cities (not as holy city)" }
 
-  # Role-based modifiers (family doesn't matter)
+  cityScoringNoFamily:
+    note: "Characters without a family (initial rulers, foreigners, etc.). All player cities count, weighted less."
+    rules:
+      - { points: 2, label: "Player owns the holy city of this religion" }
+      - { points: 1, label: "Religion present in any other player city" }
+
+  cityScoringTribe:
+    note: "Tribe characters score off tribe settlements (cities + tribe sites)."
+    rules:
+      - { points: 4, label: "Tribe city is the holy city" }
+      - { points: 3, label: "Tribe city has the religion (not holy)" }
+      - { points: 2, label: "Tribe site has the religion" }
+
   roleScoring:
-    note: "These stack regardless of family affiliation."
+    note: "Role bonuses stack on top of city/family scoring, regardless of family affiliation."
     rules:
       - { points: 3, label: "Governor of the holy city" }
-      - { points: 2, label: "Governor of a city with that religion (not the holy city)" }
+      - { points: 2, label: "Governor of a city with this religion (not the holy city)" }
       - { points: 2, label: "Agent in the holy city" }
-      - { points: 1, label: "Agent in a city with that religion (not the holy city)" }
+      - { points: 1, label: "Agent in a city with this religion (not the holy city)" }
 
-  # Final-roll adjustments — only applied to religions that already cleared the threshold
   postThreshold:
-    note: "Only religions that passed the threshold get these final modifiers."
+    note: "Only religions whose pre-mod score cleared the threshold get these. Then the random multiplier picks the winner."
     rules:
-      - { points: 3, label: "Religion is Pagan (even if from the wrong nation)" }
-      - { points: "0-3", label: "If <4 characters follow that religion, add (4 - number_of_characters) to the score" }
+      - { points: 3, label: "Religion is a Pagan religion (has a `mePaganNation`)" }
+      - { points: "0–4", label: "max(0, 4 − total_characters_following) — boosts small religions" }
 
-  # The final tiebreaker
-  randomization: "The post-threshold sum is multiplied by a random integer 5..14. The highest result wins."
+  randomization: "Final score = sum × random integer in [5, 14]. Highest score wins."
