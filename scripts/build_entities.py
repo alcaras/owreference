@@ -44,25 +44,29 @@ def text_lookup(filenames: list[str]) -> dict[str, str]:
     return out
 
 
-# Yield → color (sampled to match in-game UI palette)
+# Yield → color. MUST stay in sync with the `.yield-{key}` rules in
+# src/styles/theme.css — those are the canonical palette (matched to
+# the spreadsheet's Intro-tab legend). Bug history: when these drifted,
+# multi-yield diagonal cells used the wrong colors (Culture rendered
+# pink because this dict was out of date).
 YIELD_COLORS = {
-    "ORDERS":      "#d96e3a",   # warm scroll-orange
-    "SCIENCE":     "#9c6cc9",   # purple flask
-    "CIVICS":      "#c0823a",   # tan/civics
-    "CULTURE":     "#d877a1",   # pink culture
-    "MONEY":       "#d9b13a",   # gold
-    "TRAINING":    "#c25555",   # red training
-    "FOOD":        "#7fb15e",   # green food
-    "GROWTH":      "#5fa37e",   # green growth
-    "WOOD":        "#a9764c",   # brown wood
-    "STONE":       "#9a9aa3",   # grey stone
-    "IRON":        "#cfd0d2",   # silver iron
-    "HAPPINESS":   "#74b7d4",   # light blue
-    "DISCONTENT":  "#704949",   # dark red
+    "SCIENCE":     "#6b5ea6",   # light purple (was #9c6cc9)
+    "CIVICS":      "#c98b46",   # peach
+    "TRAINING":    "#c25555",   # light pink/red
+    "MONEY":       "#d9b13a",   # light yellow
+    "FOOD":        "#5e8c43",   # green
+    "IRON":        "#8a8a8e",   # grey
+    "STONE":       "#b3b3b8",   # light grey
+    "WOOD":        "#8a4a08",   # brown
+    "CULTURE":     "#4e84b8",   # light blue (was pink — FIX 2026-05-12)
+    "GROWTH":      "#6ba368",   # light green
+    "ORDERS":      "#b8b8c0",   # white/grey
+    "DISCONTENT":  "#7a6ea3",   # lavender
+    "HAPPINESS":   "#d9b13a",   # gold (same as money)
     "INFLUENCE":   "#c8c9d3",   # silver
     "INTRIGUE":    "#735483",   # purple
     "LEGITIMACY":  "#c9a04a",   # parchment gold
-    "MAINTENANCE": "#8a6a55",   # brown
+    "MAINTENANCE": "#a35858",   # red-salmon
     "DIVINE_FAVOR":"#e3c45f",   # warm gold
     "WRATH":       "#a83838",   # dark red
 }
@@ -184,6 +188,59 @@ def build() -> dict:
                 "page": "technologies",
                 "icon": icon_url(f"icons/techs/{zt[5:].lower()}.png"),
             })
+
+    # Improvements (rural + urban + wonders). Aliases include the common
+    # shorthand the legacy spreadsheet uses: "LM" → Lumbermill, "Nets" →
+    # Nets, "Grove" → Grove, "Courthouse" → Courthouse, "Odeon" → Odeon,
+    # "Camp" → Camp, "Farms"/"Farm" → Farm, "Pastures"/"Pasture" → Pasture,
+    # "Mines"/"Mine" → Mine. Used by the icon-only renderer in shrine /
+    # bonus effect text.
+    IMPROVEMENT_ALIASES = {
+        "LUMBERMILL":  ["Lumbermill", "Lumber Mill", "LM", "LMs", "Lumbermills"],
+        "NETS":        ["Nets", "Net", "Fishing Nets"],
+        "GROVE":       ["Grove", "Groves"],
+        "COURTHOUSE":  ["Courthouse", "Courthouses"],
+        "ODEON":       ["Odeon", "Odeons"],
+        "CAMP":        ["Camp", "Camps"],
+        "FARM":        ["Farm", "Farms"],
+        "PASTURE":     ["Pasture", "Pastures"],
+        "MINE":        ["Mine", "Mines"],
+        "QUARRY":      ["Quarry", "Quarries"],
+        "HARBOR":      ["Harbor", "Harbors", "Harbour"],
+        "WATERMILL":   ["Watermill", "Watermills"],
+        "WINDMILL":    ["Windmill", "Windmills"],
+        "BARRACKS":    ["Barracks"],
+        "GARRISON_3":  ["Citadel", "Citadels"],
+        "TEMPLE":      ["Temple", "Temples"],
+        "MONASTERY":   ["Monastery", "Monasteries"],
+        "CATHEDRAL":   ["Cathedral", "Cathedrals"],
+        "PALACE":      ["Palace"],
+        "LIBRARY":     ["Library", "Libraries"],
+        "UNIVERSITY":  ["University", "Universities"],
+        "MARKET":      ["Market", "Markets"],
+        "BATHS":       ["Heated Baths", "Baths"],
+        "GRANARY":     ["Granary", "Granaries"],
+        "AMPHITHEATER":["Amphitheater", "Amphitheaters"],
+        "FORT":        ["Fort", "Forts"],
+        "STELE":       ["Stele", "Steles"],
+    }
+    PUBLIC_IMPROVEMENTS = ROOT / "public" / "img" / "icons" / "improvements"
+    for key, aliases in IMPROVEMENT_ALIASES.items():
+        filename = key.lower() + ".png"
+        if not (PUBLIC_IMPROVEMENTS / filename).exists():
+            continue  # icon wasn't extracted, skip
+        # Use the first alias as the canonical display name
+        name = aliases[0]
+        slug = key.lower().replace("_", "-")
+        entities.append({
+            "id": f"IMPROVEMENT_{key}",
+            "slug": slug,
+            "type": "improvement",
+            "name": name,
+            "aliases": aliases,
+            "page": "urban-buildings",   # most improvements live here; LM/Farm/etc. would route to rural-improvements
+            "icon": f"img/icons/improvements/{filename}",
+        })
 
     # Resources
     if (XML_DIR / "resource.xml").exists():

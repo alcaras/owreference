@@ -188,7 +188,9 @@ h1, h2, h3 {
      gets the same horizontal real estate regardless of text length. */
   table-layout: fixed;
 }
-/* Equal-width nation columns (left rowlabel column keeps its min-width). */
+/* Equal-width nation columns. The row-label column needs an explicit
+   width too under table-layout: fixed. */
+.ntbl col.ntbl__rowlabel-col { width: 8.5rem; }
 .ntbl col[data-nation] { width: 11rem; }
 .ntbl thead th { font-weight: 500; }
 .ntbl th, .ntbl td { vertical-align: top; }

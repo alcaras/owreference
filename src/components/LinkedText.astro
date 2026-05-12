@@ -21,7 +21,10 @@ function shouldIconize(seg: typeof segments[number]): boolean {
   if (!iconsForYields) return false;
   if (!seg.entity) return false;
   if (!seg.entity.icon) return false;
-  return seg.entity.type === 'yield' || seg.entity.type === 'concept';
+  // Yields/concepts and improvements both have well-known glyph-style icons
+  // that read clearly inline at body-text size. Nations/units/techs render
+  // as text+icon since their names aren't a single glyph.
+  return ['yield', 'concept', 'improvement'].includes(seg.entity.type);
 }
 ---
 
