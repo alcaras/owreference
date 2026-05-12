@@ -15,10 +15,9 @@ type Row =
       defaultYield?: string;
     };
 
-// defaultYield gives the row a baseline color when the text doesn't name a
-// yield directly. UU rows = training (military), Tech rows = science,
-// Royal Family rows = legitimacy. Bonus rows have no default — they really
-// vary, so we let classifyYield drive them and fall back to "misc" if needed.
+// No row defaults — let classifyYield score each cell on its actual text.
+// Cells with no recognizable yield fall through to `.yield-misc` (slate),
+// which is honest: "this cell doesn't describe a yield."
 const rows: Row[] = [
   { kind: 'section', label: 'Bonuses' },
   { kind: 'data', label: 'Bonus 1', field: n => n.bonuses?.[0] },
@@ -32,18 +31,18 @@ const rows: Row[] = [
   { kind: 'shrine', label: 'Shrine 4', field: n => n.shrines?.[3] },
 
   { kind: 'section', label: 'Unique Unit' },
-  { kind: 'data', label: 'Names',      field: n => n.uniqueUnit?.names,     defaultYield: 'training' },
-  { kind: 'data', label: 'Traits',     field: n => n.uniqueUnit?.traits,    defaultYield: 'training' },
-  { kind: 'data', label: 'Cost',       field: n => n.uniqueUnit?.cost,      defaultYield: 'training' },
-  { kind: 'data', label: 'Upkeep',     field: n => n.uniqueUnit?.upkeep,    defaultYield: 'training' },
-  { kind: 'data', label: 'Move/Sight', field: n => n.uniqueUnit?.moveSight, defaultYield: 'training' },
-  { kind: 'data', label: 'U6 Card',    field: n => n.uniqueUnit?.u6Card,    defaultYield: 'training' },
-  { kind: 'data', label: 'U8 Card',    field: n => n.uniqueUnit?.u8Card,    defaultYield: 'training' },
+  { kind: 'data', label: 'Names',      field: n => n.uniqueUnit?.names },
+  { kind: 'data', label: 'Traits',     field: n => n.uniqueUnit?.traits },
+  { kind: 'data', label: 'Cost',       field: n => n.uniqueUnit?.cost },
+  { kind: 'data', label: 'Upkeep',     field: n => n.uniqueUnit?.upkeep },
+  { kind: 'data', label: 'Move/Sight', field: n => n.uniqueUnit?.moveSight },
+  { kind: 'data', label: 'U6 Card',    field: n => n.uniqueUnit?.u6Card },
+  { kind: 'data', label: 'U8 Card',    field: n => n.uniqueUnit?.u8Card },
 
   { kind: 'section', label: 'Starting Techs' },
-  { kind: 'data', label: 'Tech 1', field: n => n.startingTech?.[0], defaultYield: 'science' },
-  { kind: 'data', label: 'Tech 2', field: n => n.startingTech?.[1], defaultYield: 'science' },
-  { kind: 'data', label: 'Tech 3', field: n => n.startingTech?.[2], defaultYield: 'science' },
+  { kind: 'data', label: 'Tech 1', field: n => n.startingTech?.[0] },
+  { kind: 'data', label: 'Tech 2', field: n => n.startingTech?.[1] },
+  { kind: 'data', label: 'Tech 3', field: n => n.startingTech?.[2] },
 
   { kind: 'section', label: 'Families' },
   { kind: 'family', label: 'Family 1', field: n => n.families?.[0] },
@@ -54,10 +53,10 @@ const rows: Row[] = [
   { kind: 'family', label: 'Family 6', field: n => n.families?.[5] },
 
   { kind: 'section', label: 'Royal Family' },
-  { kind: 'data', label: 'Leader', field: n => n.leader?.name,   defaultYield: 'legitimacy' },
-  { kind: 'data', label: 'Spouse', field: n => n.leader?.spouse, defaultYield: 'legitimacy' },
-  { kind: 'data', label: 'Heir 1', field: n => n.leader?.heir1,  defaultYield: 'legitimacy' },
-  { kind: 'data', label: 'Heir 2', field: n => n.leader?.heir2,  defaultYield: 'legitimacy' },
+  { kind: 'data', label: 'Leader', field: n => n.leader?.name },
+  { kind: 'data', label: 'Spouse', field: n => n.leader?.spouse },
+  { kind: 'data', label: 'Heir 1', field: n => n.leader?.heir1 },
+  { kind: 'data', label: 'Heir 2', field: n => n.leader?.heir2 },
 ];
 
 const ordered = [...nations].sort((a, b) => a.name.localeCompare(b.name));
