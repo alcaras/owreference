@@ -16,6 +16,11 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from humanize import (  # noqa: E402
+    load_xml_indexes, render_nation_effects, render_shrine_effects,
+)
+
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT_JSON = ROOT / "src" / "data" / "nations.json"
@@ -208,8 +213,10 @@ def load_nations() -> list[dict]:
     text_unit = load_text("text-unit.xml") if (XML_DIR / "text-unit.xml").exists() else {}
     colors = load_colors()
     shrines_by_nation = load_shrines()
+    xml_indexes = load_xml_indexes(XML_DIR)
 
     # Per-nation per-family hex (e.g., COLOR_NATION_ASSYRIA_FAMILY_01 → #b53c01).
+    # Also alias the YEUZHI typo so the Yuezhi families pick up colors.
     family_hex: dict[tuple[str, int], str] = {}
     for entry in parse("color.xml").findall("Entry"):
         zt = entry.findtext("zType") or ""
@@ -219,8 +226,12 @@ def load_nations() -> list[dict]:
             if re.fullmatch(r"#[0-9a-fA-F]{8}", hex_val):
                 hex_val = hex_val[:7]
             family_hex[(m.group(1), int(m.group(2)))] = hex_val.lower()
+            if m.group(1) == "NATION_YEUZHI":
+                family_hex[("NATION_YUEZHI", int(m.group(2)))] = hex_val.lower()
 
-    # Map family → (nation_id, class)
+    # Map family → (nation_id, class). Prefer abNation (canonical nation
+    # reference) over TeamColor — Yuezhi has a typo'd TEAMCOLOR_NATION_YEUZHI
+    # in the game data while abNation correctly says NATION_YUEZHI.
     families_by_nation: dict[str, list[dict]] = defaultdict(list)
     for entry in parse("family.xml").findall("Entry"):
         zt = entry.findtext("zType") or ""
@@ -228,9 +239,18 @@ def load_nations() -> list[dict]:
         team_color = entry.findtext("TeamColor") or ""
         family_class = entry.findtext("FamilyClass") or ""
         color_idx = entry.findtext("iColorIndex") or "0"
-        if not zt or not team_color.startswith("TEAMCOLOR_NATION_"):
+        if not zt:
             continue
-        nation = team_color.replace("TEAMCOLOR_", "")  # NATION_ASSYRIA
+        nation = ""
+        ab_nation_pairs = entry.findall("abNation/Pair")
+        for p in ab_nation_pairs:
+            if (p.findtext("bValue") or "0") == "1":
+                nation = p.findtext("zIndex") or ""
+                break
+        if not nation and team_color.startswith("TEAMCOLOR_NATION_"):
+            nation = team_color.replace("TEAMCOLOR_", "")
+        if not nation:
+            continue
         class_key = f"TEXT_{family_class}"  # TEXT_FAMILYCLASS_CHAMPIONS
         # XML uses 1-based slot numbers (FAMILY_01..04); iColorIndex is 0-based.
         slot = int(color_idx) + 1
@@ -271,6 +291,16 @@ def load_nations() -> list[dict]:
         fams = sorted(families_by_nation.get(zt, []), key=lambda f: f["colorIndex"])
         nation_shrines = shrines_by_nation.get(zt, [])
 
+        # Auto-derived bonus list from the game's effect tree.
+        effect_player_id = (entry.findtext("EffectPlayer") or "").strip()
+        effects_xml = render_nation_effects(effect_player_id, xml_indexes) if effect_player_id else []
+
+        # Auto-derived shrine effects (per shrine)
+        for s in nation_shrines:
+            shrine_entry = xml_indexes.get("improvement.xml", {}).get(s["id"])
+            if shrine_entry is not None:
+                s["effectsXml"] = render_shrine_effects(shrine_entry)
+
         nations.append({
             "id": zt,
             "slug": zt.replace("NATION_", "").lower(),
@@ -281,6 +311,7 @@ def load_nations() -> list[dict]:
             "dynasties": dynasties,
             "families": fams,
             "shrineXml": nation_shrines,
+            "effectsXml": effects_xml,
             "playable": (entry.findtext("bPlayable") == "1") or entry.findtext("bPlayable") is None,
             "gameContent": entry.findtext("GameContentRequired") or "",
         })

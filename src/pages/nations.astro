@@ -9,7 +9,7 @@ const base = import.meta.env.BASE_URL;
 type Row =
   | { kind: 'section'; label: string }
   | {
-      kind: 'data' | 'shrine' | 'family';
+      kind: 'data' | 'shrine' | 'family' | 'effects';
       label: string;
       field: (n: typeof nations[number]) => any;
       // Some rows describe non-yield things (names, traits, leader stats) —
@@ -23,9 +23,12 @@ type Row =
 // which is honest: "this cell doesn't describe a yield."
 const rows: Row[] = [
   { kind: 'section', label: 'Bonuses' },
-  { kind: 'data', label: 'Bonus 1', field: n => n.bonuses?.[0] },
-  { kind: 'data', label: 'Bonus 2', field: n => n.bonuses?.[1] },
-  { kind: 'data', label: 'Bonus 3', field: n => n.bonuses?.[2] },
+  {
+    kind: 'effects', label: 'Effects',
+    // Prefer the XML-derived effects (canonical, auto-updates each patch);
+    // fall back to yaml bonuses for the few nations not yet covered.
+    field: n => (n.effectsXml && n.effectsXml.length > 0) ? n.effectsXml : (n.bonuses || []),
+  },
 
   { kind: 'section', label: 'Shrines' },
   { kind: 'shrine', label: 'Shrine 1', field: n => n.shrines?.[0] },
@@ -183,6 +186,29 @@ for (const n of nations) {
                   );
                 }
 
+                if (row.kind === 'effects') {
+                  // Vertical stack of yield-colored mini-tiles, one per effect.
+                  const items: string[] = v;
+                  if (!items || items.length === 0) {
+                    return (
+                      <td class={`cell n-${n.slug} is-empty`} data-nation={n.slug}>
+                        <span class="cell__dash">—</span>
+                      </td>
+                    );
+                  }
+                  return (
+                    <td class={`cell cell--effects n-${n.slug}`} data-nation={n.slug}>
+                      {items.map(text => {
+                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                        return (
+                          <div class={`effect yield-${yieldKey}`}>
+                            <LinkedText text={text} showIcons={false} />
+                          </div>
+                        );
+                      })}
+                    </td>
+                  );
+                }
                 if (row.kind === 'shrine') {
                   const sh = v;
                   const effect = sh.effect || '';
