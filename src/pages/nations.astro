@@ -161,8 +161,13 @@ for (const n of nations) {
 
                 if (row.kind === 'family') {
                   const famClass = FAMILY_CLASS_COLOR[v.class] || '';
+                  const stripe = v.ingameColor;
                   return (
-                    <td class={`cell n-${n.slug} ${famClass}`} data-nation={n.slug}>
+                    <td
+                      class={`cell cell--fam n-${n.slug} ${famClass}`}
+                      data-nation={n.slug}
+                      style={stripe ? `--fam-stripe: ${stripe}` : undefined}
+                    >
                       <div class="fam">
                         <span class="fam__class"><LinkedText text={v.class} showIcons={false} /></span>
                         <span class="fam__name">{v.name}</span>

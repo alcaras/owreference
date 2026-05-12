@@ -332,6 +332,14 @@ h1, h2, h3 {
   font-weight: 400;
 }
 
+/* Family cells: 4px left-edge stripe in the in-game family color. The cell
+   bg stays the class signature color (so all Champions read the same color
+   across nations) — the stripe encodes the per-family in-game identity. */
+.cell--fam {
+  box-shadow: inset 4px 0 0 var(--fam-stripe, transparent);
+  padding-left: 0.75rem;
+}
+
 /* Family cell internals — class is the headline, name is flavor */
 .fam { display: flex; flex-direction: column; }
 .fam__class {

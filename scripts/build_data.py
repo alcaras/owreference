@@ -209,6 +209,17 @@ def load_nations() -> list[dict]:
     colors = load_colors()
     shrines_by_nation = load_shrines()
 
+    # Per-nation per-family hex (e.g., COLOR_NATION_ASSYRIA_FAMILY_01 → #b53c01).
+    family_hex: dict[tuple[str, int], str] = {}
+    for entry in parse("color.xml").findall("Entry"):
+        zt = entry.findtext("zType") or ""
+        hex_val = (entry.findtext("zHexValue") or "")
+        m = re.fullmatch(r"COLOR_(NATION_[A-Z_]+)_FAMILY_(\d+)", zt)
+        if m and hex_val:
+            if re.fullmatch(r"#[0-9a-fA-F]{8}", hex_val):
+                hex_val = hex_val[:7]
+            family_hex[(m.group(1), int(m.group(2)))] = hex_val.lower()
+
     # Map family → (nation_id, class)
     families_by_nation: dict[str, list[dict]] = defaultdict(list)
     for entry in parse("family.xml").findall("Entry"):
@@ -221,11 +232,15 @@ def load_nations() -> list[dict]:
             continue
         nation = team_color.replace("TEAMCOLOR_", "")  # NATION_ASSYRIA
         class_key = f"TEXT_{family_class}"  # TEXT_FAMILYCLASS_CHAMPIONS
+        # XML uses 1-based slot numbers (FAMILY_01..04); iColorIndex is 0-based.
+        slot = int(color_idx) + 1
+        hex_color = family_hex.get((nation, slot))
         families_by_nation[nation].append({
             "id": zt,
             "name": text_family.get(name_key, zt.replace("FAMILY_", "").title()),
             "class": text_infos.get(class_key, family_class.replace("FAMILYCLASS_", "").title()),
             "colorIndex": int(color_idx),
+            "ingameColor": hex_color,
         })
 
     # Build nations
