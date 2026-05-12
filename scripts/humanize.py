@@ -12,6 +12,7 @@ text becomes XML-canonical and updates with each patch.
 """
 from __future__ import annotations
 
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Callable
@@ -25,23 +26,70 @@ def _index_entries(root: ET.Element, key: str = "zType") -> dict[str, ET.Element
 
 
 def load_xml_indexes(xml_dir: Path) -> dict[str, dict[str, ET.Element]]:
-    """Pre-load every XML file the humanizer might consult, indexed by zType."""
+    """Pre-load every XML file the humanizer might consult, indexed by zType.
+    For bonus.xml we merge in the *-event-*.xml variants since they share
+    the same shape and effects reference both freely."""
     files = [
         "effectCity.xml", "effectPlayer.xml", "effectUnit.xml",
         "bonus.xml", "improvement.xml", "promotion.xml",
         "project.xml", "tech.xml", "law.xml", "religion.xml",
-        "trait.xml", "specialist.xml",
+        "trait.xml", "specialist.xml", "resource.xml",
     ]
     out: dict[str, dict[str, ET.Element]] = {}
     for f in files:
         p = xml_dir / f
         if p.exists():
             out[f] = _index_entries(ET.parse(p).getroot())
+
+    # Merge bonus-event-*.xml entries into bonus.xml lookup
+    bonus_idx = out.setdefault("bonus.xml", {})
+    for p in xml_dir.glob("bonus-event-*.xml"):
+        for k, v in _index_entries(ET.parse(p).getroot()).items():
+            bonus_idx.setdefault(k, v)
+
+    # Build a flat text lookup for Name fields across all text-*.xml files
+    text_idx: dict[str, str] = {}
+    for p in xml_dir.glob("text-*.xml"):
+        try:
+            for entry in ET.parse(p).getroot().findall("Entry"):
+                k = entry.findtext("zType") or ""
+                en = _first_form(entry.findtext("en-US"))
+                if k and en:
+                    text_idx.setdefault(k, en)
+        except ET.ParseError:
+            continue
+    out["__text__"] = text_idx  # type: ignore[assignment]
     return out
 
 
+def _lookup_name(indexes: dict, name_key: str) -> str:
+    """Resolve TEXT_PROJECT_OLYMPICS → 'Olympics' via the merged text index."""
+    if not name_key:
+        return ""
+    text = indexes.get("__text__", {})
+    return text.get(name_key, "")
+
+
+_LINK_RE = re.compile(r"\{?lowercase:link\(([A-Z_]+)(?:,\d+)?\)\}?|link\(([A-Z_]+)(?:,\d+)?\)")
+
+
+def _strip_link_templates(s: str) -> str:
+    """The game's strings use {lowercase:link(TOKEN,2)} markup. Replace with
+    a title-cased rendering of the final word in TOKEN — e.g.
+    link(RELIGION_BUDDHISM) → Buddhism."""
+    def repl(m: "re.Match[str]") -> str:
+        token = m.group(1) or m.group(2) or ""
+        # Drop leading category (RELIGION_, CONCEPT_, etc.) — keep the rest
+        parts = token.split("_")
+        if len(parts) > 1:
+            parts = parts[1:]
+        return " ".join(p.title() for p in parts)
+    return _LINK_RE.sub(repl, s)
+
+
 def _first_form(s: str | None) -> str:
-    return (s or "").split("~")[0].strip()
+    raw = (s or "").split("~")[0].strip()
+    return _strip_link_templates(raw)
 
 
 def load_text(xml_dir: Path, *filenames: str) -> dict[str, str]:
@@ -134,7 +182,7 @@ SCALAR_LABELS: list[tuple[str, str, str]] = [
 # Renderers
 # ────────────────────────────────────────────────────────────────────────────
 
-def render_effect_city(e: ET.Element, *, per_city: bool = True) -> list[str]:
+def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | None = None) -> list[str]:
     """Render an EffectCity entry as a list of human-readable lines.
 
     `per_city` adds the '/City' suffix to yield-rate lines. Set False when
@@ -216,6 +264,25 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True) -> list[str]:
         v = int(pair.findtext("iValue") or "0")
         out.append(f"{fmt_decimal(v)}% {imp}")
 
+    # Resource-triggered effects: "When city has Resource X, gain effect Y"
+    # (Aksum: ELEPHANT → GIVE_IVORY). Render as "Elephants give Ivory".
+    for pair in e.findall("aeEffectCityEffectCity/Pair"):
+        trigger = pair.findtext("zIndex") or ""
+        result = pair.findtext("zValue") or ""
+        if trigger.startswith("EFFECTCITY_RESOURCE_") and indexes is not None:
+            resource = trigger.replace("EFFECTCITY_RESOURCE_", "").replace("_", " ").title()
+            result_entry = indexes.get("effectCity.xml", {}).get(result)
+            if result_entry is not None:
+                # Pull the produced luxury from aeLuxuryResources, or fall back to name
+                luxes = [r.text.replace("RESOURCE_", "").title()
+                         for r in result_entry.findall("aeLuxuryResources/zValue")
+                         if r.text]
+                if luxes:
+                    out.append(f"{resource}s give {', '.join(luxes)}")
+                    continue
+        # Fallback: raw token
+        out.append(f"{condition_name(trigger)} → {condition_name(result)}")
+
     return out
 
 
@@ -280,7 +347,7 @@ def render_effect_player_scalars(e: ET.Element) -> list[str]:
     return out
 
 
-def render_bonus(e: ET.Element) -> list[str]:
+def render_bonus(e: ET.Element, indexes: dict | None = None) -> list[str]:
     """Render a Bonus entry (granted on found/start)."""
     out: list[str] = []
     for tag in ("aiYieldStockpile", "aiGlobalYields", "aiYields"):
@@ -288,14 +355,19 @@ def render_bonus(e: ET.Element) -> list[str]:
             y = yield_name(pair.findtext("zIndex"))
             v = int(pair.findtext("iValue") or "0")
             out.append(f"{fmt_decimal(v)} {y}")
-    # Civics one-shot ("New Cities: +200 Civics")
     for pair in e.findall("aiYieldRate/Pair"):
         y = yield_name(pair.findtext("zIndex"))
         v = int(pair.findtext("iValue") or "0")
         out.append(f"{fmt_decimal(v)} {y}")
-    for fp in e.findall("aeFreeProject/zValue"):
-        out.append(f"Unlocks {condition_name(fp.text)}")
-    for fu in e.findall("aeFreeUnit/Pair"):
+    for fp in e.findall("aeFreeProject/zValue") + e.findall("aeAddProjects/zValue"):
+        token = fp.text or ""
+        nice = ""
+        if indexes is not None:
+            proj = indexes.get("project.xml", {}).get(token)
+            if proj is not None:
+                nice = _lookup_name(indexes, proj.findtext("Name") or "")
+        out.append(f"Unlocks {nice or condition_name(token)}")
+    for fu in e.findall("aeFreeUnit/Pair") + e.findall("aiUnits/Pair"):
         u = (fu.findtext("zIndex") or "").replace("UNIT_", "").title()
         n = int(fu.findtext("iValue") or "0")
         out.append(f"+{n} {u}")
@@ -323,14 +395,14 @@ def render_nation_effects(
     if ec_id:
         ec = indexes.get("effectCity.xml", {}).get(ec_id)
         if ec is not None:
-            lines.extend(render_effect_city(ec, per_city=True))
+            lines.extend(render_effect_city(ec, per_city=True, indexes=indexes))
 
     # Extra per-city effect (e.g., Egypt)
     ece_id = ep.findtext("EffectCityExtra")
     if ece_id:
         ec = indexes.get("effectCity.xml", {}).get(ece_id)
         if ec is not None:
-            lines.extend(render_effect_city(ec, per_city=True))
+            lines.extend(render_effect_city(ec, per_city=True, indexes=indexes))
 
     # One-time bonuses (Start / Found)
     for tag in ("StartBonus", "FoundBonus"):
@@ -340,8 +412,12 @@ def render_nation_effects(
         b = indexes.get("bonus.xml", {}).get(b_id)
         if b is not None:
             prefix = "Start: " if tag == "StartBonus" else "Found: "
-            for line in render_bonus(b):
-                lines.append(prefix + line.lstrip("+"))
+            for line in render_bonus(b, indexes):
+                # Pass through "Unlocks X" as-is, otherwise prefix Start:/Found:
+                if line.startswith("Unlocks "):
+                    lines.append(line)
+                else:
+                    lines.append(prefix + line.lstrip("+"))
 
     # Unit effects (e.g., Assyria EFFECTUNIT_ASSYRIA contains pillage/kill bonuses)
     eu_id = ep.findtext("EffectUnit")
@@ -350,9 +426,20 @@ def render_nation_effects(
         if eu is not None:
             lines.extend(render_effect_unit(eu))
 
-    # Nested EffectPlayer (e.g., Greece Olympics)
+    # Nested EffectPlayer (e.g., Greece Olympics, Aksum Mint Coin, Maurya Buddhism)
     sub = ep.findtext("EffectPlayer")
     if sub:
+        sub_entry = indexes.get("effectPlayer.xml", {}).get(sub)
+        sub_name_key = sub_entry.findtext("Name") if sub_entry is not None else ""
+        # If the nested effect points at a project (TEXT_PROJECT_*), render
+        # "Unlocks <Project>" — that's what nations like Greece do for Olympics.
+        if sub_name_key and sub_name_key.startswith("TEXT_PROJECT_"):
+            nice = _lookup_name(indexes, sub_name_key)
+            if nice:
+                lines.append(f"Unlocks {nice}")
+            else:
+                lines.append(f"Unlocks {condition_name(sub)}")
+        # Always recurse to capture any concrete modifiers on the nested entry too
         for line in render_nation_effects(sub, indexes):
             lines.append(line)
 
