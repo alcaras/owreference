@@ -75,13 +75,15 @@ YIELD_COLORS = {
 # Harvest→food, Focus→training, etc.) so bonus/shrine text gets a sensible
 # color even when no literal yield word appears.
 YIELD_ALIASES: dict[str, list[str]] = {
+    # Only true yield-name synonyms — not mechanic words. "Ranged", "Focus",
+    # "Pillage", "XP" are unit mechanics, not yields, so they no longer drag
+    # a cell into yield-training.
     "orders":       ["Order", "Orders"],
-    "training":     ["Training", "Train", "Focus", "Pillage", "XP", "Fatigue",
-                     "Mercs", "Mercenaries", "Ranged", "Forts", "Fort"],
+    "training":     ["Training", "Train"],
     "civics":       ["Civics", "Civic", "Civ"],
     "culture":      ["Culture", "Cult"],
     "science":      ["Science", "Sci"],
-    "money":        ["Money", "Coin", "Coins", "Mint", "Treasury"],
+    "money":        ["Money", "Coin", "Coins", "Mint"],
     "growth":       ["Growth", "Settler", "Settlers"],
     "food":         ["Food", "Harvest", "Farms", "Farm", "Pastures", "Pasture"],
     "wood":         ["Wood", "Lumber", "Chop", "Chopping", "Forests", "Forest"],

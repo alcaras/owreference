@@ -12,7 +12,10 @@ type Row =
       kind: 'data' | 'shrine' | 'family';
       label: string;
       field: (n: typeof nations[number]) => any;
-      defaultYield?: string;
+      // Some rows describe non-yield things (names, traits, leader stats) —
+      // mark them so classifyYield doesn't drag them into a random color
+      // just because the text happens to contain a yield word.
+      skipClassify?: boolean;
     };
 
 // No row defaults — let classifyYield score each cell on its actual text.
@@ -31,13 +34,13 @@ const rows: Row[] = [
   { kind: 'shrine', label: 'Shrine 4', field: n => n.shrines?.[3] },
 
   { kind: 'section', label: 'Unique Unit' },
-  { kind: 'data', label: 'Names',      field: n => n.uniqueUnit?.names },
-  { kind: 'data', label: 'Traits',     field: n => n.uniqueUnit?.traits },
+  { kind: 'data', label: 'Names',      field: n => n.uniqueUnit?.names,     skipClassify: true },
+  { kind: 'data', label: 'Traits',     field: n => n.uniqueUnit?.traits,    skipClassify: true },
   { kind: 'data', label: 'Cost',       field: n => n.uniqueUnit?.cost },
   { kind: 'data', label: 'Upkeep',     field: n => n.uniqueUnit?.upkeep },
-  { kind: 'data', label: 'Move/Sight', field: n => n.uniqueUnit?.moveSight },
-  { kind: 'data', label: 'U6 Card',    field: n => n.uniqueUnit?.u6Card },
-  { kind: 'data', label: 'U8 Card',    field: n => n.uniqueUnit?.u8Card },
+  { kind: 'data', label: 'Move/Sight', field: n => n.uniqueUnit?.moveSight, skipClassify: true },
+  { kind: 'data', label: 'U6 Card',    field: n => n.uniqueUnit?.u6Card,    skipClassify: true },
+  { kind: 'data', label: 'U8 Card',    field: n => n.uniqueUnit?.u8Card,    skipClassify: true },
 
   { kind: 'section', label: 'Starting Techs' },
   { kind: 'data', label: 'Tech 1', field: n => n.startingTech?.[0] },
@@ -225,8 +228,8 @@ for (const n of nations) {
                 }
 
                 const text = String(v);
-                const classified = classifyYield(text)?.toLowerCase();
-                const yieldKey = classified || row.defaultYield || 'misc';
+                const classified = row.skipClassify ? null : classifyYield(text)?.toLowerCase();
+                const yieldKey = classified || 'misc';
                 const yieldClass = `yield-${yieldKey}`;
                 return (
                   <td class={`cell n-${n.slug} ${yieldClass}`} data-nation={n.slug}>
