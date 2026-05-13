@@ -206,6 +206,35 @@ def match_yaml_shrines(yaml_shrines: list[str], xml_shrines: list[dict]) -> list
     return pairs
 
 
+def load_dynasties() -> dict[str, list[dict]]:
+    """Return {nation_id: [dynasty_dict, ...]} from dynasty.xml."""
+    text_infos = load_text("text-infos.xml")
+    out: dict[str, list[dict]] = {}
+    if not (XML_DIR / "dynasty.xml").exists():
+        return out
+    for entry in parse("dynasty.xml").findall("Entry"):
+        zt = entry.findtext("zType") or ""
+        if not zt.startswith("DYNASTY_"):
+            continue
+        nation = entry.findtext("Nation") or ""
+        if not nation:
+            continue
+        name = text_infos.get(entry.findtext("Name") or "", zt.replace("DYNASTY_", "").title())
+        desc = text_infos.get(entry.findtext("Description") or "", "")
+        founder = (entry.findtext("Founder") or "").replace("CHARACTER_", "").title()
+        first_ruler = (entry.findtext("FirstRuler") or "").replace("CHARACTER_", "").title()
+        out.setdefault(nation, []).append({
+            "id": zt,
+            "slug": zt.replace("DYNASTY_", "").lower(),
+            "name": name,
+            "description": desc,
+            "founder": founder or None,
+            "firstRuler": first_ruler or None,
+            "gameContent": entry.findtext("GameContentRequired") or "",
+        })
+    return out
+
+
 def load_nations() -> list[dict]:
     text_nation = load_text("text-nation.xml")
     text_family = load_text("text-family.xml")
@@ -213,6 +242,7 @@ def load_nations() -> list[dict]:
     text_unit = load_text("text-unit.xml") if (XML_DIR / "text-unit.xml").exists() else {}
     colors = load_colors()
     shrines_by_nation = load_shrines()
+    dynasties_by_nation = load_dynasties()
     xml_indexes = load_xml_indexes(XML_DIR)
 
     # Per-nation per-family hex (e.g., COLOR_NATION_ASSYRIA_FAMILY_01 → #b53c01).
@@ -309,6 +339,7 @@ def load_nations() -> list[dict]:
             "startingTech": starting_tech,
             "startingLaw": starting_law,
             "dynasties": dynasties,
+            "dynastyDetails": dynasties_by_nation.get(zt, []),
             "families": fams,
             "shrineXml": nation_shrines,
             "effectsXml": effects_xml,

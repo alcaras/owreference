@@ -151,7 +151,7 @@ for (const n of nations) {
             {ordered.map(n => (
               <th class={`nhdr n-${n.slug}`} data-nation={n.slug} title={n.id} id={n.slug}>
                 <div class="nhdr__inner">
-                  <a class="nhdr__link" href={`${base}nations#${n.slug}`}>
+                  <a class="nhdr__link" href={`${base}nations/${n.slug}`}>
                     <img class="nhdr__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
                     <span class="nhdr__name">{n.name}</span>
                   </a>
@@ -188,7 +188,11 @@ for (const n of nations) {
                   const iconUrl = type ? `${base}img/icons/shrines/${type.toLowerCase()}.png` : '';
                   const yieldKey = SHRINE_TYPE_YIELD[type] || classifyYield(effect)?.toLowerCase() || 'misc';
                   return (
-                    <td class={`cell n-${n.slug} yield-${yieldKey}`} data-nation={n.slug}>
+                    <td
+                      class={`cell n-${n.slug} yield-${yieldKey} hl`}
+                      data-nation={n.slug}
+                      data-hl={type ? `shrine:${type.toLowerCase()}` : undefined}
+                    >
                       <div class="shrine">
                         <div class="shrine__head">
                           {iconUrl && <img class="shrine__art" src={iconUrl} alt="" />}
@@ -206,8 +210,9 @@ for (const n of nations) {
                   const stripe = v.ingameColor;
                   return (
                     <td
-                      class={`cell cell--fam n-${n.slug}`}
+                      class={`cell cell--fam n-${n.slug} hl`}
                       data-nation={n.slug}
+                      data-hl={v.classKey ? `family:${v.classKey}` : undefined}
                       style={stripe ? `--fam-stripe: ${stripe}` : undefined}
                     >
                       <span class="fam">
@@ -225,8 +230,15 @@ for (const n of nations) {
                 const classified = row.skipClassify ? null : classifyYield(text)?.toLowerCase();
                 const yieldKey = classified || (row.kind === 'bonus' ? 'misc' : '');
                 const yieldClass = yieldKey ? `yield-${yieldKey}` : '';
+                // Tech rows: highlight other nations with the same starting tech
+                const isTechRow = /^Tech \d/.test(row.label);
+                const hlKey = isTechRow ? `tech:${text.toLowerCase().replace(/\s+/g, '-')}` : undefined;
                 return (
-                  <td class={`cell n-${n.slug} ${yieldClass}`} data-nation={n.slug}>
+                  <td
+                    class={`cell n-${n.slug} ${yieldClass} ${isTechRow ? 'hl' : ''}`}
+                    data-nation={n.slug}
+                    data-hl={hlKey}
+                  >
                     <LinkedText text={text} showIcons={false} iconsForYields={true} />
                   </td>
                 );
@@ -347,6 +359,23 @@ for (const n of nations) {
       }
 
       applyFilters();
+
+      // Hover-to-highlight: mousing over a family / shrine / tech cell
+      // highlights every other cell sharing the same key (data-hl).
+      // Makes commonalities scan diagonally across nations.
+      const hlCells = grid.querySelectorAll('.hl[data-hl]');
+      hlCells.forEach((cell) => {
+        cell.addEventListener('mouseenter', () => {
+          const key = cell.getAttribute('data-hl');
+          if (!key) return;
+          grid.querySelectorAll('[data-hl="' + key.replace(/"/g, '\\"') + '"]').forEach((el) => {
+            el.classList.add('is-related');
+          });
+        });
+        cell.addEventListener('mouseleave', () => {
+          grid.querySelectorAll('.is-related').forEach((el) => el.classList.remove('is-related'));
+        });
+      });
     })();
   </script>
 </Base>
