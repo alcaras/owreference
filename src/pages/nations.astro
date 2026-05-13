@@ -2,49 +2,26 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import nations from '../data/nations.json';
-import { classifyYield, classifyAllYields, yieldColors } from '../lib/entities';
-
-// Build a CSS diagonal-split background image for an N-yield cell.
-// Returns null when there's <2 distinct yields (caller falls back to
-// the single-yield .yield-{key} class).
-function multiYieldFill(yields: string[]): string | null {
-  if (yields.length < 2) return null;
-  const colors = yields.map(y => yieldColors[y]).filter(Boolean);
-  if (colors.length < 2) return null;
-  // Use hard stops at evenly-spaced angles. 135deg = top-left to bottom-right.
-  const stops: string[] = [];
-  const step = 100 / colors.length;
-  colors.forEach((c, i) => {
-    stops.push(`${c} ${i * step}%`, `${c} ${(i + 1) * step}%`);
-  });
-  return `linear-gradient(135deg, ${stops.join(', ')})`;
-}
+import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
 
 type Row =
   | { kind: 'section'; label: string }
   | {
-      kind: 'data' | 'shrine' | 'family' | 'effects';
+      kind: 'data' | 'shrine' | 'family' | 'bonus';
       label: string;
       field: (n: typeof nations[number]) => any;
-      // Some rows describe non-yield things (names, traits, leader stats) —
-      // mark them so classifyYield doesn't drag them into a random color
-      // just because the text happens to contain a yield word.
       skipClassify?: boolean;
     };
 
-// No row defaults — let classifyYield score each cell on its actual text.
-// Cells with no recognizable yield fall through to `.yield-misc` (slate),
-// which is honest: "this cell doesn't describe a yield."
 const rows: Row[] = [
   { kind: 'section', label: 'Bonuses' },
-  {
-    kind: 'effects', label: 'Effects',
-    // Prefer the XML-derived effects (canonical, auto-updates each patch);
-    // fall back to yaml bonuses for the few nations not yet covered.
-    field: n => (n.effectsXml && n.effectsXml.length > 0) ? n.effectsXml : (n.bonuses || []),
-  },
+  // Bonus 1/2/3 pull from the XML-canonical effects list (humanizer output).
+  // Fallback to legacy yaml bonuses for nations whose XML coverage is partial.
+  { kind: 'bonus', label: 'Bonus 1', field: n => (n.effectsXml?.[0] ?? n.bonuses?.[0]) },
+  { kind: 'bonus', label: 'Bonus 2', field: n => (n.effectsXml?.[1] ?? n.bonuses?.[1]) },
+  { kind: 'bonus', label: 'Bonus 3', field: n => (n.effectsXml?.[2] ?? n.bonuses?.[2]) },
 
   { kind: 'section', label: 'Shrines' },
   { kind: 'shrine', label: 'Shrine 1', field: n => n.shrines?.[0] },
@@ -83,16 +60,9 @@ const rows: Row[] = [
 
 const ordered = [...nations].sort((a, b) => a.name.localeCompare(b.name));
 
-const SHRINE_GLYPH: Record<string, string> = {
-  LOVE: '♥', WAR: '⚔', WATER: '≋', FIRE: '🜂',
-  KINGSHIP: '♔', SUN: '☀', WISDOM: '✦',
-  HEARTH: '◔', HEALING: '✚', HUNTING: '⌬', UNDERWORLD: '⚱',
-};
-
-// Shrine type → yield key. Most types have a direct dowry-style yield (per
-// each shrine's aiYieldOutput in improvement.xml). FIRE/HEALING/HUNTING give
-// no yield directly but boost tiles — we map them by thematic fit so every
-// shrine cell gets a deterministic color.
+// Shrine type → yield key. Used for the 3px left-bar color when the
+// effect text alone doesn't classify (FIRE/HEALING/HUNTING boost tiles
+// but produce no direct yield, so we anchor on a thematic fit).
 const SHRINE_TYPE_YIELD: Record<string, string> = {
   WAR:        'training',
   KINGSHIP:   'civics',
@@ -102,17 +72,12 @@ const SHRINE_TYPE_YIELD: Record<string, string> = {
   LOVE:       'growth',
   UNDERWORLD: 'culture',
   HEARTH:     'culture',
-  FIRE:       'iron',     // Fire shrines boost mines / lumber mills
-  HEALING:    'growth',   // Healing shrines boost groves / healers
-  HUNTING:    'food',     // Hunting shrines boost camps / farms
+  FIRE:       'iron',
+  HEALING:    'growth',
+  HUNTING:    'food',
 };
 
-const FAMILY_CLASSES = [
-  'Champions','Hunters','Riders','Artisans','Patrons',
-  'Traders','Sages','Statesmen','Landowners','Clerics',
-] as const;
-
-// Pre-classify each cell's yield so we can serialize a search blob per nation.
+// Pre-compute a search blob per nation for the column-filter search.
 const searchBlobs: Record<string, string> = {};
 for (const n of nations) {
   searchBlobs[n.slug] = JSON.stringify(n).toLowerCase();
@@ -122,12 +87,14 @@ for (const n of nations) {
 <Base
   title="Nations"
   active="nations"
+  eyebrow="All 13 · side by side"
   description="All 13 Old World nations side-by-side: starting bonuses, shrines, unique units, families, starting techs, and leader/royal lineup. Pulled XML-canonical from the game's own files."
 >
   <div class="page-meta">
-    <h1 class="page-title">
-      <span class="page-title__mark">👑</span>Nations
-    </h1>
+    <div>
+      <div class="page-eyebrow">All 13 · side by side</div>
+      <h1 class="page-title">Nations</h1>
+    </div>
     <div class="page-stats">
       <button
         type="button"
@@ -176,10 +143,12 @@ for (const n of nations) {
             </th>
             {ordered.map(n => (
               <th class={`nhdr n-${n.slug}`} data-nation={n.slug} title={n.id} id={n.slug}>
-                <a class="nhdr__link" href={`${base}nations#${n.slug}`}>
-                  <img class="nhdr__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
-                  <span class="nhdr__name">{n.name}</span>
-                </a>
+                <div class="nhdr__inner">
+                  <a class="nhdr__link" href={`${base}nations#${n.slug}`}>
+                    <img class="nhdr__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
+                    <span class="nhdr__name">{n.name}</span>
+                  </a>
+                </div>
               </th>
             ))}
           </tr>
@@ -187,9 +156,7 @@ for (const n of nations) {
         <tbody>
           {rows.map(row => row.kind === 'section' ? (
             <tr class="srow">
-              <th class="srow__th" colspan={ordered.length + 1}>
-                <span class="srow__chevron">▸</span>{row.label}
-              </th>
+              <th class="srow__th" colspan={ordered.length + 1}>{row.label}</th>
             </tr>
           ) : (
             <tr>
@@ -197,7 +164,6 @@ for (const n of nations) {
               {ordered.map(n => {
                 const v = row.field(n);
                 const empty = v == null || v === '' || (row.kind === 'family' && !v);
-
                 if (empty) {
                   return (
                     <td class={`cell n-${n.slug} is-empty`} data-nation={n.slug}>
@@ -206,90 +172,53 @@ for (const n of nations) {
                   );
                 }
 
-                if (row.kind === 'effects') {
-                  // Vertical stack of yield-colored mini-tiles, one per effect.
-                  const items: string[] = v;
-                  if (!items || items.length === 0) {
-                    return (
-                      <td class={`cell n-${n.slug} is-empty`} data-nation={n.slug}>
-                        <span class="cell__dash">—</span>
-                      </td>
-                    );
-                  }
-                  return (
-                    <td class={`cell cell--effects n-${n.slug}`} data-nation={n.slug}>
-                      {items.map(text => {
-                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
-                        return (
-                          <div class={`effect yield-${yieldKey}`}>
-                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
-                          </div>
-                        );
-                      })}
-                    </td>
-                  );
-                }
                 if (row.kind === 'shrine') {
                   const sh = v;
                   const effect = sh.effect || '';
                   const type = sh.shrine?.type || '';
                   const typeLabel = sh.shrine?.typeLabel || '';
                   const deity = sh.shrine?.name || '';
-                  const glyph = SHRINE_GLYPH[type] || '✦';
                   const iconUrl = type ? `${base}img/icons/shrines/${type.toLowerCase()}.png` : '';
-                  // Anchor on the shrine type's primary yield, then add any
-                  // additional yields named in the effect text.
-                  const typeYield = SHRINE_TYPE_YIELD[type]?.toUpperCase();
-                  const extras = classifyAllYields(effect);
-                  const allYields = typeYield
-                    ? [typeYield, ...extras.filter(y => y !== typeYield)]
-                    : extras;
-                  const yieldFill = multiYieldFill(allYields);
-                  const styleParts: string[] = [];
-                  if (iconUrl) styleParts.push(`--shrine-art: url("${iconUrl}")`);
-                  if (yieldFill) styleParts.push(`--yield-fill: ${yieldFill}`);
-                  const cellStyle = styleParts.length ? styleParts.join('; ') : undefined;
-                  // Color by shrine type — guarantees every shrine cell is
-                  // colored (the effect text doesn't always name a yield).
-                  const yieldKey = SHRINE_TYPE_YIELD[type] || classifyYield(effect)?.toLowerCase();
-                  const yieldClass = yieldKey ? `yield-${yieldKey}` : '';
+                  const yieldKey = SHRINE_TYPE_YIELD[type] || classifyYield(effect)?.toLowerCase() || 'misc';
                   return (
-                    <td class={`cell cell--shrine n-${n.slug} ${yieldClass}`} data-nation={n.slug} style={cellStyle}>
-                      {sh.shrine && (
-                        <div class="shrine">
-                          <span class="shrine__deity" title={`${typeLabel} shrine`}>{deity}</span>
+                    <td class={`cell n-${n.slug} yield-${yieldKey}`} data-nation={n.slug}>
+                      <div class="shrine">
+                        <div class="shrine__head">
+                          {iconUrl && <img class="shrine__art" src={iconUrl} alt="" />}
+                          <span class="shrine__type">{typeLabel}</span>
                         </div>
-                      )}
-                      <div class="shrine__effect"><LinkedText text={effect} showIcons={false} iconsForYields={true} /></div>
+                        <span class="shrine__deity">{deity}</span>
+                        <div class="shrine__effect"><LinkedText text={effect} showIcons={false} iconsForYields={true} /></div>
+                      </div>
                     </td>
                   );
                 }
 
                 if (row.kind === 'family') {
-                  const bg = v.ingameColor;
-                  const fg = v.ingameFg;
                   const iconUrl = v.classKey ? `${base}img/archetypes/${v.classKey}.png` : null;
-                  const style = bg ? `--yield-bg: ${bg}; --yield-fg: ${fg};` : undefined;
+                  // Yield-bar color for family cells: leave it off (no signal).
                   return (
-                    <td class={`cell cell--fam n-${n.slug}`} data-nation={n.slug} style={style}>
+                    <td class={`cell cell--noref n-${n.slug}`} data-nation={n.slug}>
                       <div class="fam">
-                        <span class="fam__class">
+                        <div class="fam__head">
                           {iconUrl && <img class="fam__icon" src={iconUrl} alt="" />}
-                          <LinkedText text={v.class} showIcons={false} />
-                        </span>
+                          <span class="fam__class">{v.class}</span>
+                        </div>
                         <span class="fam__name">{v.name}</span>
                       </div>
                     </td>
                   );
                 }
 
+                // 'bonus' and 'data' rows share the same rendering — just
+                // text inside a yield-classed cell with the 3px left bar.
                 const text = String(v);
                 const classified = row.skipClassify ? null : classifyYield(text)?.toLowerCase();
-                const yieldKey = classified || 'misc';
-                const yieldClass = `yield-${yieldKey}`;
+                const yieldKey = classified || (row.kind === 'bonus' ? 'misc' : '');
+                const yieldClass = yieldKey ? `yield-${yieldKey}` : '';
                 return (
                   <td class={`cell n-${n.slug} ${yieldClass}`} data-nation={n.slug}>
-                    <div class="cell__body"><LinkedText text={text} showIcons={false} iconsForYields={true} /></div>
+                    <LinkedText text={text} showIcons={false} iconsForYields={true} />
                   </td>
                 );
               })}
@@ -305,27 +234,17 @@ for (const n of nations) {
     <div class="legend">
       <span class="legend__label">Yields</span>
       {['orders','science','civics','culture','money','training','food','growth','wood','stone','iron'].map(y => (
-        <a class={`chip yield-${y}`} href={`${base}yields/${y}`}>
+        <span class={`chip yield-${y}`}>
           <img class="chip__icon" src={`${base}img/icons/yields/${y}.png`} alt="" onerror="this.style.display='none'" />
           {y[0].toUpperCase() + y.slice(1)}
-        </a>
-      ))}
-    </div>
-    <div class="legend">
-      <span class="legend__label">Family classes</span>
-      {FAMILY_CLASSES.map(cls => (
-        <span class="chip chip--neutral">
-          <img class="chip__icon" src={`${base}img/archetypes/${cls.toLowerCase()}.png`} alt="" />
-          {cls}
         </span>
       ))}
     </div>
+    <p class="caption">Left edge = yield given · Right edge = nation tint</p>
   </div>
 
   <script type="application/json" id="nation-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
-    // Column filtering: combines (a) header search query and (b) nation-picker
-    // checkbox state. A column is visible iff both allow it.
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('nation-search-blobs');
@@ -369,21 +288,18 @@ for (const n of nations) {
 
       if (input) input.addEventListener('input', applyFilters);
 
-      // Picker open/close
       if (toggle && picker) {
         toggle.addEventListener('click', () => {
           const open = !picker.hidden;
           picker.hidden = open;
           toggle.setAttribute('aria-expanded', String(!open));
         });
-        // Close on outside click
         document.addEventListener('click', (e) => {
           if (picker.hidden) return;
           if (picker.contains(e.target) || toggle.contains(e.target)) return;
           picker.hidden = true;
           toggle.setAttribute('aria-expanded', 'false');
         });
-        // Escape closes
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape' && !picker.hidden) {
             picker.hidden = true;
@@ -393,7 +309,6 @@ for (const n of nations) {
         });
       }
 
-      // Checkbox handling
       const cbs = picker ? picker.querySelectorAll('.nation-picker__cb') : [];
       cbs.forEach((cb) => {
         cb.addEventListener('change', () => {
@@ -403,7 +318,6 @@ for (const n of nations) {
         });
       });
 
-      // Action buttons
       if (picker) {
         picker.addEventListener('click', (e) => {
           const btn = e.target.closest('[data-pick]');

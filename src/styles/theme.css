@@ -1,40 +1,72 @@
-/* Old World Reference — main theme. Dark mode, in-game-styled.
-   Ported from from-design/design_handoff_nations_table/styles.css.
-   Production ships only the "refined + micro" variant — no Tweaks. */
+/* Old World Reference — Tufte / editorial direction.
+   Ported from from-design/new-may-12/ on 2026-05-12.
+   Warm slate palette (oklch hue 80), Cormorant Garamond + Inter,
+   data-ink discipline: yield → 3px left bar, nation → 2px underline. */
 
 :root {
   color-scheme: dark;
-  --bg: #0e0f12;
-  --bg-elev: #16181d;
-  --bg-elev-2: #1d2027;
-  --bg-elev-3: #23262f;
-  --border: #2a2e37;
-  --border-strong: #3a3f4b;
-  --text: #e8e9ec;
-  --text-dim: #a8acb6;
-  --text-faint: #6c707a;
-  --accent: #c9a04a;
-  --accent-2: #6ea7d4;
 
-  --font-ui: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Cinzel", "Trajan Pro", Georgia, serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* Warm slate palette (oklch, hue 80 = bone/amber) — borrowed from owtt. */
+  --bg:           oklch(0.18 0.012 80);
+  --bg-elev:      oklch(0.22 0.012 78);
+  --bg-elev-2:    oklch(0.25 0.013 78);
+  --bg-elev-3:    oklch(0.28 0.014 78);
+  --border:       oklch(0.32 0.012 80);
+  --border-strong:oklch(0.40 0.014 80);
+  --border-faint: oklch(0.28 0.010 80);
+
+  --text:         oklch(0.94 0.008 80);
+  --text-soft:    oklch(0.82 0.010 80);
+  --text-dim:     oklch(0.62 0.012 80);
+  --text-faint:   oklch(0.48 0.012 80);
+
+  --gold:         oklch(0.82 0.13 82);
+  --gold-soft:    oklch(0.70 0.10 82);
+  --gold-deep:    oklch(0.55 0.08 80);
+  --gold-glow:    oklch(0.82 0.13 82 / 0.18);
+
+  /* Legacy aliases */
+  --accent:       var(--gold);
+  --accent-2:     oklch(0.74 0.08 252);
+
+  --font-ui:      "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   --radius: 6px;
   --radius-sm: 4px;
   --radius-lg: 10px;
+
+  --shadow-sm: 0 1px 0 rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.25);
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; min-height: 100vh; }
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(1200px 600px at 20% -10%, oklch(0.26 0.02 70 / .55), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, oklch(0.24 0.02 250 / .25), transparent 60%),
+    var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
   font-size: 14px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  position: relative;
 }
+/* Subtle parchment grid overlay — almost imperceptible, just enough texture */
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / .013) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / .013) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+}
+main, header { position: relative; z-index: 1; }
 
 a { color: var(--accent-2); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -46,68 +78,125 @@ h1, h2, h3 {
   font-weight: 600;
   letter-spacing: 0.02em;
   margin: 0;
+  color: var(--text);
 }
 
+/* ─── Yield tokens (used as 3px left-bar color on cells) ─── */
+.yield-science     { --yield-bg:#6b5ea6; }
+.yield-civics      { --yield-bg:#c98b46; }
+.yield-training    { --yield-bg:#c25555; }
+.yield-money       { --yield-bg:#d9b13a; }
+.yield-food        { --yield-bg:#5e8c43; }
+.yield-iron        { --yield-bg:#8a8a8e; }
+.yield-stone       { --yield-bg:#b3b3b8; }
+.yield-wood        { --yield-bg:#8a4a08; }
+.yield-culture     { --yield-bg:#4e84b8; }
+.yield-growth      { --yield-bg:#6ba368; }
+.yield-orders      { --yield-bg:#b8b8c0; }
+.yield-discontent  { --yield-bg:#7a6ea3; }
+.yield-happiness   { --yield-bg:#d9b13a; }
+.yield-influence   { --yield-bg:#c8c9d3; }
+.yield-intrigue    { --yield-bg:#735483; }
+.yield-legitimacy  { --yield-bg:#c9a04a; }
+.yield-maintenance { --yield-bg:#a35858; }
+.yield-divine_favor{ --yield-bg:#e3c45f; }
+.yield-wrath       { --yield-bg:#a83838; }
+.yield-misc        { --yield-bg: var(--border-strong); }
+
+/* Legend chips */
+.chip {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.1rem 0.55rem 0.1rem 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  color: var(--text-soft);
+  background: transparent;
+  border: 0;
+  text-decoration: none;
+}
+.chip:hover { color: var(--text); text-decoration: none; }
+.chip__glyph { font-size: 0.95em; color: var(--yield-bg); }
+.chip__icon { width: 1em; height: 1em; object-fit: contain; }
+
 /* ──────────────────────────────────────────────────────────
-   Header
+   Header — editorial: shield tile + eyebrow + serif title
    ────────────────────────────────────────────────────────── */
 .hdr {
   position: sticky; top: 0; z-index: 20;
-  background: linear-gradient(180deg, #14161b, color-mix(in srgb, var(--bg) 92%, transparent));
-  backdrop-filter: saturate(140%) blur(8px);
+  background: linear-gradient(to bottom, oklch(0.16 0.012 80 / .92), oklch(0.16 0.012 80 / .82));
+  backdrop-filter: blur(10px) saturate(140%);
   border-bottom: 1px solid var(--border);
 }
 .hdr__inner {
   max-width: 1700px; margin: 0 auto;
-  padding: 0.7rem 1.1rem;
+  padding: 0.8rem 1.4rem;
   display: grid; grid-template-columns: auto 1fr auto;
   align-items: center; gap: 1.5rem;
 }
 .hdr__brand {
-  display: inline-flex; align-items: baseline; gap: 0.5rem;
+  display: inline-flex; align-items: center; gap: 0.7rem;
   color: var(--text); text-decoration: none;
-  font-family: var(--font-display);
-  letter-spacing: 0.04em;
 }
 .hdr__brand:hover { text-decoration: none; }
 .hdr__mark {
-  width: 1.25em;
-  height: 1.25em;
-  object-fit: contain;
-  vertical-align: -0.2em;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 30% 30%, oklch(0.32 0.05 80), oklch(0.20 0.02 80));
+  border: 1px solid var(--gold-deep);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / .08), var(--shadow-sm);
+  flex-shrink: 0;
 }
-.hdr__title { font-size: 1.05rem; font-weight: 600; }
-.hdr__sub   { color: var(--text-dim); font-size: 0.95rem; font-weight: 500; }
-
+.hdr__mark img { width: 22px; height: 22px; object-fit: contain; }
+.hdr__title-wrap {
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+.hdr__sub {
+  font-family: var(--font-ui);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+.hdr__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.35rem;
+  letter-spacing: 0.005em;
+  color: var(--text);
+}
 .hdr__nav { display: flex; gap: 0.15rem; flex-wrap: wrap; }
 .hdr__navlink {
   color: var(--text-dim);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   padding: 0.4rem 0.7rem;
   border-radius: 6px;
   position: relative;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   text-decoration: none;
 }
 .hdr__navlink:hover { color: var(--text); background: var(--bg-elev); text-decoration: none; }
 .hdr__navlink.is-active {
   color: var(--text);
   background: var(--bg-elev);
-  box-shadow: inset 0 -2px 0 var(--accent);
+  box-shadow: inset 0 -2px 0 var(--gold);
 }
 
 .hdr__search {
   display: inline-flex; align-items: center; gap: 0.5rem;
   background: var(--bg-elev);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 0.35rem 0.55rem;
   min-width: 280px;
 }
-.hdr__search:focus-within {
-  border-color: var(--border-strong);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
-}
+.hdr__search:focus-within { border-color: var(--gold-deep); box-shadow: 0 0 0 2px var(--gold-glow); }
 .hdr__search-ico { color: var(--text-faint); font-size: 1rem; }
 .hdr__search input {
   flex: 1; background: transparent; border: 0; outline: 0;
@@ -118,9 +207,9 @@ h1, h2, h3 {
 .hdr__search input::-webkit-search-cancel-button { display: none; }
 .hdr__search kbd {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   padding: 0.1rem 0.35rem;
-  border-radius: 4px;
+  border-radius: 3px;
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--text-faint);
@@ -132,42 +221,51 @@ h1, h2, h3 {
 .main {
   max-width: 1700px;
   margin: 0 auto;
-  padding: 1.25rem 1.1rem 4rem;
+  padding: 1.25rem 1.4rem 4rem;
 }
 .page-meta {
   display: flex; justify-content: space-between; align-items: flex-end;
   gap: 1.5rem;
   margin-bottom: 1rem;
 }
+.page-eyebrow {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--gold-soft);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
 .page-title {
   font-family: var(--font-display);
-  font-size: 1.7rem;
+  font-size: 2rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  margin: 0 0 0.25rem;
-  display: inline-flex; align-items: center; gap: 0.5rem;
+  letter-spacing: 0.01em;
+  margin: 0;
+  color: var(--text);
+  display: inline-flex; align-items: baseline; gap: 0.5rem;
 }
-.page-title__mark { font-size: 1.2rem; }
-.page-stats { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.page-title__mark { display: none; }
+.page-stats { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end; }
 .stat {
-  font-size: 0.72rem; color: var(--text-dim);
+  font-size: 0.72rem; color: var(--text-soft);
   background: var(--bg-elev);
   border: 1px solid var(--border);
-  padding: 0.3rem 0.6rem;
+  padding: 0.4rem 0.6rem;
   border-radius: 6px;
   font-variant-numeric: tabular-nums;
 }
-.stat b { color: var(--text); font-weight: 700; margin-right: 0.2rem; }
+.stat b { color: var(--text); font-weight: 700; font-family: var(--font-mono); margin-right: 0.2rem; }
 
 /* ──────────────────────────────────────────────────────────
-   Nations grid scroll wrapper
+   Nations grid scroll wrapper — minimal frame in Tufte direction
    ────────────────────────────────────────────────────────── */
 .grid { position: relative; }
 .grid__scroll {
   overflow: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 .grid__searchnote {
   font-size: 0.75rem;
@@ -175,25 +273,18 @@ h1, h2, h3 {
   padding: 0.5rem 0.2rem 0;
 }
 .is-hidden { display: none !important; }
-/* Table <col> elements need visibility:collapse to actually remove the
-   column from layout under table-layout:fixed. display:none doesn't
-   collapse the reserved width. */
 .ntbl col.is-hidden { visibility: collapse; display: revert !important; }
 
 /* ──────────────────────────────────────────────────────────
-   Nations table — refined + micro variant only
+   Nations table — Tufte direction
    ────────────────────────────────────────────────────────── */
 .ntbl {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.82rem;
-  /* Lock nation columns to the widths declared on <col> so every nation
-     gets the same horizontal real estate regardless of text length. */
+  border-collapse: collapse;
+  font-size: 0.8rem;
   table-layout: fixed;
+  font-variant-numeric: tabular-nums;
 }
-/* Equal-width nation columns. The row-label column needs an explicit
-   width too under table-layout: fixed. */
 .ntbl col.ntbl__rowlabel-col { width: 8.5rem; }
 .ntbl col[data-nation] { width: 11rem; }
 .ntbl thead th { font-weight: 500; }
@@ -201,331 +292,285 @@ h1, h2, h3 {
 
 /* Sticky row-label column */
 .rowlabel {
-  background: var(--bg-elev);
-  color: var(--text-dim);
+  background: transparent;
+  color: var(--text-soft);
   font-family: var(--font-display);
   font-weight: 600;
-  text-align: left;
-  font-size: 0.62rem;
-  letter-spacing: 0.02em;
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+  text-align: right;
   position: sticky;
   left: 0;
   z-index: 3;
   border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  min-width: 7rem;
-  padding: 0.3rem 0.55rem;
+  padding: 0.4rem 0.8rem 0.4rem 0;
 }
 .rowlabel--corner {
   background: var(--bg);
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.06em;
-  text-transform: none;
-  color: var(--text-faint);
   z-index: 5;
   position: sticky; top: 0; left: 0;
   border-bottom: 1px solid var(--border);
-  font-weight: 400;
+  border-right: 1px solid var(--border);
+  padding: 1rem 0.7rem 0.6rem 0;
+  text-align: right;
 }
-.rowlabel--corner .rowlabel__small { display: block; opacity: 0.85; }
-.rowlabel--corner .rowlabel__big   { display: block; color: var(--text-dim); margin-top: 2px; }
+.rowlabel--corner .rowlabel__small,
+.rowlabel--corner .rowlabel__big {
+  font-family: var(--font-ui);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+  display: block;
+  font-weight: 500;
+}
+.rowlabel--corner .rowlabel__big {
+  color: var(--gold-soft);
+  margin-top: 3px;
+}
 
-/* Section header rows */
+/* Section header rows — gold eyebrow + gold-deep underline */
 .srow__th {
-  background: var(--bg);
-  color: var(--accent);
-  font-family: var(--font-display);
-  letter-spacing: 0.04em;
-  font-size: 0.85rem;
+  background: transparent;
+  color: var(--gold-soft);
+  font-family: var(--font-ui);
   font-weight: 600;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   text-align: left;
-  padding: 1.1rem 0.7rem 0.4rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border) 65%);
+  padding: 1.75rem 0 0.45rem 0;
+  border-bottom: 1px solid var(--gold-deep);
   position: sticky; left: 0;
 }
-.srow__chevron {
-  display: inline-block;
-  color: var(--accent);
-  opacity: 0.55;
-  margin-right: 0.4rem;
-  font-size: 0.65em;
-}
+.srow__chevron { display: none; }
 
-/* Nation column headers (sticky-top) */
+/* Nation column header — transparent bg, 2px nation-color rule below */
 .nhdr {
-  background: var(--nation-bg, var(--bg-elev));
-  color: var(--nation-fg, var(--text));
-  border-bottom: 2px solid color-mix(in srgb, var(--nation-bg) 50%, #000 50%);
-  text-align: center;
-  vertical-align: bottom;
+  background: transparent;
+  color: var(--text);
   position: sticky; top: 0;
   z-index: 2;
-  padding: 0.4rem 0.4rem;
-  min-width: 9rem;
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.18));
+  padding: 1rem 0.6rem 0.6rem;
+  text-align: left;
+  vertical-align: bottom;
 }
-.nhdr__inner { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.nhdr__inner {
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+.nhdr__inner::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0.5rem; bottom: 0;
+  height: 2px;
+  background: var(--nation-bg);
+  opacity: 0.9;
+}
 .nhdr__link {
-  display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
   color: inherit; text-decoration: none;
 }
 .nhdr__link:hover { text-decoration: none; }
-.nhdr__link:hover .nhdr__name { text-decoration: underline; }
+.nhdr__link:hover .nhdr__name { color: var(--gold); }
 .nhdr__crest {
   width: 26px; height: 26px;
   object-fit: contain;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4));
+  opacity: 0.95;
 }
 .nhdr__name {
   font-family: var(--font-display);
-  letter-spacing: 0.02em;
-  font-size: 0.74rem;
   font-weight: 600;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.18);
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  line-height: 1.05;
 }
 
-/* Data cells */
+/* Data cells — transparent, 3px yield bar left, 2px nation hairline right */
 .cell {
   position: relative;
-  background: var(--yield-bg, var(--bg-elev));
-  color: var(--yield-fg, var(--text));
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
-  border-right: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
-  border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
-  padding: 0.28rem 0.45rem;
-  font-size: 0.72rem;
-  line-height: 1.25;
-  transition: filter 0.12s;
+  background: transparent;
+  color: var(--text);
+  padding: 0.5rem 0.7rem 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.32;
+  border-bottom: 1px solid var(--border-faint);
+}
+.cell::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem; top: 0.4rem; bottom: 0.4rem;
+  width: 3px;
+  background: var(--yield-bg, transparent);
+  border-radius: 1px;
+}
+.cell::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0.4rem; bottom: 0.4rem;
+  width: 2px;
+  background: var(--nation-bg);
+  opacity: 0.35;
 }
 .cell.is-empty {
-  background: var(--bg-elev);
-  background-image: none;
   color: var(--text-faint);
-  border-color: var(--border);
 }
-.cell__dash { opacity: 0.5; font-family: var(--font-mono); }
+.cell.is-empty::before,
+.cell.is-empty::after { display: none; }
+.cell__dash { opacity: 0.3; font-family: var(--font-mono); }
 
+/* Links inside cells — quiet, underline on hover only */
 .cell a, .cell .term {
   color: inherit;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
-  text-underline-offset: 2px;
-  text-decoration-thickness: 1px;
+  text-decoration: none;
   border-bottom: 0;
 }
 .cell a:hover, .cell .term:hover {
-  text-decoration-color: currentColor;
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
   border-bottom: 0;
 }
 .cell .term__icon {
   width: 0.95em; height: 0.95em;
   vertical-align: -0.1em;
-  margin-right: 0.15em;
+  margin: 0 0.05em;
   object-fit: contain;
 }
 
-/* Shrine cell internals — DEITY name is the headline (matches the in-game
-   label), TYPE is a small chip with the shrine icon underneath. */
+/* Shrine cell internals — 18px game icon + serif type + italic deity */
 .shrine {
   display: flex; flex-direction: column;
   gap: 0.05rem;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
+}
+.shrine__head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.shrine__art {
+  width: 18px; height: 18px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.5));
+  opacity: 0.92;
+  flex-shrink: 0;
+}
+.shrine__type {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.005em;
+  color: var(--text);
+  line-height: 1.1;
 }
 .shrine__deity {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.92rem;
-  letter-spacing: 0.02em;
-  color: inherit;
-  line-height: 1.15;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.74rem;
+  letter-spacing: 0.01em;
+  color: var(--text-faint);
 }
-.shrine__type {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.6rem;
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.85;
-  color: inherit;
-  margin-top: 0.05rem;
-}
-.shrine__type-icon {
-  width: 1.4em;
-  height: 1em;
-  object-fit: cover;
-  border-radius: 2px;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.4);
-}
-.shrine__type-label {
-  font-weight: 500;
-}
-.shrine__glyph { font-size: 0.95em; opacity: 0.85; }
-
-/* Shrine cells: in-game art as background texture, with a strong yield
-   tint everywhere and a hard dark scrim under the text area. The art is
-   visible as a subdued texture (especially in the unused right/bottom),
-   not as a competing image.
-   Layered backgrounds (top → bottom):
-     1. Strong dark scrim (text legibility)
-     2. Yield-color overlay (keeps the cell visually yield-coded)
-     3. The shrine art (de-emphasized via the layers above it) */
-.cell--shrine {
-  position: relative;
-  background-color: var(--yield-bg, var(--bg-elev));
-  /* The art lives in a ::before pseudo-element so we can independently
-     blur and dim it without affecting the yield-color layer.
-     Multi-yield shrines (e.g. Wisdom → Science + Civics) set
-     --yield-fill to a diagonal gradient that draws under the scrim. */
-  isolation: isolate;
-  background-image:
-    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32)),
-    var(--yield-fill, none);
-  border-right: 1px solid color-mix(in srgb, var(--yield-bg, #000) 50%, #000 50%);
-  border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, #000) 50%, #000 50%);
-  overflow: hidden;
-}
-.cell--shrine::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: var(--shrine-art);
-  background-size: cover;
-  background-position: center 35%;
-  opacity: 0.12;
-  filter: saturate(0.55) contrast(0.9);
-  z-index: -1;
-  pointer-events: none;
-}
-/* Text on shrine cells gets stronger shadows for legibility over the
-   painted backgrounds, and the deity name is forced white-pure. */
-.cell--shrine .shrine__deity,
-.cell--shrine .shrine__effect {
-  position: relative;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.75), 0 0 4px rgba(0,0,0,0.45);
+.shrine__effect {
+  margin-top: 0.15rem;
+  color: var(--text-soft);
 }
 
-/* Effect-list cells: stack of yield-colored mini-tiles, one per effect.
-   Outer cell has no padding so each effect tile owns its own edges. */
-.cell--effects {
-  background: var(--bg);
-  background-image: none;
-  padding: 0;
-}
-.cell--effects .effect {
-  display: block;
-  background: var(--yield-bg, var(--bg-elev));
-  color: var(--yield-fg, var(--text));
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
-  padding: 0.3rem 0.5rem;
-  font-size: 0.72rem;
-  line-height: 1.25;
-  border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
-}
-.cell--effects .effect:last-child { border-bottom: 0; }
-
-/* Family cells: the in-game per-family hex color is the cell bg (set inline
-   via --yield-bg / --yield-fg). The class icon precedes the class name. */
-.fam { display: flex; flex-direction: column; }
-.fam__class {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
-}
+/* Family cell internals — serif class + italic name */
+.fam { display: flex; flex-direction: column; gap: 0.05rem; }
+.fam__head { display: inline-flex; align-items: center; gap: 0.35rem; }
 .fam__icon {
-  width: 1em;
-  height: 1em;
+  width: 1em; height: 1em;
   object-fit: contain;
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
   flex-shrink: 0;
+  opacity: 0.85;
+}
+.fam__class {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.96rem;
+  letter-spacing: 0.005em;
+  color: var(--text);
+  line-height: 1.1;
 }
 .fam__name {
-  margin-top: 0.05rem;
+  font-family: var(--font-display);
   font-style: italic;
-  font-size: 0.64rem;
-  opacity: 0.72;
-  font-family: var(--font-ui);
   font-weight: 400;
-  letter-spacing: 0.02em;
+  font-size: 0.74rem;
+  letter-spacing: 0.01em;
+  color: var(--text-faint);
 }
 
 /* ──────────────────────────────────────────────────────────
-   Yield color tokens — applied via .yield-{key} class
+   Caption + legends
    ────────────────────────────────────────────────────────── */
-.yield-science     { --yield-bg: #6b5ea6; --yield-fg: #fff; }
-.yield-civics      { --yield-bg: #c98b46; --yield-fg: #fff; }
-.yield-training    { --yield-bg: #c25555; --yield-fg: #fff; }
-.yield-money       { --yield-bg: #d9b13a; --yield-fg: #1a1408; }
-.yield-food        { --yield-bg: #5e8c43; --yield-fg: #fff; }
-.yield-iron        { --yield-bg: #8a8a8e; --yield-fg: #14161b; }
-.yield-stone       { --yield-bg: #b3b3b8; --yield-fg: #14161b; }
-.yield-wood        { --yield-bg: #8a4a08; --yield-fg: #fff; }
-.yield-culture     { --yield-bg: #4e84b8; --yield-fg: #fff; }
-.yield-growth      { --yield-bg: #6ba368; --yield-fg: #fff; }
-.yield-orders      { --yield-bg: #b8b8c0; --yield-fg: #14161b; }
-.yield-discontent  { --yield-bg: #7a6ea3; --yield-fg: #fff; }
-.yield-happiness   { --yield-bg: #d9b13a; --yield-fg: #1a1408; }
-.yield-influence   { --yield-bg: #c8c9d3; --yield-fg: #14161b; }
-.yield-intrigue    { --yield-bg: #735483; --yield-fg: #fff; }
-.yield-legitimacy  { --yield-bg: #c9a04a; --yield-fg: #1a1408; }
-.yield-maintenance { --yield-bg: #a35858; --yield-fg: #fff; }
-.yield-divine_favor{ --yield-bg: #e3c45f; --yield-fg: #1a1408; }
-.yield-wrath       { --yield-bg: #a83838; --yield-fg: #fff; }
-
-/* Misc: catch-all for cells that don't classify to a known yield. A subtle
-   slate so they don't read as "missing" against the colorful neighbors. */
-.yield-misc        { --yield-bg: #3d4250; --yield-fg: #e8e9ec; }
-
-/* Neutral chip variant (used for the family-class legend, etc.) */
-.chip--neutral {
-  background: var(--bg-elev);
-  color: var(--text);
-  border: 1px solid var(--border);
+.legends {
+  margin-top: 1rem;
+  display: flex; flex-direction: column; gap: 0.4rem;
+}
+.legend {
+  display: flex; flex-wrap: wrap; gap: 0.35rem 0.6rem;
+  align-items: center;
+  font-size: 0.72rem; color: var(--text-soft);
+}
+.legend__label {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--gold-soft);
+  margin-right: 0.4rem;
   font-weight: 500;
 }
+.legend__label em { color: var(--gold); font-style: normal; }
+.caption {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--gold-soft);
+  font-weight: 500;
+  margin-top: 0.4rem;
+}
 
 /* ──────────────────────────────────────────────────────────
-   Nation picker (popover triggered by the "X of Y visible" stat)
+   Nation picker popover (attached to the visibility stat)
    ────────────────────────────────────────────────────────── */
+.picker { position: relative; }
 .stat--button {
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font: inherit;
 }
-.stat--button:hover { border-color: var(--border-strong); color: var(--text); }
-.stat--button[aria-expanded="true"] {
-  border-color: var(--accent);
-  background: var(--bg-elev-2);
-}
-.stat__chev {
-  font-size: 0.7em;
-  color: var(--text-faint);
-  transition: transform 0.15s;
-}
+.stat--button:hover { color: var(--text); border-color: var(--gold-deep); }
+.stat--button[aria-expanded="true"] { border-color: var(--gold-deep); background: var(--bg-elev-2); }
+.stat__chev { color: var(--text-faint); font-size: 0.7em; transition: transform 0.15s; }
 .stat--button[aria-expanded="true"] .stat__chev { transform: rotate(180deg); }
 
 .nation-picker {
   margin-bottom: 0.75rem;
   background: var(--bg-elev);
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
   max-width: 540px;
   margin-left: auto;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
 }
 .nation-picker[hidden] { display: none; }
 .nation-picker__actions {
-  display: flex;
-  gap: 0.4rem;
+  display: flex; gap: 0.4rem;
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border);
@@ -534,14 +579,14 @@ h1, h2, h3 {
   font-family: var(--font-ui);
   font-size: 0.72rem;
   padding: 0.25rem 0.65rem;
-  background: var(--bg);
-  color: var(--text-dim);
+  background: transparent;
+  color: var(--text-soft);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
 }
 .nation-picker__action:hover { color: var(--text); border-color: var(--border-strong); }
-.nation-picker__action--close { margin-left: auto; color: var(--accent); }
+.nation-picker__action--close { margin-left: auto; color: var(--gold); border-color: color-mix(in srgb, var(--gold) 40%, var(--border)); }
 .nation-picker__list {
   list-style: none;
   margin: 0; padding: 0;
@@ -552,57 +597,28 @@ h1, h2, h3 {
 .nation-picker__row {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   padding: 0.2rem 0.3rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   user-select: none;
 }
 .nation-picker__row:hover { background: var(--bg-elev-2); }
-.nation-picker__cb { margin: 0; accent-color: var(--accent); }
-.nation-picker__crest { width: 18px; height: 18px; object-fit: contain; }
-.nation-picker__name { color: var(--text); }
+.nation-picker__cb { margin: 0; accent-color: var(--gold); }
+.nation-picker__crest { width: 18px; height: 18px; object-fit: contain; opacity: 0.95; }
+.nation-picker__name {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
 .nation-picker__row:has(input:not(:checked)) .nation-picker__name { color: var(--text-faint); text-decoration: line-through; }
 .nation-picker__row:has(input:not(:checked)) .nation-picker__crest { opacity: 0.45; }
 
-/* Legend chip — solid pastel pill */
-.chip {
-  display: inline-flex; align-items: center; gap: 0.35rem;
-  padding: 0.18rem 0.55rem;
-  border-radius: 999px;
-  background: var(--yield-bg, var(--bg-elev));
-  color: var(--yield-fg, var(--text));
-  border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 70%, #000 30%);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-decoration: none;
-}
-.chip:hover { text-decoration: none; filter: brightness(1.1); }
-.chip__glyph { font-size: 0.9em; opacity: 0.85; }
-.chip__icon { width: 1em; height: 1em; object-fit: contain; }
-
 /* ──────────────────────────────────────────────────────────
-   Legends / footer
+   Footer
    ────────────────────────────────────────────────────────── */
-.legends {
-  margin-top: 1rem;
-  display: flex; flex-direction: column; gap: 0.4rem;
-}
-.legend {
-  display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center;
-  font-size: 0.72rem; color: var(--text-dim);
-}
-.legend__label {
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.02em;
-  color: var(--text-faint);
-  margin-right: 0.4rem;
-}
-.legend__label em { font-style: italic; color: var(--accent); font-weight: 500; }
-
 .foot {
   margin-top: 2rem;
   padding-top: 0.9rem;
@@ -610,22 +626,23 @@ h1, h2, h3 {
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 0.6rem 1.2rem;
   font-size: 0.72rem;
-  color: var(--text-dim);
+  color: var(--text-soft);
 }
 .foot__col { display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
 .foot__label {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-faint);
+  letter-spacing: 0.2em;
+  color: var(--gold-soft);
   margin-right: 0.2rem;
+  font-weight: 500;
 }
 .foot__val { color: var(--text); font-variant-numeric: tabular-nums; }
 .foot__val--dim { color: var(--text-dim); }
 .foot__dot { color: var(--text-faint); opacity: 0.6; }
-.foot a { color: var(--text-dim); text-decoration: none; }
-.foot a:hover { color: var(--accent); text-decoration: underline; }
+.foot a { color: var(--text-soft); text-decoration: none; }
+.foot a:hover { color: var(--gold); text-decoration: underline; }
 
 /* ──────────────────────────────────────────────────────────
    Mobile fallback
