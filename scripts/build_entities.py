@@ -87,7 +87,9 @@ YIELD_ALIASES: dict[str, list[str]] = {
     "civics":       ["Civics", "Civic", "Civ"],
     "culture":      ["Culture", "Cult"],
     "science":      ["Science", "Sci"],
-    "money":        ["Money", "Coin", "Coins", "Mint"],
+    # "Coin"/"Coins"/"Mint" deliberately excluded — they're project names
+    # ("Mint Coin", "Mint Coinage") and would mis-iconize as the Money glyph.
+    "money":        ["Money"],
     "growth":       ["Growth", "Settler", "Settlers"],
     "food":         ["Food", "Harvest", "Farms", "Farm", "Pastures", "Pasture"],
     "wood":         ["Wood", "Lumber", "Chop", "Chopping", "Forests", "Forest"],
