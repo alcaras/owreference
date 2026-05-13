@@ -41,20 +41,20 @@ export function getEntityBySlug(type: Entity['type'], slug: string): Entity | un
   return bySlug[`${type}:${slug}`];
 }
 
-// Pre-compiled regex matching any known alias. Word-bounded.
+// Pre-compiled regex matching any known alias. Word-bounded, case-insensitive
+// so lowercase yaml phrasings like "(+money +legitimacy)" also iconize.
 // Sorted longest-first so "Heavy Cavalry" beats "Cavalry".
 const aliasPattern: RegExp = (() => {
   const escaped = data.aliasIndex.map(a => a.alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  // Use boundaries that work for words like "Sci" inside "Science"
-  // \b doesn't work great for non-word chars (e.g. emojis); use lookarounds.
-  return new RegExp(`(?<![A-Za-z0-9])(${escaped.join('|')})(?![A-Za-z0-9])`, 'g');
+  return new RegExp(`(?<![A-Za-z0-9])(${escaped.join('|')})(?![A-Za-z0-9])`, 'gi');
 })();
 
 const aliasToEntity: Map<string, Entity> = (() => {
   const m = new Map<string, Entity>();
   for (const { alias, id } of data.aliasIndex) {
     const e = byId[id];
-    if (e && !m.has(alias)) m.set(alias, e);  // first wins (already sorted longest)
+    // Index by lowercase so case-insensitive matches can resolve back.
+    if (e && !m.has(alias.toLowerCase())) m.set(alias.toLowerCase(), e);
   }
   return m;
 })();
@@ -76,7 +76,7 @@ export function linkify(text: string): LinkedSegment[] {
     if (match.index > lastIdx) {
       segments.push({ text: text.slice(lastIdx, match.index) });
     }
-    const e = aliasToEntity.get(match[0]);
+    const e = aliasToEntity.get(match[0].toLowerCase());
     segments.push({ text: match[0], entity: e });
     lastIdx = match.index + match[0].length;
   }
