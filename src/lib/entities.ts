@@ -7,7 +7,7 @@ import entitiesData from '../data/entities.json';
 export interface Entity {
   id: string;
   slug: string;
-  type: 'yield' | 'concept' | 'nation' | 'family' | 'tech' | 'resource' | 'unit' | 'law' | 'improvement';
+  type: 'yield' | 'concept' | 'nation' | 'family' | 'tech' | 'resource' | 'unit' | 'law' | 'improvement' | 'project' | 'promotion';
   name: string;
   aliases: string[];
   page: string;

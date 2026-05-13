@@ -21,18 +21,15 @@ function shouldIconize(seg: typeof segments[number]): boolean {
   if (!iconsForYields) return false;
   if (!seg.entity) return false;
   if (!seg.entity.icon) return false;
-  return ['yield', 'concept', 'improvement'].includes(seg.entity.type);
+  return ['yield', 'concept', 'improvement', 'resource', 'project', 'promotion'].includes(seg.entity.type);
 }
 
-// Tighten the rendering to match in-game style: the game writes "2🌾" not
-// "+2 Food". When iconsForYields is on, we apply two text passes between
-// segments:
-//   1. Strip a leading "+" immediately before an iconized yield/improvement.
-//      "+2 " before a yield-icon → "2 " (negatives keep their sign).
-//   2. Drop the comma between two iconized values that the spreadsheet
-//      separates: "+2 Civics, +1 Order/Wonder" already reduces to
-//      "2 [civ] 1 [order]/[wonder]" — leave the slash alone, drop the
-//      ", " between adjacent iconized chunks.
+// Match in-game style: the game writes "2🌾" not "+2 Food". Only strip
+// the leading "+" when it precedes an *integer value followed by a space*
+// that gets iconized — i.e. a raw count like "+2 Training" → "2 [training]".
+// Leave "+" before a percentage ("+20% Mines") alone since the % carries
+// modifier meaning. Leave commas alone too — they keep multi-value lists
+// scanning naturally.
 function processedSegments() {
   if (!iconsForYields) return segments;
   const out: typeof segments = [];
@@ -40,13 +37,11 @@ function processedSegments() {
     let s = segments[i];
     const nextIconized = shouldIconize(segments[i + 1] || { text: '', entity: undefined } as any);
     if (nextIconized && !s.entity) {
-      // Drop a leading "+" only when it directly precedes an iconized yield;
-      // also collapse a ", " separator into a single space.
-      let t = s.text;
-      // ", " before an iconized yield → " "
-      t = t.replace(/,\s+\+?(?=$)/, ' ');
-      // "+" at the start of a trailing number-then-space → number-then-space
-      t = t.replace(/(^|\s)\+(?=\d)/g, '$1');
+      // "+" immediately before a [digit(s).optional-decimal] then a SPACE
+      // that's about to become an iconized yield — strip the "+".
+      // Won't match "+20%" (no space after digits), "+Cult" (no digit), or
+      // standalone "+" with non-yield text following.
+      const t = s.text.replace(/(^|\s)\+(?=[\d.]+\s)/g, '$1');
       s = { ...s, text: t };
     }
     out.push(s);

@@ -244,6 +244,49 @@ def build() -> dict:
             "icon": f"img/icons/improvements/{filename}",
         })
 
+    # Project icons (city projects referenced in bonus / shrine text)
+    PROJECT_ALIASES: dict[str, list[str]] = {
+        "treasury_1":   ["Treasury"],
+        "olympics_1":   ["Olympics", "Olympiad", "Olympic Games"],
+        # Mint Coin has no dedicated sprite; register with no icon so the
+        # text "Mint Coin" stays as plain text rather than mis-iconizing.
+    }
+    PUBLIC_PROJECTS = ROOT / "public" / "img" / "icons" / "projects"
+    for key, aliases in PROJECT_ALIASES.items():
+        filename = key + ".png"
+        if not (PUBLIC_PROJECTS / filename).exists():
+            continue
+        entities.append({
+            "id": f"PROJECT_{key.upper()}",
+            "slug": key.split("_")[0],
+            "type": "project",
+            "name": aliases[0],
+            "aliases": aliases,
+            "page": "wonders",
+            "icon": f"img/icons/projects/{filename}",
+        })
+
+    # Unit-effect / promotion icons (Focus tiers etc.)
+    PROMOTION_ALIASES: dict[str, list[str]] = {
+        "focus1": ["Focus I", "Focus 1"],
+        "focus2": ["Focus II", "Focus 2"],
+        "focus3": ["Focus III", "Focus 3"],
+    }
+    PUBLIC_EFFECTS = ROOT / "public" / "img" / "icons" / "effects"
+    for key, aliases in PROMOTION_ALIASES.items():
+        filename = key + ".png"
+        if not (PUBLIC_EFFECTS / filename).exists():
+            continue
+        entities.append({
+            "id": f"EFFECTUNIT_{key.upper()}",
+            "slug": key,
+            "type": "promotion",
+            "name": aliases[0],
+            "aliases": aliases,
+            "page": "promotions",
+            "icon": f"img/icons/effects/{filename}",
+        })
+
     # Resources
     if (XML_DIR / "resource.xml").exists():
         for entry in parse("resource.xml").findall("Entry"):

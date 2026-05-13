@@ -15,13 +15,24 @@ type Row =
       skipClassify?: boolean;
     };
 
+function bonusSource(n: typeof nations[number]): string[] {
+  const xml = (n as any).effectsXml as string[] | undefined;
+  const yaml = (n as any).bonuses as string[] | undefined;
+  const xmlLen = xml?.length || 0;
+  const yamlLen = yaml?.length || 0;
+  if (xmlLen >= yamlLen) return xml || [];
+  return yaml || [];
+}
+
 const rows: Row[] = [
   { kind: 'section', label: 'Bonuses' },
-  // Bonus 1/2/3 pull from the XML-canonical effects list (humanizer output).
-  // Fallback to legacy yaml bonuses for nations whose XML coverage is partial.
-  { kind: 'bonus', label: 'Bonus 1', field: n => (n.effectsXml?.[0] ?? n.bonuses?.[0]) },
-  { kind: 'bonus', label: 'Bonus 2', field: n => (n.effectsXml?.[1] ?? n.bonuses?.[1]) },
-  { kind: 'bonus', label: 'Bonus 3', field: n => (n.effectsXml?.[2] ?? n.bonuses?.[2]) },
+  // Bonus 1/2/3 pull from a single source per nation. Use XML-canonical
+  // effects when they're at least as complete as the yaml curation;
+  // otherwise fall back entirely to yaml (so we don't mix-and-match
+  // index-by-index, which produced duplicates and dropped entries).
+  { kind: 'bonus', label: 'Bonus 1', field: n => bonusSource(n)[0] },
+  { kind: 'bonus', label: 'Bonus 2', field: n => bonusSource(n)[1] },
+  { kind: 'bonus', label: 'Bonus 3', field: n => bonusSource(n)[2] },
 
   { kind: 'section', label: 'Shrines' },
   { kind: 'shrine', label: 'Shrine 1', field: n => n.shrines?.[0] },

@@ -35,9 +35,11 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^SPECIALIST_([A-Z_]+?)()$"), "icons/specialists"),
     (re.compile(r"^TECH_([A-Z_]+?)()$"), "icons/techs"),
     (re.compile(r"^IMPROVEMENT_SHRINE_([A-Z_]+?)()$"), "icons/shrines"),
-    # General improvement icons (excludes _SHRINE_ matched above, ruins/temp
-    # placeholders, and per-religion sub-icons we don't need here).
     (re.compile(r"^IMPROVEMENT_(?!SHRINE_|RUINS|PILLAGED|FINISHED|LIBRARY_TEMP|DEAD_|.*_RUINS|SETTLEMENT_|HOVEL_|BASTION_|OUTPOST_|ANCIENT_|ENCAMPMENT_|CITY_SITE)([A-Z0-9_]+?)()$"), "icons/improvements"),
+    # Project icons used in shrine/bonus text — e.g. Treasury, Olympics
+    (re.compile(r"^PROJECT_([A-Z_0-9]+?)()$"), "icons/projects"),
+    # Unit effect / promotion icons — e.g. Focus I/II/III, Steadfast
+    (re.compile(r"^EFFECTUNIT_([A-Z_0-9]+?)()$"), "icons/effects"),
 ]
 
 
