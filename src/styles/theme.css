@@ -393,37 +393,19 @@ h1, h2, h3 {
   line-height: 1.05;
 }
 
-/* Data cells — transparent, 3px yield bar left, 2px nation hairline right */
+/* Data cells — transparent bg. No yield bar / no nation bar; inline icons
+   carry the categorical encoding (yield/improvement glyphs in effect text,
+   crests in the column header, shrine art beside the type label). */
 .cell {
   position: relative;
   background: transparent;
   color: var(--text);
-  padding: 0.5rem 0.7rem 0.5rem 0.85rem;
+  padding: 0.5rem 0.7rem;
   font-size: 0.8rem;
   line-height: 1.32;
   border-bottom: 1px solid var(--border-faint);
 }
-.cell::before {
-  content: '';
-  position: absolute;
-  left: 0.15rem; top: 0.4rem; bottom: 0.4rem;
-  width: 3px;
-  background: var(--yield-bg, transparent);
-  border-radius: 1px;
-}
-.cell::after {
-  content: '';
-  position: absolute;
-  right: 0; top: 0.4rem; bottom: 0.4rem;
-  width: 2px;
-  background: var(--nation-bg);
-  opacity: 0.35;
-}
-.cell.is-empty {
-  color: var(--text-faint);
-}
-.cell.is-empty::before,
-.cell.is-empty::after { display: none; }
+.cell.is-empty { color: var(--text-faint); }
 .cell__dash { opacity: 0.3; font-family: var(--font-mono); }
 
 /* Links inside cells — quiet, underline on hover only */
@@ -598,11 +580,15 @@ h1, h2, h3 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.2rem 0.3rem;
+  padding: 0.2rem 0.3rem 0.2rem 0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.78rem;
   user-select: none;
+  position: relative;
+  /* In-game nation color shows as a 3px left-edge swatch on each row */
+  box-shadow: inset 3px 0 0 var(--nation-bg, var(--border));
+  padding-left: 0.6rem;
 }
 .nation-picker__row:hover { background: var(--bg-elev-2); }
 .nation-picker__cb { margin: 0; accent-color: var(--gold); }
@@ -615,6 +601,9 @@ h1, h2, h3 {
 }
 .nation-picker__row:has(input:not(:checked)) .nation-picker__name { color: var(--text-faint); text-decoration: line-through; }
 .nation-picker__row:has(input:not(:checked)) .nation-picker__crest { opacity: 0.45; }
+.nation-picker__row:has(input:not(:checked)) {
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--nation-bg) 35%, transparent 65%);
+}
 
 /* ──────────────────────────────────────────────────────────
    Footer

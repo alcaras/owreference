@@ -118,7 +118,7 @@ for (const n of nations) {
     <ul class="nation-picker__list">
       {ordered.map(n => (
         <li class="nation-picker__item">
-          <label class="nation-picker__row">
+          <label class={`nation-picker__row n-${n.slug}`}>
             <input type="checkbox" class="nation-picker__cb" value={n.slug} checked />
             <img class="nation-picker__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
             <span class="nation-picker__name">{n.name}</span>
