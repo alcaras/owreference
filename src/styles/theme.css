@@ -55,14 +55,17 @@ body {
   min-height: 100vh;
   position: relative;
 }
-/* Subtle parchment grid overlay — almost imperceptible, just enough texture */
+/* Subtle parchment grid overlay — almost imperceptible, just enough texture.
+   Use rgba (not oklch at very low alpha) — Chromium occasionally rendered
+   the oklch form with a visible red/magenta cast on wide-gamut displays
+   while Firefox stayed correctly neutral. */
 body::before {
   content: "";
   position: fixed; inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / .013) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / .013) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.018) 1px, transparent 1px);
   background-size: 60px 60px;
   z-index: 0;
 }
@@ -286,13 +289,13 @@ h1, h2, h3 {
 .ntbl {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.74rem;
-  line-height: 1.28;
+  font-size: 0.82rem;
+  line-height: 1.3;
   table-layout: fixed;
   font-variant-numeric: tabular-nums;
 }
-.ntbl col.ntbl__rowlabel-col { width: 7rem; }
-.ntbl col[data-nation] { width: 11.5rem; }
+.ntbl col.ntbl__rowlabel-col { width: 7.5rem; }
+.ntbl col[data-nation] { width: 12.5rem; }
 .ntbl thead th { font-weight: 500; }
 .ntbl th, .ntbl td { vertical-align: top; }
 
@@ -303,7 +306,7 @@ h1, h2, h3 {
   color: var(--text-soft);
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   letter-spacing: 0.01em;
   text-align: right;
   position: sticky;
@@ -409,9 +412,9 @@ h1, h2, h3 {
   position: relative;
   background: transparent;
   color: var(--text);
-  padding: 0.16rem 0.55rem;
-  font-size: 0.74rem;
-  line-height: 1.18;
+  padding: 0.22rem 0.6rem;
+  font-size: 0.82rem;
+  line-height: 1.22;
   border-bottom: 1px solid var(--border-faint);
 }
 .cell.is-empty { color: var(--text-faint); }
@@ -467,7 +470,7 @@ h1, h2, h3 {
 .shrine__type {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   letter-spacing: 0.005em;
   color: var(--text);
 }
@@ -475,7 +478,7 @@ h1, h2, h3 {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   letter-spacing: 0.01em;
   color: var(--text-faint);
 }
@@ -504,7 +507,7 @@ h1, h2, h3 {
 .fam__class {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.86rem;
+  font-size: 0.95rem;
   letter-spacing: 0.005em;
   color: var(--text);
 }
@@ -512,7 +515,7 @@ h1, h2, h3 {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   letter-spacing: 0.01em;
   color: var(--text-faint);
 }

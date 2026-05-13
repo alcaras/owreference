@@ -1,0 +1,309 @@
+---
+import Base from '../../layouts/Base.astro';
+import tribes from '../../data/tribes.json';
+
+export function getStaticPaths() {
+  return tribes.map(t => ({ params: { slug: t.slug }, props: { tribe: t } }));
+}
+
+const { tribe } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const isDiplomatic = tribe.diplomacy && !!tribe.unit;
+const unit = tribe.unit;
+---
+
+<Base
+  title={tribe.name}
+  active="tribes"
+  description={`Old World tribe — ${tribe.name}${unit ? ` · signature unit: ${unit.unitName} (${unit.promoName})` : ''}.`}
+>
+  <nav class="crumbs">
+    <a href={`${base}tribes`}>Tribes</a>
+    <span class="crumbs__sep">›</span>
+    <span class="crumbs__here">{tribe.name}</span>
+  </nav>
+
+  <header class="tribe-hero">
+    <img class="tribe-hero__crest" src={`${base}img/tribes/${tribe.slug}.png`} alt="" onerror="this.style.visibility='hidden'" />
+    <div class="tribe-hero__title">
+      <h1 class="tribe-hero__name">{tribe.name}</h1>
+      {tribe.nickname && <div class="tribe-hero__nick">{tribe.nickname}</div>}
+      <ul class="tribe-hero__flags">
+        <li class="tribe-hero__flag">{tribe.defaultDiplomacy} on contact</li>
+        {tribe.organized && <li class="tribe-hero__flag">organized</li>}
+        {tribe.mercenary && <li class="tribe-hero__flag">offers mercenaries</li>}
+        {tribe.gameContent && <li class="tribe-hero__flag tribe-hero__flag--dlc">{tribe.gameContent}</li>}
+      </ul>
+    </div>
+  </header>
+
+  <div class="tribe-detail">
+    {isDiplomatic && unit && (
+      <section class="card card--unit">
+        <h2 class="card__h">Signature unit</h2>
+        <div class="unit-row">
+          <img
+            class="unit-row__icon"
+            src={`${base}img/icons/units/${unit.unitIcon}.png`}
+            alt=""
+            onerror="this.style.visibility='hidden'"
+          />
+          <div class="unit-row__body">
+            <div class="unit-row__name">{unit.unitName}</div>
+            <div class="unit-row__sub">
+              <span class="promo">
+                {unit.promoId && (
+                  <img
+                    class="promo__icon"
+                    src={`${base}img/icons/effects/${unit.promoId.toLowerCase().replace('effectunit_', '')}.png`}
+                    alt=""
+                    onerror="this.style.visibility='hidden'"
+                  />
+                )}
+                <span class="promo__name">{unit.promoName}</span>
+              </span>
+              <span class="unit-row__lab">free promotion</span>
+            </div>
+            {unit.extraPromos.length > 0 && (
+              <div class="unit-row__extra">
+                Plus standard tiers: {unit.extraPromos.map(p => p.name).join(', ')}
+              </div>
+            )}
+          </div>
+        </div>
+        <p class="card__note">
+          Spawns in barbarian villages of this tribe. When the {tribe.name}
+          declare on you, this is the unit you'll see in their stacks. Its
+          free promotion makes it punch above its strength tier.
+        </p>
+      </section>
+    )}
+
+    <section class="card">
+      <h2 class="card__h">Diplomacy</h2>
+      <dl class="kv">
+        <dt>Default state</dt>
+        <dd>{tribe.defaultDiplomacy}</dd>
+        <dt>Negotiable</dt>
+        <dd>{tribe.diplomacy ? 'Yes — peace, truce, alliance' : 'No'}</dd>
+        <dt>Mercenary recruit</dt>
+        <dd>{tribe.mercenary ? 'Yes — friendly state unlocks hires' : 'No'}</dd>
+        <dt>Pillage priority</dt>
+        <dd>{tribe.iPillagePriority}</dd>
+        <dt>City attack priority</dt>
+        <dd>{tribe.iCityAttackPriority}</dd>
+      </dl>
+    </section>
+
+    {(tribe.firstNamesMale.length > 0 || tribe.firstNamesFemale.length > 0) && (
+      <section class="card card--names">
+        <h2 class="card__h">First names</h2>
+        {tribe.firstNamesMale.length > 0 && (
+          <div class="names-block">
+            <div class="names-block__lab">Male · {tribe.namesMaleCount}</div>
+            <div class="names-block__list">{tribe.firstNamesMale.join(' · ')}</div>
+          </div>
+        )}
+        {tribe.firstNamesFemale.length > 0 && (
+          <div class="names-block">
+            <div class="names-block__lab">Female · {tribe.namesFemaleCount}</div>
+            <div class="names-block__list">{tribe.firstNamesFemale.join(' · ')}</div>
+          </div>
+        )}
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .crumbs {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-faint);
+    margin-bottom: 1rem;
+  }
+  .crumbs a { color: var(--gold-soft); text-decoration: none; }
+  .crumbs a:hover { color: var(--gold); }
+  .crumbs__sep { margin: 0 0.4rem; color: var(--border); }
+  .crumbs__here { color: var(--text-soft); }
+
+  .tribe-hero {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--gold-deep);
+  }
+  .tribe-hero__crest {
+    width: 80px; height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+  }
+  .tribe-hero__title { display: flex; flex-direction: column; gap: 0.25rem; }
+  .tribe-hero__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 2.6rem;
+    margin: 0;
+    line-height: 1;
+    color: var(--text);
+  }
+  .tribe-hero__nick {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--text-faint);
+  }
+  .tribe-hero__flags {
+    list-style: none; margin: 0.25rem 0 0; padding: 0;
+    display: flex; flex-wrap: wrap;
+    gap: 0 0.5rem;
+  }
+  .tribe-hero__flag {
+    font-family: var(--font-ui);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+  .tribe-hero__flag--dlc { color: var(--gold-soft); }
+  .tribe-hero__flag:not(:last-child)::after {
+    content: '·';
+    margin-left: 0.5rem;
+    color: var(--border);
+  }
+
+  .tribe-detail {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 760px) {
+    .tribe-detail { grid-template-columns: 1.4fr 1fr; }
+    .card--unit { grid-column: 1 / -1; }
+    .card--names { grid-column: 1 / -1; }
+  }
+
+  .card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.2rem;
+  }
+  .card__h {
+    font-family: var(--font-ui);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--gold-soft);
+    margin: 0 0 0.65rem 0;
+    font-weight: 500;
+  }
+  .card__note {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .unit-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .unit-row__icon {
+    width: 64px; height: 64px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    flex-shrink: 0;
+  }
+  .unit-row__body { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+  .unit-row__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--text);
+  }
+  .unit-row__sub {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+  .unit-row__lab {
+    font-family: var(--font-ui);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-faint);
+  }
+  .unit-row__extra {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+    margin-top: 0.2rem;
+  }
+
+  .promo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.18rem 0.55rem;
+    background: oklch(0.30 0.04 80 / 0.5);
+    border: 1px solid var(--gold-deep);
+    border-radius: 3px;
+  }
+  .promo__icon { width: 18px; height: 18px; object-fit: contain; }
+  .promo__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  .kv {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.35rem 1rem;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  .kv dt {
+    font-family: var(--font-ui);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-faint);
+    align-self: center;
+  }
+  .kv dd {
+    margin: 0;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 500;
+  }
+
+  .names-block { margin-bottom: 0.85rem; }
+  .names-block:last-child { margin-bottom: 0; }
+  .names-block__lab {
+    font-family: var(--font-ui);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold-soft);
+    margin-bottom: 0.2rem;
+  }
+  .names-block__list {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--text-soft);
+  }
+</style>

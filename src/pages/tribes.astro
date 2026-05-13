@@ -1,0 +1,272 @@
+---
+import Base from '../layouts/Base.astro';
+import tribes from '../data/tribes.json';
+
+const base = import.meta.env.BASE_URL;
+
+// Split: diplomatic tribes (Gauls, Huns, Danes, …) get the rich card.
+// Generic / non-diplomatic entries (Anarchy, Barbarians, Raiders, Rebels)
+// are listed at the bottom as flavor — they have no special unit and
+// can't be befriended.
+const diplomatic = tribes.filter(t => t.diplomacy && t.unit);
+const generic = tribes.filter(t => !(t.diplomacy && t.unit));
+
+diplomatic.sort((a, b) => a.name.localeCompare(b.name));
+generic.sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<Base
+  title="Tribes"
+  active="tribes"
+  description="All Old World tribes — Gauls, Huns, Danes, Numidians, Scythians, Thracians, Vandals — and the unique tribal unit each fields, with its signature free promotion. Pulled XML-canonical from the game's own files."
+>
+  <div class="page-meta">
+    <h1 class="page-title">Tribes</h1>
+    <div class="page-stats">
+      <span class="stat"><b>{diplomatic.length}</b> diplomatic</span>
+      <span class="stat"><b>{generic.length}</b> generic</span>
+    </div>
+  </div>
+
+  <p class="lede">
+    The seven diplomatic tribes each field one signature unit type — and
+    that unit ships with a free promotion no other unit gets. Anarchy,
+    Barbarians, Raiders, and Rebels are generic enemy states with no
+    special troops or diplomacy.
+  </p>
+
+  <section class="tribe-grid">
+    {diplomatic.map(t => (
+      <a class={`tribe-card t-${t.slug}`} href={`${base}tribes/${t.slug}`}>
+        <div class="tribe-card__head">
+          <img class="tribe-card__crest" src={`${base}img/tribes/${t.slug}.png`} alt="" />
+          <div class="tribe-card__title">
+            <h2 class="tribe-card__name">{t.name}</h2>
+            {t.nickname && <div class="tribe-card__nick">{t.nickname}</div>}
+          </div>
+        </div>
+        {t.unit && (
+          <div class="tribe-card__unit">
+            <img
+              class="tribe-card__unit-icon"
+              src={`${base}img/icons/units/${t.unit.unitIcon}.png`}
+              alt=""
+              onerror="this.style.visibility='hidden'"
+            />
+            <div class="tribe-card__unit-meta">
+              <div class="tribe-card__unit-name">{t.unit.unitName}</div>
+              <div class="tribe-card__unit-promo">
+                {t.unit.promoId && (
+                  <img
+                    class="tribe-card__promo-icon"
+                    src={`${base}img/icons/effects/${t.unit.promoId.toLowerCase().replace('effectunit_', '')}.png`}
+                    alt=""
+                    onerror="this.style.visibility='hidden'"
+                  />
+                )}
+                <span class="tribe-card__promo-name">{t.unit.promoName}</span>
+                {t.unit.extraPromos.length > 0 && (
+                  <span class="tribe-card__promo-extra">
+                    + {t.unit.extraPromos.map(p => p.name).join(', ')}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        <ul class="tribe-card__flags">
+          {t.organized && <li class="tribe-card__flag">organized</li>}
+          {t.mercenary && <li class="tribe-card__flag">mercenaries</li>}
+          {t.gameContent && <li class="tribe-card__flag tribe-card__flag--dlc">{t.gameContent}</li>}
+        </ul>
+      </a>
+    ))}
+  </section>
+
+  {generic.length > 0 && (
+    <section class="tribe-generic">
+      <h2 class="tribe-generic__h">Generic enemy states</h2>
+      <ul class="tribe-generic__list">
+        {generic.map(t => (
+          <li class="tribe-generic__item">
+            <img class="tribe-generic__crest" src={`${base}img/tribes/${t.slug}.png`} alt="" onerror="this.style.visibility='hidden'" />
+            <span class="tribe-generic__name">{t.name}</span>
+            <span class="tribe-generic__sep">·</span>
+            <span class="tribe-generic__dim">no diplomacy · no special unit</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-soft);
+    max-width: 56ch;
+    margin: 0.5rem 0 1.5rem 0;
+  }
+
+  .tribe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .tribe-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem 0.95rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .tribe-card:hover {
+    border-color: var(--gold-deep);
+    transform: translateY(-1px);
+  }
+  .tribe-card:hover .tribe-card__name { color: var(--gold); }
+
+  .tribe-card__head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .tribe-card__crest {
+    width: 44px; height: 44px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+    flex-shrink: 0;
+  }
+  .tribe-card__title { display: flex; flex-direction: column; gap: 0.1rem; }
+  .tribe-card__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin: 0;
+    line-height: 1;
+    color: var(--text);
+    transition: color 0.15s;
+  }
+  .tribe-card__nick {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--text-faint);
+    line-height: 1;
+  }
+
+  .tribe-card__unit {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--border-faint);
+    border-bottom: 1px solid var(--border-faint);
+  }
+  .tribe-card__unit-icon {
+    width: 36px; height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
+  }
+  .tribe-card__unit-meta { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+  .tribe-card__unit-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text);
+    line-height: 1.05;
+  }
+  .tribe-card__unit-promo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.84rem;
+    color: var(--text-soft);
+    flex-wrap: wrap;
+  }
+  .tribe-card__promo-icon {
+    width: 16px; height: 16px;
+    object-fit: contain;
+    opacity: 0.92;
+  }
+  .tribe-card__promo-name {
+    color: var(--gold-soft);
+    font-weight: 500;
+  }
+  .tribe-card__promo-extra {
+    color: var(--text-faint);
+    font-size: 0.78rem;
+  }
+
+  .tribe-card__flags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.55rem;
+  }
+  .tribe-card__flag {
+    font-family: var(--font-ui);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+  .tribe-card__flag--dlc {
+    color: var(--gold-soft);
+  }
+  .tribe-card__flag:not(:last-child)::after {
+    content: '·';
+    margin-left: 0.55rem;
+    color: var(--border);
+  }
+
+  .tribe-generic {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .tribe-generic__h {
+    font-family: var(--font-ui);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--gold-soft);
+    font-weight: 500;
+    margin: 0 0 0.6rem 0;
+  }
+  .tribe-generic__list {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 0.3rem;
+  }
+  .tribe-generic__item {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.88rem;
+    color: var(--text-soft);
+  }
+  .tribe-generic__crest {
+    width: 20px; height: 20px;
+    object-fit: contain;
+    opacity: 0.7;
+  }
+  .tribe-generic__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text);
+  }
+  .tribe-generic__sep { color: var(--border); }
+  .tribe-generic__dim { color: var(--text-faint); font-size: 0.8rem; }
+</style>
