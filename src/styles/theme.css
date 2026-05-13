@@ -309,7 +309,8 @@ h1, h2, h3 {
   left: 0;
   z-index: 3;
   border-right: 1px solid var(--border);
-  padding: 0.28rem 0.6rem 0.28rem 0;
+  padding: 0.16rem 0.6rem 0.16rem 0;
+  line-height: 1.2;
 }
 .rowlabel--corner {
   background: var(--bg);
@@ -346,7 +347,7 @@ h1, h2, h3 {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   text-align: left;
-  padding: 0.9rem 0 0.3rem 0;
+  padding: 0.55rem 0 0.2rem 0;
   border-bottom: 1px solid var(--gold-deep);
   position: sticky; left: 0;
 }
@@ -401,16 +402,15 @@ h1, h2, h3 {
   line-height: 1.05;
 }
 
-/* Data cells — transparent bg, tight padding for spreadsheet-style density.
-   Inline icons carry the categorical encoding (yield/improvement glyphs in
-   effect text, crests in the column header, shrine art beside the deity). */
+/* Data cells — transparent bg, very tight padding for spreadsheet-style
+   density. Inline icons carry the categorical encoding. */
 .cell {
   position: relative;
   background: transparent;
   color: var(--text);
-  padding: 0.28rem 0.55rem;
+  padding: 0.16rem 0.55rem;
   font-size: 0.74rem;
-  line-height: 1.28;
+  line-height: 1.18;
   border-bottom: 1px solid var(--border-faint);
 }
 .cell.is-empty { color: var(--text-faint); }
@@ -440,7 +440,7 @@ h1, h2, h3 {
    density. Line 1: icon + serif type + italic deity. Line 2: effect. */
 .shrine {
   display: flex; flex-direction: column;
-  gap: 0.05rem;
+  gap: 0;
 }
 .shrine__head {
   display: inline-flex;
@@ -448,6 +448,7 @@ h1, h2, h3 {
   gap: 0.3rem;
   line-height: 1.1;
 }
+.shrine__effect { line-height: 1.18; }
 .shrine__art {
   width: 14px; height: 14px;
   object-fit: contain;
