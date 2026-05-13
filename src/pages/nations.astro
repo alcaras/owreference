@@ -193,8 +193,8 @@ for (const n of nations) {
                         <div class="shrine__head">
                           {iconUrl && <img class="shrine__art" src={iconUrl} alt="" />}
                           <span class="shrine__type">{typeLabel}</span>
+                          <span class="shrine__deity">{deity}</span>
                         </div>
-                        <span class="shrine__deity">{deity}</span>
                         <div class="shrine__effect"><LinkedText text={effect} showIcons={false} iconsForYields={true} /></div>
                       </div>
                     </td>
@@ -203,9 +203,6 @@ for (const n of nations) {
 
                 if (row.kind === 'family') {
                   const iconUrl = v.classKey ? `${base}img/archetypes/${v.classKey}.png` : null;
-                  // Per-family in-game color shows as a 3px left-edge stripe —
-                  // each nation's 4 families have their own canonical hex
-                  // (COLOR_NATION_X_FAMILY_0Y) used in the game UI.
                   const stripe = v.ingameColor;
                   return (
                     <td
@@ -213,13 +210,11 @@ for (const n of nations) {
                       data-nation={n.slug}
                       style={stripe ? `--fam-stripe: ${stripe}` : undefined}
                     >
-                      <div class="fam">
-                        <div class="fam__head">
-                          {iconUrl && <img class="fam__icon" src={iconUrl} alt="" />}
-                          <span class="fam__class">{v.class}</span>
-                        </div>
+                      <span class="fam">
+                        {iconUrl && <img class="fam__icon" src={iconUrl} alt="" />}
+                        <span class="fam__class">{v.class}</span>
                         <span class="fam__name">{v.name}</span>
-                      </div>
+                      </span>
                     </td>
                   );
                 }

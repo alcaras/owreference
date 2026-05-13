@@ -285,12 +285,13 @@ h1, h2, h3 {
 .ntbl {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8rem;
+  font-size: 0.74rem;
+  line-height: 1.28;
   table-layout: fixed;
   font-variant-numeric: tabular-nums;
 }
-.ntbl col.ntbl__rowlabel-col { width: 8.5rem; }
-.ntbl col[data-nation] { width: 11rem; }
+.ntbl col.ntbl__rowlabel-col { width: 7rem; }
+.ntbl col[data-nation] { width: 11.5rem; }
 .ntbl thead th { font-weight: 500; }
 .ntbl th, .ntbl td { vertical-align: top; }
 
@@ -301,14 +302,14 @@ h1, h2, h3 {
   color: var(--text-soft);
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.78rem;
   letter-spacing: 0.01em;
   text-align: right;
   position: sticky;
   left: 0;
   z-index: 3;
   border-right: 1px solid var(--border);
-  padding: 0.4rem 0.8rem 0.4rem 0;
+  padding: 0.28rem 0.6rem 0.28rem 0;
 }
 .rowlabel--corner {
   background: var(--bg);
@@ -341,11 +342,11 @@ h1, h2, h3 {
   color: var(--gold-soft);
   font-family: var(--font-ui);
   font-weight: 600;
-  font-size: 0.66rem;
-  letter-spacing: 0.22em;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   text-align: left;
-  padding: 1.75rem 0 0.45rem 0;
+  padding: 0.9rem 0 0.3rem 0;
   border-bottom: 1px solid var(--gold-deep);
   position: sticky; left: 0;
 }
@@ -400,16 +401,16 @@ h1, h2, h3 {
   line-height: 1.05;
 }
 
-/* Data cells — transparent bg. No yield bar / no nation bar; inline icons
-   carry the categorical encoding (yield/improvement glyphs in effect text,
-   crests in the column header, shrine art beside the type label). */
+/* Data cells — transparent bg, tight padding for spreadsheet-style density.
+   Inline icons carry the categorical encoding (yield/improvement glyphs in
+   effect text, crests in the column header, shrine art beside the deity). */
 .cell {
   position: relative;
   background: transparent;
   color: var(--text);
-  padding: 0.5rem 0.7rem;
-  font-size: 0.8rem;
-  line-height: 1.32;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.74rem;
+  line-height: 1.28;
   border-bottom: 1px solid var(--border-faint);
 }
 .cell.is-empty { color: var(--text-faint); }
@@ -435,42 +436,42 @@ h1, h2, h3 {
   object-fit: contain;
 }
 
-/* Shrine cell internals — 18px game icon + serif type + italic deity */
+/* Shrine cell internals — compact two-line layout to match spreadsheet
+   density. Line 1: icon + serif type + italic deity. Line 2: effect. */
 .shrine {
   display: flex; flex-direction: column;
   gap: 0.05rem;
-  margin-bottom: 0.25rem;
 }
 .shrine__head {
   display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
+  align-items: baseline;
+  gap: 0.3rem;
+  line-height: 1.1;
 }
 .shrine__art {
-  width: 18px; height: 18px;
+  width: 14px; height: 14px;
   object-fit: contain;
   filter: drop-shadow(0 1px 0 rgba(0,0,0,0.5));
   opacity: 0.92;
   flex-shrink: 0;
+  align-self: center;
 }
 .shrine__type {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.88rem;
   letter-spacing: 0.005em;
   color: var(--text);
-  line-height: 1.1;
 }
 .shrine__deity {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   letter-spacing: 0.01em;
   color: var(--text-faint);
 }
 .shrine__effect {
-  margin-top: 0.15rem;
   color: var(--text-soft);
 }
 
@@ -482,29 +483,28 @@ h1, h2, h3 {
   padding-left: 0.95rem;
 }
 
-/* Family cell internals — serif class + italic name */
-.fam { display: flex; flex-direction: column; gap: 0.05rem; }
-.fam__head { display: inline-flex; align-items: center; gap: 0.35rem; }
+/* Family cell internals — compact one-line layout: icon + class · name */
+.fam { display: inline-flex; align-items: baseline; gap: 0.35rem; flex-wrap: wrap; }
 .fam__icon {
   width: 1em; height: 1em;
   object-fit: contain;
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
   flex-shrink: 0;
   opacity: 0.85;
+  align-self: center;
 }
 .fam__class {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.96rem;
+  font-size: 0.86rem;
   letter-spacing: 0.005em;
   color: var(--text);
-  line-height: 1.1;
 }
 .fam__name {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   letter-spacing: 0.01em;
   color: var(--text-faint);
 }
