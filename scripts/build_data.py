@@ -206,20 +206,142 @@ def match_yaml_shrines(yaml_shrines: list[str], xml_shrines: list[dict]) -> list
     return pairs
 
 
+_ROMAN = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"}
+
+def _format_id_name(zt: str, prefix: str) -> str:
+    """CHARACTER_ASHUR_UBALLIT_I → 'Ashur Uballit I'; keeps Roman numerals upright."""
+    s = zt[len(prefix):] if zt.startswith(prefix) else zt
+    return " ".join(p if p in _ROMAN else p.title() for p in s.split("_"))
+
+
+def _format_dlc(tag: str) -> str:
+    """WONDERS_DYNASTIES → 'Wonders & Dynasties'."""
+    if not tag:
+        return ""
+    return tag.replace("_", " & ").title()
+
+
+def load_unit_traits() -> dict[str, str]:
+    """For each unit id, return the slug of its primary unit-trait glyph
+    (lowercase, e.g. UNIT_HOPLITE → 'infantry'). The glyph is the white
+    silhouette shown inside the unit's shape on the map. Uses aeUnitTrait
+    (the first listed wins) and falls back to UnitCycle for generic units."""
+    out: dict[str, str] = {}
+    CYCLE_TO_TRAIT = {
+        "WORKER": "worker", "DISCIPLE": "disciple",
+        "MILITARY_INFANTRY": "infantry", "MILITARY_RANGED": "ranged",
+        "MILITARY_MOUNTED": "mounted", "MILITARY_SIEGE": "siege",
+        "MILITARY_WATER": "ship",
+    }
+    if not (XML_DIR / "unit.xml").exists():
+        return out
+    for entry in parse("unit.xml").findall("Entry"):
+        zt = entry.findtext("zType") or ""
+        if not zt.startswith("UNIT_"):
+            continue
+        # Prefer the unit's first explicit trait
+        for t in entry.findall("aeUnitTrait/zValue"):
+            tk = (t.text or "").replace("UNITTRAIT_", "").lower()
+            if tk:
+                out[zt] = tk
+                break
+        if zt in out:
+            continue
+        # Fall back to UnitCycle for units without explicit traits (Scout, etc.)
+        cycle = (entry.findtext("UnitCycle") or "").replace("UNITCYCLE_", "")
+        if cycle in CYCLE_TO_TRAIT:
+            out[zt] = CYCLE_TO_TRAIT[cycle]
+    return out
+
+
+def load_unit_name_map() -> dict[str, str]:
+    """Map human-readable unit name → unit zType (for resolving the UU
+    string 'Battering Ram / Siege Tower' to underlying UNIT_BATTERING_RAM /
+    UNIT_SIEGE_TOWER for glyph lookup)."""
+    out: dict[str, str] = {}
+    text_unit = load_text("text-unit.xml") if (XML_DIR / "text-unit.xml").exists() else {}
+    if not (XML_DIR / "unit.xml").exists():
+        return out
+    for entry in parse("unit.xml").findall("Entry"):
+        zt = entry.findtext("zType") or ""
+        if not zt.startswith("UNIT_"):
+            continue
+        name_key = entry.findtext("Name") or ""
+        if not name_key:
+            continue
+        nice = text_unit.get(name_key, "")
+        if nice:
+            out[nice] = zt
+    return out
+
+
+def load_portrait_map() -> dict[str, str]:
+    """Map CHARACTER_PORTRAIT_X → underlying sprite name (HISTORICAL_PERSON_Y).
+    Drives portrait resolution for named characters since the game's
+    'PreferredPortrait' on each character points at a portrait id, not
+    the sprite directly."""
+    out: dict[str, str] = {}
+    for p in XML_DIR.glob("characterPortrait*.xml"):
+        # Skip the support files (Opinion/FeaturePoints/AgeInterpolation)
+        if "Opinion" in p.name or "Feature" in p.name or "AgeInterpolation" in p.name:
+            continue
+        try:
+            for entry in ET.parse(p).getroot().findall("Entry"):
+                pid = entry.findtext("zType") or ""
+                if not pid.startswith("CHARACTER_PORTRAIT_"):
+                    continue
+                # Use the ADULT sprite when present; fall back to first match
+                adult = ""
+                first = ""
+                for pair in entry.findall("azAgeGroupSpriteNames/Pair"):
+                    age = pair.findtext("zIndex") or ""
+                    sprite = pair.findtext("zValue") or ""
+                    if not sprite:
+                        continue
+                    if not first:
+                        first = sprite
+                    if age == "CHARACTER_AGE_GROUP_ADULT":
+                        adult = sprite
+                        break
+                out[pid] = adult or first
+        except ET.ParseError:
+            continue
+    return out
+
+
 def load_characters() -> dict[str, dict]:
     """Index character.xml entries by zType. Each char carries
     aeTraits + PreferredPortrait so we can show founder traits + portrait."""
     out: dict[str, dict] = {}
     if not (XML_DIR / "character.xml").exists():
         return out
-    text_infos = load_text("text-infos.xml")
+    # Pull names from every text-name*.xml variant; fall back to a
+    # formatted version of the raw FirstName id.
+    name_texts: dict[str, str] = {}
+    for p in XML_DIR.glob("text-name*.xml"):
+        try:
+            for e in ET.parse(p).getroot().findall("Entry"):
+                k = e.findtext("zType") or ""
+                en = (e.findtext("en-US") or "").split("~")[0].strip()
+                if not k or not en:
+                    continue
+                # Strip any leading <![CDATA[ markers / inline font tags.
+                en = re.sub(r"<[^>]+>", "", en)
+                # Use the simpler key only; skip _HISTORICAL variants
+                # (those carry cuneiform / decorative Unicode).
+                if "_HISTORICAL" in k or k.endswith("_H"):
+                    continue
+                name_texts[k] = en
+        except ET.ParseError:
+            continue
     text_trait = load_text("text-trait.xml") if (XML_DIR / "text-trait.xml").exists() else {}
     for entry in parse("character.xml").findall("Entry"):
         zt = entry.findtext("zType") or ""
         if not zt.startswith("CHARACTER_"):
             continue
         first_name_key = entry.findtext("FirstName") or ""
-        display = text_infos.get(first_name_key, zt.replace("CHARACTER_", "").title())
+        text_key = f"TEXT_{first_name_key}" if first_name_key else ""
+        display = name_texts.get(text_key) or _format_id_name(zt, "CHARACTER_")
         traits = []
         for t in entry.findall("aeTraits/zValue"):
             tk = t.text or ""
@@ -240,21 +362,76 @@ def load_characters() -> dict[str, dict]:
     return out
 
 
-def find_portrait(character_name: str) -> str | None:
-    """Return public/img path for a historical-person portrait whose name
-    matches the character. We look up by the uppercased character name."""
-    PORTRAITS = ROOT / "public" / "img" / "portraits" / "historical"
-    if not PORTRAITS.exists():
-        return None
-    upper = character_name.upper().replace(" ", "_")
-    for suffix in ["", "_elder", "_adult", "_teen", "_senior"]:
-        candidate = PORTRAITS / f"{upper.lower()}{suffix}.png"
-        if candidate.exists():
-            return f"img/portraits/historical/{candidate.name}"
+def find_portrait(character_name: str, char_id: str = "", preferred_portrait: str = "",
+                  portrait_map: dict[str, str] | None = None) -> str | None:
+    """Return public/img path for the character's portrait.
+    Priority:
+      1. Resolve PreferredPortrait via characterPortrait.xml → sprite name
+         (e.g. CHARACTER_PORTRAIT_AKSUM_KALEB → HISTORICAL_PERSON_KALEB).
+      2. Slug-based fallback (display name + char id, with suffix variants).
+      3. Glob-based fallback (any file starting with the slug).
+    """
+    PORTRAITS = [
+        (ROOT / "public" / "img" / "portraits" / "historical", "historical"),
+        (ROOT / "public" / "img" / "portraits" / "character_select", "character_select"),
+    ]
+
+    # 1. Try the explicit characterPortrait → sprite mapping
+    if preferred_portrait and portrait_map:
+        sprite = portrait_map.get(preferred_portrait, "")
+        if sprite:
+            # HISTORICAL_PERSON_KALEB → kaleb.png in historical/
+            slug = ""
+            for prefix in ("HISTORICAL_PERSON_", "CHARACTER_SELECT_"):
+                if sprite.startswith(prefix):
+                    slug = sprite[len(prefix):].lower()
+                    break
+            if slug:
+                for pool, web in PORTRAITS:
+                    candidate = pool / f"{slug}.png"
+                    if candidate.exists():
+                        return f"img/portraits/{web}/{candidate.name}"
+
+    # 2. Build slug candidates from name and char_id (with common suffixes stripped)
+    candidates: list[str] = []
+    if character_name:
+        candidates.append(re.sub(r"[ \-]+", "_", character_name).lower())
+    if char_id and char_id.startswith("CHARACTER_"):
+        candidates.append(char_id[len("CHARACTER_"):].lower())
+    extra: list[str] = []
+    for c in candidates:
+        for suf in ("_leader", "_navigator", "_caesar_leader", "_caesar"):
+            if c.endswith(suf):
+                extra.append(c[: -len(suf)])
+    candidates.extend(extra)
+
+    seen: set[str] = set()
+    for slug in candidates:
+        if not slug or slug in seen:
+            continue
+        seen.add(slug)
+        for pool, web in PORTRAITS:
+            if not pool.exists():
+                continue
+            for suffix in ["", "_elder", "_adult", "_teen", "_senior"]:
+                candidate = pool / f"{slug}{suffix}.png"
+                if candidate.exists():
+                    return f"img/portraits/{web}/{candidate.name}"
+
+    # 3. Fuzzy prefix scan — match any file beginning with the slug
+    for slug in seen:
+        for pool, web in PORTRAITS:
+            if not pool.exists() or len(slug) < 4:
+                continue
+            matches = sorted(pool.glob(f"{slug}*.png"))
+            # Prefer the base portrait (no _elder/_adult suffix)
+            matches.sort(key=lambda p: ("_elder" in p.name, "_senior" in p.name, p.name))
+            if matches:
+                return f"img/portraits/{web}/{matches[0].name}"
     return None
 
 
-def load_dynasties(characters: dict[str, dict]) -> dict[str, list[dict]]:
+def load_dynasties(characters: dict[str, dict], portrait_map: dict[str, str]) -> dict[str, list[dict]]:
     """Return {nation_id: [dynasty_dict, ...]} from dynasty.xml. Each dynasty
     is enriched with its founder character's traits and portrait."""
     text_infos = load_text("text-infos.xml")
@@ -268,7 +445,7 @@ def load_dynasties(characters: dict[str, dict]) -> dict[str, list[dict]]:
         nation = entry.findtext("Nation") or ""
         if not nation:
             continue
-        name = text_infos.get(entry.findtext("Name") or "", zt.replace("DYNASTY_", "").title())
+        name = text_infos.get(entry.findtext("Name") or "", _format_id_name(zt, "DYNASTY_"))
         desc = text_infos.get(entry.findtext("Description") or "", "")
         founder_id = entry.findtext("Founder") or ""
         first_ruler_id = entry.findtext("FirstRuler") or ""
@@ -278,7 +455,9 @@ def load_dynasties(characters: dict[str, dict]) -> dict[str, list[dict]]:
         # leader at game start. Fall back to founder.
         primary = first_ruler or founder
         primary_name = first_ruler["name"] if first_ruler else (founder["name"] if founder else "")
-        portrait = find_portrait(primary_name) if primary_name else None
+        primary_id = first_ruler_id if first_ruler else founder_id
+        preferred = primary["preferredPortrait"] if primary else ""
+        portrait = find_portrait(primary_name, primary_id, preferred, portrait_map) if (primary_name or primary_id) else None
         out.setdefault(nation, []).append({
             "id": zt,
             "slug": zt.replace("DYNASTY_", "").lower(),
@@ -290,7 +469,7 @@ def load_dynasties(characters: dict[str, dict]) -> dict[str, list[dict]]:
             "leaderTraits": primary["traits"] if primary else [],
             "leaderUrl": primary["url"] if primary else "",
             "portrait": portrait,
-            "gameContent": entry.findtext("GameContentRequired") or "",
+            "gameContent": _format_dlc(entry.findtext("GameContentRequired") or ""),
         })
     return out
 
@@ -303,7 +482,10 @@ def load_nations() -> list[dict]:
     colors = load_colors()
     shrines_by_nation = load_shrines()
     characters = load_characters()
-    dynasties_by_nation = load_dynasties(characters)
+    portrait_map = load_portrait_map()
+    unit_traits = load_unit_traits()
+    unit_name_to_id = load_unit_name_map()
+    dynasties_by_nation = load_dynasties(characters, portrait_map)
     xml_indexes = load_xml_indexes(XML_DIR)
     text_cityname = load_text("text-cityname.xml") if (XML_DIR / "text-cityname.xml").exists() else {}
     text_name = load_text("text-name.xml") if (XML_DIR / "text-name.xml").exists() else {}
@@ -404,30 +586,22 @@ def load_nations() -> list[dict]:
             if key:
                 first_names_female.append(text_name.get(key, key.replace("NAME_", "").title()))
 
+        def _unit_pair(pair):
+            uk = (pair.findtext("zIndex") or "")
+            n_count = int(pair.findtext("iValue") or "0")
+            if not uk:
+                return None
+            return {
+                "id": uk,
+                "name": text_unit_for_starts.get(f"TEXT_{uk}", uk.replace("UNIT_", "").replace("_", " ").title()),
+                "count": n_count,
+                "slug": uk.replace("UNIT_", "").lower().replace("_", "-"),
+                "trait": unit_traits.get(uk, ""),
+            }
         # Starting units (the first turn): pairs of (unit, count)
-        start_units = []
-        for pair in entry.findall("aiStartUnit/Pair"):
-            uk = (pair.findtext("zIndex") or "")
-            n_count = int(pair.findtext("iValue") or "0")
-            if uk:
-                start_units.append({
-                    "id": uk,
-                    "name": text_unit_for_starts.get(f"TEXT_{uk}", uk.replace("UNIT_", "").replace("_", " ").title()),
-                    "count": n_count,
-                    "slug": uk.replace("UNIT_", "").lower().replace("_", "-"),
-                })
+        start_units = [u for u in (_unit_pair(p) for p in entry.findall("aiStartUnit/Pair")) if u]
         # Initial city units (Worker, etc. spawned with the capital)
-        city_units = []
-        for pair in entry.findall("aiCityUnit/Pair"):
-            uk = (pair.findtext("zIndex") or "")
-            n_count = int(pair.findtext("iValue") or "0")
-            if uk:
-                city_units.append({
-                    "id": uk,
-                    "name": text_unit_for_starts.get(f"TEXT_{uk}", uk.replace("UNIT_", "").replace("_", " ").title()),
-                    "count": n_count,
-                    "slug": uk.replace("UNIT_", "").lower().replace("_", "-"),
-                })
+        city_units = [u for u in (_unit_pair(p) for p in entry.findall("aiCityUnit/Pair")) if u]
 
         first_build_id = entry.findtext("FirstBuild") or ""
         first_build_name = text_unit_for_starts.get(f"TEXT_{first_build_id}", first_build_id.replace("UNIT_", "").title()) if first_build_id else ""
@@ -492,9 +666,13 @@ def load_annotations() -> dict:
     return yaml.safe_load(ANNOTATIONS.read_text()) or {}
 
 
-def merge_annotations(nations: list[dict], annotations: dict) -> list[dict]:
+def merge_annotations(nations: list[dict], annotations: dict,
+                      unit_name_to_id: dict[str, str] | None = None,
+                      unit_traits: dict[str, str] | None = None) -> list[dict]:
     """Overlay human-curated bonuses/shrines/uu text onto canonical XML data,
-    and pair yaml shrines with XML shrines by primary yield."""
+    and pair yaml shrines with XML shrines by primary yield. Also resolves
+    the UU's 'Battering Ram / Siege Tower' string to underlying unit ids
+    so the page can render trait glyphs."""
     by_slug = {n["slug"]: n for n in nations}
     for slug, ann in (annotations.get("nations") or {}).items():
         if slug not in by_slug:
@@ -502,10 +680,19 @@ def merge_annotations(nations: list[dict], annotations: dict) -> list[dict]:
         n = by_slug[slug]
         yaml_shrines = ann.get("shrines", []) or []
         matched = match_yaml_shrines(yaml_shrines, n.get("shrineXml", []) or [])
+        uu = dict(ann.get("uniqueUnit", {}) or {})
+        # Resolve UU names → underlying unit ids + trait glyphs
+        if uu.get("names") and unit_name_to_id is not None:
+            resolved = []
+            for part in [p.strip() for p in str(uu["names"]).split("/")]:
+                uid = unit_name_to_id.get(part, "")
+                trait = (unit_traits or {}).get(uid, "") if uid else ""
+                resolved.append({"name": part, "id": uid, "trait": trait})
+            uu["unitsResolved"] = resolved
         n.update({
             "bonuses": ann.get("bonuses", []),
             "shrines": matched,
-            "uniqueUnit": ann.get("uniqueUnit", {}),
+            "uniqueUnit": uu,
             "leader": ann.get("leader", {}),
         })
     return nations
@@ -529,7 +716,7 @@ def write_css(nations: list[dict]) -> None:
 def main() -> int:
     nations = load_nations()
     annotations = load_annotations()
-    nations = merge_annotations(nations, annotations)
+    nations = merge_annotations(nations, annotations, load_unit_name_map(), load_unit_traits())
 
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(nations, indent=2, sort_keys=True, ensure_ascii=False) + "\n")

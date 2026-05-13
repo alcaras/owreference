@@ -40,6 +40,12 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^EFFECTUNIT_([A-Z_0-9]+?)()$"), "icons/effects"),
     # Historical-person portraits (dynasty founders + named characters)
     (re.compile(r"^HISTORICAL_PERSON_([A-Z_0-9]+?)()$"), "portraits/historical"),
+    # Default-leader portraits used in the New Game character-select UI.
+    # Often the dynasty's signature character (Ashurbanipal, Cyrus, Dido, …).
+    (re.compile(r"^CHARACTER_SELECT_([A-Z_0-9]+?)()$"), "portraits/character_select"),
+    # Unit-trait glyphs (the white silhouettes inside each unit's shape on
+    # the map — bow for ranged, hammer for siege, etc.)
+    (re.compile(r"^UNITTRAIT_([A-Z_0-9]+?)()$"), "icons/unit_traits"),
     # Unit sprites for the unique-unit cards. The game has lots; we extract
     # everything starting with UNIT_ (excluding action/UI sprites).
     (re.compile(r"^UNIT_(?!ACTION_|TARGET_|TARGETING_|MOVE_|ATTACK_)([A-Z_0-9]+?)()$"), "icons/units"),

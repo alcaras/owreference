@@ -75,42 +75,19 @@ const titles = (n as any).titles || {};
     <section class="np-sec np-sec--start">
       <h2 class="np-sec__title">Start</h2>
       <dl class="np-dl np-dl--start">
-        {startUnits.length > 0 && (
+        {(startUnits.length > 0 || cityUnits.length > 0) && (
           <>
-            <dt>Map</dt>
+            <dt>Starting Units</dt>
             <dd class="np-units">
-              {startUnits.map((u: any) => (
+              {[...startUnits, ...cityUnits].map((u: any) => (
                 <span class="np-unit">
-                  <img class="np-unit__icon" src={`${base}img/icons/units/${u.slug}.png`} alt="" onerror="this.style.display='none'" />
+                  {u.trait && (
+                    <img class="np-unit__glyph" src={`${base}img/icons/unit_traits/${u.trait}.png`} alt="" onerror="this.style.display='none'" />
+                  )}
                   {u.count > 1 && <span class="np-unit__n">{u.count}×</span>}
                   {u.name}
                 </span>
               ))}
-            </dd>
-          </>
-        )}
-        {cityUnits.length > 0 && (
-          <>
-            <dt>Capital</dt>
-            <dd class="np-units">
-              {cityUnits.map((u: any) => (
-                <span class="np-unit">
-                  <img class="np-unit__icon" src={`${base}img/icons/units/${u.slug}.png`} alt="" onerror="this.style.display='none'" />
-                  {u.count > 1 && <span class="np-unit__n">{u.count}×</span>}
-                  {u.name}
-                </span>
-              ))}
-            </dd>
-          </>
-        )}
-        {firstBuild && (
-          <>
-            <dt>First build</dt>
-            <dd class="np-units">
-              <span class="np-unit">
-                <img class="np-unit__icon" src={`${base}img/icons/units/${firstBuild.id.replace('UNIT_', '').toLowerCase().replace(/_/g, '-')}.png`} alt="" onerror="this.style.display='none'" />
-                {firstBuild.name}
-              </span>
             </dd>
           </>
         )}
@@ -140,7 +117,26 @@ const titles = (n as any).titles || {};
     <section class="np-sec np-sec--uu">
       <h2 class="np-sec__title">Unique Unit</h2>
       <dl class="np-dl">
-        {uniqueUnit.names && <><dt>Names</dt><dd><LinkedText text={uniqueUnit.names} showIcons={false} iconsForYields={true} /></dd></>}
+        {uniqueUnit.unitsResolved && uniqueUnit.unitsResolved.length > 0 ? (
+          <>
+            <dt>Names</dt>
+            <dd class="np-units">
+              {uniqueUnit.unitsResolved.map((u: any, i: number) => (
+                <>
+                  {i > 0 && <span class="np-unit__sep">/</span>}
+                  <span class="np-unit">
+                    {u.trait && (
+                      <img class="np-unit__glyph" src={`${base}img/icons/unit_traits/${u.trait}.png`} alt="" onerror="this.style.display='none'" />
+                    )}
+                    {u.name}
+                  </span>
+                </>
+              ))}
+            </dd>
+          </>
+        ) : uniqueUnit.names && (
+          <><dt>Names</dt><dd><LinkedText text={uniqueUnit.names} showIcons={false} iconsForYields={true} /></dd></>
+        )}
         {uniqueUnit.traits && <><dt>Traits</dt><dd>{uniqueUnit.traits}</dd></>}
         {uniqueUnit.cost && <><dt>Cost</dt><dd><LinkedText text={uniqueUnit.cost} showIcons={false} iconsForYields={true} /></dd></>}
         {uniqueUnit.upkeep && <><dt>Upkeep</dt><dd><LinkedText text={uniqueUnit.upkeep} showIcons={false} iconsForYields={true} /></dd></>}
@@ -408,7 +404,15 @@ const titles = (n as any).titles || {};
     font-size: 0.92rem;
   }
   .np-unit__icon { width: 1.3em; height: 1.3em; object-fit: contain; opacity: 0.95; }
+  /* In-game white-silhouette glyph (UNITTRAIT_* sprite) — small and tight */
+  .np-unit__glyph {
+    width: 1.1em; height: 1.1em;
+    object-fit: contain;
+    opacity: 0.9;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
+  }
   .np-unit__n { font-family: var(--font-mono); font-size: 0.78em; color: var(--text-dim); }
+  .np-unit__sep { color: var(--text-faint); margin: 0 0.15rem; }
 
   .np-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
   .np-chip {

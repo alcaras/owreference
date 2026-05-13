@@ -251,17 +251,6 @@ for (const n of nations) {
     <div class="grid__searchnote" id="grid-searchnote" hidden></div>
   </div>
 
-  <div class="legends">
-    <div class="legend">
-      <span class="legend__label">Yields</span>
-      {['orders','science','civics','culture','money','training','food','growth','wood','stone','iron'].map(y => (
-        <span class={`chip yield-${y}`}>
-          <img class="chip__icon" src={`${base}img/icons/yields/${y}.png`} alt="" onerror="this.style.display='none'" />
-          {y[0].toUpperCase() + y.slice(1)}
-        </span>
-      ))}
-    </div>
-  </div>
 
   <script type="application/json" id="nation-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
