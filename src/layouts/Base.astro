@@ -92,17 +92,7 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
             >{n.label}</a>
           ))}
         </nav>
-        <label class="hdr__search">
-          <span class="hdr__search-ico">⌕</span>
-          <input
-            id="site-search"
-            type="search"
-            placeholder="Search nations, yields, techs…"
-            autocomplete="off"
-            spellcheck={false}
-          />
-          <kbd>⌘K</kbd>
-        </label>
+        <span class="hdr__spacer" aria-hidden="true"></span>
       </div>
     </header>
 
@@ -145,18 +135,5 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
       </footer>
     </main>
 
-    <script is:inline>
-      // ⌘K / Ctrl+K focuses the global search.
-      document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-          const input = document.getElementById('site-search');
-          if (input) {
-            e.preventDefault();
-            input.focus();
-            input.select();
-          }
-        }
-      });
-    </script>
   </body>
 </html>
