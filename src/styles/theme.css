@@ -263,7 +263,10 @@ h1, h2, h3 {
    ────────────────────────────────────────────────────────── */
 .grid { position: relative; }
 .grid__scroll {
-  overflow: auto;
+  /* Horizontal scroll stays inside the table; vertical scroll bubbles up
+     to the page so the page header + table headers can both pin. */
+  overflow-x: auto;
+  overflow-y: visible;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
@@ -290,9 +293,10 @@ h1, h2, h3 {
 .ntbl thead th { font-weight: 500; }
 .ntbl th, .ntbl td { vertical-align: top; }
 
-/* Sticky row-label column */
+/* Sticky row-label column — pinned-left during horizontal scroll. Bg is
+   solid so cell content scrolling under it stays readable. */
 .rowlabel {
-  background: transparent;
+  background: var(--bg);
   color: var(--text-soft);
   font-family: var(--font-display);
   font-weight: 600;
@@ -308,7 +312,7 @@ h1, h2, h3 {
 .rowlabel--corner {
   background: var(--bg);
   z-index: 5;
-  position: sticky; top: 0; left: 0;
+  position: sticky; top: 3.6rem; left: 0;
   border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
   padding: 1rem 0.7rem 0.6rem 0;
@@ -329,9 +333,10 @@ h1, h2, h3 {
   margin-top: 3px;
 }
 
-/* Section header rows — gold eyebrow + gold-deep underline */
+/* Section header rows — gold eyebrow + gold-deep underline. Solid bg so
+   cells scrolling horizontally underneath stay legible. */
 .srow__th {
-  background: transparent;
+  background: var(--bg);
   color: var(--gold-soft);
   font-family: var(--font-ui);
   font-weight: 600;
@@ -345,11 +350,13 @@ h1, h2, h3 {
 }
 .srow__chevron { display: none; }
 
-/* Nation column header — transparent bg, 2px nation-color rule below */
+/* Nation column header — sticks below the page header (≈3.6rem tall) on
+   vertical page scroll. Solid bg behind so cells scrolling under it stay
+   readable. */
 .nhdr {
-  background: transparent;
+  background: var(--bg);
   color: var(--text);
-  position: sticky; top: 0;
+  position: sticky; top: 3.6rem;
   z-index: 2;
   padding: 1rem 0.6rem 0.6rem;
   text-align: left;
