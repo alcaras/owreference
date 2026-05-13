@@ -206,8 +206,57 @@ def match_yaml_shrines(yaml_shrines: list[str], xml_shrines: list[dict]) -> list
     return pairs
 
 
-def load_dynasties() -> dict[str, list[dict]]:
-    """Return {nation_id: [dynasty_dict, ...]} from dynasty.xml."""
+def load_characters() -> dict[str, dict]:
+    """Index character.xml entries by zType. Each char carries
+    aeTraits + PreferredPortrait so we can show founder traits + portrait."""
+    out: dict[str, dict] = {}
+    if not (XML_DIR / "character.xml").exists():
+        return out
+    text_infos = load_text("text-infos.xml")
+    text_trait = load_text("text-trait.xml") if (XML_DIR / "text-trait.xml").exists() else {}
+    for entry in parse("character.xml").findall("Entry"):
+        zt = entry.findtext("zType") or ""
+        if not zt.startswith("CHARACTER_"):
+            continue
+        first_name_key = entry.findtext("FirstName") or ""
+        display = text_infos.get(first_name_key, zt.replace("CHARACTER_", "").title())
+        traits = []
+        for t in entry.findall("aeTraits/zValue"):
+            tk = t.text or ""
+            if not tk:
+                continue
+            traits.append({
+                "id": tk,
+                "label": text_trait.get(f"TEXT_{tk}", tk.replace("TRAIT_", "").replace("_", " ").title()),
+            })
+        out[zt] = {
+            "name": display,
+            "gender": entry.findtext("Gender") or "",
+            "age": int(entry.findtext("iAge") or "0"),
+            "preferredPortrait": entry.findtext("PreferredPortrait") or "",
+            "url": entry.findtext("URL") or "",
+            "traits": traits,
+        }
+    return out
+
+
+def find_portrait(character_name: str) -> str | None:
+    """Return public/img path for a historical-person portrait whose name
+    matches the character. We look up by the uppercased character name."""
+    PORTRAITS = ROOT / "public" / "img" / "portraits" / "historical"
+    if not PORTRAITS.exists():
+        return None
+    upper = character_name.upper().replace(" ", "_")
+    for suffix in ["", "_elder", "_adult", "_teen", "_senior"]:
+        candidate = PORTRAITS / f"{upper.lower()}{suffix}.png"
+        if candidate.exists():
+            return f"img/portraits/historical/{candidate.name}"
+    return None
+
+
+def load_dynasties(characters: dict[str, dict]) -> dict[str, list[dict]]:
+    """Return {nation_id: [dynasty_dict, ...]} from dynasty.xml. Each dynasty
+    is enriched with its founder character's traits and portrait."""
     text_infos = load_text("text-infos.xml")
     out: dict[str, list[dict]] = {}
     if not (XML_DIR / "dynasty.xml").exists():
@@ -221,15 +270,26 @@ def load_dynasties() -> dict[str, list[dict]]:
             continue
         name = text_infos.get(entry.findtext("Name") or "", zt.replace("DYNASTY_", "").title())
         desc = text_infos.get(entry.findtext("Description") or "", "")
-        founder = (entry.findtext("Founder") or "").replace("CHARACTER_", "").title()
-        first_ruler = (entry.findtext("FirstRuler") or "").replace("CHARACTER_", "").title()
+        founder_id = entry.findtext("Founder") or ""
+        first_ruler_id = entry.findtext("FirstRuler") or ""
+        founder = characters.get(founder_id) if founder_id else None
+        first_ruler = characters.get(first_ruler_id) if first_ruler_id else None
+        # Prefer the FirstRuler for portrait + traits — the dynasty's playable
+        # leader at game start. Fall back to founder.
+        primary = first_ruler or founder
+        primary_name = first_ruler["name"] if first_ruler else (founder["name"] if founder else "")
+        portrait = find_portrait(primary_name) if primary_name else None
         out.setdefault(nation, []).append({
             "id": zt,
             "slug": zt.replace("DYNASTY_", "").lower(),
             "name": name,
             "description": desc,
-            "founder": founder or None,
-            "firstRuler": first_ruler or None,
+            "founder": founder["name"] if founder else None,
+            "firstRuler": first_ruler["name"] if first_ruler else None,
+            "leaderAge": primary["age"] if primary else None,
+            "leaderTraits": primary["traits"] if primary else [],
+            "leaderUrl": primary["url"] if primary else "",
+            "portrait": portrait,
             "gameContent": entry.findtext("GameContentRequired") or "",
         })
     return out
@@ -242,8 +302,12 @@ def load_nations() -> list[dict]:
     text_unit = load_text("text-unit.xml") if (XML_DIR / "text-unit.xml").exists() else {}
     colors = load_colors()
     shrines_by_nation = load_shrines()
-    dynasties_by_nation = load_dynasties()
+    characters = load_characters()
+    dynasties_by_nation = load_dynasties(characters)
     xml_indexes = load_xml_indexes(XML_DIR)
+    text_cityname = load_text("text-cityname.xml") if (XML_DIR / "text-cityname.xml").exists() else {}
+    text_name = load_text("text-name.xml") if (XML_DIR / "text-name.xml").exists() else {}
+    text_unit_for_starts = load_text("text-unit.xml") if (XML_DIR / "text-unit.xml").exists() else {}
 
     # Per-nation per-family hex (e.g., COLOR_NATION_ASSYRIA_FAMILY_01 → #b53c01).
     # Also alias the YEUZHI typo so the Yuezhi families pick up colors.
@@ -321,6 +385,59 @@ def load_nations() -> list[dict]:
         fams = sorted(families_by_nation.get(zt, []), key=lambda f: f["colorIndex"])
         nation_shrines = shrines_by_nation.get(zt, [])
 
+        # City names (resolved to display text)
+        city_names = []
+        for cn in entry.findall("aeCityNames/zValue"):
+            key = cn.text or ""
+            if key:
+                city_names.append(text_cityname.get(key, key.replace("CITYNAME_", "").title()))
+
+        # First name pools
+        first_names_male = []
+        for nm in entry.findall("aeFirstNamesMale/zValue"):
+            key = nm.text or ""
+            if key:
+                first_names_male.append(text_name.get(key, key.replace("NAME_", "").title()))
+        first_names_female = []
+        for nm in entry.findall("aeFirstNamesFemale/zValue"):
+            key = nm.text or ""
+            if key:
+                first_names_female.append(text_name.get(key, key.replace("NAME_", "").title()))
+
+        # Starting units (the first turn): pairs of (unit, count)
+        start_units = []
+        for pair in entry.findall("aiStartUnit/Pair"):
+            uk = (pair.findtext("zIndex") or "")
+            n_count = int(pair.findtext("iValue") or "0")
+            if uk:
+                start_units.append({
+                    "id": uk,
+                    "name": text_unit_for_starts.get(f"TEXT_{uk}", uk.replace("UNIT_", "").replace("_", " ").title()),
+                    "count": n_count,
+                    "slug": uk.replace("UNIT_", "").lower().replace("_", "-"),
+                })
+        # Initial city units (Worker, etc. spawned with the capital)
+        city_units = []
+        for pair in entry.findall("aiCityUnit/Pair"):
+            uk = (pair.findtext("zIndex") or "")
+            n_count = int(pair.findtext("iValue") or "0")
+            if uk:
+                city_units.append({
+                    "id": uk,
+                    "name": text_unit_for_starts.get(f"TEXT_{uk}", uk.replace("UNIT_", "").replace("_", " ").title()),
+                    "count": n_count,
+                    "slug": uk.replace("UNIT_", "").lower().replace("_", "-"),
+                })
+
+        first_build_id = entry.findtext("FirstBuild") or ""
+        first_build_name = text_unit_for_starts.get(f"TEXT_{first_build_id}", first_build_id.replace("UNIT_", "").title()) if first_build_id else ""
+
+        # Title labels
+        leader_title = text_infos.get(entry.findtext("LeaderTitle") or "", "")
+        heir_title = text_infos.get(entry.findtext("HeirTitle") or "", "")
+        regent_title = text_infos.get(entry.findtext("RegentTitle") or "", "")
+        successor_title = text_infos.get(entry.findtext("SuccessorTitle") or "", "")
+
         # Auto-derived bonus list from the game's effect tree.
         effect_player_id = (entry.findtext("EffectPlayer") or "").strip()
         effects_xml = render_nation_effects(effect_player_id, xml_indexes) if effect_player_id else []
@@ -343,6 +460,18 @@ def load_nations() -> list[dict]:
             "families": fams,
             "shrineXml": nation_shrines,
             "effectsXml": effects_xml,
+            "cityNames": city_names,
+            "firstNamesMale": first_names_male,
+            "firstNamesFemale": first_names_female,
+            "startUnits": start_units,
+            "cityUnits": city_units,
+            "firstBuild": {"id": first_build_id, "name": first_build_name} if first_build_id else None,
+            "titles": {
+                "leader": leader_title,
+                "heir": heir_title,
+                "regent": regent_title,
+                "successor": successor_title,
+            },
             "playable": (entry.findtext("bPlayable") == "1") or entry.findtext("bPlayable") is None,
             "gameContent": entry.findtext("GameContentRequired") or "",
         })

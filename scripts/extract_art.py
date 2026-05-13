@@ -36,10 +36,13 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^TECH_([A-Z_]+?)()$"), "icons/techs"),
     (re.compile(r"^IMPROVEMENT_SHRINE_([A-Z_]+?)()$"), "icons/shrines"),
     (re.compile(r"^IMPROVEMENT_(?!SHRINE_|RUINS|PILLAGED|FINISHED|LIBRARY_TEMP|DEAD_|.*_RUINS|SETTLEMENT_|HOVEL_|BASTION_|OUTPOST_|ANCIENT_|ENCAMPMENT_|CITY_SITE)([A-Z0-9_]+?)()$"), "icons/improvements"),
-    # Project icons used in shrine/bonus text — e.g. Treasury, Olympics
     (re.compile(r"^PROJECT_([A-Z_0-9]+?)()$"), "icons/projects"),
-    # Unit effect / promotion icons — e.g. Focus I/II/III, Steadfast
     (re.compile(r"^EFFECTUNIT_([A-Z_0-9]+?)()$"), "icons/effects"),
+    # Historical-person portraits (dynasty founders + named characters)
+    (re.compile(r"^HISTORICAL_PERSON_([A-Z_0-9]+?)()$"), "portraits/historical"),
+    # Unit sprites for the unique-unit cards. The game has lots; we extract
+    # everything starting with UNIT_ (excluding action/UI sprites).
+    (re.compile(r"^UNIT_(?!ACTION_|TARGET_|TARGETING_|MOVE_|ATTACK_)([A-Z_0-9]+?)()$"), "icons/units"),
 ]
 
 

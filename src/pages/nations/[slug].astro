@@ -18,7 +18,6 @@ const SHRINE_TYPE_YIELD: Record<string, string> = {
   FIRE: 'iron', HEALING: 'growth', HUNTING: 'food',
 };
 
-// Pick bonus source: prefer XML when at least as complete; else yaml.
 function bonusSource(): string[] {
   const xml = ((n as any).effectsXml as string[] | undefined) || [];
   const yaml = ((n as any).bonuses as string[] | undefined) || [];
@@ -31,7 +30,11 @@ const families = (n as any).families || [];
 const dynasties = (n as any).dynastyDetails || [];
 const startingTech: string[] = (n as any).startingTech || [];
 const startingLaw: string[] = (n as any).startingLaw || [];
-const leader = (n as any).leader || {};
+const cityNames: string[] = (n as any).cityNames || [];
+const startUnits = (n as any).startUnits || [];
+const cityUnits = (n as any).cityUnits || [];
+const firstBuild = (n as any).firstBuild;
+const titles = (n as any).titles || {};
 ---
 
 <Base
@@ -44,128 +47,197 @@ const leader = (n as any).leader || {};
   <header class="nat-head" style={`--nation-bg: ${n.color.bg}; --nation-fg: ${n.color.fg};`}>
     <img class="nat-head__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
     <div class="nat-head__title">
-      <div class="nat-head__sub">Old World · Nation</div>
+      <div class="nat-head__sub">
+        Old World · Nation
+        {n.gameContent && <span class="nat-head__dlc"> · DLC: {n.gameContent}</span>}
+      </div>
       <h1 class="nat-head__name">{n.name}</h1>
-      {n.gameContent && <div class="nat-head__dlc">DLC: {n.gameContent}</div>}
+      {titles.leader && <div class="nat-head__title-label">Leader title: <em>{titles.leader}</em></div>}
     </div>
     <div class="nat-head__rule"></div>
   </header>
 
-  <section class="np-sec">
-    <h2 class="np-sec__title">Bonuses</h2>
-    <ul class="np-list">
-      {bonuses.map(b => {
-        const yk = classifyYield(b)?.toLowerCase() || 'misc';
-        return (
-          <li class={`np-item yield-${yk}`}>
-            <LinkedText text={b} showIcons={false} iconsForYields={true} />
-          </li>
-        );
-      })}
-    </ul>
-  </section>
+  <div class="np-grid">
+    <section class="np-sec np-sec--bonuses">
+      <h2 class="np-sec__title">Bonuses</h2>
+      <ul class="np-list">
+        {bonuses.map(b => {
+          const yk = classifyYield(b)?.toLowerCase() || 'misc';
+          return (
+            <li class={`np-item yield-${yk}`}>
+              <LinkedText text={b} showIcons={false} iconsForYields={true} />
+            </li>
+          );
+        })}
+      </ul>
+    </section>
 
-  <section class="np-sec">
-    <h2 class="np-sec__title">Shrines</h2>
-    <div class="np-shrines">
-      {shrines.filter((s: any) => s.shrine).map((sh: any) => {
-        const type = sh.shrine?.type || '';
-        const yk = SHRINE_TYPE_YIELD[type] || 'misc';
-        const iconUrl = type ? `${base}img/icons/shrines/${type.toLowerCase()}.png` : '';
-        return (
-          <article class={`np-shrine yield-${yk}`}>
-            {iconUrl && <img class="np-shrine__art" src={iconUrl} alt="" />}
-            <div class="np-shrine__body">
-              <header>
-                <span class="np-shrine__type">{sh.shrine?.typeLabel}</span>
-                <span class="np-shrine__deity">{sh.shrine?.name}</span>
-              </header>
-              <p class="np-shrine__effect">
-                <LinkedText text={sh.effect || ''} showIcons={false} iconsForYields={true} />
-              </p>
-            </div>
-          </article>
-        );
-      })}
-    </div>
-  </section>
+    <section class="np-sec np-sec--start">
+      <h2 class="np-sec__title">Start</h2>
+      <dl class="np-dl np-dl--start">
+        {startUnits.length > 0 && (
+          <>
+            <dt>Map</dt>
+            <dd class="np-units">
+              {startUnits.map((u: any) => (
+                <span class="np-unit">
+                  <img class="np-unit__icon" src={`${base}img/icons/units/${u.slug}.png`} alt="" onerror="this.style.display='none'" />
+                  {u.count > 1 && <span class="np-unit__n">{u.count}×</span>}
+                  {u.name}
+                </span>
+              ))}
+            </dd>
+          </>
+        )}
+        {cityUnits.length > 0 && (
+          <>
+            <dt>Capital</dt>
+            <dd class="np-units">
+              {cityUnits.map((u: any) => (
+                <span class="np-unit">
+                  <img class="np-unit__icon" src={`${base}img/icons/units/${u.slug}.png`} alt="" onerror="this.style.display='none'" />
+                  {u.count > 1 && <span class="np-unit__n">{u.count}×</span>}
+                  {u.name}
+                </span>
+              ))}
+            </dd>
+          </>
+        )}
+        {firstBuild && (
+          <>
+            <dt>First build</dt>
+            <dd class="np-units">
+              <span class="np-unit">
+                <img class="np-unit__icon" src={`${base}img/icons/units/${firstBuild.id.replace('UNIT_', '').toLowerCase().replace(/_/g, '-')}.png`} alt="" onerror="this.style.display='none'" />
+                {firstBuild.name}
+              </span>
+            </dd>
+          </>
+        )}
+        {startingTech.length > 0 && (
+          <>
+            <dt>Tech</dt>
+            <dd>
+              <ul class="np-chips">
+                {startingTech.map(t => <li class="np-chip">{t}</li>)}
+              </ul>
+            </dd>
+          </>
+        )}
+        {startingLaw.length > 0 && (
+          <>
+            <dt>Laws</dt>
+            <dd>
+              <ul class="np-chips">
+                {startingLaw.map(l => <li class="np-chip">{l}</li>)}
+              </ul>
+            </dd>
+          </>
+        )}
+      </dl>
+    </section>
 
-  <section class="np-sec">
-    <h2 class="np-sec__title">Unique Unit</h2>
-    <dl class="np-dl">
-      {uniqueUnit.names && <><dt>Names</dt><dd><LinkedText text={uniqueUnit.names} showIcons={false} iconsForYields={true} /></dd></>}
-      {uniqueUnit.traits && <><dt>Traits</dt><dd>{uniqueUnit.traits}</dd></>}
-      {uniqueUnit.cost && <><dt>Cost</dt><dd><LinkedText text={uniqueUnit.cost} showIcons={false} iconsForYields={true} /></dd></>}
-      {uniqueUnit.upkeep && <><dt>Upkeep</dt><dd><LinkedText text={uniqueUnit.upkeep} showIcons={false} iconsForYields={true} /></dd></>}
-      {uniqueUnit.moveSight && <><dt>Move/Sight</dt><dd>{uniqueUnit.moveSight}</dd></>}
-    </dl>
-  </section>
+    <section class="np-sec np-sec--uu">
+      <h2 class="np-sec__title">Unique Unit</h2>
+      <dl class="np-dl">
+        {uniqueUnit.names && <><dt>Names</dt><dd><LinkedText text={uniqueUnit.names} showIcons={false} iconsForYields={true} /></dd></>}
+        {uniqueUnit.traits && <><dt>Traits</dt><dd>{uniqueUnit.traits}</dd></>}
+        {uniqueUnit.cost && <><dt>Cost</dt><dd><LinkedText text={uniqueUnit.cost} showIcons={false} iconsForYields={true} /></dd></>}
+        {uniqueUnit.upkeep && <><dt>Upkeep</dt><dd><LinkedText text={uniqueUnit.upkeep} showIcons={false} iconsForYields={true} /></dd></>}
+        {uniqueUnit.moveSight && <><dt>Move/Sight</dt><dd>{uniqueUnit.moveSight}</dd></>}
+      </dl>
+    </section>
 
-  <section class="np-sec">
-    <h2 class="np-sec__title">Starting Techs</h2>
-    <ul class="np-chips">
-      {startingTech.map(t => <li class="np-chip">{t}</li>)}
-      {startingTech.length === 0 && <li class="np-chip np-chip--dim">—</li>}
-    </ul>
-    {startingLaw.length > 0 && (
-      <>
-        <h3 class="np-sub">Starting Laws</h3>
-        <ul class="np-chips">{startingLaw.map(l => <li class="np-chip">{l}</li>)}</ul>
-      </>
-    )}
-  </section>
+    <section class="np-sec np-sec--shrines">
+      <h2 class="np-sec__title">Shrines</h2>
+      <div class="np-shrines">
+        {shrines.filter((s: any) => s.shrine).map((sh: any) => {
+          const type = sh.shrine?.type || '';
+          const yk = SHRINE_TYPE_YIELD[type] || 'misc';
+          const iconUrl = type ? `${base}img/icons/shrines/${type.toLowerCase()}.png` : '';
+          return (
+            <article class={`np-shrine yield-${yk}`}>
+              {iconUrl && <img class="np-shrine__art" src={iconUrl} alt="" />}
+              <div class="np-shrine__body">
+                <header>
+                  <span class="np-shrine__type">{sh.shrine?.typeLabel}</span>
+                  <span class="np-shrine__deity">{sh.shrine?.name}</span>
+                </header>
+                <p class="np-shrine__effect">
+                  <LinkedText text={sh.effect || ''} showIcons={false} iconsForYields={true} />
+                </p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
 
-  <section class="np-sec">
-    <h2 class="np-sec__title">Families</h2>
-    <ul class="np-families">
-      {families.map((f: any) => (
-        <li class="np-fam" style={f.ingameColor ? `--fam-stripe: ${f.ingameColor}` : undefined}>
-          {f.classKey && <img class="np-fam__icon" src={`${base}img/archetypes/${f.classKey}.png`} alt="" />}
-          <span class="np-fam__class">{f.class}</span>
-          <span class="np-fam__name">{f.name}</span>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section class="np-sec">
-    <h2 class="np-sec__title">Dynasties</h2>
-    {dynasties.length === 0 ? (
-      <p class="np-empty">No dynasty data for this nation.</p>
-    ) : (
-      <ul class="np-dynasties">
-        {dynasties.map((d: any) => (
-          <li class="np-dyn">
-            <header class="np-dyn__head">
-              <span class="np-dyn__name">{d.name}</span>
-              {d.founder && d.founder !== d.firstRuler && (
-                <span class="np-dyn__role">founder · <em>{d.founder}</em></span>
-              )}
-              {d.firstRuler && (
-                <span class="np-dyn__role">first ruler · <em>{d.firstRuler}</em></span>
-              )}
-              {d.gameContent && <span class="np-dyn__dlc">{d.gameContent}</span>}
-            </header>
-            {d.description && (
-              <p class="np-dyn__desc"><LinkedText text={d.description} showIcons={false} iconsForYields={true} /></p>
-            )}
+    <section class="np-sec np-sec--families">
+      <h2 class="np-sec__title">Families</h2>
+      <ul class="np-families">
+        {families.map((f: any) => (
+          <li class="np-fam" style={f.ingameColor ? `--fam-stripe: ${f.ingameColor}` : undefined}>
+            {f.classKey && <img class="np-fam__icon" src={`${base}img/archetypes/${f.classKey}.png`} alt="" />}
+            <span class="np-fam__class">{f.class}</span>
+            <span class="np-fam__name">{f.name}</span>
           </li>
         ))}
       </ul>
-    )}
-  </section>
-
-  {(leader.name || leader.spouse || leader.heir1 || leader.heir2) && (
-    <section class="np-sec">
-      <h2 class="np-sec__title">Royal Family</h2>
-      <dl class="np-dl">
-        {leader.name && <><dt>Leader</dt><dd>{leader.name}</dd></>}
-        {leader.spouse && <><dt>Spouse</dt><dd>{leader.spouse}</dd></>}
-        {leader.heir1 && <><dt>Heir 1</dt><dd>{leader.heir1}</dd></>}
-        {leader.heir2 && <><dt>Heir 2</dt><dd>{leader.heir2}</dd></>}
-      </dl>
     </section>
-  )}
+
+    <section class="np-sec np-sec--dynasties">
+      <h2 class="np-sec__title">Dynasties</h2>
+      {dynasties.length === 0 ? (
+        <p class="np-empty">No dynasty data for this nation.</p>
+      ) : (
+        <ul class="np-dynasties">
+          {dynasties.map((d: any) => (
+            <li class="np-dyn">
+              {d.portrait ? (
+                <img class="np-dyn__portrait" src={`${base}${d.portrait}`} alt={d.firstRuler || d.name} />
+              ) : (
+                <div class="np-dyn__portrait np-dyn__portrait--placeholder">{(d.firstRuler || d.name)?.[0] || '?'}</div>
+              )}
+              <div class="np-dyn__body">
+                <header class="np-dyn__head">
+                  <span class="np-dyn__name">{d.name}</span>
+                  {d.leaderAge != null && d.leaderAge > 0 && (
+                    <span class="np-dyn__age">age {d.leaderAge}</span>
+                  )}
+                  {d.gameContent && <span class="np-dyn__dlc">{d.gameContent}</span>}
+                </header>
+                {d.firstRuler && (
+                  <div class="np-dyn__role">
+                    First ruler: <em>{d.firstRuler}</em>
+                    {d.founder && d.founder !== d.firstRuler && <> · founded by <em>{d.founder}</em></>}
+                  </div>
+                )}
+                {d.leaderTraits && d.leaderTraits.length > 0 && (
+                  <ul class="np-dyn__traits">
+                    {d.leaderTraits.map((t: any) => <li class="np-trait">{t.label}</li>)}
+                  </ul>
+                )}
+                {d.description && (
+                  <p class="np-dyn__desc"><LinkedText text={d.description} showIcons={false} iconsForYields={true} /></p>
+                )}
+                {d.leaderUrl && <a class="np-dyn__url" href={d.leaderUrl} target="_blank" rel="noopener">Wikipedia ↗</a>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+
+    {cityNames.length > 0 && (
+      <section class="np-sec np-sec--cities">
+        <h2 class="np-sec__title">City names <span class="np-count">{cityNames.length}</span></h2>
+        <ul class="np-citylist">
+          {cityNames.map(c => <li>{c}</li>)}
+        </ul>
+      </section>
+    )}
+  </div>
 </Base>
 
 <style>
@@ -185,13 +257,12 @@ const leader = (n as any).leader || {};
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    gap: 1rem;
+    gap: 1.1rem;
     padding-bottom: 0.8rem;
     margin-bottom: 1.4rem;
-    position: relative;
   }
   .nat-head__crest {
-    width: 64px; height: 64px;
+    width: 72px; height: 72px;
     object-fit: contain;
     filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
   }
@@ -204,22 +275,22 @@ const leader = (n as any).leader || {};
     color: var(--gold-soft);
     font-weight: 500;
   }
+  .nat-head__dlc { color: var(--text-dim); }
   .nat-head__name {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 2.4rem;
-    line-height: 1.1;
+    line-height: 1.05;
     color: var(--text);
     letter-spacing: 0.005em;
   }
-  .nat-head__dlc {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
+  .nat-head__title-label {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
     color: var(--text-dim);
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
   }
+  .nat-head__title-label em { color: var(--text-soft); font-style: italic; }
   .nat-head__rule {
     grid-column: 1 / -1;
     height: 3px;
@@ -227,7 +298,22 @@ const leader = (n as any).leader || {};
     opacity: 0.85;
   }
 
-  .np-sec { margin: 1.6rem 0; }
+  /* Two-column grid on desktop; sections place themselves intelligently. */
+  .np-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.4rem;
+  }
+  @media (min-width: 1200px) {
+    .np-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  /* Some sections need more width — they span the full grid */
+  .np-sec--dynasties,
+  .np-sec--shrines,
+  .np-sec--families,
+  .np-sec--cities { grid-column: 1 / -1; }
+
+  .np-sec { margin: 0; min-width: 0; }
   .np-sec__title {
     font-family: var(--font-ui);
     font-weight: 600;
@@ -238,23 +324,25 @@ const leader = (n as any).leader || {};
     border-bottom: 1px solid var(--gold-deep);
     padding-bottom: 0.3rem;
     margin: 0 0 0.7rem;
+    display: flex; align-items: baseline; gap: 0.5rem;
   }
-  .np-sub {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.95rem;
-    margin: 0.9rem 0 0.4rem;
-    color: var(--text-soft);
+  .np-count {
+    font-family: var(--font-mono);
+    font-size: 0.7em;
+    color: var(--text-faint);
+    letter-spacing: 0;
+    text-transform: none;
+    margin-left: auto;
   }
   .np-empty { color: var(--text-faint); font-style: italic; }
 
-  .np-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+  .np-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.3rem; }
   .np-item {
-    padding: 0.4rem 0.7rem 0.4rem 0.9rem;
+    padding: 0.35rem 0.7rem 0.35rem 0.85rem;
     background: var(--bg-elev);
     border-left: 3px solid var(--yield-bg, var(--border-strong));
     border-radius: 0 4px 4px 0;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
   }
 
   .np-shrines {
@@ -265,7 +353,7 @@ const leader = (n as any).leader || {};
   .np-shrine {
     display: flex;
     gap: 0.6rem;
-    padding: 0.5rem 0.7rem 0.5rem 0.9rem;
+    padding: 0.5rem 0.7rem 0.5rem 0.85rem;
     background: var(--bg-elev);
     border-left: 3px solid var(--yield-bg, var(--border-strong));
     border-radius: 0 4px 4px 0;
@@ -277,7 +365,7 @@ const leader = (n as any).leader || {};
     flex-shrink: 0;
     align-self: flex-start;
   }
-  .np-shrine__body { flex: 1; }
+  .np-shrine__body { flex: 1; min-width: 0; }
   .np-shrine__body header { display: flex; align-items: baseline; gap: 0.4rem; }
   .np-shrine__type {
     font-family: var(--font-display);
@@ -288,7 +376,7 @@ const leader = (n as any).leader || {};
   .np-shrine__deity {
     font-family: var(--font-display);
     font-style: italic;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     color: var(--text-faint);
   }
   .np-shrine__effect { margin: 0.15rem 0 0; font-size: 0.86rem; color: var(--text-soft); }
@@ -298,7 +386,7 @@ const leader = (n as any).leader || {};
     grid-template-columns: max-content 1fr;
     gap: 0.25rem 1rem;
     margin: 0;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
   }
   .np-dl dt {
     font-family: var(--font-ui);
@@ -309,18 +397,29 @@ const leader = (n as any).leader || {};
     padding-top: 0.2rem;
   }
   .np-dl dd { margin: 0; color: var(--text); }
+  .np-dl--start dd { display: flex; flex-wrap: wrap; gap: 0.3rem 0.65rem; align-items: center; }
 
-  .np-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .np-units { display: inline-flex; flex-wrap: wrap; gap: 0.55rem; }
+  .np-unit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+  }
+  .np-unit__icon { width: 1.3em; height: 1.3em; object-fit: contain; opacity: 0.95; }
+  .np-unit__n { font-family: var(--font-mono); font-size: 0.78em; color: var(--text-dim); }
+
+  .np-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
   .np-chip {
-    padding: 0.25rem 0.65rem;
+    padding: 0.2rem 0.6rem;
     background: var(--bg-elev);
     border: 1px solid var(--border);
     border-radius: 999px;
     font-family: var(--font-display);
-    font-size: 0.88rem;
+    font-size: 0.84rem;
     color: var(--text);
   }
-  .np-chip--dim { color: var(--text-faint); font-style: italic; }
 
   .np-families { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.35rem; }
   .np-fam {
@@ -336,29 +435,76 @@ const leader = (n as any).leader || {};
   .np-fam__class { font-family: var(--font-display); font-weight: 600; font-size: 0.96rem; color: var(--text); }
   .np-fam__name { font-family: var(--font-display); font-style: italic; font-size: 0.78rem; color: var(--text-faint); }
 
-  .np-dynasties { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+  /* Dynasty cards — portrait + body in a row */
+  .np-dynasties {
+    list-style: none; padding: 0; margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 0.7rem;
+  }
   .np-dyn {
-    padding: 0.55rem 0.85rem;
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 0.7rem;
+    padding: 0.55rem 0.85rem 0.55rem 0.6rem;
     background: var(--bg-elev);
     border-left: 3px solid var(--gold-deep);
     border-radius: 0 4px 4px 0;
   }
-  .np-dyn__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem; }
+  .np-dyn__portrait {
+    width: 80px; height: 80px;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .np-dyn__portrait--placeholder {
+    display: grid; place-items: center;
+    background: var(--bg-elev-2);
+    color: var(--text-faint);
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+  .np-dyn__body { min-width: 0; }
+  .np-dyn__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; margin-bottom: 0.1rem; }
   .np-dyn__name {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--text);
     letter-spacing: 0.01em;
   }
+  .np-dyn__age {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
   .np-dyn__role {
     font-family: var(--font-ui);
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
+    font-size: 0.76rem;
     color: var(--text-dim);
+    margin-bottom: 0.25rem;
   }
-  .np-dyn__role em { font-style: italic; color: var(--text-soft); letter-spacing: 0.02em; text-transform: none; font-size: 0.9rem; }
+  .np-dyn__role em { font-style: italic; color: var(--text-soft); font-size: 0.92em; }
+  .np-dyn__traits {
+    list-style: none;
+    display: flex; flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 0 0 0.35rem;
+    padding: 0;
+  }
+  .np-trait {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    padding: 0.05rem 0.45rem;
+    background: var(--bg-elev-2);
+    color: var(--text-soft);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+  }
   .np-dyn__dlc {
     font-family: var(--font-mono);
     font-size: 0.6rem;
@@ -368,10 +514,39 @@ const leader = (n as any).leader || {};
     letter-spacing: 0.12em;
   }
   .np-dyn__desc {
-    margin: 0.35rem 0 0;
+    margin: 0;
     color: var(--text-soft);
-    font-size: 0.92rem;
-    line-height: 1.5;
-    max-width: 80ch;
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+  .np-dyn__url {
+    display: inline-block;
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+    color: var(--gold-soft);
+    text-decoration: none;
+  }
+  .np-dyn__url:hover { color: var(--gold); text-decoration: underline; }
+
+  /* City list — dense multi-column block */
+  .np-citylist {
+    list-style: none;
+    padding: 0; margin: 0;
+    columns: 4 7rem;
+    column-gap: 1.5rem;
+    font-size: 0.86rem;
+    color: var(--text-soft);
+  }
+  .np-citylist li {
+    padding: 0.1rem 0;
+    break-inside: avoid;
+  }
+
+  @media (max-width: 700px) {
+    .np-grid { grid-template-columns: 1fr; }
+    .nat-head__name { font-size: 1.8rem; }
+    .nat-head__crest { width: 48px; height: 48px; }
+    .np-dyn { grid-template-columns: 60px 1fr; }
+    .np-dyn__portrait { width: 60px; height: 60px; }
   }
 </style>

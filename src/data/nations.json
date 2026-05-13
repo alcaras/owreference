@@ -5,6 +5,42 @@
       "Elephants add Ivory (with camp)",
       "Stele (civic and yield boost)"
     ],
+    "cityNames": [
+      "Adulis",
+      "Adwa",
+      "Agazi",
+      "Asmara",
+      "Axum",
+      "Azeba",
+      "Etchmara",
+      "Hawulti",
+      "Keskese",
+      "Kubar",
+      "Massawa",
+      "Matara",
+      "Mendefera",
+      "Qohaito",
+      "Sabae",
+      "Sabat",
+      "Sembel",
+      "Wuqro",
+      "Yeha",
+      "Zula"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger"
+      }
+    ],
     "color": {
       "bg": "#f8a3b4",
       "fg": "#f5f6f8",
@@ -24,7 +60,20 @@
         "founder": "Kaleb",
         "gameContent": "AKSUM",
         "id": "DYNASTY_KALEB",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_PIOUS",
+            "label": "Pious"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Kaleb_of_Axum",
         "name": "Kaleb",
+        "portrait": "img/portraits/historical/kaleb.png",
         "slug": "kaleb"
       },
       {
@@ -33,7 +82,20 @@
         "founder": "Ousanas",
         "gameContent": "AKSUM",
         "id": "DYNASTY_EZANA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot"
+          },
+          {
+            "id": "TRAIT_EVANGELIST",
+            "label": "Evangelist"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ezana_of_Axum",
         "name": "Ezana",
+        "portrait": "img/portraits/historical/ezana.png",
         "slug": "ezana"
       },
       {
@@ -42,7 +104,24 @@
         "founder": "Gudit",
         "gameContent": "AKSUM",
         "id": "DYNASTY_GUDIT",
+        "leaderAge": 28,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_RUTHLESS",
+            "label": "Ruthless"
+          },
+          {
+            "id": "TRAIT_INFAMOUS",
+            "label": "Infamous"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Gudit",
         "name": "Gudit",
+        "portrait": "img/portraits/historical/gudit.png",
         "slug": "gudit"
       },
       {
@@ -51,7 +130,24 @@
         "founder": "Makeda",
         "gameContent": "AKSUM",
         "id": "DYNASTY_MAKEDA",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat"
+          },
+          {
+            "id": "TRAIT_CUNNING",
+            "label": "Cunning"
+          },
+          {
+            "id": "TRAIT_ENVOY",
+            "label": "Envoy"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Queen_of_Sheba",
         "name": "Makeda",
+        "portrait": "img/portraits/historical/makeda.png",
         "slug": "makeda"
       },
       {
@@ -60,7 +156,24 @@
         "founder": "Gadarat",
         "gameContent": "AKSUM",
         "id": "DYNASTY_GADARAT",
+        "leaderAge": 25,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician"
+          },
+          {
+            "id": "TRAIT_SUBJUGATOR",
+            "label": "Subjugator"
+          },
+          {
+            "id": "TRAIT_WARLIKE",
+            "label": "Warlike"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/GDRT",
         "name": "Gadarat",
+        "portrait": "img/portraits/historical/gadarat.png",
         "slug": "gadarat"
       }
     ],
@@ -105,6 +218,54 @@
         "ingameFg": "#111418",
         "name": "Barya"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ababa_Esat",
+      "Adhana",
+      "Admas",
+      "Ahywa",
+      "Awsena",
+      "Esmeni",
+      "Garsemot",
+      "Gudit",
+      "Hadena",
+      "Ismenie",
+      "Kalina",
+      "Kuname",
+      "Lab",
+      "Makeda",
+      "Masoba",
+      "Nikanta",
+      "Nikawla",
+      "Sofya",
+      "Tsetisi",
+      "Wakana"
+    ],
+    "firstNamesMale": [
+      "Aderaz",
+      "Alameda",
+      "Angabo",
+      "Ayzor",
+      "Azaba",
+      "Bazen",
+      "Datawnas",
+      "Dil_Naod",
+      "Endubis",
+      "Ezana",
+      "Gabra_Maskal",
+      "Gadarat",
+      "Kaleb",
+      "Mawat",
+      "Menelik",
+      "Ousanas",
+      "Saizana",
+      "Wazeb",
+      "Zaqarnas",
+      "Zoskales"
     ],
     "gameContent": "AKSUM",
     "id": "NATION_AKSUM",
@@ -263,12 +424,26 @@
       }
     ],
     "slug": "aksum",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Labor Force",
       "Administration"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "150/200 iron",
       "moveSight": "2 move, 4 vision",
@@ -284,6 +459,46 @@
       "+2 Orders/Kill",
       "Units start with Focus 1",
       "+100% Pillage Yield"
+    ],
+    "cityNames": [
+      "Assur",
+      "Nineveh",
+      "Kalhu",
+      "Arpad",
+      "Dur_Sharrukin",
+      "Qatna",
+      "Harran",
+      "Sareisa",
+      "Erbil",
+      "Mardaman",
+      "Ekallatum",
+      "Tushhan",
+      "Mardin",
+      "Arrapha",
+      "Carchemish",
+      "Kahat",
+      "Gozan",
+      "Nisibis",
+      "Pteria",
+      "Resen",
+      "Kar_Sulmanu_Asaredu",
+      "Tushpa",
+      "Gaza",
+      "Jerwan"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger"
+      }
     ],
     "color": {
       "bg": "#fadc3b",
@@ -304,7 +519,20 @@
         "founder": "Esarhaddon",
         "gameContent": "",
         "id": "DYNASTY_ASHURBANIPAL",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot"
+          },
+          {
+            "id": "TRAIT_EDUCATED",
+            "label": "Educated"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ashurbanipal",
         "name": "Ashurbanipal",
+        "portrait": null,
         "slug": "ashurbanipal"
       },
       {
@@ -313,7 +541,20 @@
         "founder": "Shalmaneser_Iii",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_SHAMMURAMAT",
+        "leaderAge": 28,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_INTELLIGENT",
+            "label": "Intelligent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Shammuramat",
         "name": "Shammuramat",
+        "portrait": "img/portraits/historical/shammuramat.png",
         "slug": "shammuramat"
       },
       {
@@ -322,7 +563,24 @@
         "founder": "Shalmaneser_I",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_TUKULTI_NINURTA_I",
+        "leaderAge": 25,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_PROUD",
+            "label": "Proud"
+          },
+          {
+            "id": "TRAIT_KING_OF_KINGS",
+            "label": "King Of Kings"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Tukulti-Ninurta_I",
         "name": "Tukulti_Ninurta_I",
+        "portrait": "img/portraits/historical/tukulti_ninurta_i.png",
         "slug": "tukulti_ninurta_i"
       },
       {
@@ -331,7 +589,20 @@
         "founder": "Eriba_Adad_I",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_ASHUR_UBALLIT_I",
+        "leaderAge": 31,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat"
+          },
+          {
+            "id": "TRAIT_RUTHLESS",
+            "label": "Ruthless"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ashur-uballit_I",
         "name": "Ashur_Uballit_I",
+        "portrait": "img/portraits/historical/ashur_uballit_i.png",
         "slug": "ashur_uballit_i"
       },
       {
@@ -340,7 +611,20 @@
         "founder": "Sargon_Ii",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_SARGON_II",
+        "leaderAge": 35,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_RIGHTEOUS",
+            "label": "Righteous"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Sargon_II",
         "name": "Sargon_Ii",
+        "portrait": "img/portraits/historical/sargon_ii.png",
         "slug": "sargon_ii"
       }
     ],
@@ -386,6 +670,63 @@
         "ingameFg": "#f5f6f8",
         "name": "Erishum"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Addati",
+      "Ahat_Abisha",
+      "Ahat_Abu",
+      "Ahi_Talli",
+      "Akbara",
+      "Ataliya",
+      "Attar_Palti",
+      "Balhiti",
+      "Banitu",
+      "Esharra_Hammat",
+      "Eziptu",
+      "Hama",
+      "Kabalaia",
+      "Kidiniti",
+      "Libbali_Sharrat",
+      "Marqihita",
+      "Naqia",
+      "Nur_Ekalli",
+      "Sammu_Ramat",
+      "Saraia",
+      "Shadditu",
+      "Tashmetu_Sharrat",
+      "Yaba",
+      "Zarpanitu"
+    ],
+    "firstNamesMale": [
+      "Adad_Nirari",
+      "Adamu",
+      "Aminu",
+      "Ashur_Dan",
+      "Ashur_Nirari",
+      "Ashur_Uballit",
+      "Ashurbanipal",
+      "Bazaya",
+      "Enlil_Nasir",
+      "Eriba_Adad",
+      "Esarhaddon",
+      "Giritu",
+      "Ishme_Dagan",
+      "Nimedu",
+      "Puzur_Ashur",
+      "Rimut_Adad",
+      "Sennacherib",
+      "Shalmaneser",
+      "Shamash_Shum",
+      "Shamshi_Adad",
+      "Sulili",
+      "Tiglath_Pileser",
+      "Tukulti_War",
+      "Ushpia",
+      "Zubir"
     ],
     "gameContent": "",
     "id": "NATION_ASSYRIA",
@@ -542,12 +883,26 @@
       }
     ],
     "slug": "assyria",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Administration",
       "Military Drill"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 wood, 50/100 iron",
       "moveSight": "1 move, 3 vision",
@@ -563,6 +918,43 @@
       "+1 Sci/City",
       "+2 Culture/Treasury",
       "+20% Growth"
+    ],
+    "cityNames": [
+      "Babylon",
+      "Akkad",
+      "Nippur",
+      "Borsippa",
+      "Mari",
+      "Sippar",
+      "Eshnunna",
+      "Dur_Kurigalzu",
+      "Ellasar",
+      "Opis",
+      "Larsa",
+      "Ur",
+      "Kish",
+      "Shuruppak",
+      "Lagash",
+      "Kisurra",
+      "Eridu",
+      "Uruk",
+      "Marad",
+      "Dilbat",
+      "An_At"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger"
+      }
     ],
     "color": {
       "bg": "#82c83e",
@@ -583,7 +975,20 @@
         "founder": "Nabopolassar",
         "gameContent": "",
         "id": "DYNASTY_NEBUCHADNEZZAR",
+        "leaderAge": 27,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_SCHOLAR_ARCHETYPE",
+            "label": "Scholar"
+          },
+          {
+            "id": "TRAIT_PROSPEROUS",
+            "label": "Prosperous"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nebuchadnezzar_II",
         "name": "Nebuchadnezzar II",
+        "portrait": null,
         "slug": "nebuchadnezzar"
       },
       {
@@ -592,7 +997,24 @@
         "founder": "Adad_Guppi",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_ADAD_GUPPI",
+        "leaderAge": 42,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot"
+          },
+          {
+            "id": "TRAIT_INTELLIGENT",
+            "label": "Intelligent"
+          },
+          {
+            "id": "TRAIT_LONG_LIVED",
+            "label": "Long Lived"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Adad-guppi",
         "name": "Adad_Guppi",
+        "portrait": "img/portraits/historical/adad_guppi.png",
         "slug": "adad_guppi"
       },
       {
@@ -601,7 +1023,20 @@
         "founder": "Sin_Muballit",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_HAMMURABI",
+        "leaderAge": 18,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge"
+          },
+          {
+            "id": "TRAIT_DIVINE",
+            "label": "Divine"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hammurabi",
         "name": "Hammurabi",
+        "portrait": "img/portraits/historical/hammurabi.png",
         "slug": "hammurabi"
       },
       {
@@ -610,7 +1045,20 @@
         "founder": "Ninurta_Nadin_Sumi",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_NEBUCHADNEZZAR_I",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician"
+          },
+          {
+            "id": "TRAIT_TRACKER",
+            "label": "Tracker"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nebuchadnezzar_I",
         "name": "Nebuchadnezzar_I",
+        "portrait": "img/portraits/historical/nebuchadnezzar_i.png",
         "slug": "nebuchadnezzar_i"
       },
       {
@@ -619,7 +1067,24 @@
         "founder": "Kurigalzu_I",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_KURIGALZU_I",
+        "leaderAge": 27,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder"
+          },
+          {
+            "id": "TRAIT_CUNNING",
+            "label": "Cunning"
+          },
+          {
+            "id": "TRAIT_PEACEFUL_EXPANSIONIST",
+            "label": "Peaceful Expansionist"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Kurigalzu_I",
         "name": "Kurigalzu_I",
+        "portrait": "img/portraits/historical/kurigalzu_i.png",
         "slug": "kurigalzu_i"
       }
     ],
@@ -665,6 +1130,66 @@
         "ingameFg": "#111418",
         "name": "Amorite"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ahatsunu",
+      "Alittum",
+      "Amata",
+      "Belessunu",
+      "Beltum_Rimenni",
+      "Damiqtum",
+      "Erishti_Aya",
+      "Ettu",
+      "Gashansunu",
+      "Gemeti",
+      "Humusi",
+      "Iltani",
+      "Kashshaya",
+      "Lamassani",
+      "Melulatum",
+      "Nidintu",
+      "Ninsunu",
+      "Nishi_Inishu",
+      "Palatum",
+      "Ramtu",
+      "Sheritum",
+      "Sun_Gamelat",
+      "Tabni_Sun",
+      "Ubalnu",
+      "Ummi_Ningal",
+      "Zakiti"
+    ],
+    "firstNamesMale": [
+      "Abi_Rattash",
+      "Abil_Sin",
+      "Agum",
+      "Amel_Marduk",
+      "Burnaburiash",
+      "Eriba",
+      "Gandash",
+      "Hammurabi",
+      "Immerum",
+      "Kara_Hardash",
+      "Kashtiliash",
+      "Kudur_Enlil",
+      "Kurigalzu",
+      "Labashi_Marduk",
+      "Lutipri",
+      "Marduk_Nadin_Ahi",
+      "Meli_Shipak",
+      "Nabonidus",
+      "Nabopolassar",
+      "Nebuchadnezzar",
+      "Neriglissar",
+      "Sabium",
+      "Shuma",
+      "Sin_Muballit",
+      "Su_Abu",
+      "Ulamburiash"
     ],
     "gameContent": "",
     "id": "NATION_BABYLONIA",
@@ -837,12 +1362,26 @@
       }
     ],
     "slug": "babylonia",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Administration",
       "Rhetoric"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "150/200 wood",
       "moveSight": "2 moves, 3 range, 4 vision",
@@ -858,6 +1397,49 @@
       "New Cities: +200 Civics",
       "Can Hire Mercs from Tribes",
       "+10 Money/Turn Connected"
+    ],
+    "cityNames": [
+      "Carthago",
+      "Utica",
+      "Hadrumetum",
+      "Thapsus",
+      "Theveste",
+      "Sabrata",
+      "Leptis_Magna",
+      "Hippo_Regius",
+      "Cadiz",
+      "Panormus",
+      "Lilybaeum",
+      "Zama",
+      "Karalis",
+      "Kerkuane",
+      "Tingis",
+      "Sulci",
+      "Melite",
+      "Nora",
+      "Lixus",
+      "Carthago_Nova",
+      "Malaca",
+      "Cartenna",
+      "Saldae",
+      "Sicca",
+      "Neapolis",
+      "Thaenae",
+      "Arae_Philaenorum"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger"
+      }
     ],
     "color": {
       "bg": "#f6efe1",
@@ -877,7 +1459,24 @@
         "founder": "Mattan",
         "gameContent": "",
         "id": "DYNASTY_DIDO",
+        "leaderAge": 23,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat"
+          },
+          {
+            "id": "TRAIT_CUNNING",
+            "label": "Cunning"
+          },
+          {
+            "id": "TRAIT_ENGINEER",
+            "label": "Engineer"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Dido",
         "name": "Dido",
+        "portrait": null,
         "slug": "dido"
       },
       {
@@ -886,7 +1485,20 @@
         "founder": "Hamilcar",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_HANNIBAL",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_HANNIBAL_LEADER",
+            "label": "Hannibal Leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hannibal",
         "name": "Hannibal",
+        "portrait": null,
         "slug": "hannibal"
       },
       {
@@ -895,7 +1507,24 @@
         "founder": "Hanno_Ii",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_HANNO_II",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HANNO_II_LEADER",
+            "label": "Hanno Ii Leader"
+          },
+          {
+            "id": "TRAIT_PROSPEROUS",
+            "label": "Prosperous"
+          },
+          {
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hanno_II_the_Great",
         "name": "Hanno_Ii",
+        "portrait": "img/portraits/historical/hanno_ii.png",
         "slug": "hanno_ii"
       },
       {
@@ -904,7 +1533,20 @@
         "founder": "Hanno_Navigator",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_HANNO_NAVIGATOR",
+        "leaderAge": 37,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HANNO_NAVIGATOR_LEADER",
+            "label": "Hanno Navigator Leader"
+          },
+          {
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hanno_the_Navigator",
         "name": "Hanno_Navigator",
+        "portrait": null,
         "slug": "hanno_navigator"
       }
     ],
@@ -950,6 +1592,88 @@
         "ingameFg": "#f5f6f8",
         "name": "Didonian"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Amatbaal",
+      "Amatmelqart",
+      "Amatmilik",
+      "Anbar",
+      "Arishat",
+      "Arishatbaal",
+      "Ashdanat",
+      "Ashtarte",
+      "Baalzebel",
+      "Batbaal",
+      "Birich",
+      "Birqot",
+      "Dido",
+      "Elissar",
+      "Fairuz",
+      "Hanbi",
+      "Hannah",
+      "Ildash",
+      "Imilce",
+      "Mutunbaal",
+      "Nasma",
+      "Otr",
+      "Sapanbaal",
+      "Shamshye",
+      "Sophonisba",
+      "Tabiba",
+      "Thualath",
+      "Thubabath",
+      "Umashtart",
+      "Yasmin",
+      "Yzbaal",
+      "Zanbak",
+      "Zohur",
+      "Zmorrod",
+      "Zyara",
+      "Zyabqot"
+    ],
+    "firstNamesMale": [
+      "Abdosir",
+      "Acerbas",
+      "Adherbal",
+      "Adonibaal",
+      "Armilik",
+      "Azrubaal",
+      "Baalhanno",
+      "Baelbad",
+      "Bodashtart",
+      "Bomilcar",
+      "Bostar",
+      "Carthalo",
+      "Eshmunazar",
+      "Feroan",
+      "Gisco",
+      "Hamilcar",
+      "Hannibal",
+      "Hanno",
+      "Hasdrubal",
+      "Hishmat",
+      "Himilco",
+      "Hiram",
+      "Iboham",
+      "Mago",
+      "Maharbal",
+      "Malchus",
+      "Mattan",
+      "Melak",
+      "Navoel",
+      "Ozmelek",
+      "Pygmalion",
+      "Qamr",
+      "Qodmush",
+      "Rabih",
+      "Shada",
+      "Yutpan",
+      "Zoushan",
+      "Karaly"
     ],
     "gameContent": "",
     "id": "NATION_CARTHAGE",
@@ -1105,12 +1829,26 @@
       }
     ],
     "slug": "carthage",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Divination",
       "Aristocracy"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 food, 50/100 wood",
       "moveSight": "2 move, 4 vision",
@@ -1126,6 +1864,99 @@
       "+400 Stone",
       "+40% Farm on River",
       "-20% Cost for Adj Imp"
+    ],
+    "cityNames": [
+      "Waset",
+      "Pelusium",
+      "Memphis",
+      "Khem",
+      "Yamu",
+      "Khito",
+      "Ptkheka",
+      "Sais",
+      "Per_Wadjet",
+      "Khasut",
+      "Timinhor",
+      "Piemro",
+      "Thonis",
+      "Menouthis",
+      "Pikuat",
+      "Per_Atum",
+      "Busiris",
+      "Hut_Hery_Ib",
+      "Taremu",
+      "Setennu",
+      "Tjebnutjer",
+      "Pachnamunis",
+      "Heliopolis",
+      "Tjaru",
+      "Per_Amun",
+      "Weprehwy",
+      "Damietta",
+      "Djedet",
+      "Semabehdet",
+      "Per_Bast",
+      "Tanis",
+      "Avaris",
+      "Pi_Ramesses",
+      "Per_Sopdu",
+      "Abu",
+      "Swenett",
+      "Nubt",
+      "Behdet",
+      "Nekheb",
+      "Hieraconpolis",
+      "Te_Senet",
+      "Per_Hathor",
+      "Iuny",
+      "Sumenu",
+      "Djerty",
+      "Madu",
+      "Iushenshen",
+      "Gesy",
+      "Gebtu",
+      "Dendera",
+      "Seshesh",
+      "Abydos",
+      "Tjenu",
+      "Ipu",
+      "Hut_Repyt",
+      "Tjebu",
+      "Shashotep",
+      "Per_Nemty",
+      "Zawty",
+      "Qis",
+      "Akhetaten",
+      "Khmun",
+      "Herwer",
+      "Hebenu",
+      "Mer_Nefer_Et",
+      "Saka",
+      "Tayu_Djayet",
+      "Per_Medjed",
+      "Henen_Nesut",
+      "Shedet",
+      "Tepihu",
+      "Chenem_Waset",
+      "Iken",
+      "Buhen",
+      "Amunia",
+      "Meroe",
+      "Npy"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior"
+      }
     ],
     "color": {
       "bg": "#bc6304",
@@ -1147,7 +1978,20 @@
         "founder": "Thutmose_Ii",
         "gameContent": "",
         "id": "DYNASTY_HATSHEPSUT",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder"
+          },
+          {
+            "id": "TRAIT_INSPIRING",
+            "label": "Inspiring"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hatshepsut",
         "name": "Hatshepsut",
+        "portrait": null,
         "slug": "hatshepsut"
       },
       {
@@ -1156,7 +2000,24 @@
         "founder": "Djet",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_MERNEITH",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_STRICT",
+            "label": "Strict"
+          },
+          {
+            "id": "TRAIT_CONNECTION_TACTICAL_ADVANTAGE",
+            "label": "Connection Tactical Advantage"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Merneith",
         "name": "Merneith",
+        "portrait": null,
         "slug": "merneith"
       },
       {
@@ -1165,7 +2026,24 @@
         "founder": "Sneferu",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_KHUFU",
+        "leaderAge": 20,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder"
+          },
+          {
+            "id": "TRAIT_DELVER",
+            "label": "Delver"
+          },
+          {
+            "id": "TRAIT_MONUMENTAL_EFFORT",
+            "label": "Monumental Effort"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Khufu",
         "name": "Khufu",
+        "portrait": "img/portraits/historical/khufu.png",
         "slug": "khufu"
       },
       {
@@ -1174,7 +2052,20 @@
         "founder": "Intef",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_MENTUHOTEP_II",
+        "leaderAge": 20,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge"
+          },
+          {
+            "id": "TRAIT_ELOQUENT",
+            "label": "Eloquent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Mentuhotep_II",
         "name": "Mentuhotep_Ii",
+        "portrait": "img/portraits/historical/mentuhotep_ii.png",
         "slug": "mentuhotep_ii"
       },
       {
@@ -1183,7 +2074,24 @@
         "founder": "Akhenaten",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_AKHENATEN",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot"
+          },
+          {
+            "id": "TRAIT_INSANE",
+            "label": "Insane"
+          },
+          {
+            "id": "TRAIT_RELIGIOUS_FERVOR",
+            "label": "Religious Fervor"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Akhenaten",
         "name": "Akhenaten",
+        "portrait": "img/portraits/historical/akhenaten.png",
         "slug": "akhenaten"
       },
       {
@@ -1192,7 +2100,24 @@
         "founder": "Ramesses",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_RAMESSES_II",
+        "leaderAge": 23,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_CHARIOT_MASTER",
+            "label": "Chariot Master"
+          },
+          {
+            "id": "TRAIT_GREAT_ANCESTOR",
+            "label": "Great Ancestor"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ramesses_II",
         "name": "Ramesses_Ii",
+        "portrait": null,
         "slug": "ramesses_ii"
       }
     ],
@@ -1238,6 +2163,64 @@
         "ingameFg": "#111418",
         "name": "Thutmosid"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ankhesenamun",
+      "Berenib",
+      "Esenchebis",
+      "Hatshepsut",
+      "Hetepheres",
+      "Iput",
+      "Khenut",
+      "Mehaa",
+      "Meresankh",
+      "Mernit",
+      "Nebet",
+      "Nebwenet",
+      "Nefertari",
+      "Nefertiti",
+      "Nitiqret",
+      "Rekhetre",
+      "Sebat",
+      "Semat",
+      "Senminis",
+      "Serethor",
+      "Sobekneferu",
+      "Tetobastis",
+      "Tiye",
+      "Twosret",
+      "Udjebten"
+    ],
+    "firstNamesMale": [
+      "Ahmose",
+      "Akhenaten",
+      "Amenemhat",
+      "Amenhotep",
+      "Api",
+      "Besis",
+      "Djedefre",
+      "Djoser",
+      "Horapis",
+      "Horemheb",
+      "Inet",
+      "Kamose",
+      "Khafre",
+      "Khufu",
+      "Menkaure",
+      "Mentuhotep",
+      "Merenptah",
+      "Narmer",
+      "Neferkare",
+      "Pepi",
+      "Psamtik",
+      "Senusret",
+      "Seti",
+      "Tutankhamun",
+      "Werhetep"
     ],
     "gameContent": "",
     "id": "NATION_EGYPT",
@@ -1381,12 +2364,26 @@
       }
     ],
     "slug": "egypt",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Stonecutting",
       "Labor Force"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 food, 50/100 wood",
       "moveSight": "4 move, 2 range, 6 vision",
@@ -1402,6 +2399,70 @@
       "Unlocks Olympiad",
       "+2 Culture/City",
       "-25% Settler Cost"
+    ],
+    "cityNames": [
+      "Pella",
+      "Athens",
+      "Sparta",
+      "Corinth",
+      "Thebes",
+      "Argos",
+      "Eretria",
+      "Corcyra",
+      "Miletus",
+      "Syracuse",
+      "Ephesus",
+      "Cyrene",
+      "Halicarnassus",
+      "Pergamon",
+      "Byzantium",
+      "Thessalonike",
+      "Philippi",
+      "Amphipolis",
+      "Neapolis",
+      "Olynthus",
+      "Potidaea",
+      "Dion",
+      "Massalia",
+      "Larissa",
+      "Patras",
+      "Chalkis",
+      "Mytilene",
+      "Pylos",
+      "Gortyn",
+      "Croton",
+      "Rhegion",
+      "Alexandria",
+      "Ialysus",
+      "Lindos",
+      "Karystos",
+      "Heraclea",
+      "Lyctos",
+      "Apollonia",
+      "Phocaea",
+      "Megara",
+      "Cumae",
+      "Epidamnos",
+      "Attaleia",
+      "Nicodmedia",
+      "Nicaea",
+      "Trapezus",
+      "Antiocheia",
+      "Ambracia"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior"
+      }
     ],
     "color": {
       "bg": "#2360bc",
@@ -1422,7 +2483,20 @@
         "founder": "Philip",
         "gameContent": "",
         "id": "DYNASTY_PHILIP",
+        "leaderAge": 39,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_BOLD",
+            "label": "Bold"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Philip_II_of_Macedon",
         "name": "Philip",
+        "portrait": null,
         "slug": "philip"
       },
       {
@@ -1431,7 +2505,20 @@
         "founder": "Ptolemy",
         "gameContent": "",
         "id": "DYNASTY_PTOLEMY",
+        "leaderAge": 48,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_SCHOLAR_ARCHETYPE",
+            "label": "Scholar"
+          },
+          {
+            "id": "TRAIT_EDUCATED",
+            "label": "Educated"
+          }
+        ],
+        "leaderUrl": "",
         "name": "Ptolemy",
+        "portrait": "img/portraits/historical/ptolemy.png",
         "slug": "ptolemy"
       },
       {
@@ -1440,7 +2527,24 @@
         "founder": "Leonidas",
         "gameContent": "",
         "id": "DYNASTY_LEONIDAS",
+        "leaderAge": 31,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_LEONIDAS_LEADER",
+            "label": "Indomitable"
+          },
+          {
+            "id": "TRAIT_LEONIDAS_LEADER_DOOMED",
+            "label": "Fated to Die"
+          }
+        ],
+        "leaderUrl": "",
         "name": "Leonidas",
+        "portrait": "img/portraits/historical/leonidas.png",
         "slug": "leonidas"
       },
       {
@@ -1449,7 +2553,20 @@
         "founder": "Pericles",
         "gameContent": "",
         "id": "DYNASTY_PERICLES",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator"
+          },
+          {
+            "id": "TRAIT_PERICLES_LEADER",
+            "label": "First Citizen"
+          }
+        ],
+        "leaderUrl": "",
         "name": "Pericles",
+        "portrait": "img/portraits/historical/pericles.png",
         "slug": "pericles"
       },
       {
@@ -1458,7 +2575,20 @@
         "founder": "Philip_Alexander",
         "gameContent": "",
         "id": "DYNASTY_ALEXANDER",
+        "leaderAge": 20,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_BOLD",
+            "label": "Bold"
+          }
+        ],
+        "leaderUrl": "",
         "name": "Alexander",
+        "portrait": null,
         "slug": "alexander"
       }
     ],
@@ -1504,6 +2634,104 @@
         "ingameFg": "#111418",
         "name": "Alcmaeonid"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Anyte",
+      "Archidamia",
+      "Arete",
+      "Arsinoe",
+      "Artemisia",
+      "Aspasia",
+      "Audata",
+      "Berenice",
+      "Bilistiche",
+      "Chilonis",
+      "Chryseis",
+      "Cynane",
+      "Deidamia",
+      "Dionassa",
+      "Diotima",
+      "Eryxo",
+      "Eurydice",
+      "Gorgo",
+      "Hipparchia",
+      "Hydna",
+      "Laodice",
+      "Lanassa",
+      "Lanike",
+      "Metrodora",
+      "Moralia",
+      "Myrtale",
+      "Nicaea",
+      "Nicasipolis",
+      "Olympias",
+      "Pheretima",
+      "Phila",
+      "Philinna",
+      "Phthia",
+      "Polycratia",
+      "Polyxena",
+      "Stratonice",
+      "Telesilla",
+      "Theano",
+      "Timaea",
+      "Xanthippe"
+    ],
+    "firstNamesMale": [
+      "Aeacides",
+      "Agis",
+      "Alcetas",
+      "Alcibiades",
+      "Alexander",
+      "Antigonus",
+      "Antiochus",
+      "Antipater",
+      "Aristander",
+      "Arybbas",
+      "Attalus",
+      "Balacrus",
+      "Bardylis",
+      "Cassander",
+      "Cimon",
+      "Cleisthenes",
+      "Cleitarchus",
+      "Cleomenes",
+      "Craterus",
+      "Derdas",
+      "Demetrius",
+      "Diodorus",
+      "Hephaestion",
+      "Hippias",
+      "Hippostratus",
+      "Leonidas",
+      "Leonnatus",
+      "Lysander",
+      "Lysimachus",
+      "Machatas",
+      "Meleager",
+      "Miltiades",
+      "Neoptlemus",
+      "Nicias",
+      "Orestes",
+      "Parmenio",
+      "Pausanias",
+      "Peithon",
+      "Pelopidas",
+      "Perdiccas",
+      "Periander",
+      "Pericles",
+      "Perseus",
+      "Philotas",
+      "Polyperchon",
+      "Philip",
+      "Pyrrhus",
+      "Seleucus",
+      "Sopolis",
+      "Themistocles"
     ],
     "gameContent": "",
     "id": "NATION_GREECE",
@@ -1675,12 +2903,26 @@
       }
     ],
     "slug": "greece",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Stonecutting",
       "Drama"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 iron, 50/100 wood",
       "moveSight": "2 move, 4 vision",
@@ -1696,6 +2938,45 @@
       "+2 Civics/City",
       "anyone can chop",
       "no hill movement penalty"
+    ],
+    "cityNames": [
+      "Hattusa",
+      "Sarissa",
+      "Kussara",
+      "Zalpuwa",
+      "Ankuwa",
+      "Tarhuntassa",
+      "Adana",
+      "Samuha",
+      "Kanesh",
+      "Halab",
+      "Ugarit",
+      "Alalah",
+      "Hapalla",
+      "Hatay",
+      "Azatiwataya",
+      "Tuwanuwa",
+      "Malidiya",
+      "Tawiniya",
+      "Tarsus",
+      "Qadesh",
+      "Hupisna",
+      "Parsuhanda",
+      "Lusna"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior"
+      }
     ],
     "color": {
       "bg": "#80e3e8",
@@ -1716,7 +2997,20 @@
         "founder": "Hattusili",
         "gameContent": "",
         "id": "DYNASTY_HATTUSILI",
+        "leaderAge": 46,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge"
+          },
+          {
+            "id": "TRAIT_WARLIKE",
+            "label": "Warlike"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/%E1%B8%AAattu%C5%A1ili_I",
         "name": "Hattusili",
+        "portrait": "img/portraits/historical/hattusili.png",
         "slug": "hattusili"
       },
       {
@@ -1725,7 +3019,24 @@
         "founder": "Tudhaliya_Ii",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_SUPPILULIUMA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician"
+          },
+          {
+            "id": "TRAIT_BLOODTHIRSTY",
+            "label": "Bloodthirsty"
+          },
+          {
+            "id": "TRAIT_AMBITIOUS",
+            "label": "Ambitious"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/%C5%A0uppiluliuma_I",
         "name": "Suppiluliuma",
+        "portrait": null,
         "slug": "suppiluliuma"
       },
       {
@@ -1734,7 +3045,24 @@
         "founder": "Mursili_I",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_HANTILI",
+        "leaderAge": 35,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_SCHEMER_ARCHETYPE",
+            "label": "Schemer"
+          },
+          {
+            "id": "TRAIT_ROBUST",
+            "label": "Robust"
+          },
+          {
+            "id": "TRAIT_HANTILI_LEADER",
+            "label": "Hantili Leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hantili_I",
         "name": "Hantili",
+        "portrait": null,
         "slug": "hantili"
       },
       {
@@ -1743,7 +3071,24 @@
         "founder": "Puduhepa",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_PUDUHEPA",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat"
+          },
+          {
+            "id": "TRAIT_ELOQUENT",
+            "label": "Eloquent"
+          },
+          {
+            "id": "TRAIT_PUDUHEPA_LEADER",
+            "label": "Puduhepa Leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Pudu%E1%B8%ABepa",
         "name": "Puduhepa",
+        "portrait": "img/portraits/historical/puduhepa.png",
         "slug": "puduhepa"
       },
       {
@@ -1752,7 +3097,24 @@
         "founder": "Mursili_Ii",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_MURSILI_II",
+        "leaderAge": 19,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_SCHOLAR_ARCHETYPE",
+            "label": "Scholar"
+          },
+          {
+            "id": "TRAIT_STEADFAST",
+            "label": "Steadfast"
+          },
+          {
+            "id": "TRAIT_INEXPERIENCED",
+            "label": "Inexperienced"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Mur%C5%A1ili_II",
         "name": "Mursili_Ii",
+        "portrait": "img/portraits/historical/mursili_ii.png",
         "slug": "mursili_ii"
       }
     ],
@@ -1796,6 +3158,57 @@
         "ingameFg": "#f5f6f8",
         "name": "Hattusan"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Hittite_Female01",
+      "Hittite_Female02",
+      "Hittite_Female03",
+      "Hittite_Female04",
+      "Hittite_Female05",
+      "Hittite_Female06",
+      "Hittite_Female07",
+      "Hittite_Female08",
+      "Hittite_Female09",
+      "Hittite_Female10",
+      "Hittite_Female11",
+      "Hittite_Female12",
+      "Hittite_Female13",
+      "Hittite_Female14",
+      "Hittite_Female15",
+      "Hittite_Female16",
+      "Hittite_Female17",
+      "Hittite_Female18"
+    ],
+    "firstNamesMale": [
+      "Hittite_Male01",
+      "Hittite_Male02",
+      "Hittite_Male03",
+      "Hittite_Male04",
+      "Hittite_Male05",
+      "Hittite_Male06",
+      "Hittite_Male07",
+      "Hittite_Male08",
+      "Hittite_Male09",
+      "Hittite_Male10",
+      "Hittite_Male11",
+      "Hittite_Male12",
+      "Hittite_Male13",
+      "Hittite_Male14",
+      "Hittite_Male15",
+      "Hittite_Male16",
+      "Hittite_Male17",
+      "Hittite_Male18",
+      "Hittite_Male19",
+      "Hittite_Male20",
+      "Hittite_Male22",
+      "Hittite_Male22",
+      "Hittite_Male23",
+      "Hittite_Male24",
+      "Hittite_Male25"
     ],
     "gameContent": "NATION_HITTITES",
     "id": "NATION_HITTITE",
@@ -1937,12 +3350,26 @@
       }
     ],
     "slug": "hittite",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Husbandry",
       "Administration"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 food, 50/100 wood",
       "moveSight": "3 move, 5 vision",
@@ -1958,6 +3385,71 @@
       "anyone can build Forts",
       "+50% Shrines",
       "Kushite Pyramids"
+    ],
+    "cityNames": [
+      "Meroe",
+      "Napata",
+      "Kerma",
+      "Faras",
+      "Kawa",
+      "Karanog",
+      "Ushara",
+      "Hamadab",
+      "Gabati",
+      "Sanam",
+      "Naqa",
+      "Basa",
+      "El_Hassa",
+      "Nuri",
+      "Qasr_Ibrim",
+      "Sedeinga",
+      "Tabo",
+      "El_Kurru",
+      "Dangeil",
+      "Sururab",
+      "El_Fura",
+      "Kadada",
+      "El_Gol",
+      "El_Usheir",
+      "Marru",
+      "Artul",
+      "Kurgus",
+      "Ghazali",
+      "El_Tuweina",
+      "El_Zuma",
+      "Korti",
+      "Kandruka",
+      "Tumbos",
+      "Sesebi",
+      "Soleb",
+      "Gebel_Dosha",
+      "Amara",
+      "Firka",
+      "Akasha",
+      "Kulubnarti",
+      "Semna",
+      "Dakka",
+      "Kuban",
+      "Sayala",
+      "Aniba",
+      "Gebel_Ada",
+      "Mirgissa",
+      "Debeira",
+      "Askurt"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger"
+      }
     ],
     "color": {
       "bg": "#ffffb6",
@@ -1978,7 +3470,20 @@
         "founder": "Naqyrinsan",
         "gameContent": "PHARAOHS",
         "id": "DYNASTY_AMANIRENA",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_SWIFT",
+            "label": "Swift"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Amanirenas",
         "name": "Amanirena",
+        "portrait": null,
         "slug": "amanirena"
       },
       {
@@ -1987,7 +3492,20 @@
         "founder": "Amanitore",
         "gameContent": "PHARAOHS",
         "id": "DYNASTY_AMANITORE",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder"
+          },
+          {
+            "id": "TRAIT_DILIGENT",
+            "label": "Diligent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Amanitore",
         "name": "Amanitore",
+        "portrait": "img/portraits/historical/amanitore.png",
         "slug": "amanitore"
       },
       {
@@ -1996,7 +3514,20 @@
         "founder": "Piye",
         "gameContent": "PHARAOHS",
         "id": "DYNASTY_PIYE",
+        "leaderAge": 30,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot"
+          },
+          {
+            "id": "TRAIT_FERVENT",
+            "label": "Fervent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Piye",
         "name": "Piye",
+        "portrait": "img/portraits/historical/piye.png",
         "slug": "piye"
       },
       {
@@ -2005,7 +3536,20 @@
         "founder": "Amenirdis",
         "gameContent": "PHARAOHS",
         "id": "DYNASTY_ALARA",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_REVERED",
+            "label": "Revered"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Alara_of_Kush",
         "name": "Alara",
+        "portrait": "img/portraits/historical/alara.png",
         "slug": "alara"
       },
       {
@@ -2014,7 +3558,20 @@
         "founder": "Shanakdakhete",
         "gameContent": "PHARAOHS",
         "id": "DYNASTY_SHANAKDAKHETE",
+        "leaderAge": 23,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_SCHOLAR_ARCHETYPE",
+            "label": "Scholar"
+          },
+          {
+            "id": "TRAIT_DIPLOMATIC",
+            "label": "Diplomatic"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Shanakdakhete",
         "name": "Shanakdakhete",
+        "portrait": "img/portraits/historical/shanakdakhete.png",
         "slug": "shanakdakhete"
       }
     ],
@@ -2058,6 +3615,64 @@
         "ingameFg": "#f5f6f8",
         "name": "Setju"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Abar",
+      "Khensa",
+      "Qalhata",
+      "Naparaye",
+      "Arty",
+      "Mutirdis",
+      "Amenirdis",
+      "Shepenupet",
+      "Amanirenas",
+      "Nawidemak",
+      "Amanipilade",
+      "Alakhebasken",
+      "Batahaliye",
+      "Akhrasan",
+      "Henutirdis",
+      "Atasamale",
+      "Tagtal",
+      "Akheqa",
+      "Maletasen",
+      "Nasalsa",
+      "Madiqen",
+      "Artaha",
+      "Asata",
+      "Khaliset",
+      "Kasaqa"
+    ],
+    "firstNamesMale": [
+      "Kashta",
+      "Shebitku",
+      "Shabaka",
+      "Taharqa",
+      "Tanamani",
+      "Atlanersa",
+      "Anlamani",
+      "Malonaqen",
+      "Siaspiqa",
+      "Nasakhma",
+      "Harsiotef",
+      "Akhraten",
+      "Amanibakhi",
+      "Nastasen",
+      "Khaliut",
+      "Karkamani",
+      "Talakhamani",
+      "Aryamani",
+      "Aktisanes",
+      "Amanislo",
+      "Amantekha",
+      "Teriteqas",
+      "Natakamani",
+      "Pisakar",
+      "Shorkaror"
     ],
     "gameContent": "PHARAOHS",
     "id": "NATION_KUSH",
@@ -2229,12 +3844,26 @@
       }
     ],
     "slug": "kush",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Stonecutting",
       "Divination"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "150/200 wood",
       "moveSight": "2 moves, 3 range, 4 vision",
@@ -2250,6 +3879,44 @@
       "-50% Civic Mission Costs",
       "-50% Training Mission Costs",
       "☸️Found Buddhism☸️"
+    ],
+    "cityNames": [
+      "Pataliputra",
+      "Tosali",
+      "Suvarnagiri",
+      "Taxila",
+      "Ujjain",
+      "Champa",
+      "Rajagriha",
+      "Tamralipti",
+      "Jaugada",
+      "Paudanyapura",
+      "Kundina",
+      "Tripuri",
+      "Varanasi",
+      "Kaushambi",
+      "Gujjara",
+      "Bairat",
+      "Mathura",
+      "Sopara",
+      "Indraprastha",
+      "Sagala",
+      "Pratisthana",
+      "Amaravati"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior"
+      }
     ],
     "color": {
       "bg": "#a749ff",
@@ -2270,7 +3937,20 @@
         "founder": "Ashoka",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_ASHOKA",
+        "leaderAge": 27,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician"
+          },
+          {
+            "id": "TRAIT_COMPASSIONATE",
+            "label": "Compassionate"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ashoka",
         "name": "Ashoka",
+        "portrait": "img/portraits/historical/ashoka.png",
         "slug": "ashoka"
       },
       {
@@ -2279,7 +3959,20 @@
         "founder": "Unknown_Mother",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_MAHAPADMA",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_NANDA",
+            "label": "Nanda"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Mahapadma_Nanda",
         "name": "Mahapadma",
+        "portrait": null,
         "slug": "mahapadma"
       },
       {
@@ -2288,7 +3981,20 @@
         "founder": "Chandragupta",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_CHANDRAGUPTA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge"
+          },
+          {
+            "id": "TRAIT_TRUSTED",
+            "label": "Trusted"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Chandragupta_Maurya",
         "name": "Chandragupta",
+        "portrait": null,
         "slug": "chandragupta"
       },
       {
@@ -2297,7 +4003,20 @@
         "founder": "Nayanika",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_NAYANIKA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot"
+          },
+          {
+            "id": "TRAIT_RITUALISTIC",
+            "label": "Ritualistic"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nayanika",
         "name": "Nayanika",
+        "portrait": "img/portraits/historical/nayanika.png",
         "slug": "nayanika"
       },
       {
@@ -2306,7 +4025,20 @@
         "founder": "Chandragupta_Ii",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_PRABHAVATIGUPTA",
+        "leaderAge": 30,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator"
+          },
+          {
+            "id": "TRAIT_GUPTA_PRINCESS",
+            "label": "Gupta Princess"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Prabhavatigupta",
         "name": "Prabhavatigupta",
+        "portrait": "img/portraits/historical/prabhavatigupta.png",
         "slug": "prabhavatigupta"
       }
     ],
@@ -2370,6 +4102,54 @@
         "ingameFg": "#f5f6f8",
         "name": "Kamboja"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ambika",
+      "Asandhimitra",
+      "Charumitra",
+      "Dharini",
+      "Draupadi",
+      "Durdhara",
+      "Karuvaki",
+      "Khema",
+      "Kosala",
+      "Kumara",
+      "Maitreyi",
+      "Meera",
+      "Migavati",
+      "Naganika",
+      "Nandini",
+      "Orrisa",
+      "Rudrama",
+      "Sita",
+      "Subhandrangi",
+      "Vajira"
+    ],
+    "firstNamesMale": [
+      "Agnimitra",
+      "Bindusara",
+      "Brihadratha",
+      "Chavana",
+      "Devavarman",
+      "Ghosha",
+      "Hiranya",
+      "Jalauka",
+      "Kalashoka",
+      "Kritaka",
+      "Munda",
+      "Pratipa",
+      "Ranjeet",
+      "Samprati",
+      "Shalishuka",
+      "Shantanu",
+      "Sudhanu",
+      "Suhotra",
+      "Sumitra",
+      "Vijaya"
     ],
     "gameContent": "EMPIRES_OF_THE_INDUS",
     "id": "NATION_MAURYA",
@@ -2526,12 +4306,26 @@
       }
     ],
     "slug": "maurya",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Stonecutting",
       "Administration"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 food, 50/100 iron",
       "moveSight": "2 move, 5 vision",
@@ -2547,6 +4341,56 @@
       "+50% Harvest",
       "-25% Cost Ranged",
       "Pastures +0.5 Orders"
+    ],
+    "cityNames": [
+      "Persepolis",
+      "Susa",
+      "Pasargadae",
+      "Ecbatana",
+      "Anshan",
+      "Sardis",
+      "Bactra",
+      "Gordium",
+      "Ctesiphon",
+      "Samarkand",
+      "Hatra",
+      "Shushtar",
+      "Nishapur",
+      "Shiraz",
+      "Kermanshah",
+      "Hyrba",
+      "Cyreschate",
+      "Ortospana",
+      "Pahrah",
+      "Prophthasia",
+      "Artacoana",
+      "Tus",
+      "Zadracarta",
+      "Saddarvazeh",
+      "Rhages",
+      "Gabae",
+      "Yazd",
+      "Carmania",
+      "Hormirzad",
+      "Teredon",
+      "Catura",
+      "Komis",
+      "Darband",
+      "Aspadana"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger"
+      }
     ],
     "color": {
       "bg": "#c04e4a",
@@ -2567,7 +4411,20 @@
         "founder": "Astyages",
         "gameContent": "",
         "id": "DYNASTY_CYRUS",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_TOUGH",
+            "label": "Tough"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Cyrus_the_Great",
         "name": "Cyrus",
+        "portrait": null,
         "slug": "cyrus"
       },
       {
@@ -2576,7 +4433,20 @@
         "founder": "Hystaspes",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_DARIUS",
+        "leaderAge": 28,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_SCHEMER_ARCHETYPE",
+            "label": "Schemer"
+          },
+          {
+            "id": "TRAIT_DARIUS_LEADER",
+            "label": "Darius Leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Darius_the_Great",
         "name": "Darius",
+        "portrait": null,
         "slug": "darius"
       },
       {
@@ -2585,7 +4455,20 @@
         "founder": "Ardashir",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_SHAPUR",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician"
+          },
+          {
+            "id": "TRAIT_SHAPUR_LEADER",
+            "label": "Shapur Leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Shapur_I",
         "name": "Shapur",
+        "portrait": null,
         "slug": "shapur"
       },
       {
@@ -2594,7 +4477,20 @@
         "founder": "Parysatis",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_STATEIRA",
+        "leaderAge": 25,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder"
+          },
+          {
+            "id": "TRAIT_AFFABLE",
+            "label": "Affable"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Stateira_(wife_of_Artaxerxes_II)",
         "name": "Stateira",
+        "portrait": null,
         "slug": "stateira"
       },
       {
@@ -2603,7 +4499,20 @@
         "founder": "Cyaxares_Leader",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_CYAXARES",
+        "leaderAge": 27,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_CYAXARES_LEADER",
+            "label": "Cyaxares Leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Cyaxares",
         "name": "Cyaxares",
+        "portrait": null,
         "slug": "cyaxares"
       }
     ],
@@ -2649,6 +4558,71 @@
         "ingameFg": "#f5f6f8",
         "name": "Achaemenid"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Amestris",
+      "Amytis",
+      "Apama",
+      "Artakama",
+      "Artazostre",
+      "Artystone",
+      "Astar",
+      "Azarmidokht",
+      "Barsine",
+      "Boran",
+      "Cassandane",
+      "Gordiya",
+      "Gurdzad",
+      "Ifra",
+      "Irdabama",
+      "Khuranzim",
+      "Mandana",
+      "Myrod",
+      "Parmida",
+      "Parmys",
+      "Parysatis",
+      "Roxana",
+      "Shirin",
+      "Stateira",
+      "Sura",
+      "Zand",
+      "Zurvandokht"
+    ],
+    "firstNamesMale": [
+      "Ardashir",
+      "Ariaspes",
+      "Artabanus",
+      "Artaxerxes",
+      "Astyages",
+      "Aruku",
+      "Bahram",
+      "Bardiya",
+      "Cambyses",
+      "Cyrus",
+      "Darius",
+      "Harpagus",
+      "Hormizd",
+      "Hystaspes",
+      "Khosrau",
+      "Mazyar",
+      "Megabazus",
+      "Mithridates",
+      "Orodes",
+      "Oxathres",
+      "Pharnaspes",
+      "Phraates",
+      "Shapur",
+      "Smerdis",
+      "Sukhra",
+      "Teispes",
+      "Tiridates",
+      "Vologases",
+      "Xerxes",
+      "Yazdegerd"
     ],
     "gameContent": "",
     "id": "NATION_PERSIA",
@@ -2791,12 +4765,26 @@
       }
     ],
     "slug": "persia",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Trapping",
       "Husbandry"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 iron, 50/100 food",
       "moveSight": "3 move, 1 range, 4 vision",
@@ -2811,6 +4799,89 @@
     "bonuses": [
       "+1 Fatigue Limit",
       "+2 Training/City"
+    ],
+    "cityNames": [
+      "Roma",
+      "Ariminum",
+      "Bononia",
+      "Aquileia",
+      "Capua",
+      "Antium",
+      "Ostia",
+      "Florentia",
+      "Mediolanum",
+      "Patavium",
+      "Ravenna",
+      "Belum",
+      "Tarraco",
+      "Italica",
+      "Modicia",
+      "Salernum",
+      "Forum_Livii",
+      "Regium_Lepidi",
+      "Corduba",
+      "Ascrivium",
+      "Valentia",
+      "Scalabis",
+      "Villa_Euracini",
+      "Massa",
+      "Pistoria",
+      "Gerunda",
+      "Pompaleo",
+      "Naissus",
+      "Vesontio",
+      "Lutetia",
+      "Hispalis",
+      "Lugdunum",
+      "Siscia",
+      "Augusta_Treverorum",
+      "Castra_Legionis",
+      "Augusta_Taurinorum",
+      "Novaesium",
+      "Ovilava",
+      "Iuvavum",
+      "Turicum",
+      "Pompeii",
+      "Volubilis",
+      "Barium",
+      "Brixia",
+      "Comum",
+      "Theranda",
+      "Hadrianopolis",
+      "Durovigutum",
+      "Ponus_Aelius",
+      "Aquincum",
+      "Cibalae",
+      "Salona",
+      "Aeminium",
+      "Lentia",
+      "Nida",
+      "Sumelocenna",
+      "Calleva_Atrebatum",
+      "Camulodunum",
+      "Viminacium",
+      "Londinium",
+      "Aventicum",
+      "Faventia",
+      "Mogontiacum",
+      "Sirmium",
+      "Oescus",
+      "Heliopolis_Canaan",
+      "Petra"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior"
+      }
     ],
     "color": {
       "bg": "#880d56",
@@ -2833,7 +4904,20 @@
         "founder": "Ilia",
         "gameContent": "",
         "id": "DYNASTY_ROMULUS",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician"
+          },
+          {
+            "id": "TRAIT_RUTHLESS",
+            "label": "Ruthless"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Romulus",
         "name": "Romulus",
+        "portrait": null,
         "slug": "romulus"
       },
       {
@@ -2842,7 +4926,20 @@
         "founder": "Scipio_Leader",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_SCIPIO",
+        "leaderAge": 42,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician"
+          },
+          {
+            "id": "TRAIT_AMBUSHER",
+            "label": "Ambusher"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Scipio_Africanus",
         "name": "Scipio",
+        "portrait": null,
         "slug": "scipio"
       },
       {
@@ -2851,7 +4948,20 @@
         "founder": "Sulla_Leader",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_SULLA",
+        "leaderAge": 32,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_SCHEMER_ARCHETYPE",
+            "label": "Schemer"
+          },
+          {
+            "id": "TRAIT_DICTATOR",
+            "label": "Dictator"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Sulla",
         "name": "Sulla",
+        "portrait": null,
         "slug": "sulla"
       },
       {
@@ -2860,7 +4970,20 @@
         "founder": "Gaius_Marius_Leader",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_GAIUS_MARIUS",
+        "leaderAge": 36,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_THIRD_FOUNDER",
+            "label": "Third Founder"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Gaius_Marius",
         "name": "Gaius_Marius",
+        "portrait": null,
         "slug": "gaius_marius"
       },
       {
@@ -2869,7 +4992,20 @@
         "founder": "Julius_Caesar_Leader",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_JULIUS_CAESAR",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_EXPANSIONIST",
+            "label": "Expansionist"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Julius_Caesar",
         "name": "Julius_Caesar",
+        "portrait": null,
         "slug": "julius_caesar"
       },
       {
@@ -2878,7 +5014,20 @@
         "founder": "Augustus_Leader",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_AUGUSTUS",
+        "leaderAge": 36,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge"
+          },
+          {
+            "id": "TRAIT_REFINED",
+            "label": "Refined"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Augustus",
         "name": "Augustus",
+        "portrait": null,
         "slug": "augustus"
       },
       {
@@ -2887,7 +5036,20 @@
         "founder": "Germanicus",
         "gameContent": "WONDERS_DYNASTIES",
         "id": "DYNASTY_AGRIPPINA",
+        "leaderAge": 29,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_CALCULATING",
+            "label": "Calculating"
+          },
+          {
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Agrippina_the_Younger",
         "name": "Agrippina",
+        "portrait": null,
         "slug": "agrippina"
       }
     ],
@@ -2932,6 +5094,68 @@
         "ingameFg": "#f5f6f8",
         "name": "Julius"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Aemilia",
+      "Agrippina",
+      "Antonia",
+      "Atia",
+      "Aurelia",
+      "Calpurnia",
+      "Camilla",
+      "Clodia",
+      "Cornelia",
+      "Domitia",
+      "Drusilla",
+      "Fulvia",
+      "Hortensia",
+      "Ilia",
+      "Livia",
+      "Lucilla",
+      "Marcia",
+      "Plautia",
+      "Pompeia",
+      "Porcia",
+      "Rhea",
+      "Scribonia",
+      "Sempronia",
+      "Servilia",
+      "Sulpicia",
+      "Tullia",
+      "Vipsania"
+    ],
+    "firstNamesMale": [
+      "Appius",
+      "Aulus",
+      "Decimus",
+      "Faustus",
+      "Gaius",
+      "Gnaeus",
+      "Hostus",
+      "Kaeso",
+      "Lucius",
+      "Mamercus",
+      "Manius",
+      "Marcus",
+      "Nonus",
+      "Numerius",
+      "Octavius",
+      "Postumus",
+      "Publius",
+      "Quintus",
+      "Romulus",
+      "Remus",
+      "Servius",
+      "Sextus",
+      "Spurius",
+      "Statius",
+      "Tiberius",
+      "Titus",
+      "Vibius"
     ],
     "gameContent": "",
     "id": "NATION_ROME",
@@ -3088,12 +5312,26 @@
       }
     ],
     "slug": "rome",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Stonecutting",
       "Polis"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "150/200 iron",
       "moveSight": "2 move, 4 vision",
@@ -3109,6 +5347,39 @@
       "+1 Civic/Shrine & Sangam",
       "+2 Training+Elephant/City",
       "+1 Order/Harbor"
+    ],
+    "cityNames": [
+      "Uraiyur",
+      "Vanchi",
+      "Korkai",
+      "Muziris",
+      "Madurai",
+      "Ollaiyur",
+      "Pazhi",
+      "Tondi",
+      "Muchiri",
+      "Karuvur",
+      "Kanyakumari",
+      "Kaverippattanam",
+      "Chennai",
+      "Kasaragodu",
+      "Madurai",
+      "Vengi",
+      "Thanjavur"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger"
+      }
     ],
     "color": {
       "bg": "#00b281",
@@ -3129,7 +5400,20 @@
         "founder": "Karikala",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_KARIKALA",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator"
+          },
+          {
+            "id": "TRAIT_INTELLIGENT",
+            "label": "Intelligent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Karikala",
         "name": "Karikala",
+        "portrait": "img/portraits/historical/karikala.png",
         "slug": "karikala"
       },
       {
@@ -3138,7 +5422,20 @@
         "founder": "Nedunjeliyan",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_NEDUNJELIYAN",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician"
+          },
+          {
+            "id": "TRAIT_PURSUER",
+            "label": "Pursuer"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nedunjeliyan_II",
         "name": "Nedunjeliyan",
+        "portrait": null,
         "slug": "nedunjeliyan"
       },
       {
@@ -3147,7 +5444,20 @@
         "founder": "Nedum_Dead",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_CENKUTTUVAN",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat"
+          },
+          {
+            "id": "TRAIT_KINGMAKER",
+            "label": "Kingmaker"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Cenkuttuvan",
         "name": "Cenkuttuvan",
+        "portrait": null,
         "slug": "cenkuttuvan"
       },
       {
@@ -3156,7 +5466,20 @@
         "founder": "Killi",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_ALLI",
+        "leaderAge": 21,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_LEGENDARY",
+            "label": "Legendary"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Alli_Raani",
         "name": "Alli",
+        "portrait": null,
         "slug": "alli"
       },
       {
@@ -3165,7 +5488,20 @@
         "founder": "Nedum",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_NEDUM",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander"
+          },
+          {
+            "id": "TRAIT_COASTAL_WARLORD",
+            "label": "Coastal Warlord"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nedum_Cheralathan",
         "name": "Nedum",
+        "portrait": null,
         "slug": "nedum"
       }
     ],
@@ -3200,6 +5536,60 @@
         "ingameFg": "#f5f6f8",
         "name": "Chera"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Pilivalai",
+      "Kannagi",
+      "Madhavi",
+      "Vanavan",
+      "Puteri",
+      "Mukkokilan",
+      "Panchavan",
+      "Vira",
+      "Arulmoli",
+      "Ammangadevi",
+      "Vanathi",
+      "Dantisakti",
+      "Trailokya",
+      "Lata",
+      "Prithvi",
+      "Meenavan",
+      "Viranarayani",
+      "Villavan",
+      "Kundavai",
+      "Ilaada",
+      "Neriyan",
+      "Manakkilli",
+      "Iilanko",
+      "Mari"
+    ],
+    "firstNamesMale": [
+      "Virakurcha",
+      "Simhavarman",
+      "Bharavi",
+      "Mahendravarman",
+      "Kovalan",
+      "Ellalan",
+      "Kulakkottan",
+      "Killivalavan",
+      "Perunarkilli",
+      "Konchenganan",
+      "Vijayalaya",
+      "Rajaraja",
+      "Rajendra",
+      "Vikrama",
+      "Palyani",
+      "Kanaikkal",
+      "Kalangai",
+      "Perum",
+      "Kudakko",
+      "Ilanko",
+      "Paranar",
+      "Killi"
     ],
     "gameContent": "EMPIRES_OF_THE_INDUS",
     "id": "NATION_TAMIL",
@@ -3355,12 +5745,26 @@
       }
     ],
     "slug": "tamil",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Divination",
       "Trapping",
       "Ironworking"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 food, 50/100 wood",
       "moveSight": "2 move, 1 range, 5 vision",
@@ -3376,6 +5780,36 @@
       "1 Horse in each city",
       "Steppe Riders",
       "Vassalize Tribe / +Ally Fatigue"
+    ],
+    "cityNames": [
+      "Surkh_Kotal",
+      "Purushapura",
+      "Kapisa",
+      "Saketa",
+      "Mathura",
+      "Bazira",
+      "Varnu",
+      "Aornos",
+      "Begram",
+      "Kandahar",
+      "Butkara",
+      "Srinagar",
+      "Khalatse",
+      "Sanchi"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker"
+      },
+      {
+        "count": 2,
+        "id": "UNIT_STEPPE_RIDER",
+        "name": "Steppe Rider",
+        "slug": "steppe-rider"
+      }
     ],
     "color": {
       "bg": "#ad7e00",
@@ -3396,7 +5830,20 @@
         "founder": "Kujula",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_KUJULA",
+        "leaderAge": 28,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_SCHEMER_ARCHETYPE",
+            "label": "Schemer"
+          },
+          {
+            "id": "TRAIT_BOLD",
+            "label": "Bold"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Kujula_Kadphises",
         "name": "Kujula",
+        "portrait": null,
         "slug": "kujula"
       },
       {
@@ -3405,7 +5852,20 @@
         "founder": "Luo",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_LUO",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat"
+          },
+          {
+            "id": "TRAIT_SILK_ROAD_TRADER",
+            "label": "Silk Road Trader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Yuezhi#Earliest_references_in_Chinese_texts",
         "name": "Luo",
+        "portrait": "img/portraits/historical/luo.png",
         "slug": "luo"
       },
       {
@@ -3414,7 +5874,20 @@
         "founder": "Rukhana",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_RUKHANA",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero"
+          },
+          {
+            "id": "TRAIT_NOMADIC",
+            "label": "Nomadic"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Yuezhi#Yuezhi_and_Xiongnu",
         "name": "Rukhana",
+        "portrait": "img/portraits/historical/rukhana.png",
         "slug": "rukhana"
       },
       {
@@ -3423,7 +5896,20 @@
         "founder": "Kujula_Dead",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_VIMA_TAKTO",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge"
+          },
+          {
+            "id": "TRAIT_COIN_MINTER",
+            "label": "Coin Minter"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Vima_Takto",
         "name": "Vima_Takto",
+        "portrait": null,
         "slug": "vima_takto"
       },
       {
@@ -3432,7 +5918,20 @@
         "founder": "Vima_Kadphises",
         "gameContent": "EMPIRES_OF_THE_INDUS",
         "id": "DYNASTY_KANISHKA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator"
+          },
+          {
+            "id": "TRAIT_RELIGIOUS_PATRON",
+            "label": "Religious Patron"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Kanishka",
         "name": "Kanishka",
+        "portrait": null,
         "slug": "kanishka"
       }
     ],
@@ -3476,6 +5975,64 @@
         "ingameFg": "#f5f6f8",
         "name": "Dumi"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ahatsunu",
+      "Alittum",
+      "Amata",
+      "Belessunu",
+      "Beltum_Rimenni",
+      "Damiqtum",
+      "Erishti_Aya",
+      "Ettu",
+      "Gashansunu",
+      "Gemeti",
+      "Humusi",
+      "Iltani",
+      "Kashshaya",
+      "Lamassani",
+      "Melulatum",
+      "Nidintu",
+      "Ninsunu",
+      "Nishi_Inishu",
+      "Palatum",
+      "Ramtu",
+      "Sheritum",
+      "Sun_Gamelat",
+      "Tabni_Sun",
+      "Ubalnu",
+      "Ummi_Ningal",
+      "Zakiti"
+    ],
+    "firstNamesMale": [
+      "Huvishka",
+      "Vasudeva",
+      "Vashishka",
+      "Mahi",
+      "Kipunada",
+      "Shaka",
+      "Heraios",
+      "Touman",
+      "Meng",
+      "Modun",
+      "Jizhu",
+      "Jiyu",
+      "Chastana",
+      "Nahapana",
+      "Bhumaka",
+      "Abhiraka",
+      "Damasena",
+      "Vijaysena",
+      "Vanaspara",
+      "Sodasa",
+      "Hagana",
+      "Rajuvula",
+      "Bhadayasa",
+      "Kharapallana"
     ],
     "gameContent": "EMPIRES_OF_THE_INDUS",
     "id": "NATION_YUEZHI",
@@ -3632,11 +6189,25 @@
       }
     ],
     "slug": "yuezhi",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Military Drill",
       "Husbandry"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
       "cost": "100 iron, 50/100 food",
       "moveSight": "3 move, 6 vision",
