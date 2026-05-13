@@ -35,8 +35,8 @@ const rows: Row[] = [
   { kind: 'data', label: 'Cost',       field: n => n.uniqueUnit?.cost },
   { kind: 'data', label: 'Upkeep',     field: n => n.uniqueUnit?.upkeep },
   { kind: 'data', label: 'Move/Sight', field: n => n.uniqueUnit?.moveSight, skipClassify: true },
-  { kind: 'data', label: 'U6 Card',    field: n => n.uniqueUnit?.u6Card,    skipClassify: true },
-  { kind: 'data', label: 'U8 Card',    field: n => n.uniqueUnit?.u8Card,    skipClassify: true },
+  // U6/U8 Card rows dropped: every nation rolls Strong Culture at 6 UU and
+  // Legendary Culture at 8, so the rows carried no comparison value.
 
   { kind: 'section', label: 'Starting Techs' },
   { kind: 'data', label: 'Tech 1', field: n => n.startingTech?.[0] },
