@@ -33,15 +33,10 @@ const ogImageUrl = ogImage
   ? new URL(base + ogImage, siteOrigin).href
   : new URL(base + 'img/crests/rome.png', siteOrigin).href;  // sensible fallback crest
 
+// Scope narrowed to Nations for now — other pages still generate but
+// aren't surfaced in the nav. Reintroduce them once each is polished.
 const nav = [
-  { href: '',           label: 'Index' },
-  { href: 'nations',    label: 'Nations' },
-  { href: 'families',   label: 'Families' },
-  { href: 'technologies', label: 'Techs' },
-  { href: 'unit-damage', label: 'Units' },
-  { href: 'laws',       label: 'Laws' },
-  { href: 'yields/orders', label: 'Yields' },
-  { href: 'shrines',    label: 'Shrines' },
+  { href: 'nations', label: 'Nations' },
 ];
 
 const syncedDate = new Date(patch.syncedAt);
@@ -82,7 +77,7 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
   <body>
     <header class="hdr">
       <div class="hdr__inner">
-        <a class="hdr__brand" href={base}>
+        <a class="hdr__brand" href={`${base}nations`}>
           <img class="hdr__mark" src={`${base}img/icons/yields/legitimacy.png`} alt="" width="20" height="20" />
           <span class="hdr__title">Old World</span>
           <span class="hdr__sub">Reference</span>

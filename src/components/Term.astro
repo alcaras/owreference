@@ -1,13 +1,16 @@
 ---
 // Renders a single linked entity reference: optional icon + name → link to its page.
 // Use directly for known IDs, or via <LinkedText> for free-text auto-linking.
+// While scope is narrowed to the Nations tab, only entity types with a
+// real destination page get rendered as <a>; the rest render as <span>
+// (icon + tooltip), so clicks don't dead-end on unbuilt pages.
 import type { Entity } from '../lib/entities';
 import { getEntity } from '../lib/entities';
 
 interface Props {
   id?: string;
   entity?: Entity;
-  label?: string;          // override display label
+  label?: string;
   showIcon?: boolean;
   iconOnly?: boolean;
 }
@@ -16,20 +19,28 @@ const { id, entity: passed, label, showIcon = true, iconOnly = false } = Astro.p
 const e: Entity | undefined = passed ?? (id ? getEntity(id) : undefined);
 const base = import.meta.env.BASE_URL;
 
-if (!e) {
-  // Unknown — render the label or id as plain text
-}
+// Only these entity types have surfaced pages right now. Everything else
+// renders as a non-clickable chip (no surprise navigation off Nations).
+const NAV_TYPES = new Set(['nation']);
+const isLinkable = e && NAV_TYPES.has(e.type);
 ---
 
 {e ? (
-  <a class={`term term--${e.type}`} href={`${base}${e.page}#${e.slug}`} title={e.name} data-entity-id={e.id}>
-    {/* Render the icon when explicitly enabled OR when this is an icon-only
-        link (otherwise the link would be empty). */}
-    {(showIcon || iconOnly) && e.icon && (
-      <img class="term__icon" src={`${base}${e.icon}`} alt={e.name} />
-    )}
-    {!iconOnly && <span class="term__name">{label ?? e.name}</span>}
-  </a>
+  isLinkable ? (
+    <a class={`term term--${e.type}`} href={`${base}${e.page}#${e.slug}`} title={e.name} data-entity-id={e.id}>
+      {(showIcon || iconOnly) && e.icon && (
+        <img class="term__icon" src={`${base}${e.icon}`} alt={e.name} />
+      )}
+      {!iconOnly && <span class="term__name">{label ?? e.name}</span>}
+    </a>
+  ) : (
+    <span class={`term term--${e.type} term--noref`} title={e.name} data-entity-id={e.id}>
+      {(showIcon || iconOnly) && e.icon && (
+        <img class="term__icon" src={`${base}${e.icon}`} alt={e.name} />
+      )}
+      {!iconOnly && <span class="term__name">{label ?? e.name}</span>}
+    </span>
+  )
 ) : (
   <span class="term term--unknown">{label ?? id ?? ''}</span>
 )}
@@ -68,4 +79,7 @@ if (!e) {
   }
   .term--nation { font-weight: 600; }
   .term--unknown { border-bottom: none; opacity: 0.7; }
+  /* Non-link terms (improvements, yields, etc. with no destination right
+     now) — drop the dotted link cue so they don't look interactive. */
+  .term--noref { border-bottom: none; cursor: help; }
 </style>

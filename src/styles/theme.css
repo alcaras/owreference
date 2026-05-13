@@ -175,6 +175,10 @@ h1, h2, h3 {
   padding: 0.5rem 0.2rem 0;
 }
 .is-hidden { display: none !important; }
+/* Table <col> elements need visibility:collapse to actually remove the
+   column from layout under table-layout:fixed. display:none doesn't
+   collapse the reserved width. */
+.ntbl col.is-hidden { visibility: collapse; display: revert !important; }
 
 /* ──────────────────────────────────────────────────────────
    Nations table — refined + micro variant only
@@ -390,24 +394,18 @@ h1, h2, h3 {
   background-image: var(--shrine-art);
   background-size: cover;
   background-position: center 35%;
-  opacity: 0.22;
-  filter: saturate(0.7);
+  opacity: 0.12;
+  filter: saturate(0.55) contrast(0.9);
   z-index: -1;
   pointer-events: none;
 }
-/* Slightly brighten the text on shrine cells — they sit over the same
-   yield-bg as other cells but with extra noise, so text needs more punch. */
-.cell--shrine .shrine__type,
-.cell--shrine .shrine__name,
+/* Text on shrine cells gets stronger shadows for legibility over the
+   painted backgrounds, and the deity name is forced white-pure. */
+.cell--shrine .shrine__deity,
 .cell--shrine .shrine__effect {
   position: relative;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.55);
-}
-
-/* On wide viewports, let a little more art peek through — wider cells
-   can hold it without losing readability. */
-@media (min-width: 1400px) {
-  .cell--shrine::before { opacity: 0.32; }
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.75), 0 0 4px rgba(0,0,0,0.45);
 }
 
 /* Effect-list cells: stack of yield-colored mini-tiles, one per effect.
