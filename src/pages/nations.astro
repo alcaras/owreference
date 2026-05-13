@@ -192,9 +192,16 @@ for (const n of nations) {
 
                 if (row.kind === 'family') {
                   const iconUrl = v.classKey ? `${base}img/archetypes/${v.classKey}.png` : null;
-                  // Yield-bar color for family cells: leave it off (no signal).
+                  // Per-family in-game color shows as a 3px left-edge stripe —
+                  // each nation's 4 families have their own canonical hex
+                  // (COLOR_NATION_X_FAMILY_0Y) used in the game UI.
+                  const stripe = v.ingameColor;
                   return (
-                    <td class={`cell cell--noref n-${n.slug}`} data-nation={n.slug}>
+                    <td
+                      class={`cell cell--fam n-${n.slug}`}
+                      data-nation={n.slug}
+                      style={stripe ? `--fam-stripe: ${stripe}` : undefined}
+                    >
                       <div class="fam">
                         <div class="fam__head">
                           {iconUrl && <img class="fam__icon" src={iconUrl} alt="" />}

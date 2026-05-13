@@ -467,6 +467,14 @@ h1, h2, h3 {
   color: var(--text-soft);
 }
 
+/* Family cells: per-family in-game color shows as a 3px left-edge stripe.
+   Each family has a canonical hex from COLOR_NATION_X_FAMILY_0Y in
+   color.xml; we leave the cell otherwise transparent. */
+.cell--fam {
+  box-shadow: inset 3px 0 0 var(--fam-stripe, transparent);
+  padding-left: 0.95rem;
+}
+
 /* Family cell internals — serif class + italic name */
 .fam { display: flex; flex-direction: column; gap: 0.05rem; }
 .fam__head { display: inline-flex; align-items: center; gap: 0.35rem; }
