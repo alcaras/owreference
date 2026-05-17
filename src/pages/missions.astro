@@ -1,0 +1,394 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import catalog from '../data/mission-catalog.json';
+
+const base = import.meta.env.BASE_URL;
+
+const CATEGORY_ORDER = [
+  'Council & Court',
+  'Diplomacy',
+  'Espionage',
+  'Religion',
+  'Family & Succession',
+  'Character Development',
+  'Schemes',
+  'Leader Powers',
+  'Other',
+];
+
+const CATEGORY_BLURB: Record<string, string> = {
+  'Council & Court': 'Seat your council, run the court, jail and ransom.',
+  'Diplomacy': 'Peace, war, alliances, tribute and trade — with nations and tribes.',
+  'Espionage': 'Spymaster network operations: infiltrate, slander, steal, kill.',
+  'Religion': 'Adopt and spread faith, run synods, quell dissent.',
+  'Family & Succession': 'Marriages, heirs, adoption, legitimacy and divorce.',
+  'Character Development': 'Tutor, recruit and rally — grow your characters.',
+  'Schemes': 'Behind-the-throne intrigue between ambitious characters.',
+  'Leader Powers': 'Unique scripted abilities tied to specific named leaders.',
+  'Other': 'Uncategorized.',
+};
+
+type Mission = typeof catalog[number];
+
+// Group by category, preserving the curated order. Within a category,
+// player-facing first (already name-sorted by the builder), internal last.
+const grouped = CATEGORY_ORDER
+  .map(cat => {
+    const all = catalog.filter(m => m.category === cat);
+    return {
+      cat,
+      blurb: CATEGORY_BLURB[cat],
+      player: all.filter(m => !m.internal),
+      internal: all.filter(m => m.internal),
+    };
+  })
+  .filter(g => g.player.length + g.internal.length > 0);
+
+const totalPlayer = catalog.filter(m => !m.internal).length;
+const totalInternal = catalog.length - totalPlayer;
+
+// Search blob per mission for the header search box.
+const searchBlobs: Record<string, string> = {};
+for (const m of catalog) {
+  searchBlobs[m.id] = JSON.stringify({
+    n: m.name, w: m.who, c: m.category, t: m.target,
+    d: m.dlc, tech: m.techPrereq?.label, o: m.outcomes,
+  }).toLowerCase();
+}
+
+function costStr(rows: Mission['cost']) {
+  return rows.map(r => `${r.value} ${r.label}`);
+}
+---
+
+<Base
+  title="Missions"
+  active="missions"
+  pageMark="📜"
+  description="Every mission in Old World — who performs it, what it costs, time, requirements and outcomes. Diplomacy, espionage, religion, family, schemes and unique leader powers, pulled XML-canonical from the game's files."
+  pageStats={[
+    { label: 'missions', value: totalPlayer },
+    { label: 'categories', value: grouped.length },
+    { label: 'internal variants', value: totalInternal },
+  ]}
+>
+  <div class="mtoolbar">
+    <label class="mtoolbar__chk">
+      <input type="checkbox" id="show-internal" />
+      <span>Show internal / AI variants ({totalInternal})</span>
+    </label>
+    <span class="mtoolbar__note" id="m-searchnote" hidden></span>
+  </div>
+
+  <div id="missions-root">
+    {grouped.map(group => (
+      <section class="mcat" data-cat={group.cat}>
+        <header class="mcat__head">
+          <h2 class="mcat__title">{group.cat}</h2>
+          <span class="mcat__count">{group.player.length}</span>
+          <p class="mcat__blurb">{group.blurb}</p>
+        </header>
+
+        <table class="mtbl">
+          <thead>
+            <tr>
+              <th class="mtbl__c-name">Mission</th>
+              <th class="mtbl__c-who">Who</th>
+              <th class="mtbl__c-cost">Cost</th>
+              <th class="mtbl__c-time">Time</th>
+              <th class="mtbl__c-req">Requires</th>
+              <th class="mtbl__c-out">Outcomes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...group.player, ...group.internal].map(m => (
+              <tr
+                class={`mrow ${m.internal ? 'mrow--internal' : ''}`}
+                data-mission={m.id}
+                data-internal={m.internal ? '1' : '0'}
+              >
+                <td class="mtbl__c-name">
+                  <span class="mname">{m.name}</span>
+                  {m.target && <span class="mtarget">→ {m.target}</span>}
+                  {m.description && (
+                    <span class="mdesc"><LinkedText text={m.description} showIcons={false} /></span>
+                  )}
+                </td>
+                <td class="mtbl__c-who">
+                  {m.who && m.who !== '—'
+                    ? <span class="mwho">{m.who}</span>
+                    : <span class="cell__dash">—</span>}
+                </td>
+                <td class="mtbl__c-cost">
+                  {m.cost.length === 0 && m.opinionCost.length === 0 ? (
+                    <span class="cell__dash">—</span>
+                  ) : (
+                    <span class="mcost">
+                      {costStr(m.cost).map(c => <span class="chip chip--cost">{c}</span>)}
+                      {costStr(m.opinionCost).map(c => (
+                        <span class="chip chip--opinion" title="Paid in opinion / treasury">{c}</span>
+                      ))}
+                    </span>
+                  )}
+                </td>
+                <td class="mtbl__c-time">
+                  {m.turns > 0
+                    ? <span>{m.turns}{m.turnsScaled ? '+' : ''} <span class="munit">turn{m.turns === 1 ? '' : 's'}</span></span>
+                    : <span class="munit">instant</span>}
+                  {m.cooldown > 0 && <span class="mcd">{m.cooldown}t cooldown</span>}
+                </td>
+                <td class="mtbl__c-req">
+                  {!m.techPrereq && !m.dlc && !m.diplomacy && !m.gameOption ? (
+                    <span class="cell__dash">—</span>
+                  ) : (
+                    <span class="mreq">
+                      {m.techPrereq && (
+                        <a class="chip chip--tech" href={`${base}technologies#${m.techPrereq.slug}`}>{m.techPrereq.label}</a>
+                      )}
+                      {m.diplomacy && <span class="chip chip--diplo">{m.diplomacy}</span>}
+                      {m.gameOption && <span class="chip chip--opt">{m.gameOption}</span>}
+                      {m.dlc && <span class="chip chip--dlc">{m.dlc}</span>}
+                    </span>
+                  )}
+                </td>
+                <td class="mtbl__c-out">
+                  {m.outcomes.length === 0 ? (
+                    <span class="cell__dash">—</span>
+                  ) : m.outcomes.length === 1 ? (
+                    <span class="mout-single">{m.outcomes[0]}</span>
+                  ) : (
+                    <details class="mout">
+                      <summary>{m.outcomeCount} outcomes</summary>
+                      <ul class="mout__list">
+                        {m.outcomes.map(o => <li>{o}</li>)}
+                      </ul>
+                    </details>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    ))}
+  </div>
+
+  <script type="application/json" id="m-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const root = document.getElementById('missions-root');
+      const blobNode = document.getElementById('m-search-blobs');
+      const input = document.getElementById('site-search');
+      const showInternal = document.getElementById('show-internal');
+      const note = document.getElementById('m-searchnote');
+      if (!root || !blobNode) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+
+      function apply() {
+        const q = ((input && input.value) || '').trim().toLowerCase();
+        const wantInternal = !!(showInternal && showInternal.checked);
+        let shown = 0, hiddenByQ = 0;
+        for (const row of root.querySelectorAll('.mrow')) {
+          const id = row.getAttribute('data-mission');
+          const isInternal = row.getAttribute('data-internal') === '1';
+          const matchesQ = !q || (blobs[id] || '').includes(q);
+          const visible = matchesQ && (wantInternal || !isInternal);
+          row.classList.toggle('is-hidden', !visible);
+          if (visible) shown++;
+          if (!matchesQ) hiddenByQ++;
+        }
+        // Hide a category section entirely if it has no visible rows.
+        for (const sec of root.querySelectorAll('.mcat')) {
+          const anyVisible = sec.querySelector('.mrow:not(.is-hidden)');
+          sec.classList.toggle('is-hidden', !anyVisible);
+        }
+        if (note) {
+          if (q) {
+            note.hidden = false;
+            note.textContent = shown + ' mission' + (shown === 1 ? '' : 's') + ' match "' + (input ? input.value : '') + '"';
+          } else {
+            note.hidden = true;
+          }
+        }
+      }
+
+      if (input) input.addEventListener('input', apply);
+      if (showInternal) showInternal.addEventListener('change', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .mtoolbar {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 0.25rem 0 1.25rem;
+    flex-wrap: wrap;
+  }
+  .mtoolbar__chk {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    font-size: 0.8rem; color: var(--text-soft);
+    cursor: pointer; user-select: none;
+  }
+  .mtoolbar__chk input { accent-color: var(--gold); }
+  .mtoolbar__note {
+    font-family: var(--font-ui);
+    font-size: 0.7rem; letter-spacing: 0.06em;
+    color: var(--gold-soft);
+  }
+
+  .mcat { margin-bottom: 2.25rem; }
+  .mcat.is-hidden { display: none; }
+  .mcat__head {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--gold-deep);
+  }
+  .mcat__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--text);
+  }
+  .mcat__count {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--gold-soft);
+    border: 1px solid var(--gold-deep);
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+  }
+  .mcat__blurb {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.92rem;
+    color: var(--text-faint);
+    margin: 0;
+    justify-self: end;
+    text-align: right;
+  }
+
+  .mtbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+  .mtbl thead th {
+    font-family: var(--font-ui);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-dim);
+    font-weight: 500;
+    text-align: left;
+    padding: 0.3rem 0.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .mtbl td {
+    padding: 0.42rem 0.7rem;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-faint);
+  }
+  .mtbl__c-name { width: 26%; }
+  .mtbl__c-who  { width: 15%; }
+  .mtbl__c-cost { width: 16%; }
+  .mtbl__c-time { width: 11%; }
+  .mtbl__c-req  { width: 16%; }
+  .mtbl__c-out  { width: 16%; }
+
+  .mrow.is-hidden { display: none; }
+  .mrow:hover td { background: oklch(0.30 0.04 80 / 0.28); }
+  .mrow--internal td { opacity: 0.62; }
+  .mrow--internal .mname { font-style: italic; }
+
+  .mname {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: var(--text);
+  }
+  .mtarget {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+  }
+  .mdesc {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    line-height: 1.35;
+  }
+  .mwho { color: var(--text); }
+
+  .mcost, .mreq {
+    display: flex; flex-wrap: wrap; gap: 0.25rem;
+  }
+  .chip {
+    display: inline-flex; align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    padding: 0.08rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid var(--border-strong);
+    color: var(--text-soft);
+    white-space: nowrap;
+  }
+  .chip--cost    { border-color: var(--gold-deep); color: var(--gold-soft); }
+  .chip--opinion { border-style: dashed; color: var(--text-faint); }
+  .chip--tech {
+    border-color: oklch(0.5 0.1 270); color: oklch(0.78 0.09 270);
+    text-decoration: none;
+  }
+  .chip--tech:hover { background: oklch(0.5 0.1 270 / 0.18); text-decoration: none; }
+  .chip--diplo { border-color: oklch(0.5 0.08 145); color: oklch(0.78 0.08 145); }
+  .chip--opt   { border-color: var(--border-strong); color: var(--text-faint); }
+  .chip--dlc {
+    border-color: oklch(0.5 0.1 60); color: oklch(0.8 0.1 60);
+  }
+
+  .munit { color: var(--text-faint); font-size: 0.78rem; }
+  .mcd {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+  }
+
+  .mout-single { color: var(--text-soft); font-size: 0.8rem; }
+  .mout summary {
+    cursor: pointer;
+    color: var(--gold-soft);
+    font-size: 0.78rem;
+    font-family: var(--font-mono);
+  }
+  .mout summary:hover { color: var(--gold); }
+  .mout__list {
+    margin: 0.3rem 0 0;
+    padding-left: 1rem;
+    color: var(--text-soft);
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .cell__dash { opacity: 0.3; font-family: var(--font-mono); }
+
+  @media (max-width: 860px) {
+    .mtbl, .mtbl thead, .mtbl tbody, .mtbl tr, .mtbl td { display: block; }
+    .mtbl thead { display: none; }
+    .mrow { border: 1px solid var(--border); border-radius: 4px; margin-bottom: 0.6rem; padding: 0.3rem 0; }
+    .mtbl td { border: 0; padding: 0.2rem 0.8rem; }
+    .mtbl__c-name { padding-top: 0.5rem; }
+    .mtbl__c-out  { padding-bottom: 0.5rem; }
+    .mcat__blurb { display: none; }
+    .mcat__head { grid-template-columns: auto auto; }
+  }
+</style>
