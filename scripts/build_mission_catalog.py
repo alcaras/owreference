@@ -89,86 +89,38 @@ WHO_LABELS = {
     "SUBJECT_AUGUSTUS_DYNASTY_LEADER_US": "Augustus dynasty leader",
 }
 
-# ── Functional category. The game's missionClass.xml only has two values
-# (Diplomacy, Marriage) so it's useless for a reference. We categorize by
-# explicit id sets first, then prefix rules, then subject fallback.
-CATEGORY_ORDER = [
-    "Council & Court",
-    "Diplomacy",
-    "Espionage",
-    "Religion",
-    "Family & Succession",
-    "Character Development",
-    "Schemes",
-    "Leader Powers",
+# ── Performer grouping. The reference is organized by WHO can run the
+# mission (the SubjectCharacter role), not by what it does. Proper-noun /
+# dynasty-specific scripted powers are pulled out into their own bucket
+# at the end so they don't clutter the general roles.
+PERFORMER_ORDER = [
+    "Leader",
+    "Ambassador",
+    "Chancellor",
+    "Spymaster",
+    "Agent",
+    "Family Head",
+    "Religious Head & Clergy",
+    "Any Character",
+    "Situational",
+    "Unique Leader Powers",
     "Other",
 ]
 
-EXACT_CATEGORY = {
-    # Council & Court
-    "MISSION_AMBASSADOR": "Council & Court",
-    "MISSION_CHANCELLOR": "Council & Court",
-    "MISSION_SPYMASTER": "Council & Court",
-    "MISSION_LEAVE_COUNCIL": "Council & Court",
-    "MISSION_HOLD_COURT": "Council & Court",
-    "MISSION_SEND_COURTIER": "Council & Court",
-    "MISSION_PACIFY_CITY": "Council & Court",
-    "MISSION_IMPRISON": "Council & Court",
-    "MISSION_RELEASE": "Council & Court",
-    "MISSION_CAPTURE": "Council & Court",
-    "MISSION_PAY_RANSOM": "Council & Court",
-    "MISSION_IMPART_STEWARDSHIP": "Council & Court",
-    "MISSION_LEAD_DELEGATION": "Council & Court",
-    # Character Development
-    "MISSION_TUTOR": "Character Development",
-    "MISSION_TUTOR_SCHOLAR": "Character Development",
-    "MISSION_RECRUIT_SCHOLAR": "Character Development",
-    "MISSION_RALLY_TROOPS": "Character Development",
-    "MISSION_INFLUENCE": "Character Development",
-    "MISSION_INFLUENCE_OLYMPIAS": "Character Development",
-    "MISSION_CONVERT_SELF": "Character Development",
-    # Family & Succession
-    "MISSION_ADOPT": "Family & Succession",
-    "MISSION_LEGITIMIZE": "Family & Succession",
-    "MISSION_CHOSEN_HEIR": "Family & Succession",
-    "MISSION_ADOPT_AS_HEIR": "Family & Succession",
-    "MISSION_DIVORCE": "Family & Succession",
-    "MISSION_ABDICATE": "Family & Succession",
-    "MISSION_MARRY_COURTIER": "Family & Succession",
-    "MISSION_PLAN_WEDDING": "Family & Succession",
-    "MISSION_INCUBATE": "Family & Succession",
-    "MISSION_INTERCESSION_FAMILY": "Family & Succession",
-    "MISSION_FAMILY_GIFT": "Family & Succession",
-    # Schemes (Scandal event pack)
-    "MISSION_PROSCRIPTION": "Schemes",
-    "MISSION_REVEL": "Schemes",
-    "MISSION_SCHEME_AGAINST_RIVAL": "Schemes",
-    "MISSION_SCHEME_AGAINST_RIVAL_RISING_STAR": "Schemes",
-    "MISSION_SEEK_POLITICAL_ALLIES": "Schemes",
-    "MISSION_GAMBLE": "Schemes",
-    "MISSION_PLOT_MURDER": "Schemes",
-    "MISSION_TAUNT": "Schemes",
+PERFORMER_BLURB = {
+    "Leader": "Run by the ruler (incl. Diplomat/Judge/Scholar/Schemer leader variants and the Dictator).",
+    "Ambassador": "Your council Ambassador — diplomacy, synods, trade.",
+    "Chancellor": "Your council Chancellor.",
+    "Spymaster": "Your council Spymaster — the espionage network.",
+    "Agent": "Spy network Agents operating in the field.",
+    "Family Head": "The head of a family (matters under Oligarchy).",
+    "Religious Head & Clergy": "The religion head or its clergy, by faith.",
+    "Any Character": "Any eligible courtier — non-leaders, tutors, envoys, marriageable characters.",
+    "Situational": "Characters in a particular state — imprisoned, captured, fugitive, bastard, infected.",
+    "Unique Leader Powers": "Scripted abilities tied to specific named leaders / dynasties (DLC).",
+    "Other": "Uncategorized.",
 }
 
-# Prefix / substring rules, evaluated in order, first match wins.
-PREFIX_RULES = [
-    ("Espionage", ("MISSION_INFILTRATE", "MISSION_SLANDER", "MISSION_STEAL_RESEARCH",
-                    "MISSION_ASSASSINATE", "MISSION_EXPOSE_AGENT", "MISSION_TREACHERY",
-                    "MISSION_INSURRECTION", "MISSION_MOVE_NETWORK")),
-    ("Religion", ("MISSION_ADOPT_RELIGION", "MISSION_LEAVE_RELIGION", "MISSION_CONVERT_",
-                  "MISSION_INTERCESSION_RELIGION", "MISSION_HIGH_SYNOD", "MISSION_MAKE_CLERGY",
-                  "MISSION_PAGAN_SACRIFICES", "MISSION_QUELL_DISSENT")),
-    ("Family & Succession", ("MISSION_FAMILY_MARRIAGE", "MISSION_MARRY_", "MISSION_FAMILY_GIFT")),
-    ("Diplomacy", ("MISSION_TEAM_ALLIANCE", "MISSION_PLAYER_PEACE", "MISSION_PLAYER_TRUCE",
-                   "MISSION_PLAYER_DECLARE_WAR", "MISSION_PLAYER_BREAK_PEACE",
-                   "MISSION_PLAYER_END_ALLIANCE", "MISSION_PLAYER_CANCEL_TRADE",
-                   "MISSION_PLAYER_MARRIAGE", "MISSION_TRIBE_ALLIANCE", "MISSION_TRIBE_PEACE",
-                   "MISSION_TRIBE_TRUCE", "MISSION_TRIBE_DECLARE_WAR", "MISSION_TRIBE_BREAK_PEACE",
-                   "MISSION_TRIBE_END_ALLIANCE", "MISSION_TRIBE_MARRIAGE", "MISSION_DEMAND_TRIBUTE",
-                   "MISSION_TRADE_MISSION", "MISSION_INTIMIDATE", "MISSION_VASSALIZE_TRIBE",
-                   "MISSION_TRIBE_PLAYER_WAR", "MISSION_PLAYER_TRIBE_WAR",
-                   "MISSION_PLAYER_PLAYER_WAR", "MISSION_PLAYER_JOIN_PLAYER_WAR")),
-]
 
 # Subject-noun → Leader Powers (unique scripted abilities). Anything whose
 # SubjectCharacter is a proper-noun leader falls here unless already mapped.
@@ -242,25 +194,45 @@ def humanize_const(token: str, prefix: str) -> str:
     return " ".join(w.upper() if _ROMAN.match(w) else w for w in words)
 
 
-def categorize(mid: str, subject: str) -> str:
+_ANY_CHARACTER_SUBJECTS = {
+    "SUBJECT_CHARACTER_US", "SUBJECT_NON_LEADER_US", "SUBJECT_COURTIER",
+    "SUBJECT_TUTOR_US", "SUBJECT_ENVOY", "SUBJECT_COUNCIL", "SUBJECT_CAN_MARRY",
+}
+_SITUATIONAL_SUBJECTS = {
+    "SUBJECT_IMPRISONED", "SUBJECT_CAPTURED", "SUBJECT_FUGITIVE",
+    "SUBJECT_BASTARD", "SUBJECT_INFECTED",
+    "SUBJECT_CHARACTER_STEWARD_OF_THE_LAND_ADULT",
+}
+
+
+def performer(mid: str, subject: str, internal: bool) -> str:
+    """Bucket a mission by WHO can run it."""
+    # Dynasty / proper-noun scripted powers go to their own section.
     if mid in LEADER_POWER_IDS or subject in LEADER_POWER_SUBJECTS:
-        return "Leader Powers"
-    if mid in EXACT_CATEGORY:
-        return EXACT_CATEGORY[mid]
-    for cat, prefixes in PREFIX_RULES:
-        if any(mid.startswith(pfx) for pfx in prefixes):
-            return cat
-    # subject-based fallback
-    if subject in ("SUBJECT_SPYMASTER", "SUBJECT_AGENT"):
-        return "Espionage"
-    if subject in ("SUBJECT_RELIGION_HEAD_US",) or subject.startswith("SUBJECT_CLERGY"):
-        return "Religion"
-    if subject in ("SUBJECT_AMBASSADOR", "SUBJECT_CHANCELLOR", "SUBJECT_LEADER_DIPLOMAT",
-                   "SUBJECT_ENVOY", "SUBJECT_LEADER_PEACE_OR_TRUCE",
-                   "SUBJECT_LEADER_TRIBE_PEACE_OR_TRUCE"):
-        return "Diplomacy"
-    if subject in ("SUBJECT_CAN_MARRY",):
-        return "Family & Succession"
+        return "Unique Leader Powers"
+    if subject == "SUBJECT_AMBASSADOR":
+        return "Ambassador"
+    if subject == "SUBJECT_CHANCELLOR":
+        return "Chancellor"
+    if subject == "SUBJECT_SPYMASTER":
+        return "Spymaster"
+    if subject == "SUBJECT_AGENT":
+        return "Agent"
+    if subject == "SUBJECT_FAMILY_HEAD_US":
+        return "Family Head"
+    if subject == "SUBJECT_RELIGION_HEAD_US" or subject.startswith("SUBJECT_CLERGY"):
+        return "Religious Head & Clergy"
+    # Dictator is the ruler under a tyrannical government → Leader.
+    if subject == "SUBJECT_DICTATOR" or subject.startswith("SUBJECT_LEADER"):
+        return "Leader"
+    if subject in _ANY_CHARACTER_SUBJECTS:
+        return "Any Character"
+    if subject in _SITUATIONAL_SUBJECTS:
+        return "Situational"
+    # No SubjectCharacter: AI/UI diplomacy plumbing if internal, otherwise
+    # a player/leader-level decision (e.g. Adopt/Leave Religion).
+    if not subject:
+        return "Other" if internal else "Leader"
     return "Other"
 
 
@@ -276,11 +248,40 @@ def main() -> int:
         "text-mission-wog.xml", "text-missionResult.xml", "text-missionResult-btt.xml",
         "text-missionResult-sap.xml", "text-missionResult-wog.xml", "text-subject.xml",
         "text-subject-sap.xml", "text-infos.xml", "text-tech.xml",
+        "text-trait.xml",
     )
     missions = index("mission.xml")
     results = index("missionResult.xml") | index("missionResult-btt.xml") \
         | index("missionResult-sap.xml") | index("missionResult-wog.xml")
     subjects = index("subject.xml")
+    traits = index("trait.xml")
+
+    def role_req(subject: str) -> dict | None:
+        """The role/archetype a character must be to run this — e.g.
+        SUBJECT_LEADER_JUDGE requires the Judge archetype trait."""
+        s = subjects.get(subject)
+        if s is None:
+            return None
+        tp = s.findtext("TraitPrereq")
+        if tp:
+            tr = traits.get(tp)
+            label = text.get(f"TEXT_{tp}", humanize_const(tp, "TRAIT_").replace(" Archetype", ""))
+            spr = (tr.findtext("zIconName") if tr is not None else "") or ""
+            # zIconName routes the same way extract_art.py does:
+            #   TRAIT_JUDGE        → icons/traits/judge.png
+            #   RELIGION_CHRISTIAN → icons/religions/christianity.png
+            icon = None
+            if spr.startswith("TRAIT_"):
+                icon = f"icons/traits/{spr[len('TRAIT_'):].lower()}"
+            elif spr.startswith("RELIGION_"):
+                icon = f"icons/religions/{spr[len('RELIGION_'):].lower()}"
+            kind = "faith" if (spr.startswith("RELIGION_")) else "archetype"
+            return {"kind": kind, "label": label, "icon": icon}
+        cp = s.findtext("CouncilPrereq")
+        if cp:
+            return {"kind": "council",
+                    "label": humanize_const(cp, "COUNCIL_"), "icon": None}
+        return None
 
     def who_label(subject: str) -> str:
         if not subject:
@@ -309,15 +310,15 @@ def main() -> int:
         subject = m.findtext("SubjectCharacter") or ""
         target = m.findtext("SubjectTarget") or ""
 
-        # Costs (×10 display except Orders)
+        # Mission costs are STOCKPILE costs, stored 1:1 — not the ×10
+        # rate-yield encoding used for per-turn nation bonuses. Hold Court
+        # really costs 100 Training; Rally Troops 100 Civics. Display raw.
         def costs(tag: str) -> list[dict]:
             o = []
             for pair in m.findall(f"{tag}/Pair"):
                 y = (pair.findtext("zIndex") or "").replace("YIELD_", "")
                 v = int(pair.findtext("iValue") or "0")
-                disp = v if y == "ORDERS" else v / 10
-                disp = int(disp) if disp == int(disp) else disp
-                o.append({"yield": y.lower(), "label": y.title(), "value": disp})
+                o.append({"yield": y.lower(), "label": y.title(), "value": v})
             return o
 
         tech = m.findtext("TechPrereq")
@@ -336,14 +337,16 @@ def main() -> int:
             )
             outcome_names.append(nm)
 
+        internal = is_internal(mid)
         out.append({
             "id": mid,
             "slug": mid.replace("MISSION_", "").lower().replace("_", "-"),
             "name": name,
             "description": desc,
-            "category": categorize(mid, subject),
+            "performer": performer(mid, subject, internal),
             "who": who_label(subject),
             "whoId": subject,
+            "roleReq": role_req(subject),
             "target": humanize_const(target, "SUBJECT_") if target else "",
             "cost": costs("aiYieldCost"),
             "opinionCost": costs("aiYieldCostOpinion"),
@@ -359,12 +362,12 @@ def main() -> int:
             "diplomacy": humanize_const(diplo, "DIPLOMACY_") if diplo else None,
             "gameOption": humanize_const(game_opt, "GAMEOPTION_") if game_opt else None,
             "encyclopedia": m.findtext("bEncyclopedia") == "1",
-            "internal": is_internal(mid),
+            "internal": internal,
             "outcomes": outcome_names,
             "outcomeCount": len(outcome_names),
         })
 
-    out.sort(key=lambda x: (CATEGORY_ORDER.index(x["category"]), x["name"]))
+    out.sort(key=lambda x: (PERFORMER_ORDER.index(x["performer"]), x["name"]))
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
@@ -372,12 +375,12 @@ def main() -> int:
     by_cat: dict[str, int] = {}
     internal_n = 0
     for mm in out:
-        by_cat[mm["category"]] = by_cat.get(mm["category"], 0) + 1
+        by_cat[mm["performer"]] = by_cat.get(mm["performer"], 0) + 1
         internal_n += 1 if mm["internal"] else 0
     print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(out)} missions ({internal_n} internal)")
-    for c in CATEGORY_ORDER:
+    for c in PERFORMER_ORDER:
         if by_cat.get(c):
-            print(f"  · {c:24} {by_cat[c]}")
+            print(f"  · {c:26} {by_cat[c]}")
     return 0
 
 

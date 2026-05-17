@@ -46,6 +46,11 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     # Unit-trait glyphs (the white silhouettes inside each unit's shape on
     # the map — bow for ranged, hammer for siege, etc.)
     (re.compile(r"^UNITTRAIT_([A-Z_0-9]+?)()$"), "icons/unit_traits"),
+    # Character-archetype trait glyphs (Judge, Scholar, Diplomat, Schemer,
+    # …) — used to show which leader archetype a mission requires.
+    (re.compile(r"^TRAIT_([A-Z_0-9]+?)()$"), "icons/traits"),
+    # Religion symbols — clergy missions are gated by faith.
+    (re.compile(r"^RELIGION_([A-Z_0-9]+?)()$"), "icons/religions"),
     # Unit sprites for the unique-unit cards. The game has lots; we extract
     # everything starting with UNIT_ (excluding action/UI sprites).
     (re.compile(r"^UNIT_(?!ACTION_|TARGET_|TARGETING_|MOVE_|ATTACK_)([A-Z_0-9]+?)()$"), "icons/units"),
