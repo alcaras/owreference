@@ -37,6 +37,7 @@ const nav = [
   { href: 'nations', label: 'Nations' },
   { href: 'tribes', label: 'Tribes' },
   { href: 'missions', label: 'Missions' },
+  { href: 'map-scripts', label: 'Map Scripts' },
 ];
 
 const syncedDate = new Date(patch.syncedAt);
@@ -90,7 +91,7 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
           {nav.map(n => (
             <a
               href={`${base}${n.href}`}
-              class={`hdr__navlink ${active === n.label.toLowerCase() ? 'is-active' : ''}`}
+              class={`hdr__navlink ${(active === n.label.toLowerCase() || active === n.href) ? 'is-active' : ''}`}
             >{n.label}</a>
           ))}
         </nav>

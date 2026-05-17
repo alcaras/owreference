@@ -1,0 +1,203 @@
+---
+import Base from '../layouts/Base.astro';
+import scripts from '../data/mapscripts.json';
+
+const generators = scripts.filter(s => !s.special);
+const special = scripts.filter(s => s.special);
+
+const totalOptions = scripts.reduce((n, s) => n + s.optionCount, 0);
+
+const searchBlobs: Record<string, string> = {};
+for (const s of scripts) {
+  searchBlobs[s.id] = JSON.stringify({
+    n: s.name, d: s.description,
+    o: s.optionGroups.flatMap(g => [g.group, ...g.choices.map(c => c.label)]),
+  }).toLowerCase();
+}
+---
+
+<Base
+  title="Map Scripts"
+  active="map-scripts"
+  pageMark="🗺️"
+  description="Every procedurally-generated map script in Old World — Continent, Inland Sea, Archipelago, Seaside and more — with each script's generation options (player start, tribes, terrain, water). Pulled XML-canonical from the game's files."
+  pageStats={[
+    { label: 'generated scripts', value: generators.length },
+    { label: 'special layouts', value: special.length },
+    { label: 'tunable options', value: totalOptions },
+  ]}
+>
+  <p class="lede">
+    The map types the game builds procedurally when you start a new game —
+    not the hand-authored preset scenario maps. Each script below lists
+    the generation knobs it exposes (player start, tribes, terrain,
+    water). Scripts with no options generate a fixed layout.
+  </p>
+
+  <div class="ms-toolbar">
+    <span class="ms-note" id="ms-searchnote" hidden></span>
+  </div>
+
+  <div id="ms-root">
+    <section class="ms-sec">
+      <h2 class="ms-sec__h">Generated map scripts</h2>
+      <div class="ms-grid">
+        {generators.map(s => (
+          <article class="ms-card" data-script={s.id}>
+            <header class="ms-card__head">
+              <h3 class="ms-card__name">{s.name}</h3>
+              {s.optionCount > 0 && <span class="ms-card__opts">{s.optionCount} options</span>}
+            </header>
+            {s.description && <p class="ms-card__desc">{s.description}</p>}
+            {s.optionGroups.length > 0 && (
+              <dl class="ms-opts">
+                {s.optionGroups.map(g => (
+                  <div class="ms-optgrp">
+                    <dt class="ms-optgrp__g">{g.group}</dt>
+                    <dd class="ms-optgrp__c">
+                      {g.choices.map(c => (
+                        <span class="ms-chip" title={c.help || c.label}>{c.label}</span>
+                      ))}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {special.length > 0 && (
+      <section class="ms-sec">
+        <h2 class="ms-sec__h">Special / fixed layouts</h2>
+        <p class="ms-sec__sub">Constrained scripts for duels and symmetric starts.</p>
+        <div class="ms-grid">
+          {special.map(s => (
+            <article class="ms-card ms-card--special" data-script={s.id}>
+              <header class="ms-card__head">
+                <h3 class="ms-card__name">{s.name}</h3>
+              </header>
+              {s.description && <p class="ms-card__desc">{s.description}</p>}
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+
+  <script type="application/json" id="ms-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const root = document.getElementById('ms-root');
+      const blobNode = document.getElementById('ms-blobs');
+      const input = document.getElementById('site-search');
+      const note = document.getElementById('ms-searchnote');
+      if (!root || !blobNode) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = ((input && input.value) || '').trim().toLowerCase();
+        let shown = 0;
+        for (const card of root.querySelectorAll('.ms-card')) {
+          const id = card.getAttribute('data-script');
+          const vis = !q || (blobs[id] || '').includes(q);
+          card.classList.toggle('is-hidden', !vis);
+          if (vis) shown++;
+        }
+        for (const sec of root.querySelectorAll('.ms-sec')) {
+          sec.classList.toggle('is-hidden', !sec.querySelector('.ms-card:not(.is-hidden)'));
+        }
+        if (note) {
+          if (q) { note.hidden = false; note.textContent = shown + ' script' + (shown === 1 ? '' : 's') + ' match "' + (input ? input.value : '') + '"'; }
+          else { note.hidden = true; }
+        }
+      }
+      if (input) input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 1rem; line-height: 1.5; color: var(--text-soft);
+    max-width: 64ch; margin: 0.5rem 0 1.25rem;
+  }
+  .ms-toolbar { min-height: 1rem; margin-bottom: 0.5rem; }
+  .ms-note {
+    font-family: var(--font-ui); font-size: 0.7rem;
+    letter-spacing: 0.06em; color: var(--gold-soft);
+  }
+
+  .ms-sec { margin-bottom: 2rem; }
+  .ms-sec.is-hidden { display: none; }
+  .ms-sec__h {
+    font-family: var(--font-ui); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.22em;
+    color: var(--gold-soft); font-weight: 500;
+    margin: 0 0 0.2rem; padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--gold-deep);
+  }
+  .ms-sec__sub {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 0.9rem; color: var(--text-faint); margin: 0.4rem 0 0.9rem;
+  }
+
+  .ms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1rem; margin-top: 0.9rem;
+  }
+  .ms-card {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 4px; padding: 0.95rem 1.1rem 1rem;
+    display: flex; flex-direction: column; gap: 0.55rem;
+  }
+  .ms-card.is-hidden { display: none; }
+  .ms-card--special { border-style: dashed; }
+  .ms-card__head {
+    display: flex; align-items: baseline;
+    justify-content: space-between; gap: 0.6rem;
+  }
+  .ms-card__name {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 1.25rem; color: var(--text); line-height: 1.05;
+  }
+  .ms-card__opts {
+    font-family: var(--font-mono); font-size: 0.66rem;
+    color: var(--gold-soft); white-space: nowrap;
+    border: 1px solid var(--gold-deep); border-radius: 999px;
+    padding: 0.05rem 0.45rem;
+  }
+  .ms-card__desc {
+    font-size: 0.86rem; line-height: 1.45;
+    color: var(--text-soft); margin: 0;
+  }
+
+  .ms-opts {
+    margin: 0.15rem 0 0; display: flex;
+    flex-direction: column; gap: 0.45rem;
+    border-top: 1px solid var(--border-faint); padding-top: 0.6rem;
+  }
+  .ms-optgrp { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.5rem; }
+  .ms-optgrp__g {
+    font-family: var(--font-ui); font-size: 0.58rem;
+    text-transform: uppercase; letter-spacing: 0.13em;
+    color: var(--text-dim); padding-top: 0.18rem;
+  }
+  .ms-optgrp__c {
+    margin: 0; display: flex; flex-wrap: wrap; gap: 0.28rem;
+  }
+  .ms-chip {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    padding: 0.07rem 0.42rem; border-radius: 3px;
+    border: 1px solid var(--border-strong); color: var(--text-soft);
+    cursor: help;
+  }
+
+  @media (max-width: 560px) {
+    .ms-optgrp { grid-template-columns: 1fr; gap: 0.15rem; }
+  }
+</style>
