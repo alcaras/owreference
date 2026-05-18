@@ -198,6 +198,8 @@ Add new fields to the humanizer as you encounter them. Always test against the s
 - **Cells that don't classify to a yield** get `.yield-misc` (slate). Don't hand-assign row defaults — let `classifyYield(text)` decide, and use `skipClassify: true` on rows where the text describes non-yield content (UU names/traits, royal family members).
 - **Mods folder (`reference/XML/Mods/`) is excluded from the repo** to keep size down. The pipeline only reads from `reference/XML/Infos/`.
 - **`reference/Graphics/` and `reference/Source/`** are excluded too (binary game assets, Unity controllers).
+- **Cognomen tracker OCR — the OCR is reliable; don't blame Tesseract.** On a real F5 capture Tesseract.js read **every digit correctly** (17/17 scoring stats, zero number errors). What looks "garbled" is *gutter noise*, not bad text: bullet glyphs (●) become `e`/`eo`/`®`/`¢`, the left UI rail bleeds in as `J{`/`U`/`|` prefixes, and right-edge game-world text appends junk like `54 C`, `5 in`, `1 Is`. The fix was always in the **parser**, never the image. Don't add OpenCV.js / heavier preprocessing on a hunch — diagnose against a real screenshot first.
+- **F5 panel ≠ all cognomen stats.** The panel lists ~50 lifetime stats but only **47 feed cognomen scoring** (`calculator.inputStats`). `Worker Turns`, `Children Had`, `Trees Removed` etc. are real panel rows that score nothing — the parser's `ignored` bucket counting them is **correct behaviour, not a miss**. Verify against `inputStats` before "fixing" an ignored stat.
 
 ---
 
@@ -218,6 +220,42 @@ From `src/lib/entities.ts`:
 - `linkify(text)` — returns `LinkedSegment[]` for rendering
 - `classifyYield(text)` — returns the first yield key found (lowercased), or null
 - `yieldColors` — `{YIELD_KEY: hex}` from the registry
+
+---
+
+## Cognomen tracker — screenshot OCR import
+
+`src/pages/cognomens-tracker.astro` lets users fill the tracker from the in-game
+**F5 leader panel** two ways, both converging on **one parser** (`parseAndFill`):
+
+1. **Paste/type the Stat(s) text** — original flow.
+2. **Paste / drag-drop / pick a screenshot** — OCR'd client-side, fed into the
+   same `parseAndFill`. A single `document` `paste` listener auto-detects:
+   `clipboardData.items` with an `image/*` file → OCR; otherwise text flow.
+
+Pipeline (all in the page's `is:inline` script — no build step, no server):
+
+- **Tesseract.js** is **lazy-loaded from jsDelivr CDN** (`@5.1.1`) only the first
+  time an image is supplied (`loadTesseract()`), so the page stays light and the
+  static/offline build is uncompromised. Offline → it tells the user to paste text.
+- **`preprocess(img)`**: canvas upscale (~1600px max), grayscale, **Otsu**
+  threshold with **auto-polarity** (majority class = background → forced white),
+  returns a data URL. This is enough; resist adding more.
+- **`parseAndFill(raw)`** is OCR-tolerant by design:
+  - **Value** = first integer *after* the first `:`/`=` (`rest.match(/(\d[\d,]*)/)`),
+    so trailing edge-bleed (`54 C`, `5 in`) is ignored.
+  - **Label** = text before that colon, `normLabel`'d, then matched against
+    `calculator.statAliases` by exact key **or suffix** (`norm.endsWith(' '+key)`,
+    longest wins), so bullet/UI-rail gutter junk (`J{ e Worker Turns`) is stripped.
+  - The `Cognomen:` line is skipped from stat-fill and used as a cross-check
+    (`expected` → compared to the computed `best.title`).
+- `statAliases` comes from `scripts/build_cognomens.py` (`_norm_label` — keep the
+  JS `normLabel` in sync with it). 99 alias keys → 47 scoring stat tokens.
+
+When changing the parser, **test against a real OCR dump**, not synthetic text —
+the gutter-noise shapes (`eo`, `|J{ e`, `Jie`, trailing ` of`/` Is`) are the
+whole point. A node one-liner loading `calculator.statAliases` + the real paste
+is the fastest regression check (see git history of commit `5c37ecd`).
 
 ---
 
