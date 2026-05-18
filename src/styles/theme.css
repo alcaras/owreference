@@ -327,7 +327,7 @@ h1, h2, h3 {
 .rowlabel--corner {
   background: var(--bg);
   z-index: 5;
-  position: sticky; top: 3.6rem; left: 0;
+  position: sticky; top: var(--hdr-h, 3.6rem); left: 0;
   border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
   padding: 0.5rem 0.7rem 0.4rem 0;
@@ -370,7 +370,7 @@ h1, h2, h3 {
 .nhdr {
   background: var(--bg);
   color: var(--text);
-  position: sticky; top: 3.6rem;
+  position: sticky; top: var(--hdr-h, 3.6rem);
   z-index: 2;
   padding: 0.5rem 0.6rem 0.4rem;
   text-align: left;
