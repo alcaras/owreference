@@ -266,10 +266,11 @@ h1, h2, h3 {
    ────────────────────────────────────────────────────────── */
 .grid { position: relative; }
 .grid__scroll {
-  /* Horizontal scroll inside the table; vertical clip (not auto) so the
-     parent isn't a y-scroll-port. Result: sticky-top on the nation row
-     binds against the viewport (not grid__scroll), so the page has a
-     single scrollbar and the nation row pins below the page header. */
+  /* Horizontal scroll for the wide table. NOTE: overflow-x:auto makes this
+     a scroll container, so sticky descendants resolve against THIS box, not
+     the viewport (overflow-y:clip does not change that). The in-table sticky
+     header therefore uses top:0 — any positive top would statically shove it
+     down (this box never scrolls vertically), covering the first rows. */
   overflow-x: auto;
   overflow-y: clip;
   border-top: 1px solid var(--border);
@@ -327,7 +328,7 @@ h1, h2, h3 {
 .rowlabel--corner {
   background: var(--bg);
   z-index: 5;
-  position: sticky; top: 3.6rem; left: 0;
+  position: sticky; top: 0; left: 0;
   border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
   padding: 0.5rem 0.7rem 0.4rem 0;
@@ -370,7 +371,7 @@ h1, h2, h3 {
 .nhdr {
   background: var(--bg);
   color: var(--text);
-  position: sticky; top: 3.6rem;
+  position: sticky; top: 0;
   z-index: 2;
   padding: 0.5rem 0.6rem 0.4rem;
   text-align: left;
