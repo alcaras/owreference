@@ -54,6 +54,174 @@ GENERIC_EFFECTS = {
     "EFFECTUNIT_RANGE1", "EFFECTUNIT_RANGE2",
 }
 
+# The 7 tribes that field a full combat roster (each has units flagged in
+# unit.xml's azBarbarianPortraitName). Anarchy/Barbarians/Raiders/Rebels
+# are generic enemy states with no roster.
+COMBAT_TRIBES = {
+    "TRIBE_DANES", "TRIBE_GAULS", "TRIBE_HUNS", "TRIBE_NUMIDIANS",
+    "TRIBE_SCYTHIANS", "TRIBE_THRACIANS", "TRIBE_VANDALS",
+}
+
+# UnitCycle → branch label for the matrix sections.
+BRANCH_BY_CYCLE = {
+    "UNITCYCLE_MILITARY_INFANTRY": "Melee",
+    "UNITCYCLE_MILITARY_RANGED": "Ranged",
+    "UNITCYCLE_MILITARY_MOUNTED": "Mounted",
+}
+BRANCH_ORDER = {"Melee": 0, "Ranged": 1, "Mounted": 2}
+
+
+def _icon_from(zicon: str | None, unit_id: str) -> str:
+    """Icon filename (no ext). Art is extracted by zIconName with the
+    leading UNIT_/unit_ prefix stripped, lowercased — e.g.
+    UNIT_ELITE_HUSCARL → 'elite_huscarl'. Fall back to the unit id with
+    its tier suffix collapsed if zIconName is missing."""
+    base = (zicon or unit_id).lower()
+    base = re.sub(r"^unit_", "", base)
+    if not zicon:
+        base = re.sub(r"_\d+$", "", base)
+    return base
+
+
+def build_rosters(text_unit: dict, text_effect: dict) -> dict[str, list[dict]]:
+    """{ TRIBE_X: [ {id,name,icon,strength,branch,special,promoId,promoName}, ... ] }.
+
+    A unit belongs to tribe X iff unit.xml lists X under
+    azBarbarianPortraitName/Pair/zIndex. Game-data quirk: the Hunnic
+    Cavalry pair (and its art) is tagged TRIBE_SCYTHIANS even though the
+    unit is the Huns' signature line — re-home it to TRIBE_HUNS (mirrors
+    the YEUZHI-typo class of upstream quirks; we paper over, never fix
+    the user's Steam install)."""
+    unit_root = ET.parse(XML_DIR / "unit.xml").getroot()
+
+    # Pass 1: collect every tribe-tagged unit with its raw attrs.
+    raw: list[dict] = []
+    for entry in unit_root.findall("Entry"):
+        zt = entry.findtext("zType") or ""
+        if not zt:
+            continue
+        tribes = {
+            p.findtext("zIndex")
+            for p in entry.findall("azBarbarianPortraitName/Pair")
+            if (p.findtext("zIndex") or "").startswith("TRIBE_")
+        }
+        if not tribes:
+            continue
+        if "HUNNIC_CAVALRY" in zt:
+            tribes = {"TRIBE_HUNS"}
+        strength = int(entry.findtext("iStrength") or "0") // 10
+        cycle = entry.findtext("UnitCycle") or ""
+        branch = BRANCH_BY_CYCLE.get(cycle, "Melee")
+        effs = [v.text for v in entry.findall("aeEffectUnit/zValue") if v.text]
+        zicon = entry.findtext("zIconName")
+        raw.append({
+            "id": zt,
+            "tribes": tribes & COMBAT_TRIBES,
+            "strength": strength,
+            "branch": branch,
+            "icon": _icon_from(zicon, zt),
+            "effs": effs,
+        })
+
+    # Pass 2: special vs generic. Strip the trailing _<tier> to get a
+    # base name; a base name fielded by more than one tribe is a shared
+    # generic unit, otherwise it's that tribe's unique upgrade.
+    base_tribes: dict[str, set[str]] = {}
+    for u in raw:
+        base = re.sub(r"_\d+$", "", u["id"])
+        base_tribes.setdefault(base, set()).update(u["tribes"])
+
+    def effect_name(e: str | None) -> str | None:
+        if not e:
+            return None
+        return text_effect.get(f"TEXT_{e}", e.replace("EFFECTUNIT_", "").title())
+
+    rosters: dict[str, list[dict]] = {}
+    for u in raw:
+        base = re.sub(r"_\d+$", "", u["id"])
+        special = len(base_tribes.get(base, set())) <= 1
+        # Display name resolves via the _1-collapsed text key
+        # (TEXT_UNIT_HUSCARL is empty; TEXT_UNIT_HUSCARL_1 = "Huscarl").
+        name = (
+            text_unit.get(f"TEXT_{u['id']}")
+            or text_unit.get(f"TEXT_{base}_1")
+            or text_unit.get(f"TEXT_{base}")
+            or base.replace("UNIT_", "").replace("_", " ").title()
+        )
+        unique = [e for e in u["effs"] if e not in GENERIC_EFFECTS]
+        promo = unique[0] if unique else None
+        for tribe in u["tribes"]:
+            rosters.setdefault(tribe, []).append({
+                "id": u["id"],
+                "name": name,
+                "icon": u["icon"],
+                "strength": u["strength"],
+                "branch": u["branch"],
+                "special": special,
+                "promoId": promo if special else None,
+                "promoName": effect_name(promo) if special else None,
+            })
+
+    for tribe, units in rosters.items():
+        units.sort(key=lambda x: (
+            BRANCH_ORDER.get(x["branch"], 9),
+            x["strength"],
+            0 if x["special"] else 1,
+            x["id"],
+        ))
+    return rosters
+
+
+def resolve_tribe_colors() -> dict[str, str]:
+    """{ TRIBE_X: '#rrggbb' }, fully XML-derived.
+
+    color.xml has no TEAMCOLOR_TRIBE_* entries. The mapping is a 3-hop
+    chain through the game's own files (per the source-of-truth rule —
+    prefer XML over a hand-assigned fallback):
+      tribe.xml  <TeamColor>TEAMCOLOR_TRIBE_X
+      teamColor.xml  TEAMCOLOR_TRIBE_X → aePlayerColors[0] (PLAYERCOLOR_*)
+      playerColor.xml  PLAYERCOLOR_* → <AssetColor> COLOR_BARBARIAN_TRIBE_0N
+      color.xml  COLOR_BARBARIAN_TRIBE_0N → <zHexValue>
+    """
+    # teamColor.xml: TEAMCOLOR_TRIBE_X → first aePlayerColors zValue
+    tc_to_pc: dict[str, str] = {}
+    for e in ET.parse(XML_DIR / "teamColor.xml").getroot().findall("Entry"):
+        zt = e.findtext("zType") or ""
+        if not zt.startswith("TEAMCOLOR_TRIBE_"):
+            continue
+        pc = e.findtext("aePlayerColors/zValue")
+        if pc:
+            tc_to_pc[zt] = pc
+
+    # playerColor.xml: PLAYERCOLOR_* → AssetColor
+    pc_to_color: dict[str, str] = {}
+    for e in ET.parse(XML_DIR / "playerColor.xml").getroot().findall("Entry"):
+        zt = e.findtext("zType") or ""
+        ac = e.findtext("AssetColor")
+        if zt and ac:
+            pc_to_color[zt] = ac
+
+    # color.xml: COLOR_* → hex
+    color_hex: dict[str, str] = {}
+    for e in ET.parse(XML_DIR / "color.xml").getroot().findall("Entry"):
+        zt = e.findtext("zType") or ""
+        hx = e.findtext("zHexValue")
+        if zt and hx:
+            color_hex[zt] = hx.strip()
+
+    out: dict[str, str] = {}
+    for e in ET.parse(XML_DIR / "tribe.xml").getroot().findall("Entry"):
+        zt = e.findtext("zType") or ""
+        team = e.findtext("TeamColor") or ""
+        if not zt.startswith("TRIBE_") or not team:
+            continue
+        pc = tc_to_pc.get(team)
+        col = pc_to_color.get(pc) if pc else None
+        hx = color_hex.get(col) if col else None
+        if hx:
+            out[zt] = hx
+    return out
+
 
 def load_tribe_units(text_unit: dict, text_effect: dict) -> dict[str, dict]:
     """Returns { TRIBE_X: {unit_id, unit_name, unit_icon_name, promo_id, promo_name, extra_promos:[{id,name}]} }."""
@@ -135,6 +303,8 @@ def main() -> int:
     )
     text_effect = load_text("text-effectUnit.xml")
     tribe_units = load_tribe_units(text_unit, text_effect)
+    rosters = build_rosters(text_unit, text_effect)
+    tribe_colors = resolve_tribe_colors()
     text_name = {}
     for p in XML_DIR.glob("text-name*.xml"):
         try:
@@ -195,6 +365,9 @@ def main() -> int:
             "namesMaleCount": len(names_m),
             "namesFemaleCount": len(names_f),
             "unit": tribe_units.get(zt),
+            "combat": zt in COMBAT_TRIBES,
+            "color": tribe_colors.get(zt),
+            "roster": rosters.get(zt, []),
         })
 
     tribes.sort(key=lambda t: t["slug"])

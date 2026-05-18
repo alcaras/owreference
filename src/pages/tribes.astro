@@ -4,84 +4,171 @@ import tribes from '../data/tribes.json';
 
 const base = import.meta.env.BASE_URL;
 
-// Split: diplomatic tribes (Gauls, Huns, Danes, …) get the rich card.
-// Generic / non-diplomatic entries (Anarchy, Barbarians, Raiders, Rebels)
-// are listed at the bottom as flavor — they have no special unit and
-// can't be befriended.
-const diplomatic = tribes.filter(t => t.diplomacy && t.unit);
-const generic = tribes.filter(t => !(t.diplomacy && t.unit));
+// Combat tribes (Danes, Gauls, Huns, Numidians, Scythians, Thracians,
+// Vandals) field a full roster and become the matrix columns. The
+// generic enemy states (Anarchy, Barbarians, Raiders, Rebels) have no
+// roster and no diplomacy — they're a small flavor list below.
+type Tribe = typeof tribes[number];
+type RosterUnit = {
+  id: string; name: string; icon: string; strength: number;
+  branch: string; special: boolean;
+  promoId: string | null; promoName: string | null;
+};
 
-diplomatic.sort((a, b) => a.name.localeCompare(b.name));
-generic.sort((a, b) => a.name.localeCompare(b.name));
+const combat = tribes
+  .filter(t => (t as any).combat && (t as any).roster?.length)
+  .sort((a, b) => a.name.localeCompare(b.name)) as Tribe[];
+const generic = tribes
+  .filter(t => !((t as any).combat && (t as any).roster?.length))
+  .sort((a, b) => a.name.localeCompare(b.name)) as Tribe[];
+
+// Branch sections × strength rows. Only emit a (branch, strength) row
+// if at least one tribe fields a unit there. Strengths span 3–6.
+const BRANCHES = ['Melee', 'Ranged', 'Mounted'];
+const STRENGTHS = [3, 4, 5, 6];
+
+function unitsAt(t: Tribe, branch: string, strength: number): RosterUnit[] {
+  const r = ((t as any).roster ?? []) as RosterUnit[];
+  return r.filter(u => u.branch === branch && u.strength === strength);
+}
+
+type Section = { branch: string; rows: number[] };
+const sections: Section[] = [];
+for (const branch of BRANCHES) {
+  const rows = STRENGTHS.filter(s =>
+    combat.some(t => unitsAt(t, branch, s).length > 0)
+  );
+  if (rows.length) sections.push({ branch, rows });
+}
+
+const specialCount = combat.reduce(
+  (n, t) => n + (((t as any).roster ?? []) as RosterUnit[]).filter(u => u.special).length,
+  0,
+);
 ---
 
 <Base
   title="Tribes"
   active="tribes"
-  description="All Old World tribes — Gauls, Huns, Danes, Numidians, Scythians, Thracians, Vandals — and the unique tribal unit each fields, with its signature free promotion. Pulled XML-canonical from the game's own files."
+  description="The seven combat tribes of Old World side-by-side — every unit they field by branch and strength, with each tribe's unique upgrade troops and the free promotion they carry. Pulled XML-canonical from the game's own files."
 >
   <div class="page-meta">
     <h1 class="page-title">Tribes</h1>
     <div class="page-stats">
-      <span class="stat"><b>{diplomatic.length}</b> diplomatic</span>
-      <span class="stat"><b>{generic.length}</b> generic</span>
+      <span class="stat"><b>{combat.length}</b> combat tribes</span>
+      <span class="stat"><b>{specialCount}</b> unique units</span>
+      <span class="stat"><b>{generic.length}</b> generic states</span>
     </div>
   </div>
 
   <p class="lede">
-    The seven diplomatic tribes each field one signature unit type — and
-    that unit ships with a free promotion no other unit gets. Anarchy,
-    Barbarians, Raiders, and Rebels are generic enemy states with no
-    special troops or diplomacy.
+    Each combat tribe fields a shared core of Marauders, Skirmishers and
+    Nomads — but tops out with its own signature upgrade unit, and that
+    unit alone ships with a free promotion no other troop gets.
   </p>
 
-  <section class="tribe-grid">
-    {diplomatic.map(t => (
-      <a class={`tribe-card t-${t.slug}`} href={`${base}tribes/${t.slug}`}>
-        <div class="tribe-card__head">
-          <img class="tribe-card__crest" src={`${base}img/tribes/${t.slug}.png`} alt="" />
-          <div class="tribe-card__title">
-            <h2 class="tribe-card__name">{t.name}</h2>
-            {t.nickname && <div class="tribe-card__nick">{t.nickname}</div>}
-          </div>
-        </div>
-        {t.unit && (
-          <div class="tribe-card__unit">
-            <img
-              class="tribe-card__unit-icon"
-              src={`${base}img/icons/units/${t.unit.unitIcon}.png`}
-              alt=""
-              onerror="this.style.visibility='hidden'"
-            />
-            <div class="tribe-card__unit-meta">
-              <div class="tribe-card__unit-name">{t.unit.unitName}</div>
-              <div class="tribe-card__unit-promo">
-                {t.unit.promoId && (
-                  <img
-                    class="tribe-card__promo-icon"
-                    src={`${base}img/icons/effects/${t.unit.promoId.toLowerCase().replace('effectunit_', '')}.png`}
-                    alt=""
-                    onerror="this.style.visibility='hidden'"
-                  />
-                )}
-                <span class="tribe-card__promo-name">{t.unit.promoName}</span>
-                {t.unit.extraPromos.length > 0 && (
-                  <span class="tribe-card__promo-extra">
-                    + {t.unit.extraPromos.map(p => p.name).join(', ')}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        <ul class="tribe-card__flags">
-          {t.organized && <li class="tribe-card__flag">organized</li>}
-          {t.mercenary && <li class="tribe-card__flag">mercenaries</li>}
-          {t.gameContent && <li class="tribe-card__flag tribe-card__flag--dlc">{t.gameContent}</li>}
-        </ul>
-      </a>
-    ))}
-  </section>
+  <div class="grid" id="tribes-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          {combat.map(t => <col data-tribe={t.slug} />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Tribe →</span>
+              <span class="rowlabel__big">Strength ↓</span>
+            </th>
+            {combat.map(t => (
+              <th
+                class="nhdr"
+                data-tribe={t.slug}
+                title={t.id}
+                id={t.slug}
+                style={(t as any).color ? `--nation-bg: ${(t as any).color}` : undefined}
+              >
+                <div class="nhdr__inner">
+                  <a class="nhdr__link" href={`${base}tribes/${t.slug}`}>
+                    <img
+                      class="nhdr__crest"
+                      src={`${base}img/tribes/${t.slug}.png`}
+                      alt=""
+                      onerror="this.style.visibility='hidden'"
+                    />
+                    <span class="nhdr__name">{t.name}</span>
+                  </a>
+                  {t.nickname && <span class="nhdr__nick">{t.nickname}</span>}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sections.map(sec => (
+            <>
+              <tr class="srow">
+                <th class="srow__th" colspan={combat.length + 1}>{sec.branch}</th>
+              </tr>
+              {sec.rows.map(strength => (
+                <tr>
+                  <th class="rowlabel" scope="row">Str {strength}</th>
+                  {combat.map(t => {
+                    const us = unitsAt(t, sec.branch, strength);
+                    if (us.length === 0) {
+                      return (
+                        <td class="cell is-empty" data-tribe={t.slug}>
+                          <span class="cell__dash">—</span>
+                        </td>
+                      );
+                    }
+                    // Numidians/Scythians run two mounted lines, so a
+                    // (branch, strength) cell can hold two units —
+                    // prefer the special one first, list both.
+                    const sorted = [...us].sort(
+                      (a, b) => Number(b.special) - Number(a.special)
+                    );
+                    const anySpecial = sorted.some(u => u.special);
+                    return (
+                      <td
+                        class={`cell tcell ${anySpecial ? 'tcell--special' : ''}`}
+                        data-tribe={t.slug}
+                      >
+                        {sorted.map(u => (
+                          <div class={`tunit ${u.special ? 'tunit--special' : ''}`}>
+                            <img
+                              class="tunit__icon"
+                              src={`${base}img/icons/units/${u.icon}.png`}
+                              alt=""
+                              onerror="this.style.visibility='hidden'"
+                            />
+                            <div class="tunit__meta">
+                              <span class="tunit__name">{u.name}</span>
+                              {u.special && u.promoName && (
+                                <span class="tunit__promo">
+                                  <img
+                                    class="tunit__promo-icon"
+                                    src={`${base}img/icons/effects/${(u.promoId ?? '').toLowerCase().replace('effectunit_', '')}.png`}
+                                    alt=""
+                                    onerror="this.style.visibility='hidden'"
+                                  />
+                                  {u.promoName}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   {generic.length > 0 && (
     <section class="tribe-generic">
@@ -89,7 +176,12 @@ generic.sort((a, b) => a.name.localeCompare(b.name));
       <ul class="tribe-generic__list">
         {generic.map(t => (
           <li class="tribe-generic__item">
-            <img class="tribe-generic__crest" src={`${base}img/tribes/${t.slug}.png`} alt="" onerror="this.style.visibility='hidden'" />
+            <img
+              class="tribe-generic__crest"
+              src={`${base}img/tribes/${t.slug}.png`}
+              alt=""
+              onerror="this.style.visibility='hidden'"
+            />
             <span class="tribe-generic__name">{t.name}</span>
             <span class="tribe-generic__sep">·</span>
             <span class="tribe-generic__dim">no diplomacy · no special unit</span>
@@ -107,135 +199,75 @@ generic.sort((a, b) => a.name.localeCompare(b.name));
     font-size: 1rem;
     line-height: 1.5;
     color: var(--text-soft);
-    max-width: 56ch;
+    max-width: 60ch;
     margin: 0.5rem 0 1.5rem 0;
   }
 
-  .tribe-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .tribe-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 1rem 1.1rem 0.95rem;
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.15s, transform 0.15s;
-  }
-  .tribe-card:hover {
-    border-color: var(--gold-deep);
-    transform: translateY(-1px);
-  }
-  .tribe-card:hover .tribe-card__name { color: var(--gold); }
-
-  .tribe-card__head {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .tribe-card__crest {
-    width: 44px; height: 44px;
-    object-fit: contain;
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
-    flex-shrink: 0;
-  }
-  .tribe-card__title { display: flex; flex-direction: column; gap: 0.1rem; }
-  .tribe-card__name {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.4rem;
-    margin: 0;
-    line-height: 1;
-    color: var(--text);
-    transition: color 0.15s;
-  }
-  .tribe-card__nick {
+  /* Tribe column header — nickname under the name, mirroring the
+     card's title block. Color comes from --nation-bg (set inline per
+     tribe from the XML-resolved hex), reusing .nhdr's underline strip. */
+  .nhdr__nick {
     font-family: var(--font-display);
     font-style: italic;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     color: var(--text-faint);
     line-height: 1;
   }
 
-  .tribe-card__unit {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.65rem;
-    padding: 0.55rem 0;
-    border-top: 1px solid var(--border-faint);
-    border-bottom: 1px solid var(--border-faint);
-  }
-  .tribe-card__unit-icon {
-    width: 36px; height: 36px;
-    object-fit: contain;
-    flex-shrink: 0;
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
-  }
-  .tribe-card__unit-meta { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
-  .tribe-card__unit-name {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text);
-    line-height: 1.05;
-  }
-  .tribe-card__unit-promo {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.84rem;
-    color: var(--text-soft);
-    flex-wrap: wrap;
-  }
-  .tribe-card__promo-icon {
-    width: 16px; height: 16px;
-    object-fit: contain;
-    opacity: 0.92;
-  }
-  .tribe-card__promo-name {
-    color: var(--gold-soft);
-    font-weight: 500;
-  }
-  .tribe-card__promo-extra {
-    color: var(--text-faint);
-    font-size: 0.78rem;
+  /* Roster cell — one or two units stacked. Background stays neutral
+     per the design rule (tribe color lives only in the header strip);
+     special units get a gold edge + inline promo. */
+  .tcell { padding: 0.28rem 0.6rem; }
+  .tcell--special {
+    box-shadow: inset 3px 0 0 var(--gold-deep);
   }
 
-  .tribe-card__flags {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .tunit {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem 0.55rem;
+    align-items: flex-start;
+    gap: 0.45rem;
   }
-  .tribe-card__flag {
-    font-family: var(--font-ui);
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
+  .tunit + .tunit {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--border-faint);
+  }
+  .tunit__icon {
+    width: 28px; height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+  }
+  .tunit__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+  .tunit__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.86rem;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  .tunit--special .tunit__name { color: var(--gold-soft); }
+  .tunit__promo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.72rem;
     color: var(--text-faint);
-    font-weight: 500;
+    line-height: 1.1;
   }
-  .tribe-card__flag--dlc {
-    color: var(--gold-soft);
-  }
-  .tribe-card__flag:not(:last-child)::after {
-    content: '·';
-    margin-left: 0.55rem;
-    color: var(--border);
+  .tunit__promo-icon {
+    width: 13px; height: 13px;
+    object-fit: contain;
+    opacity: 0.9;
   }
 
   .tribe-generic {
-    margin-top: 1.5rem;
+    margin-top: 1.75rem;
     padding-top: 1rem;
     border-top: 1px solid var(--border);
   }
