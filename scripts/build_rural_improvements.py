@@ -22,6 +22,15 @@ from humanize import (  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "rural_improvements.json"
+IMG_DIR = ROOT / "public" / "img" / "icons" / "improvements"
+
+
+def resolve_icon(ztype: str) -> str:
+    """Rural improvement art is keyed by class slug (farm, mine, …)."""
+    slug = ztype.replace("IMPROVEMENT_", "").lower()
+    if slug and (IMG_DIR / f"{slug}.png").exists():
+        return f"img/icons/improvements/{slug}.png"
+    return ""
 
 
 def load_text(*filenames: str) -> dict[str, str]:
@@ -226,6 +235,7 @@ def main() -> int:
             "id": zt,
             "slug": slug,
             "name": name,
+            "icon": resolve_icon(zt),
             "class": fmt_class(cls),
             "classId": cls,
             "tech": {

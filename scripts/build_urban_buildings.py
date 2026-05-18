@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build src/data/urban_buildings.json from improvement.xml + improvementClass.xml.
+Build src/data/urban_improvements.json from improvement.xml + improvementClass.xml.
 
 Picks every improvement where bUrban=1 (city-tile structures), excluding
 shrines (their own page), holy-city placeholders, and the bonus/permanent
@@ -11,6 +11,7 @@ the humanizer), terrain validity, and restrictions like "max 2/city".
 from __future__ import annotations
 
 import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -22,7 +23,28 @@ from humanize import (  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
-OUT = ROOT / "src" / "data" / "urban_buildings.json"
+OUT = ROOT / "src" / "data" / "urban_improvements.json"
+IMG_DIR = ROOT / "public" / "img" / "icons" / "improvements"
+
+# Extracted improvement art is keyed by the building's display name, not its
+# class (Baths tiers ship as cold/warm/heated_baths, Theater tiers as
+# theater/odeon/amphitheater). A few names don't slugify onto their file —
+# patch those by hand.
+ICON_ALIASES = {"ministry": "ministries"}
+
+
+def slugify(s: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", (s or "").lower()).strip("_")
+
+
+def resolve_icon(name: str, ztype: str) -> str:
+    """name-slug → id-slug → alias. Returns site path or '' if no art."""
+    name_slug = slugify(name)
+    id_slug = ztype.replace("IMPROVEMENT_", "").lower()
+    for cand in (name_slug, id_slug, ICON_ALIASES.get(name_slug, "")):
+        if cand and (IMG_DIR / f"{cand}.png").exists():
+            return f"img/icons/improvements/{cand}.png"
+    return ""
 
 
 def load_text(*filenames: str) -> dict[str, str]:
@@ -224,6 +246,7 @@ def main() -> int:
             "id": zt,
             "slug": slug,
             "name": name,
+            "icon": resolve_icon(name, zt),
             "class": cls.replace("IMPROVEMENTCLASS_", "").title() if cls else "",
             "classId": cls,
             "tech": {
@@ -253,7 +276,7 @@ def main() -> int:
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(items, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
-    print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(items)} urban buildings")
+    print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(items)} urban improvements")
     return 0
 
 

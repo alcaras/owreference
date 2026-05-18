@@ -1,0 +1,278 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import buildings from '../data/urban_improvements.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Building = typeof buildings[number];
+
+// Columns describe the attribute. Rows are items (inverted from Nations).
+type Col =
+  | { key: 'name';        label: 'Improvement' }
+  | { key: 'tech';        label: 'Tech' }
+  | { key: 'prereqs';     label: 'Other Prereq' }
+  | { key: 'cost';        label: 'Cost' }
+  | { key: 'specialist';  label: 'Specialist Slot' }
+  | { key: 'effects';     label: 'Effects' }
+  | { key: 'terrains';    label: 'Terrain' }
+  | { key: 'restrict';    label: 'Restrictions' };
+
+const cols: Col[] = [
+  { key: 'name',       label: 'Improvement' },
+  { key: 'tech',       label: 'Tech' },
+  { key: 'prereqs',    label: 'Other Prereq' },
+  { key: 'cost',       label: 'Cost' },
+  { key: 'specialist', label: 'Specialist Slot' },
+  { key: 'effects',    label: 'Effects' },
+  { key: 'terrains',   label: 'Terrain' },
+  { key: 'restrict',   label: 'Restrictions' },
+];
+
+function otherPrereq(b: Building): string[] {
+  const out: string[] = [];
+  if (b.culturePrereq) out.push(`${b.culturePrereq} Culture`);
+  if (b.familyPrereq)  out.push(`${b.familyPrereq} Family`);
+  if (b.nationPrereq)  out.push(`${b.nationPrereq} only`);
+  if (b.lawPrereq)     out.push(`Law: ${b.lawPrereq}`);
+  return out;
+}
+
+const searchBlobs: Record<string, string> = {};
+for (const b of buildings) {
+  searchBlobs[b.slug] = JSON.stringify(b).toLowerCase();
+}
+
+const classCount = new Set(buildings.map(b => b.class)).size;
+---
+
+<Base title="Urban Improvements" active="urban-improvements" pageMark="🏡" pageStats={[
+  { label: 'improvements', value: buildings.length },
+  { label: 'classes',      value: classCount },
+]}>
+  <div class="grid" id="ub-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            {cols.map(c => (
+              <th class={`nhdr nhdr--col`} data-col={c.key}>
+                <div class="nhdr__inner"><span class="nhdr__name">{c.label}</span></div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {buildings.map(b => {
+            const prereqs = otherPrereq(b);
+            return (
+              <tr data-row={b.slug}>
+                {/* Improvement name + art */}
+                <th class="rowlabel rowlabel--item" scope="row" id={b.slug}>
+                  <div class="item__head">
+                    {b.icon ? (
+                      <img class="item__art" src={`${base}${b.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />
+                    ) : (
+                      <span class="item__art item__art--ph" aria-hidden="true"></span>
+                    )}
+                    <div class="item__txt">
+                      <div class="item__name">{b.name}</div>
+                      <div class="item__sub">{b.class}</div>
+                    </div>
+                  </div>
+                </th>
+
+                {/* Tech */}
+                {b.tech ? (
+                  <td class="cell cell--center yield-misc">
+                    <a class="tech-chip" href={`${base}technologies#${b.tech.slug}`} title={b.tech.name}>
+                      <img class="tech-chip__icon" src={`${base}img/icons/techs/${b.tech.slug}.png`} alt="" onerror="this.style.display='none'" />
+                      <span>{b.tech.name}</span>
+                    </a>
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+
+                {/* Other prereqs */}
+                {prereqs.length > 0 ? (
+                  <td class="cell cell--list yield-misc">
+                    {prereqs.map(p => <div class="listitem"><LinkedText text={p} /></div>)}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+
+                {/* Cost */}
+                {b.cost && b.cost.length > 0 ? (
+                  <td class="cell cell--effects">
+                    {b.cost.map(line => {
+                      const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                      return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                    })}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+
+                {/* Specialist slot */}
+                {b.specialist ? (
+                  <td class="cell cell--center yield-misc">
+                    <a class="spec-chip" href={`${base}urban-specialists#${b.specialist.slug}`} title={b.specialist.name}>
+                      <img class="spec-chip__icon" src={`${base}img/icons/specialists/${b.specialist.slug}.png`} alt="" onerror="this.style.display='none'" />
+                      <span>{b.specialist.name}</span>
+                    </a>
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+
+                {/* Effects */}
+                {b.effects && b.effects.length > 0 ? (
+                  <td class="cell cell--effects">
+                    {b.effects.map(line => {
+                      const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                      return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                    })}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+
+                {/* Terrain */}
+                {b.terrains && b.terrains.length > 0 ? (
+                  <td class="cell yield-misc">
+                    {b.terrains.map(t => <div class="terrain-tag">{t}</div>)}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+
+                {/* Restrictions */}
+                {b.restrictions && b.restrictions.length > 0 ? (
+                  <td class="cell yield-misc">
+                    {b.restrictions.map(r => <div class="listitem">{r}</div>)}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="application/json" id="ub-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('ub-search-blobs');
+      const grid = document.getElementById('ub-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const row = grid.querySelector('tr[data-row="' + slug + '"]');
+          if (!row) continue;
+          const match = !q || blobs[slug].includes(q);
+          row.classList.toggle('is-hidden', !match);
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  /* Column headers — neutral (no per-nation colors here) */
+  .nhdr--col {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    text-align: left;
+    padding: 0.45rem 0.6rem;
+    min-width: 8rem;
+  }
+  .nhdr--col .nhdr__name {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* Item rowlabel — left sticky column. Art + Cinzel name + class subtitle. */
+  .rowlabel--item {
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    padding: 0.45rem 0.6rem;
+    background: var(--bg-elev);
+    min-width: 12rem;
+    border-right: 1px solid var(--border);
+  }
+  .item__head { display: flex; align-items: center; gap: 0.5rem; }
+  .item__art {
+    width: 30px; height: 30px; object-fit: contain; flex: none;
+  }
+  .item__art--ph {
+    display: inline-block;
+    border-radius: 4px;
+    background: var(--bg-elev-2);
+  }
+  .item__txt { min-width: 0; }
+  .item__name {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .item__sub {
+    font-style: italic;
+    color: var(--text-faint);
+    font-size: 0.66rem;
+    margin-top: 0.1rem;
+  }
+
+  .cell--center { text-align: left; padding: 0.4rem 0.55rem; }
+
+  .tech-chip, .spec-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem 0.15rem 0.3rem;
+    background: var(--bg-elev-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+  .tech-chip:hover, .spec-chip:hover { filter: brightness(1.15); text-decoration: none; }
+  .tech-chip__icon, .spec-chip__icon {
+    width: 14px; height: 14px; object-fit: contain;
+  }
+
+  .terrain-tag {
+    display: inline-block;
+    padding: 0.05rem 0.4rem;
+    margin: 0.1rem 0.2rem 0.1rem 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    background: var(--bg);
+  }
+
+  .cell--list { padding: 0.3rem 0.5rem; }
+  .listitem {
+    font-size: 0.72rem;
+    padding: 0.06rem 0;
+  }
+</style>

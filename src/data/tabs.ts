@@ -96,9 +96,9 @@ export const TABS: Tab[] = [
     willContain: ['Yield, cost, prerequisites, and adjacency bonuses'],
   },
   {
-    slug: 'urban-buildings', icon: '🏡', label: 'Urban Buildings', section: 'Empire',
+    slug: 'urban-improvements', icon: '🏡', label: 'Urban Improvements', section: 'Empire',
     status: 'built', sourceSheet: '🏡 Urban Buildings',
-    summary: 'Buildings, specialist slots, and effects',
+    summary: 'City buildings — art, specialist slots, and effects',
     willContain: ['Cost, slots, yield, and required terrain/tech'],
   },
   {
@@ -138,10 +138,24 @@ export const TABS: Tab[] = [
     willContain: ['Each harvest event and odds'],
   },
   {
+    // Split into Urban Specialists + Rural Specialists. Slug kept as a
+    // redirect; not surfaced in nav/index.
     slug: 'specialists', icon: '👨‍🌾', label: 'Specialists', section: 'Empire',
-    status: 'built', sourceSheet: '👨‍🌾 Specialists',
+    status: 'skipped', sourceSheet: '👨‍🌾 Specialists',
     summary: 'Tile/building specialists and yields',
     willContain: ['Specialist type × yield per slot'],
+  },
+  {
+    slug: 'urban-specialists', icon: '🏺', label: 'Urban Specialists', section: 'Empire',
+    status: 'built', sourceSheet: '👨‍🌾 Specialists',
+    summary: 'Tiered urban specialists (I/II/III), art, yields, slots',
+    willContain: ['Each urban specialist class × tier yields and which buildings it slots into'],
+  },
+  {
+    slug: 'rural-specialists', icon: '🌾', label: 'Rural Specialists', section: 'Empire',
+    status: 'built', sourceSheet: '👨‍🌾 Specialists',
+    summary: 'Rural specialists, art, yields, and slots',
+    willContain: ['Each rural specialist class, yields, and which improvements it slots into'],
   },
   {
     slug: 'hurrying', icon: '⏩', label: 'Hurrying Production', section: 'Empire',

@@ -240,7 +240,7 @@ def build() -> dict:
             "type": "improvement",
             "name": name,
             "aliases": aliases,
-            "page": "urban-buildings",   # most improvements live here; LM/Farm/etc. would route to rural-improvements
+            "page": "urban-improvements",   # most improvements live here; LM/Farm/etc. would route to rural-improvements
             "icon": f"img/icons/improvements/{filename}",
         })
 

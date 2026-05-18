@@ -56,8 +56,17 @@ for (const it of improvements) {
           {improvements.map(it => (
             <tr data-row={it.slug}>
               <th class="rowlabel rowlabel--item" scope="row" id={it.slug}>
-                <div class="item__name">{it.name}</div>
-                <div class="item__sub">{it.class}</div>
+                <div class="item__head">
+                  {it.icon ? (
+                    <img class="item__art" src={`${base}${it.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />
+                  ) : (
+                    <span class="item__art item__art--ph" aria-hidden="true"></span>
+                  )}
+                  <div class="item__txt">
+                    <div class="item__name">{it.name}</div>
+                    <div class="item__sub">{it.class}</div>
+                  </div>
+                </div>
               </th>
 
               {it.tech ? (
@@ -125,7 +134,7 @@ for (const it of improvements) {
 
               {it.specialist ? (
                 <td class="cell yield-misc">
-                  <a class="spec-chip" href={`${base}specialists#${it.specialist.slug}`} title={it.specialist.name}>
+                  <a class="spec-chip" href={`${base}rural-specialists#${it.specialist.slug}`} title={it.specialist.name}>
                     <img class="spec-chip__icon" src={`${base}img/icons/specialists/${it.specialist.slug}.png`} alt="" onerror="this.style.display='none'" />
                     <span>{it.specialist.name}</span>
                   </a>
@@ -191,9 +200,13 @@ for (const it of improvements) {
     font-size: 0.72rem;
     padding: 0.45rem 0.6rem;
     background: var(--bg-elev);
-    min-width: 10rem;
+    min-width: 12rem;
     border-right: 1px solid var(--border);
   }
+  .item__head { display: flex; align-items: center; gap: 0.5rem; }
+  .item__art { width: 30px; height: 30px; object-fit: contain; flex: none; }
+  .item__art--ph { display: inline-block; border-radius: 4px; background: var(--bg-elev-2); }
+  .item__txt { min-width: 0; }
   .item__name {
     font-family: var(--font-display);
     font-size: 0.92rem;
