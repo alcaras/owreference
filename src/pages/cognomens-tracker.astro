@@ -102,7 +102,7 @@ const payload = {
       </section>
 
       <section class="calc__next" id="cf-next" hidden>
-        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">— click a row for how to earn it; <b class="calc__next-note-up">gold ▲</b> = higher legitimacy than your title (actually upgrades it)</span></h2>
+        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">— only titles that would actually replace yours (higher legitimacy); click a row for how to earn it</span></h2>
         <ol class="calc__next-list" id="cf-next-list"></ol>
       </section>
 
@@ -437,10 +437,13 @@ const payload = {
           tracksBox.appendChild(card);
         }
 
-        // Closest titles — rank every track's next unearned tier by how near
-        // it is (progress %, then fewest points remaining), show the top 6.
-        nextItems.sort((a, b) => b.pct - a.pct || a.remaining - b.remaining);
-        const top = nextItems.slice(0, 6);
+        // Closest titles — only cognomens that would actually replace your
+        // displayed title (legitimacy strictly above your current). Equal-or-
+        // lower ones can never change it, so they're not "to earn next".
+        // Ranked by nearness (progress %, then fewest points remaining).
+        const upgrades = nextItems.filter(n => n.upgrade);
+        upgrades.sort((a, b) => b.pct - a.pct || a.remaining - b.remaining);
+        const top = upgrades.slice(0, 6);
         if (top.length) {
           nextList.innerHTML = top.map(n =>
             '<li class="calc__next-item' + (n.upgrade ? ' is-upgrade' : '') + '">' +
@@ -481,7 +484,14 @@ const payload = {
           }
           nextWrap.hidden = false;
         } else {
-          nextWrap.hidden = true;
+          nextList.innerHTML =
+            '<li class="calc__next-none">' +
+              (best
+                ? 'No title outranks <b>' + best.title + '</b> (legitimacy ' +
+                  signed(best.legitimacy) + ') — you hold the best available.'
+                : 'No titles in reach yet — start earning stats.') +
+            '</li>';
+          nextWrap.hidden = false;
         }
       }
 
@@ -634,6 +644,11 @@ const payload = {
   .calc__next-note-up { color: var(--accent); font-weight: 600; }
   .calc__next-list { list-style: none; margin: 0; padding: 0;
     display: flex; flex-direction: column; gap: 0.3rem; }
+  .calc__next-none {
+    list-style: none; font-size: 0.76rem; color: var(--text-dim);
+    padding: 0.3rem 0.2rem;
+  }
+  .calc__next-none b { color: var(--text); }
   .calc__next-item { font-size: 0.78rem; }
   .calc__nd { border-radius: 5px; }
   .calc__nd[open] { background: var(--bg); }
