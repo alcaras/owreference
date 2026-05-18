@@ -21,6 +21,12 @@ const TRACK_GLYPH: Record<string, string> = {
   'Building':             '⛏',
   'Religion':             '🙏',
   'Reign':                '⏳',
+  'Benevolence':          '🕊',
+  'Cults & Clergy':       '🛐',
+  'Gathering':            '🌿',
+  'Raiding':              '🗡',
+  'Lawgiving':            '⚖',
+  'Zealotry':             '🔥',
 };
 
 const searchBlobs: Record<string, string> = {};
@@ -32,12 +38,16 @@ for (const c of cognomens) searchBlobs[c.slug] = JSON.stringify(c).toLowerCase()
   { label: 'tracks', value: tracks.length },
 ]}>
   <p class="cog-intro">
-    A regnal title is awarded the moment a ruler clears two bars at once: the
-    Legitimacy threshold (<code>iLegitimacy</code>) and the cumulative score on
-    one of the stat tracks below (<code>iMinValue</code> against
-    <code>aiStatValue</code>). The Main Line are earned purely by ruling well or
-    badly; the side tracks reward specialists. Pulled from
-    <code>cognomen.xml</code>.
+    A regnal title has <strong>one</strong> gate: a cumulative score —
+    Σ&nbsp;stat&nbsp;×&nbsp;weight (<code>aiStatValue</code>) — that must clear
+    the title's threshold (<code>iMinValue</code>, scaled up by ruler number and
+    game speed). <code>iLegitimacy</code> is <em>not</em> a second bar: it's the
+    rank. Among every title whose score you've cleared, you hold the one with
+    the highest legitimacy. The Main Line rewards all-round rule; the side
+    tracks reward specialists. Pulled from <code>cognomen.xml</code>; award
+    logic verified against <code>Character.cs · updateCognomen()</code>. Want to
+    see which you'd earn? Use the
+    <a href={`${import.meta.env.BASE_URL}cognomens-tracker`}>tracker</a>.
   </p>
 
   <div class="cog-tracks" id="cog-tracks">
@@ -232,4 +242,15 @@ for (const c of cognomens) searchBlobs[c.slug] = JSON.stringify(c).toLowerCase()
   /* Slightly narrower fields for cognomen tables */
   .cog-track .ntbl .nhdr:nth-child(2) { min-width: 9rem; }
   .cog-track .ntbl .nhdr:nth-child(5) { min-width: 18rem; }
+
+  /* These per-track tables are only 2–7 rows tall. The sticky thead/corner
+     inherited from the nations layout (position: sticky; top: 3.6rem) pins to
+     the viewport and floats over its own body rows as the page scrolls — the
+     "cropping" artifact. Reference tables this short don't need a sticky
+     header; pin nothing. */
+  .cog-track .ntbl .nhdr,
+  .cog-track .ntbl .rowlabel--corner {
+    position: static;
+    top: auto;
+  }
 </style>

@@ -51,6 +51,16 @@ export const TABS: Tab[] = [
     summary: 'Title/cognomen unlock conditions',
     willContain: ['All cognomens with unlock triggers and bonuses'],
   },
+  {
+    slug: 'cognomens-tracker', icon: '🧮', label: 'Cognomens Tracker', section: 'Civilizations',
+    status: 'built', sourceSheet: '👑Cognomens (Tracker)',
+    summary: 'Interactive calculator: which title your leader earns',
+    willContain: [
+      'Per-stat inputs replaying the exact in-game award routine',
+      'Ruler-number and game-speed threshold scaling (from game source)',
+      'Per-track progress to the next title',
+    ],
+  },
 
   // ── Characters ─────────────────────────────────────────────────
   {

@@ -1,0 +1,418 @@
+---
+import Base from '../layouts/Base.astro';
+import cognomenData from '../data/cognomens.json';
+
+const { cognomens, tracks, calculator } = cognomenData as any;
+
+// Glyph per track — mirrors the reference page.
+const TRACK_GLYPH: Record<string, string> = {
+  'Main Line': '👑', 'Killing': '⚔', 'Training / Promoting': '🎖',
+  'Tribal Sites': '⛺', 'Alliances & Peace': '☮', 'Conquest': '⚐',
+  'Reconquest': '⮌', 'Founding Cities': '🏛', 'Court & Specialists': '👥',
+  'Tech & Wonders': '🔮', 'Building': '⛏', 'Exploration': '🧭',
+  'Religion': '🙏', 'Reign': '⏳',
+  'Benevolence': '🕊', 'Cults & Clergy': '🛐', 'Gathering': '🌿',
+  'Raiding': '🗡', 'Lawgiving': '⚖', 'Zealotry': '🔥',
+};
+
+// Only the cognomens that participate in the score progression — strip the
+// JSON down to exactly what the client-side algorithm needs.
+const trackerCogs = cognomens
+  .filter((c: any) => c.tracker)
+  .map((c: any) => ({
+    id: c.id, slug: c.slug, title: c.title, track: c.track,
+    legitimacy: c.legitimacy, minValue: c.minValue,
+    stats: c.stats.map((s: any) => ({ stat: s.stat, value: s.value })),
+  }));
+
+const trackOrder: string[] = tracks
+  .map((t: any) => t.name)
+  .filter((n: string) => trackerCogs.some((c: any) => c.track === n));
+
+const payload = {
+  cogs: trackerCogs,
+  trackOrder,
+  inputStats: calculator.inputStats,
+  gameSpeeds: calculator.gameSpeeds,
+  leaderScaling: calculator.leaderScaling,
+};
+---
+
+<Base title="Cognomens Tracker" active="cognomens-tracker" pageMark="🧮" pageStats={[
+  { label: 'tracked', value: trackerCogs.length },
+  { label: 'tracks', value: trackOrder.length },
+  { label: 'inputs', value: calculator.inputStats.length },
+]}>
+  <p class="cog-intro">
+    Enter what your leader has done — pulled from the timeline screen
+    (<kbd>F5</kbd>, hover the leader's portrait) — to see which regnal title
+    they currently hold and how far the next one is. This runs the game's exact
+    award routine (<code>Character.cs · updateCognomen()</code>): score
+    = Σ&nbsp;stat&nbsp;×&nbsp;weight; the title is the one with the highest
+    legitimacy whose scaled threshold you've cleared. Thresholds scale by
+    <strong>ruler number</strong> and <strong>game speed</strong> — both modelled
+    from the source. Inputs persist in your browser.
+  </p>
+
+  <div class="calc">
+    <aside class="calc__panel">
+      <div class="calc__settings">
+        <label class="calc__field">
+          <span class="calc__lbl">Ruler #</span>
+          <input id="cf-ruler" type="number" min="1" step="1" value="1" />
+          <span class="calc__hint">1 = founder · each +1 raises every bar 5% of base</span>
+        </label>
+        <label class="calc__field">
+          <span class="calc__lbl">Game speed</span>
+          <select id="cf-speed"></select>
+        </label>
+        <label class="calc__check">
+          <input id="cf-bad" type="checkbox" />
+          <span>Allow bad cognomens<span class="calc__hint"> (ALLOW_BAD_COGNOMENS option)</span></span>
+        </label>
+        <button id="cf-reset" type="button" class="calc__reset">Reset all</button>
+      </div>
+
+      <div class="calc__stats" id="cf-stats"></div>
+    </aside>
+
+    <main class="calc__out">
+      <section class="calc__hero" id="cf-hero">
+        <span class="calc__hero-eyebrow">Current title</span>
+        <span class="calc__hero-title" id="cf-hero-title">—</span>
+        <span class="calc__hero-sub" id="cf-hero-sub"></span>
+      </section>
+
+      <div class="calc__tracks" id="cf-tracks"></div>
+    </main>
+  </div>
+
+  <script type="application/json" id="cf-data" set:html={JSON.stringify(payload)}></script>
+  <script is:inline>
+    (function () {
+      const node = document.getElementById('cf-data');
+      if (!node) return;
+      const DATA = JSON.parse(node.textContent || '{}');
+      const KEY = 'owref:cognomen-tracker:v1';
+      const GLYPH = {
+        'Main Line': '👑', 'Killing': '⚔', 'Training / Promoting': '🎖',
+        'Tribal Sites': '⛺', 'Alliances & Peace': '☮', 'Conquest': '⚐',
+        'Reconquest': '⮌', 'Founding Cities': '🏛', 'Court & Specialists': '👥',
+        'Tech & Wonders': '🔮', 'Building': '⛏', 'Exploration': '🧭',
+        'Religion': '🙏', 'Reign': '⏳',
+        'Benevolence': '🕊', 'Cults & Clergy': '🛐', 'Gathering': '🌿',
+        'Raiding': '🗡', 'Lawgiving': '⚖', 'Zealotry': '🔥',
+      };
+
+      // ── state ────────────────────────────────────────────────
+      let state = { counts: {}, ruler: 1, speed: DATA.gameSpeeds[0].id, bad: false };
+      try {
+        const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+        if (saved && typeof saved === 'object') state = Object.assign(state, saved);
+      } catch (e) {}
+      const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+
+      // ── exact game math (Character.cs / Utils.cs) ────────────
+      // modify(v, m) = v * (100 + max(0, m + 100) ... ) / 100, integer.
+      function modify(v, m) {
+        if (v === 0 || m === 0) return v;
+        const mult = Math.max(0, m + 100);
+        return Math.trunc((v * mult) / 100);
+      }
+      function scaledMin(base, rulerIdx, speedMod) {
+        // base * (20 + leaderIndex) / 20, leaderIndex 0-based, integer.
+        let v = Math.trunc((base * (20 + rulerIdx)) / 20);
+        return modify(v, speedMod);
+      }
+      function scoreOf(cog) {
+        let s = 0;
+        for (const st of cog.stats) s += (state.counts[st.stat] | 0) * st.value;
+        return s;
+      }
+
+      function evaluate() {
+        const rulerIdx = Math.max(0, (parseInt(state.ruler, 10) || 1) - 1);
+        const sp = DATA.gameSpeeds.find(g => g.id === state.speed) || DATA.gameSpeeds[0];
+        const speedMod = sp.modifier;
+
+        let best = null, bestLeg = 0;
+        const evald = DATA.cogs.map(c => {
+          const score = scoreOf(c);
+          const sMin = scaledMin(c.minValue, rulerIdx, speedMod);
+          const considered = c.legitimacy > 0 || state.bad;
+          const earned = considered && sMin > 0 && score >= sMin;
+          const aleg = Math.abs(c.legitimacy);
+          if (earned && aleg > bestLeg) { best = c; bestLeg = aleg; }
+          return { c, score, sMin, earned, considered };
+        });
+        return { evald, best, rulerIdx, speedMod };
+      }
+
+      // ── render: stat inputs ──────────────────────────────────
+      const statsBox = document.getElementById('cf-stats');
+      for (const s of DATA.inputStats) {
+        const row = document.createElement('label');
+        row.className = 'calc__stat';
+        const w = [];
+        if (s.mainValue != null) w.push('main ' + s.mainValue);
+        if (s.sideValue != null) w.push('side ' + s.sideValue);
+        row.innerHTML =
+          '<span class="calc__stat-name">' + s.label + '</span>' +
+          '<span class="calc__stat-w">' + w.join(' · ') + '</span>';
+        const inp = document.createElement('input');
+        inp.type = 'number'; inp.min = '0'; inp.step = '1';
+        inp.value = state.counts[s.stat] != null ? state.counts[s.stat] : '';
+        inp.dataset.stat = s.stat;
+        inp.addEventListener('input', () => {
+          const v = parseInt(inp.value, 10);
+          if (Number.isFinite(v) && v !== 0) state.counts[s.stat] = v;
+          else delete state.counts[s.stat];
+          save(); render();
+        });
+        row.appendChild(inp);
+        statsBox.appendChild(row);
+      }
+
+      // ── render: settings ─────────────────────────────────────
+      const elRuler = document.getElementById('cf-ruler');
+      const elSpeed = document.getElementById('cf-speed');
+      const elBad = document.getElementById('cf-bad');
+      for (const g of DATA.gameSpeeds) {
+        const o = document.createElement('option');
+        const mult = g.modifier === 0 ? '×1.0' : '×' + ((100 + g.modifier) / 100).toFixed(1);
+        o.value = g.id; o.textContent = g.label + ' (' + mult + ')';
+        elSpeed.appendChild(o);
+      }
+      elRuler.value = state.ruler;
+      elSpeed.value = state.speed;
+      elBad.checked = !!state.bad;
+      elRuler.addEventListener('input', () => { state.ruler = elRuler.value; save(); render(); });
+      elSpeed.addEventListener('change', () => { state.speed = elSpeed.value; save(); render(); });
+      elBad.addEventListener('change', () => { state.bad = elBad.checked; save(); render(); });
+      document.getElementById('cf-reset').addEventListener('click', () => {
+        state = { counts: {}, ruler: 1, speed: DATA.gameSpeeds[0].id, bad: false };
+        save();
+        for (const inp of statsBox.querySelectorAll('input')) inp.value = '';
+        elRuler.value = 1; elSpeed.value = state.speed; elBad.checked = false;
+        render();
+      });
+
+      // ── render: output ───────────────────────────────────────
+      const hero = document.getElementById('cf-hero');
+      const heroTitle = document.getElementById('cf-hero-title');
+      const heroSub = document.getElementById('cf-hero-sub');
+      const tracksBox = document.getElementById('cf-tracks');
+
+      function fmt(n) { return n.toLocaleString(); }
+
+      function render() {
+        const { evald, best } = evaluate();
+        const byId = {};
+        for (const e of evald) byId[e.c.id] = e;
+
+        if (best) {
+          heroTitle.textContent = best.title;
+          heroSub.textContent =
+            best.track + ' track · legitimacy ' +
+            (best.legitimacy >= 0 ? '+' : '') + best.legitimacy;
+          hero.classList.toggle('is-bad', best.legitimacy < 0);
+          hero.classList.add('is-set');
+        } else {
+          heroTitle.textContent = 'No title yet';
+          heroSub.textContent = 'No threshold cleared — keep ruling.';
+          hero.classList.remove('is-set', 'is-bad');
+        }
+
+        tracksBox.innerHTML = '';
+        for (const tname of DATA.trackOrder) {
+          const tiers = DATA.cogs
+            .filter(c => c.track === tname && (c.legitimacy > 0 || state.bad))
+            .map(c => byId[c.id])
+            .sort((a, b) => a.sMin - b.sMin);
+          if (!tiers.length) continue;
+
+          const earnedTiers = tiers.filter(t => t.earned);
+          const current = earnedTiers.length ? earnedTiers[earnedTiers.length - 1] : null;
+          const next = tiers.find(t => !t.earned) || null;
+          const score = tiers[0].score; // identical within a track's sub-ladder
+          const pct = next ? Math.max(0, Math.min(100, (score / next.sMin) * 100)) : 100;
+
+          const card = document.createElement('section');
+          card.className = 'calc__card' + (current ? ' is-on' : '');
+          let html =
+            '<header class="calc__card-hdr">' +
+              '<span class="calc__card-mark">' + (GLYPH[tname] || '·') + '</span>' +
+              '<span class="calc__card-name">' + tname + '</span>' +
+              '<span class="calc__card-cur">' +
+                (current ? current.c.title : '—') + '</span>' +
+            '</header>' +
+            '<div class="calc__bar"><span style="width:' + pct.toFixed(1) + '%"></span></div>' +
+            '<div class="calc__meta">' +
+              'score <b>' + fmt(score) + '</b>' +
+              (next
+                ? ' · ' + fmt(Math.max(0, next.sMin - score)) + ' to <b>' + next.c.title + '</b>'
+                : ' · <b>maxed</b>') +
+            '</div>' +
+            '<ol class="calc__tiers">';
+          for (const t of tiers) {
+            const cls = t.earned ? 'is-earned' : '';
+            const isCur = current && t.c.id === current.c.id;
+            html +=
+              '<li class="' + cls + (isCur ? ' is-cur' : '') + '">' +
+                '<span class="calc__tier-name">' + t.c.title + '</span>' +
+                '<span class="calc__tier-min">' + fmt(t.sMin) + '</span>' +
+              '</li>';
+          }
+          html += '</ol>';
+          card.innerHTML = html;
+          tracksBox.appendChild(card);
+        }
+      }
+
+      render();
+    })();
+  </script>
+</Base>
+
+<style>
+  .cog-intro {
+    max-width: 880px; color: var(--text-dim); font-size: 0.86rem;
+    margin: 0 0 1.25rem; line-height: 1.6;
+  }
+  .cog-intro code, .cog-intro kbd {
+    background: var(--bg-elev); padding: 0.05rem 0.4rem;
+    border-radius: 3px; border: 1px solid var(--border);
+    font-family: var(--font-mono); font-size: 0.78em;
+  }
+  .cog-intro strong { color: var(--text); }
+
+  .calc {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  @media (max-width: 860px) { .calc { grid-template-columns: 1fr; } }
+
+  /* ── input panel ── */
+  .calc__panel {
+    position: sticky; top: 1rem;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1rem;
+  }
+  .calc__settings { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 0.9rem; }
+  .calc__field { display: flex; flex-direction: column; gap: 0.2rem; }
+  .calc__lbl {
+    font-family: var(--font-display); font-size: 0.78rem;
+    color: var(--text); letter-spacing: 0.02em;
+  }
+  .calc__hint { color: var(--text-faint); font-size: 0.66rem; font-style: italic; }
+  .calc__panel input[type=number], .calc__panel select {
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); border-radius: 4px; padding: 0.3rem 0.45rem;
+    font-family: var(--font-mono); font-size: 0.8rem; width: 100%;
+  }
+  .calc__check {
+    display: flex; align-items: baseline; gap: 0.45rem;
+    font-size: 0.78rem; color: var(--text);
+  }
+  .calc__reset {
+    align-self: flex-start; background: transparent; color: var(--text-dim);
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 0.25rem 0.7rem; font-size: 0.72rem; cursor: pointer;
+  }
+  .calc__reset:hover { color: var(--text); border-color: var(--accent); }
+
+  .calc__stats {
+    display: flex; flex-direction: column; gap: 0;
+    border-top: 1px solid var(--border); max-height: 60vh; overflow-y: auto;
+  }
+  .calc__stat {
+    display: grid; grid-template-columns: 1fr auto;
+    grid-template-areas: 'name input' 'w input';
+    align-items: center; gap: 0 0.6rem;
+    padding: 0.32rem 0; border-bottom: 1px dashed var(--border);
+  }
+  .calc__stat-name { grid-area: name; font-size: 0.76rem; color: var(--text); }
+  .calc__stat-w {
+    grid-area: w; font-family: var(--font-mono);
+    font-size: 0.6rem; color: var(--text-faint);
+  }
+  .calc__stat input {
+    grid-area: input; width: 4.6rem; text-align: right;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); border-radius: 4px; padding: 0.25rem 0.4rem;
+    font-family: var(--font-mono); font-size: 0.8rem;
+  }
+  .calc__stat input:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+
+  /* ── hero ── */
+  .calc__hero {
+    display: flex; flex-direction: column; gap: 0.15rem;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 1.1rem;
+  }
+  .calc__hero.is-set { border-left-color: var(--accent); }
+  .calc__hero.is-bad { border-left-color: #c46b6b; }
+  .calc__hero-eyebrow {
+    font-family: var(--font-mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-faint);
+  }
+  .calc__hero-title {
+    font-family: var(--font-display); font-size: 1.6rem;
+    font-weight: 600; color: var(--accent); line-height: 1.1;
+  }
+  .calc__hero.is-bad .calc__hero-title { color: #f0a8a8; }
+  .calc__hero-sub { font-size: 0.76rem; color: var(--text-dim); }
+
+  /* ── track cards ── */
+  .calc__tracks {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 0.9rem;
+  }
+  .calc__card {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 7px; padding: 0.75rem 0.85rem;
+  }
+  .calc__card.is-on { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+  .calc__card-hdr {
+    display: flex; align-items: baseline; gap: 0.4rem; margin-bottom: 0.5rem;
+  }
+  .calc__card-mark { color: var(--accent); }
+  .calc__card-name {
+    font-family: var(--font-display); font-size: 0.84rem;
+    font-weight: 600; color: var(--text);
+  }
+  .calc__card-cur {
+    margin-left: auto; font-size: 0.78rem;
+    color: var(--text-dim); font-style: italic;
+  }
+  .calc__card.is-on .calc__card-cur { color: var(--accent); font-style: normal; }
+  .calc__bar {
+    height: 5px; background: var(--bg); border-radius: 999px;
+    overflow: hidden; margin-bottom: 0.35rem;
+  }
+  .calc__bar span {
+    display: block; height: 100%;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 60%, transparent), var(--accent));
+    transition: width 0.18s ease;
+  }
+  .calc__meta {
+    font-size: 0.68rem; color: var(--text-faint);
+    font-family: var(--font-mono); margin-bottom: 0.5rem;
+  }
+  .calc__meta b { color: var(--text-dim); font-weight: 600; }
+  .calc__tiers { list-style: none; margin: 0; padding: 0; }
+  .calc__tiers li {
+    display: flex; justify-content: space-between; gap: 0.5rem;
+    font-size: 0.7rem; padding: 0.16rem 0;
+    color: var(--text-faint); border-bottom: 1px dashed var(--border);
+  }
+  .calc__tiers li:last-child { border-bottom: 0; }
+  .calc__tiers li.is-earned { color: var(--text-dim); }
+  .calc__tiers li.is-cur {
+    color: var(--accent); font-weight: 600;
+  }
+  .calc__tiers .calc__tier-min { font-family: var(--font-mono); }
+</style>
