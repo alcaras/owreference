@@ -14,6 +14,7 @@ type RosterUnit = {
   mounted: boolean; strength: number;
   branch: string; special: boolean;
   promoId: string | null; promoName: string | null;
+  promos: { id: string; name: string | null; unique: boolean }[];
 };
 
 const combat = tribes
@@ -157,17 +158,17 @@ const specialCount = combat.reduce(
                             </span>
                             <div class="tunit__meta">
                               <span class="tunit__name">{u.name}</span>
-                              {u.special && u.promoName && (
-                                <span class="tunit__promo">
+                              {u.promos.map(p => (
+                                <span class={`tunit__promo ${p.unique ? 'tunit__promo--unique' : ''}`}>
                                   <img
                                     class="tunit__promo-icon"
-                                    src={`${base}img/icons/effects/${(u.promoId ?? '').toLowerCase().replace('effectunit_', '')}.png`}
+                                    src={`${base}img/icons/effects/${p.id.toLowerCase().replace('effectunit_', '')}.png`}
                                     alt=""
                                     onerror="this.style.visibility='hidden'"
                                   />
-                                  {u.promoName}
+                                  {p.name}
                                 </span>
-                              )}
+                              ))}
                             </div>
                           </div>
                         ))}
@@ -286,7 +287,10 @@ const specialCount = combat.reduce(
     font-size: 0.72rem;
     color: var(--text-faint);
     line-height: 1.1;
+    margin-right: 0.4rem;
   }
+  /* The tribe-unique signature promo vs the generic XP-tier one. */
+  .tunit__promo--unique { color: var(--gold-soft); }
   .tunit__promo-icon {
     width: 13px; height: 13px;
     object-fit: contain;

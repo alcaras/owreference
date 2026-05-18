@@ -159,6 +159,13 @@ def build_rosters(text_unit: dict, text_effect: dict) -> dict[str, list[dict]]:
         )
         unique = [e for e in u["effs"] if e not in GENERIC_EFFECTS]
         promo = unique[0] if unique else None
+        # A unit can carry more than one free promotion (e.g. Huscarl =
+        # Cold + Cleave I, Gaesata = Ranger + Pierce I). Surface them all,
+        # in XML order; flag which is the tribe-unique signature.
+        promos = [
+            {"id": e, "name": effect_name(e), "unique": e not in GENERIC_EFFECTS}
+            for e in u["effs"]
+        ]
         for tribe in u["tribes"]:
             rosters.setdefault(tribe, []).append({
                 "id": u["id"],
@@ -171,6 +178,7 @@ def build_rosters(text_unit: dict, text_effect: dict) -> dict[str, list[dict]]:
                 "special": special,
                 "promoId": promo if special else None,
                 "promoName": effect_name(promo) if special else None,
+                "promos": promos,
             })
 
     for tribe, units in rosters.items():
