@@ -102,7 +102,7 @@ const payload = {
       </section>
 
       <section class="calc__next" id="cf-next" hidden>
-        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">— nearest to earn next; <b class="calc__next-note-up">gold ▲</b> = higher legitimacy than your title (actually upgrades it)</span></h2>
+        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">— click a row for how to earn it; <b class="calc__next-note-up">gold ▲</b> = higher legitimacy than your title (actually upgrades it)</span></h2>
         <ol class="calc__next-list" id="cf-next-list"></ol>
       </section>
 
@@ -302,6 +302,57 @@ const payload = {
 
       function fmt(n) { return n.toLocaleString(); }
 
+      const labelOf = {};
+      for (const s of DATA.inputStats) labelOf[s.stat] = s.label;
+
+      // Which Closest-title rows the user has expanded — preserved across the
+      // full re-render that every input change triggers.
+      const openNext = new Set();
+
+      // "How to gain it": the cognomen's scoring breakdown against the current
+      // counts, plus the fewest single-stat additions that would close the gap.
+      function gainHTML(cog, score, sMin) {
+        const need = Math.max(0, sMin - score);
+        const rows = cog.stats
+          .map(st => {
+            const n = state.counts[st.stat] | 0;
+            return { lbl: labelOf[st.stat] || st.stat, w: st.value, n, c: n * st.value };
+          })
+          .sort((a, b) => b.c - a.c || Math.abs(b.w) - Math.abs(a.w));
+
+        let h = '<table class="gain__tbl"><tbody>';
+        for (const r of rows) {
+          h += '<tr class="' + (r.w < 0 ? 'is-pen' : '') + '">' +
+            '<td class="gain__l">' + r.lbl + '</td>' +
+            '<td class="gain__n">' + fmt(r.n) + '</td>' +
+            '<td class="gain__w">× ' + r.w + '</td>' +
+            '<td class="gain__c">' + (r.c >= 0 ? '+' : '') + fmt(r.c) + '</td>' +
+          '</tr>';
+        }
+        h += '</tbody></table>';
+
+        h += '<div class="gain__sum">score <b>' + fmt(score) + '</b> / need <b>' +
+          fmt(sMin) + '</b> · <b>' + fmt(need) + '</b> to go</div>';
+
+        const routes = rows
+          .filter(r => r.w > 0)
+          .sort((a, b) => b.w - a.w)
+          .slice(0, 3)
+          .map(r => '+' + fmt(Math.ceil(need / r.w)) + ' ' + r.lbl +
+            ' <span class="gain__dim">(× ' + r.w + ')</span>');
+        if (need > 0 && routes.length) {
+          h += '<div class="gain__routes"><span class="gain__dim">' +
+            'Any one of:</span> ' + routes.join(' &nbsp;·&nbsp; ') + '</div>';
+        }
+        const pens = rows.filter(r => r.w < 0);
+        if (pens.length) {
+          h += '<div class="gain__dim gain__pen">Penalties: ' +
+            pens.map(r => r.lbl + ' (× ' + r.w + ')').join(', ') +
+            ' — these subtract.</div>';
+        }
+        return h;
+      }
+
       function render() {
         const { evald, best } = evaluate();
         const byId = {};
@@ -342,7 +393,9 @@ const payload = {
           const pct = next ? Math.max(0, Math.min(100, (score / next.sMin) * 100)) : 100;
 
           if (next) nextItems.push({
-            title: next.c.title, track: tname, glyph: GLYPH[tname] || '·',
+            cog: next.c, title: next.c.title, track: tname,
+            glyph: GLYPH[tname] || '·',
+            score, sMin: next.sMin,
             remaining: Math.max(0, next.sMin - score), pct,
             legit: next.c.legitimacy,
             upgrade: Math.abs(next.c.legitimacy) > curLeg,
@@ -391,20 +444,41 @@ const payload = {
         if (top.length) {
           nextList.innerHTML = top.map(n =>
             '<li class="calc__next-item' + (n.upgrade ? ' is-upgrade' : '') + '">' +
-              '<span class="calc__next-mark">' + n.glyph + '</span>' +
-              '<span class="calc__next-title">' + n.title + '</span>' +
-              '<span class="calc__next-leg" title="legitimacy' +
-                (n.upgrade ? ' — would become your title' : ' — ≤ current, won\'t change title') +
-                '">' + signed(n.legit) +
-                (n.upgrade ? ' ▲' : '') + '</span>' +
-              '<span class="calc__next-track">' + n.track + '</span>' +
-              '<span class="calc__next-bar"><span style="width:' +
-                n.pct.toFixed(1) + '%"></span></span>' +
-              '<span class="calc__next-need">' +
-                (n.remaining === 0 ? 'ready' : fmt(n.remaining) + ' pts') +
-              '</span>' +
+              '<details class="calc__nd" data-cid="' + n.cog.id + '"' +
+                (openNext.has(n.cog.id) ? ' open' : '') + '>' +
+                '<summary class="calc__next-sum">' +
+                  '<span class="calc__next-caret">▸</span>' +
+                  '<span class="calc__next-mark">' + n.glyph + '</span>' +
+                  '<span class="calc__next-title">' + n.title + '</span>' +
+                  '<span class="calc__next-leg" title="legitimacy' +
+                    (n.upgrade ? ' — would become your title' : ' — ≤ current, won\'t change title') +
+                    '">' + signed(n.legit) + (n.upgrade ? ' ▲' : '') + '</span>' +
+                  '<span class="calc__next-track">' + n.track + '</span>' +
+                  '<span class="calc__next-bar"><span style="width:' +
+                    n.pct.toFixed(1) + '%"></span></span>' +
+                  '<span class="calc__next-need">' +
+                    (n.remaining === 0 ? 'ready' : fmt(n.remaining) + ' pts') +
+                  '</span>' +
+                '</summary>' +
+                '<div class="calc__next-detail">' +
+                  '<p class="gain__why">' +
+                    (n.upgrade
+                      ? 'Earning this sets your title to <b>' + n.title +
+                        '</b> (legitimacy ' + signed(n.legit) + ', outranks your current).'
+                      : 'Legitimacy ' + signed(n.legit) +
+                        ' is ≤ your current title — earning it won\'t change the displayed title.') +
+                  '</p>' +
+                  gainHTML(n.cog, n.score, n.sMin) +
+                '</div>' +
+              '</details>' +
             '</li>'
           ).join('');
+          for (const d of nextList.querySelectorAll('.calc__nd')) {
+            d.addEventListener('toggle', () => {
+              if (d.open) openNext.add(d.dataset.cid);
+              else openNext.delete(d.dataset.cid);
+            });
+          }
           nextWrap.hidden = false;
         } else {
           nextWrap.hidden = true;
@@ -560,12 +634,22 @@ const payload = {
   .calc__next-note-up { color: var(--accent); font-weight: 600; }
   .calc__next-list { list-style: none; margin: 0; padding: 0;
     display: flex; flex-direction: column; gap: 0.3rem; }
-  .calc__next-item {
+  .calc__next-item { font-size: 0.78rem; }
+  .calc__nd { border-radius: 5px; }
+  .calc__nd[open] { background: var(--bg); }
+  .calc__next-sum {
     display: grid;
-    grid-template-columns: 1.2rem minmax(7rem, max-content) 3.4rem 1fr 6rem 4.5rem;
+    grid-template-columns: 0.9rem 1.2rem minmax(7rem, max-content) 3.4rem 1fr 6rem 4.5rem;
     align-items: center; gap: 0.55rem;
-    font-size: 0.78rem; padding: 0.18rem 0;
+    padding: 0.2rem 0.4rem; cursor: pointer; list-style: none;
   }
+  .calc__next-sum::-webkit-details-marker { display: none; }
+  .calc__next-sum:hover { background: var(--bg); border-radius: 5px; }
+  .calc__next-caret {
+    color: var(--text-faint); font-size: 0.7rem;
+    transition: transform 0.12s ease;
+  }
+  .calc__nd[open] .calc__next-caret { transform: rotate(90deg); }
   .calc__next-mark { color: var(--accent); text-align: center; }
   .calc__next-title {
     font-family: var(--font-display); font-weight: 600; color: var(--text-faint);
@@ -581,7 +665,7 @@ const payload = {
   }
   .calc__next-track { color: var(--text-faint); font-size: 0.7rem; }
   .calc__next-bar {
-    height: 5px; background: var(--bg); border-radius: 999px; overflow: hidden;
+    height: 5px; background: var(--bg-elev); border-radius: 999px; overflow: hidden;
   }
   .calc__next-bar span {
     display: block; height: 100%;
@@ -591,9 +675,39 @@ const payload = {
     font-family: var(--font-mono); font-size: 0.72rem;
     color: var(--text-dim); text-align: right;
   }
+  .calc__next-detail {
+    padding: 0.3rem 0.7rem 0.7rem 2.1rem;
+  }
+  .gain__why {
+    margin: 0 0 0.5rem; font-size: 0.72rem; color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .gain__why b { color: var(--text); }
+  .gain__tbl { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+  .gain__tbl td { padding: 0.1rem 0.3rem; border-bottom: 1px dashed var(--border); }
+  .gain__l { color: var(--text-dim); }
+  .gain__n, .gain__w, .gain__c {
+    font-family: var(--font-mono); text-align: right; white-space: nowrap;
+  }
+  .gain__w { color: var(--text-faint); }
+  .gain__c { color: var(--text); }
+  .gain__tbl tr.is-pen .gain__c { color: #e08a8a; }
+  .gain__tbl tr.is-pen .gain__l { color: var(--text-faint); }
+  .gain__sum {
+    margin-top: 0.4rem; font-size: 0.72rem; color: var(--text-dim);
+    font-family: var(--font-mono);
+  }
+  .gain__sum b { color: var(--text); }
+  .gain__routes {
+    margin-top: 0.4rem; font-size: 0.72rem; color: var(--accent);
+    line-height: 1.6;
+  }
+  .gain__dim { color: var(--text-faint); font-weight: 400; }
+  .gain__pen { margin-top: 0.35rem; font-size: 0.68rem; }
   @media (max-width: 560px) {
-    .calc__next-item { grid-template-columns: 1.2rem 1fr 3.4rem 4.5rem; }
+    .calc__next-sum { grid-template-columns: 0.9rem 1.2rem 1fr 3.4rem 4.5rem; }
     .calc__next-track, .calc__next-bar { display: none; }
+    .calc__next-detail { padding-left: 1rem; }
   }
 
   /* ── track cards ── */
