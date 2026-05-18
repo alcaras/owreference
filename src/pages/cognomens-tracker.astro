@@ -63,12 +63,21 @@ const payload = {
       <details class="calc__paste" id="cf-paste-wrap" open>
         <summary class="calc__paste-sum">⇪ Paste from game</summary>
         <p class="calc__paste-help">
-          In-game press <kbd>F5</kbd>, hover your leader's portrait, and copy the
-          <em>Stat(s)</em> block (the <code>Cognomen:</code> line too, if you
-          have it — used as a cross-check). Paste it here and hit fill.
+          In-game press <kbd>F5</kbd> and hover your leader's portrait. Then
+          either <strong>copy the <em>Stat(s)</em> text</strong> and paste it
+          below, or just <strong>paste a screenshot</strong> of the panel
+          (<kbd>⌘/Ctrl</kbd>+<kbd>V</kbd> a screen grab) — it's read on your
+          device, nothing is uploaded. Include the <code>Cognomen:</code> line
+          if you have it; it's used as a cross-check.
         </p>
-        <textarea id="cf-paste" rows="5" spellcheck="false"
-          placeholder="Cognomen: the Gatherer (Legitimacy: +30)&#10;Tribes Contacted: 2&#10;Resources Harvested: 14&#10;Years Reigned: 17 …"></textarea>
+        <div id="cf-drop" class="calc__drop">
+          <textarea id="cf-paste" rows="5" spellcheck="false"
+            placeholder="Paste the Stat(s) text — or a screenshot — here.&#10;Cognomen: the Gatherer (Legitimacy: +30)&#10;Tribes Contacted: 2&#10;Resources Harvested: 14 …"></textarea>
+          <label class="calc__drop-pick">
+            drop / choose a screenshot
+            <input id="cf-file" type="file" accept="image/*" hidden />
+          </label>
+        </div>
         <div class="calc__paste-row">
           <button id="cf-paste-go" type="button" class="calc__reset calc__reset--go">Parse &amp; fill</button>
           <span id="cf-paste-msg" class="calc__paste-msg"></span>
@@ -262,25 +271,52 @@ const payload = {
       }
 
       const pasteMsg = document.getElementById('cf-paste-msg');
-      document.getElementById('cf-paste-go').addEventListener('click', () => {
-        const raw = (document.getElementById('cf-paste').value || '');
-        const lines = raw.split('\n');
+      const pasteBox = document.getElementById('cf-paste');
+
+      function setMsg(cls, text) {
+        pasteMsg.className = 'calc__paste-msg ' + cls;
+        pasteMsg.textContent = text;
+      }
+
+      function parseAndFill(raw) {
+        const lines = (raw || '').split('\n');
         const next = {};
         let filled = 0, ignored = 0, expected = null;
 
         for (const line of lines) {
           const ln = line.trim();
           if (!ln) continue;
+          const ci = ln.search(/[:=]/);
+          if (ci < 0) continue; // no "label: value" → noise line, skip
+          const labelRaw = ln.slice(0, ci);
+          const rest = ln.slice(ci + 1);
           // "Cognomen: the Gatherer (Legitimacy: +30)" → cross-check only.
-          const cg = ln.match(/cognomen\s*[:=]\s*(?:the\s+)?([a-z][a-z' -]*?)\s*(?:\(|$)/i);
-          if (/^[\s•\-*]*cognomen\s*[:=]/i.test(ln)) {
+          if (/cognomen/i.test(labelRaw)) {
+            const cg = ln.match(/cognomen\s*[:=]\s*(?:the\s+)?([a-z][a-z' -]*?)\s*(?:\(|$)/i);
             if (cg) expected = cg[1].trim().toLowerCase();
             continue;
           }
-          const m = ln.match(/^[\s•\-*]*(.+?)\s*[:=]\s*([\d,]+)\s*$/);
-          if (!m) continue;
-          const token = DATA.statAliases[normLabel(m[1])];
-          const val = parseInt(m[2].replace(/,/g, ''), 10);
+          // Value = first integer after the colon. OCR appends edge-bleed
+          // junk ("54 C", "5 in"); the label gets gutter junk from bullets
+          // and the side UI rail ("J{ e Worker Turns"). Both are tolerated:
+          // the value ignores trailing text, the label is matched as a
+          // suffix against the known alias vocabulary.
+          const vm = rest.match(/(\d[\d,]*)/);
+          if (!vm) continue;
+          const val = parseInt(vm[1].replace(/,/g, ''), 10);
+          const norm = normLabel(labelRaw);
+          let token = DATA.statAliases[norm];
+          if (!token) {
+            let bestLen = 0;
+            for (const key in DATA.statAliases) {
+              if (norm === key || norm.endsWith(' ' + key)) {
+                if (key.length > bestLen) {
+                  bestLen = key.length;
+                  token = DATA.statAliases[key];
+                }
+              }
+            }
+          }
           if (token && Number.isFinite(val)) {
             if (val !== 0) next[token] = val;
             filled++;
@@ -290,11 +326,10 @@ const payload = {
         }
 
         if (!filled) {
-          pasteMsg.className = 'calc__paste-msg is-warn';
-          pasteMsg.textContent = ignored
+          setMsg('is-warn', ignored
             ? 'No cognomen stats recognised — is this the F5 leader Stat(s) block?'
-            : 'Nothing to parse — paste the leader Stat(s) lines.';
-          return;
+            : 'Nothing to parse — paste the leader Stat(s) lines, or a screenshot.');
+          return false;
         }
 
         // A paste is a full snapshot — replace counts wholesale.
@@ -304,21 +339,146 @@ const payload = {
         render();
 
         const { best } = evaluate();
+        let cls = 'is-ok';
         let msg = 'Filled ' + filled + ' stat' + (filled === 1 ? '' : 's');
         if (ignored) msg += ' · ignored ' + ignored + ' non-scoring';
-        pasteMsg.className = 'calc__paste-msg is-ok';
         if (expected) {
           const got = best ? best.title.replace(/^the\s+/i, '').toLowerCase() : '';
           if (got && got === expected) {
             msg += ' · ✓ matches in-game (' + best.title + ')';
           } else {
-            pasteMsg.className = 'calc__paste-msg is-warn';
+            cls = 'is-warn';
             msg += ' · ⚠ game shows “' + expected + '”, we get “' +
               (best ? best.title : 'none') +
               '” — adjust Ruler #/Game speed to reconcile';
           }
         }
-        pasteMsg.textContent = msg;
+        setMsg(cls, msg);
+        return true;
+      }
+
+      document.getElementById('cf-paste-go').addEventListener('click', () => {
+        parseAndFill(pasteBox.value || '');
+      });
+
+      // ── screenshot path: OCR in the browser, then the same parser ──
+      // The F5 panel is crisp UI text (not a photo) and the output is a tiny
+      // fixed "Label: integer" vocabulary, so client-side OCR + the existing
+      // fuzzy label match is reliable. Tesseract.js is lazy-loaded only when
+      // a user actually drops an image, so the page stays light.
+      let tessReady = null;
+      function loadTesseract() {
+        if (tessReady) return tessReady;
+        tessReady = new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+          s.onload = () => resolve(window.Tesseract);
+          s.onerror = () => reject(new Error('OCR engine failed to load (offline?)'));
+          document.head.appendChild(s);
+        });
+        return tessReady;
+      }
+
+      // Upscale → grayscale → Otsu threshold, with auto-polarity so text ends
+      // up dark on white (what Tesseract reads best). Returns a data URL.
+      function preprocess(img) {
+        const scale = Math.min(3, Math.max(1, 1600 / Math.max(img.width, 1)));
+        const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, w, h);
+        const id = ctx.getImageData(0, 0, w, h);
+        const px = id.data, n = w * h;
+        const gray = new Uint8Array(n);
+        const hist = new Array(256).fill(0);
+        for (let i = 0, j = 0; i < px.length; i += 4, j++) {
+          const g = (px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114) | 0;
+          gray[j] = g; hist[g]++;
+        }
+        // Otsu's method for the global threshold.
+        let sum = 0; for (let t = 0; t < 256; t++) sum += t * hist[t];
+        let sumB = 0, wB = 0, varMax = -1, thr = 127;
+        for (let t = 0; t < 256; t++) {
+          wB += hist[t]; if (!wB) continue;
+          const wF = n - wB; if (!wF) break;
+          sumB += t * hist[t];
+          const mB = sumB / wB, mF = (sum - sumB) / wF;
+          const v = wB * wF * (mB - mF) * (mB - mF);
+          if (v > varMax) { varMax = v; thr = t; }
+        }
+        // Whichever side is the majority is the background → make it white.
+        let dark = 0; for (let j = 0; j < n; j++) if (gray[j] <= thr) dark++;
+        const inkIsDark = dark <= n - dark;
+        for (let i = 0, j = 0; i < px.length; i += 4, j++) {
+          const isInk = inkIsDark ? gray[j] <= thr : gray[j] > thr;
+          const v = isInk ? 0 : 255;
+          px[i] = px[i + 1] = px[i + 2] = v; px[i + 3] = 255;
+        }
+        ctx.putImageData(id, 0, 0);
+        return c.toDataURL('image/png');
+      }
+
+      async function runOcr(blob) {
+        if (!blob || !/^image\//.test(blob.type || '')) return;
+        setMsg('is-warn', '⏳ Loading OCR engine…');
+        let T;
+        try { T = await loadTesseract(); }
+        catch (e) { setMsg('is-warn', '⚠ ' + e.message + ' — paste the text instead.'); return; }
+        try {
+          const url = URL.createObjectURL(blob);
+          const img = await new Promise((res, rej) => {
+            const im = new Image();
+            im.onload = () => res(im); im.onerror = rej; im.src = url;
+          });
+          const prepped = preprocess(img);
+          URL.revokeObjectURL(url);
+          setMsg('is-warn', '⏳ Reading screenshot…');
+          const { data } = await T.recognize(prepped, 'eng');
+          const text = (data && data.text || '').trim();
+          if (!text) { setMsg('is-warn', '⚠ No text found in the image.'); return; }
+          pasteBox.value = text;
+          const ok = parseAndFill(text);
+          if (ok) pasteMsg.textContent = '📷 ' + pasteMsg.textContent +
+            ' — check the extracted text above for OCR slips.';
+        } catch (e) {
+          setMsg('is-warn', '⚠ OCR failed: ' + (e && e.message || e));
+        }
+      }
+
+      // Auto-detect: paste an image anywhere → OCR; paste text → normal flow.
+      function imageFromItems(items) {
+        for (const it of items || []) {
+          if (it.kind === 'file' && /^image\//.test(it.type)) return it.getAsFile();
+        }
+        return null;
+      }
+      document.addEventListener('paste', (e) => {
+        const blob = imageFromItems(e.clipboardData && e.clipboardData.items);
+        if (blob) { e.preventDefault(); runOcr(blob); }
+      });
+
+      // Drag-drop and click-to-choose, scoped to the paste box.
+      const drop = document.getElementById('cf-drop');
+      const fileInput = document.getElementById('cf-file');
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files[0]) runOcr(fileInput.files[0]);
+        fileInput.value = '';
+      });
+      ['dragenter', 'dragover'].forEach((ev) =>
+        drop.addEventListener(ev, (e) => {
+          e.preventDefault(); drop.classList.add('is-drag');
+        }));
+      ['dragleave', 'drop'].forEach((ev) =>
+        drop.addEventListener(ev, (e) => {
+          e.preventDefault();
+          if (ev === 'dragleave' && drop.contains(e.relatedTarget)) return;
+          drop.classList.remove('is-drag');
+        }));
+      drop.addEventListener('drop', (e) => {
+        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (f) runOcr(f);
       });
 
       // ── render: output ───────────────────────────────────────
@@ -611,6 +771,21 @@ const payload = {
     font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.45;
   }
   #cf-paste:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+  .calc__drop { position: relative; }
+  .calc__drop.is-drag::after {
+    content: 'Drop screenshot to read'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: color-mix(in srgb, var(--accent) 22%, var(--bg-elev));
+    border: 1px dashed var(--accent); border-radius: 4px;
+    color: var(--text); font-family: var(--font-display); font-size: 0.8rem;
+    pointer-events: none;
+  }
+  .calc__drop-pick {
+    display: inline-block; margin-top: 0.35rem; cursor: pointer;
+    color: var(--text-faint); font-size: 0.64rem;
+    text-decoration: underline dotted; text-underline-offset: 2px;
+  }
+  .calc__drop-pick:hover { color: var(--accent); }
   .calc__paste-row {
     display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem;
   }
