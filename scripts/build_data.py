@@ -317,19 +317,29 @@ _RATING_LABEL = {
 _TRAIT_ICON_DIR = ROOT / "public" / "img" / "icons" / "traits"
 
 
-def _archetype_index() -> dict[str, dict]:
-    """archetypes.json keyed by trait id. build_archetypes.py runs before
-    build_data.py (see Makefile), so this is fresh; humanises the full
-    archetype kit (signature leader ability + ratings) we can't get from a
-    generic trait-effect walk."""
-    if not hasattr(_archetype_index, "_cache"):
-        p = ROOT / "src" / "data" / "archetypes.json"
-        try:
-            data = json.loads(p.read_text())
-            _archetype_index._cache = {a["id"]: a for a in data}
-        except Exception:
-            _archetype_index._cache = {}
-    return _archetype_index._cache
+def _trait_ep_scalars(ep: "ET.Element") -> list[str]:
+    """Scalar fields on a trait's EffectPlayer that the generic humanizer
+    skips but the in-game trait tooltip shows (opinion shifts, religion
+    spread, stat-triggered bonuses)."""
+    out: list[str] = []
+    simple = (
+        ("iLeaderOpinionChange", "{v:+d} Leader Opinion"),
+        ("iFamilyOpinionChange", "{v:+d} Family Opinion"),
+        ("iReligionOpinionChange", "{v:+d} Religion Opinion"),
+        ("iStateReligionSpread", "{v:+d}% State Religion Spread Chance"),
+    )
+    for fld, fmt in simple:
+        v = int(ep.findtext(fld) or "0")
+        if v:
+            out.append(fmt.format(v=v))
+    for pair in ep.findall("StatBonus/Pair"):
+        stat = (pair.findtext("First") or "").replace("STAT_", "").replace(
+            "_", " ").title()
+        bonus = (pair.findtext("Second") or "").replace(
+            "BONUS_", "").replace("_", " ").title()
+        if stat and bonus:
+            out.append(f"On {stat}: {bonus}")
+    return out
 
 
 def _trait_detail(trait_id: str, label: str,
@@ -347,27 +357,40 @@ def _trait_detail(trait_id: str, label: str,
             if (_TRAIT_ICON_DIR / f"{slug}.png").exists() else None)
 
     effects: list[str] = []
-    arch = _archetype_index().get(trait_id) if is_arch else None
-    if arch:
-        # Archetypes: use the fully-humanised kit from archetypes.json —
-        # the signature leader ability plus its rating profile.
-        effects.extend(arch.get("leaderEffects") or [])
-        for r in arch.get("ratings") or []:
-            v = r.get("value") or 0
-            if v:
-                effects.append(f"{'+' if v > 0 else ''}{v} {r.get('label')}")
-    else:
+    # Archetype traits: the icon speaks for itself — the user does NOT want
+    # the archetype's kit re-explained here (it's on the Archetypes page).
+    if not is_arch:
         tx = (indexes or {}).get("trait.xml", {}).get(trait_id)
         if tx is not None:
+            # 1. Effect-player effects the humanizer already understands.
             for ref_field in ("EffectPlayer", "LeaderEffectPlayer"):
                 ref = tx.findtext(ref_field)
-                if ref:
-                    effects.extend(render_effect_player(ref, indexes))
-            for pair in tx.findall("aiRating/Pair"):
+                if not ref:
+                    continue
+                effects.extend(render_effect_player(ref, indexes))
+                # Scalar fields on the trait's effect-player that the generic
+                # humanizer doesn't surface — these ARE in the in-game tooltip.
+                ep = (indexes or {}).get("effectPlayer.xml", {}).get(ref)
+                if ep is not None:
+                    effects.extend(_trait_ep_scalars(ep))
+            # 2. Trait-level opinion scalars (shown in-tooltip).
+            for fld, fmt in (
+                ("iOpinionSame", "{v:+d} Opinion (same trait)"),
+                ("iReligionHeadModifier", "{v:+d} Opinion as Religion Head"),
+                ("iFamilyHeadModifier", "{v:+d} Opinion as Family Head"),
+            ):
+                v = int(tx.findtext(fld) or "0")
+                if v:
+                    effects.append(fmt.format(v=v))
+            # 3. Rating — aiRating, falling back to aiRatingFallback (many
+            #    traits, e.g. Cunning/Infamous/Bold, only set the fallback).
+            rating_pairs = tx.findall("aiRating/Pair") or tx.findall(
+                "aiRatingFallback/Pair")
+            for pair in rating_pairs:
                 rk = pair.findtext("zIndex") or ""
                 rv = int(pair.findtext("iValue") or "0")
                 if rv and rk in _RATING_LABEL:
-                    effects.append(f"{'+' if rv > 0 else ''}{rv} {_RATING_LABEL[rk]}")
+                    effects.append(f"{rv:+d} {_RATING_LABEL[rk]}")
     # de-dup, keep order
     seen: set[str] = set()
     effects = [e for e in effects if not (e in seen or seen.add(e))]

@@ -205,9 +205,10 @@ const titles = (n as any).titles || {};
                       <header class="np-dyn__head">
                         {arch && arch.icon && (
                           <img class="np-dyn__arch" src={`${base}${arch.icon}`}
-                               alt={arch.label} title={`${arch.label}${arch.effects.length ? ' — ' + arch.effects.join('; ') : ''}`} />
+                               alt={arch.label} title={arch.label} />
                         )}
                         <span class="np-dyn__name">{d.name}</span>
+                        {arch && <span class="np-dyn__arch-name">{arch.label}</span>}
                         {d.leaderAge != null && d.leaderAge > 0 && (
                           <span class="np-dyn__age">age {d.leaderAge}</span>
                         )}
@@ -219,21 +220,15 @@ const titles = (n as any).titles || {};
                           {d.founder && d.founder !== d.firstRuler && <> · founded by <em>{d.founder}</em></>}
                         </div>
                       )}
-                      {(arch || rest.length > 0) && (
+                      {rest.length > 0 && (
                         <ul class="np-dyn__traits">
-                          {arch && (
-                            <li class="np-trait np-trait--arch">
-                              <span class="np-trait__name">{arch.label}</span>
-                              {arch.effects.length > 0 && (
-                                <span class="np-trait__fx">{arch.effects.join(' · ')}</span>
-                              )}
-                            </li>
-                          )}
                           {rest.map((t: any) => (
                             <li class="np-trait">
                               <span class="np-trait__name">{t.label}</span>
-                              {t.effects && t.effects.length > 0 && (
+                              {t.effects && t.effects.length > 0 ? (
                                 <span class="np-trait__fx">{t.effects.join(' · ')}</span>
+                              ) : (
+                                <span class="np-trait__fx np-trait__fx--none">no mechanical effect</span>
                               )}
                             </li>
                           ))}
@@ -544,6 +539,11 @@ const titles = (n as any).titles || {};
     font-weight: 600;
     color: var(--text-soft);
   }
+  .np-dyn__arch-name {
+    font-family: var(--font-ui); font-size: 0.7rem;
+    color: var(--gold-soft); letter-spacing: 0.04em;
+  }
+  .np-trait__fx--none { font-style: italic; opacity: 0.7; }
   .np-trait--arch .np-trait__name { color: var(--gold-soft); }
   .np-trait__fx {
     font-size: 0.72rem;
