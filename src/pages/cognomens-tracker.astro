@@ -22,6 +22,7 @@ const trackerCogs = cognomens
   .map((c: any) => ({
     id: c.id, slug: c.slug, title: c.title, track: c.track,
     legitimacy: c.legitimacy, minValue: c.minValue,
+    dlc: c.dlc || '',
     stats: c.stats.map((s: any) => ({ stat: s.stat, value: s.value })),
   }));
 
@@ -88,6 +89,10 @@ const payload = {
           <input id="cf-bad" type="checkbox" />
           <span>Allow bad cognomens<span class="calc__hint"> (ALLOW_BAD_COGNOMENS option)</span></span>
         </label>
+        <label class="calc__check">
+          <input id="cf-dlc" type="checkbox" checked />
+          <span>Empires of the Indus DLC<span class="calc__hint"> (the only DLC with cognomens — 6 tracks)</span></span>
+        </label>
         <button id="cf-reset" type="button" class="calc__reset">Reset all</button>
       </div>
 
@@ -128,12 +133,20 @@ const payload = {
       };
 
       // ── state ────────────────────────────────────────────────
-      let state = { counts: {}, ruler: 1, speed: DATA.gameSpeeds[0].id, bad: false };
+      let state = { counts: {}, ruler: 1, speed: DATA.gameSpeeds[0].id, bad: false, dlc: true };
       try {
         const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
         if (saved && typeof saved === 'object') state = Object.assign(state, saved);
       } catch (e) {}
       const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+
+      // Empires of the Indus is the only DLC that adds cognomens (6 tracks).
+      // When the toggle is off, those cognomens — and the stats only they
+      // score on — drop out, exactly as the game gates DLC content.
+      const cogList = () => state.dlc ? DATA.cogs : DATA.cogs.filter(c => !c.dlc);
+      const baseStats = new Set();
+      for (const c of DATA.cogs) if (!c.dlc) for (const s of c.stats) baseStats.add(s.stat);
+      const isDlcOnlyStat = (st) => !baseStats.has(st);
 
       // ── exact game math (Character.cs / Utils.cs) ────────────
       // modify(v, m) = v * (100 + max(0, m + 100) ... ) / 100, integer.
@@ -159,7 +172,7 @@ const payload = {
         const speedMod = sp.modifier;
 
         let best = null, bestLeg = 0;
-        const evald = DATA.cogs.map(c => {
+        const evald = cogList().map(c => {
           const score = scoreOf(c);
           const sMin = scaledMin(c.minValue, rulerIdx, speedMod);
           const considered = c.legitimacy > 0 || state.bad;
@@ -176,11 +189,15 @@ const payload = {
       for (const s of DATA.inputStats) {
         const row = document.createElement('label');
         row.className = 'calc__stat';
+        const dlcOnly = isDlcOnlyStat(s.stat);
+        if (dlcOnly) row.dataset.dlc = '1';
         const w = [];
         if (s.mainValue != null) w.push('main ' + s.mainValue);
         if (s.sideValue != null) w.push('side ' + s.sideValue);
         row.innerHTML =
-          '<span class="calc__stat-name">' + s.label + '</span>' +
+          '<span class="calc__stat-name">' + s.label +
+            (dlcOnly ? ' <span class="calc__stat-dlc" title="Empires of the Indus DLC">DLC</span>' : '') +
+          '</span>' +
           '<span class="calc__stat-w">' + w.join(' · ') + '</span>';
         const inp = document.createElement('input');
         inp.type = 'number'; inp.min = '0'; inp.step = '1';
@@ -200,6 +217,11 @@ const payload = {
       const elRuler = document.getElementById('cf-ruler');
       const elSpeed = document.getElementById('cf-speed');
       const elBad = document.getElementById('cf-bad');
+      const elDlc = document.getElementById('cf-dlc');
+      const applyStatVis = () => {
+        for (const r of statsBox.querySelectorAll('.calc__stat[data-dlc="1"]'))
+          r.classList.toggle('is-hidden', !state.dlc);
+      };
       for (const g of DATA.gameSpeeds) {
         const o = document.createElement('option');
         const mult = g.modifier === 0 ? '×1.0' : '×' + ((100 + g.modifier) / 100).toFixed(1);
@@ -209,14 +231,21 @@ const payload = {
       elRuler.value = state.ruler;
       elSpeed.value = state.speed;
       elBad.checked = !!state.bad;
+      elDlc.checked = !!state.dlc;
+      applyStatVis();
       elRuler.addEventListener('input', () => { state.ruler = elRuler.value; save(); render(); });
       elSpeed.addEventListener('change', () => { state.speed = elSpeed.value; save(); render(); });
       elBad.addEventListener('change', () => { state.bad = elBad.checked; save(); render(); });
+      elDlc.addEventListener('change', () => {
+        state.dlc = elDlc.checked; save(); applyStatVis(); render();
+      });
       document.getElementById('cf-reset').addEventListener('click', () => {
-        state = { counts: {}, ruler: 1, speed: DATA.gameSpeeds[0].id, bad: false };
+        state = { counts: {}, ruler: 1, speed: DATA.gameSpeeds[0].id, bad: false, dlc: true };
         save();
         for (const inp of statsBox.querySelectorAll('input')) inp.value = '';
-        elRuler.value = 1; elSpeed.value = state.speed; elBad.checked = false;
+        elRuler.value = 1; elSpeed.value = state.speed;
+        elBad.checked = false; elDlc.checked = true;
+        applyStatVis();
         render();
       });
 
@@ -380,7 +409,7 @@ const payload = {
         tracksBox.innerHTML = '';
         const nextItems = [];
         for (const tname of DATA.trackOrder) {
-          const tiers = DATA.cogs
+          const tiers = cogList()
             .filter(c => c.track === tname && (c.legitimacy > 0 || state.bad))
             .map(c => byId[c.id])
             .sort((a, b) => a.sMin - b.sMin);
@@ -598,7 +627,14 @@ const payload = {
     align-items: center; gap: 0 0.6rem;
     padding: 0.32rem 0; border-bottom: 1px dashed var(--border);
   }
+  .calc__stat.is-hidden { display: none; }
   .calc__stat-name { grid-area: name; font-size: 0.76rem; color: var(--text); }
+  .calc__stat-dlc {
+    font-family: var(--font-mono); font-size: 0.56rem; font-weight: 600;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+    border-radius: 3px; padding: 0 0.22rem; margin-left: 0.3rem;
+    vertical-align: middle; letter-spacing: 0.04em;
+  }
   .calc__stat-w {
     grid-area: w; font-family: var(--font-mono);
     font-size: 0.6rem; color: var(--text-faint);
