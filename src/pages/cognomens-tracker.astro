@@ -101,6 +101,11 @@ const payload = {
         <span class="calc__hero-sub" id="cf-hero-sub"></span>
       </section>
 
+      <section class="calc__next" id="cf-next" hidden>
+        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">— what you're nearest to earning next</span></h2>
+        <ol class="calc__next-list" id="cf-next-list"></ol>
+      </section>
+
       <div class="calc__tracks" id="cf-tracks"></div>
     </main>
   </div>
@@ -292,6 +297,8 @@ const payload = {
       const heroTitle = document.getElementById('cf-hero-title');
       const heroSub = document.getElementById('cf-hero-sub');
       const tracksBox = document.getElementById('cf-tracks');
+      const nextWrap = document.getElementById('cf-next');
+      const nextList = document.getElementById('cf-next-list');
 
       function fmt(n) { return n.toLocaleString(); }
 
@@ -314,6 +321,7 @@ const payload = {
         }
 
         tracksBox.innerHTML = '';
+        const nextItems = [];
         for (const tname of DATA.trackOrder) {
           const tiers = DATA.cogs
             .filter(c => c.track === tname && (c.legitimacy > 0 || state.bad))
@@ -326,6 +334,11 @@ const payload = {
           const next = tiers.find(t => !t.earned) || null;
           const score = tiers[0].score; // identical within a track's sub-ladder
           const pct = next ? Math.max(0, Math.min(100, (score / next.sMin) * 100)) : 100;
+
+          if (next) nextItems.push({
+            title: next.c.title, track: tname, glyph: GLYPH[tname] || '·',
+            remaining: Math.max(0, next.sMin - score), pct,
+          });
 
           const card = document.createElement('section');
           card.className = 'calc__card' + (current ? ' is-on' : '');
@@ -357,6 +370,28 @@ const payload = {
           card.innerHTML = html;
           tracksBox.appendChild(card);
         }
+
+        // Closest titles — rank every track's next unearned tier by how near
+        // it is (progress %, then fewest points remaining), show the top 6.
+        nextItems.sort((a, b) => b.pct - a.pct || a.remaining - b.remaining);
+        const top = nextItems.slice(0, 6);
+        if (top.length) {
+          nextList.innerHTML = top.map(n =>
+            '<li class="calc__next-item">' +
+              '<span class="calc__next-mark">' + n.glyph + '</span>' +
+              '<span class="calc__next-title">' + n.title + '</span>' +
+              '<span class="calc__next-track">' + n.track + '</span>' +
+              '<span class="calc__next-bar"><span style="width:' +
+                n.pct.toFixed(1) + '%"></span></span>' +
+              '<span class="calc__next-need">' +
+                (n.remaining === 0 ? 'ready' : fmt(n.remaining) + ' pts') +
+              '</span>' +
+            '</li>'
+          ).join('');
+          nextWrap.hidden = false;
+        } else {
+          nextWrap.hidden = true;
+        }
       }
 
       render();
@@ -364,7 +399,10 @@ const payload = {
   </script>
 </Base>
 
-<style>
+<!-- is:global — the track cards, tier lists and stat inputs are built at
+     runtime via innerHTML, so they never receive Astro's scoped data-cid
+     attribute. Scoped selectors would silently miss every generated node. -->
+<style is:global>
   .cog-intro {
     max-width: 880px; color: var(--text-dim); font-size: 0.86rem;
     margin: 0 0 1.25rem; line-height: 1.6;
@@ -491,6 +529,45 @@ const payload = {
   }
   .calc__hero.is-bad .calc__hero-title { color: #f0a8a8; }
   .calc__hero-sub { font-size: 0.76rem; color: var(--text-dim); }
+
+  /* ── closest titles ── */
+  .calc__next {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 1.1rem;
+  }
+  .calc__next-hdr {
+    font-family: var(--font-display); font-size: 0.9rem; font-weight: 600;
+    color: var(--text); margin: 0 0 0.6rem;
+  }
+  .calc__next-note { color: var(--text-faint); font-size: 0.72rem; font-weight: 400; }
+  .calc__next-list { list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 0.3rem; }
+  .calc__next-item {
+    display: grid;
+    grid-template-columns: 1.2rem minmax(7rem, max-content) 1fr 6rem 4.5rem;
+    align-items: center; gap: 0.55rem;
+    font-size: 0.78rem; padding: 0.18rem 0;
+  }
+  .calc__next-mark { color: var(--accent); text-align: center; }
+  .calc__next-title {
+    font-family: var(--font-display); font-weight: 600; color: var(--text);
+  }
+  .calc__next-track { color: var(--text-faint); font-size: 0.7rem; }
+  .calc__next-bar {
+    height: 5px; background: var(--bg); border-radius: 999px; overflow: hidden;
+  }
+  .calc__next-bar span {
+    display: block; height: 100%;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 60%, transparent), var(--accent));
+  }
+  .calc__next-need {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--text-dim); text-align: right;
+  }
+  @media (max-width: 560px) {
+    .calc__next-item { grid-template-columns: 1.2rem 1fr 4.5rem; }
+    .calc__next-track, .calc__next-bar { display: none; }
+  }
 
   /* ── track cards ── */
   .calc__tracks {
