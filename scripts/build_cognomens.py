@@ -181,6 +181,86 @@ def load_turn_scales(text: dict[str, str]) -> list[dict]:
     return out
 
 
+import re
+
+# Manual aliases for stats whose in-game F5-panel label isn't in text-stat.xml
+# (Cults/Clergy) or differs from it enough to be worth pinning explicitly.
+MANUAL_STAT_ALIASES: dict[str, list[str]] = {
+    "STAT_CULTS":                          ["Cults", "Cults Founded", "Cults Established"],
+    "STAT_CLERGY_ADDED":                   ["Clergy Added", "Clergy"],
+    "STAT_UNIT_MILITARY_KILLED_GENERAL":   ["Military Units Killed as General",
+                                            "Killed as General"],
+    "STAT_TRIBE_CLEARED":                  ["Tribal Sites Cleared", "Camps Cleared"],
+}
+
+
+def _norm_label(s: str) -> str:
+    """Lowercase, non-alphanumerics → single space, trimmed. MUST stay in
+    lockstep with the identical normaliser in cognomens-tracker.astro."""
+    return re.sub(r"[^a-z0-9]+", " ", s.lower()).strip()
+
+
+def _expand_templates(s: str) -> list[str]:
+    """`{singular_N:Sing:Plur}` → both forms (cartesian over all templates);
+    any other `{...}` link template is stripped."""
+    m = re.search(r"\{singular_\d+:([^:}]*):([^}]*)\}", s)
+    if m:
+        out: list[str] = []
+        for choice in (m.group(1), m.group(2)):
+            out += _expand_templates(s[: m.start()] + choice + s[m.end():])
+        return out
+    return [re.sub(r"\{[^}]*\}", "", s).strip()]
+
+
+def build_stat_aliases(input_stats: list[dict]) -> dict[str, str]:
+    """normalised label → STAT token, for the tracker's game-paste parser.
+
+    Sourced from the game's own stat strings (`text-stat.xml`, with
+    `text-ui.xml` fallbacks) so it tracks the F5 leader panel verbatim and
+    survives patches; augmented with our own display labels and a small manual
+    map. Collisions would be a data bug — assert there are none.
+    """
+    tstat: dict[str, str] = {}
+    for fn in ("text-stat.xml", "text-ui.xml"):
+        p = XML_DIR / fn
+        if not p.exists():
+            continue
+        for e in ET.parse(p).getroot().findall("Entry"):
+            z = e.findtext("zType") or ""
+            en = (e.findtext("en-US") or "").strip()
+            if z and en:
+                tstat[z] = en
+
+    aliases: dict[str, str] = {}
+
+    def add(label: str, token: str) -> None:
+        key = _norm_label(label)
+        if not key:
+            return
+        if key in aliases and aliases[key] != token:
+            raise SystemExit(
+                f"stat-alias collision: {key!r} → {aliases[key]} vs {token}"
+            )
+        aliases[key] = token
+
+    for s in input_stats:
+        token = s["stat"]
+        suffix = token.replace("STAT_", "")
+        raws = [
+            tstat.get(f"TEXT_STAT_{suffix}"),
+            tstat.get(f"TEXT_UI_STATS_{suffix}"),
+            s["label"],  # our own STAT_LABELS rendering
+            *MANUAL_STAT_ALIASES.get(token, []),
+        ]
+        for raw in raws:
+            if not raw:
+                continue
+            for variant in _expand_templates(raw):
+                add(variant, token)
+
+    return aliases
+
+
 def build_calculator(cogs: list[dict], text: dict[str, str]) -> dict:
     """The data the client-side tracker needs to replicate Character.cs.
 
@@ -250,6 +330,7 @@ def build_calculator(cogs: list[dict], text: dict[str, str]) -> dict:
 
     return {
         "inputStats": input_stats,
+        "statAliases": build_stat_aliases(input_stats),
         "gameSpeeds": load_turn_scales(text),
         "leaderScaling": {
             "baseDivisor": 20,

@@ -33,6 +33,7 @@ const payload = {
   cogs: trackerCogs,
   trackOrder,
   inputStats: calculator.inputStats,
+  statAliases: calculator.statAliases,
   gameSpeeds: calculator.gameSpeeds,
   leaderScaling: calculator.leaderScaling,
 };
@@ -51,11 +52,28 @@ const payload = {
     = Σ&nbsp;stat&nbsp;×&nbsp;weight; the title is the one with the highest
     legitimacy whose scaled threshold you've cleared. Thresholds scale by
     <strong>ruler number</strong> and <strong>game speed</strong> — both modelled
-    from the source. Inputs persist in your browser.
+    from the source. Fastest path: <strong>paste the F5 leader panel</strong>
+    straight in (labels map to the game's own <code>text-stat.xml</code>
+    strings, Indus DLC stats included). Inputs persist in your browser.
   </p>
 
   <div class="calc">
     <aside class="calc__panel">
+      <details class="calc__paste" id="cf-paste-wrap" open>
+        <summary class="calc__paste-sum">⇪ Paste from game</summary>
+        <p class="calc__paste-help">
+          In-game press <kbd>F5</kbd>, hover your leader's portrait, and copy the
+          <em>Stat(s)</em> block (the <code>Cognomen:</code> line too, if you
+          have it — used as a cross-check). Paste it here and hit fill.
+        </p>
+        <textarea id="cf-paste" rows="5" spellcheck="false"
+          placeholder="Cognomen: the Gatherer (Legitimacy: +30)&#10;Tribes Contacted: 2&#10;Resources Harvested: 14&#10;Years Reigned: 17 …"></textarea>
+        <div class="calc__paste-row">
+          <button id="cf-paste-go" type="button" class="calc__reset calc__reset--go">Parse &amp; fill</button>
+          <span id="cf-paste-msg" class="calc__paste-msg"></span>
+        </div>
+      </details>
+
       <div class="calc__settings">
         <label class="calc__field">
           <span class="calc__lbl">Ruler #</span>
@@ -197,6 +215,78 @@ const payload = {
         render();
       });
 
+      // ── paste-from-game import ───────────────────────────────
+      // Same normaliser as build_cognomens.py · _norm_label — keep in sync.
+      const normLabel = (s) =>
+        s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+      function syncInputs() {
+        for (const inp of statsBox.querySelectorAll('input')) {
+          const v = state.counts[inp.dataset.stat];
+          inp.value = v != null ? v : '';
+        }
+      }
+
+      const pasteMsg = document.getElementById('cf-paste-msg');
+      document.getElementById('cf-paste-go').addEventListener('click', () => {
+        const raw = (document.getElementById('cf-paste').value || '');
+        const lines = raw.split('\n');
+        const next = {};
+        let filled = 0, ignored = 0, expected = null;
+
+        for (const line of lines) {
+          const ln = line.trim();
+          if (!ln) continue;
+          // "Cognomen: the Gatherer (Legitimacy: +30)" → cross-check only.
+          const cg = ln.match(/cognomen\s*[:=]\s*(?:the\s+)?([a-z][a-z' -]*?)\s*(?:\(|$)/i);
+          if (/^[\s•\-*]*cognomen\s*[:=]/i.test(ln)) {
+            if (cg) expected = cg[1].trim().toLowerCase();
+            continue;
+          }
+          const m = ln.match(/^[\s•\-*]*(.+?)\s*[:=]\s*([\d,]+)\s*$/);
+          if (!m) continue;
+          const token = DATA.statAliases[normLabel(m[1])];
+          const val = parseInt(m[2].replace(/,/g, ''), 10);
+          if (token && Number.isFinite(val)) {
+            if (val !== 0) next[token] = val;
+            filled++;
+          } else {
+            ignored++; // parsed as "label: n" but not a cognomen-scoring stat
+          }
+        }
+
+        if (!filled) {
+          pasteMsg.className = 'calc__paste-msg is-warn';
+          pasteMsg.textContent = ignored
+            ? 'No cognomen stats recognised — is this the F5 leader Stat(s) block?'
+            : 'Nothing to parse — paste the leader Stat(s) lines.';
+          return;
+        }
+
+        // A paste is a full snapshot — replace counts wholesale.
+        state.counts = next;
+        save();
+        syncInputs();
+        render();
+
+        const { best } = evaluate();
+        let msg = 'Filled ' + filled + ' stat' + (filled === 1 ? '' : 's');
+        if (ignored) msg += ' · ignored ' + ignored + ' non-scoring';
+        pasteMsg.className = 'calc__paste-msg is-ok';
+        if (expected) {
+          const got = best ? best.title.replace(/^the\s+/i, '').toLowerCase() : '';
+          if (got && got === expected) {
+            msg += ' · ✓ matches in-game (' + best.title + ')';
+          } else {
+            pasteMsg.className = 'calc__paste-msg is-warn';
+            msg += ' · ⚠ game shows “' + expected + '”, we get “' +
+              (best ? best.title : 'none') +
+              '” — adjust Ruler #/Game speed to reconcile';
+          }
+        }
+        pasteMsg.textContent = msg;
+      });
+
       // ── render: output ───────────────────────────────────────
       const hero = document.getElementById('cf-hero');
       const heroTitle = document.getElementById('cf-hero-title');
@@ -322,6 +412,42 @@ const payload = {
     padding: 0.25rem 0.7rem; font-size: 0.72rem; cursor: pointer;
   }
   .calc__reset:hover { color: var(--text); border-color: var(--accent); }
+  .calc__reset--go { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
+
+  /* ── paste-from-game ── */
+  .calc__paste {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.55rem 0.7rem; margin-bottom: 0.9rem;
+  }
+  .calc__paste-sum {
+    font-family: var(--font-display); font-size: 0.82rem; font-weight: 600;
+    color: var(--text); cursor: pointer; list-style: none;
+  }
+  .calc__paste-sum::-webkit-details-marker { display: none; }
+  .calc__paste-sum::before { content: '▸ '; color: var(--accent); }
+  .calc__paste[open] .calc__paste-sum::before { content: '▾ '; }
+  .calc__paste-help {
+    color: var(--text-faint); font-size: 0.68rem; line-height: 1.5;
+    margin: 0.5rem 0 0.45rem;
+  }
+  .calc__paste-help kbd, .calc__paste-help code {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 3px; padding: 0 0.25rem; font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  #cf-paste {
+    width: 100%; box-sizing: border-box; resize: vertical;
+    background: var(--bg-elev); border: 1px solid var(--border);
+    color: var(--text); border-radius: 4px; padding: 0.4rem 0.5rem;
+    font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.45;
+  }
+  #cf-paste:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+  .calc__paste-row {
+    display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem;
+  }
+  .calc__paste-msg { font-size: 0.66rem; line-height: 1.4; }
+  .calc__paste-msg.is-ok { color: #b5d68f; }
+  .calc__paste-msg.is-warn { color: #e7c46b; }
 
   .calc__stats {
     display: flex; flex-direction: column; gap: 0;
