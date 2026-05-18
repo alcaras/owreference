@@ -282,6 +282,14 @@ h1, h2, h3 {
 }
 .is-hidden { display: none !important; }
 .ntbl col.is-hidden { visibility: collapse; display: revert !important; }
+/* Column hide is driven entirely by <col>.is-hidden (visibility: collapse)
+   with table-layout: fixed. The cells must STAY in the row — display:none-ing
+   them changes per-row cell counts, so the remaining cells reflow under the
+   wrong nation headers and the fixed `colspan` section rows desync (the
+   "check 4, only 1 shows / random" bug). visibility: collapse keeps the cell
+   in place; the collapsed <col> gives it zero width. */
+.ntbl th.is-hidden,
+.ntbl td.is-hidden { display: revert !important; visibility: collapse; }
 
 /* ──────────────────────────────────────────────────────────
    Nations table — Tufte direction
