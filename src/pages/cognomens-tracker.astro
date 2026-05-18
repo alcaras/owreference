@@ -334,9 +334,10 @@ const payload = {
       const labelOf = {};
       for (const s of DATA.inputStats) labelOf[s.stat] = s.label;
 
-      // Which Closest-title rows the user has expanded — preserved across the
-      // full re-render that every input change triggers.
-      const openNext = new Set();
+      // Closest-title rows are expanded by default; we only remember the ones
+      // the user explicitly collapsed, so that choice survives the full
+      // re-render every input change triggers.
+      const collapsedNext = new Set();
 
       // "How to gain it": the cognomen's scoring breakdown against the current
       // counts, plus the fewest single-stat additions that would close the gap.
@@ -477,7 +478,7 @@ const payload = {
           nextList.innerHTML = top.map(n =>
             '<li class="calc__next-item' + (n.upgrade ? ' is-upgrade' : '') + '">' +
               '<details class="calc__nd" data-cid="' + n.cog.id + '"' +
-                (openNext.has(n.cog.id) ? ' open' : '') + '>' +
+                (collapsedNext.has(n.cog.id) ? '' : ' open') + '>' +
                 '<summary class="calc__next-sum">' +
                   '<span class="calc__next-caret">▸</span>' +
                   '<span class="calc__next-mark">' + n.glyph + '</span>' +
@@ -507,8 +508,8 @@ const payload = {
           ).join('');
           for (const d of nextList.querySelectorAll('.calc__nd')) {
             d.addEventListener('toggle', () => {
-              if (d.open) openNext.add(d.dataset.cid);
-              else openNext.delete(d.dataset.cid);
+              if (d.open) collapsedNext.delete(d.dataset.cid);
+              else collapsedNext.add(d.dataset.cid);
             });
           }
           nextWrap.hidden = false;
