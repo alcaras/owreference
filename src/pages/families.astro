@@ -48,10 +48,44 @@ for (const f of families) {
   active="families"
   pageMark="👪"
   description="The 10 family classes of Old World (Champions, Hunters, Riders, Statesmen, Sages, Patrons, Artisans, Landowners, Clerics, Traders) with city bonuses, seat bonuses, opinion modifiers, preferred laws, favored buildings, and which nations have each."
-  pageStats={[
-    { label: 'classes', value: families.length },
-  ]}
 >
+  <div class="page-meta">
+    <h1 class="page-title">Families</h1>
+    <div class="page-stats">
+      <button
+        type="button"
+        class="stat stat--button"
+        id="family-picker-toggle"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="family-picker"
+      >
+        <b id="family-visible-count">{families.length}</b> of <b>{families.length}</b> visible <span class="stat__chev">▾</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nation-picker" id="family-picker" hidden role="dialog" aria-label="Filter family classes">
+    <div class="nation-picker__actions">
+      <button type="button" class="nation-picker__action" data-pick="all">Select all</button>
+      <button type="button" class="nation-picker__action" data-pick="none">Clear</button>
+      <button type="button" class="nation-picker__action nation-picker__action--close" data-pick="close">Done</button>
+    </div>
+    <ul class="nation-picker__list">
+      {families.map(f => (
+        <li class="nation-picker__item">
+          <label class="nation-picker__row">
+            <input type="checkbox" class="nation-picker__cb" value={f.slug} checked />
+            <img class="nation-picker__crest" src={`${base}${f.icon}`} alt="" />
+            <span class="nation-picker__name">{f.name}</span>
+          </label>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="grid__searchnote" id="grid-searchnote" hidden></div>
+
   <div class="grid" id="families-grid">
     <div class="grid__scroll">
       <table class="ntbl">
@@ -99,7 +133,7 @@ for (const f of families) {
                         const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
                         return (
                           <div class={`effect yield-${yieldKey}`}>
-                            <LinkedText text={text} showIcons={false} />
+                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
                           </div>
                         );
                       })}
@@ -167,40 +201,104 @@ for (const f of families) {
     </div>
   </div>
 
-  <div class="legends">
-    <div class="legend">
-      <span class="legend__label">Family classes</span>
-      {families.map(f => (
-        <a class="chip chip--neutral" href={`#${f.slug}`}>
-          <img class="chip__icon" src={`${base}${f.icon}`} alt="" />
-          {f.name}
-        </a>
-      ))}
-    </div>
-  </div>
-
   <script type="application/json" id="family-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
-    // Column-filter search for the families table — mirrors the Nations
-    // page implementation, keyed by data-family instead of data-nation.
+    // Combined column-picker + search, mirroring the Nations page
+    // (state of the art), keyed by data-family.
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('family-search-blobs');
       const grid = document.getElementById('families-grid');
-      if (!input || !blobNode || !grid) return;
+      const note = document.getElementById('grid-searchnote');
+      const toggle = document.getElementById('family-picker-toggle');
+      const picker = document.getElementById('family-picker');
+      const visibleCount = document.getElementById('family-visible-count');
+      if (!blobNode || !grid) return;
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
-      function apply() {
-        const q = (input.value || '').trim().toLowerCase();
-        for (const slug of Object.keys(blobs)) {
-          const match = !q || blobs[slug].includes(q);
+      const slugs = Object.keys(blobs);
+      const picked = new Set(slugs);
+
+      function applyFilters() {
+        const q = ((input && input.value) || '').trim().toLowerCase();
+        let visibleN = 0, hiddenBySearch = 0;
+        for (const slug of slugs) {
+          const matchesSearch = !q || blobs[slug].includes(q);
+          const isPicked = picked.has(slug);
+          const visible = matchesSearch && isPicked;
+          if (visible) visibleN++;
+          if (!matchesSearch) hiddenBySearch++;
           for (const el of grid.querySelectorAll('[data-family="' + slug + '"]')) {
-            el.classList.toggle('is-hidden', !match);
+            el.classList.toggle('is-hidden', !visible);
+          }
+        }
+        if (visibleCount) visibleCount.textContent = String(visibleN);
+        if (note) {
+          if (q && hiddenBySearch > 0) {
+            note.hidden = false;
+            note.textContent =
+              'Showing ' + (slugs.length - hiddenBySearch) + ' of ' + slugs.length +
+              ' family classes matching "' + (input ? input.value : '') + '"';
+          } else {
+            note.hidden = true;
+            note.textContent = '';
           }
         }
       }
-      input.addEventListener('input', apply);
-      apply();
+
+      if (input) input.addEventListener('input', applyFilters);
+
+      if (toggle && picker) {
+        toggle.addEventListener('click', () => {
+          const open = !picker.hidden;
+          picker.hidden = open;
+          toggle.setAttribute('aria-expanded', String(!open));
+        });
+        document.addEventListener('click', (e) => {
+          if (picker.hidden) return;
+          if (picker.contains(e.target) || toggle.contains(e.target)) return;
+          picker.hidden = true;
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !picker.hidden) {
+            picker.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.focus();
+          }
+        });
+      }
+
+      const cbs = picker ? picker.querySelectorAll('.nation-picker__cb') : [];
+      cbs.forEach((cb) => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) picked.add(cb.value);
+          else picked.delete(cb.value);
+          applyFilters();
+        });
+      });
+
+      if (picker) {
+        picker.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-pick]');
+          if (!btn) return;
+          const action = btn.getAttribute('data-pick');
+          if (action === 'all') {
+            slugs.forEach((s) => picked.add(s));
+            cbs.forEach((cb) => (cb.checked = true));
+            applyFilters();
+          } else if (action === 'none') {
+            picked.clear();
+            cbs.forEach((cb) => (cb.checked = false));
+            applyFilters();
+          } else if (action === 'close') {
+            picker.hidden = true;
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      applyFilters();
     })();
   </script>
 </Base>

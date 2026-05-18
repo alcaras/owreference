@@ -54,15 +54,47 @@ const searchBlobs: Record<string, string> = {};
 for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase();
 ---
 
-<Base title="Archetypes" active="archetypes" pageMark="🎓" pageStats={[
-  { label: 'archetypes', value: archetypes.length },
-]}>
-  <p class="arc-intro">
-    The ten character archetypes from <code>trait.xml</code>, with each one's
-    rating contribution, favored law, polar opposite (which carries a strong
-    -60 opinion modifier), and the bonuses that fire when the archetype holds
-    a leader, general, or governor slot.
-  </p>
+<Base
+  title="Archetypes"
+  active="archetypes"
+  description="The ten character archetypes of Old World — each one's rating contribution (Wisdom/Charisma/Courage/Discipline), favored law, polar opposite (a strong -60 opinion modifier), and the bonuses that fire as leader, general, or governor."
+>
+  <div class="page-meta">
+    <h1 class="page-title">Archetypes</h1>
+    <div class="page-stats">
+      <button
+        type="button"
+        class="stat stat--button"
+        id="arc-picker-toggle"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="arc-picker"
+      >
+        <b id="arc-visible-count">{archetypes.length}</b> of <b>{archetypes.length}</b> visible <span class="stat__chev">▾</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nation-picker" id="arc-picker" hidden role="dialog" aria-label="Filter archetypes">
+    <div class="nation-picker__actions">
+      <button type="button" class="nation-picker__action" data-pick="all">Select all</button>
+      <button type="button" class="nation-picker__action" data-pick="none">Clear</button>
+      <button type="button" class="nation-picker__action nation-picker__action--close" data-pick="close">Done</button>
+    </div>
+    <ul class="nation-picker__list">
+      {archetypes.map(a => (
+        <li class="nation-picker__item">
+          <label class="nation-picker__row">
+            <input type="checkbox" class="nation-picker__cb" value={a.slug} checked />
+            <span class="arc-pick__glyph">{SLOT_GLYPH[a.slots[0]] || '·'}</span>
+            <span class="nation-picker__name">{a.name}</span>
+          </label>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="grid__searchnote" id="grid-searchnote" hidden></div>
 
   <div class="grid" id="arc-grid">
     <div class="grid__scroll">
@@ -172,7 +204,7 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
                         const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
                         return (
                           <div class={`effect yield-${yieldKey}`}>
-                            <LinkedText text={text} showIcons={false} />
+                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
                           </div>
                         );
                       })}
@@ -205,41 +237,112 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
 
   <script type="application/json" id="arc-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
+    // Combined column-picker + search, mirroring the Nations page
+    // (state of the art), keyed by data-archetype.
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('arc-search-blobs');
       const grid = document.getElementById('arc-grid');
-      if (!input || !blobNode || !grid) return;
+      const note = document.getElementById('grid-searchnote');
+      const toggle = document.getElementById('arc-picker-toggle');
+      const picker = document.getElementById('arc-picker');
+      const visibleCount = document.getElementById('arc-visible-count');
+      if (!blobNode || !grid) return;
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
-      function apply() {
-        const q = (input.value || '').trim().toLowerCase();
-        for (const slug of Object.keys(blobs)) {
-          const match = !q || blobs[slug].includes(q);
+      const slugs = Object.keys(blobs);
+      const picked = new Set(slugs);
+
+      function applyFilters() {
+        const q = ((input && input.value) || '').trim().toLowerCase();
+        let visibleN = 0, hiddenBySearch = 0;
+        for (const slug of slugs) {
+          const matchesSearch = !q || blobs[slug].includes(q);
+          const isPicked = picked.has(slug);
+          const visible = matchesSearch && isPicked;
+          if (visible) visibleN++;
+          if (!matchesSearch) hiddenBySearch++;
           for (const el of grid.querySelectorAll('[data-archetype="' + slug + '"]')) {
-            el.classList.toggle('is-hidden', !match);
+            el.classList.toggle('is-hidden', !visible);
+          }
+        }
+        if (visibleCount) visibleCount.textContent = String(visibleN);
+        if (note) {
+          if (q && hiddenBySearch > 0) {
+            note.hidden = false;
+            note.textContent =
+              'Showing ' + (slugs.length - hiddenBySearch) + ' of ' + slugs.length +
+              ' archetypes matching "' + (input ? input.value : '') + '"';
+          } else {
+            note.hidden = true;
+            note.textContent = '';
           }
         }
       }
-      input.addEventListener('input', apply);
-      apply();
+
+      if (input) input.addEventListener('input', applyFilters);
+
+      if (toggle && picker) {
+        toggle.addEventListener('click', () => {
+          const open = !picker.hidden;
+          picker.hidden = open;
+          toggle.setAttribute('aria-expanded', String(!open));
+        });
+        document.addEventListener('click', (e) => {
+          if (picker.hidden) return;
+          if (picker.contains(e.target) || toggle.contains(e.target)) return;
+          picker.hidden = true;
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !picker.hidden) {
+            picker.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.focus();
+          }
+        });
+      }
+
+      const cbs = picker ? picker.querySelectorAll('.nation-picker__cb') : [];
+      cbs.forEach((cb) => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) picked.add(cb.value);
+          else picked.delete(cb.value);
+          applyFilters();
+        });
+      });
+
+      if (picker) {
+        picker.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-pick]');
+          if (!btn) return;
+          const action = btn.getAttribute('data-pick');
+          if (action === 'all') {
+            slugs.forEach((s) => picked.add(s));
+            cbs.forEach((cb) => (cb.checked = true));
+            applyFilters();
+          } else if (action === 'none') {
+            picked.clear();
+            cbs.forEach((cb) => (cb.checked = false));
+            applyFilters();
+          } else if (action === 'close') {
+            picker.hidden = true;
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      applyFilters();
     })();
   </script>
 </Base>
 
 <style>
-  .arc-intro {
-    max-width: 820px;
-    color: var(--text-dim);
-    font-size: 0.86rem;
-    margin: 0 0 1rem;
-    line-height: 1.55;
-  }
-  .arc-intro code {
-    background: var(--bg-elev);
-    padding: 0.05rem 0.4rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
+  .arc-pick__glyph {
+    width: 1.1em;
+    text-align: center;
+    color: var(--text-faint);
+    flex: none;
   }
 
   .arc-hdr__group {
