@@ -72,9 +72,10 @@ def render_yield_pairs(parent: ET.Element, tag: str, divide: bool = True, *, suf
         raw = int(pair.findtext("iValue") or "0")
         v = raw / 10 if divide else raw
         if as_cost:
-            # Cost values are positive in XML; render absolute, no leading +
-            iv = v if v == int(v) else v
-            out.append(f"{abs(iv) if iv == int(iv) else iv:g} {y}{suffix}".replace(".0 ", " "))
+            # Build costs are RAW integers — the game's getBuildCost returns
+            # maiYieldCost as-is, displayed with no YIELDS_MULTIPLIER divisor
+            # (unlike per-turn rates). Render absolute, no leading +.
+            out.append(f"{abs(raw)} {y}{suffix}")
         else:
             out.append(f"{fmt_decimal(v)} {y}{suffix}")
     return out
@@ -190,11 +191,15 @@ def main() -> int:
             v = int(pair.findtext("iValue") or "0")
             effects.append(f"+{v} XP for {cls_tok}")
 
-        # Iron consumption etc.
+        # Per-turn upkeep (aiYieldConsumption is a RATE → /10). Its own
+        # column, not folded into effects. Value is negative in XML; show
+        # the absolute drain.
+        upkeep: list[str] = []
         for pair in e.findall("aiYieldConsumption/Pair"):
             y = yield_name(pair.findtext("zIndex"))
-            v = int(pair.findtext("iValue") or "0") / 10
-            effects.append(f"{fmt_decimal(v)} {y}/Turn (consumption)")
+            v = abs(int(pair.findtext("iValue") or "0")) / 10
+            vs = f"{v:g}" if v != int(v) else f"{int(v)}"
+            upkeep.append(f"{vs} {y}/turn")
 
         # Terrain validity
         terrain_tokens = [tv.text or "" for tv in e.findall("TerrainValid/zValue") if tv.text]
@@ -267,6 +272,7 @@ def main() -> int:
             "nationPrereq": nation_prereq.replace("NATION_", "").title() if nation_prereq else "",
             "lawPrereq": law_prereq.replace("LAW_", "").replace("_", " ").title() if law_prereq else "",
             "cost": cost_lines,
+            "upkeep": upkeep,
             "specialist": {
                 "id": specialist_id,
                 "slug": specialist_slug,
@@ -280,7 +286,17 @@ def main() -> int:
         })
 
     # Sort by class, then name
-    items.sort(key=lambda x: (x["class"], x["name"]))
+    # Default order: by tech-unlock progression (tech.xml file order ≈
+    # research order), then class, then name. Users can re-sort any column.
+    tech_order = {
+        t.findtext("zType"): i
+        for i, t in enumerate(parse("tech.xml").findall("Entry"))
+        if t.findtext("zType")
+    }
+    items.sort(key=lambda x: (
+        tech_order.get((x.get("tech") or {}).get("id"), -1),
+        x["class"], x["name"],
+    ))
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(items, indent=2, sort_keys=True, ensure_ascii=False) + "\n")

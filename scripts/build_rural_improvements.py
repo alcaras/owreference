@@ -65,14 +65,16 @@ def fmt_resource(token: str) -> str:
 
 
 def cost_pairs(parent: ET.Element, tag: str) -> list[str]:
-    """Render yield costs as 'N Yield' (absolute, no leading sign)."""
+    """Render yield costs as 'N Yield' (absolute, no leading sign).
+
+    Build costs are RAW integers — the game's getBuildCost returns
+    maiYieldCost as-is and displays it with no YIELDS_MULTIPLIER divisor
+    (unlike per-turn yield rates, which are /10). Do NOT divide here."""
     out: list[str] = []
     for pair in parent.findall(f"{tag}/Pair"):
         y = yield_name(pair.findtext("zIndex"))
-        v = int(pair.findtext("iValue") or "0") / 10
-        if v == int(v):
-            v = int(v)
-        out.append(f"{abs(v)} {y}")
+        v = abs(int(pair.findtext("iValue") or "0"))
+        out.append(f"{v} {y}")
     return out
 
 
@@ -137,6 +139,15 @@ def main() -> int:
 
         # Output yields (direct)
         output_lines = output_pairs(e, "aiYieldOutput")
+
+        # Per-turn upkeep (aiYieldConsumption is a RATE → /10; negative in
+        # XML, show absolute drain). Own column.
+        upkeep_lines: list[str] = []
+        for pair in e.findall("aiYieldConsumption/Pair"):
+            y = yield_name(pair.findtext("zIndex"))
+            v = abs(int(pair.findtext("iValue") or "0")) / 10
+            vs = f"{v:g}" if v != int(v) else f"{int(v)}"
+            upkeep_lines.append(f"{vs} {y}/turn")
 
         # Specialist slot
         specialist_id = e.findtext("Specialist") or ""
@@ -254,6 +265,7 @@ def main() -> int:
                 "name": tech_name,
             } if tech_id else None,
             "cost": cost_lines,
+            "upkeep": upkeep_lines,
             "output": output_lines,
             "specialist": {
                 "id": specialist_id,
@@ -266,7 +278,17 @@ def main() -> int:
             "restrictions": restrictions,
         })
 
-    items.sort(key=lambda x: x["name"])
+    # Default order: by tech-unlock progression (tech.xml file order ≈
+    # research order), then name. Users can re-sort any column.
+    tech_order = {
+        t.findtext("zType"): i
+        for i, t in enumerate(parse("tech.xml").findall("Entry"))
+        if t.findtext("zType")
+    }
+    items.sort(key=lambda x: (
+        tech_order.get((x.get("tech") or {}).get("id"), -1),
+        x["name"],
+    ))
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(items, indent=2, sort_keys=True, ensure_ascii=False) + "\n")

@@ -12,6 +12,7 @@ type Col =
   | { key: 'name';        label: 'Improvement' }
   | { key: 'tech';        label: 'Tech' }
   | { key: 'cost';        label: 'Cost' }
+  | { key: 'upkeep';      label: 'Upkeep' }
   | { key: 'output';      label: 'Base Yield' }
   | { key: 'terrains';    label: 'Terrain' }
   | { key: 'adjacency';   label: 'Adjacency' }
@@ -23,6 +24,7 @@ const cols: Col[] = [
   { key: 'name',        label: 'Improvement' },
   { key: 'tech',        label: 'Tech' },
   { key: 'cost',        label: 'Cost' },
+  { key: 'upkeep',      label: 'Upkeep' },
   { key: 'output',      label: 'Base Yield' },
   { key: 'terrains',    label: 'Terrain' },
   { key: 'adjacency',   label: 'Adjacency' },
@@ -83,6 +85,17 @@ for (const it of improvements) {
               {it.cost && it.cost.length > 0 ? (
                 <td class="cell cell--effects">
                   {it.cost.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                  })}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.upkeep && it.upkeep.length > 0 ? (
+                <td class="cell cell--effects">
+                  {it.upkeep.map(line => {
                     const yk = classifyYield(line)?.toLowerCase() || 'misc';
                     return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                   })}

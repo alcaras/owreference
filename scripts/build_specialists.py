@@ -156,12 +156,14 @@ def main() -> int:
             v = int(pair.findtext("iValue") or "0")
             cls_mods.append(f"{fmt_decimal(v)}% {imp}")
 
-        # Cost
+        # Cost — both civics (miCivics) and the aiYieldCost yields are RAW
+        # integers in-game (Player.getSpecialistYieldCost / getSpecialistBuildCost
+        # apply no YIELDS_MULTIPLIER). Do NOT divide.
         civics = e.findtext("iCivics") or "0"
         food_cost = 0
         for pair in e.findall("aiYieldCost/Pair"):
             if (pair.findtext("zIndex") or "") == "YIELD_FOOD":
-                food_cost = int(pair.findtext("iValue") or "0") / 10
+                food_cost = int(pair.findtext("iValue") or "0")
 
         # Which improvement classes accept this specialist?
         slot_classes = spec_to_imp_classes.get(zt, [])
