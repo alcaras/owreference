@@ -84,7 +84,7 @@ for (const it of improvements) {
                 <td class="cell cell--effects">
                   {it.cost.map(line => {
                     const yk = classifyYield(line)?.toLowerCase() || 'misc';
-                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                   })}
                 </td>
               ) : (
@@ -95,7 +95,7 @@ for (const it of improvements) {
                 <td class="cell cell--effects">
                   {it.output.map(line => {
                     const yk = classifyYield(line)?.toLowerCase() || 'misc';
-                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                   })}
                 </td>
               ) : (
@@ -114,7 +114,7 @@ for (const it of improvements) {
                 <td class="cell cell--effects">
                   {it.adjacency.map(line => {
                     const yk = classifyYield(line)?.toLowerCase() || 'misc';
-                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                   })}
                 </td>
               ) : (
@@ -125,7 +125,7 @@ for (const it of improvements) {
                 <td class="cell cell--effects">
                   {it.terrainMods.map(line => {
                     const yk = classifyYield(line)?.toLowerCase() || 'misc';
-                    return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                   })}
                 </td>
               ) : (
@@ -176,6 +176,39 @@ for (const it of improvements) {
       }
       input.addEventListener('input', apply);
       apply();
+    })();
+  </script>
+  <script is:inline>
+    (function () {
+      const table = document.querySelector('#ri-grid table.ntbl');
+      if (!table || !table.tHead) return;
+      const ths = Array.from(table.tHead.rows[0].cells);
+      ths.forEach((th, ci) => {
+        th.classList.add('is-sortable');
+        th.addEventListener('click', () => {
+          const tb = table.tBodies[0];
+          const rows = Array.from(tb.rows).filter(r => !r.classList.contains('srow'));
+          const asc = th.getAttribute('aria-sort') !== 'ascending';
+          ths.forEach(h => h.removeAttribute('aria-sort'));
+          th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+          const val = r => {
+            const c = r.cells[ci];
+            const t = (c ? c.textContent : '').trim();
+            const n = parseFloat(t.replace(/[^0-9.\-]/g, ''));
+            return { t, n: (t && !isNaN(n)) ? n : null };
+          };
+          rows.sort((a, b) => {
+            const ka = val(a), kb = val(b);
+            let r;
+            if (ka.n !== null && kb.n !== null) r = ka.n - kb.n;
+            else if (ka.n !== null) r = -1;
+            else if (kb.n !== null) r = 1;
+            else r = ka.t.localeCompare(kb.t);
+            return asc ? r : -r;
+          });
+          rows.forEach(r => tb.appendChild(r));
+        });
+      });
     })();
   </script>
 </Base>
@@ -246,4 +279,9 @@ for (const it of improvements) {
     background: var(--bg);
   }
   .listitem { font-size: 0.72rem; padding: 0.06rem 0; }
+  .nhdr.is-sortable { cursor: pointer; user-select: none; }
+  .nhdr.is-sortable:hover { filter: brightness(1.12); }
+  .nhdr.is-sortable .nhdr__name::after { content: '⇅'; opacity: 0.35; font-size: 0.85em; margin-left: 0.3em; }
+  .nhdr[aria-sort='ascending'] .nhdr__name::after { content: '↑'; opacity: 0.9; }
+  .nhdr[aria-sort='descending'] .nhdr__name::after { content: '↓'; opacity: 0.9; }
 </style>

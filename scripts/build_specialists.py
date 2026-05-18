@@ -12,6 +12,7 @@ fully determines tier output.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -23,6 +24,45 @@ from humanize import (  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
+IMG_DIR = ROOT / "public" / "img" / "icons" / "improvements"
+ICON_ALIASES = {"ministry": "ministries"}
+
+
+def _slug(s: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", (s or "").lower()).strip("_")
+
+
+def build_class_icon_map(imp_root: ET.Element, text_imp: dict[str, str]) -> dict[str, str]:
+    """IMPROVEMENTCLASS_* → site icon path for a representative member.
+
+    Prefer the tier-1 / base improvement of the class so 'Library' shows the
+    Library icon (not Academy). Falls back through name-slug → id-slug →
+    alias → class-name slug; '' if no art exists."""
+    best: dict[str, ET.Element] = {}
+    for ie in imp_root.findall("Entry"):
+        cls = ie.findtext("Class") or ""
+        zt = ie.findtext("zType") or ""
+        if not cls or not zt:
+            continue
+        cur = best.get(cls)
+        # Prefer _1 / no-numeric-suffix entries (the base building).
+        rank = 0 if zt.endswith("_1") else (1 if not zt.rsplit("_", 1)[-1].isdigit() else 2)
+        if cur is None or rank < cur[0]:
+            best[cls] = (rank, ie)
+    out: dict[str, str] = {}
+    for cls, (_rank, ie) in best.items():
+        zt = ie.findtext("zType") or ""
+        name = text_imp.get(ie.findtext("Name") or "", "")
+        cands = [_slug(name), zt.replace("IMPROVEMENT_", "").lower(),
+                 ICON_ALIASES.get(_slug(name), ""),
+                 _slug(cls.replace("IMPROVEMENTCLASS_", ""))]
+        for c in cands:
+            if c and (IMG_DIR / f"{c}.png").exists():
+                out[cls] = f"img/icons/improvements/{c}.png"
+                break
+        else:
+            out[cls] = ""
+    return out
 OUT = ROOT / "src" / "data" / "specialists.json"
 
 
@@ -64,9 +104,11 @@ def main() -> int:
     text_idx = load_text("text-infos.xml")
     indexes = load_xml_indexes(XML_DIR)
 
+    text_imp = load_text("text-improvement.xml", "text-improvementClass.xml", "text-infos.xml")
     spec_root = parse("specialist.xml")
     # Map improvement classes that grant which specialist (built from improvement.xml).
     imp_root = parse("improvement.xml")
+    class_icon = build_class_icon_map(imp_root, text_imp)
     spec_to_imp_classes: dict[str, list[str]] = {}
     for ie in imp_root.findall("Entry"):
         s = ie.findtext("Specialist") or ""
@@ -152,6 +194,13 @@ def main() -> int:
             "foodCost": int(food_cost) if food_cost == int(food_cost) else food_cost,
             "religionOpinion": int(opinion_rel) if opinion_rel.lstrip("-").isdigit() else 0,
             "slotImprovementClasses": [c.replace("IMPROVEMENTCLASS_", "").title() for c in slot_classes],
+            "slotImprovements": [
+                {
+                    "class": c.replace("IMPROVEMENTCLASS_", "").title(),
+                    "icon": class_icon.get(c, ""),
+                }
+                for c in slot_classes
+            ],
         })
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

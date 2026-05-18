@@ -155,6 +155,16 @@ def main() -> int:
         # Terrain validity
         terrain_tokens = [tv.text or "" for tv in e.findall("TerrainValid/zValue") if tv.text]
         terrains = [fmt_terrain(t) for t in terrain_tokens]
+        # River-edge improvements (Watermill) carry no TerrainValid — the
+        # requirement is the bRiverValid / bRotateToRiverEdge flags instead.
+        if (e.findtext("bRiverValid") or "0") == "1" or (e.findtext("bRotateToRiverEdge") or "0") == "1":
+            terrains.append("River")
+        if (e.findtext("bCoastalValid") or "0") == "1" or (e.findtext("bCoast") or "0") == "1":
+            terrains.append("Coast")
+        # Some improvements explicitly exclude a terrain (Watermill: no Hill)
+        ti = e.findtext("TerrainInvalid") or ""
+        if ti:
+            terrains.append(f"not {fmt_terrain(ti)}")
 
         # Adjacency / yield modifiers
         adjacency: list[str] = []

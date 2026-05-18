@@ -30,6 +30,7 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^CREST_FAMILY_([A-Z_]+?)(_SEAT)?$"), "families"),
     (re.compile(r"^CREST_TRIBE_([A-Z_]+?)(_SEAT)?$"), "tribes"),
     (re.compile(r"^CREST_ARCHETYPE_([A-Z_]+?)(_SEAT)?$"), "archetypes"),
+    (re.compile(r"^CULTURE_(WEAK|DEVELOPING|STRONG|LEGENDARY)()$"), "icons/culture"),
     (re.compile(r"^YIELD_([A-Z_]+?)()$"), "icons/yields"),
     (re.compile(r"^RESOURCE_([A-Z_]+?)()$"), "icons/resources"),
     (re.compile(r"^SPECIALIST_([A-Z_]+?)()$"), "icons/specialists"),

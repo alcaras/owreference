@@ -202,6 +202,14 @@ def main() -> int:
 
         # Restrictions
         restrictions: list[str] = []
+        # Placement rule — whether it must follow urban-tile rules or can go
+        # anywhere in territory. (All current urban improvements are urban +
+        # territory-only, but surface it from XML so it stays honest if a
+        # patch adds a free-placement one.)
+        if (e.findtext("bUrban") or "0") == "1":
+            restrictions.append("Urban tile only")
+        elif (e.findtext("bTerritoryOnly") or "0") == "1":
+            restrictions.append("Anywhere in own territory")
         max_city = e.findtext("iMaxCityCount")
         if max_city and max_city != "0":
             restrictions.append(f"Max {max_city}/City")

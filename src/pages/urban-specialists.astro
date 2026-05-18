@@ -5,6 +5,9 @@ import specialists from '../data/specialists.json';
 import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
+const TIER_NAME: Record<number, string> = { 1: 'Apprentice', 2: 'Master', 3: 'Elder' };
+const civicsIco = 'img/icons/yields/civics.png';
+const foodIco = 'img/icons/yields/food.png';
 
 type Spec = typeof specialists[number];
 
@@ -38,9 +41,9 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
           <tr>
             <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Specialist</span></div></th>
             <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Slots Into</span></div></th>
-            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Tier I</span></div></th>
-            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Tier II</span></div></th>
-            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Tier III</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Apprentice</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Master</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Elder</span></div></th>
             <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Cost</span></div></th>
           </tr>
         </thead>
@@ -60,9 +63,12 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
                   </div>
                 </th>
                 <td class="cell yield-misc">
-                  {arr[0].slotImprovementClasses && arr[0].slotImprovementClasses.length > 0
-                    ? arr[0].slotImprovementClasses.map((c: string) => (
-                        <div class="terrain-tag"><LinkedText text={c} /></div>
+                  {arr[0].slotImprovements && arr[0].slotImprovements.length > 0
+                    ? arr[0].slotImprovements.map((si: {class: string; icon: string}) => (
+                        <div class="terrain-tag slot-tag">
+                          {si.icon && <img class="slot-ico" src={`${base}${si.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />}
+                          <LinkedText text={si.class} />
+                        </div>
                       ))
                     : <span class="cell__dash">—</span>}
                 </td>
@@ -74,7 +80,7 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
                     <td class="cell cell--effects">
                       {lines.length > 0 ? lines.map((line: string) => {
                         const yk = classifyYield(line)?.toLowerCase() || 'misc';
-                        return <div class={`effect yield-${yk}`}><LinkedText text={line} /></div>;
+                        return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                       }) : <span class="cell__dash">—</span>}
                     </td>
                   );
@@ -83,7 +89,15 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
                   {[1, 2, 3].map(tier => {
                     const s = byTier[tier];
                     if (!s) return null;
-                    return <div class="cost-row">T{tier}: <span class="cost-num">{s.civicsCost}</span> Civ · <span class="cost-num">{s.foodCost}</span> Food</div>;
+                    return (
+                      <div class="cost-row">
+                        <span class="cost-tier">{TIER_NAME[tier]}</span>
+                        <span class="cost-num">{s.civicsCost}</span>
+                        <img class="cost-ico" src={`${base}${civicsIco}`} alt="Civics" title="Civics" />
+                        <span class="cost-num">{s.foodCost}</span>
+                        <img class="cost-ico" src={`${base}${foodIco}`} alt="Food" title="Food" />
+                      </div>
+                    );
                   })}
                 </td>
               </tr>
@@ -113,6 +127,39 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
       }
       input.addEventListener('input', apply);
       apply();
+    })();
+  </script>
+  <script is:inline>
+    (function () {
+      const table = document.querySelector('#us-grid table.ntbl');
+      if (!table || !table.tHead) return;
+      const ths = Array.from(table.tHead.rows[0].cells);
+      ths.forEach((th, ci) => {
+        th.classList.add('is-sortable');
+        th.addEventListener('click', () => {
+          const tb = table.tBodies[0];
+          const rows = Array.from(tb.rows).filter(r => !r.classList.contains('srow'));
+          const asc = th.getAttribute('aria-sort') !== 'ascending';
+          ths.forEach(h => h.removeAttribute('aria-sort'));
+          th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+          const val = r => {
+            const c = r.cells[ci];
+            const t = (c ? c.textContent : '').trim();
+            const n = parseFloat(t.replace(/[^0-9.\-]/g, ''));
+            return { t, n: (t && !isNaN(n)) ? n : null };
+          };
+          rows.sort((a, b) => {
+            const ka = val(a), kb = val(b);
+            let r;
+            if (ka.n !== null && kb.n !== null) r = ka.n - kb.n;
+            else if (ka.n !== null) r = -1;
+            else if (kb.n !== null) r = 1;
+            else r = ka.t.localeCompare(kb.t);
+            return asc ? r : -r;
+          });
+          rows.forEach(r => tb.appendChild(r));
+        });
+      });
     })();
   </script>
 </Base>
@@ -168,11 +215,23 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
     color: var(--text-dim);
     background: var(--bg);
   }
-  .cost-row { font-size: 0.7rem; color: var(--text-dim); padding: 0.05rem 0; }
+  .cost-row {
+    display: flex; align-items: center; gap: 0.25rem;
+    font-size: 0.7rem; color: var(--text-dim); padding: 0.06rem 0;
+  }
+  .cost-tier { min-width: 5.2em; color: var(--text-faint); font-style: italic; }
+  .cost-ico { width: 13px; height: 13px; object-fit: contain; margin-right: 0.15rem; }
   .cost-num {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     color: var(--text);
     font-weight: 600;
   }
+  .slot-tag { display: inline-flex; align-items: center; gap: 0.25rem; }
+  .slot-ico { width: 15px; height: 15px; object-fit: contain; flex: none; }
+  .nhdr.is-sortable { cursor: pointer; user-select: none; }
+  .nhdr.is-sortable:hover { filter: brightness(1.12); }
+  .nhdr.is-sortable .nhdr__name::after { content: '⇅'; opacity: 0.35; font-size: 0.85em; margin-left: 0.3em; }
+  .nhdr[aria-sort='ascending'] .nhdr__name::after { content: '↑'; opacity: 0.9; }
+  .nhdr[aria-sort='descending'] .nhdr__name::after { content: '↓'; opacity: 0.9; }
 </style>
