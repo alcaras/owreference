@@ -140,25 +140,5 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
       </footer>
     </main>
 
-    <script is:inline>
-      /* The sticky in-table headers pin at top: var(--hdr-h). Measure the
-         real sticky site header (it grows when the nav wraps to 2+ lines)
-         so the first body row never hides behind it. */
-      (function () {
-        var hdr = document.querySelector('.hdr');
-        if (!hdr) return;
-        var raf = 0;
-        function sync() {
-          raf = 0;
-          document.documentElement.style.setProperty(
-            '--hdr-h', hdr.getBoundingClientRect().height + 'px');
-        }
-        function schedule() { if (!raf) raf = requestAnimationFrame(sync); }
-        sync();
-        addEventListener('resize', schedule);
-        addEventListener('load', sync);
-        if (window.ResizeObserver) new ResizeObserver(schedule).observe(hdr);
-      })();
-    </script>
   </body>
 </html>
