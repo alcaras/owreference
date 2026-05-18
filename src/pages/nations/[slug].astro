@@ -196,24 +196,52 @@ const titles = (n as any).titles || {};
                 <div class="np-dyn__portrait np-dyn__portrait--placeholder">{(d.firstRuler || d.name)?.[0] || '?'}</div>
               )}
               <div class="np-dyn__body">
-                <header class="np-dyn__head">
-                  <span class="np-dyn__name">{d.name}</span>
-                  {d.leaderAge != null && d.leaderAge > 0 && (
-                    <span class="np-dyn__age">age {d.leaderAge}</span>
-                  )}
-                  {d.gameContent && <span class="np-dyn__dlc">{d.gameContent}</span>}
-                </header>
-                {d.firstRuler && (
-                  <div class="np-dyn__role">
-                    First ruler: <em>{d.firstRuler}</em>
-                    {d.founder && d.founder !== d.firstRuler && <> · founded by <em>{d.founder}</em></>}
-                  </div>
-                )}
-                {d.leaderTraits && d.leaderTraits.length > 0 && (
-                  <ul class="np-dyn__traits">
-                    {d.leaderTraits.map((t: any) => <li class="np-trait">{t.label}</li>)}
-                  </ul>
-                )}
+                {(() => {
+                  const ts = d.leaderTraits || [];
+                  const arch = ts.find((t: any) => t.archetype);
+                  const rest = ts.filter((t: any) => !t.archetype);
+                  return (
+                    <>
+                      <header class="np-dyn__head">
+                        {arch && arch.icon && (
+                          <img class="np-dyn__arch" src={`${base}${arch.icon}`}
+                               alt={arch.label} title={`${arch.label}${arch.effects.length ? ' — ' + arch.effects.join('; ') : ''}`} />
+                        )}
+                        <span class="np-dyn__name">{d.name}</span>
+                        {d.leaderAge != null && d.leaderAge > 0 && (
+                          <span class="np-dyn__age">age {d.leaderAge}</span>
+                        )}
+                        {d.gameContent && <span class="np-dyn__dlc">{d.gameContent}</span>}
+                      </header>
+                      {d.firstRuler && (
+                        <div class="np-dyn__role">
+                          First ruler: <em>{d.firstRuler}</em>
+                          {d.founder && d.founder !== d.firstRuler && <> · founded by <em>{d.founder}</em></>}
+                        </div>
+                      )}
+                      {(arch || rest.length > 0) && (
+                        <ul class="np-dyn__traits">
+                          {arch && (
+                            <li class="np-trait np-trait--arch">
+                              <span class="np-trait__name">{arch.label}</span>
+                              {arch.effects.length > 0 && (
+                                <span class="np-trait__fx">{arch.effects.join(' · ')}</span>
+                              )}
+                            </li>
+                          )}
+                          {rest.map((t: any) => (
+                            <li class="np-trait">
+                              <span class="np-trait__name">{t.label}</span>
+                              {t.effects && t.effects.length > 0 && (
+                                <span class="np-trait__fx">{t.effects.join(' · ')}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </>
+                  );
+                })()}
                 {d.description && (
                   <p class="np-dyn__desc"><LinkedText text={d.description} showIcons={false} iconsForYields={true} /></p>
                 )}
@@ -471,7 +499,12 @@ const titles = (n as any).titles || {};
     font-weight: 600;
   }
   .np-dyn__body { min-width: 0; }
-  .np-dyn__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; margin-bottom: 0.1rem; }
+  .np-dyn__head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.1rem; }
+  .np-dyn__arch {
+    width: 1.5rem; height: 1.5rem; object-fit: contain;
+    flex: none;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+  }
   .np-dyn__name {
     font-family: var(--font-display);
     font-weight: 600;
@@ -495,20 +528,28 @@ const titles = (n as any).titles || {};
   .np-dyn__role em { font-style: italic; color: var(--text-soft); font-size: 0.92em; }
   .np-dyn__traits {
     list-style: none;
-    display: flex; flex-wrap: wrap;
-    gap: 0.25rem;
-    margin: 0 0 0.35rem;
+    display: flex; flex-direction: column;
+    gap: 0.2rem;
+    margin: 0 0 0.4rem;
     padding: 0;
   }
   .np-trait {
-    font-family: var(--font-display);
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 0.1rem 0.5rem;
     font-size: 0.78rem;
-    padding: 0.05rem 0.45rem;
-    background: var(--bg-elev-2);
-    color: var(--text-soft);
-    border: 1px solid var(--border);
-    border-radius: 3px;
+    line-height: 1.35;
   }
+  .np-trait__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-soft);
+  }
+  .np-trait--arch .np-trait__name { color: var(--gold-soft); }
+  .np-trait__fx {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+  .np-trait__fx::before { content: "— "; color: var(--text-faint); }
   .np-dyn__dlc {
     font-family: var(--font-mono);
     font-size: 0.6rem;

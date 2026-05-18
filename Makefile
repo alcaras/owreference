@@ -12,6 +12,7 @@ art:
 	@python3 scripts/extract_art.py
 
 data:
+	@python3 scripts/build_archetypes.py
 	@python3 scripts/build_data.py
 	@python3 scripts/build_tribes.py
 	@python3 scripts/build_families.py
@@ -31,7 +32,6 @@ data:
 	@python3 scripts/build_opinion.py
 	@python3 scripts/build_trait_inheritance.py
 	@python3 scripts/build_study_events.py
-	@python3 scripts/build_archetypes.py
 	@python3 scripts/build_cognomens.py
 	@python3 scripts/build_stats.py
 	@python3 scripts/build_missions.py

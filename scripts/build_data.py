@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, render_nation_effects, render_shrine_effects,
+    render_effect_player,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -309,7 +310,79 @@ def load_portrait_map() -> dict[str, str]:
     return out
 
 
-def load_characters() -> dict[str, dict]:
+_RATING_LABEL = {
+    "RATING_WISDOM": "Wisdom", "RATING_CHARISMA": "Charisma",
+    "RATING_COURAGE": "Courage", "RATING_DISCIPLINE": "Discipline",
+}
+_TRAIT_ICON_DIR = ROOT / "public" / "img" / "icons" / "traits"
+
+
+def _archetype_index() -> dict[str, dict]:
+    """archetypes.json keyed by trait id. build_archetypes.py runs before
+    build_data.py (see Makefile), so this is fresh; humanises the full
+    archetype kit (signature leader ability + ratings) we can't get from a
+    generic trait-effect walk."""
+    if not hasattr(_archetype_index, "_cache"):
+        p = ROOT / "src" / "data" / "archetypes.json"
+        try:
+            data = json.loads(p.read_text())
+            _archetype_index._cache = {a["id"]: a for a in data}
+        except Exception:
+            _archetype_index._cache = {}
+    return _archetype_index._cache
+
+
+def _trait_detail(trait_id: str, label: str,
+                   indexes: dict | None) -> dict:
+    """Enrich a leader trait with its archetype-ness, glyph, and the
+    effect lines the in-game tooltip shows (humanised from trait.xml).
+
+    Archetype traits (TRAIT_*_ARCHETYPE) always have a glyph at
+    img/icons/traits/<slug>.png — the page shows that instead of the word.
+    """
+    is_arch = trait_id.endswith("_ARCHETYPE")
+    slug = (trait_id.replace("TRAIT_", "")
+            .replace("_ARCHETYPE", "").lower())
+    icon = (f"img/icons/traits/{slug}.png"
+            if (_TRAIT_ICON_DIR / f"{slug}.png").exists() else None)
+
+    effects: list[str] = []
+    arch = _archetype_index().get(trait_id) if is_arch else None
+    if arch:
+        # Archetypes: use the fully-humanised kit from archetypes.json —
+        # the signature leader ability plus its rating profile.
+        effects.extend(arch.get("leaderEffects") or [])
+        for r in arch.get("ratings") or []:
+            v = r.get("value") or 0
+            if v:
+                effects.append(f"{'+' if v > 0 else ''}{v} {r.get('label')}")
+    else:
+        tx = (indexes or {}).get("trait.xml", {}).get(trait_id)
+        if tx is not None:
+            for ref_field in ("EffectPlayer", "LeaderEffectPlayer"):
+                ref = tx.findtext(ref_field)
+                if ref:
+                    effects.extend(render_effect_player(ref, indexes))
+            for pair in tx.findall("aiRating/Pair"):
+                rk = pair.findtext("zIndex") or ""
+                rv = int(pair.findtext("iValue") or "0")
+                if rv and rk in _RATING_LABEL:
+                    effects.append(f"{'+' if rv > 0 else ''}{rv} {_RATING_LABEL[rk]}")
+    # de-dup, keep order
+    seen: set[str] = set()
+    effects = [e for e in effects if not (e in seen or seen.add(e))]
+
+    return {
+        "id": trait_id,
+        "label": label,
+        "archetype": is_arch,
+        "slug": slug,
+        "icon": icon,
+        "effects": effects,
+    }
+
+
+def load_characters(indexes: dict | None = None) -> dict[str, dict]:
     """Index character.xml entries by zType. Each char carries
     aeTraits + PreferredPortrait so we can show founder traits + portrait."""
     out: dict[str, dict] = {}
@@ -347,10 +420,9 @@ def load_characters() -> dict[str, dict]:
             tk = t.text or ""
             if not tk:
                 continue
-            traits.append({
-                "id": tk,
-                "label": text_trait.get(f"TEXT_{tk}", tk.replace("TRAIT_", "").replace("_", " ").title()),
-            })
+            label = text_trait.get(
+                f"TEXT_{tk}", tk.replace("TRAIT_", "").replace("_", " ").title())
+            traits.append(_trait_detail(tk, label, indexes))
         out[zt] = {
             "name": display,
             "gender": entry.findtext("Gender") or "",
@@ -481,12 +553,12 @@ def load_nations() -> list[dict]:
     text_unit = load_text("text-unit.xml") if (XML_DIR / "text-unit.xml").exists() else {}
     colors = load_colors()
     shrines_by_nation = load_shrines()
-    characters = load_characters()
+    xml_indexes = load_xml_indexes(XML_DIR)
+    characters = load_characters(xml_indexes)
     portrait_map = load_portrait_map()
     unit_traits = load_unit_traits()
     unit_name_to_id = load_unit_name_map()
     dynasties_by_nation = load_dynasties(characters, portrait_map)
-    xml_indexes = load_xml_indexes(XML_DIR)
     text_cityname = load_text("text-cityname.xml") if (XML_DIR / "text-cityname.xml").exists() else {}
     text_name = load_text("text-name.xml") if (XML_DIR / "text-name.xml").exists() else {}
     text_unit_for_starts = load_text("text-unit.xml") if (XML_DIR / "text-unit.xml").exists() else {}
