@@ -10,7 +10,8 @@ const base = import.meta.env.BASE_URL;
 // roster and no diplomacy — they're a small flavor list below.
 type Tribe = typeof tribes[number];
 type RosterUnit = {
-  id: string; name: string; icon: string; strength: number;
+  id: string; name: string; icon: string; glyph: string;
+  mounted: boolean; strength: number;
   branch: string; special: boolean;
   promoId: string | null; promoName: string | null;
 };
@@ -24,7 +25,9 @@ const generic = tribes
 
 // Branch sections × strength rows. Only emit a (branch, strength) row
 // if at least one tribe fields a unit there. Strengths span 3–6.
-const BRANCHES = ['Melee', 'Ranged', 'Mounted'];
+// Mounted is an attribute (shown as a badge), not a branch — mounted
+// units are still Melee or Ranged.
+const BRANCHES = ['Melee', 'Ranged'];
 const STRENGTHS = [3, 4, 5, 6];
 
 function unitsAt(t: Tribe, branch: string, strength: number): RosterUnit[] {
@@ -136,12 +139,22 @@ const specialCount = combat.reduce(
                       >
                         {sorted.map(u => (
                           <div class={`tunit ${u.special ? 'tunit--special' : ''}`}>
-                            <img
-                              class="tunit__icon"
-                              src={`${base}img/icons/units/${u.icon}.png`}
-                              alt=""
-                              onerror="this.style.visibility='hidden'"
-                            />
+                            <span class="tunit__glyphwrap">
+                              <img
+                                class="tunit__icon"
+                                src={`${base}img/icons/unit_traits/${u.glyph}.png`}
+                                alt=""
+                                onerror="this.style.visibility='hidden'"
+                              />
+                              {u.mounted && (
+                                <img
+                                  class="tunit__mounted"
+                                  src={`${base}img/icons/unit_traits/mounted.png`}
+                                  alt="mounted" title="Mounted"
+                                  onerror="this.style.display='none'"
+                                />
+                              )}
+                            </span>
                             <div class="tunit__meta">
                               <span class="tunit__name">{u.name}</span>
                               {u.special && u.promoName && (
@@ -232,11 +245,25 @@ const specialCount = combat.reduce(
     padding-top: 0.4rem;
     border-top: 1px solid var(--border-faint);
   }
+  .tunit__glyphwrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    display: inline-block;
+  }
   .tunit__icon {
     width: 28px; height: 28px;
     object-fit: contain;
-    flex-shrink: 0;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+  }
+  /* Mounted is an attribute, not a branch — small badge on the glyph. */
+  .tunit__mounted {
+    position: absolute;
+    right: -4px; bottom: -3px;
+    width: 14px; height: 14px;
+    object-fit: contain;
+    opacity: 0.85;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
   }
   .tunit__meta {
     display: flex;

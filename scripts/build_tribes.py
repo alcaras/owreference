@@ -62,13 +62,15 @@ COMBAT_TRIBES = {
     "TRIBE_SCYTHIANS", "TRIBE_THRACIANS", "TRIBE_VANDALS",
 }
 
-# UnitCycle → branch label for the matrix sections.
-BRANCH_BY_CYCLE = {
-    "UNITCYCLE_MILITARY_INFANTRY": "Melee",
-    "UNITCYCLE_MILITARY_RANGED": "Ranged",
-    "UNITCYCLE_MILITARY_MOUNTED": "Mounted",
-}
-BRANCH_ORDER = {"Melee": 0, "Ranged": 1, "Mounted": 2}
+# Branch comes from the unit's first aeUnitTrait, NOT UnitCycle: mounted
+# units are still melee or ranged (a horse archer is Ranged), so "Mounted"
+# is an attribute, not a third branch. UNITTRAIT_RANGED → Ranged, else Melee.
+BRANCH_ORDER = {"Melee": 0, "Ranged": 1}
+
+
+def _unit_traits(entry: "ET.Element") -> list[str]:
+    return [(v.text or "").replace("UNITTRAIT_", "")
+            for v in entry.findall("aeUnitTrait/zValue") if v.text]
 
 
 def _icon_from(zicon: str | None, unit_id: str) -> str:
@@ -110,8 +112,13 @@ def build_rosters(text_unit: dict, text_effect: dict) -> dict[str, list[dict]]:
         if "HUNNIC_CAVALRY" in zt:
             tribes = {"TRIBE_HUNS"}
         strength = int(entry.findtext("iStrength") or "0") // 10
-        cycle = entry.findtext("UnitCycle") or ""
-        branch = BRANCH_BY_CYCLE.get(cycle, "Melee")
+        utr = _unit_traits(entry)
+        branch = "Ranged" if "RANGED" in utr else "Melee"
+        # White map glyph (the silhouette shown inside the unit's map chit):
+        # the first trait — MELEE/RANGED — extracted to icons/unit_traits/.
+        glyph = (utr[0].lower() if utr else
+                 ("ranged" if branch == "Ranged" else "melee"))
+        mounted = "MOUNTED" in utr
         effs = [v.text for v in entry.findall("aeEffectUnit/zValue") if v.text]
         zicon = entry.findtext("zIconName")
         raw.append({
@@ -119,6 +126,8 @@ def build_rosters(text_unit: dict, text_effect: dict) -> dict[str, list[dict]]:
             "tribes": tribes & COMBAT_TRIBES,
             "strength": strength,
             "branch": branch,
+            "mounted": mounted,
+            "glyph": glyph,
             "icon": _icon_from(zicon, zt),
             "effs": effs,
         })
@@ -155,6 +164,8 @@ def build_rosters(text_unit: dict, text_effect: dict) -> dict[str, list[dict]]:
                 "id": u["id"],
                 "name": name,
                 "icon": u["icon"],
+                "glyph": u["glyph"],
+                "mounted": u["mounted"],
                 "strength": u["strength"],
                 "branch": u["branch"],
                 "special": special,
