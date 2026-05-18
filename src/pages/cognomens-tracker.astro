@@ -102,7 +102,7 @@ const payload = {
       </section>
 
       <section class="calc__next" id="cf-next" hidden>
-        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">— what you're nearest to earning next</span></h2>
+        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">— nearest to earn next; <b class="calc__next-note-up">gold ▲</b> = higher legitimacy than your title (actually upgrades it)</span></h2>
         <ol class="calc__next-list" id="cf-next-list"></ol>
       </section>
 
@@ -320,6 +320,12 @@ const payload = {
           hero.classList.remove('is-set', 'is-bad');
         }
 
+        // The game ranks by |legitimacy|; only a cognomen with HIGHER
+        // legitimacy than your current title can ever replace it. Everything
+        // at or below curLeg is cosmetic no matter how close in points.
+        const curLeg = best ? Math.abs(best.legitimacy) : 0;
+        const signed = (n) => (n >= 0 ? '+' : '') + n;
+
         tracksBox.innerHTML = '';
         const nextItems = [];
         for (const tname of DATA.trackOrder) {
@@ -338,6 +344,8 @@ const payload = {
           if (next) nextItems.push({
             title: next.c.title, track: tname, glyph: GLYPH[tname] || '·',
             remaining: Math.max(0, next.sMin - score), pct,
+            legit: next.c.legitimacy,
+            upgrade: Math.abs(next.c.legitimacy) > curLeg,
           });
 
           const card = document.createElement('section');
@@ -360,9 +368,14 @@ const payload = {
           for (const t of tiers) {
             const cls = t.earned ? 'is-earned' : '';
             const isCur = current && t.c.id === current.c.id;
+            const up = Math.abs(t.c.legitimacy) > curLeg;
             html +=
-              '<li class="' + cls + (isCur ? ' is-cur' : '') + '">' +
+              '<li class="' + cls + (isCur ? ' is-cur' : '') +
+                (up ? ' is-upgrade' : '') + '">' +
                 '<span class="calc__tier-name">' + t.c.title + '</span>' +
+                '<span class="calc__tier-leg" title="legitimacy' +
+                  (up ? ' — outranks your current title' : '') + '">' +
+                  signed(t.c.legitimacy) + '</span>' +
                 '<span class="calc__tier-min">' + fmt(t.sMin) + '</span>' +
               '</li>';
           }
@@ -377,9 +390,13 @@ const payload = {
         const top = nextItems.slice(0, 6);
         if (top.length) {
           nextList.innerHTML = top.map(n =>
-            '<li class="calc__next-item">' +
+            '<li class="calc__next-item' + (n.upgrade ? ' is-upgrade' : '') + '">' +
               '<span class="calc__next-mark">' + n.glyph + '</span>' +
               '<span class="calc__next-title">' + n.title + '</span>' +
+              '<span class="calc__next-leg" title="legitimacy' +
+                (n.upgrade ? ' — would become your title' : ' — ≤ current, won\'t change title') +
+                '">' + signed(n.legit) +
+                (n.upgrade ? ' ▲' : '') + '</span>' +
               '<span class="calc__next-track">' + n.track + '</span>' +
               '<span class="calc__next-bar"><span style="width:' +
                 n.pct.toFixed(1) + '%"></span></span>' +
@@ -540,17 +557,27 @@ const payload = {
     color: var(--text); margin: 0 0 0.6rem;
   }
   .calc__next-note { color: var(--text-faint); font-size: 0.72rem; font-weight: 400; }
+  .calc__next-note-up { color: var(--accent); font-weight: 600; }
   .calc__next-list { list-style: none; margin: 0; padding: 0;
     display: flex; flex-direction: column; gap: 0.3rem; }
   .calc__next-item {
     display: grid;
-    grid-template-columns: 1.2rem minmax(7rem, max-content) 1fr 6rem 4.5rem;
+    grid-template-columns: 1.2rem minmax(7rem, max-content) 3.4rem 1fr 6rem 4.5rem;
     align-items: center; gap: 0.55rem;
     font-size: 0.78rem; padding: 0.18rem 0;
   }
   .calc__next-mark { color: var(--accent); text-align: center; }
   .calc__next-title {
-    font-family: var(--font-display); font-weight: 600; color: var(--text);
+    font-family: var(--font-display); font-weight: 600; color: var(--text-faint);
+  }
+  /* upgrade = legitimacy beats your current title (worth chasing) */
+  .calc__next-item.is-upgrade .calc__next-title { color: var(--text); }
+  .calc__next-leg {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    color: var(--text-faint); opacity: 0.55; white-space: nowrap;
+  }
+  .calc__next-item.is-upgrade .calc__next-leg {
+    color: var(--accent); opacity: 1; font-weight: 600;
   }
   .calc__next-track { color: var(--text-faint); font-size: 0.7rem; }
   .calc__next-bar {
@@ -565,7 +592,7 @@ const payload = {
     color: var(--text-dim); text-align: right;
   }
   @media (max-width: 560px) {
-    .calc__next-item { grid-template-columns: 1.2rem 1fr 4.5rem; }
+    .calc__next-item { grid-template-columns: 1.2rem 1fr 3.4rem 4.5rem; }
     .calc__next-track, .calc__next-bar { display: none; }
   }
 
@@ -608,7 +635,8 @@ const payload = {
   .calc__meta b { color: var(--text-dim); font-weight: 600; }
   .calc__tiers { list-style: none; margin: 0; padding: 0; }
   .calc__tiers li {
-    display: flex; justify-content: space-between; gap: 0.5rem;
+    display: grid; grid-template-columns: 1fr 2.6rem auto;
+    align-items: baseline; gap: 0.5rem;
     font-size: 0.7rem; padding: 0.16rem 0;
     color: var(--text-faint); border-bottom: 1px dashed var(--border);
   }
@@ -617,5 +645,15 @@ const payload = {
   .calc__tiers li.is-cur {
     color: var(--accent); font-weight: 600;
   }
-  .calc__tiers .calc__tier-min { font-family: var(--font-mono); }
+  .calc__tier-leg {
+    font-family: var(--font-mono); font-size: 0.66rem;
+    text-align: right; color: var(--text-faint);
+  }
+  /* legitimacy higher than your current title = earning it changes the
+     displayed title. Anything ≤ current is dimmed: cosmetic only. */
+  .calc__tiers li.is-upgrade .calc__tier-leg {
+    color: var(--accent); font-weight: 600;
+  }
+  .calc__tiers li:not(.is-upgrade):not(.is-cur) .calc__tier-leg { opacity: 0.55; }
+  .calc__tiers .calc__tier-min { font-family: var(--font-mono); text-align: right; }
 </style>
