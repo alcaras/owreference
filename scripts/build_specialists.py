@@ -19,7 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
-    load_xml_indexes, fmt_decimal, yield_name,
+    load_xml_indexes, fmt_decimal, yield_name, render_effect_city,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -84,19 +84,23 @@ def parse(name: str) -> ET.Element:
     return ET.parse(XML_DIR / name).getroot()
 
 
-def render_yields(e: ET.Element) -> list[str]:
-    """Render all yield-bearing fields on an effectCity entry."""
-    out: list[str] = []
-    if e is None:
+def per_citizen_map(indexes: dict) -> dict[str, list[str]]:
+    """EFFECTCITY_CITIZEN reverse-references some specialist tiers' EffectCity
+    in its aaiEffectCityYieldRate — that's the "+N Yield / Citizen" bonus
+    (Master/Elder Poet, Priest, Scribe, Philosopher). Build {specialist
+    EffectCity zType → ["+0.5 Civics/Citizen", …]}."""
+    out: dict[str, list[str]] = {}
+    cit = indexes.get("effectCity.xml", {}).get("EFFECTCITY_CITIZEN")
+    if cit is None:
         return out
-    for pair in e.findall("aiYieldRate/Pair"):
-        y = yield_name(pair.findtext("zIndex"))
-        v = int(pair.findtext("iValue") or "0") / 10
-        out.append(f"{fmt_decimal(v)} {y}")
-    for pair in e.findall("aiYieldModifier/Pair"):
-        y = yield_name(pair.findtext("zIndex"))
-        v = int(pair.findtext("iValue") or "0")
-        out.append(f"{fmt_decimal(v)}% {y}")
+    for pair in cit.findall("aaiEffectCityYieldRate/Pair"):
+        z = pair.findtext("zIndex") or ""
+        if not z.startswith("EFFECTCITY_SPECIALIST_"):
+            continue
+        for sp in pair.findall("SubPair"):
+            y = yield_name(sp.findtext("zSubIndex"))
+            v = int(sp.findtext("iValue") or "0") / 10
+            out.setdefault(z, []).append(f"{fmt_decimal(v)} {y}/Citizen")
     return out
 
 
@@ -109,6 +113,7 @@ def main() -> int:
     # Map improvement classes that grant which specialist (built from improvement.xml).
     imp_root = parse("improvement.xml")
     class_icon = build_class_icon_map(imp_root, text_imp)
+    per_citizen = per_citizen_map(indexes)
     spec_to_imp_classes: dict[str, list[str]] = {}
     for ie in imp_root.findall("Entry"):
         s = ie.findtext("Specialist") or ""
@@ -146,8 +151,14 @@ def main() -> int:
         ec_extra_id = e.findtext("EffectCityExtra") or ""
         ec_extra = indexes.get("effectCity.xml", {}).get(ec_extra_id) if ec_extra_id else None
 
-        yields_main = render_yields(ec) if ec is not None else []
-        yields_extra = render_yields(ec_extra) if ec_extra is not None else []
+        # Use the full humanizer so per-Culture-Level (aiYieldRateCulture,
+        # e.g. Master/Elder Monk → "+1 Civics/Culture Level") and other
+        # conditional yields aren't silently dropped.
+        yields_main = render_effect_city(ec, per_city=False, indexes=indexes) if ec is not None else []
+        yields_extra = render_effect_city(ec_extra, per_city=False, indexes=indexes) if ec_extra is not None else []
+        # Per-citizen bonus reverse-referenced from EFFECTCITY_CITIZEN
+        # (Master/Elder Poet, Priest, Scribe, Philosopher).
+        yields_per_citizen = per_citizen.get(ec_id, [])
 
         # Class-wide modifier (e.g., SPECIALIST_FARMER: +50% Farms)
         cls_mods: list[str] = []
@@ -191,6 +202,7 @@ def main() -> int:
             "icon": f"img/icons/specialists/{class_slug}.png",
             "yieldsMain": yields_main,
             "yieldsExtra": yields_extra,
+            "yieldsPerCitizen": yields_per_citizen,
             "classModifiers": cls_mods,
             "civicsCost": int(civics) if civics.lstrip("-").isdigit() else 0,
             "foodCost": int(food_cost) if food_cost == int(food_cost) else food_cost,

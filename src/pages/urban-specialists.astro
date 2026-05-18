@@ -75,12 +75,16 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
                 {[1, 2, 3].map(tier => {
                   const s = byTier[tier];
                   if (!s) return <td class="cell is-empty"><span class="cell__dash">—</span></td>;
-                  const lines = [...(s.yieldsMain || []), ...(s.yieldsExtra || []), ...(s.classModifiers || [])];
+                  const lines = [...(s.yieldsMain || []), ...(s.yieldsExtra || []), ...(s.yieldsPerCitizen || []), ...(s.classModifiers || [])];
                   return (
                     <td class="cell cell--effects">
                       {lines.length > 0 ? lines.map((line: string) => {
                         const yk = classifyYield(line)?.toLowerCase() || 'misc';
-                        return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                        // "Culture Level" is a city-rank qualifier, not the
+                        // Culture yield — don't let iconsForYields swap the
+                        // word for the Culture glyph.
+                        const iconize = !/Culture Level/.test(line);
+                        return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={iconize} /></div>;
                       }) : <span class="cell__dash">—</span>}
                     </td>
                   );

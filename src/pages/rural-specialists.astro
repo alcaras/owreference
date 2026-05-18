@@ -36,7 +36,7 @@ for (const s of rural) searchBlobs[s.classSlug] = JSON.stringify(s).toLowerCase(
         </thead>
         <tbody>
           {rural.map((s: Spec) => {
-            const lines = [...(s.yieldsMain || []), ...(s.yieldsExtra || []), ...(s.classModifiers || [])];
+            const lines = [...(s.yieldsMain || []), ...(s.yieldsExtra || []), ...(s.yieldsPerCitizen || []), ...(s.classModifiers || [])];
             return (
               <tr data-row={s.classSlug}>
                 <th class="rowlabel rowlabel--item" scope="row" id={s.classSlug}>
@@ -61,7 +61,8 @@ for (const s of rural) searchBlobs[s.classSlug] = JSON.stringify(s).toLowerCase(
                 <td class="cell cell--effects">
                   {lines.length > 0 ? lines.map((line: string) => {
                     const yk = classifyYield(line)?.toLowerCase() || 'misc';
-                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                    const iconize = !/Culture Level/.test(line);
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={iconize} /></div>;
                   }) : <span class="cell__dash">—</span>}
                 </td>
                 <td class="cell yield-misc">
