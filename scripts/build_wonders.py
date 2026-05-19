@@ -26,7 +26,62 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_player, render_bonus,
+    fmt_decimal, yield_name,
 )
+
+
+def _nice_token(token: str) -> str:
+    """UNIT_CARAVAN → Caravan, RELIGION_BUDDHISM → Buddhism, etc."""
+    return (token.split("_", 1)[-1] if "_" in token else token).replace("_", " ").title()
+
+
+def tile_and_oneoff_lines(entry: ET.Element, indexes: dict) -> list[str]:
+    """One-time / tile / recurring effects the EffectPlayer chain misses:
+    BonusCities payloads, periodic free units (iUnitTurns + aiUnitDie),
+    unit-trait XP, religion spread, and adjacent-tile class yields.
+    All read from improvement.xml — no spreadsheet."""
+    out: list[str] = []
+
+    # Bonus applied to every city on completion (Ishtar Gate, Hagia
+    # Sophia, Jebel Barkal). render_bonus already phrases "in every City".
+    bc_id = (entry.findtext("BonusCities") or "").strip()
+    if bc_id:
+        bc = indexes.get("bonus.xml", {}).get(bc_id)
+        if bc is not None:
+            out.extend(render_bonus(bc, indexes))
+
+    # Periodic free unit: iUnitTurns = period, aiUnitDie = which unit(s).
+    period = entry.findtext("iUnitTurns")
+    if period and period != "0":
+        for pair in entry.findall("aiUnitDie/Pair"):
+            unit = _nice_token(pair.findtext("zIndex") or "")
+            out.append(f"Free {unit} every {int(period)} turns")
+
+    # Bonus XP for a unit trait built here (Circus Maximus, Cothon).
+    for pair in entry.findall("aiUnitTraitXP/Pair"):
+        trait = _nice_token(pair.findtext("zIndex") or "")
+        v = int(pair.findtext("iValue") or "0")
+        out.append(f"+{v} XP for {trait} units built here")
+
+    # Religion this wonder spreads (Monumental Buddhas).
+    rel = (entry.findtext("ReligionSpread") or "").strip()
+    if rel:
+        out.append(f"Spreads {_nice_token(rel)}")
+
+    # Yield to adjacent tiles of an improvement class (Chittorgarh:
+    # +2 Training to adjacent Farms). Tile-yield values are 10× display.
+    for pair in entry.findall("aaiAdjacentImprovementClassYield/Pair"):
+        cls = _nice_token(pair.findtext("zIndex") or "")
+        sp = pair.find("SubPair")
+        if sp is None:
+            continue
+        y = yield_name(sp.findtext("zSubIndex"))
+        v = int(sp.findtext("iValue") or "0") / 10
+        if v == int(v):
+            v = int(v)
+        out.append(f"{fmt_decimal(v)} {y} to adjacent {cls}s")
+
+    return out
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -214,13 +269,31 @@ def main() -> int:
                     if ln not in effects:
                         effects.append(ln)
 
-        # One-time bonus (Bonus = on-build payload)
+        # One-time bonus (Bonus = on-build payload) + per-city / tile /
+        # recurring effects the EffectPlayer chain doesn't cover.
         one_time: list[str] = []
         b_id = (entry.findtext("Bonus") or "").strip()
         if b_id:
             b = indexes.get("bonus.xml", {}).get(b_id)
             if b is not None:
-                one_time = render_bonus(b, indexes)
+                one_time.extend(render_bonus(b, indexes))
+        for ln in tile_and_oneoff_lines(entry, indexes):
+            if ln not in one_time:
+                one_time.append(ln)
+
+        # Split the wonder-tile per-turn output: Culture gets its own
+        # sortable column; anything else stays as chips.
+        culture_per_turn = 0
+        other_output = []
+        for o in output:
+            if o["yield"] == "culture":
+                culture_per_turn = o["value"]
+            else:
+                other_output.append(o)
+
+        # Best-effort external reference (game files carry no prose).
+        wiki = "https://en.wikipedia.org/wiki/" + re.sub(
+            r"^The\s+", "", name).strip().replace(" ", "_")
 
         wonders.append({
             "id": zt,
@@ -236,6 +309,9 @@ def main() -> int:
             "costMap": cost_map,
             "icon": icon,
             "output": output,
+            "otherOutput": other_output,
+            "culturePerTurn": culture_per_turn,
+            "wikipedia": wiki,
             "vp": vp,
             "effects": effects,
             "oneTime": one_time,

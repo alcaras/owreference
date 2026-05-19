@@ -545,6 +545,24 @@ def render_bonus(e: ET.Element, indexes: dict | None = None) -> list[str]:
         u = (fu.findtext("zIndex") or "").replace("UNIT_", "").title()
         n = int(fu.findtext("iValue") or "0")
         out.append(f"+{n} {u}")
+    # Per-city instant yields (e.g., Ishtar Gate: +100 Culture in every City)
+    for pair in e.findall("aiCityYields/Pair"):
+        y = yield_name(pair.findtext("zIndex"))
+        v = int(pair.findtext("iValue") or "0")
+        out.append(f"{fmt_decimal(v)} {y} in every City")
+    # Instant happiness levels in every city (e.g., Hagia Sophia)
+    hl = e.findtext("iHappinessLevels")
+    if hl and hl != "0":
+        n = int(hl)
+        out.append(f"+{n} Happiness Level{'s' if n != 1 else ''} in every City")
+    # Free improvement of a class added to every city (e.g., Jebel Barkal Temple)
+    add_cls = e.findtext("AddImprovementClass")
+    if add_cls:
+        nice = add_cls.replace("IMPROVEMENTCLASS_", "").replace("_", " ").title()
+        out.append(f"Adds a free {nice} to every City")
+    # Holy-city agents (e.g., the Oracle)
+    if (e.findtext("bHolyCityAgents") or "0") == "1":
+        out.append("Holy City spawns Agents")
     return out
 
 

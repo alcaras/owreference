@@ -36,7 +36,10 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^SPECIALIST_([A-Z_]+?)()$"), "icons/specialists"),
     (re.compile(r"^TECH_([A-Z_]+?)()$"), "icons/techs"),
     (re.compile(r"^IMPROVEMENT_SHRINE_([A-Z_]+?)()$"), "icons/shrines"),
-    (re.compile(r"^IMPROVEMENT_(?!SHRINE_|RUINS|PILLAGED|FINISHED|LIBRARY_TEMP|DEAD_|.*_RUINS|SETTLEMENT_|HOVEL_|BASTION_|OUTPOST_|ANCIENT_|ENCAMPMENT_|CITY_SITE)([A-Z0-9_]+?)()$"), "icons/improvements"),
+    # NB: char class includes `'` so apostrophe assets like
+    # IMPROVEMENT_SANCHI'S_STUPPA (the Great Stupa) actually match;
+    # route() then sanitizes the slug to sanchi_s_stuppa.
+    (re.compile(r"^IMPROVEMENT_(?!SHRINE_|RUINS|PILLAGED|FINISHED|LIBRARY_TEMP|DEAD_|.*_RUINS|SETTLEMENT_|HOVEL_|BASTION_|OUTPOST_|ANCIENT_|ENCAMPMENT_|CITY_SITE)([A-Z0-9_']+?)()$"), "icons/improvements"),
     (re.compile(r"^PROJECT_([A-Z_0-9]+?)()$"), "icons/projects"),
     (re.compile(r"^EFFECTUNIT_([A-Z_0-9]+?)()$"), "icons/effects"),
     # Historical-person portraits (dynasty founders + named characters)
@@ -63,7 +66,11 @@ def route(name: str) -> tuple[str, str, bool] | None:
     for pat, out_dir in ROUTES:
         m = pat.match(name)
         if m:
-            slug = m.group(1).lower()
+            # Sanitize: lower-case, any non [a-z0-9_] → _ (collapse runs).
+            # No-op for the usual ALL_CAPS_UNDERSCORE names; only rewrites
+            # oddballs like SANCHI'S_STUPPA → sanchi_s_stuppa so the file
+            # is shell/URL-safe and matches build_wonders' slug resolver.
+            slug = re.sub(r"[^a-z0-9_]+", "_", m.group(1).lower()).strip("_")
             is_seat = bool(m.group(2))
             return out_dir, slug, is_seat
     return None

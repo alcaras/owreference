@@ -1,0 +1,178 @@
+---
+import Base from '../../layouts/Base.astro';
+import LinkedText from '../../components/LinkedText.astro';
+import wonders from '../../data/wonders.json';
+import { classifyYield } from '../../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+export function getStaticPaths() {
+  return (wonders as any[]).map(w => ({ params: { slug: w.slug }, props: { w } }));
+}
+
+const { w } = Astro.props as { w: any };
+const yieldIcon = (k: string) => `${base}img/icons/yields/${k}.png`;
+const eraIcon = (e: string) => `${base}img/icons/culture/${e.toLowerCase()}.png`;
+
+// Every fact below is from the game's improvement.xml (via build_wonders.py /
+// the humanizer) — no spreadsheet. The Wikipedia link is the only external.
+const facts: { label: string; value: string }[] = [
+  { label: 'Culture Tier', value: `${w.era} Culture` },
+  { label: 'Build Time', value: `${w.buildTurns} turns` },
+  { label: 'Location', value: w.location },
+  { label: 'Buildable by', value: 'Any nation' },
+];
+if (w.vp > 0) facts.push({ label: 'Victory Points', value: String(w.vp) });
+if (w.isHolyCity) facts.push({ label: 'Requires', value: 'Holy City' });
+if (w.dlc) facts.push({ label: 'Content', value: w.dlcLabel });
+
+const effectRows = (lines: string[]) =>
+  lines.map(t => ({ t, yk: classifyYield(t)?.toLowerCase() || 'misc' }));
+---
+
+<Base
+  title={w.name}
+  active="wonders"
+  description={`${w.name} — ${w.era} Culture wonder in Old World. ${w.location}. ${
+    w.culturePerTurn ? `+${w.culturePerTurn} Culture/turn. ` : ''
+  }${w.effects.join('. ')}${w.effects.length ? '.' : ''} All data from the game's improvement.xml.`}
+>
+  <p class="crumb"><a href={`${base}wonders`}>← All Wonders</a></p>
+
+  <header class="whead">
+    {w.icon ? (
+      <img class="whead__art" src={`${base}${w.icon}`} alt={w.name} loading="eager" onerror="this.style.display='none'" />
+    ) : (
+      <div class="whead__art whead__art--ph" aria-hidden="true">🏛️</div>
+    )}
+    <div class="whead__body">
+      <h1 class="whead__title">{w.name}</h1>
+      <div class="whead__chips">
+        <span class="chip chip--era">
+          <img src={eraIcon(w.era)} alt="" class="chip__icon" onerror="this.style.display='none'" />
+          {w.era} Culture
+        </span>
+        {w.culturePerTurn > 0 && (
+          <span class="chip yield-culture">
+            <img src={yieldIcon('culture')} alt="" class="chip__icon" onerror="this.style.display='none'" />
+            +{w.culturePerTurn} Culture/Turn
+          </span>
+        )}
+        {w.vp > 0 && <span class="chip chip--vp"><b>{w.vp}</b> VP</span>}
+        {w.isHolyCity && <span class="chip chip--holy">✧ Holy City</span>}
+        {w.dlc && <span class="chip chip--dlc" title={w.dlcLabel}>DLC</span>}
+      </div>
+      <p class="whead__wiki">
+        <a href={w.wikipedia} target="_blank" rel="noopener noreferrer">Read about {w.name} on Wikipedia ↗</a>
+      </p>
+    </div>
+  </header>
+
+  <div class="wgrid">
+    <section class="wcard">
+      <h2 class="wcard__h">Build Cost</h2>
+      <ul class="costlist">
+        {w.cost.length === 0 ? <li class="muted">—</li> : w.cost.map((c: any) => (
+          <li class={`costlist__row yield-${c.yield}`}>
+            <img src={yieldIcon(c.yield)} alt="" class="costlist__ico" onerror="this.style.display='none'" />
+            <span class="costlist__y">{c.yield[0].toUpperCase() + c.yield.slice(1)}</span>
+            <b class="costlist__v">{c.value}</b>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="wcard">
+      <h2 class="wcard__h">Details</h2>
+      <dl class="dl">
+        {facts.map(f => (<><dt>{f.label}</dt><dd><LinkedText text={f.value} showIcons={false} /></dd></>))}
+      </dl>
+    </section>
+
+    <section class="wcard">
+      <h2 class="wcard__h">Tile Output</h2>
+      {(w.culturePerTurn > 0 || w.otherOutput.length > 0) ? (
+        <ul class="bullets">
+          {w.culturePerTurn > 0 && (
+            <li class="effect yield-culture"><LinkedText text={`+${w.culturePerTurn} Culture/Turn`} iconsForYields={true} /></li>
+          )}
+          {w.otherOutput.map((o: any) => (
+            <li class={`effect yield-${o.yield}`}><LinkedText text={o.label} iconsForYields={true} /></li>
+          ))}
+        </ul>
+      ) : <p class="muted">No per-turn tile yield.</p>}
+    </section>
+
+    <section class="wcard wcard--wide">
+      <h2 class="wcard__h">Ongoing Bonus</h2>
+      {w.effects.length === 0 ? <p class="muted">None.</p> : (
+        <ul class="bullets">
+          {effectRows(w.effects).map(e => (
+            <li class={`effect yield-${e.yk}`}><LinkedText text={e.t} showIcons={false} iconsForYields={true} /></li>
+          ))}
+        </ul>
+      )}
+    </section>
+
+    <section class="wcard wcard--wide">
+      <h2 class="wcard__h">One-time / Tile</h2>
+      {w.oneTime.length === 0 ? <p class="muted">None.</p> : (
+        <ul class="bullets">
+          {effectRows(w.oneTime).map(e => (
+            <li class={`effect yield-${e.yk}`}><LinkedText text={e.t} showIcons={false} iconsForYields={true} /></li>
+          ))}
+        </ul>
+      )}
+    </section>
+  </div>
+
+  <p class="provenance">Every fact on this page is derived from the game's <code>improvement.xml</code> (and its effect/bonus chains via the humanizer). The legacy spreadsheet is not consulted. The Wikipedia link is the only external reference.</p>
+</Base>
+
+<style>
+  .crumb { margin: 0 0 1rem; font-size: 0.82rem; }
+  .crumb a { color: var(--text-dim); text-decoration: none; }
+  .crumb a:hover { color: var(--accent); }
+
+  .whead {
+    display: flex; gap: 1.25rem; align-items: flex-start;
+    padding: 0 0 1.25rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem;
+  }
+  .whead__art {
+    width: 132px; height: 132px; object-fit: contain; flex-shrink: 0;
+    border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+  }
+  .whead__art--ph { display: flex; align-items: center; justify-content: center; font-size: 3.5rem; opacity: 0.5; }
+  .whead__title { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--accent); margin: 0 0 0.6rem; }
+  .whead__chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.7rem; }
+  .whead__wiki { margin: 0; font-size: 0.85rem; }
+  .whead__wiki a { color: var(--accent); }
+
+  .chip--era { background: var(--bg-elev-2); color: var(--text); border: 1px solid var(--border); }
+  .chip--vp { background: color-mix(in srgb, var(--accent) 35%, var(--bg-elev) 65%); color: var(--text); border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); }
+  .chip--vp b { color: var(--accent); font-family: var(--font-mono); margin-right: 0.2rem; }
+  .chip--holy { background: color-mix(in srgb, #6b5ea6 30%, var(--bg-elev) 70%); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 50%, transparent); }
+  .chip--dlc { background: var(--bg-elev-2); color: var(--text-dim); border: 1px solid var(--border); font-family: var(--font-mono); text-transform: uppercase; font-size: 0.62rem; letter-spacing: 0.06em; }
+
+  .wgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.85rem; }
+  .wcard { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; }
+  .wcard--wide { grid-column: 1 / -1; }
+  .wcard__h { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; margin: 0 0 0.6rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }
+  .muted { color: var(--text-faint); font-size: 0.85rem; margin: 0; }
+
+  .costlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+  .costlist__row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; padding: 0.2rem 0.35rem; border-radius: 4px; }
+  .costlist__ico { width: 18px; height: 18px; object-fit: contain; }
+  .costlist__y { color: var(--text-dim); }
+  .costlist__v { margin-left: auto; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .dl { display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.9rem; margin: 0; font-size: 0.85rem; }
+  .dl dt { color: var(--text-faint); }
+  .dl dd { margin: 0; color: var(--text); }
+
+  .bullets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+  .bullets .effect { font-size: 0.85rem; }
+
+  .provenance { margin: 1.5rem 0 0; font-size: 0.76rem; color: var(--text-faint); line-height: 1.5; }
+  .provenance code { font-family: var(--font-mono); color: var(--text-dim); }
+</style>
