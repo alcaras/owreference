@@ -2,6 +2,7 @@
 import '../styles/theme.css';
 import '../styles/nation-tokens.css';
 import patch from '../../data/patch.json';
+import { NAV } from '../data/nav';
 
 interface Props {
   title: string;
@@ -31,23 +32,9 @@ const ogImageUrl = ogImage
   ? new URL(base + ogImage, siteOrigin).href
   : new URL(base + 'img/crests/rome.png', siteOrigin).href;  // sensible fallback crest
 
-// Scope narrowed to Nations for now — other pages still generate but
-// aren't surfaced in the nav. Reintroduce them once each is polished.
-const nav = [
-  { href: 'nations', label: 'Nations' },
-  { href: 'tribes', label: 'Tribes' },
-  { href: 'families', label: 'Families' },
-  { href: 'archetypes', label: 'Archetypes' },
-  { href: 'missions', label: 'Missions' },
-  { href: 'map-scripts', label: 'Map Scripts' },
-  { href: 'urban-improvements', label: 'Urban Improvements' },
-  { href: 'rural-improvements', label: 'Rural Improvements' },
-  { href: 'wonders', label: 'Wonders' },
-  { href: 'urban-specialists', label: 'Urban Specialists' },
-  { href: 'rural-specialists', label: 'Rural Specialists' },
-  { href: 'cognomens', label: 'Cognomens' },
-  { href: 'cognomens-tracker', label: 'Cognomens Tracker' },
-];
+// The curated nav set lives in src/data/nav.ts — shared single source of
+// truth so the home-page catalog can't drift from the header nav.
+const nav = NAV;
 
 const syncedDate = new Date(patch.syncedAt);
 const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
