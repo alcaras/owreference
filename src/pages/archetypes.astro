@@ -4,6 +4,8 @@ import LinkedText from '../components/LinkedText.astro';
 import archetypes from '../data/archetypes.json';
 import { classifyYield } from '../lib/entities';
 
+const base = import.meta.env.BASE_URL;
+
 type Archetype = typeof archetypes[number];
 
 const RATING_TONE: Record<string, string> = {
@@ -87,6 +89,7 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
           <label class="nation-picker__row">
             <input type="checkbox" class="nation-picker__cb" value={a.slug} checked />
             <span class="arc-pick__glyph">{SLOT_GLYPH[a.slots[0]] || '·'}</span>
+            {a.icon && <img class="nation-picker__crest" src={`${base}${a.icon}`} alt="" onerror="this.style.display='none'" />}
             <span class="nation-picker__name">{a.name}</span>
           </label>
         </li>
@@ -113,6 +116,7 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
               <th class="nhdr nhdr--family" data-archetype={a.slug} id={a.slug}>
                 <div class="nhdr__inner">
                   <span class="arc-hdr__group">{SLOT_GLYPH[a.slots[0]] || '·'} {ARCHETYPE_GROUP[a.slug] || a.slots[0]}</span>
+                  {a.icon && <img class="nhdr__crest" src={`${base}${a.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />}
                   <span class="nhdr__name">{a.name}</span>
                 </div>
               </th>

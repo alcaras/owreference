@@ -31,6 +31,36 @@ from humanize import (  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "wonders.json"
+IMG_DIR = ROOT / "public" / "img" / "icons" / "improvements"
+
+# Cost columns surfaced on the page, in in-game yield order.
+COST_YIELDS = ["food", "iron", "stone", "wood", "civics"]
+
+
+def slugify(s: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", (s or "").lower()).strip("_")
+
+
+def resolve_icon(name: str, ztype: str, icon_name: str) -> str:
+    """Sprite path for a wonder, '' if none was extracted.
+
+    Tries, in order: display-name slug → zType slug → zIconName slug
+    (and its raw apostrophe form). zIconName is the reliable key for the
+    handful whose art ships under a different name (Acropolis→Parthenon,
+    Via Recta Souk→Grand Bazaar, Mahavihara→Nalanda Mahavihra, …).
+    Resolves 27/28 — only Sanchi's Stupa has no extracted sprite.
+    """
+    icn = icon_name.replace("IMPROVEMENT_", "")
+    cands = [
+        slugify(name),
+        ztype.replace("IMPROVEMENT_", "").lower(),
+        slugify(icn),
+        icn.lower(),
+    ]
+    for cand in cands:
+        if cand and (IMG_DIR / f"{cand}.png").exists():
+            return f"img/icons/improvements/{cand}.png"
+    return ""
 
 
 ERA_BY_CULTURE = {
@@ -151,6 +181,11 @@ def main() -> int:
         era = ERA_BY_CULTURE.get(culture, {"order": 0, "label": culture})
 
         cost = cost_lines(entry)
+        # Per-yield cost map for the sortable columns (None where the
+        # wonder doesn't use that yield, so the column shows a dash).
+        cost_by = {c["yield"]: c["value"] for c in cost}
+        cost_map = {y: cost_by.get(y) for y in COST_YIELDS}
+        icon = resolve_icon(name, zt, entry.findtext("zIconName") or "")
         output = output_lines(entry)
         location = location_from(entry)
         build_turns = int(entry.findtext("iBuildTurns") or "0")
@@ -198,6 +233,8 @@ def main() -> int:
             "location": location,
             "buildTurns": build_turns,
             "cost": cost,
+            "costMap": cost_map,
+            "icon": icon,
             "output": output,
             "vp": vp,
             "effects": effects,

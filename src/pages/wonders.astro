@@ -6,25 +6,23 @@ import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
 
-// Pre-classify cell yields for the column-filter search.
+// Per-yield cost columns, in in-game yield order (must match
+// COST_YIELDS in scripts/build_wonders.py).
+const COST_COLS = ['food', 'iron', 'stone', 'wood', 'civics'] as const;
+
+// Culture-tier art (icon over words, per the design rules).
+const ERA_ORDER: Record<string, number> = { Weak: 1, Developing: 2, Strong: 3, Legendary: 4 };
+const eraIcon = (era: string) => `${base}img/icons/culture/${era.toLowerCase()}.png`;
+const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
+
+// Pre-classify a JSON blob per wonder for the search filter.
 const searchBlobs: Record<string, string> = {};
 for (const w of wonders) {
   searchBlobs[w.slug] = JSON.stringify(w).toLowerCase();
 }
 
-// Group wonders by era so we get a section header per culture tier.
-type Era = 'Weak' | 'Developing' | 'Strong' | 'Legendary';
-const ERAS: Era[] = ['Weak', 'Developing', 'Strong', 'Legendary'];
-const byEra: Record<Era, typeof wonders> = {
-  Weak: [], Developing: [], Strong: [], Legendary: [],
-};
-for (const w of wonders) {
-  (byEra[w.era as Era] || byEra.Weak).push(w);
-}
-
-// Yield-icon helper for cost chips. Public/img/icons/yields/<key>.png.
-const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
-
+const ERAS = ['Weak', 'Developing', 'Strong', 'Legendary'] as const;
+const eraCount = (e: string) => wonders.filter(w => w.era === e).length;
 const dlcCount = wonders.filter(w => w.dlc).length;
 ---
 
@@ -32,7 +30,7 @@ const dlcCount = wonders.filter(w => w.dlc).length;
   title="Wonders"
   active="wonders"
   pageMark="🏛️"
-  description={`The ${wonders.length} World Wonders of Old World (${wonders.length - dlcCount} base game, ${dlcCount} DLC) grouped by Culture tier — build cost, tile location requirement, per-turn yield output, ongoing empire bonus, and one-time completion bonus. Each is buildable by any nation.`}
+  description={`The ${wonders.length} World Wonders of Old World (${wonders.length - dlcCount} base game, ${dlcCount} DLC) — build cost broken out per yield (Food, Iron, Stone, Wood, Civics, sortable), Culture tier, tile location requirement, per-turn yield output, ongoing empire bonus and one-time completion bonus. Every fact is derived from the game's improvement.xml, not the legacy spreadsheet. Buildable by any nation.`}
 >
   <div class="page-meta">
     <h1 class="page-title">Wonders</h1>
@@ -57,12 +55,13 @@ const dlcCount = wonders.filter(w => w.dlc).length;
       <button type="button" class="nation-picker__action nation-picker__action--close" data-pick="close">Done</button>
     </div>
     <ul class="nation-picker__list">
-      {ERAS.filter(e => byEra[e].length > 0).map(era => (
+      {ERAS.filter(e => eraCount(e) > 0).map(era => (
         <li class="nation-picker__item">
           <label class="nation-picker__row">
             <input type="checkbox" class="nation-picker__cb" value={era} checked />
+            <img class="nation-picker__crest" src={eraIcon(era)} alt="" onerror="this.style.display='none'" />
             <span class="nation-picker__name">{era} Culture</span>
-            <span class="nation-picker__count">{byEra[era].length}</span>
+            <span class="nation-picker__count">{eraCount(era)}</span>
           </label>
         </li>
       ))}
@@ -76,113 +75,115 @@ const dlcCount = wonders.filter(w => w.dlc).length;
       <table class="ntbl wtbl">
         <colgroup>
           <col class="wtbl__name-col" />
+          <col class="wtbl__era-col" />
           <col class="wtbl__loc-col" />
-          <col class="wtbl__cost-col" />
+          {COST_COLS.map(() => <col class="wtbl__cost-col" />)}
           <col class="wtbl__effects-col" />
           <col class="wtbl__onetime-col" />
         </colgroup>
         <thead>
           <tr>
-            <th class="rowlabel rowlabel--corner">
-              <span class="rowlabel__small">Wonder ↓</span>
-              <span class="rowlabel__big">Attribute →</span>
-            </th>
-            <th class="nhdr nhdr--family">Location</th>
-            <th class="nhdr nhdr--family">Cost</th>
-            <th class="nhdr nhdr--family">Ongoing Bonus</th>
-            <th class="nhdr nhdr--family">One-time / Tile</th>
+            <th class="rowlabel rowlabel--corner"><span class="nhdr__name">Wonder</span></th>
+            <th class="nhdr nhdr--col"><span class="nhdr__name">Culture</span></th>
+            <th class="nhdr nhdr--col"><span class="nhdr__name">Location</span></th>
+            {COST_COLS.map(y => (
+              <th class={`nhdr nhdr--col nhdr--cost yield-${y}`} title={`${y[0].toUpperCase() + y.slice(1)} cost`}>
+                <span class="nhdr__name">
+                  <img class="nhdr__yico" src={yieldIcon(y)} alt="" onerror="this.style.display='none'" />
+                  {y[0].toUpperCase() + y.slice(1)}
+                </span>
+              </th>
+            ))}
+            <th class="nhdr nhdr--col"><span class="nhdr__name">Ongoing Bonus</span></th>
+            <th class="nhdr nhdr--col"><span class="nhdr__name">One-time / Tile</span></th>
           </tr>
         </thead>
         <tbody>
-          {ERAS.map(era => (
-            <>
-              {byEra[era].length > 0 && (
-                <tr class="srow" data-erahdr={era}>
-                  <th class="srow__th" colspan={5}>
-                    <span class="srow__chevron">▸</span>
-                    {era} Culture
-                    <span class="srow__hint"> — {byEra[era].length} wonders</span>
-                  </th>
-                </tr>
-              )}
-              {byEra[era].map(w => (
-                <tr data-wonder={w.slug} data-era={era} id={w.slug}>
-                  <th class="rowlabel rowlabel--wonder" scope="row">
-                    <div class="wname">
-                      <span class="wname__name">{w.name}</span>
-                      <div class="wname__meta">
-                        {w.vp > 0 && <span class="chip chip--vp" title="Victory Points"><b>{w.vp}</b> VP</span>}
-                        {w.dlc && <span class="chip chip--dlc" title={w.dlcLabel}>DLC</span>}
-                        {w.isHolyCity && <span class="chip chip--holy" title="Holy City Wonder">✧ Holy</span>}
-                      </div>
-                      {w.output.length > 0 && (
-                        <div class="wname__output">
-                          {w.output.map((o: any) => (
-                            <span class={`chip yield-${o.yield}`} title="Per-turn yield from the wonder tile">
-                              <img class="chip__icon" src={yieldIcon(o.yield)} alt="" onerror="this.style.display='none'" />
-                              {o.label.replace('/Turn', '')}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+          {wonders.map(w => (
+            <tr data-wonder={w.slug} data-era={w.era} id={w.slug}>
+              <th class="rowlabel rowlabel--wonder" scope="row" data-sortval={w.sortName}>
+                <div class="wname">
+                  {w.icon ? (
+                    <img class="wname__art" src={`${base}${w.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />
+                  ) : (
+                    <span class="wname__art wname__art--ph" aria-hidden="true">🏛️</span>
+                  )}
+                  <div class="wname__text">
+                    <span class="wname__name">{w.name}</span>
+                    <div class="wname__meta">
+                      {w.vp > 0 && <span class="chip chip--vp" title="Victory Points"><b>{w.vp}</b> VP</span>}
+                      {w.dlc && <span class="chip chip--dlc" title={w.dlcLabel}>DLC</span>}
+                      {w.isHolyCity && <span class="chip chip--holy" title="Holy City Wonder">✧ Holy</span>}
                     </div>
-                  </th>
-
-                  {/* Location */}
-                  <td class="cell cell--loc yield-misc" data-wonder={w.slug}>
-                    <div class="cell__body"><LinkedText text={w.location} showIcons={false} /></div>
-                  </td>
-
-                  {/* Cost */}
-                  <td class="cell cell--cost" data-wonder={w.slug}>
-                    {w.cost.length === 0 ? (
-                      <span class="cell__dash">—</span>
-                    ) : (
-                      <div class="cost-list">
-                        {w.cost.map((c: any) => (
-                          <span class={`chip yield-${c.yield}`}>
-                            <img class="chip__icon" src={yieldIcon(c.yield)} alt="" onerror="this.style.display='none'" />
-                            <b>{c.value}</b>
+                    {w.output.length > 0 && (
+                      <div class="wname__output">
+                        {w.output.map((o: any) => (
+                          <span class={`chip yield-${o.yield}`} title="Per-turn yield from the wonder tile">
+                            <img class="chip__icon" src={yieldIcon(o.yield)} alt="" onerror="this.style.display='none'" />
+                            {o.label.replace('/Turn', '')}
                           </span>
                         ))}
                       </div>
                     )}
-                  </td>
+                  </div>
+                </div>
+              </th>
 
-                  {/* Ongoing bonus (humanized effects) */}
-                  {w.effects.length === 0 ? (
-                    <td class="cell is-empty" data-wonder={w.slug}><span class="cell__dash">—</span></td>
-                  ) : (
-                    <td class="cell cell--effects" data-wonder={w.slug}>
-                      {w.effects.map((text: string) => {
-                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
-                        return (
-                          <div class={`effect yield-${yieldKey}`}>
-                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
-                          </div>
-                        );
-                      })}
-                    </td>
-                  )}
+              {/* Culture tier — icon over words, sorts by tier order */}
+              <td class="cell cell--era" data-sortval={ERA_ORDER[w.era] ?? 0}>
+                <span class="era-tag" title={`${w.era} Culture`}>
+                  <img class="era-tag__ico" src={eraIcon(w.era)} alt="" onerror="this.style.display='none'" />
+                  <span class="era-tag__txt">{w.era}</span>
+                </span>
+              </td>
 
-                  {/* One-time bonus (Bonus on completion) */}
-                  {w.oneTime.length === 0 ? (
-                    <td class="cell is-empty" data-wonder={w.slug}><span class="cell__dash">—</span></td>
-                  ) : (
-                    <td class="cell cell--effects" data-wonder={w.slug}>
-                      {w.oneTime.map((text: string) => {
-                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
-                        return (
-                          <div class={`effect yield-${yieldKey}`}>
-                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
-                          </div>
-                        );
-                      })}
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </>
+              {/* Location */}
+              <td class="cell cell--loc yield-misc">
+                <div class="cell__body"><LinkedText text={w.location} showIcons={false} /></div>
+              </td>
+
+              {/* Per-yield cost columns (game order) */}
+              {COST_COLS.map(y => {
+                const v = (w.costMap as any)[y] as number | null;
+                return v == null ? (
+                  <td class="cell cell--cost is-empty"><span class="cell__dash">—</span></td>
+                ) : (
+                  <td class={`cell cell--cost yield-${y}`}><span class="costval">{v}</span></td>
+                );
+              })}
+
+              {/* Ongoing bonus */}
+              {w.effects.length === 0 ? (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              ) : (
+                <td class="cell cell--effects">
+                  {w.effects.map((text: string) => {
+                    const yk = classifyYield(text)?.toLowerCase() || 'misc';
+                    return (
+                      <div class={`effect yield-${yk}`}>
+                        <LinkedText text={text} showIcons={false} iconsForYields={true} />
+                      </div>
+                    );
+                  })}
+                </td>
+              )}
+
+              {/* One-time bonus */}
+              {w.oneTime.length === 0 ? (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              ) : (
+                <td class="cell cell--effects">
+                  {w.oneTime.map((text: string) => {
+                    const yk = classifyYield(text)?.toLowerCase() || 'misc';
+                    return (
+                      <div class={`effect yield-${yk}`}>
+                        <LinkedText text={text} showIcons={false} iconsForYields={true} />
+                      </div>
+                    );
+                  })}
+                </td>
+              )}
+            </tr>
           ))}
         </tbody>
       </table>
@@ -192,11 +193,8 @@ const dlcCount = wonders.filter(w => w.dlc).length;
   <script type="application/json" id="wonder-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script type="application/json" id="wonder-era-map" set:html={JSON.stringify(Object.fromEntries(wonders.map(w => [w.slug, w.era])))}></script>
   <script is:inline>
-    // Combined Culture-tier picker + search, mirroring the Nations page
-    // (state of the art). The picker filters whole eras (folding in what
-    // used to be a static legend); search composes on top, keyed by
-    // data-wonder; era section headers hide when their tier is unpicked
-    // or has no search match.
+    // Combined Culture-tier picker + search, keyed by data-wonder. Works
+    // on the flat (sortable) table — no section headers to manage.
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('wonder-search-blobs');
@@ -219,22 +217,14 @@ const dlcCount = wonders.filter(w => w.dlc).length;
       function applyFilters() {
         const q = ((input && input.value) || '').trim().toLowerCase();
         let visibleN = 0, hiddenBySearch = 0;
-        const eraHasVisible = {};
         for (const slug of slugs) {
           const matchesSearch = !q || blobs[slug].includes(q);
-          const eraPicked = pickedEras.has(eraOf[slug]);
-          const visible = matchesSearch && eraPicked;
-          if (visible) { visibleN++; eraHasVisible[eraOf[slug]] = true; }
+          const visible = matchesSearch && pickedEras.has(eraOf[slug]);
+          if (visible) visibleN++;
           if (!matchesSearch) hiddenBySearch++;
           for (const el of grid.querySelectorAll('[data-wonder="' + slug + '"]')) {
             el.classList.toggle('is-hidden', !visible);
           }
-        }
-        // Section headers follow their tier: hidden if unpicked or empty
-        // after the current search.
-        for (const hdr of grid.querySelectorAll('[data-erahdr]')) {
-          const era = hdr.getAttribute('data-erahdr');
-          hdr.classList.toggle('is-hidden', !pickedEras.has(era) || !eraHasVisible[era]);
         }
         if (visibleCount) visibleCount.textContent = String(visibleN);
         if (note) {
@@ -305,110 +295,109 @@ const dlcCount = wonders.filter(w => w.dlc).length;
       applyFilters();
     })();
   </script>
+  <script is:inline>
+    // Click-to-sort columns. Mirrors urban-improvements.astro, extended to
+    // honor data-sortval (Culture sorts by tier order, Wonder by sort-name)
+    // so the visible label can stay an icon/word.
+    (function () {
+      const table = document.querySelector('#wonders-grid table.ntbl');
+      if (!table || !table.tHead) return;
+      const ths = Array.from(table.tHead.rows[0].cells);
+      ths.forEach((th, ci) => {
+        th.classList.add('is-sortable');
+        th.addEventListener('click', () => {
+          const tb = table.tBodies[0];
+          const rows = Array.from(tb.rows);
+          const asc = th.getAttribute('aria-sort') !== 'ascending';
+          ths.forEach(h => h.removeAttribute('aria-sort'));
+          th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+          const val = r => {
+            const c = r.cells[ci];
+            const sv = c && c.getAttribute && c.getAttribute('data-sortval');
+            const t = (sv != null ? sv : (c ? c.textContent : '')).trim();
+            const n = parseFloat(t.replace(/[^0-9.\-]/g, ''));
+            return { t, n: (t && !isNaN(n)) ? n : null };
+          };
+          rows.sort((a, b) => {
+            const ka = val(a), kb = val(b);
+            let r;
+            if (ka.n !== null && kb.n !== null) r = ka.n - kb.n;
+            else if (ka.n !== null) r = -1;
+            else if (kb.n !== null) r = 1;
+            else r = ka.t.localeCompare(kb.t);
+            return asc ? r : -r;
+          });
+          rows.forEach(r => tb.appendChild(r));
+        });
+      });
+    })();
+  </script>
 </Base>
 
 <style>
-  /* Section row hint after era label */
-  .srow__hint { color: var(--text-faint); font-weight: 400; font-size: 0.78em; letter-spacing: 0; }
-
-  /* Column widths for the wonders table */
-  .wtbl__name-col    { width: 16rem; }
-  .wtbl__loc-col     { width: 11rem; }
-  .wtbl__cost-col    { width: 10rem; }
+  /* Column widths */
+  .wtbl__name-col    { width: 17rem; }
+  .wtbl__era-col     { width: 7rem; }
+  .wtbl__loc-col     { width: 10rem; }
+  .wtbl__cost-col    { width: 4.5rem; }
   .wtbl__effects-col { width: auto; }
-  .wtbl__onetime-col { width: 14rem; }
+  .wtbl__onetime-col { width: 13rem; }
 
-  /* Make the wonder-name column behave like a row label but with richer content */
-  .rowlabel--wonder {
-    padding: 0.5rem 0.65rem;
-    text-align: left;
-    background: var(--bg-elev);
-  }
-  .wname { display: flex; flex-direction: column; gap: 0.3rem; }
-  .wname__name {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.92rem;
-    color: var(--text);
-    letter-spacing: 0.02em;
-  }
-  .wname__meta {
-    display: flex; gap: 0.25rem; flex-wrap: wrap; align-items: center;
-  }
-  .wname__output {
-    display: flex; gap: 0.25rem; flex-wrap: wrap;
-    margin-top: 0.15rem;
-  }
-
-  /* Cost cell layout: yield chips with the numeric amount */
-  .cell--cost {
-    padding: 0.35rem 0.45rem;
-    background: var(--bg-elev);
-    background-image: none;
-  }
-  .cost-list { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
-  .cost-list .chip {
-    padding: 0.1rem 0.45rem 0.1rem 0.3rem;
-    font-size: 0.72rem;
-    gap: 0.25rem;
-  }
-  .cost-list .chip b {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    font-weight: 600;
-  }
-
-  /* Smaller chip variants used in the name cell */
-  .chip--vp {
-    background: color-mix(in srgb, var(--accent) 35%, var(--bg-elev) 65%);
-    color: var(--text);
-    border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
-    padding: 0.05rem 0.4rem;
-    font-size: 0.66rem;
-  }
-  .chip--vp b {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    color: var(--accent);
-    margin-right: 0.2rem;
-  }
-  .chip--dlc {
+  /* Sortable header affordance (same as urban/rural improvements) */
+  .nhdr--col {
     background: var(--bg-elev-2);
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-    padding: 0.05rem 0.4rem;
-    font-size: 0.64rem;
-    letter-spacing: 0.06em;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-  }
-  .chip--holy {
-    background: color-mix(in srgb, #6b5ea6 30%, var(--bg-elev) 70%);
     color: var(--text);
-    border: 1px solid color-mix(in srgb, #6b5ea6 50%, transparent);
-    padding: 0.05rem 0.4rem;
-    font-size: 0.66rem;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    border-bottom: 2px solid var(--border-strong);
+    text-align: left;
+    padding: 0.45rem 0.55rem;
   }
+  .nhdr__name { font-family: var(--font-display); font-size: 0.78rem; letter-spacing: 0.03em; display: inline-flex; align-items: center; gap: 0.3rem; }
+  .nhdr__yico { width: 14px; height: 14px; object-fit: contain; }
+  .nhdr.is-sortable, .rowlabel--corner.is-sortable { cursor: pointer; user-select: none; }
+  .nhdr.is-sortable:hover, .rowlabel--corner.is-sortable:hover { filter: brightness(1.12); }
+  .nhdr.is-sortable .nhdr__name::after,
+  .rowlabel--corner.is-sortable .nhdr__name::after {
+    content: '↕'; opacity: 0.35; margin-left: 0.25rem; font-size: 0.85em;
+  }
+  .nhdr[aria-sort='ascending'] .nhdr__name::after,
+  .rowlabel--corner[aria-sort='ascending'] .nhdr__name::after { content: '↑'; opacity: 0.9; }
+  .nhdr[aria-sort='descending'] .nhdr__name::after,
+  .rowlabel--corner[aria-sort='descending'] .nhdr__name::after { content: '↓'; opacity: 0.9; }
+  .nhdr--cost { text-align: right; }
+  .nhdr--cost .nhdr__name { justify-content: flex-end; }
+
+  /* Wonder name cell: art + Cinzel name + chips */
+  .rowlabel--wonder { padding: 0.45rem 0.6rem; text-align: left; background: var(--bg-elev); }
+  .wname { display: flex; gap: 0.55rem; align-items: flex-start; }
+  .wname__art {
+    width: 38px; height: 38px; object-fit: contain; flex-shrink: 0;
+    border-radius: 5px; background: rgba(0,0,0,0.25);
+  }
+  .wname__art--ph { display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; opacity: 0.5; }
+  .wname__text { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+  .wname__name { font-family: var(--font-display); font-weight: 600; font-size: 0.92rem; color: var(--text); letter-spacing: 0.02em; }
+  .wname__meta { display: flex; gap: 0.25rem; flex-wrap: wrap; align-items: center; }
+  .wname__output { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+
+  /* Culture tier tag */
+  .cell--era { background: var(--bg-elev); background-image: none; }
+  .era-tag { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--text-dim); }
+  .era-tag__ico { width: 18px; height: 18px; object-fit: contain; }
+
+  /* Cost columns: right-aligned mono number, faint yield tint */
+  .cell--cost { text-align: right; padding: 0.3rem 0.55rem; background-image: none; }
+  .cell--cost.is-empty { background: var(--bg-elev); }
+  .costval { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.82rem; }
+
+  /* Chip variants reused in the name cell */
+  .chip--vp { background: color-mix(in srgb, var(--accent) 35%, var(--bg-elev) 65%); color: var(--text); border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); padding: 0.05rem 0.4rem; font-size: 0.66rem; }
+  .chip--vp b { font-family: var(--font-mono); font-weight: 700; color: var(--accent); margin-right: 0.2rem; }
+  .chip--dlc { background: var(--bg-elev-2); color: var(--text-dim); border: 1px solid var(--border); padding: 0.05rem 0.4rem; font-size: 0.64rem; letter-spacing: 0.06em; font-family: var(--font-mono); text-transform: uppercase; }
+  .chip--holy { background: color-mix(in srgb, #6b5ea6 30%, var(--bg-elev) 70%); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 50%, transparent); padding: 0.05rem 0.4rem; font-size: 0.66rem; }
 
   .cell--loc { font-size: 0.78rem; }
-
-  /* Hide rows during search / picker filtering */
   tr.is-hidden { display: none; }
 
-  /* Header style for non-nation columns (same trick as families.astro) */
-  .wtbl .nhdr--family {
-    background: var(--bg-elev-2);
-    color: var(--text);
-    border-bottom: 2px solid var(--border-strong);
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
-  }
-
-  /* Count badge in the Culture-tier picker rows */
-  .nation-picker__count {
-    margin-left: auto;
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    font-size: 0.72rem;
-    color: var(--text-faint);
-  }
+  .nation-picker__count { margin-left: auto; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.72rem; color: var(--text-faint); }
 </style>

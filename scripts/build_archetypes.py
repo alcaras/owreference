@@ -326,6 +326,13 @@ def main() -> int:
             "generalEffects": general_effects,
             "misc": misc,
             "iconName": e.findtext("zIconName") or "",
+            # Character-archetype trait glyph (Commander, Scholar, …),
+            # extracted to public/img/icons/traits/<slug>.png. '' if absent.
+            "icon": (
+                f"img/icons/traits/{name_short.lower()}.png"
+                if (ROOT / "public" / "img" / "icons" / "traits" / f"{name_short.lower()}.png").exists()
+                else ""
+            ),
         })
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
