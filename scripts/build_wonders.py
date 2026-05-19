@@ -158,8 +158,8 @@ def humanize_imp_name(zt: str) -> str:
     return zt.replace("IMPROVEMENT_", "").replace("_", " ").title()
 
 
-def location_from(entry: ET.Element) -> str:
-    """Build a one-line location requirement string from terrain + flags."""
+def _location_parts(entry: ET.Element) -> list[str]:
+    """Primitive location-requirement tags from terrain + flags."""
     parts: list[str] = []
     for t in entry.findall("TerrainValid/zValue"):
         token = (t.text or "").strip()
@@ -170,11 +170,59 @@ def location_from(entry: ET.Element) -> str:
         parts.append("River")
     if (entry.findtext("bHolyCityValid") or "") == "1":
         parts.append("Holy City")
-    if (entry.findtext("bFreshWaterSource") or "") == "1":
-        # Often combined with TerrainValid; surface separately as a note
-        if "Fresh Water" not in parts:
-            parts.append("Fresh Water source")
+    if (entry.findtext("bFreshWaterSource") or "") == "1" and "Fresh Water source" not in parts:
+        parts.append("Fresh Water source")
+    return parts
+
+
+def location_from(entry: ET.Element) -> str:
+    """One-line location requirement string from terrain + flags."""
+    parts = _location_parts(entry)
     return " or ".join(parts) if parts else "Any tile"
+
+
+def location_tags(entry: ET.Element) -> list[str]:
+    """Faceted-filter tags — same primitives, 'Any tile' when unconstrained."""
+    return _location_parts(entry) or ["Any tile"]
+
+
+# Short source label for the Source/DLC facet.
+SOURCE_LABEL = {
+    "":                     "Base game",
+    "WONDERS_DYNASTIES":    "Wonders & Dynasties",
+    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
+    "SEARCH_AND_PROGRESS":  "Search & Progress",
+    "BEHIND_THE_THRONE":    "Behind the Throne",
+}
+
+# Curated Wikipedia targets — the *historical* wonder, not the generic
+# term. Keyed by improvement zType. Anything not listed falls back to the
+# default generator (name minus "The ", spaces→underscores), which is
+# already correct for Ishtar Gate, Hagia Sophia, Jebel Barkal, etc.
+WIKI_OVERRIDE = {
+    "IMPROVEMENT_PYRAMIDS":           "Egyptian pyramids",
+    "IMPROVEMENT_GREAT_ZIGGURAT":     "Ziggurat of Ur",
+    "IMPROVEMENT_ORACLE":             "Pythia",
+    "IMPROVEMENT_HANGING_GARDENS":    "Hanging Gardens of Babylon",
+    "IMPROVEMENT_LIGHTHOUSE":         "Lighthouse of Alexandria",
+    "IMPROVEMENT_COLOSSUS":           "Colossus of Rhodes",
+    "IMPROVEMENT_MAUSOLEUM":          "Mausoleum at Halicarnassus",
+    "IMPROVEMENT_ACROPOLIS":          "Acropolis of Athens",
+    "IMPROVEMENT_ROYAL_LIBRARY":      "Library of Alexandria",
+    "IMPROVEMENT_MUSAEUM":            "Musaeum",
+    "IMPROVEMENT_PANTHEON":           "Pantheon, Rome",
+    "IMPROVEMENT_NECROPOLIS":         "Valley of the Kings",
+    "IMPROVEMENT_HELIOPOLIS":         "Heliopolis (ancient Egypt)",
+    "IMPROVEMENT_STUPA":              "Sanchi",
+    "IMPROVEMENT_THE_MAHAVIHARA":     "Nalanda",
+    "IMPROVEMENT_MONUMENTAL_BUDDHAS": "Buddhas of Bamiyan",
+    "IMPROVEMENT_HILL_FORT":          "Chittor Fort",
+    "IMPROVEMENT_VIA_RECTA_SOUK":     "Straight Street",
+    "IMPROVEMENT_JERWAN_AQUEDUCT":    "Jerwan",
+    "IMPROVEMENT_YAZILIKAYA":         "Yazılıkaya",
+    "IMPROVEMENT_COTHON":             "Cothon",
+    "IMPROVEMENT_AL_KHAZNEH":         "Al-Khazneh",
+}
 
 
 def cost_lines(entry: ET.Element) -> list[dict]:
@@ -291,9 +339,13 @@ def main() -> int:
             else:
                 other_output.append(o)
 
-        # Best-effort external reference (game files carry no prose).
-        wiki = "https://en.wikipedia.org/wiki/" + re.sub(
-            r"^The\s+", "", name).strip().replace(" ", "_")
+        # External reference (game files carry no prose). Prefer the
+        # curated historical article; else derive from the name.
+        wiki_title = WIKI_OVERRIDE.get(zt) or re.sub(r"^The\s+", "", name).strip()
+        from urllib.parse import quote
+        # Wikipedia title chars that should stay literal in the path.
+        wiki = "https://en.wikipedia.org/wiki/" + quote(
+            wiki_title.replace(" ", "_"), safe="(),'-_")
 
         wonders.append({
             "id": zt,
@@ -304,6 +356,8 @@ def main() -> int:
             "eraOrder": era["order"],
             "culturePrereq": culture,
             "location": location,
+            "locationTags": location_tags(entry),
+            "source": SOURCE_LABEL.get(dlc_tag, dlc_tag.replace("_", " ").title() if dlc_tag else "Base game"),
             "buildTurns": build_turns,
             "cost": cost,
             "costMap": cost_map,

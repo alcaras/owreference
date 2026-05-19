@@ -12,6 +12,7 @@ type Col =
   | { key: 'name';        label: 'Improvement' }
   | { key: 'tech';        label: 'Tech' }
   | { key: 'cost';        label: 'Cost' }
+  | { key: 'build';       label: 'Build' }
   | { key: 'upkeep';      label: 'Upkeep' }
   | { key: 'output';      label: 'Base Yield' }
   | { key: 'terrains';    label: 'Terrain' }
@@ -24,6 +25,7 @@ const cols: Col[] = [
   { key: 'name',        label: 'Improvement' },
   { key: 'tech',        label: 'Tech' },
   { key: 'cost',        label: 'Cost' },
+  { key: 'build',       label: 'Build' },
   { key: 'upkeep',      label: 'Upkeep' },
   { key: 'output',      label: 'Base Yield' },
   { key: 'terrains',    label: 'Terrain' },
@@ -88,6 +90,14 @@ for (const it of improvements) {
                     const yk = classifyYield(line)?.toLowerCase() || 'misc';
                     return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                   })}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {it.buildTurns && it.buildTurns > 0 ? (
+                <td class="cell cell--center yield-misc" data-sortval={it.buildTurns}>
+                  {it.buildTurns} {it.buildTurns === 1 ? 'turn' : 'turns'}
                 </td>
               ) : (
                 <td class="cell is-empty"><span class="cell__dash">—</span></td>

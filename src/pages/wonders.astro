@@ -22,8 +22,36 @@ for (const w of wonders) {
 }
 
 const ERAS = ['Weak', 'Developing', 'Strong', 'Legendary'] as const;
-const eraCount = (e: string) => wonders.filter(w => w.era === e).length;
 const dlcCount = wonders.filter(w => w.dlc).length;
+
+// ── Faceted-filter option lists (deterministic order, present only) ──
+const present = <T,>(pref: readonly T[], have: Set<T>) => pref.filter(v => have.has(v));
+const SOURCES = present(
+  ['Base game', 'Wonders & Dynasties', 'Empires of the Indus', 'Search & Progress', 'Behind the Throne'] as const,
+  new Set(wonders.map(w => w.source)),
+);
+const LOC_TAGS = present(
+  ['Any tile', 'Hill', 'Coastal Water', 'Adj. Mountain / Volcano', 'Arid or Sand',
+   'River', 'Fresh Water source', 'Habitable Tile', 'Holy City'] as const,
+  new Set(wonders.flatMap(w => w.locationTags as string[])),
+);
+const HOLY = [
+  { val: 'yes', label: 'Requires Holy City' },
+  { val: 'no',  label: 'No Holy City requirement' },
+];
+
+type Facet = { key: string; title: string; opts: { val: string; label: string; icon?: string; count: number }[] };
+const cnt = (pred: (w: typeof wonders[number]) => boolean) => wonders.filter(pred).length;
+const FACETS: Facet[] = [
+  { key: 'era', title: 'Culture tier', opts: ERAS.filter(e => cnt(w => w.era === e) > 0).map(e =>
+      ({ val: e, label: `${e} Culture`, icon: eraIcon(e), count: cnt(w => w.era === e) })) },
+  { key: 'source', title: 'Source', opts: SOURCES.map(s =>
+      ({ val: s, label: s, count: cnt(w => w.source === s) })) },
+  { key: 'loc', title: 'Location requirement', opts: LOC_TAGS.map(t =>
+      ({ val: t, label: t, count: cnt(w => (w.locationTags as string[]).includes(t)) })) },
+  { key: 'holy', title: 'Holy City', opts: HOLY.map(h =>
+      ({ val: h.val, label: h.label, count: cnt(w => (w.isHolyCity ? 'yes' : 'no') === h.val) })) },
+];
 ---
 
 <Base
@@ -48,24 +76,29 @@ const dlcCount = wonders.filter(w => w.dlc).length;
     </div>
   </div>
 
-  <div class="nation-picker" id="wonder-picker" hidden role="dialog" aria-label="Filter wonders by Culture tier">
+  <div class="nation-picker nation-picker--facets" id="wonder-picker" hidden role="dialog" aria-label="Filter wonders">
     <div class="nation-picker__actions">
       <button type="button" class="nation-picker__action" data-pick="all">Select all</button>
       <button type="button" class="nation-picker__action" data-pick="none">Clear</button>
       <button type="button" class="nation-picker__action nation-picker__action--close" data-pick="close">Done</button>
     </div>
-    <ul class="nation-picker__list">
-      {ERAS.filter(e => eraCount(e) > 0).map(era => (
-        <li class="nation-picker__item">
-          <label class="nation-picker__row">
-            <input type="checkbox" class="nation-picker__cb" value={era} checked />
-            <img class="nation-picker__crest" src={eraIcon(era)} alt="" onerror="this.style.display='none'" />
-            <span class="nation-picker__name">{era} Culture</span>
-            <span class="nation-picker__count">{eraCount(era)}</span>
-          </label>
-        </li>
-      ))}
-    </ul>
+    {FACETS.map(f => (
+      <div class="facet">
+        <div class="facet__title">{f.title}</div>
+        <ul class="nation-picker__list">
+          {f.opts.map(o => (
+            <li class="nation-picker__item">
+              <label class="nation-picker__row">
+                <input type="checkbox" class="nation-picker__cb" data-facet={f.key} value={o.val} checked />
+                {o.icon && <img class="nation-picker__crest" src={o.icon} alt="" onerror="this.style.display='none'" />}
+                <span class="nation-picker__name">{o.label}</span>
+                <span class="nation-picker__count">{o.count}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
   </div>
 
   <div class="grid__searchnote" id="grid-searchnote" hidden></div>
@@ -76,6 +109,7 @@ const dlcCount = wonders.filter(w => w.dlc).length;
         <colgroup>
           <col class="wtbl__name-col" />
           <col class="wtbl__era-col" />
+          <col class="wtbl__build-col" />
           <col class="wtbl__cult-col" />
           <col class="wtbl__loc-col" />
           {COST_COLS.map(() => <col class="wtbl__cost-col" />)}
@@ -86,6 +120,7 @@ const dlcCount = wonders.filter(w => w.dlc).length;
           <tr>
             <th class="rowlabel rowlabel--corner"><span class="nhdr__name">Wonder</span></th>
             <th class="nhdr nhdr--col"><span class="nhdr__name">Tier</span></th>
+            <th class="nhdr nhdr--col nhdr--cost" title="Build time in turns"><span class="nhdr__name">Build</span></th>
             <th class="nhdr nhdr--col nhdr--cost yield-culture" title="Culture per turn from the wonder tile">
               <span class="nhdr__name">
                 <img class="nhdr__yico" src={yieldIcon('culture')} alt="" onerror="this.style.display='none'" />
@@ -107,7 +142,14 @@ const dlcCount = wonders.filter(w => w.dlc).length;
         </thead>
         <tbody>
           {wonders.map(w => (
-            <tr data-wonder={w.slug} data-era={w.era} id={w.slug}>
+            <tr
+              data-wonder={w.slug}
+              data-era={w.era}
+              data-source={w.source}
+              data-loc={(w.locationTags as string[]).join('|')}
+              data-holy={w.isHolyCity ? 'yes' : 'no'}
+              id={w.slug}
+            >
               <th class="rowlabel rowlabel--wonder" scope="row" data-sortval={w.sortName}>
                 <div class="wname">
                   {w.icon ? (
@@ -143,6 +185,15 @@ const dlcCount = wonders.filter(w => w.dlc).length;
                   <span class="era-tag__txt">{w.era}</span>
                 </span>
               </td>
+
+              {/* Build time in turns (sortable) */}
+              {w.buildTurns > 0 ? (
+                <td class="cell cell--cost" data-sortval={w.buildTurns}>
+                  <span class="costval">{w.buildTurns}<span class="costval__unit">t</span></span>
+                </td>
+              ) : (
+                <td class="cell cell--cost is-empty"><span class="cell__dash">—</span></td>
+              )}
 
               {/* Culture per turn from the wonder tile (own sortable column) */}
               {w.culturePerTurn > 0 ? (
@@ -215,47 +266,62 @@ const dlcCount = wonders.filter(w => w.dlc).length;
   </div>
 
   <script type="application/json" id="wonder-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
-  <script type="application/json" id="wonder-era-map" set:html={JSON.stringify(Object.fromEntries(wonders.map(w => [w.slug, w.era])))}></script>
   <script is:inline>
-    // Combined Culture-tier picker + search, keyed by data-wonder. Works
-    // on the flat (sortable) table — no section headers to manage.
+    // Faceted picker + search on the flat (sortable) table. Facets are
+    // read from row data-attributes (data-era/source/loc/holy); semantics
+    // are OR within a facet, AND across facets, composed with the search.
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('wonder-search-blobs');
-      const eraNode = document.getElementById('wonder-era-map');
       const grid = document.getElementById('wonders-grid');
       const note = document.getElementById('grid-searchnote');
       const toggle = document.getElementById('wonder-picker-toggle');
       const picker = document.getElementById('wonder-picker');
       const visibleCount = document.getElementById('wonder-visible-count');
-      if (!blobNode || !eraNode || !grid) return;
-      let blobs, eraOf;
-      try {
-        blobs = JSON.parse(blobNode.textContent || '{}');
-        eraOf = JSON.parse(eraNode.textContent || '{}');
-      } catch { return; }
-      const slugs = Object.keys(blobs);
-      const allEras = Array.from(new Set(slugs.map((s) => eraOf[s])));
-      const pickedEras = new Set(allEras);
+      if (!blobNode || !grid || !picker) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+
+      // facet key → row data-attribute. `loc` is multi-valued ('|'-joined).
+      const FACET_ATTR = { era: 'data-era', source: 'data-source', loc: 'data-loc', holy: 'data-holy' };
+      const rows = Array.from(grid.querySelectorAll('tr[data-wonder]'));
+      const cbs = Array.from(picker.querySelectorAll('.nation-picker__cb'));
+      // picked[facet] = Set of checked values (rebuilt from the checkboxes).
+      const picked = {};
+      function syncPicked() {
+        for (const k of Object.keys(FACET_ATTR)) picked[k] = new Set();
+        cbs.forEach((cb) => { if (cb.checked) picked[cb.getAttribute('data-facet')].add(cb.value); });
+      }
+      function rowVals(row, facet) {
+        const raw = row.getAttribute(FACET_ATTR[facet]) || '';
+        return facet === 'loc' ? raw.split('|') : [raw];
+      }
+      function rowPasses(row) {
+        for (const facet of Object.keys(FACET_ATTR)) {
+          const pset = picked[facet];
+          if (!rowVals(row, facet).some((v) => pset.has(v))) return false;
+        }
+        return true;
+      }
 
       function applyFilters() {
+        syncPicked();
         const q = ((input && input.value) || '').trim().toLowerCase();
         let visibleN = 0, hiddenBySearch = 0;
-        for (const slug of slugs) {
-          const matchesSearch = !q || blobs[slug].includes(q);
-          const visible = matchesSearch && pickedEras.has(eraOf[slug]);
+        for (const row of rows) {
+          const slug = row.getAttribute('data-wonder');
+          const matchesSearch = !q || (blobs[slug] || '').includes(q);
+          const visible = matchesSearch && rowPasses(row);
           if (visible) visibleN++;
           if (!matchesSearch) hiddenBySearch++;
-          for (const el of grid.querySelectorAll('[data-wonder="' + slug + '"]')) {
-            el.classList.toggle('is-hidden', !visible);
-          }
+          row.classList.toggle('is-hidden', !visible);
         }
         if (visibleCount) visibleCount.textContent = String(visibleN);
         if (note) {
           if (q && hiddenBySearch > 0) {
             note.hidden = false;
             note.textContent =
-              'Showing ' + (slugs.length - hiddenBySearch) + ' of ' + slugs.length +
+              'Showing ' + (rows.length - hiddenBySearch) + ' of ' + rows.length +
               ' wonders matching "' + (input ? input.value : '') + '"';
           } else {
             note.hidden = true;
@@ -266,7 +332,7 @@ const dlcCount = wonders.filter(w => w.dlc).length;
 
       if (input) input.addEventListener('input', applyFilters);
 
-      if (toggle && picker) {
+      if (toggle) {
         toggle.addEventListener('click', () => {
           const open = !picker.hidden;
           picker.hidden = open;
@@ -287,34 +353,19 @@ const dlcCount = wonders.filter(w => w.dlc).length;
         });
       }
 
-      const cbs = picker ? picker.querySelectorAll('.nation-picker__cb') : [];
-      cbs.forEach((cb) => {
-        cb.addEventListener('change', () => {
-          if (cb.checked) pickedEras.add(cb.value);
-          else pickedEras.delete(cb.value);
-          applyFilters();
-        });
-      });
+      cbs.forEach((cb) => cb.addEventListener('change', applyFilters));
 
-      if (picker) {
-        picker.addEventListener('click', (e) => {
-          const btn = e.target.closest('[data-pick]');
-          if (!btn) return;
-          const action = btn.getAttribute('data-pick');
-          if (action === 'all') {
-            allEras.forEach((s) => pickedEras.add(s));
-            cbs.forEach((cb) => (cb.checked = true));
-            applyFilters();
-          } else if (action === 'none') {
-            pickedEras.clear();
-            cbs.forEach((cb) => (cb.checked = false));
-            applyFilters();
-          } else if (action === 'close') {
-            picker.hidden = true;
-            if (toggle) toggle.setAttribute('aria-expanded', 'false');
-          }
-        });
-      }
+      picker.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-pick]');
+        if (!btn) return;
+        const action = btn.getAttribute('data-pick');
+        if (action === 'all') { cbs.forEach((cb) => (cb.checked = true)); applyFilters(); }
+        else if (action === 'none') { cbs.forEach((cb) => (cb.checked = false)); applyFilters(); }
+        else if (action === 'close') {
+          picker.hidden = true;
+          if (toggle) toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
 
       applyFilters();
     })();
@@ -362,6 +413,7 @@ const dlcCount = wonders.filter(w => w.dlc).length;
   /* Column widths */
   .wtbl__name-col    { width: 18rem; }
   .wtbl__era-col     { width: 7rem; }
+  .wtbl__build-col   { width: 4.5rem; }
   .wtbl__cult-col    { width: 6rem; }
   .wtbl__loc-col     { width: 10rem; }
   .wtbl__cost-col    { width: 5.25rem; }
@@ -416,6 +468,15 @@ const dlcCount = wonders.filter(w => w.dlc).length;
   .cell--cost.is-empty { background: var(--bg-elev); }
   .costval { display: inline-flex; align-items: center; gap: 0.3rem; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.82rem; }
   .costval__ico { width: 15px; height: 15px; object-fit: contain; flex-shrink: 0; }
+  .costval__unit { color: var(--text-faint); font-weight: 400; margin-left: 1px; }
+
+  /* Faceted picker: stacked sections inside the shared popover */
+  .nation-picker--facets { max-height: 70vh; overflow-y: auto; min-width: 16rem; }
+  .facet + .facet { margin-top: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.5rem; }
+  .facet__title {
+    font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.06em;
+    color: var(--text-faint); margin: 0 0 0.2rem; padding-left: 0.6rem;
+  }
 
   /* Chip variants reused in the name cell */
   .chip--vp { background: color-mix(in srgb, var(--accent) 35%, var(--bg-elev) 65%); color: var(--text); border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); padding: 0.05rem 0.4rem; font-size: 0.66rem; }

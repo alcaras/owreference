@@ -137,11 +137,11 @@ def main() -> int:
         nation_prereq = e.findtext("NationPrereq") or ""
         law_prereq = e.findtext("LawPrereq") or ""
 
-        # Build cost: yield cost + build turns
+        # Build cost (yields) and build time (own field/column, not
+        # mixed into the cost list).
         cost_lines: list[str] = render_yield_pairs(e, "aiYieldCost", as_cost=True)
         bt = e.findtext("iBuildTurns")
-        if bt and bt != "0":
-            cost_lines.append(f"{bt} turns")
+        build_turns = int(bt) if bt and bt != "0" else 0
 
         # Specialist slot
         specialist_id = e.findtext("Specialist") or ""
@@ -272,6 +272,7 @@ def main() -> int:
             "nationPrereq": nation_prereq.replace("NATION_", "").title() if nation_prereq else "",
             "lawPrereq": law_prereq.replace("LAW_", "").replace("_", " ").title() if law_prereq else "",
             "cost": cost_lines,
+            "buildTurns": build_turns,
             "upkeep": upkeep,
             "specialist": {
                 "id": specialist_id,

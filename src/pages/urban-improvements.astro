@@ -14,6 +14,7 @@ type Col =
   | { key: 'tech';        label: 'Tech' }
   | { key: 'prereqs';     label: 'Other Prereq' }
   | { key: 'cost';        label: 'Cost' }
+  | { key: 'build';       label: 'Build' }
   | { key: 'upkeep';      label: 'Upkeep' }
   | { key: 'specialist';  label: 'Specialist Slot' }
   | { key: 'effects';     label: 'Effects' }
@@ -25,6 +26,7 @@ const cols: Col[] = [
   { key: 'tech',       label: 'Tech' },
   { key: 'prereqs',    label: 'Other Prereq' },
   { key: 'cost',       label: 'Cost' },
+  { key: 'build',      label: 'Build' },
   { key: 'upkeep',     label: 'Upkeep' },
   { key: 'specialist', label: 'Specialist Slot' },
   { key: 'effects',    label: 'Effects' },
@@ -127,6 +129,15 @@ const classCount = new Set(buildings.map(b => b.class)).size;
                       const yk = classifyYield(line)?.toLowerCase() || 'misc';
                       return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                     })}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+
+                {/* Build time (turns) */}
+                {b.buildTurns && b.buildTurns > 0 ? (
+                  <td class="cell cell--center yield-misc" data-sortval={b.buildTurns}>
+                    {b.buildTurns} {b.buildTurns === 1 ? 'turn' : 'turns'}
                   </td>
                 ) : (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>

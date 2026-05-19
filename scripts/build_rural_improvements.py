@@ -131,11 +131,10 @@ def main() -> int:
             tech_name_key = tech_entry.findtext("Name") if tech_entry is not None else ""
             tech_name = text_imp.get(tech_name_key or "", tech_id.replace("TECH_", "").replace("_", " ").title())
 
-        # Build cost: yield cost + turns
+        # Build cost (yields) and build time (own field/column).
         cost_lines = cost_pairs(e, "aiYieldCost")
         bt = e.findtext("iBuildTurns")
-        if bt and bt != "0":
-            cost_lines.append(f"{bt} turns")
+        build_turns = int(bt) if bt and bt != "0" else 0
 
         # Output yields (direct)
         output_lines = output_pairs(e, "aiYieldOutput")
@@ -265,6 +264,7 @@ def main() -> int:
                 "name": tech_name,
             } if tech_id else None,
             "cost": cost_lines,
+            "buildTurns": build_turns,
             "upkeep": upkeep_lines,
             "output": output_lines,
             "specialist": {
