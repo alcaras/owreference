@@ -26,19 +26,51 @@ for (const w of wonders) {
 const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
 
 const dlcCount = wonders.filter(w => w.dlc).length;
-const baseCount = wonders.length - dlcCount;
 ---
 
 <Base
   title="Wonders"
   active="wonders"
   pageMark="🏛️"
-  pageStats={[
-    { label: 'wonders', value: wonders.length },
-    { label: 'base game', value: baseCount },
-    { label: 'DLC', value: dlcCount },
-  ]}
+  description={`The ${wonders.length} World Wonders of Old World (${wonders.length - dlcCount} base game, ${dlcCount} DLC) grouped by Culture tier — build cost, tile location requirement, per-turn yield output, ongoing empire bonus, and one-time completion bonus. Each is buildable by any nation.`}
 >
+  <div class="page-meta">
+    <h1 class="page-title">Wonders</h1>
+    <div class="page-stats">
+      <button
+        type="button"
+        class="stat stat--button"
+        id="wonder-picker-toggle"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="wonder-picker"
+      >
+        <b id="wonder-visible-count">{wonders.length}</b> of <b>{wonders.length}</b> visible <span class="stat__chev">▾</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nation-picker" id="wonder-picker" hidden role="dialog" aria-label="Filter wonders by Culture tier">
+    <div class="nation-picker__actions">
+      <button type="button" class="nation-picker__action" data-pick="all">Select all</button>
+      <button type="button" class="nation-picker__action" data-pick="none">Clear</button>
+      <button type="button" class="nation-picker__action nation-picker__action--close" data-pick="close">Done</button>
+    </div>
+    <ul class="nation-picker__list">
+      {ERAS.filter(e => byEra[e].length > 0).map(era => (
+        <li class="nation-picker__item">
+          <label class="nation-picker__row">
+            <input type="checkbox" class="nation-picker__cb" value={era} checked />
+            <span class="nation-picker__name">{era} Culture</span>
+            <span class="nation-picker__count">{byEra[era].length}</span>
+          </label>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="grid__searchnote" id="grid-searchnote" hidden></div>
+
   <div class="grid" id="wonders-grid">
     <div class="grid__scroll">
       <table class="ntbl wtbl">
@@ -65,7 +97,7 @@ const baseCount = wonders.length - dlcCount;
           {ERAS.map(era => (
             <>
               {byEra[era].length > 0 && (
-                <tr class="srow">
+                <tr class="srow" data-erahdr={era}>
                   <th class="srow__th" colspan={5}>
                     <span class="srow__chevron">▸</span>
                     {era} Culture
@@ -74,7 +106,7 @@ const baseCount = wonders.length - dlcCount;
                 </tr>
               )}
               {byEra[era].map(w => (
-                <tr data-wonder={w.slug} id={w.slug}>
+                <tr data-wonder={w.slug} data-era={era} id={w.slug}>
                   <th class="rowlabel rowlabel--wonder" scope="row">
                     <div class="wname">
                       <span class="wname__name">{w.name}</span>
@@ -126,7 +158,7 @@ const baseCount = wonders.length - dlcCount;
                         const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
                         return (
                           <div class={`effect yield-${yieldKey}`}>
-                            <LinkedText text={text} showIcons={false} />
+                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
                           </div>
                         );
                       })}
@@ -142,7 +174,7 @@ const baseCount = wonders.length - dlcCount;
                         const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
                         return (
                           <div class={`effect yield-${yieldKey}`}>
-                            <LinkedText text={text} showIcons={false} />
+                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
                           </div>
                         );
                       })}
@@ -157,45 +189,120 @@ const baseCount = wonders.length - dlcCount;
     </div>
   </div>
 
-  <div class="legends">
-    <div class="legend">
-      <span class="legend__label">Cost yields</span>
-      {['civics','stone','wood','iron','food'].map(y => (
-        <a class={`chip yield-${y}`} href={`${base}yields/${y}`}>
-          <img class="chip__icon" src={`${base}img/icons/yields/${y}.png`} alt="" onerror="this.style.display='none'" />
-          {y[0].toUpperCase() + y.slice(1)}
-        </a>
-      ))}
-    </div>
-    <div class="legend">
-      <span class="legend__label">Eras</span>
-      {ERAS.map(e => <span class="chip chip--neutral">{e}</span>)}
-    </div>
-  </div>
-
   <script type="application/json" id="wonder-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script type="application/json" id="wonder-era-map" set:html={JSON.stringify(Object.fromEntries(wonders.map(w => [w.slug, w.era])))}></script>
   <script is:inline>
-    // Row-filter search: hides table rows whose JSON blob doesn't include
-    // the search query. Era section headers stay visible to preserve
-    // the layout (mirrors the families.astro filter pattern).
+    // Combined Culture-tier picker + search, mirroring the Nations page
+    // (state of the art). The picker filters whole eras (folding in what
+    // used to be a static legend); search composes on top, keyed by
+    // data-wonder; era section headers hide when their tier is unpicked
+    // or has no search match.
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('wonder-search-blobs');
+      const eraNode = document.getElementById('wonder-era-map');
       const grid = document.getElementById('wonders-grid');
-      if (!input || !blobNode || !grid) return;
-      let blobs;
-      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
-      function apply() {
-        const q = (input.value || '').trim().toLowerCase();
-        for (const slug of Object.keys(blobs)) {
-          const match = !q || blobs[slug].includes(q);
+      const note = document.getElementById('grid-searchnote');
+      const toggle = document.getElementById('wonder-picker-toggle');
+      const picker = document.getElementById('wonder-picker');
+      const visibleCount = document.getElementById('wonder-visible-count');
+      if (!blobNode || !eraNode || !grid) return;
+      let blobs, eraOf;
+      try {
+        blobs = JSON.parse(blobNode.textContent || '{}');
+        eraOf = JSON.parse(eraNode.textContent || '{}');
+      } catch { return; }
+      const slugs = Object.keys(blobs);
+      const allEras = Array.from(new Set(slugs.map((s) => eraOf[s])));
+      const pickedEras = new Set(allEras);
+
+      function applyFilters() {
+        const q = ((input && input.value) || '').trim().toLowerCase();
+        let visibleN = 0, hiddenBySearch = 0;
+        const eraHasVisible = {};
+        for (const slug of slugs) {
+          const matchesSearch = !q || blobs[slug].includes(q);
+          const eraPicked = pickedEras.has(eraOf[slug]);
+          const visible = matchesSearch && eraPicked;
+          if (visible) { visibleN++; eraHasVisible[eraOf[slug]] = true; }
+          if (!matchesSearch) hiddenBySearch++;
           for (const el of grid.querySelectorAll('[data-wonder="' + slug + '"]')) {
-            el.classList.toggle('is-hidden', !match);
+            el.classList.toggle('is-hidden', !visible);
+          }
+        }
+        // Section headers follow their tier: hidden if unpicked or empty
+        // after the current search.
+        for (const hdr of grid.querySelectorAll('[data-erahdr]')) {
+          const era = hdr.getAttribute('data-erahdr');
+          hdr.classList.toggle('is-hidden', !pickedEras.has(era) || !eraHasVisible[era]);
+        }
+        if (visibleCount) visibleCount.textContent = String(visibleN);
+        if (note) {
+          if (q && hiddenBySearch > 0) {
+            note.hidden = false;
+            note.textContent =
+              'Showing ' + (slugs.length - hiddenBySearch) + ' of ' + slugs.length +
+              ' wonders matching "' + (input ? input.value : '') + '"';
+          } else {
+            note.hidden = true;
+            note.textContent = '';
           }
         }
       }
-      input.addEventListener('input', apply);
-      apply();
+
+      if (input) input.addEventListener('input', applyFilters);
+
+      if (toggle && picker) {
+        toggle.addEventListener('click', () => {
+          const open = !picker.hidden;
+          picker.hidden = open;
+          toggle.setAttribute('aria-expanded', String(!open));
+        });
+        document.addEventListener('click', (e) => {
+          if (picker.hidden) return;
+          if (picker.contains(e.target) || toggle.contains(e.target)) return;
+          picker.hidden = true;
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !picker.hidden) {
+            picker.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.focus();
+          }
+        });
+      }
+
+      const cbs = picker ? picker.querySelectorAll('.nation-picker__cb') : [];
+      cbs.forEach((cb) => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) pickedEras.add(cb.value);
+          else pickedEras.delete(cb.value);
+          applyFilters();
+        });
+      });
+
+      if (picker) {
+        picker.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-pick]');
+          if (!btn) return;
+          const action = btn.getAttribute('data-pick');
+          if (action === 'all') {
+            allEras.forEach((s) => pickedEras.add(s));
+            cbs.forEach((cb) => (cb.checked = true));
+            applyFilters();
+          } else if (action === 'none') {
+            pickedEras.clear();
+            cbs.forEach((cb) => (cb.checked = false));
+            applyFilters();
+          } else if (action === 'close') {
+            picker.hidden = true;
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      applyFilters();
     })();
   </script>
 </Base>
@@ -285,7 +392,7 @@ const baseCount = wonders.length - dlcCount;
 
   .cell--loc { font-size: 0.78rem; }
 
-  /* Hide rows during search */
+  /* Hide rows during search / picker filtering */
   tr.is-hidden { display: none; }
 
   /* Header style for non-nation columns (same trick as families.astro) */
@@ -294,5 +401,14 @@ const baseCount = wonders.length - dlcCount;
     color: var(--text);
     border-bottom: 2px solid var(--border-strong);
     background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+  }
+
+  /* Count badge in the Culture-tier picker rows */
+  .nation-picker__count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.72rem;
+    color: var(--text-faint);
   }
 </style>
