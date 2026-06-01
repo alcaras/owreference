@@ -10,6 +10,10 @@ becomes a "+50% vs Mounted" entry.
 
 Non-combat units (settlers, workers, scouts) are kept but flagged so the
 page can group them separately.
+
+Each unit also carries a `category` ("normal" | "unique" | "tribal"), Culture
+tier (`era`/`eraOrder` for unique units), `nationLabel`, `techLabel` and a
+`source` DLC label, feeding the Units and Unique Units catalog pages.
 """
 from __future__ import annotations
 
@@ -65,8 +69,36 @@ TRAIT_LABEL_OVERRIDES = {
 }
 
 
+# Culture-tier gating for unique units (they have no TechPrereq — a nation
+# unlocks them at a Culture level instead). DMT Warrior / Steppe Rider have no
+# CulturePrereq: a nation's starting unique, surfaced as "Initial".
+ERA_BY_CULTURE = {
+    "":                   {"order": 1, "label": "Initial"},
+    "CULTURE_WEAK":       {"order": 1, "label": "Weak"},
+    "CULTURE_DEVELOPING": {"order": 2, "label": "Developing"},
+    "CULTURE_STRONG":     {"order": 3, "label": "Strong"},
+    "CULTURE_LEGENDARY":  {"order": 4, "label": "Legendary"},
+}
+
+# DLC tag → short source label, mirroring build_wonders.py.
+SOURCE_LABEL = {
+    "":                     "Base game",
+    "WONDERS_DYNASTIES":    "Wonders & Dynasties",
+    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
+    "SEARCH_AND_PROGRESS":  "Search & Progress",
+    "BEHIND_THE_THRONE":    "Behind the Throne",
+}
+
+
 def parse(name: str) -> ET.Element:
     return ET.parse(XML_DIR / name).getroot()
+
+
+def token_title(token: str, prefix: str = "") -> str:
+    """NATION_YUEZHI → Yuezhi, TECH_LAND_CONSOLIDATION → Land Consolidation."""
+    if not token:
+        return ""
+    return token.replace(prefix, "", 1).replace("_", " ").title() if prefix else token.replace("_", " ").title()
 
 
 def trait_label(t: str) -> str:
@@ -148,7 +180,14 @@ def main() -> int:
             continue
 
         name_key = entry.findtext("Name") or ""
-        name = text.get(name_key, zt.replace("UNIT_", "").replace("_", " ").title())
+        zt_name = zt.replace("UNIT_", "").replace("_", " ").title()
+        name = text.get(name_key, zt_name)
+        # Religion disciples carry a parameterized name ("{UNIT-RELIGION,1}
+        # Disciple") that the game fills in per religion at runtime. The zType
+        # already names the religion (UNIT_BUDDHISM_DISCIPLE), so fall back to
+        # it whenever the text still has an unresolved {…} template.
+        if "{" in name:
+            name = zt_name
 
         traits = [t.text for t in entry.findall("aeUnitTrait/zValue") if t.text]
         # Primary class follows PRIMARY_TRAITS priority — pick the *highest-
@@ -179,11 +218,38 @@ def main() -> int:
         # XML-derived counter modifiers
         counters = collect_counter_lines(effect_ids, eu_idx)
 
+        # Classification axis used by the Units / Unique Units pages:
+        #   unique  → has a NationPrereq (nation-only build; wins even if the
+        #             unit also carries UNITTRAIT_TRIBAL, e.g. Yuezhi Steppe Rider)
+        #   tribal  → carries UNITTRAIT_TRIBAL and no nation gate (barbarian/tribe)
+        #   normal  → everything else (the roster any nation can build)
+        nation_prereq = entry.findtext("NationPrereq") or ""
+        is_tribal = "UNITTRAIT_TRIBAL" in traits_set
+        if nation_prereq:
+            category = "unique"
+        elif is_tribal:
+            category = "tribal"
+        else:
+            category = "normal"
+
+        # Unique units gate on Culture tier, not tech (TechPrereq is empty).
+        culture = entry.findtext("CulturePrereq") or ""
+        era = ERA_BY_CULTURE.get(culture, {"order": 0, "label": token_title(culture, "CULTURE_")})
+        dlc = entry.findtext("GameContentRequired") or ""
+
         units.append({
             "id": zt,
             "slug": zt.replace("UNIT_", "").lower(),
             "name": name,
             "isCombat": is_combat_unit(entry),
+            "category": category,
+            "isTribal": is_tribal,
+            "culturePrereq": culture,
+            "era": era["label"] if nation_prereq else "",
+            "eraOrder": era["order"] if nation_prereq else 0,
+            "nationLabel": token_title(nation_prereq, "NATION_"),
+            "techLabel": token_title(entry.findtext("TechPrereq") or "", "TECH_"),
+            "source": SOURCE_LABEL.get(dlc, token_title(dlc) if dlc else "Base game"),
             "iconSlug": (entry.findtext("zIconName") or zt).replace("UNIT_", "").lower(),
             "techPrereq": entry.findtext("TechPrereq") or "",
             "nationPrereq": entry.findtext("NationPrereq") or "",

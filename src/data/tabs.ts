@@ -174,6 +174,18 @@ export const TABS: Tab[] = [
 
   // ── Military ──────────────────────────────────────────────────
   {
+    slug: 'units', icon: '🛡️', label: 'Units', section: 'Military',
+    status: 'built', sourceSheet: '🛡️ Units',
+    summary: 'Standard buildable units: stats, cost, upkeep, counters',
+    willContain: ['Each unit: class, strength, move, range, cost, tech, counters'],
+  },
+  {
+    slug: 'unique-units', icon: '⭐', label: 'Unique Units', section: 'Military',
+    status: 'built', sourceSheet: '⭐ Unique Units',
+    summary: 'Nation-unique units by civilization and Culture tier',
+    willContain: ['Each unique unit: nation, tier, class, stats, counters'],
+  },
+  {
     slug: 'promotions', icon: '🎖️', label: 'Promotions', section: 'Military',
     status: 'built', sourceSheet: '🎖️ Promotions',
     summary: 'Promotion tree, prerequisites, effects',

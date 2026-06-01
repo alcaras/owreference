@@ -23,6 +23,8 @@ export const NAV: NavItem[] = [
   { href: 'wonders', label: 'Wonders' },
   { href: 'urban-specialists', label: 'Urban Specialists' },
   { href: 'rural-specialists', label: 'Rural Specialists' },
+  { href: 'units', label: 'Units' },
+  { href: 'unique-units', label: 'Unique Units' },
   { href: 'cognomens', label: 'Cognomens' },
   { href: 'cognomens-tracker', label: 'Cognomens Tracker' },
 ];
