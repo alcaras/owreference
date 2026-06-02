@@ -235,6 +235,12 @@ export const TABS: Tab[] = [
 
   // ── Character Skills ─────────────────────────────────────────
   {
+    slug: 'stat-scaling', icon: '📈', label: 'Stat Scaling', section: 'Character Skills',
+    status: 'built', sourceSheet: '🟣 Wisdom Base / CM (+ Charisma, Courage, Discipline)',
+    summary: 'Per-rating yield/combat scaling by role, Non-competitive vs Competitive',
+    willContain: ['All 4 stats, rating −3..+15, Leader/Governor/Agent/General, both modes'],
+  },
+  {
     slug: 'wisdom', icon: '🟣', label: 'Wisdom', section: 'Character Skills',
     status: 'built', sourceSheet: '🟣 Wisdom Base',
     summary: 'Base bonuses + commander effects',

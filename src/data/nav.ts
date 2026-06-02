@@ -25,6 +25,10 @@ export const NAV: NavItem[] = [
   { href: 'rural-specialists', label: 'Rural Specialists' },
   { href: 'units', label: 'Units' },
   { href: 'unique-units', label: 'Unique Units' },
+  { href: 'stat-scaling', label: 'Stat Scaling' },
+  { href: 'rally', label: 'Rally Troops' },
+  { href: 'hold-court', label: 'Hold Court' },
+  { href: 'steal-research', label: 'Steal Research' },
   { href: 'cognomens', label: 'Cognomens' },
   { href: 'cognomens-tracker', label: 'Cognomens Tracker' },
 ];

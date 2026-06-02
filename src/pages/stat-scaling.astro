@@ -1,0 +1,188 @@
+---
+import Base from '../layouts/Base.astro';
+import data from '../data/stat-scaling.json';
+
+const base = import.meta.env.BASE_URL;
+const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
+
+const { ratings, ratingEquivalent, stats } = data as any;
+
+// Format a Leader (flat-yield) value: signed, drop trailing .0.
+function fmtYield(v: number): string {
+  if (v === 0) return '0';
+  const s = Number.isInteger(v) ? String(v) : v.toFixed(1);
+  return (v > 0 ? '+' : '') + s;
+}
+function fmtPct(v: number): string {
+  return v === 0 ? '0' : (v > 0 ? '+' : '') + v + '%';
+}
+function fmtFlat(v: number): string {
+  return v === 0 ? '0' : (v > 0 ? '+' : '') + v;
+}
+function fmtCell(role: any, v: number): string {
+  if (role.kind === 'yield') return fmtYield(v);
+  if (role.kind === 'flat') return fmtFlat(v);
+  return fmtPct(v);
+}
+---
+
+<Base
+  title="Stat Scaling"
+  active="stat-scaling"
+  pageMark="📈"
+  description="How each character rating (Wisdom, Charisma, Courage, Discipline) scales into yields and combat bonuses, by role and rating value (−3 to +15), computed directly from the game's own formula. Compare Non-competitive (triangular) vs Competitive Mode (linear) scaling side by side. Every number is derived from rating.xml and yield.xml via the triangle formula in the game code — not the legacy spreadsheet."
+  pageStats={[
+    { label: 'stats', value: stats.length },
+    { label: 'rating range', value: `${ratings[0]}…${ratings[ratings.length - 1]}` },
+    { label: 'modes', value: 2 },
+  ]}
+>
+  <section class="scale-intro">
+    <p>
+      A character's <b>rating</b> in a skill turns into ongoing effects that depend on the
+      <b>role</b> they hold. The amounts come from the game's rating formula — a triangular curve
+      (<code>triangleOffset</code> / <code>triangleBoost</code>) applied to each rating's base rate in
+      <code>rating.xml</code>. <b>Competitive Mode</b> (the <i>Lower Character Yields</i> option) swaps the
+      triangular curve for a <b>linear</b> one through an equivalent rating of {ratingEquivalent},
+      flattening the payoff of extreme ratings.
+    </p>
+    <ul class="scale-roles">
+      <li><b>Leader</b> — flat yield of the stat's signature yield (its own <code>iTriangleOffset</code>).</li>
+      <li><b>Governor</b> — percent boost to that yield (triangle-boosted).</li>
+      <li><b>Agent</b> — percent boost to that yield (linear with rating).</li>
+      <li><b>General</b> — a combat bonus (Crit / Defense / Attack / Unit XP), triangle-boosted.</li>
+    </ul>
+    <p class="scale-note">
+      These are the raw outputs of the game formula and can differ from the legacy spreadsheet's
+      normalised display.
+    </p>
+  </section>
+
+  <div class="mode-toggle" role="radiogroup" aria-label="Scaling mode">
+    <button type="button" class="mode-toggle__btn is-active" data-mode="base" role="radio" aria-checked="true">Non-competitive</button>
+    <button type="button" class="mode-toggle__btn" data-mode="cm" role="radio" aria-checked="false">Competitive Mode</button>
+  </div>
+
+  <div class="scaling" id="scaling" data-mode="base">
+    {stats.map((stat: any) => (
+      <section class={`scale-stat yield-${stat.yield}`}>
+        <header class="scale-stat__hdr">
+          <img class="scale-stat__ico" src={yieldIcon(stat.yield)} alt="" onerror="this.style.display='none'" />
+          <h2 class="scale-stat__name" style={`--stat-color:${stat.color}`}>{stat.name}</h2>
+          <span class="scale-stat__yield">signature yield: <b>{stat.yieldLabel}</b></span>
+        </header>
+        <div class="grid">
+          <div class="grid__scroll">
+            <table class="ntbl stbl">
+              <colgroup>
+                <col class="stbl__rate-col" />
+                {stat.roles.map(() => <col />)}
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="rowlabel rowlabel--corner"><span class="nhdr__name">Rating</span></th>
+                  {stat.roles.map((role: any) => (
+                    <th class="nhdr nhdr--col nhdr--num">
+                      <span class="nhdr__name">{role.label}</span>
+                      <span class="nhdr__effect">{role.effect}</span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              {['base', 'cm'].map((mode) => (
+                <tbody class={`tb tb--${mode}`}>
+                  {stat[mode].map((r: any) => (
+                    <tr class={r.rating === 0 ? 'is-zero' : ''}>
+                      <th class="rowlabel rowlabel--rate" scope="row">{r.rating > 0 ? `+${r.rating}` : r.rating}</th>
+                      {stat.roles.map((role: any) => {
+                        const v = r[role.key];
+                        const txt = fmtCell(role, v);
+                        const tint = role.kind === 'yield' ? `yield-${stat.yield}` : (role.key === 'general' ? 'yield-misc' : `yield-${stat.yield}`);
+                        return (
+                          <td class={`cell cell--num ${v === 0 ? 'is-empty' : tint} ${v < 0 ? 'is-neg' : ''}`}>
+                            <span class="numval">{txt}</span>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              ))}
+            </table>
+          </div>
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <script is:inline>
+    (function () {
+      const root = document.getElementById('scaling');
+      const btns = Array.from(document.querySelectorAll('.mode-toggle__btn'));
+      if (!root || !btns.length) return;
+      btns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const mode = btn.getAttribute('data-mode');
+          root.setAttribute('data-mode', mode);
+          btns.forEach((b) => {
+            const on = b === btn;
+            b.classList.toggle('is-active', on);
+            b.setAttribute('aria-checked', String(on));
+          });
+        });
+      });
+    })();
+  </script>
+</Base>
+
+<style>
+  .scale-intro { max-width: 60rem; margin: 0 0 1.25rem; color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
+  .scale-intro p { margin: 0 0 0.6rem; }
+  .scale-intro code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-elev-2); padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
+  .scale-roles { margin: 0 0 0.6rem; padding-left: 1.1rem; display: grid; gap: 0.2rem; }
+  .scale-roles b { color: var(--text); }
+  .scale-note { font-size: 0.82rem; color: var(--text-faint); font-style: italic; }
+
+  /* Mode toggle */
+  .mode-toggle { display: inline-flex; gap: 0; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; margin-bottom: 1.25rem; }
+  .mode-toggle__btn {
+    font-family: var(--font-display); font-size: 0.82rem; letter-spacing: 0.03em;
+    padding: 0.4rem 0.95rem; background: var(--bg-elev); color: var(--text-dim);
+    border: none; cursor: pointer; transition: background 0.12s, color 0.12s;
+  }
+  .mode-toggle__btn + .mode-toggle__btn { border-left: 1px solid var(--border-strong); }
+  .mode-toggle__btn:hover { color: var(--text); }
+  .mode-toggle__btn.is-active { background: color-mix(in srgb, var(--accent) 30%, var(--bg-elev) 70%); color: var(--text); }
+
+  /* Mode visibility */
+  .scaling[data-mode='base'] .tb--cm { display: none; }
+  .scaling[data-mode='cm'] .tb--base { display: none; }
+
+  /* Stat section */
+  .scale-stat { margin-bottom: 1.75rem; }
+  .scale-stat__hdr { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .scale-stat__ico { width: 22px; height: 22px; object-fit: contain; }
+  .scale-stat__name { font-family: var(--font-display); font-size: 1.15rem; margin: 0; color: var(--stat-color, var(--accent)); }
+  .scale-stat__yield { font-size: 0.8rem; color: var(--text-faint); }
+  .scale-stat__yield b { color: var(--text-dim); }
+
+  .stbl__rate-col { width: 5rem; }
+
+  .nhdr--col {
+    background: var(--bg-elev-2); color: var(--text);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    border-bottom: 2px solid var(--border-strong);
+    text-align: right; padding: 0.4rem 0.55rem; vertical-align: bottom;
+  }
+  .nhdr__name { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 0.02em; display: block; }
+  .nhdr__effect { font-size: 0.66rem; color: var(--text-faint); font-family: var(--font-mono); display: block; margin-top: 1px; }
+
+  .rowlabel--rate { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.84rem; background: var(--bg-elev); color: var(--text-dim); padding: 0.3rem 0.6rem; }
+  .cell--num { text-align: right; padding: 0.3rem 0.55rem; }
+  .numval { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.82rem; }
+  .cell--num.is-empty { background: var(--bg-elev); }
+  .cell--num.is-empty .numval { color: var(--text-faint); }
+  .cell--num.is-neg .numval { opacity: 0.75; }
+  tr.is-zero { opacity: 0.6; }
+  tr.is-zero .rowlabel--rate { color: var(--text-faint); }
+</style>

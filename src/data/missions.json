@@ -13,6 +13,561 @@
       }
     ],
     "description": "Inspire the troops to gain Training",
+    "eventChance": {
+      "probability": 0.25,
+      "total": 4,
+      "weight": 1
+    },
+    "events": [
+      {
+        "conditions": [
+          "No active wars"
+        ],
+        "guaranteed": [
+          "+4 Training (+1/city)"
+        ],
+        "id": "EVENTSTORY_RALLY_STANDING_ARMIES",
+        "name": "Standing Armies",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_STANDING_ARMIES_OPTION_0",
+            "outcomes": [
+              {
+                "label": "Rally Standing Armies Repair Four Improvements",
+                "probability": 0.8333333333333334,
+                "rewards": [
+                  "Progress ambition: Four Repaired",
+                  "+1 Worker"
+                ],
+                "weight": 1000
+              },
+              {
+                "label": "Rally Standing Armies Repair Cities",
+                "probability": 0.08333333333333333,
+                "rewards": [
+                  "Affects a city",
+                  "Affects a city"
+                ],
+                "weight": 100
+              },
+              {
+                "label": "Rally Standing Armies Repair Eight Improvements",
+                "probability": 0.08333333333333333,
+                "rewards": [
+                  "Progress ambition: Eight Repaired",
+                  "+1 Worker"
+                ],
+                "weight": 100
+              }
+            ],
+            "requirements": [],
+            "text": ""
+          },
+          {
+            "id": "EVENTOPTION_RALLY_STANDING_ARMIES_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+3 Stone (+1/city)",
+                  "+3 Iron (+1/city)"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "They will join laborers in the procurement of materials."
+          },
+          {
+            "id": "EVENTOPTION_RALLY_STANDING_ARMIES_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+1 Levy unit",
+                  "+1 Levy unit"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We need more troops to enforce the peace."
+          },
+          {
+            "id": "EVENTOPTION_RALLY_STANDING_ARMIES_OPTION_3",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "-0.5 Orders",
+                  "Add Walls",
+                  "Add Walls"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Cities need more defensive fortifications."
+          }
+        ],
+        "prob": null,
+        "share": 0.23076923076923078,
+        "text": "Inspired by your speeches, soldiers across the rival intensify their drills and combat training. When they are not honing their military prowess, they dedicate their time and energies to improving the Cities in which they live. Thousands of fighting men and women take to the streets to volunteer their time. Officers have appealed to the court for direction. How shall soldiers focus their labors?",
+        "weight": 3
+      },
+      {
+        "conditions": [
+          "Low Courage"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_RALLY_ANGRY_SOLDIERS",
+        "name": "Angry Soldiers",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_ANGRY_SOLDIERS_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I need to try again. The soldiers must trust me."
+          },
+          {
+            "id": "EVENTOPTION_RALLY_ANGRY_SOLDIERS_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+4 XP to the character",
+                  "1 rebel unit appear"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "There is no more time for these speeches."
+          }
+        ],
+        "prob": null,
+        "share": 0.07692307692307693,
+        "text": "The military crowds in the city seem rowdier than usual. As you deliver your rousing oration, stones begin to fly, followed by insults. A scuffle breaks out. A soldier with a dagger rushes towards you... but he is killed before he can raise his weapon. Guards hurry you from the scene, but the incident leaves a lasting impression. Your ties with the military have worn worryingly thin.",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "Tribe nearby"
+        ],
+        "guaranteed": [
+          "+6 Training (+1.5/city)"
+        ],
+        "id": "EVENTSTORY_RALLY_BLOOD_FOR_BLOOD",
+        "name": "Blood for Blood",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_BLOOD_FOR_BLOOD_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Tribal Invasion"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "They want blood, they will have it."
+          }
+        ],
+        "prob": null,
+        "share": 0.07692307692307693,
+        "text": "Attempts to embolden our army prove highly successful. Unfortunately, some soldiers grow too frenzied for their own good. Inflamed by the fires of war (and wine), several units carouse until the early morning hours before stalking into a nearby encampment and slaughtering a group of innocent women and children. The seek blood for blood, assembling their war parties.",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "General"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_RALLY_HOLLOW_RHETORIC",
+        "name": "Hollow Rhetoric",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_HOLLOW_RHETORIC_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Possibly Strict",
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I will not stand for such insubordination."
+          },
+          {
+            "id": "EVENTOPTION_RALLY_HOLLOW_RHETORIC_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "It is an officer's duty to question his orders."
+          },
+          {
+            "id": "EVENTOPTION_RALLY_HOLLOW_RHETORIC_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+8 Training (+2/city)",
+                  "Leader relationship: Influenced By"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [
+              "Warrior / Brave / Valiant"
+            ],
+            "text": "must be reminded of my military experience."
+          }
+        ],
+        "prob": null,
+        "share": 0.07692307692307693,
+        "text": "Your series of inspiring speeches fall on deaf ears, as the soldiers of the rival army turn their backs on you at every stop. On your last visit to a military training ground, General the character confronts you. You have heard that he is beloved by troops across the nation. \"Hollow rhetoric means nothing to the fighting man,\" he says, as his soldiers look on. \"You would be wise to remember that when the blood begins to spill.\"",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "High Discipline",
+          "Unit Melee",
+          "Unit Melee"
+        ],
+        "guaranteed": [
+          "+6 Training (+1.5/city)"
+        ],
+        "id": "EVENTSTORY_RALLY_IN_THE_FIELD",
+        "name": "In the Field",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_IN_THE_FIELD_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a unit",
+                  "Affects a unit"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Sadly, I do not have the time, but good luck."
+          },
+          {
+            "id": "EVENTOPTION_RALLY_IN_THE_FIELD_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character",
+                  "Affects a unit",
+                  "Affects a unit"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Of course, I will join you in the wilds of the rival."
+          }
+        ],
+        "prob": 50,
+        "share": 0.07692307692307693,
+        "text": "When you arrive in the city to inspire the troops, an opportunity arises. Several units of infantryman are about to embark on a wilderness expedition meant to test their survival strength, resourcefulness, and stealth. The officers in charge extend an invitation. If you have the time, they would love for you to join them in this bonding exercise and pass on your wisdom to the young recruits.",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "Religion World"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_RELIGIOUS_MERCENARIES",
+        "name": "Mercenaries",
+        "options": [
+          {
+            "id": "EVENTOPTION_RELIGIOUS_MERCENARIES_YES",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a rival"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We welcome them to fight for the rival, and for ."
+          },
+          {
+            "id": "EVENTOPTION_RELIGIOUS_MERCENARIES_NO",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We will not hire them."
+          }
+        ],
+        "prob": null,
+        "share": 0.07692307692307693,
+        "text": "A group of grizzled soldiers approach one of our outposts, offering their allegiance. They say that they are fighters second, and first. Out of respect for us as nation, the soldiers are willing to join us for a smaller payment than most mercenaries would request. Should we accept this offer?",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "Zoroastrianism"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_RELIGION_OUR_ALLEGIANCE",
+        "name": "Our Allegiance",
+        "options": [
+          {
+            "id": "EVENTOPTION_RELIGION_OUR_ALLEGIANCE_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "State Religion",
+                  "-6 Training (+-1.5/city)"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "All serve Ahura Mazda in the battle against evil."
+          },
+          {
+            "id": "EVENTOPTION_RELIGION_OUR_ALLEGIANCE_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect",
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "They fight for the good of the rival and its ruler."
+          },
+          {
+            "id": "EVENTOPTION_RELIGION_OUR_ALLEGIANCE_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+6 Training (+1.5/city)"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We are done following the whims of faith."
+          }
+        ],
+        "prob": null,
+        "share": 0.07692307692307693,
+        "text": "Murmurs of discontent can be heard in military camps across the rival. With the rise of , many of its adherents claim that they are \"soldiers for Ahura Mazda\". Such a bold statement unnerves the other men, who have pledged allegiance to you, . For whom do our armies fight? Our , or our god?",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "High Wisdom"
+        ],
+        "guaranteed": [
+          "+6 Training (+1.5/city)"
+        ],
+        "id": "EVENTSTORY_RALLY_OVERLOOKED_INNOVATORS",
+        "name": "Overlooked Innovators",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_OVERLOOKED_INNOVATORS_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a city"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Promote this man above his superiors."
+          },
+          {
+            "id": "EVENTOPTION_RALLY_OVERLOOKED_INNOVATORS_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I will take the time to listen."
+          }
+        ],
+        "prob": 50,
+        "share": 0.07692307692307693,
+        "text": "Moved by your electrifying oration in the city, a small group of soldiers seeks a private audience. They wish to share several scientific developments created during their time in training. Their leader, a frail, well-spoken swordsman, explains that their group has been scoffed at by officers and ridiculed by fellow troops. No one will listen to their ideas. Will you?",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "High Charisma"
+        ],
+        "guaranteed": [
+          "+6 Training (+1.5/city)"
+        ],
+        "id": "EVENTSTORY_RALLY_PROUD_THRONGS",
+        "name": "Proud Throngs",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_PROUD_THRONGS_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+4 Happiness in a City",
+                  "+4 Happiness in a City"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We should always celebrate our brave soldiers."
+          }
+        ],
+        "prob": 50,
+        "share": 0.07692307692307693,
+        "text": "In an effort to inspire your forces, you visit every city in the rival, speaking before throngs of eager soldiers. The gatherings attract proud citizens, who openly share their food and drink with the assembled crowds. The tour proves a rousing success, one with unintended benefits. Both the city and the city still ring with celebrations days after your departure.",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "General"
+        ],
+        "guaranteed": [
+          "+6 Training (+1.5/city)"
+        ],
+        "id": "EVENTSTORY_RALLY_THE_DRUNKEN_ARMY",
+        "name": "The Drunken Army",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_THE_DRUNKEN_ARMY_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character",
+                  "Affects a unit"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I should be more careful with my wine."
+          }
+        ],
+        "prob": null,
+        "share": 0.07692307692307693,
+        "text": "You are met with cheers as you arrive at the military training grounds. Servants unload wagons of fine food and wine for the soldiers, and you toast their courage and good health. Revels continue late into the night. The next day, you discover that General and his men have started training while still inebriated from the previous evening's festivities. Several of the troops sustain injuries in the resulting drills, and must retire to his tent to recover.",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "General"
+        ],
+        "guaranteed": [
+          "+8 Training (+2/city)"
+        ],
+        "id": "EVENTSTORY_RALLY_THROWN_ROSES",
+        "name": "Thrown Roses",
+        "options": [
+          {
+            "id": "EVENTOPTION_RALLY_THROWN_ROSES_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Gain trait: Inspiring"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Our forces are ready for anything."
+          },
+          {
+            "id": "EVENTOPTION_RALLY_THROWN_ROSES_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Allow my admirers to approach and touch me."
+          }
+        ],
+        "prob": null,
+        "share": 0.07692307692307693,
+        "text": "Soldiers of the rival admire and respect your leadership, recognizing you as one of their own. Touring the streets of the city on horseback, flanked by your royal guard, the cheering crowds bolster your spirit. A winding column of troops twists through the dusty streets. Flowers rain down upon your head throughout the entirety of your speech. You are adored.",
+        "weight": 1
+      }
+    ],
     "id": "MISSION_RALLY_TROOPS",
     "name": "Rally Troops",
     "outcomes": [
@@ -48,6 +603,35 @@
         "weight": 1
       }
     ],
+    "scaling": {
+      "base": 9,
+      "byCities": [
+        {
+          "cities": 1,
+          "value": 10
+        },
+        {
+          "cities": 3,
+          "value": 12
+        },
+        {
+          "cities": 6,
+          "value": 15
+        },
+        {
+          "cities": 10,
+          "value": 19
+        },
+        {
+          "cities": 15,
+          "value": 24
+        }
+      ],
+      "label": "Training",
+      "per": 1,
+      "perUnit": "city",
+      "yield": "training"
+    },
     "slug": "rally",
     "subject": "Leader Us",
     "techPrereq": {
@@ -72,6 +656,1309 @@
       }
     ],
     "description": "Pass judgment to gain Civics",
+    "eventChance": {
+      "probability": 0.2,
+      "total": 5,
+      "weight": 1
+    },
+    "events": [
+      {
+        "conditions": [
+          "Courtier Scientist"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TECH_WINDLASS_ACCIDENTS_HAPPEN",
+        "name": "Accidents Happen",
+        "options": [
+          {
+            "id": "EVENTOPTION_TECH_WINDLASS_ACCIDENTS_HAPPEN_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+2 XP to the character",
+                  "Grants a resource"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Send the family gifts to ease their sorrow."
+          },
+          {
+            "id": "EVENTOPTION_TECH_WINDLASS_ACCIDENTS_HAPPEN_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Remove the character from the court."
+          }
+        ],
+        "prob": null,
+        "share": 0.13333333333333333,
+        "text": "Workers on a the family estate recently attempted to use an early model of a windlass in building construction. Sadly, the apparatus collapsed due to its faulty design. The disaster killed three servants and injured a distant the family cousin. Members of the family have come to court, demanding reparations, or the removal of the great scientist the character, who first suggested they use the device.",
+        "weight": 10
+      },
+      {
+        "conditions": [
+          "Family Max Upset",
+          "Family Different From Leader"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_IN_REMEMBRANCE",
+        "name": "In Remembrance",
+        "options": [
+          {
+            "id": "EVENTOPTION_IN_REMEMBRANCE_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "-4 Civics (+-1/city)",
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "It is right to honor the great the family rulers."
+          },
+          {
+            "id": "EVENTOPTION_IN_REMEMBRANCE_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Leader relationship: Vengeful Against",
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "No, not unless all past rulers receive this honor."
+          },
+          {
+            "id": "EVENTOPTION_IN_REMEMBRANCE_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "A day for all past rulers of the rival will be established."
+          }
+        ],
+        "prob": null,
+        "share": 0.13333333333333333,
+        "text": "the character and other members of the family family wish to commemorate the great the character with a national day of recognition. Unfortunately, this proposal strikes several other influential families as potentially problematic. Elevating to a revered status only strengthens his legacy in the eyes of the rival people.",
+        "weight": 10
+      },
+      {
+        "conditions": [
+          "Cruel"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TRAIT_BRUTAL_HEIR",
+        "name": "Brutal Heir",
+        "options": [
+          {
+            "id": "EVENTOPTION_TRAIT_BRUTAL_HEIR_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We will compensate those who have suffered."
+          },
+          {
+            "id": "EVENTOPTION_TRAIT_BRUTAL_HEIR_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "It is an heir's right to punish the weak."
+          },
+          {
+            "id": "EVENTOPTION_TRAIT_BRUTAL_HEIR_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up",
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "must be taught compassion."
+          }
+        ],
+        "prob": null,
+        "share": 0.10666666666666667,
+        "text": "A group of scarred and bloodied laborers come to court, accusing the royal heir, the character, of unspeakable brutalities. According to their stories, he sets impossible production quotas, punishing those who fail short with prison, beatings, and even crucifixion. The workers request our immediate intervention.",
+        "weight": 8
+      },
+      {
+        "conditions": [
+          "Mutual Attraction Leader",
+          "Different Family To Leader",
+          "Judge",
+          "Min Cautious"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_HOLD_COURT_COURTLY_LOVE",
+        "name": "Hold Court Courtly Love",
+        "options": [
+          {
+            "id": "EVENTOPTION_HOLD_COURT_COURTLY_LOVE_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Unconvincing Verdict",
+                  "Leader relationship: Influenced By"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": ""
+          },
+          {
+            "id": "EVENTOPTION_HOLD_COURT_COURTLY_LOVE_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Did Not Preside Over Case",
+                  "Leader relationship: Influenced By"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": ""
+          }
+        ],
+        "prob": null,
+        "share": 0.08,
+        "text": "",
+        "weight": 6
+      },
+      {
+        "conditions": [
+          "Family Champions",
+          "City Family Seat"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_HOLD_COURT_OF_WAR",
+        "name": "War Council",
+        "options": [
+          {
+            "id": "EVENTOPTION_HOLD_COURT_OF_WAR_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "-12 Money (+-3/city)",
+                  "Affects a family",
+                  "+1 Heavy Infantry unit"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "You honor me, ! Your bodyguard will fight bravely against the rival."
+          },
+          {
+            "id": "EVENTOPTION_HOLD_COURT_OF_WAR_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+2 XP to the character",
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "That is a noble offer, , but we don't require such a sacrifice at this time."
+          }
+        ],
+        "prob": null,
+        "share": 0.08,
+        "text": "In times of war like these, the Champions of the family Family are eager to show their worth. When summoned with the other Family Heads to Hold Court, , Oligarch of the family, offered to send his personal retinue into the fray. We would simply need to provide some funds for their upkeep. the family consider this a great honor, and would feel slighted if denied the opportunity to send 's bodyguard to fight for you against the treacherous the rival.",
+        "weight": 6
+      },
+      {
+        "conditions": [
+          "Player Legal Code"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TRAIT_SAGE_COUNSEL",
+        "name": "Sage Counsel",
+        "options": [
+          {
+            "id": "EVENTOPTION_TRAIT_SAGE_COUNSEL_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+12 Happiness in a City"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Reduce the backlog of legal cases."
+          },
+          {
+            "id": "EVENTOPTION_TRAIT_SAGE_COUNSEL_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+4 Civics (+1/city)"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Train additional advocates."
+          },
+          {
+            "id": "EVENTOPTION_TRAIT_SAGE_COUNSEL_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+0.8 Orders"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Find ways to improve efficiency."
+          }
+        ],
+        "prob": null,
+        "share": 0.05333333333333334,
+        "text": "Recent policy changes have expedited legal matters across the kingdom, leaving many advocates with new-found availability. We should put these experts to task. How shall these scholars direct their efforts?",
+        "weight": 4
+      },
+      {
+        "conditions": [
+          "City Courthouse",
+          "City Family Seat",
+          "Family Min Pleased",
+          "Family Min Pleased"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEGAL_DISPUTE",
+        "name": "Legal Dispute",
+        "options": [
+          {
+            "id": "EVENTOPTION_LEGAL_DISPUTE_SIDE_WITH_MAJORITY",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "the city is a the family city, so a property with disputed ownership is the family."
+          },
+          {
+            "id": "EVENTOPTION_LEGAL_DISPUTE_SIDE_WITH_MINORITY",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "If the judge says the family are rightful owners of the property, so be it."
+          },
+          {
+            "id": "EVENTOPTION_LEGAL_DISPUTE_DECIDE_MYSELF",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We can find a fair and just way for both families to share the property."
+          },
+          {
+            "id": "EVENTOPTION_LEGAL_DISPUTE_SEIZE",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up",
+                  "Affects a family",
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "So much talk, so much chaos... turn it over to the common folk of the city."
+          }
+        ],
+        "prob": null,
+        "share": 0.04,
+        "text": "A recent court case has turned into a major dispute. The cause is a property dispute between the family and the family in the city, the family family seat. The case went to the city's court where the judge was also the family. Unsurprisingly, the family said they would not recognize a ruling by a the family judge in a the family city. To everyone's great surprise, the judge ruled in favor of the family who are looking to accept the ruling, but now the family are calling foul play. Both families send representatives stating that they hold you in high esteem and ask for you to decide the dispute.",
+        "weight": 3
+      },
+      {
+        "conditions": [
+          "Courtier Merchant"
+        ],
+        "guaranteed": [
+          "Special effect"
+        ],
+        "id": "EVENTSTORY_GP_LIFESTYLES_OF_THE_RICH",
+        "name": "Lifestyles of the Rich",
+        "options": [
+          {
+            "id": "EVENTOPTION_GP_LIFESTYLES_OF_THE_RICH_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Leader relationship: Endeared To",
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Send the cheats and plotters away!"
+          },
+          {
+            "id": "EVENTOPTION_GP_LIFESTYLES_OF_THE_RICH_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "A noble trading guild is a sound idea."
+          },
+          {
+            "id": "EVENTOPTION_GP_LIFESTYLES_OF_THE_RICH_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "They have approval, but they must fund it themselves."
+          }
+        ],
+        "prob": null,
+        "share": 0.04,
+        "text": "In court, members of the family family argue bitterly with the great merchant the character. The the family demand the formation of a noble trading guild that would grant lower prices and exclusivity on certain goods. If their demand is not granted, they will refuse to buy from royal vendors. the character appears shaken by the threats.",
+        "weight": 3
+      },
+      {
+        "conditions": [
+          "No active wars",
+          "Family Min Cautious",
+          "Family Min Cautious",
+          "Family Min Cautious"
+        ],
+        "guaranteed": [
+          "Special effect"
+        ],
+        "id": "EVENTSTORY_HOLD_COURT_HAPPY_FAMILIES",
+        "name": "A Crowd of Admirers",
+        "options": [
+          {
+            "id": "EVENTOPTION_HOLD_COURT_HAPPY_FAMILIES_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Gain trait: Famous"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I will take a moment to reflect on the glory of the rival, and my well earned respect as her leader."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "You hold a successful court amidst a throng of admirers! The leading men and women of every the rival Family come to pay homage. Entourage in tow, they all show their sincere respect for your rule. Bask in the glow of this glorious day!",
+        "weight": 2
+      },
+      {
+        "conditions": [
+          "City Family Seat",
+          "City Different Family To Leader"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_HOLD_COURT_FAMILY_SLIGHTED",
+        "name": "Family Court Drama",
+        "options": [
+          {
+            "id": "EVENTOPTION_HOLD_COURT_FAMILY_SLIGHTED_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "-16 Money (+-4/city)"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I wish to make amends however I might. Please, allow me to finance the occasion."
+          },
+          {
+            "id": "EVENTOPTION_HOLD_COURT_FAMILY_SLIGHTED_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I haven't got any time for this sniveling."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "You hold court in the city, the family seat of the family. This leads the family to believe that you show them special favor, and in return they put on lavish, and expensive, banquets for the occasion. However, they feel slighted when in fact you give all families and courtiers equal recognition during the proceedings, and never even thank them for hosting your entourage. The crestfallen leader of the family, the character, comes to you with these concerns. He feels that without some recompense, the family family will find it difficult to forgive such an insult.",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_PRIESTLY_DWELLING_ASSYRIA",
+        "name": "High Priest of Assyrian Paganism",
+        "options": [
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_LAND",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Yes, the city can spare the land."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [
+              "Religious / Righteous"
+            ],
+            "text": "Spare no expense in honoring the divine."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_COMMONERS",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "No, that land is for the people."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "the character, the head of , has visited the court to request additional land for the <p.is_sub.S0=SUBJECT_CITY_SHRINE_SHAMASH>Shrine Shamash<p=SUBJECT_CITY_SHRINE_NUSKA>Shrine Nuska<p=SUBJECT_CITY_SHRINE_ASHUR>Shrine Ashur<p=SUBJECT_CITY_SHRINE_NINURTA>Shrine Ninurta<else>pagan shrine<end> in the city. The local worshippers are keen to honor the <p.is_sub.S0=SUBJECT_CITY_SHRINE_SHAMASH>god of justice, and expand his<p=SUBJECT_CITY_SHRINE_NINURTA>god of farming, hunting and war, and expand his<p=SUBJECT_CITY_SHRINE_ASHUR>winged sun god, and expand his<p=SUBJECT_CITY_SHRINE_NUSKA>god of light and fire, and expand his<else>god, and expand their<end> influence. How much land does one god require?",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_PRIESTLY_DWELLING_BABYLONIA",
+        "name": "High Priest of Babylonian Paganism",
+        "options": [
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_LAND",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Yes, the city can spare the land."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [
+              "Religious / Righteous"
+            ],
+            "text": "Spare no expense in honoring the divine."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_COMMONERS",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "No, that land is for the people."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "the character, the head of , has visited the court to request additional land for the <p.is_sub.S0=SUBJECT_CITY_SHRINE_NABU>Shrine Nabu<p=SUBJECT_CITY_SHRINE_MARDUK>Shrine Marduk<p=SUBJECT_CITY_SHRINE_ISHTAR>Shrine Ishtar<p=SUBJECT_CITY_SHRINE_ERESHKIGAL>Shrine Ereshkigal<else>pagan shrine<end> in the city. The local worshippers are keen to honor the <p.is_sub.S0=SUBJECT_CITY_SHRINE_NABU>god of scribes, and expand his<p=SUBJECT_CITY_SHRINE_MARDUK>king of the gods, and expand his<p=SUBJECT_CITY_SHRINE_ISHTAR>goddess of love, and expand her<p=SUBJECT_CITY_SHRINE_ERESHKIGAL>goddess of the underworld, and expand her<else>god, and expand their<end> influence. How much land does one god require?",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_PRIESTLY_DWELLING_CARTHAGE",
+        "name": "High Priest of Carthaginian Paganism",
+        "options": [
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_LAND",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Yes, the city can spare the land."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [
+              "Religious / Righteous"
+            ],
+            "text": "Spare no expense in honoring the divine."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_COMMONERS",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "No, that land is for the people."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "the character, the head of , has visited the court to request additional land for the <p.is_sub.S0=SUBJECT_CITY_SHRINE_TANIT>Shrine Tanit<p=SUBJECT_CITY_SHRINE_MELQART>Shrine Melqart<p=SUBJECT_CITY_SHRINE_ESHMUN>Shrine Eshmun<p=SUBJECT_CITY_SHRINE_BAAL_HAMMON>Shrine Baal Hammon<else>pagan shrine<end> in the city. The local worshippers are keen to honor the <p.is_sub.S0=SUBJECT_CITY_SHRINE_TANIT>mother goddess, and expand her<p=SUBJECT_CITY_SHRINE_MELQART>Lord of Tyre and Son of Baal, and expand his<p=SUBJECT_CITY_SHRINE_ESHMUN>god of the healing, and expand his<p=SUBJECT_CITY_SHRINE_BAAL_HAMMON>goddess of love and war, and expand her<else>god, and expand their<end> influence. How much land does one god require?",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_PRIESTLY_DWELLING_EGYPT",
+        "name": "High Priest of Egyptian Paganism",
+        "options": [
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_LAND",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Yes, the city can spare the land."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [
+              "Religious / Righteous"
+            ],
+            "text": "Spare no expense in honoring the divine."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_COMMONERS",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "No, that land is for the people."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "the character, the head of , has visited the court to request additional land for the <p.is_sub.S0=SUBJECT_CITY_SHRINE_RA>Shrine Ra<p=SUBJECT_CITY_SHRINE_OSIRIS>Shrine Osiris<p=SUBJECT_CITY_SHRINE_NEITH>Shrine Neith<p=SUBJECT_CITY_SHRINE_ISIS>Shrine Isis<else>pagan shrine<end> in the city. The local worshippers are keen to honor the <p.is_sub.S0=SUBJECT_CITY_SHRINE_RA>god of the sun, and expand his<p=SUBJECT_CITY_SHRINE_OSIRIS>god of the dead, fertility and agriculture, and expand his<p=SUBJECT_CITY_SHRINE_NEITH>goddess of wisdom, and expand her<p=SUBJECT_CITY_SHRINE_ISIS>goddess of healing, and expand her<else>god, and expand their<end> influence. How much land does one god require?",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_PRIESTLY_DWELLING_GREEK",
+        "name": "High Priest of Greek Paganism",
+        "options": [
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_LAND",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Yes, the city can spare the land."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [
+              "Religious / Righteous"
+            ],
+            "text": "Spare no expense in honoring the divine."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_COMMONERS",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "No, that land is for the people."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "the character, the head of , has visited the court to request additional land for the <p.is_sub.S0=SUBJECT_CITY_SHRINE_ATHENA>Shrine Athena<p=SUBJECT_CITY_SHRINE_ZEUS>Shrine Zeus<p=SUBJECT_CITY_SHRINE_POSEIDON>Shrine Poseidon<p=SUBJECT_CITY_SHRINE_HADES>Shrine Hades<else>pagan shrine<end> in the city. The local worshippers are keen to honor the <p.is_sub.S0=SUBJECT_CITY_SHRINE_ATHENA>goddess of wisdom, and expand her<p=SUBJECT_CITY_SHRINE_ZEUS>god of thunder, and expand his<p=SUBJECT_CITY_SHRINE_POSEIDON>god of the sea, and expand his<p=SUBJECT_CITY_SHRINE_HADES>god of the dead, and expand his<else>god, and expand their<end> influence. How much land does one god require?",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_PRIESTLY_DWELLING_PERSIA",
+        "name": "High Priest of Persian Paganism",
+        "options": [
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_LAND",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Yes, the city can spare the land."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [
+              "Religious / Righteous"
+            ],
+            "text": "Spare no expense in honoring the divine."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_COMMONERS",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "No, that land is for the people."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "the character, the head of , has visited the court to request additional land for the <p.is_sub.S0=SUBJECT_CITY_SHRINE_HVAR_KHSHAITA>Shrine Hvar Khshaita<p=SUBJECT_CITY_SHRINE_MITHRA>Shrine Mithra<p=SUBJECT_CITY_SHRINE_ANAHITA>Shrine Anahita<p=SUBJECT_CITY_SHRINE_ATAR>Shrine Atar<else>pagan shrine<end> in the city. The local worshippers are keen to honor the <p.is_sub.S0=SUBJECT_CITY_SHRINE_HVAR_KHSHAITA>god of the radiant sun, and expand his<p=SUBJECT_CITY_SHRINE_ANAHITA>goddess of the waters, and expand her<p=SUBJECT_CITY_SHRINE_ATAR>god of the burning and unburning fire, and expand his<p=SUBJECT_CITY_SHRINE_MITHRA>god of truth and light, and expand their<else>god, and expand their<end> influence. How much land does one god require?",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_PRIESTLY_DWELLING_ROME",
+        "name": "High Priest of Roman Paganism",
+        "options": [
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_LAND",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Yes, the city can spare the land."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [
+              "Religious / Righteous"
+            ],
+            "text": "Spare no expense in honoring the divine."
+          },
+          {
+            "id": "EVENTOPTION_PRIESTLY_DWELLING_COMMONERS",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Happiness Up"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "No, that land is for the people."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "the character, the head of , has visited the court to request additional land for the <p.is_sub.S0=SUBJECT_CITY_SHRINE_SOL>Shrine Sol<p=SUBJECT_CITY_SHRINE_CERES>Shrine Ceres<p=SUBJECT_CITY_SHRINE_FERONIA>Shrine Feronia<p=SUBJECT_CITY_SHRINE_BELLONA>Shrine Bellona<else>pagan shrine<end> in the city. The local worshippers are keen to honor the <p.is_sub.S0=SUBJECT_CITY_SHRINE_SOL>god of fire and the forge, and expand his<p=SUBJECT_CITY_SHRINE_CERES>goddess of hearth and home, and expand her<p=SUBJECT_CITY_SHRINE_FERONIA>goddess of love, and expand her<p=SUBJECT_CITY_SHRINE_BELLONA>god of war, and expand his<else>god, and expand their<end> influence. How much land does one god require?",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_THE_FIGHTING_CLASS",
+        "name": "The Fighting Class",
+        "options": [
+          {
+            "id": "EVENTOPTION_THE_FIGHTING_CLASS_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a city"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Permit the fighting class to form an assembly."
+          },
+          {
+            "id": "EVENTOPTION_THE_FIGHTING_CLASS_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Reevaluate our laws for better representation."
+          },
+          {
+            "id": "EVENTOPTION_THE_FIGHTING_CLASS_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "-12 Money (+-3/city)",
+                  "Affects a city"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Provide the masses with a short-lived distraction."
+          }
+        ],
+        "prob": null,
+        "share": 0.02666666666666667,
+        "text": "A column of militiamen winds its way through the city to the royal palace, interrupting a political debate. After years of living at the mercy of the court, they demand representation. These men, mostly farmers, are made to spend years away from their homes in times of war, leaving their families to ruin, and all at the whim of the ruling class. They demand a seat in court, or at the very least the ability to elect their own officials.",
+        "weight": 2
+      },
+      {
+        "conditions": [
+          "Non Courtier",
+          "Non Successor"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_HOLD_COURT_NEW_COURTIER",
+        "name": "A Flower Out of the Dirt",
+        "options": [
+          {
+            "id": "EVENTOPTION_HOLD_COURT_NEW_COURTIER_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Gain Wisdom 1",
+                  "-24 Money (+-6/city)",
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Appoint the character to the position of Minister right away. Spare no expense!"
+          },
+          {
+            "id": "EVENTOPTION_HOLD_COURT_NEW_COURTIER_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+2 XP to the character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We've no place for him at this time."
+          }
+        ],
+        "prob": null,
+        "share": 0.013333333333333334,
+        "text": "Through many days of often exhausting court proceedings, you are repeatedly impressed with the intellect and charisma of the character. He is a shining beacon of sincerity and genuine company among a throng of sycophants. His piercing insights into issues of high importance, combined with the undeniable charm of his eloquent delivery, have won over many members of the court, yourself included. Shall you make the character an official Minister?",
+        "weight": 1
+      },
+      {
+        "conditions": [],
+        "guaranteed": [
+          "Special effect"
+        ],
+        "id": "EVENTSTORY_HOLD_COURT_WEARY",
+        "name": "An Exhausting Ordeal",
+        "options": [
+          {
+            "id": "EVENTOPTION_HOLD_COURT_WEARY_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+6 XP to the character"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I am so relieved to be done with this. At least I have learned something from the ordeal."
+          }
+        ],
+        "prob": null,
+        "share": 0.013333333333333334,
+        "text": "You called all of the leading families of the rival to Hold Court in your Capital City of the city. The proceedings are long and tiresome and you grow ever more wearied by the ordeal. the family and the family Family have taken to court gossip out of boredom, and the family hardly ever even show up for this tedium. However, the Family Heads ultimately appreciate the effort to include them in court ceremonies, and the experience you've gained from the occasion is invaluable. Your reputation as a legitimate ruler who cares for his realm has improved.",
+        "weight": 1
+      },
+      {
+        "conditions": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_HOLD_COURT_FAMILY_SCUFFLE",
+        "name": "Family Scuffle",
+        "options": [
+          {
+            "id": "EVENTOPTION_HOLD_COURT_FAMILY_SCUFFLE_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I will reluctantly take the side of the family in this dispute."
+          },
+          {
+            "id": "EVENTOPTION_HOLD_COURT_FAMILY_SCUFFLE_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Affects a family"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I will reluctantly take the side of the family in this dispute."
+          },
+          {
+            "id": "EVENTOPTION_HOLD_COURT_FAMILY_SCUFFLE_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Come now, let us end this needless quarrel without any mutual hostilities."
+          }
+        ],
+        "prob": null,
+        "share": 0.013333333333333334,
+        "text": "The leading families of the rival have come to Hold Court. The proceedings have have not all gone as planned though. The merriment of the occasion has evaporated as the character of the family Family and the character of the family Family have been quarrelsome since they arrived. One insult is always met with another, as the two escalate their game of invectives. The other guests are concerned that it may come to blows. The respective heads of these Family, the character and the character, are firm in their resolve to take their relation's side. Each Family Head is adamant that you show them favor, and condemn the other party.",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "Family Max Cautious",
+          "Adult",
+          "Courtier",
+          "Capital Us"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_FAMILY_OSTRACIZED",
+        "name": "Ostracized",
+        "options": [
+          {
+            "id": "EVENTOPTION_FAMILY_OSTRACIZED_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Leader relationship: Influenced By",
+                  "+8 Discontent in a City"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "There is no compelling evidence against ."
+          },
+          {
+            "id": "EVENTOPTION_FAMILY_OSTRACIZED_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Affects a family",
+                  "+2 Happiness in a City"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We have no choice but to cast out the villain!"
+          },
+          {
+            "id": "EVENTOPTION_FAMILY_OSTRACIZED_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a family",
+                  "Affects a family",
+                  "Leader relationship: Influenced By"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "Refute the charges against ."
+          }
+        ],
+        "prob": null,
+        "share": 0.013333333333333334,
+        "text": "After several contentious encounters, the family family accuses the family of political wrongdoing, specifically the character. They request that all citizens of the city write the name of someone on the court whom they wish to see \"ostracized.\" They have chosen . We have not seen evidence of his crimes, but the accusers have whipped the population into a frenzy. They want blood.",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "Family Non Leader",
+          "Family Non Leader"
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TWO_MOTHERS_ONE_CHILD",
+        "name": "Two Mothers One Child",
+        "options": [
+          {
+            "id": "EVENTOPTION_TWO_MOTHERS_ONE_CHILD_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect",
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "the family are known for their pale hair."
+          },
+          {
+            "id": "EVENTOPTION_TWO_MOTHERS_ONE_CHILD_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect",
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I recognize the classic the family nose."
+          },
+          {
+            "id": "EVENTOPTION_TWO_MOTHERS_ONE_CHILD_OPTION_2",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "They can each have half of the child."
+          },
+          {
+            "id": "EVENTOPTION_TWO_MOTHERS_ONE_CHILD_OPTION_3",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "The mother is the one who would rather give up the child than see it die."
+          }
+        ],
+        "prob": null,
+        "share": 0.013333333333333334,
+        "text": "Two mothers come to you with a living baby, and a dead baby. They both swear that the living child is theirs and the dead child is the other's. They ask you to settle the dispute. How will you decide who is truthful?",
+        "weight": 1
+      }
+    ],
     "id": "MISSION_HOLD_COURT",
     "name": "Hold Court",
     "outcomes": [
@@ -122,6 +2009,35 @@
         "weight": 1
       }
     ],
+    "scaling": {
+      "base": 9,
+      "byCities": [
+        {
+          "cities": 1,
+          "value": 10
+        },
+        {
+          "cities": 3,
+          "value": 12
+        },
+        {
+          "cities": 6,
+          "value": 15
+        },
+        {
+          "cities": 10,
+          "value": 19
+        },
+        {
+          "cities": 15,
+          "value": 24
+        }
+      ],
+      "label": "Civics",
+      "per": 1,
+      "perUnit": "city",
+      "yield": "civics"
+    },
     "slug": "hold-court",
     "subject": "Leader Judge",
     "techPrereq": null,
@@ -137,6 +2053,192 @@
       }
     ],
     "description": "Steal a Nation's research to gain Science",
+    "eventChance": {
+      "probability": 0.2,
+      "total": 5,
+      "weight": 1
+    },
+    "events": [
+      {
+        "conditions": [
+          "Freedom-leaning empire"
+        ],
+        "guaranteed": [
+          "+4 Science (+1/city)"
+        ],
+        "id": "EVENTSTORY_STEAL_DEFECTING_SCIENTISTS",
+        "name": "Defecting Scientists",
+        "options": [
+          {
+            "id": "EVENTOPTION_STEAL_DEFECTING_SCIENTISTS_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Special effect"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We will provide whatever they need."
+          }
+        ],
+        "prob": null,
+        "share": 0.25,
+        "text": "'s mission to steal the rival secrets has proven more successful than expected. Not only have our spies returned with valuable secrets, but they have also convinced several notable the rival scientists to come with them. The court has agreed to expedite the building of a new facility where these scientists can continue their work.",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [
+          "+4 Science (+1/city)"
+        ],
+        "id": "EVENTSTORY_STEAL_SEEKING_HELP",
+        "name": "Seeking Help",
+        "options": [
+          {
+            "id": "EVENTOPTION_STEAL_SEEKING_HELP_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Gain trait: Incubated"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I wish him a speedy recovery."
+          }
+        ],
+        "prob": null,
+        "share": 0.25,
+        "text": "Our agent in the rival has returned triumphant, bearing caches of scientific research. Unfortunately, the stressful experience has taken its toll on . He has chosen to leave the Council and seek the healing power of the temple. We will need to find a new spymaster.",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [
+          "Gain trait: Fugitive"
+        ],
+        "id": "EVENTSTORY_STEAL_SELLING_SECRETS",
+        "name": "Selling Secrets",
+        "options": [
+          {
+            "id": "EVENTOPTION_STEAL_SELLING_SECRETS_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a rival"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "You never can trust a spy."
+          }
+        ],
+        "prob": null,
+        "share": 0.25,
+        "text": "Months have passed since sent his agent into the rival to steal its scientific secrets. Finally, news of his betrayal begin to trickle in from other sources. Instead of stealing knowledge from the rival, our spy sold them our secrets for an astronomical sum, after which he crossed into the wilds to the east and disappeared.",
+        "weight": 2
+      },
+      {
+        "conditions": [],
+        "guaranteed": [
+          "Leader relationship: Vengeful Against"
+        ],
+        "id": "EVENTSTORY_STEAL_FINGERS",
+        "name": "Fingers",
+        "options": [
+          {
+            "id": "EVENTOPTION_STEAL_FINGERS_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a rival"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We will not give in to threats."
+          },
+          {
+            "id": "EVENTOPTION_STEAL_FINGERS_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+6 Science (+1.5/city)"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "I refuse to have this blood on my hands."
+          }
+        ],
+        "prob": null,
+        "share": 0.125,
+        "text": "In a series of unfortunate events, 's spies in the rival are captured and tortured for information about their mission. Every week, the court receives a new finger. the character demands that we pay a steep price for the lives of our agents. Some of our new scientific discoveries would be a place to start.",
+        "weight": 1
+      },
+      {
+        "conditions": [
+          "High Wisdom"
+        ],
+        "guaranteed": [
+          "Eventstory Steal Player Discovery Player 0"
+        ],
+        "id": "EVENTSTORY_STEAL_PLAYER_DISCOVERY",
+        "name": "the rival Discovery",
+        "options": [
+          {
+            "id": "EVENTOPTION_STEAL_PLAYER_DISCOVERY_OPTION_0",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "Affects a rival"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "We can always use a fresh voice in court."
+          },
+          {
+            "id": "EVENTOPTION_STEAL_PLAYER_DISCOVERY_OPTION_1",
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  "+4 Science (+1/city)"
+                ],
+                "weight": null
+              }
+            ],
+            "requirements": [],
+            "text": "She must focus on understanding this discovery."
+          }
+        ],
+        "prob": null,
+        "share": 0.125,
+        "text": "'s spy has managed to escape from the rival with an abundance of stolen scientific research. This trove of knowledge includes a groundbreaking discovery on which the rival have been working for years. This success has us wondering if this spy has potential beyond espionage.",
+        "weight": 1
+      }
+    ],
     "id": "MISSION_STEAL_RESEARCH",
     "name": "Steal Research",
     "outcomes": [
@@ -200,6 +2302,35 @@
         "weight": 1
       }
     ],
+    "scaling": {
+      "base": 3,
+      "byCities": [
+        {
+          "cities": 1,
+          "value": 4
+        },
+        {
+          "cities": 3,
+          "value": 6
+        },
+        {
+          "cities": 6,
+          "value": 9
+        },
+        {
+          "cities": 10,
+          "value": 13
+        },
+        {
+          "cities": 15,
+          "value": 18
+        }
+      ],
+      "label": "Science",
+      "per": 1,
+      "perUnit": "city",
+      "yield": "science"
+    },
     "slug": "steal-research",
     "subject": "Spymaster",
     "techPrereq": {

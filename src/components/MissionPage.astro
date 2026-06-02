@@ -97,7 +97,7 @@ function pct(p: number): string {
                       <span>{r.label}</span>
                     ) : (
                       <>
-                        <span class="reward-val">{r.scope.endsWith('Per') ? `+${r.value / 10} per rating` : `+${r.value / 10}`}</span>
+                        <span class="reward-val">{r.scope.endsWith('Per') ? `+${r.value / 10} per City` : `+${r.value / 10}`}</span>
                         <span class="reward-yield">{r.label}</span>
                       </>
                     )}
@@ -111,10 +111,112 @@ function pct(p: number): string {
     </div>
 
     <p class="outcomes__legend">
-      <strong>Base</strong> rewards apply at rating 0. <strong>Per rating</strong> values stack with the subject's
-      relevant character rating (Charisma for Hold Court civics, Wisdom for Steal Research science, etc.).
+      <strong>Base</strong> is the flat reward; <strong>per City</strong> values stack with the size of your empire
+      (see Reward scaling below). The subject's character rating shifts the dice — e.g. Wisdom raises the
+      Steal Research success chance — but does not change the yield amounts.
     </p>
   </section>
+
+  {mission.scaling && (
+    <section class="scaling">
+      <h2 class="outcomes__title">Reward scaling</h2>
+      <p class="outcomes__sub">
+        The base reward is <strong>{mission.scaling.base} {mission.scaling.label}</strong>
+        {mission.scaling.per ? <> plus <strong>{mission.scaling.per} {mission.scaling.label} per City</strong></> : null},
+        so it grows with your empire. The game then scales it up further as the match goes on
+        (a turn/price multiplier that depends on game state). <strong>Competitive Mode does not change mission rewards.</strong>
+      </p>
+      <table class={`ntbl scale-tbl yield-${mission.scaling.yield}`}>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner"><span class="nhdr__name">Cities</span></th>
+            {mission.scaling.byCities.map(c => <th class="nhdr nhdr--col nhdr--num"><span class="nhdr__name">{c.cities}</span></th>)}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="rowlabel" scope="row">
+              <span class="scale-tbl__yield">
+                <img class="scale-tbl__ico" src={`${base}img/icons/yields/${mission.scaling.yield}.png`} alt="" onerror="this.style.display='none'" />
+                {mission.scaling.label} reward
+              </span>
+            </th>
+            {mission.scaling.byCities.map(c => (
+              <td class={`cell cell--num yield-${mission.scaling.yield}`}>
+                <span class="numval">+{c.value}</span>
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+      <p class="outcomes__legend">Reward at base game-yield rate (early game). Later turns multiply these up.</p>
+    </section>
+  )}
+
+  {mission.events && mission.events.length > 0 && mission.eventChance && (
+    <section class="events">
+      <h2 class="outcomes__title">Events</h2>
+      <p class="outcomes__sub">
+        <strong>{pct(mission.eventChance.probability)}</strong> of the time (a {mission.eventChance.weight}/{mission.eventChance.total} dice
+        result) the mission fires an <strong>event</strong> instead of its normal reward. One of the
+        {' '}{mission.events.length} stories below is drawn by weight, among those whose character/empire
+        conditions are met — then you pick a response. Percentages are each story's share of the weighted pool.
+      </p>
+
+      <div class="evt-list">
+        {mission.events.map(ev => {
+          const evYield = classifyYield(ev.guaranteed.join(' '))?.toLowerCase()
+            || ev.options.flatMap((o: any) => o.outcomes.flatMap((oc: any) => oc.rewards)).map((r: string) => classifyYield(r)).find(Boolean)?.toLowerCase()
+            || 'misc';
+          return (
+            <details class={`evt yield-${evYield}`}>
+              <summary class="evt__summary">
+                <span class="evt__name">{ev.name}</span>
+                <span class="evt__meta">
+                  <span class="evt__share" title="Share of the weighted event pool (among eligible stories)">~{pct(ev.share)}</span>
+                  {ev.conditions.map((c: string) => <span class="chip chip--cond">{c}</span>)}
+                </span>
+              </summary>
+              <div class="evt__body">
+                {ev.text && <p class="evt__flavor"><LinkedText text={ev.text} /></p>}
+                {ev.guaranteed.length > 0 && (
+                  <div class="evt__guaranteed">
+                    <span class="evt__label">Always</span>
+                    {ev.guaranteed.map((g: string) => (
+                      <span class={`chip yield-${classifyYield(g)?.toLowerCase() || 'misc'}`}><LinkedText text={g} showIcons={false} /></span>
+                    ))}
+                  </div>
+                )}
+                <ul class="evt__opts">
+                  {ev.options.map((o: any) => (
+                    <li class="opt">
+                      <div class="opt__text">
+                        <span class="opt__bullet">▸</span>
+                        <LinkedText text={o.text || 'Resolve'} />
+                        {o.requirements.map((r: string) => <span class="chip chip--req" title="Requires">{r}</span>)}
+                      </div>
+                      <div class="opt__outcomes">
+                        {o.outcomes.map((oc: any) => (
+                          <div class="oc">
+                            {oc.probability < 1 && <span class="oc__prob">{pct(oc.probability)}</span>}
+                            <div class="oc__rewards">
+                              {oc.rewards.filter(Boolean).map((r: string) => (
+                                <span class={`chip yield-${classifyYield(r)?.toLowerCase() || 'misc'}`}><LinkedText text={r} showIcons={false} /></span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </details>
+          );
+        })}
+      </div>
+    </section>
+  )}
 </Base>
 
 <style>
@@ -255,4 +357,62 @@ function pct(p: number): string {
     font-variant-numeric: tabular-nums;
   }
   .reward-yield { opacity: 0.78; }
+
+  /* ── Reward scaling table ── */
+  .scaling { margin-top: 2rem; }
+  .scale-tbl { width: auto; margin-top: 0.6rem; }
+  .scale-tbl .nhdr--col { background: var(--bg-elev-2); text-align: right; padding: 0.4rem 0.7rem; }
+  .scale-tbl .nhdr--num .nhdr__name { font-family: var(--font-mono); font-size: 0.82rem; }
+  .scale-tbl__yield { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; color: var(--text-dim); white-space: nowrap; }
+  .scale-tbl__ico { width: 15px; height: 15px; object-fit: contain; }
+  .scale-tbl .cell--num { text-align: right; padding: 0.35rem 0.7rem; }
+  .scale-tbl .numval { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; font-size: 0.86rem; }
+
+  /* ── Events ── */
+  .events { margin-top: 2rem; }
+  .evt-list { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.8rem; }
+  .evt {
+    border: 1px solid var(--border);
+    border-left: 3px solid color-mix(in srgb, var(--yield-bg, var(--accent)) 70%, transparent);
+    border-radius: var(--radius-lg); background: var(--bg-elev); overflow: hidden;
+  }
+  .evt[open] { background: var(--bg-elev-2); }
+  .evt__summary {
+    display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+    padding: 0.5rem 0.8rem; cursor: pointer; list-style: none; user-select: none;
+  }
+  .evt__summary::-webkit-details-marker { display: none; }
+  .evt__summary::before {
+    content: '▸'; color: var(--text-faint); font-size: 0.8rem; transition: transform 0.12s; flex-shrink: 0;
+  }
+  .evt[open] .evt__summary::before { transform: rotate(90deg); }
+  .evt__summary:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  .evt__name { font-family: var(--font-display); font-weight: 600; font-size: 0.92rem; color: var(--text); }
+  .evt__meta { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; margin-left: auto; }
+  .evt__share {
+    font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;
+    color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--bg-elev));
+    padding: 0.08rem 0.4rem; border-radius: 5px;
+  }
+  .chip--cond { background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; }
+  .chip--req { background: color-mix(in srgb, #6b5ea6 24%, var(--bg-elev)); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 45%, transparent); padding: 0.04rem 0.4rem; font-size: 0.66rem; margin-left: 0.4rem; }
+
+  .evt__body { padding: 0 0.9rem 0.7rem 1.6rem; }
+  .evt__flavor { color: var(--text-dim); font-size: 0.82rem; line-height: 1.45; margin: 0 0 0.6rem; font-style: italic; max-width: 75ch; }
+  .evt__guaranteed { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+  .evt__label, .oc__prob { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
+
+  .evt__opts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+  .opt { border-top: 1px dashed var(--border); padding-top: 0.45rem; }
+  .opt:first-child { border-top: 0; padding-top: 0; }
+  .opt__text { font-size: 0.85rem; color: var(--text); margin-bottom: 0.3rem; display: flex; align-items: baseline; gap: 0.35rem; flex-wrap: wrap; }
+  .opt__bullet { color: var(--accent); font-size: 0.7rem; }
+  .opt__outcomes { display: flex; flex-direction: column; gap: 0.25rem; padding-left: 1rem; }
+  .oc { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  .oc__prob {
+    font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; color: var(--text-dim);
+    min-width: 2.4rem; text-align: right;
+  }
+  .oc__rewards { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+  .oc__rewards .chip, .evt__guaranteed .chip { font-size: 0.72rem; padding: 0.08rem 0.45rem; }
 </style>
