@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
-import { classifyYield } from '../lib/entities';
+import { classifyYield, yieldColors } from '../lib/entities';
 import missions from '../data/missions.json';
 
 interface Props {
@@ -149,7 +149,40 @@ function pct(p: number): string {
           </tr>
         </tbody>
       </table>
-      <p class="outcomes__legend">Reward at base game-yield rate (early game). Later turns multiply these up.</p>
+      <p class="outcomes__legend">Reward at base game-yield rate (turns 0–{mission.scaling.inflationTurns}). After turn {mission.scaling.inflationTurns} the reward grows in proportion to the turn number.</p>
+
+      <div
+        class={`calc yield-${mission.scaling.yield}`}
+        data-rawbase={mission.scaling.rawBase}
+        data-rawper={mission.scaling.rawPer}
+        data-cap={mission.scaling.cap ?? ''}
+        data-infl={mission.scaling.inflationTurns}
+        data-yield={mission.scaling.yield}
+        data-label={mission.scaling.label}
+        data-color={yieldColors[`YIELD_${mission.scaling.yield.toUpperCase()}`] || '#c9a04a'}
+      >
+        <h3 class="calc__title">Reward calculator</h3>
+        <div class="calc__controls">
+          <label class="calc__field">
+            <span class="calc__field-label">Cities <output id="calc-cities-out">4</output></span>
+            <input type="range" id="calc-cities" min="1" max="20" value="4" step="1" />
+          </label>
+          <label class="calc__field">
+            <span class="calc__field-label">Turn <output id="calc-turn-out">90</output></span>
+            <input type="range" id="calc-turn" min="0" max="300" value="90" step="1" />
+          </label>
+        </div>
+        <div class="calc__readout">
+          <span class="calc__big">
+            <img class="calc__ico" src={`${base}img/icons/yields/${mission.scaling.yield}.png`} alt="" onerror="this.style.display='none'" />
+            <span id="calc-reward">+15</span>
+            <span class="calc__unit">{mission.scaling.label}</span>
+          </span>
+          <span class="calc__formula" id="calc-formula"></span>
+        </div>
+        <svg id="calc-graph" class="calc__graph" viewBox="0 0 640 300" role="img" aria-label="Reward versus turn"></svg>
+        <p class="calc__hint">Drag the sliders, or scrub across the graph to set the turn. Faint lines show other city counts. Competitive Mode does not change these rewards.</p>
+      </div>
     </section>
   )}
 
@@ -217,6 +250,112 @@ function pct(p: number): string {
       </div>
     </section>
   )}
+
+  <script is:inline>
+    // Reward calculator + reward-vs-turn graph. Replicates the game's
+    // getAdjustedValue for non-sellable yields: reward = (rawBase + rawPer×cities),
+    // then ×max(1, turn/inflationTurns) once past the inflation turn, rounded to a
+    // multiple (10/5/2 by magnitude) and capped, all at the ×10 internal scale.
+    (function () {
+      const root = document.querySelector('.calc');
+      const svg = document.getElementById('calc-graph');
+      if (!root || !svg) return;
+      const rawBase = +root.dataset.rawbase, rawPer = +root.dataset.rawper;
+      const cap = root.dataset.cap ? +root.dataset.cap : null;
+      const infl = +root.dataset.infl || 60;
+      const color = root.dataset.color || '#c9a04a';
+      const citiesIn = document.getElementById('calc-cities');
+      const turnIn = document.getElementById('calc-turn');
+      const citiesOut = document.getElementById('calc-cities-out');
+      const turnOut = document.getElementById('calc-turn-out');
+      const rewardEl = document.getElementById('calc-reward');
+      const formulaEl = document.getElementById('calc-formula');
+
+      const MAX_TURN = +turnIn.max, GHOSTS = [1, 3, 6, 10, 15];
+      const NS = 'http://www.w3.org/2000/svg';
+      const W = 640, H = 300, M = { l: 48, r: 16, t: 14, b: 30 };
+
+      // Raw (×10) reward, matching the game's integer math.
+      function rawReward(cities, turn) {
+        let v = rawBase + rawPer * cities;
+        if (turn > infl) v = Math.floor((v * turn) / infl);
+        const a = Math.abs(v), rt = a > 100 ? 10 : a > 50 ? 5 : a > 10 ? 2 : 0;
+        if (rt) v -= v % rt;
+        if (cap != null) v = Math.min(v, cap);
+        return v;
+      }
+      const reward = (cities, turn) => rawReward(cities, turn) / 10; // display
+
+      const fmt = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
+
+      function draw() {
+        const cities = +citiesIn.value, turn = +turnIn.value;
+        citiesOut.textContent = cities;
+        turnOut.textContent = turn;
+        const rw = reward(cities, turn);
+        rewardEl.textContent = '+' + fmt(rw);
+
+        // Breakdown: pre-scale × multiplier
+        const pre = (rawBase + rawPer * cities) / 10;
+        const mult = Math.max(1, turn / infl);
+        formulaEl.textContent =
+          `${fmt(rawBase / 10)} + ${fmt(rawPer / 10)}×${cities} = ${fmt(pre)}` +
+          (turn > infl ? `  ×${mult.toFixed(2)} (turn ${turn})` : `  (turn ≤ ${infl}: ×1)`) +
+          (cap != null && rawReward(cities, turn) >= cap ? '  — capped' : '');
+
+        // Y domain from the tallest visible line at MAX_TURN.
+        const yMax = Math.max(reward(Math.max(cities, 15), MAX_TURN), reward(15, MAX_TURN), 1) * 1.08;
+        const xS = (t) => M.l + (t / MAX_TURN) * (W - M.l - M.r);
+        const yS = (v) => (H - M.b) - (v / yMax) * (H - M.t - M.b);
+        const linePts = (c) => {
+          let pts = '';
+          for (let t = 0; t <= MAX_TURN; t += 4) pts += `${xS(t).toFixed(1)},${yS(reward(c, t)).toFixed(1)} `;
+          return pts.trim();
+        };
+
+        let g = '';
+        // grid + axes
+        const yTicks = 4, xTicks = [0, infl, 120, 180, 240, 300].filter(t => t <= MAX_TURN);
+        for (let i = 0; i <= yTicks; i++) {
+          const v = (yMax / yTicks) * i, y = yS(v);
+          g += `<line x1="${M.l}" y1="${y}" x2="${W - M.r}" y2="${y}" class="cg-grid"/>`;
+          g += `<text x="${M.l - 6}" y="${y + 3}" class="cg-ylab">${fmt(Math.round(v * 10) / 10)}</text>`;
+        }
+        for (const t of xTicks) {
+          g += `<text x="${xS(t)}" y="${H - M.b + 16}" class="cg-xlab">${t}</text>`;
+        }
+        // ghost city lines
+        for (const c of GHOSTS) {
+          if (c === cities) continue;
+          g += `<polyline points="${linePts(c)}" class="cg-ghost"/>`;
+          g += `<text x="${W - M.r + 2}" y="${yS(reward(c, MAX_TURN)) + 3}" class="cg-ghostlab">${c}c</text>`;
+        }
+        // active line
+        g += `<polyline points="${linePts(cities)}" class="cg-active" style="stroke:${color}"/>`;
+        // turn guide + marker
+        const mx = xS(turn), my = yS(rw);
+        g += `<line x1="${mx}" y1="${M.t}" x2="${mx}" y2="${H - M.b}" class="cg-guide"/>`;
+        g += `<circle cx="${mx}" cy="${my}" r="4.5" class="cg-dot" style="fill:${color}"/>`;
+        g += `<text x="${Math.min(mx + 8, W - M.r - 30)}" y="${Math.max(my - 8, M.t + 10)}" class="cg-val">+${fmt(rw)}</text>`;
+        svg.innerHTML = g;
+      }
+
+      function scrub(ev) {
+        const r = svg.getBoundingClientRect();
+        const px = ((ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left) / r.width * W;
+        const t = Math.round(((px - M.l) / (W - M.l - M.r)) * MAX_TURN);
+        turnIn.value = Math.max(0, Math.min(MAX_TURN, t));
+        draw();
+      }
+      citiesIn.addEventListener('input', draw);
+      turnIn.addEventListener('input', draw);
+      let scrubbing = false;
+      svg.addEventListener('pointerdown', (e) => { scrubbing = true; scrub(e); });
+      svg.addEventListener('pointermove', (e) => { if (scrubbing) scrub(e); });
+      window.addEventListener('pointerup', () => { scrubbing = false; });
+      draw();
+    })();
+  </script>
 </Base>
 
 <style>
@@ -415,4 +554,37 @@ function pct(p: number): string {
   }
   .oc__rewards { display: flex; gap: 0.25rem; flex-wrap: wrap; }
   .oc__rewards .chip, .evt__guaranteed .chip { font-size: 0.72rem; padding: 0.08rem 0.45rem; }
+
+  /* ── Reward calculator + graph ── */
+  .calc {
+    margin-top: 1rem; padding: 1rem 1.1rem 1.1rem;
+    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+    background: var(--bg-elev); max-width: 720px;
+  }
+  .calc__title { font-family: var(--font-display); font-size: 0.95rem; margin: 0 0 0.7rem; color: var(--text); }
+  .calc__controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem 1.2rem; margin-bottom: 0.8rem; }
+  .calc__field { display: flex; flex-direction: column; gap: 0.3rem; }
+  .calc__field-label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; color: var(--text-dim); text-transform: uppercase; }
+  .calc__field-label output { color: var(--accent); font-weight: 700; margin-left: 0.35rem; font-size: 0.95rem; }
+  .calc__field input[type='range'] { width: 100%; accent-color: var(--accent); }
+  .calc__readout { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+  .calc__big { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-weight: 700; font-size: 1.6rem; color: var(--text); }
+  .calc__ico { width: 22px; height: 22px; object-fit: contain; }
+  .calc__unit { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; color: var(--text-dim); }
+  .calc__formula { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-faint); }
+  .calc__graph { width: 100%; height: auto; display: block; background: var(--bg); border-radius: 8px; touch-action: none; cursor: crosshair; }
+  .calc__hint { font-size: 0.74rem; color: var(--text-faint); margin: 0.5rem 0 0; }
+
+  /* SVG graph internals (global selectors — they live inside the inline-set SVG) */
+  .calc__graph :global(.cg-grid) { stroke: var(--border); stroke-width: 1; opacity: 0.5; }
+  .calc__graph :global(.cg-ylab) { fill: var(--text-faint); font-size: 11px; font-family: var(--font-mono); text-anchor: end; }
+  .calc__graph :global(.cg-xlab) { fill: var(--text-faint); font-size: 11px; font-family: var(--font-mono); text-anchor: middle; }
+  .calc__graph :global(.cg-ghost) { fill: none; stroke: var(--text-faint); stroke-width: 1; opacity: 0.32; }
+  .calc__graph :global(.cg-ghostlab) { fill: var(--text-faint); font-size: 10px; font-family: var(--font-mono); opacity: 0.6; }
+  .calc__graph :global(.cg-active) { fill: none; stroke-width: 2.5; }
+  .calc__graph :global(.cg-guide) { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.6; }
+  .calc__graph :global(.cg-dot) { stroke: var(--bg); stroke-width: 2; }
+  .calc__graph :global(.cg-val) { fill: var(--text); font-size: 12px; font-weight: 700; font-family: var(--font-mono); }
+
+  @media (max-width: 520px) { .calc__controls { grid-template-columns: 1fr; } }
 </style>

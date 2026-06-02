@@ -120,6 +120,10 @@ def scaling_from_outcome(outcome: dict) -> dict | None:
         "label": lbl,
         "base": _trim(base_d),
         "per": _trim(per_d),
+        # Raw (×10 internal) base/per the game's getAdjustedValue runs on — fed
+        # verbatim to the client calculator so it reproduces the exact reward.
+        "rawBase": base,
+        "rawPer": per or 0,
         "perUnit": "city",
         "byCities": [{"cities": c, "value": _trim(base_d + per_d * c)} for c in SCALING_CITY_COUNTS],
     }
@@ -321,6 +325,12 @@ def main() -> int:
     missions_idx = index("mission.xml")
     results_idx = index("missionResult.xml")
     bonus_idx = index("bonus.xml")
+
+    # Globals the reward calculator needs: per-yield stockpile cap (MAX_<YIELD>,
+    # raw ×10 scale) and the turn the inflation ramp kicks in.
+    gint = {e.findtext("zType"): int(e.findtext("iValue") or "0")
+            for e in parse("globalsInt.xml").findall("Entry") if e.findtext("zType")}
+    inflation_turns = gint.get("MONEY_INFLATION_TURNS", 60)
     story_idx = index_many("eventStory.xml", "eventStory-sap.xml", "eventStory-btt.xml")
     eopt_idx = index_many(
         "eventOption.xml", "eventOption-sap.xml", "eventOption-btt.xml",
@@ -406,6 +416,9 @@ def main() -> int:
                 scaling = scaling_from_outcome(o)
                 if scaling:
                     break
+        if scaling:
+            scaling["cap"] = gint.get(f"MAX_{scaling['yield'].upper()}")  # raw cap, or None
+            scaling["inflationTurns"] = inflation_turns
 
         # Event chain: the *_EVENT outcome's dice share is the trigger chance;
         # the stories it can fire (with options + outcomes) hang off it.

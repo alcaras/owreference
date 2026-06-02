@@ -24,6 +24,18 @@ function fmtCell(role: any, v: number): string {
   if (role.kind === 'flat') return fmtFlat(v);
   return fmtPct(v);
 }
+
+// Compact payload for the interactive graph: per stat, each role's Base and
+// Competitive series (one value per rating, in `ratings` order).
+const graphData = {
+  ratings,
+  stats: (stats as any[]).map((s) => ({
+    slug: s.slug, name: s.name, color: s.color, yield: s.yield,
+    roles: s.roles.map((r: any) => ({ key: r.key, label: r.label, effect: r.effect, kind: r.kind })),
+    base: Object.fromEntries(s.roles.map((r: any) => [r.key, s.base.map((row: any) => row[r.key])])),
+    cm: Object.fromEntries(s.roles.map((r: any) => [r.key, s.cm.map((row: any) => row[r.key])])),
+  })),
+};
 ---
 
 <Base
@@ -54,16 +66,44 @@ function fmtCell(role: any, v: number): string {
     </ul>
     <p class="scale-note">
       These are the raw outputs of the game formula and can differ from the legacy spreadsheet's
-      normalised display.
+      normalised display. <b>Competitive Mode is shown by default.</b>
     </p>
   </section>
 
+  <section class="sg-panel" id="sg-panel">
+    <div class="sg-controls">
+      <div class="seg" id="sg-stats" role="tablist" aria-label="Stat">
+        {stats.map((s: any, i: number) => (
+          <button type="button" class={`seg__btn ${i === 0 ? 'is-active' : ''}`} data-stat={s.slug}>{s.name}</button>
+        ))}
+      </div>
+      <div class="seg" id="sg-roles" role="tablist" aria-label="Role">
+        {['leader', 'governor', 'agent', 'general'].map((k, i) => (
+          <button type="button" class={`seg__btn ${i === 0 ? 'is-active' : ''}`} data-role={k}>
+            {k.charAt(0).toUpperCase() + k.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+    <div class="sg-head">
+      <span class="sg-title" id="sg-title"></span>
+      <span class="sg-legend">
+        <span class="sg-legend__item"><span class="sg-swatch sg-swatch--cm"></span>Competitive</span>
+        <span class="sg-legend__item"><span class="sg-swatch sg-swatch--base"></span>Non-competitive</span>
+      </span>
+    </div>
+    <svg id="sg-graph" class="sg-graph" viewBox="0 0 640 320" role="img" aria-label="Rating scaling curve"></svg>
+    <p class="sg-readout" id="sg-readout"></p>
+  </section>
+
+  <script type="application/json" id="sg-data" set:html={JSON.stringify(graphData)}></script>
+
   <div class="mode-toggle" role="radiogroup" aria-label="Scaling mode">
-    <button type="button" class="mode-toggle__btn is-active" data-mode="base" role="radio" aria-checked="true">Non-competitive</button>
-    <button type="button" class="mode-toggle__btn" data-mode="cm" role="radio" aria-checked="false">Competitive Mode</button>
+    <button type="button" class="mode-toggle__btn is-active" data-mode="cm" role="radio" aria-checked="true">Competitive Mode</button>
+    <button type="button" class="mode-toggle__btn" data-mode="base" role="radio" aria-checked="false">Non-competitive</button>
   </div>
 
-  <div class="scaling" id="scaling" data-mode="base">
+  <div class="scaling" id="scaling" data-mode="cm">
     {stats.map((stat: any) => (
       <section class={`scale-stat yield-${stat.yield}`}>
         <header class="scale-stat__hdr">
@@ -133,6 +173,101 @@ function fmtCell(role: any, v: number): string {
       });
     })();
   </script>
+
+  <script is:inline>
+    // Interactive rating-curve graph: pick a stat + role, see Competitive
+    // (linear) vs Non-competitive (triangular) scaling across rating −3..+15.
+    (function () {
+      const node = document.getElementById('sg-data');
+      const svg = document.getElementById('sg-graph');
+      if (!node || !svg) return;
+      let DATA; try { DATA = JSON.parse(node.textContent || '{}'); } catch { return; }
+      const ratings = DATA.ratings;
+      const byStat = Object.fromEntries(DATA.stats.map((s) => [s.slug, s]));
+      const titleEl = document.getElementById('sg-title');
+      const readoutEl = document.getElementById('sg-readout');
+      const statBtns = Array.from(document.querySelectorAll('#sg-stats .seg__btn'));
+      const roleBtns = Array.from(document.querySelectorAll('#sg-roles .seg__btn'));
+
+      let statSlug = DATA.stats[0].slug, roleKey = 'leader', hoverR = null;
+      const W = 640, H = 320, M = { l: 50, r: 50, t: 16, b: 34 };
+      const xMin = ratings[0], xMax = ratings[ratings.length - 1];
+
+      const fmt = (kind, v) => {
+        const s = Number.isInteger(v) ? String(v) : v.toFixed(1);
+        if (v === 0) return '0';
+        if (kind === 'yield') return (v > 0 ? '+' : '') + s;
+        if (kind === 'flat') return (v > 0 ? '+' : '') + s;
+        return (v > 0 ? '+' : '') + s + '%';
+      };
+
+      function draw() {
+        const stat = byStat[statSlug];
+        const role = stat.roles.find((r) => r.key === roleKey);
+        const baseS = stat.base[roleKey], cmS = stat.cm[roleKey];
+        titleEl.textContent = `${stat.name} · ${role.label} — ${role.effect}`;
+
+        let lo = 0, hi = 0;
+        for (const v of baseS.concat(cmS)) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+        const pad = (hi - lo) * 0.08 || 1;
+        lo -= pad; hi += pad;
+        const xS = (r) => M.l + ((r - xMin) / (xMax - xMin)) * (W - M.l - M.r);
+        const yS = (v) => (H - M.b) - ((v - lo) / (hi - lo)) * (H - M.t - M.b);
+        const pts = (arr) => arr.map((v, i) => `${xS(ratings[i]).toFixed(1)},${yS(v).toFixed(1)}`).join(' ');
+
+        let g = '';
+        // y grid (5 ticks) + zero line
+        for (let i = 0; i <= 4; i++) {
+          const v = lo + ((hi - lo) / 4) * i, y = yS(v);
+          g += `<line x1="${M.l}" y1="${y}" x2="${W - M.r}" y2="${y}" class="cg-grid"/>`;
+          g += `<text x="${M.l - 6}" y="${y + 3}" class="cg-ylab">${Math.round(v * 10) / 10}</text>`;
+        }
+        const yz = yS(0);
+        g += `<line x1="${M.l}" y1="${yz}" x2="${W - M.r}" y2="${yz}" class="cg-zero"/>`;
+        // x labels (every 3 ratings)
+        for (let r = xMin; r <= xMax; r += 3) g += `<text x="${xS(r)}" y="${H - M.b + 16}" class="cg-xlab">${r > 0 ? '+' + r : r}</text>`;
+        g += `<text x="${(M.l + W - M.r) / 2}" y="${H - 2}" class="cg-axis">Rating</text>`;
+        // lines
+        g += `<polyline points="${pts(baseS)}" class="cg-base"/>`;
+        g += `<polyline points="${pts(cmS)}" class="cg-cm" style="stroke:${stat.color}"/>`;
+        // hover marker
+        const r = hoverR == null ? (xMax) : hoverR;
+        const idx = ratings.indexOf(r);
+        if (idx >= 0) {
+          const mx = xS(r);
+          g += `<line x1="${mx}" y1="${M.t}" x2="${mx}" y2="${H - M.b}" class="cg-guide"/>`;
+          g += `<circle cx="${mx}" cy="${yS(baseS[idx])}" r="3.5" class="cg-dot-base"/>`;
+          g += `<circle cx="${mx}" cy="${yS(cmS[idx])}" r="4" class="cg-dot-cm" style="fill:${stat.color}"/>`;
+          readoutEl.innerHTML =
+            `Rating <b>${r > 0 ? '+' + r : r}</b> · ${role.label}: ` +
+            `Competitive <b style="color:${stat.color}">${fmt(role.kind, cmS[idx])}</b> · ` +
+            `Non-competitive <b>${fmt(role.kind, baseS[idx])}</b>`;
+        }
+        svg.innerHTML = g;
+      }
+
+      svg.addEventListener('pointermove', (e) => {
+        const rect = svg.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width * W;
+        const r = Math.round(xMin + ((px - M.l) / (W - M.l - M.r)) * (xMax - xMin));
+        hoverR = Math.max(xMin, Math.min(xMax, r));
+        draw();
+      });
+      svg.addEventListener('pointerleave', () => { hoverR = null; draw(); });
+
+      statBtns.forEach((b) => b.addEventListener('click', () => {
+        statSlug = b.getAttribute('data-stat');
+        statBtns.forEach((x) => x.classList.toggle('is-active', x === b));
+        draw();
+      }));
+      roleBtns.forEach((b) => b.addEventListener('click', () => {
+        roleKey = b.getAttribute('data-role');
+        roleBtns.forEach((x) => x.classList.toggle('is-active', x === b));
+        draw();
+      }));
+      draw();
+    })();
+  </script>
 </Base>
 
 <style>
@@ -185,4 +320,39 @@ function fmtCell(role: any, v: number): string {
   .cell--num.is-neg .numval { opacity: 0.75; }
   tr.is-zero { opacity: 0.6; }
   tr.is-zero .rowlabel--rate { color: var(--text-faint); }
+
+  /* ── Interactive rating graph ── */
+  .sg-panel {
+    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+    background: var(--bg-elev); padding: 0.9rem 1rem 1rem; margin-bottom: 1.5rem; max-width: 760px;
+  }
+  .sg-controls { display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; margin-bottom: 0.7rem; }
+  .seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 7px; overflow: hidden; flex-wrap: wrap; }
+  .seg__btn {
+    font-family: var(--font-display); font-size: 0.76rem; padding: 0.32rem 0.7rem;
+    background: var(--bg-elev); color: var(--text-dim); border: none; cursor: pointer; transition: background 0.12s, color 0.12s;
+  }
+  .seg__btn + .seg__btn { border-left: 1px solid var(--border-strong); }
+  .seg__btn:hover { color: var(--text); }
+  .seg__btn.is-active { background: color-mix(in srgb, var(--accent) 28%, var(--bg-elev) 72%); color: var(--text); }
+  .sg-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.3rem; }
+  .sg-title { font-family: var(--font-display); font-size: 0.9rem; color: var(--text); }
+  .sg-legend { display: inline-flex; gap: 0.8rem; font-size: 0.74rem; color: var(--text-dim); }
+  .sg-legend__item { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .sg-swatch { width: 16px; height: 0; border-top-width: 2.5px; border-top-style: solid; display: inline-block; }
+  .sg-swatch--cm { border-top-color: var(--accent); }
+  .sg-swatch--base { border-top-color: var(--text-faint); border-top-style: dashed; }
+  .sg-graph { width: 100%; height: auto; display: block; background: var(--bg); border-radius: 8px; touch-action: none; cursor: crosshair; }
+  .sg-readout { font-size: 0.8rem; color: var(--text-dim); margin: 0.5rem 0 0; min-height: 1.2em; }
+
+  .sg-graph :global(.cg-grid) { stroke: var(--border); stroke-width: 1; opacity: 0.45; }
+  .sg-graph :global(.cg-zero) { stroke: var(--border-strong); stroke-width: 1.2; }
+  .sg-graph :global(.cg-ylab) { fill: var(--text-faint); font-size: 11px; font-family: var(--font-mono); text-anchor: end; }
+  .sg-graph :global(.cg-xlab) { fill: var(--text-faint); font-size: 11px; font-family: var(--font-mono); text-anchor: middle; }
+  .sg-graph :global(.cg-axis) { fill: var(--text-faint); font-size: 11px; font-family: var(--font-mono); text-anchor: middle; }
+  .sg-graph :global(.cg-base) { fill: none; stroke: var(--text-faint); stroke-width: 2; stroke-dasharray: 5 4; opacity: 0.85; }
+  .sg-graph :global(.cg-cm) { fill: none; stroke-width: 2.6; }
+  .sg-graph :global(.cg-guide) { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.55; }
+  .sg-graph :global(.cg-dot-base) { fill: var(--text-faint); stroke: var(--bg); stroke-width: 1.5; }
+  .sg-graph :global(.cg-dot-cm) { stroke: var(--bg); stroke-width: 2; }
 </style>

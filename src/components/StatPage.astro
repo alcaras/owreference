@@ -62,26 +62,8 @@ const helpLines = (stat.help || '').split('\n').filter(Boolean);
   <div class="stat-modes">
     <section class="stat-mode">
       <header class="stat-mode__hdr">
-        <h3 class="stat-mode__title">Base</h3>
-        <p class="stat-mode__sub">Single-player and default-rules curve.</p>
-      </header>
-      <div class="grid">
-        <div class="grid__scroll">
-          <StatTable
-            columns={stat.columns}
-            rows={stat.base}
-            ratingYieldKey={stat.yieldKey}
-            modeLabel={`${stat.name} (Base)`}
-            tableId={`${slug}-base`}
-          />
-        </div>
-      </div>
-    </section>
-
-    <section class="stat-mode">
-      <header class="stat-mode__hdr">
-        <h3 class="stat-mode__title">Competitive Mode (CM)</h3>
-        <p class="stat-mode__sub">Multiplayer-balanced curve — character yields scale flatter at the top.</p>
+        <h3 class="stat-mode__title">Competitive Mode (CM) <span class="stat-mode__default">· default</span></h3>
+        <p class="stat-mode__sub">Multiplayer-balanced curve — character yields scale flatter at the top. This is the default ruleset for this site.</p>
       </header>
       <div class="grid">
         <div class="grid__scroll">
@@ -91,6 +73,24 @@ const helpLines = (stat.help || '').split('\n').filter(Boolean);
             ratingYieldKey={stat.yieldKey}
             modeLabel={`${stat.name} (CM)`}
             tableId={`${slug}-cm`}
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="stat-mode">
+      <header class="stat-mode__hdr">
+        <h3 class="stat-mode__title">Non-competitive (Base)</h3>
+        <p class="stat-mode__sub">Single-player / default-rules curve, for reference.</p>
+      </header>
+      <div class="grid">
+        <div class="grid__scroll">
+          <StatTable
+            columns={stat.columns}
+            rows={stat.base}
+            ratingYieldKey={stat.yieldKey}
+            modeLabel={`${stat.name} (Base)`}
+            tableId={`${slug}-base`}
           />
         </div>
       </div>
@@ -197,5 +197,13 @@ const helpLines = (stat.help || '').split('\n').filter(Boolean);
     margin: 0.1rem 0 0;
     font-size: 0.74rem;
     color: var(--text-dim);
+  }
+  .stat-mode__default {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    font-weight: 600;
   }
 </style>
