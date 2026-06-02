@@ -122,14 +122,14 @@ function pct(p: number): string {
       <h2 class="outcomes__title">Reward scaling</h2>
       <p class="outcomes__sub">
         The base reward is <strong>{mission.scaling.base} {mission.scaling.label}</strong>
-        {mission.scaling.per ? <> plus <strong>{mission.scaling.per} {mission.scaling.label} per City</strong></> : null},
-        so it grows with your empire. The game then scales it up further as the match goes on
-        (a turn/price multiplier that depends on game state). <strong>Competitive Mode does not change mission rewards.</strong>
+        {mission.scaling.per ? <> plus <strong>{mission.scaling.per} {mission.scaling.label} per {(mission.scaling.citiesLabel || 'city').toLowerCase().replace('your ', '').replace('rival cities', 'rival city')}</strong></> : null},
+        so it grows with {mission.scaling.citiesLabel === 'Rival cities' ? "the rival's empire (you steal more from larger rivals)" : 'your empire'}. The game then scales it up further as the match goes on
+        (a turn/price multiplier that depends on game state, the same in both modes). <strong>Competitive Mode does not change mission rewards.</strong>
       </p>
       <table class={`ntbl scale-tbl yield-${mission.scaling.yield}`}>
         <thead>
           <tr>
-            <th class="rowlabel rowlabel--corner"><span class="nhdr__name">Cities</span></th>
+            <th class="rowlabel rowlabel--corner"><span class="nhdr__name">{mission.scaling.citiesLabel || 'Cities'}</span></th>
             {mission.scaling.byCities.map(c => <th class="nhdr nhdr--col nhdr--num"><span class="nhdr__name">{c.cities}</span></th>)}
           </tr>
         </thead>
@@ -164,7 +164,7 @@ function pct(p: number): string {
         <h3 class="calc__title">Reward calculator</h3>
         <div class="calc__controls">
           <label class="calc__field">
-            <span class="calc__field-label">Cities <output id="calc-cities-out">4</output></span>
+            <span class="calc__field-label">{mission.scaling.citiesLabel || 'Cities'} <output id="calc-cities-out">4</output></span>
             <input type="range" id="calc-cities" min="1" max="20" value="4" step="1" />
           </label>
           <label class="calc__field">
@@ -194,6 +194,8 @@ function pct(p: number): string {
         result) the mission fires an <strong>event</strong> instead of its normal reward. One of the
         {' '}{mission.events.length} stories below is drawn by weight, among those whose character/empire
         conditions are met — then you pick a response. Percentages are each story's share of the weighted pool.
+        Bracketed values like <code>[character]</code> or <code>[family]</code> are filled in with the actual
+        names in-game.
       </p>
 
       <div class="evt-list">
@@ -260,6 +262,13 @@ function pct(p: number): string {
       const root = document.querySelector('.calc');
       const svg = document.getElementById('calc-graph');
       if (!root || !svg) return;
+      // Robust SVG render: parse as SVG-namespaced nodes (innerHTML on an
+      // <svg> is unreliable across browsers) and swap them in.
+      function setSVG(el, inner) {
+        const doc = new DOMParser().parseFromString(
+          '<svg xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>', 'image/svg+xml');
+        el.replaceChildren(...Array.from(doc.documentElement.childNodes));
+      }
       const rawBase = +root.dataset.rawbase, rawPer = +root.dataset.rawper;
       const cap = root.dataset.cap ? +root.dataset.cap : null;
       const infl = +root.dataset.infl || 60;
@@ -337,7 +346,7 @@ function pct(p: number): string {
         g += `<line x1="${mx}" y1="${M.t}" x2="${mx}" y2="${H - M.b}" class="cg-guide"/>`;
         g += `<circle cx="${mx}" cy="${my}" r="4.5" class="cg-dot" style="fill:${color}"/>`;
         g += `<text x="${Math.min(mx + 8, W - M.r - 30)}" y="${Math.max(my - 8, M.t + 10)}" class="cg-val">+${fmt(rw)}</text>`;
-        svg.innerHTML = g;
+        setSVG(svg, g);
       }
 
       function scrub(ev) {

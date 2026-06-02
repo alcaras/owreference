@@ -23,28 +23,56 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
 
 
-# Event/option prose carries runtime template vars the static site can't fill:
-# {G0:him:her} grammar (take the first form) and {FAMILY-1,1}/{CHARACTER-…}
-# entity placeholders (replace with a generic noun). Strip anything left over.
-_GRAMMAR_RE = re.compile(r"\{G\d+:([^:}]*):[^}]*\}")
-_ENTITY_SUBS = [
-    (re.compile(r"\{FAMILY[-\d,]*\}"),    "the family"),
-    (re.compile(r"\{CHARACTER[-\d,]*\}"), "the character"),
-    (re.compile(r"\{PLAYER[-\d,]*\}"),    "the rival"),
-    (re.compile(r"\{CITY[-\d,]*\}"),      "the city"),
-    (re.compile(r"\{NATION[-\d,]*\}"),    "the nation"),
-    (re.compile(r"\{UNIT[-\d,]*\}"),      "the unit"),
-]
+# Event/option prose is full of runtime template vars the static site can't
+# fill: grammar ({G0:him:her}), entity references ({CHARACTER-1,1},
+# {RELIGION-1,1}, …) and bare link(TOKEN) markup. Rather than blank them (which
+# left dangling "'s thing"), we replace every entity ref with a bracketed
+# placeholder so the reader can see exactly what gets filled in.
+ENTITY_NOUNS = {
+    "CHARACTER": "character", "PLAYER": "rival", "UNITPLAYER": "rival", "CITY": "city",
+    "RELIGION": "religion", "FAMILY": "family", "TRIBE": "tribe", "TITLE": "title",
+    "UNIT": "unit", "GOAL": "ambition", "RELATIVE": "relative", "NATION": "nation",
+    "LAW": "law", "LANDMARK": "landmark", "RESOURCE": "resource", "THEOLOGY": "theology",
+    "TECH": "tech", "IMPROVEMENT": "improvement", "TRAIT": "trait", "OCCURRENCE": "event",
+}
+_LINK_BARE_RE = re.compile(r"\blink\(([A-Z0-9_]+?)(?:\s*,\s*\d+)?\)")
+
+
+def _link_bare(m: "re.Match") -> str:
+    """bare link(MISSION_HOLD_COURT) → 'Hold Court' (drop the category prefix)."""
+    parts = m.group(1).split("_")
+    words = parts[1:] if len(parts) > 1 else parts
+    return " ".join(w.capitalize() for w in words)
+
+
+def _repl_token(m: "re.Match") -> str:
+    inner = m.group(1).strip()
+    g = re.match(r"G\d+:([^:]*)", inner)                 # {G0:his:her} → his
+    if g:
+        return g.group(1)
+    w = re.match(r"(?:sentencecase|lowercase|uppercase|capitalize):(.*)", inner, re.I)
+    if w:                                                # {sentencecase:X} → X (re-processed)
+        return w.group(1)
+    typ = re.split(r"[-:,0-9. ]", inner, 1)[0].upper()
+    if typ in ENTITY_NOUNS:                             # {RELIGION-1,1} → [religion]
+        return f"[{ENTITY_NOUNS[typ]}]"
+    return ""                                            # grammar helpers (S, p.is_sub.S, random_R…) → drop
 
 
 def clean_text(s: str) -> str:
     if not s:
         return s
-    s = _GRAMMAR_RE.sub(r"\1", s)
-    for rx, repl in _ENTITY_SUBS:
-        s = rx.sub(repl, s)
-    s = re.sub(r"\{[^}]*\}", "", s)  # strip any remaining template token
-    s = re.sub(r"\bthe the\b", "the", s, flags=re.IGNORECASE)  # "the {FAMILY}" → "the the family"
+    s = _strip_link_templates(s)            # {lowercase:link(TOKEN,N)} → Token Words
+    s = _LINK_BARE_RE.sub(_link_bare, s)    # bare link(TOKEN)
+    for _ in range(6):                      # resolve nested {…{…}…}
+        new = re.sub(r"\{([^{}]*)\}", _repl_token, s)
+        if new == s:
+            break
+        s = new
+    s = re.sub(r"\s+'s\b", "'s", s)                          # "name 's" → "name's"
+    s = re.sub(r"\b(the )(the )+", r"\1", s, flags=re.I)     # "the the family" → "the family"
+    s = re.sub(r"\s+([,.;:!?])", r"\1", s)                   # space before punctuation
+    s = re.sub(r"\(\s*\)", "", s)
     return re.sub(r"\s+", " ", s).strip()
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -105,16 +133,19 @@ def scaling_from_outcome(outcome: dict) -> dict | None:
     outcome and tabulate the reward across a few empire sizes."""
     base = per = None
     yld = lbl = None
+    other = False  # aiOtherYields scale by the TARGET player's cities, not yours
     for r in outcome["rewards"]:
         if r["value"] is None:
             continue
         if r["scope"].endswith("Base"):
             base, yld, lbl = r["value"], r["yield"], r["label"]
+            other = r["scope"].startswith("aiOther")
         elif r["scope"].endswith("Per"):
             per = r["value"]
     if base is None:
         return None
     base_d, per_d = base / 10, (per or 0) / 10
+    cities_label = "Rival cities" if other else "Your cities"
     return {
         "yield": yld,
         "label": lbl,
@@ -125,6 +156,7 @@ def scaling_from_outcome(outcome: dict) -> dict | None:
         "rawBase": base,
         "rawPer": per or 0,
         "perUnit": "city",
+        "citiesLabel": cities_label,
         "byCities": [{"cities": c, "value": _trim(base_d + per_d * c)} for c in SCALING_CITY_COUNTS],
     }
 

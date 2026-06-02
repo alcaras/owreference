@@ -189,6 +189,11 @@ const graphData = {
       const statBtns = Array.from(document.querySelectorAll('#sg-stats .seg__btn'));
       const roleBtns = Array.from(document.querySelectorAll('#sg-roles .seg__btn'));
 
+      function setSVG(el, inner) {
+        const doc = new DOMParser().parseFromString(
+          '<svg xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>', 'image/svg+xml');
+        el.replaceChildren(...Array.from(doc.documentElement.childNodes));
+      }
       let statSlug = DATA.stats[0].slug, roleKey = 'leader', hoverR = null;
       const W = 640, H = 320, M = { l: 50, r: 50, t: 16, b: 34 };
       const xMin = ratings[0], xMax = ratings[ratings.length - 1];
@@ -243,7 +248,7 @@ const graphData = {
             `Competitive <b style="color:${stat.color}">${fmt(role.kind, cmS[idx])}</b> · ` +
             `Non-competitive <b>${fmt(role.kind, baseS[idx])}</b>`;
         }
-        svg.innerHTML = g;
+        setSVG(svg, g);
       }
 
       svg.addEventListener('pointermove', (e) => {
