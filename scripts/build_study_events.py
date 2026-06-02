@@ -33,6 +33,33 @@ RATING_LABELS: dict[str, str] = {
     "RATING_DISCIPLINE": "Discipline",
 }
 
+# A royal child's tutor sets a course of study; each EVENTCLASS_STUDY event is
+# gated to one (or to "Any") via a SUBJECT_STUDY_* subject-extra. This is the
+# axis the Tutor Events tab groups on.
+STUDY_LABELS: dict[str, str] = {
+    "SUBJECT_STUDY_TACTICS":    "Tactics",
+    "SUBJECT_STUDY_COMMERCE":   "Commerce",
+    "SUBJECT_STUDY_PHILOSOPHY": "Philosophy",
+    "SUBJECT_STUDY_POLITICS":   "Politics",
+    "SUBJECT_STUDY_ANY":        "Any",
+    "SUBJECT_STUDY_ANY_HIDDEN": "Any",
+}
+
+# Nation-locked study events (Rome's Bulla, Greece's Agoge, …). The gate is a
+# SUBJECT_PLAYER_<NATION> (or SUBJECT_CHARACTER_<NATION>) subject-extra.
+NATION_SUBJECTS: dict[str, str] = {
+    "SUBJECT_PLAYER_ROME":      "Rome",
+    "SUBJECT_PLAYER_BABYLONIA": "Babylonia",
+    "SUBJECT_PLAYER_GREECE":    "Greece",
+    "SUBJECT_PLAYER_HITTITE":   "Hittites",
+    "SUBJECT_PLAYER_ASSYRIA":   "Assyria",
+    "SUBJECT_PLAYER_KUSH":      "Kush",
+    "SUBJECT_PLAYER_EGYPT":     "Egypt",
+    "SUBJECT_CHARACTER_EGYPT":  "Egypt",
+    "SUBJECT_PLAYER_PERSIA":    "Persia",
+    "SUBJECT_PLAYER_CARTHAGE":  "Carthage",
+}
+
 
 def parse(name: str) -> ET.Element:
     return ET.parse(XML_DIR / name).getroot()
@@ -147,10 +174,16 @@ def main() -> int:
 
         # Subject extras = prerequisites about the event subjects (e.g. SUBJECT_TEENAGER)
         prereqs: list[str] = []
+        study = ""
+        nation = ""
         for pair in entry.findall("SubjectExtras/Pair"):
             sub = pair.findtext("Second") or ""
             if sub:
                 prereqs.append(subject_label(sub))
+                if not study and sub in STUDY_LABELS:
+                    study = STUDY_LABELS[sub]
+                if not nation and sub in NATION_SUBJECTS:
+                    nation = NATION_SUBJECTS[sub]
         # Deduplicate while preserving order
         seen: set[str] = set()
         prereqs = [p for p in prereqs if not (p in seen or seen.add(p))]
@@ -188,6 +221,8 @@ def main() -> int:
             "id": zid,
             "slug": zid.replace("EVENTSTORY_STUDY_", "").lower(),
             "title": title,
+            "study": study,
+            "nation": nation,
             "prereqs": prereqs,
             "options": options,
             "weight": weight,

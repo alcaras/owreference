@@ -87,6 +87,11 @@ export const TABS: Tab[] = [
     summary: 'Tutor study event outcomes',
     willContain: ['Each study event, prerequisites, and possible traits gained'],
   },
+  {
+    slug: 'tutor-events', icon: '📚', label: 'Tutor Events', section: 'Characters',
+    status: 'built', sourceSheet: '🎓 Study Events',
+    summary: 'Study events grouped by course of study',
+  },
 
   // ── Empire ────────────────────────────────────────────────────
   {
@@ -134,8 +139,8 @@ export const TABS: Tab[] = [
   {
     slug: 'harvest-events', icon: '🌾', label: 'Harvest Events', section: 'Empire',
     status: 'built', sourceSheet: '🌾 Harvest Events',
-    summary: 'Random harvest outcomes',
-    willContain: ['Each harvest event and odds'],
+    summary: 'Harvest events grouped by resource, with option rewards',
+    willContain: ['Each harvest event and its option rewards'],
   },
   {
     // Split into Urban Specialists + Rural Specialists. Slug kept as a
@@ -211,6 +216,16 @@ export const TABS: Tab[] = [
   },
 
   // ── Mechanics ─────────────────────────────────────────────────
+  {
+    slug: 'events', icon: '🧭', label: 'Exploration Events', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'Ruins & expedition events — triggers, odds, options, rewards',
+    willContain: [
+      'Ruins-tile events with eligibility conditions and weighted odds',
+      'Expedition (explore distant lands) chains, incl. follow-ups',
+      'Each option’s requirements and outcome rewards',
+    ],
+  },
   {
     slug: 'rally', icon: '📯', label: 'Rally Troops', section: 'Mechanics',
     status: 'built', sourceSheet: '📈 Rally  Hold Court  Steal Res',
