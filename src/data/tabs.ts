@@ -217,11 +217,19 @@ export const TABS: Tab[] = [
 
   // ── Mechanics ─────────────────────────────────────────────────
   {
-    slug: 'events', icon: '🧭', label: 'Exploration Events', section: 'Mechanics',
+    slug: 'ruin-events', icon: '🏚️', label: 'Ruin Events', section: 'Mechanics',
     status: 'built', sourceSheet: '',
-    summary: 'Ruins & expedition events — triggers, odds, options, rewards',
+    summary: 'Ruins-tile events — triggers, odds, options, rewards',
     willContain: [
       'Ruins-tile events with eligibility conditions and weighted odds',
+      'Each option’s requirements and outcome rewards',
+    ],
+  },
+  {
+    slug: 'expedition-events', icon: '🧭', label: 'Expedition Events', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'Explore-distant-lands expedition chains, incl. follow-ups',
+    willContain: [
       'Expedition (explore distant lands) chains, incl. follow-ups',
       'Each option’s requirements and outcome rewards',
     ],

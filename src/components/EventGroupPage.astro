@@ -1,0 +1,236 @@
+---
+// Renders ONE exploration-event group (Ruins or Expeditions) from
+// src/data/events.json. The combined view was split into two tabs; both share
+// this component. Pass the group `sectionKey` plus page chrome; the lede is a
+// default slot so each page supplies its own intro copy.
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import { classifyYield } from '../lib/entities';
+import sections from '../data/events.json';
+
+interface Props {
+  sectionKey: string;
+  title: string;
+  active: string;
+  pageMark: string;
+}
+const { sectionKey, title, active, pageMark } = Astro.props as Props;
+
+const sec = sections.find(s => s.key === sectionKey)!;
+type EventStory = (typeof sec)['events'][number];
+
+function pct(p: number): string {
+  return (p * 100).toFixed(0) + '%';
+}
+
+function cardYield(ev: EventStory): string {
+  const g = classifyYield(ev.guaranteed.join(' '));
+  if (g) return g.toLowerCase();
+  for (const o of ev.options)
+    for (const oc of o.outcomes)
+      for (const r of oc.rewards) {
+        const y = classifyYield(r);
+        if (y) return y.toLowerCase();
+      }
+  return 'misc';
+}
+
+function searchBlob(ev: EventStory): string {
+  return [
+    ev.name, ev.text, ev.trigger, ev.dlc, ...ev.conditions, ...ev.guaranteed,
+    ...ev.options.flatMap(o => [o.text, ...o.requirements, ...o.outcomes.flatMap(oc => oc.rewards)]),
+  ].filter(Boolean).join(' ').toLowerCase();
+}
+
+const followups = sec.events.filter(e => e.isFollowup).length;
+---
+
+<Base title={title} active={active} pageMark={pageMark} pageStats={[
+  { label: 'events', value: sec.events.length },
+  ...(followups ? [{ label: 'follow-ups', value: followups }] : []),
+]}>
+  <p class="lede"><slot /></p>
+
+  <div class="evt-filter">
+    <input type="search" id="evt-search" class="evt-filter__search"
+           placeholder="Filter events — name, reward, condition…" autocomplete="off" />
+  </div>
+  <p class="evt-filter__note" id="evt-note" hidden></p>
+
+  <div class="evt-list">
+    {sec.events.map(ev => (
+      <details class={`evt yield-${cardYield(ev)}`} data-search={searchBlob(ev)}>
+        <summary class="evt__summary">
+          <span class="evt__name">{ev.name}</span>
+          <span class="evt__meta">
+            <span class="chip--trigger">{ev.trigger}</span>
+            {ev.dlc && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
+            <span class="evt__share" title="Share of the eligible-by-weight pool">~{pct(ev.share)}</span>
+          </span>
+        </summary>
+        <div class="evt__body">
+          {ev.text && <p class="evt__flavor"><LinkedText text={ev.text} /></p>}
+
+          {(Object.keys(ev.timing).length > 0 || ev.prob || ev.conditions.length > 0) && (
+            <div class="evt__tags">
+              {ev.prob && <span class="chip--time" title="Chance this story is added to the pool on an eligible turn">{ev.prob}% to appear</span>}
+              {ev.timing.repeat && <span class="chip--time">{ev.timing.repeat}</span>}
+              {ev.timing.minTurns && <span class="chip--time">Turn {ev.timing.minTurns}+</span>}
+              {ev.timing.maxTurns && <span class="chip--time">Before turn {ev.timing.maxTurns}</span>}
+              {ev.timing.minLeader && <span class="chip--time">Leader {ev.timing.minLeader}+</span>}
+              {ev.timing.law && <span class="chip--time">Law: {ev.timing.law}</span>}
+              {ev.timing.minOpponentLevel && <span class="chip--time">{ev.timing.minOpponentLevel}+</span>}
+              {ev.conditions.map(c => <span class="chip--cond">{c}</span>)}
+            </div>
+          )}
+
+          {ev.guaranteed.length > 0 && (
+            <div class="evt__guaranteed">
+              <span class="evt__label">Always</span>
+              {ev.guaranteed.map(g => (
+                <span class={`chip yield-${classifyYield(g)?.toLowerCase() || 'misc'}`}>
+                  <LinkedText text={g} showIcons={false} />
+                </span>
+              ))}
+            </div>
+          )}
+
+          {ev.options.length > 0 && (
+            <ul class="evt__opts">
+              {ev.options.map(o => (
+                <li class="opt">
+                  <div class="opt__text">
+                    <span class="opt__bullet">▸</span>
+                    <LinkedText text={o.text || 'Resolve'} />
+                    {o.requirements.map(r => <span class="chip--req" title="Requires">{r}</span>)}
+                  </div>
+                  <div class="opt__outcomes">
+                    {o.outcomes.map(oc => (
+                      <div class="oc">
+                        {oc.probability < 1 && <span class="oc__prob">{pct(oc.probability)}</span>}
+                        <div class="oc__rewards">
+                          {oc.rewards.filter(Boolean).map(r => (
+                            <span class={`chip yield-${classifyYield(r)?.toLowerCase() || 'misc'}`}>
+                              <LinkedText text={r} showIcons={false} />
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {ev.url && (
+            <a class="evt__url" href={ev.url} target="_blank" rel="noopener noreferrer">
+              Background reading ↗
+            </a>
+          )}
+        </div>
+      </details>
+    ))}
+  </div>
+
+  <script is:inline>
+    (function () {
+      const search = document.getElementById('evt-search');
+      const note = document.getElementById('evt-note');
+      const cards = Array.from(document.querySelectorAll('.evt'));
+      function apply() {
+        const q = (search.value || '').trim().toLowerCase();
+        let shown = 0;
+        for (const card of cards) {
+          const ok = !q || (card.dataset.search || '').includes(q);
+          card.hidden = !ok;
+          if (ok) shown++;
+        }
+        if (q) {
+          note.hidden = false;
+          note.textContent = shown === 0
+            ? 'No events match “' + search.value + '”.'
+            : shown + ' event' + (shown === 1 ? '' : 's') + ' match “' + search.value + '”.';
+        } else {
+          note.hidden = true;
+        }
+      }
+      search.addEventListener('input', apply);
+    })();
+  </script>
+
+  <style>
+    .lede { color: var(--text-dim); font-size: 0.92rem; line-height: 1.55; max-width: 80ch; margin: 0 0 1.2rem; }
+    .lede a { color: var(--accent); }
+
+    .evt-filter { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+    .evt-filter__search {
+      flex: 1 1 280px; min-width: 220px;
+      background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+      color: var(--text); padding: 0.5rem 0.8rem; font-size: 0.88rem; font-family: var(--font-body);
+    }
+    .evt-filter__search:focus { outline: none; border-color: var(--accent); }
+    .evt-filter__note { font-size: 0.8rem; color: var(--text-faint); margin: 0 0 0.6rem; font-style: italic; }
+
+    .evt-list { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.9rem; }
+    .evt {
+      border: 1px solid var(--border);
+      border-left: 3px solid color-mix(in srgb, var(--yield-bg, var(--accent)) 70%, transparent);
+      border-radius: var(--radius-lg); background: var(--bg-elev); overflow: hidden;
+    }
+    .evt[open] { background: var(--bg-elev-2); }
+    .evt__summary {
+      display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+      padding: 0.5rem 0.8rem; cursor: pointer; list-style: none; user-select: none;
+    }
+    .evt__summary::-webkit-details-marker { display: none; }
+    .evt__summary::before {
+      content: '▸'; color: var(--text-faint); font-size: 0.8rem; transition: transform 0.12s; flex-shrink: 0;
+    }
+    .evt[open] .evt__summary::before { transform: rotate(90deg); }
+    .evt__summary:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+    .evt__name { font-family: var(--font-display); font-weight: 600; font-size: 0.92rem; color: var(--text); }
+    .evt__meta { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; margin-left: auto; }
+    .evt__share {
+      font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;
+      color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--bg-elev));
+      padding: 0.08rem 0.4rem; border-radius: 5px;
+    }
+    .chip--trigger {
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.02em;
+      color: var(--text-dim); background: var(--bg); border: 1px solid var(--border);
+      padding: 0.08rem 0.46rem; border-radius: 5px;
+    }
+    .chip--dlc {
+      font-size: 0.66rem; color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      padding: 0.06rem 0.44rem; border-radius: 5px;
+    }
+    .chip--cond { background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; }
+    .chip--time { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; font-family: var(--font-mono); letter-spacing: 0.02em; }
+    .chip--req { background: color-mix(in srgb, #6b5ea6 24%, var(--bg-elev)); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 45%, transparent); padding: 0.04rem 0.4rem; font-size: 0.66rem; margin-left: 0.4rem; border-radius: 5px; }
+
+    .evt__body { padding: 0 0.9rem 0.7rem 1.6rem; }
+    .evt__flavor { color: var(--text-dim); font-size: 0.82rem; line-height: 1.45; margin: 0 0 0.6rem; font-style: italic; max-width: 75ch; }
+    .evt__tags { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+    .evt__guaranteed { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+    .evt__label, .oc__prob { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
+
+    .evt__opts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+    .opt { border-top: 1px dashed var(--border); padding-top: 0.45rem; }
+    .opt:first-child { border-top: 0; padding-top: 0; }
+    .opt__text { font-size: 0.85rem; color: var(--text); margin-bottom: 0.3rem; display: flex; align-items: baseline; gap: 0.35rem; flex-wrap: wrap; }
+    .opt__bullet { color: var(--accent); font-size: 0.7rem; }
+    .opt__outcomes { display: flex; flex-direction: column; gap: 0.25rem; padding-left: 1rem; }
+    .oc { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .oc__prob {
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; color: var(--text-dim);
+      min-width: 2.4rem; text-align: right;
+    }
+    .oc__rewards { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+    .oc__rewards .chip, .evt__guaranteed .chip { font-size: 0.72rem; padding: 0.08rem 0.45rem; }
+
+    .evt__url { display: inline-block; margin-top: 0.5rem; font-size: 0.76rem; color: var(--accent); font-family: var(--font-mono); }
+  </style>
+</Base>
