@@ -317,6 +317,8 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
             out.append(_txt(f"Gain trait: {_named(text, t.text, 'TRAIT_')}"))
     if b.findall("aeRandomTraitDelay/zValue") or b.findall("aeRandomTrait/zValue"):
         out.append(_txt("Gain a random trait"))
+    if b.findall("aeRandomLeaderRelationshipDelay/zValue") or b.findall("aeRandomLeaderRelationship/zValue"):
+        out.append(_txt("Gains a random leader relationship"))
 
     cour = b.findtext("MakeCourtier")
     if cour:

@@ -1,7 +1,8 @@
 ---
-// One structured reward. Yield rewards render the icon + exact amount + scaling
-// tags (per-city, turn); everything else is a plain linked chip. Reward shape
-// comes from build_missions.humanize_bonus:
+// One structured reward. Yield rewards render the icon + exact (×1) amount +
+// scaling tags, and carry a data-scale payload so hovering shows a cities×turns
+// table of the real reward. Everything else is a plain linked chip.
+// Reward shape (build_missions.humanize_bonus):
 //   {text, yield, base, per}   flat + per-city, turn-scales
 //   {text, yield, eachCity}    applied to each city, turn-scales
 //   {text}                     traits, units, relationships, …
@@ -17,23 +18,110 @@ const yk = (r.yield || classifyYield(r.text || '')?.toLowerCase() || 'misc');
 const amt = r.base != null ? r.base : r.eachCity;
 const sign = amt >= 0 ? '+' : '';
 const yieldName = r.yield ? r.yield.charAt(0).toUpperCase() + r.yield.slice(1) : '';
-const turnHelp = 'One-time yield that grows with the game turn: the amount is multiplied by ×1 up to turn 60, then ×(turn ÷ 60) after (×2 at turn 120). Per-city values add per city you own. See a mission page for a live calculator.';
+
+// Payload the hover-table script needs: kind + raw base/per (or eachCity).
+const scaleData = isYield
+  ? JSON.stringify(r.base != null
+      ? { y: yieldName, b: r.base, p: r.per || 0 }
+      : { y: yieldName, e: r.eachCity })
+  : null;
 ---
 {isYield ? (
-  <span class={`chip rwd yield-${yk}`}>
+  <span class={`chip rwd yield-${yk}`} data-scale={scaleData} tabindex="0">
     <img class="rwd__ico" src={`${base}img/icons/yields/${r.yield}.png`} alt="" onerror="this.style.display='none'" />
     <b class="rwd__amt">{sign}{amt}</b>
     <span class="rwd__yld">{yieldName}</span>
-    {r.per ? <span class="rwd__tag" title="Extra per city you own">{r.per >= 0 ? '+' : ''}{r.per}/city</span> : null}
-    {r.eachCity != null ? <span class="rwd__tag" title="Applied to each city you own">each city</span> : null}
-    <span class="rwd__tag rwd__tag--turn" title={turnHelp}>↗ turn</span>
+    {r.per ? <span class="rwd__tag">{r.per >= 0 ? '+' : ''}{r.per}/city</span> : null}
+    {r.eachCity != null ? <span class="rwd__tag">each city</span> : null}
+    <span class="rwd__tag rwd__tag--turn">↗ turn</span>
   </span>
 ) : (
   <span class={`chip yield-${yk}`}><LinkedText text={r.text} showIcons={false} /></span>
 )}
 
+<script>
+  // Floating cities×turns reward table (runs once per page; delegates on
+  // [data-scale]). Reward = (base + per×cities) — or eachCity×cities — then the
+  // turn ramp ×1 ≤t60 / ×(turn÷60) after, rounded to a multiple, capped.
+  (function () {
+    if ((window as any).__rwdTip) return;
+    (window as any).__rwdTip = true;
+    const CITIES = [4, 7, 10, 15];
+    const TURNS = [30, 50, 70, 90];
+    const INFL = 60;
+    const CAP: Record<string, number> = { training: 2000, civics: 2000 };
+
+    const css = document.createElement('style');
+    css.textContent =
+      '#rwd-tip{position:fixed;z-index:9999;display:none;background:var(--bg-elev-2,#1a1b1f);' +
+      'border:1px solid var(--border-strong,#444);border-radius:8px;padding:8px 10px;' +
+      'box-shadow:0 6px 24px rgba(0,0,0,.5);font-size:12px;color:var(--text,#eee);max-width:none;pointer-events:none}' +
+      '#rwd-tip h4{margin:0 0 5px;font-size:11px;font-weight:600;color:var(--text-dim,#bbb);font-family:var(--font-mono,monospace)}' +
+      '#rwd-tip table{border-collapse:collapse;font-family:var(--font-mono,monospace);font-variant-numeric:tabular-nums}' +
+      '#rwd-tip th,#rwd-tip td{padding:2px 7px;text-align:right}' +
+      '#rwd-tip thead th{color:var(--text-faint,#999);font-weight:500;border-bottom:1px solid var(--border,#333)}' +
+      '#rwd-tip tbody th{color:var(--text-faint,#999);font-weight:500;text-align:left}' +
+      '#rwd-tip .rwd-tip__note{margin-top:5px;color:var(--text-faint,#999);font-size:10.5px}';
+    document.head.appendChild(css);
+
+    const tip = document.createElement('div');
+    tip.id = 'rwd-tip';
+    document.body.appendChild(tip);
+
+    function reward(d: any, cities: number, turn: number): number {
+      let v = d.e != null ? d.e * cities : d.b + (d.p || 0) * cities;
+      if (turn > INFL) v = Math.floor((v * turn) / INFL);
+      const a = Math.abs(v), rt = a > 100 ? 10 : a > 50 ? 5 : a > 10 ? 2 : 0;
+      if (rt) v = Math.round(v / rt) * rt;
+      const cap = CAP[(d.y || '').toLowerCase()];
+      if (cap) v = Math.min(v, cap);
+      return v;
+    }
+    function build(d: any): string {
+      let h = `<h4>${d.y} reward — cities × turn</h4><table><thead><tr><th>cities</th>` +
+        TURNS.map(t => `<th>t${t}</th>`).join('') + '</tr></thead><tbody>';
+      for (const c of CITIES) {
+        h += `<tr><th>${c}</th>` + TURNS.map(t => {
+          const v = reward(d, c, t);
+          return `<td>${v >= 0 ? '+' : ''}${v}</td>`;
+        }).join('') + '</tr>';
+      }
+      h += '</tbody></table><div class="rwd-tip__note">×1 up to turn 60, then ×(turn÷60). Per-city added before the multiplier.</div>';
+      return h;
+    }
+
+    function show(el: HTMLElement) {
+      let d; try { d = JSON.parse(el.getAttribute('data-scale') || ''); } catch { return; }
+      tip.innerHTML = build(d);
+      tip.style.display = 'block';
+      const r = el.getBoundingClientRect();
+      const tr = tip.getBoundingClientRect();
+      let top = r.bottom + 6;
+      if (top + tr.height > window.innerHeight - 8) top = Math.max(8, r.top - tr.height - 6);
+      let left = Math.min(r.left, window.innerWidth - tr.width - 8);
+      tip.style.top = top + 'px';
+      tip.style.left = Math.max(8, left) + 'px';
+    }
+    function hide() { tip.style.display = 'none'; }
+
+    document.addEventListener('mouseover', (e) => {
+      const el = (e.target as HTMLElement).closest('[data-scale]') as HTMLElement | null;
+      if (el) show(el);
+    });
+    document.addEventListener('mouseout', (e) => {
+      const el = (e.target as HTMLElement).closest('[data-scale]');
+      if (el && !el.contains((e as MouseEvent).relatedTarget as Node)) hide();
+    });
+    document.addEventListener('focusin', (e) => {
+      const el = (e.target as HTMLElement).closest('[data-scale]') as HTMLElement | null;
+      if (el) show(el); else hide();
+    });
+    document.addEventListener('scroll', hide, true);
+  })();
+</script>
+
 <style>
-  .rwd { display: inline-flex; align-items: center; gap: 0.28rem; }
+  .rwd { display: inline-flex; align-items: center; gap: 0.28rem; cursor: help; }
   .rwd__ico { width: 14px; height: 14px; object-fit: contain; }
   .rwd__amt { font-family: var(--font-mono); font-weight: 700; }
   .rwd__yld { font-weight: 500; }
