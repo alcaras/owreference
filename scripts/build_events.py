@@ -191,7 +191,7 @@ def main() -> int:
     text = m.load_text(*TEXT_FILES)
     story_idx = m.index_many(*STORY_FILES)
     eopt_idx = m.index_many(*OPT_FILES)
-    bonus_idx = m.index("bonus.xml")
+    bonus_idx = m.bonus_index()
 
     def story_link_adds(s: ET.Element) -> set[str]:
         """Every EventLink a story can set — story-level + each of its options."""

@@ -45,6 +45,9 @@
                     "text": "Progress ambition: Four Repaired"
                   },
                   {
+                    "text": "Opinion memory"
+                  },
+                  {
                     "text": "+1 Worker"
                   }
                 ],
@@ -55,10 +58,10 @@
                 "probability": 0.08333333333333333,
                 "rewards": [
                   {
-                    "text": "Affects a city"
+                    "text": "Begin project: Repair"
                   },
                   {
-                    "text": "Affects a city"
+                    "text": "Begin project: Repair"
                   }
                 ],
                 "weight": 100
@@ -69,6 +72,9 @@
                 "rewards": [
                   {
                     "text": "Progress ambition: Eight Repaired"
+                  },
+                  {
+                    "text": "Opinion memory"
                   },
                   {
                     "text": "+1 Worker"
@@ -140,10 +146,10 @@
                     "yield": "orders"
                   },
                   {
-                    "text": "Add Walls"
+                    "text": "Begin project: Walls"
                   },
                   {
-                    "text": "Add Walls"
+                    "text": "Begin project: Walls"
                   }
                 ],
                 "weight": null
@@ -174,7 +180,16 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "base": -5,
+                    "per": 0,
+                    "text": "-5 Orders",
+                    "yield": "orders"
+                  },
+                  {
+                    "base": 60,
+                    "per": 15,
+                    "text": "+60 Training (+15/city)",
+                    "yield": "training"
                   }
                 ],
                 "weight": null
@@ -232,7 +247,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Tribal Invasion"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -263,10 +278,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Possibly Strict"
-                  },
-                  {
-                    "text": "Affects a character"
+                    "text": "Gain trait: Slighted"
                   }
                 ],
                 "weight": null
@@ -281,11 +293,7 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [
-                  {
-                    "text": "Affects a character"
-                  }
-                ],
+                "rewards": [],
                 "weight": null
               }
             ],
@@ -346,14 +354,7 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [
-                  {
-                    "text": "Affects a unit"
-                  },
-                  {
-                    "text": "Affects a unit"
-                  }
-                ],
+                "rewards": [],
                 "weight": null
               }
             ],
@@ -368,13 +369,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "base": -4,
+                    "per": 0,
+                    "text": "-4 Orders",
+                    "yield": "orders"
                   },
                   {
-                    "text": "Affects a unit"
-                  },
-                  {
-                    "text": "Affects a unit"
+                    "text": "+20 XP to the character"
                   }
                 ],
                 "weight": null
@@ -405,12 +406,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "State Religion"
-                  },
-                  {
                     "base": -60,
                     "per": -15,
-                    "text": "-60 Training (+-15/city)",
+                    "text": "-60 Training (-15/city)",
                     "yield": "training"
                   }
                 ],
@@ -428,10 +426,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a character"
+                    "text": "+3 Legitimacy"
                   }
                 ],
                 "weight": null
@@ -489,7 +487,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a city"
+                    "text": "Gain a Officer"
                   }
                 ],
                 "weight": null
@@ -506,7 +504,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "base": -5,
+                    "per": 0,
+                    "text": "-5 Orders",
+                    "yield": "orders"
                   }
                 ],
                 "weight": null
@@ -589,10 +590,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "text": "Gain trait: Drunk"
                   },
                   {
-                    "text": "Affects a unit"
+                    "text": "Gain trait: Ill"
                   }
                 ],
                 "weight": null
@@ -647,7 +648,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "text": "Gain a random trait"
                   }
                 ],
                 "weight": null
@@ -678,7 +679,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a rival"
+                    "text": "+1 Polearm Infantry unit"
+                  },
+                  {
+                    "base": -200,
+                    "per": 0,
+                    "text": "-200 Money",
+                    "yield": "money"
                   }
                 ],
                 "weight": null
@@ -823,9 +830,6 @@
                 "rewards": [
                   {
                     "text": "+20 XP to the character"
-                  },
-                  {
-                    "text": "Grants a resource"
                   }
                 ],
                 "weight": null
@@ -842,10 +846,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
-                  },
-                  {
-                    "text": "Affects a character"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -879,11 +880,11 @@
                   {
                     "base": -40,
                     "per": -10,
-                    "text": "-40 Civics (+-10/city)",
+                    "text": "-40 Civics (-10/city)",
                     "yield": "civics"
                   },
                   {
-                    "text": "Affects a character"
+                    "text": "Begin project: National Holiday"
                   }
                 ],
                 "weight": null
@@ -903,7 +904,7 @@
                     "text": "Leader relationship: Vengeful Against"
                   },
                   {
-                    "text": "Affects a character"
+                    "text": "+4 Legitimacy"
                   }
                 ],
                 "weight": null
@@ -920,7 +921,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "text": "Gain trait: Inspiring"
+                  },
+                  {
+                    "text": "Begin project: National Holiday"
                   }
                 ],
                 "weight": null
@@ -951,7 +955,15 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "base": -240,
+                    "per": -60,
+                    "text": "-240 Money (-60/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "eachCity": 40,
+                    "text": "+40 Happiness (each city)",
+                    "yield": "happiness"
                   }
                 ],
                 "weight": null
@@ -968,7 +980,15 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "+4 Legitimacy"
+                  },
+                  {
+                    "text": "1 rebel unit appear"
+                  },
+                  {
+                    "eachCity": 60,
+                    "text": "+60 Discontent (each city)",
+                    "yield": "discontent"
                   }
                 ],
                 "weight": null
@@ -985,10 +1005,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   },
                   {
-                    "text": "Affects a character"
+                    "text": "Gain trait: Excluded from Succession"
+                  },
+                  {
+                    "text": "Gain trait: Slighted"
                   }
                 ],
                 "weight": null
@@ -1022,7 +1045,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Unconvincing Verdict"
+                    "text": "-1 Legitimacy"
                   },
                   {
                     "text": "Leader relationship: Influenced By"
@@ -1042,7 +1065,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Did Not Preside Over Case"
+                    "text": "Opinion memory"
                   },
                   {
                     "text": "Leader relationship: Influenced By"
@@ -1079,11 +1102,11 @@
                   {
                     "base": -120,
                     "per": -30,
-                    "text": "-120 Money (+-30/city)",
+                    "text": "-120 Money (-30/city)",
                     "yield": "money"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
                     "text": "+1 Heavy Infantry unit"
@@ -1106,7 +1129,7 @@
                     "text": "+20 XP to the character"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -1213,10 +1236,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -1233,10 +1256,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -1253,10 +1276,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -1273,13 +1296,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -1300,7 +1323,7 @@
         ],
         "guaranteed": [
           {
-            "text": "Special effect"
+            "text": "Law-based opinion shift"
           }
         ],
         "id": "EVENTSTORY_GP_LIFESTYLES_OF_THE_RICH",
@@ -1317,7 +1340,7 @@
                     "text": "Leader relationship: Endeared To"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -1334,7 +1357,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "text": "Free law: Guilds"
+                  },
+                  {
+                    "base": -160,
+                    "per": -40,
+                    "text": "-160 Money (-40/city)",
+                    "yield": "money"
                   }
                 ],
                 "weight": null
@@ -1351,7 +1380,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "text": "Free law: Guilds"
                   }
                 ],
                 "weight": null
@@ -1375,7 +1404,7 @@
         ],
         "guaranteed": [
           {
-            "text": "Special effect"
+            "text": "+1 Legitimacy"
           }
         ],
         "id": "EVENTSTORY_HOLD_COURT_HAPPY_FAMILIES",
@@ -1423,7 +1452,7 @@
                   {
                     "base": -160,
                     "per": -40,
-                    "text": "-160 Money (+-40/city)",
+                    "text": "-160 Money (-40/city)",
                     "yield": "money"
                   }
                 ],
@@ -1441,7 +1470,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -1470,7 +1499,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1487,7 +1522,23 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "+40–400 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1506,7 +1557,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   }
                 ],
                 "weight": null
@@ -1535,7 +1586,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1552,7 +1609,23 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "+40–400 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1571,7 +1644,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   }
                 ],
                 "weight": null
@@ -1600,7 +1673,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1617,7 +1696,23 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "+40–400 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1636,7 +1731,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   }
                 ],
                 "weight": null
@@ -1665,7 +1760,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1682,7 +1783,23 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "+40–400 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1701,7 +1818,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   }
                 ],
                 "weight": null
@@ -1730,7 +1847,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1747,7 +1870,23 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "+40–400 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1766,7 +1905,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   }
                 ],
                 "weight": null
@@ -1795,7 +1934,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1812,7 +1957,23 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "+40–400 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1831,7 +1992,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   }
                 ],
                 "weight": null
@@ -1860,7 +2021,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1877,7 +2044,23 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Acolyte"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "+40–400 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1896,7 +2079,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Happiness Up"
+                    "text": "+1 Happiness level"
                   }
                 ],
                 "weight": null
@@ -1925,7 +2108,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a city"
+                    "text": "Begin project: Consular Tribunes"
                   }
                 ],
                 "weight": null
@@ -1942,7 +2125,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a character"
+                    "text": "Progress ambition: Professional Army"
+                  },
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
                   }
                 ],
                 "weight": null
@@ -1961,11 +2150,11 @@
                   {
                     "base": -120,
                     "per": -30,
-                    "text": "-120 Money (+-30/city)",
+                    "text": "-120 Money (-30/city)",
                     "yield": "money"
                   },
                   {
-                    "text": "Affects a city"
+                    "text": "Begin project: Festival 2"
                   }
                 ],
                 "weight": null
@@ -1997,16 +2186,16 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Gain Wisdom 1"
+                    "text": "+1 Wisdom"
                   },
                   {
                     "base": -240,
                     "per": -60,
-                    "text": "-240 Money (+-60/city)",
+                    "text": "-240 Money (-60/city)",
                     "yield": "money"
                   },
                   {
-                    "text": "Special effect"
+                    "text": "Gain a Court Minister"
                   }
                 ],
                 "weight": null
@@ -2042,7 +2231,7 @@
         "conditions": [],
         "guaranteed": [
           {
-            "text": "Special effect"
+            "text": "+1 Legitimacy"
           }
         ],
         "id": "EVENTSTORY_HOLD_COURT_WEARY",
@@ -2085,10 +2274,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -2105,10 +2294,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -2155,7 +2344,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
                     "text": "Leader relationship: Influenced By"
@@ -2180,10 +2369,13 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Gain trait: Exiled"
+                  },
+                  {
+                    "text": "Leader relationship: Estranged From"
                   },
                   {
                     "eachCity": 20,
@@ -2205,10 +2397,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Affects a family"
+                    "text": "Opinion memory"
                   },
                   {
                     "text": "Leader relationship: Influenced By"
@@ -2243,10 +2435,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Special effect"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -2263,10 +2455,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Opinion memory"
                   },
                   {
-                    "text": "Special effect"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -2283,7 +2475,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "+4 Legitimacy"
+                  },
+                  {
+                    "text": "Opinion memory (all families)"
                   }
                 ],
                 "weight": null
@@ -2300,7 +2495,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Special effect"
+                    "text": "Opinion memory (all families)"
                   }
                 ],
                 "weight": null
@@ -2442,11 +2637,7 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [
-                  {
-                    "text": "Special effect"
-                  }
-                ],
+                "rewards": [],
                 "weight": null
               }
             ],
@@ -2511,11 +2702,7 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [
-                  {
-                    "text": "Affects a rival"
-                  }
-                ],
+                "rewards": [],
                 "weight": null
               }
             ],
@@ -2546,7 +2733,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a rival"
+                    "text": "Opinion memory"
                   }
                 ],
                 "weight": null
@@ -2585,11 +2772,7 @@
         "conditions": [
           "High Wisdom"
         ],
-        "guaranteed": [
-          {
-            "text": "Eventstory Steal Player Discovery Player 0"
-          }
-        ],
+        "guaranteed": [],
         "id": "EVENTSTORY_STEAL_PLAYER_DISCOVERY",
         "name": "[rival] Discovery",
         "options": [
@@ -2601,7 +2784,7 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Affects a rival"
+                    "text": "Gain a Court Minister"
                   }
                 ],
                 "weight": null

@@ -221,7 +221,7 @@ def _yld(ykey: str, base: int | None = None, per: int = 0, each: int | None = No
         return {"text": f"{'+' if each >= 0 else ''}{each} {yl} (each city)", "yield": key, "eachCity": each}
     text = f"{'+' if base >= 0 else ''}{base} {yl}"
     if per:
-        text += f" (+{per}/city)"
+        text += f" ({'+' if per >= 0 else ''}{per}/city)"
     return {"text": text, "yield": key, "base": base, "per": per}
 
 
@@ -229,11 +229,55 @@ def _txt(s: str) -> dict:
     return {"text": s}
 
 
-def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict) -> list[dict]:
+# All bonus tables: base game + the per-content event-bonus files where the
+# BONUS_EVENTOPTION_* contextual payloads actually live (without these the
+# event rewards collapse to a useless "Affects a character" fallback).
+BONUS_FILES = (
+    "bonus.xml", "bonus-event.xml", "bonus-event-sap.xml", "bonus-event-btt.xml",
+    "bonus-event-eoti.xml", "bonus-event-wd.xml", "bonus-event-wog.xml",
+)
+
+
+def bonus_index() -> dict:
+    return index_many(*BONUS_FILES)
+
+
+# Memory token → opinion delta (a "memory" is the lasting opinion shift a
+# subject keeps after an event). Lazily loaded + cached.
+_MEMORY_OPINION: dict | None = None
+
+
+def _memory_opinion(token: str):
+    global _MEMORY_OPINION
+    if _MEMORY_OPINION is None:
+        _MEMORY_OPINION = {}
+        for fn in ("memory-character.xml", "memory-player.xml", "memory-family.xml",
+                   "memory-tribe.xml", "memory-religion.xml", "memory-eoti.xml"):
+            p = XML_DIR / fn
+            if not p.exists():
+                continue
+            for e in ET.parse(p).getroot().findall("Entry"):
+                zt = e.findtext("zType")
+                op = e.findtext("iOpinion")
+                if zt:
+                    _MEMORY_OPINION[zt] = int(op) if op and op.strip() else None
+    return _MEMORY_OPINION.get(token)
+
+
+def _named(text: dict, token: str, prefix: str) -> str:
+    return text.get("TEXT_" + token, _tok(token, prefix))
+
+
+def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None = None) -> list[dict]:
     """Structured reward list for an event/mission bonus (see schema above).
-    Yields are display-scale (shown raw in-game) — no /10."""
-    if not bonus_id:
+    Yields are display-scale (shown raw in-game) — no /10. Recurses into nested
+    bonus containers; resolves the actual effect rather than a token fallback."""
+    if not bonus_id or bonus_id == "NONE":
         return []
+    _seen = _seen or set()
+    if bonus_id in _seen:
+        return []
+    _seen.add(bonus_id)
     b = bonus_idx.get(bonus_id)
     if b is None:
         return [_txt(_fallback_label(bonus_id))]
@@ -246,14 +290,58 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict) -> list[dict]:
     for y, v in pairs(b, "aiCityYields"):
         out.append(_yld(y, each=v))
 
+    # Culture-by-city-tier (aaiCultureYield): a per-city amount that depends on
+    # each city's culture level — render as a min–max range.
+    cult = [int(sp.findtext("iValue") or "0")
+            for pr in b.findall("aaiCultureYield/Pair") for sp in pr.findall("SubPair")
+            if (sp.findtext("iValue") or "0") != "0"]
+    if cult:
+        lo, hi = min(cult), max(cult)
+        rng = f"{lo}" if lo == hi else f"{lo}–{hi}"
+        out.append({"text": f"+{rng} Culture (by city tier)", "yield": "culture"})
+
     xp = int(b.findtext("iXPCharacter") or "0")
     if xp:
         out.append(_txt(f"+{xp} XP to the character"))
+    leg = int(b.findtext("iLegitimacy") or "0")
+    if leg:
+        out.append(_txt(f"{'+' if leg >= 0 else ''}{leg} Legitimacy"))
+    hap = int(b.findtext("iHappinessLevels") or "0")
+    if hap:
+        out.append(_txt(f"{'+' if hap >= 0 else ''}{hap} Happiness level{'s' if abs(hap) != 1 else ''}"))
+    for r, v in pairs(b, "aiRatings"):
+        out.append(_txt(f"{'+' if v >= 0 else ''}{v} {_named(text, r, 'RATING_')}"))
+
     for t in b.findall("aeAddTraits/zValue"):
-        tr = t.text or ""
-        out.append(_txt(f"Gain trait: {text.get('TEXT_' + tr, _tok(tr, 'TRAIT_'))}"))
+        if t.text:
+            out.append(_txt(f"Gain trait: {_named(text, t.text, 'TRAIT_')}"))
+    if b.findall("aeRandomTraitDelay/zValue") or b.findall("aeRandomTrait/zValue"):
+        out.append(_txt("Gain a random trait"))
+
+    cour = b.findtext("MakeCourtier")
+    if cour:
+        out.append(_txt(f"Gain a {_named(text, cour, 'COURTIER_')}"))
+    for p in b.findall("AddCourtier/Pair"):
+        ct = p.findtext("First")
+        if ct:
+            out.append(_txt(f"Gain a {_named(text, ct, 'COURTIER_')}"))
+    for sp in b.findall("aeAddSpecialistClasses/zValue"):
+        if sp.text:
+            out.append(_txt(f"Gain a {_named(text, sp.text, 'SPECIALISTCLASS_')}"))
+    for pr in b.findall("aeAddProjects/zValue"):
+        if pr.text:
+            out.append(_txt(f"Begin project: {_named(text, pr.text, 'PROJECT_')}"))
+    imp = b.findtext("SetImprovement")
+    if imp:
+        out.append(_txt(f"Build {_named(text, imp, 'IMPROVEMENT_')} on the tile"))
+    addres = b.findtext("AddResource")
+    if addres:
+        out.append(_txt(f"Adds {_named(text, addres, 'RESOURCE_')}"))
+    if (b.findtext("bKillUnit") or "0") == "1":
+        out.append(_txt("A unit is killed"))
+
     for u, v in pairs(b, "aiUnits"):
-        out.append(_txt(f"+{v} {text.get('TEXT_' + u, _tok(u, 'UNIT_'))}"))
+        out.append(_txt(f"+{v} {_named(text, u, 'UNIT_')}"))
     for u, v in pairs(b, "aiBonusUnits"):
         out.append(_txt(f"+{v} {_tok(u, 'BONUSUNITCLASS_')} unit"))
     reb = int(b.findtext("iRebelUnits") or "0")
@@ -266,7 +354,37 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict) -> list[dict]:
     if amb:
         out.append(_txt(f"Progress ambition: {_tok(amb, 'GOAL_')}"))
 
-    return out or [_txt(_fallback_label(bonus_id))]
+    # Opinion memories — the lasting opinion shift a subject keeps.
+    for tag, who in (("Memory", ""), ("MemoryLeader", " (leader of you)"),
+                     ("MemoryAllFamilies", " (all families)")):
+        mem = b.findtext(tag)
+        if mem and mem != "NONE":
+            op = _memory_opinion(mem)
+            out.append(_txt(f"{'+' if op >= 0 else ''}{op} opinion{who}" if op else f"Opinion memory{who}"))
+
+    fl = b.findtext("FreeLaw")
+    if fl and fl != "NONE":
+        out.append(_txt(f"Free law: {_named(text, fl, 'LAW_')}"))
+    if (b.findtext("iMarrySubject") or "0") not in ("0", ""):
+        out.append(_txt("Arranges a marriage"))
+    for t in b.findall("aeTechs/zValue"):
+        if t.text:
+            out.append(_txt(f"Gain tech: {_named(text, t.text, 'TECH_')}"))
+    if b.find("aiLawOpinion/Pair") is not None:
+        out.append(_txt("Law-based opinion shift"))
+
+    # Nested bonus containers (BONUS_*_OPTION_* often wrap several payloads).
+    for bz in b.findall("aeBonuses/zValue"):
+        out += humanize_bonus(bz.text or "", bonus_idx, text, _seen)
+    for bz in b.findall("aeAllCityBonuses/zValue"):
+        out += [{**r, "text": r["text"] + " (every city)"} for r in humanize_bonus(bz.text or "", bonus_idx, text, _seen)]
+    for p in b.findall("aeReligionBonuses/Pair"):
+        out += [{**r, "text": r["text"] + " (by religion)"} for r in humanize_bonus(p.findtext("Second") or "", bonus_idx, text, _seen)]
+
+    # A bonus we DID find but can't surface any tangible effect for is treated as
+    # a no-op (no chip), rather than a misleading "Affects a …". The fallback
+    # label is only for bonuses missing from the data entirely (handled above).
+    return out
 
 
 def option_outcomes(opt: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[dict]:
@@ -374,7 +492,7 @@ def main() -> int:
     )
     missions_idx = index("mission.xml")
     results_idx = index("missionResult.xml")
-    bonus_idx = index("bonus.xml")
+    bonus_idx = bonus_index()
 
     # Globals the reward calculator needs: per-yield stockpile cap (MAX_<YIELD>,
     # raw ×10 scale) and the turn the inflation ramp kicks in.

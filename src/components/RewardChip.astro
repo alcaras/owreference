@@ -24,7 +24,7 @@ const turnHelp = 'This yield grows with the game turn (and is one-time). See a m
     <img class="rwd__ico" src={`${base}img/icons/yields/${r.yield}.png`} alt="" onerror="this.style.display='none'" />
     <b class="rwd__amt">{sign}{amt}</b>
     <span class="rwd__yld">{yieldName}</span>
-    {r.per ? <span class="rwd__tag" title="Extra per city you own">+{r.per}/city</span> : null}
+    {r.per ? <span class="rwd__tag" title="Extra per city you own">{r.per >= 0 ? '+' : ''}{r.per}/city</span> : null}
     {r.eachCity != null ? <span class="rwd__tag" title="Applied to each city you own">each city</span> : null}
     <span class="rwd__tag rwd__tag--turn" title={turnHelp}>↗ turn</span>
   </span>
