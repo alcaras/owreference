@@ -29,6 +29,7 @@ export const NAV: NavItem[] = [
   { href: 'rally', label: 'Rally Troops' },
   { href: 'hold-court', label: 'Hold Court' },
   { href: 'steal-research', label: 'Steal Research' },
+  { href: 'events', label: 'Exploration Events' },
   { href: 'cognomens', label: 'Cognomens' },
   { href: 'cognomens-tracker', label: 'Cognomens Tracker' },
 ];

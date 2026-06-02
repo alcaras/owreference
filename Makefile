@@ -37,6 +37,7 @@ data:
 	@python3 scripts/build_stats.py
 	@python3 scripts/build_missions.py
 	@python3 scripts/build_mission_catalog.py
+	@python3 scripts/build_events.py
 	@python3 scripts/build_mapscripts.py
 	@python3 scripts/build_conversion.py
 	@python3 scripts/build_entities.py
