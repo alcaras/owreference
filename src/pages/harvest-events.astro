@@ -8,115 +8,142 @@ const base = import.meta.env.BASE_URL;
 
 type Event = typeof events[number];
 
-// Friendlier label for the bonus token: BONUS_CULTURE_GAIN_LARGE → "Large Culture Gain"
-function bonusLabel(tok: string): string {
-  let s = tok.replace(/^BONUS_/, '').replace(/^EVENTOPTION_/, '');
-  s = s.replace(/_/g, ' ');
-  s = s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-  return s;
+// Group events by the resource that triggers them. Resource-less events are
+// generic harvests that can fire on any tile — they go in a trailing bucket.
+const GENERAL = '·General Harvest';
+const groups = new Map<string, { name: string; icon: string; events: Event[] }>();
+for (const ev of events) {
+  const key = ev.resource || GENERAL;
+  if (!groups.has(key)) {
+    groups.set(key, {
+      name: ev.resource || 'General Harvest',
+      icon: ev.resource ? ev.resourceIcon : '',
+      events: [],
+    });
+  }
+  groups.get(key)!.events.push(ev);
 }
-
-function classifyBonus(tok: string): string {
-  // Map common bonus tokens to a yield color
-  const t = tok.toUpperCase();
-  if (t.includes('CULTURE'))     return 'culture';
-  if (t.includes('SCIENCE'))     return 'science';
-  if (t.includes('CIVICS'))      return 'civics';
-  if (t.includes('TRAINING'))    return 'training';
-  if (t.includes('MONEY') || t.includes('GOLD')) return 'money';
-  if (t.includes('FOOD'))        return 'food';
-  if (t.includes('GROWTH'))      return 'growth';
-  if (t.includes('ORDERS'))      return 'orders';
-  if (t.includes('HAPPINESS'))   return 'happiness';
-  if (t.includes('DISCONTENT'))  return 'discontent';
-  if (t.includes('LEGITIMACY'))  return 'legitimacy';
-  if (t.includes('INFLUENCE'))   return 'influence';
-  if (t.includes('INTRIGUE'))    return 'intrigue';
-  if (t.includes('IRON'))        return 'iron';
-  if (t.includes('WOOD'))        return 'wood';
-  if (t.includes('STONE'))       return 'stone';
-  if (t.includes('TRAIT'))       return 'misc';
-  return 'misc';
-}
-
-// Sort by resource then title for some sense of grouping
-const sorted = [...events].sort((a, b) => {
-  const r = (a.resource || 'zzz').localeCompare(b.resource || 'zzz');
-  return r !== 0 ? r : a.title.localeCompare(b.title);
-});
+// Alphabetical by resource, with the General bucket forced last.
+const sections = [...groups.entries()]
+  .sort(([a], [b]) => {
+    if (a === GENERAL) return 1;
+    if (b === GENERAL) return -1;
+    return a.localeCompare(b);
+  })
+  .map(([key, g]) => ({
+    slug: key === GENERAL ? 'general' : key.toLowerCase().replace(/ /g, '-'),
+    ...g,
+    events: [...g.events].sort((x, y) => x.title.localeCompare(y.title)),
+  }));
 
 const searchBlobs: Record<string, string> = {};
-for (const e of events) {
-  searchBlobs[e.slug] = JSON.stringify(e).toLowerCase();
-}
+for (const e of events) searchBlobs[e.slug] = JSON.stringify(e).toLowerCase();
 
-const resourceCount = new Set(events.map(e => e.resource).filter(Boolean)).size;
+const resourceCount = sections.filter(s => s.icon).length;
 ---
 
 <Base title="Harvest Events" active="harvest-events" pageMark="🌾" pageStats={[
   { label: 'events', value: events.length },
-  { label: 'resources covered', value: resourceCount },
+  { label: 'resources', value: resourceCount },
 ]}>
   <section class="he-intro">
     <p>
-      A <strong>Harvest Event</strong> fires when a Worker finishes gathering a tile Resource — the
-      tile yields its stockpile and a story-frame asks the leader to choose what to do with it.
-      Each option grants different <a href={`${base}yields/orders`}>Bonuses</a> to the player, city, or
-      family. Events are flagged in <code>eventStory*.xml</code> with <code>Class=EVENTCLASS_HARVESTING</code>
-      and trigger on <code>EVENTTRIGGER_RESOURCE_HARVESTED</code>.
+      A <strong>Harvest Event</strong> can fire when a Worker finishes gathering a tile Resource — the
+      tile yields its stockpile and a story-frame asks the leader to choose what to do with the windfall.
+      Each option grants different rewards to the player, city, or family. Events are flagged in
+      <code>eventStory*.xml</code> with <code>Class=EVENTCLASS_HARVESTING</code> and trigger on
+      <code>EVENTTRIGGER_RESOURCE_HARVESTED</code>; the reward chips below are the humanized
+      <code>bonus*.xml</code> payloads.
     </p>
   </section>
 
-  <div class="grid" id="he-grid">
-    {sorted.map(ev => (
-      <article class="ev-card" data-row={ev.slug} id={ev.slug}>
-        <header class="ev-card__hdr">
-          <h3 class="ev-card__title">{ev.title}</h3>
-          {ev.resource && (
-            <span class="ev-card__res">
-              <img class="ev-card__res-icon" src={`${base}img/icons/resources/${ev.resource.toLowerCase().replace(/ /g, '_')}.png`} alt="" onerror="this.style.display='none'" />
-              {ev.resource}
-            </span>
-          )}
+  <nav class="he-jump" aria-label="Jump to resource">
+    {sections.map(s => (
+      <a class="he-jump__item" href={`#res-${s.slug}`} data-jump={s.slug}>
+        {s.icon
+          ? <img class="he-jump__icon" src={`${base}img/icons/resources/${s.icon}.png`} alt="" onerror="this.style.display='none'" />
+          : <span class="he-jump__icon he-jump__icon--glyph">🌾</span>}
+        <span>{s.name}</span>
+        <span class="he-jump__n">{s.events.length}</span>
+      </a>
+    ))}
+  </nav>
+
+  <div id="he-root">
+    {sections.map(s => (
+      <section class="he-sec" id={`res-${s.slug}`} data-section={s.slug}>
+        <header class="he-sec__hdr">
+          {s.icon
+            ? <img class="he-sec__icon" src={`${base}img/icons/resources/${s.icon}.png`} alt="" onerror="this.style.display='none'" />
+            : <span class="he-sec__icon he-sec__icon--glyph">🌾</span>}
+          <h2 class="he-sec__name">{s.name}</h2>
+          <span class="he-sec__n">{s.events.length} event{s.events.length === 1 ? '' : 's'}</span>
         </header>
-        {ev.body && <p class="ev-card__body"><LinkedText text={ev.body} /></p>}
-        {ev.options && ev.options.length > 0 && (
-          <ol class="ev-options">
-            {ev.options.map(opt => (
-              <li class="ev-option">
-                <div class="ev-option__text"><LinkedText text={opt.text} /></div>
-                {opt.bonuses && opt.bonuses.length > 0 && (
-                  <div class="ev-option__bonuses">
-                    {opt.bonuses.map(b => (
-                      <span class={`bonus-chip yield-${classifyBonus(b)}`}>{bonusLabel(b)}</span>
-                    ))}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ol>
-        )}
-        {ev.author && <footer class="ev-card__foot">written by {ev.author}</footer>}
-      </article>
+
+        <div class="he-grid">
+          {s.events.map(ev => (
+            <article class="ev-card" data-row={ev.slug} id={ev.slug}>
+              <h3 class="ev-card__title">{ev.title}</h3>
+              {ev.body && <p class="ev-card__body"><LinkedText text={ev.body} /></p>}
+              {ev.options && ev.options.length > 0 && (
+                <ol class="ev-options">
+                  {ev.options.map(opt => (
+                    <li class="ev-option">
+                      <div class="ev-option__text"><LinkedText text={opt.text} /></div>
+                      {opt.rewards && opt.rewards.length > 0 && (
+                        <div class="ev-option__rewards">
+                          {opt.rewards.map(r => (
+                            <span class={`chip yield-${classifyYield(r)?.toLowerCase() || 'misc'}`}>
+                              <LinkedText text={r} showIcons={false} />
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              )}
+              {ev.author && <footer class="ev-card__foot">written by {ev.author}</footer>}
+            </article>
+          ))}
+        </div>
+      </section>
     ))}
   </div>
+
+  <p class="he-empty" id="he-empty" hidden>No harvest events match your search.</p>
 
   <script type="application/json" id="he-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('he-search-blobs');
-      const grid = document.getElementById('he-grid');
-      if (!input || !blobNode || !grid) return;
+      const root = document.getElementById('he-root');
+      const empty = document.getElementById('he-empty');
+      if (!input || !blobNode || !root) return;
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      const sections = Array.from(root.querySelectorAll('[data-section]'));
       function apply() {
         const q = (input.value || '').trim().toLowerCase();
-        for (const slug of Object.keys(blobs)) {
-          const card = grid.querySelector('[data-row="' + slug + '"]');
-          if (!card) continue;
-          card.classList.toggle('is-hidden', !!q && !blobs[slug].includes(q));
+        let anyVisible = false;
+        for (const sec of sections) {
+          let secVisible = false;
+          for (const card of sec.querySelectorAll('[data-row]')) {
+            const slug = card.getAttribute('data-row');
+            const hit = !q || (blobs[slug] || '').includes(q);
+            card.classList.toggle('is-hidden', !hit);
+            if (hit) secVisible = true;
+          }
+          sec.classList.toggle('is-hidden', !secVisible);
+          if (secVisible) anyVisible = true;
         }
+        for (const j of document.querySelectorAll('[data-jump]')) {
+          const slug = j.getAttribute('data-jump');
+          const sec = root.querySelector('[data-section="' + slug + '"]');
+          j.classList.toggle('is-hidden', !!sec && sec.classList.contains('is-hidden'));
+        }
+        if (empty) empty.hidden = anyVisible;
       }
       input.addEventListener('input', apply);
       apply();
@@ -127,7 +154,7 @@ const resourceCount = new Set(events.map(e => e.resource).filter(Boolean)).size;
 <style>
   .he-intro {
     max-width: 920px;
-    margin: 0 0 1.2rem;
+    margin: 0 0 1rem;
     font-size: 0.92rem;
     line-height: 1.55;
     color: var(--text-dim);
@@ -141,9 +168,69 @@ const resourceCount = new Set(events.map(e => e.resource).filter(Boolean)).size;
     font-size: 0.86em;
   }
 
-  #he-grid {
+  /* Resource jump bar */
+  .he-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0 0 1.4rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .he-jump__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.5rem 0.2rem 0.35rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elev);
+    color: var(--text-dim);
+    font-size: 0.74rem;
+    text-decoration: none;
+    transition: border-color 0.12s, color 0.12s;
+  }
+  .he-jump__item:hover { color: var(--text); border-color: var(--border-strong); }
+  .he-jump__icon { width: 16px; height: 16px; object-fit: contain; }
+  .he-jump__icon--glyph { font-size: 13px; line-height: 16px; }
+  .he-jump__n {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.66rem;
+    color: var(--text-faint);
+    background: var(--bg);
+    border-radius: 999px;
+    padding: 0 0.35rem;
+  }
+
+  /* Resource section */
+  .he-sec { margin: 0 0 2rem; scroll-margin-top: 5rem; }
+  .he-sec__hdr {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0 0 0.85rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .he-sec__icon { width: 30px; height: 30px; object-fit: contain; }
+  .he-sec__icon--glyph { font-size: 24px; line-height: 30px; text-align: center; }
+  .he-sec__name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+  .he-sec__n {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    margin-left: auto;
+    font-family: var(--font-mono, monospace);
+  }
+
+  .he-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 0.8rem;
   }
 
@@ -156,12 +243,6 @@ const resourceCount = new Set(events.map(e => e.resource).filter(Boolean)).size;
     flex-direction: column;
     gap: 0.55rem;
   }
-  .ev-card__hdr {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 0.6rem;
-  }
   .ev-card__title {
     font-family: var(--font-display);
     font-size: 1rem;
@@ -170,20 +251,6 @@ const resourceCount = new Set(events.map(e => e.resource).filter(Boolean)).size;
     letter-spacing: 0.02em;
     font-weight: 600;
   }
-  .ev-card__res {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    color: var(--text-dim);
-    font-size: 0.72rem;
-    padding: 0.15rem 0.5rem 0.15rem 0.3rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: var(--bg);
-    white-space: nowrap;
-  }
-  .ev-card__res-icon { width: 14px; height: 14px; object-fit: contain; }
-
   .ev-card__body {
     color: var(--text-dim);
     font-size: 0.82rem;
@@ -204,30 +271,22 @@ const resourceCount = new Set(events.map(e => e.resource).filter(Boolean)).size;
     background: var(--bg-elev-2);
     border: 1px solid var(--border);
     border-radius: 5px;
-    padding: 0.35rem 0.5rem;
-    counter-increment: opt;
+    padding: 0.4rem 0.5rem;
   }
   .ev-option__text {
     font-size: 0.78rem;
     color: var(--text);
     line-height: 1.35;
   }
-  .ev-option__bonuses {
-    margin-top: 0.3rem;
+  .ev-option__rewards {
+    margin-top: 0.35rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
   }
-  .bonus-chip {
-    display: inline-block;
-    padding: 0.1rem 0.45rem;
-    border-radius: 999px;
-    background: var(--yield-bg);
-    color: var(--yield-fg);
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.2));
+  .ev-option__rewards .chip {
+    font-size: 0.66rem;
+    padding: 0.12rem 0.5rem;
   }
 
   .ev-card__foot {
@@ -238,4 +297,7 @@ const resourceCount = new Set(events.map(e => e.resource).filter(Boolean)).size;
     border-top: 1px dashed var(--border);
     padding-top: 0.3rem;
   }
+
+  .is-hidden { display: none !important; }
+  .he-empty { color: var(--text-dim); font-style: italic; padding: 1rem 0; }
 </style>
