@@ -97,7 +97,7 @@ function pct(p: number): string {
                       <span>{r.label}</span>
                     ) : (
                       <>
-                        <span class="reward-val">{r.scope.endsWith('Per') ? `+${r.value / 10} per City` : `+${r.value / 10}`}</span>
+                        <span class="reward-val">{r.scope.endsWith('Per') ? `+${r.value} per City` : `+${r.value}`}</span>
                         <span class="reward-yield">{r.label}</span>
                       </>
                     )}
@@ -284,16 +284,17 @@ function pct(p: number): string {
       const NS = 'http://www.w3.org/2000/svg';
       const W = 640, H = 300, M = { l: 48, r: 16, t: 14, b: 30 };
 
-      // Raw (×10) reward, matching the game's integer math.
-      function rawReward(cities, turn) {
+      // Reward (display-scale, shown raw in-game): (base + per×cities) then the
+      // turn ramp, rounded to a multiple by magnitude (matching the reference
+      // spreadsheet's round-to-nearest), then capped.
+      function reward(cities, turn) {
         let v = rawBase + rawPer * cities;
         if (turn > infl) v = Math.floor((v * turn) / infl);
         const a = Math.abs(v), rt = a > 100 ? 10 : a > 50 ? 5 : a > 10 ? 2 : 0;
-        if (rt) v -= v % rt;
+        if (rt) v = Math.round(v / rt) * rt;
         if (cap != null) v = Math.min(v, cap);
         return v;
       }
-      const reward = (cities, turn) => rawReward(cities, turn) / 10; // display
 
       const fmt = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
@@ -305,12 +306,12 @@ function pct(p: number): string {
         rewardEl.textContent = '+' + fmt(rw);
 
         // Breakdown: pre-scale × multiplier
-        const pre = (rawBase + rawPer * cities) / 10;
+        const pre = rawBase + rawPer * cities;
         const mult = Math.max(1, turn / infl);
         formulaEl.textContent =
-          `${fmt(rawBase / 10)} + ${fmt(rawPer / 10)}×${cities} = ${fmt(pre)}` +
+          `${fmt(rawBase)} + ${fmt(rawPer)}×${cities} = ${fmt(pre)}` +
           (turn > infl ? `  ×${mult.toFixed(2)} (turn ${turn})` : `  (turn ≤ ${infl}: ×1)`) +
-          (cap != null && rawReward(cities, turn) >= cap ? '  — capped' : '');
+          (cap != null && rw >= cap ? '  — capped' : '');
 
         // Y domain from the tallest visible line at MAX_TURN.
         const yMax = Math.max(reward(Math.max(cities, 15), MAX_TURN), reward(15, MAX_TURN), 1) * 1.08;

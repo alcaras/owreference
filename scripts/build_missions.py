@@ -144,7 +144,10 @@ def scaling_from_outcome(outcome: dict) -> dict | None:
             per = r["value"]
     if base is None:
         return None
-    base_d, per_d = base / 10, (per or 0) / 10
+    # Mission reward yields are authored at DISPLAY scale and shown raw in-game
+    # (the bonus display call passes no YIELDS_MULTIPLIER), so we do NOT divide
+    # by 10 here. e.g. Rally = 90 + 10/city Training, reaching 230+ late game.
+    base_d, per_d = base, (per or 0)
     cities_label = "Rival cities" if other else "Your cities"
     return {
         "yield": yld,
@@ -216,21 +219,22 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict) -> list[str]:
         return [_fallback_label(bonus_id)]
     out: list[str] = []
 
+    # Yields here are display-scale (shown raw in-game) — no /10. See scaling note.
     base = {y: v for y, v in pairs(b, "aiGlobalYieldsBase")}
     per = {y: v for y, v in pairs(b, "aiGlobalYieldsPer")}
     for y in list(base) + [k for k in per if k not in base]:
         yl = y.replace("YIELD_", "").title()
-        bv, pv = base.get(y, 0) / 10, per.get(y, 0) / 10
-        s = f"{'+' if bv >= 0 else ''}{_trim(bv)} {yl}"
+        bv, pv = base.get(y, 0), per.get(y, 0)
+        s = f"{'+' if bv >= 0 else ''}{bv} {yl}"
         if pv:
-            s += f" (+{_trim(pv)}/city)"
+            s += f" (+{pv}/city)"
         out.append(s)
     for y, v in pairs(b, "aiCityYields"):
-        out.append(f"{'+' if v >= 0 else ''}{_trim(v/10)} {y.replace('YIELD_', '').title()} in a City")
+        out.append(f"{'+' if v >= 0 else ''}{v} {y.replace('YIELD_', '').title()} in a City")
 
     xp = int(b.findtext("iXPCharacter") or "0")
     if xp:
-        out.append(f"+{_trim(xp/10)} XP to the character")
+        out.append(f"+{xp} XP to the character")
     for t in b.findall("aeAddTraits/zValue"):
         tr = t.text or ""
         out.append(f"Gain trait: {text.get('TEXT_' + tr, _tok(tr, 'TRAIT_'))}")
@@ -391,9 +395,9 @@ def main() -> int:
         for pair in m.findall("aiYieldCost/Pair"):
             y = (pair.findtext("zIndex") or "").replace("YIELD_", "")
             v = int(pair.findtext("iValue") or "0")
-            # Game stores yields ×10 for display, except Orders which are 1:1
-            display = v / 10 if y not in ("ORDERS",) else v
-            cost.append({"yield": y.lower(), "label": y.title(), "value": display})
+            # Mission costs are display-scale and shown raw in-game (the cost
+            # text builder passes no YIELDS_MULTIPLIER), so no /10 here.
+            cost.append({"yield": y.lower(), "label": y.title(), "value": v})
 
         # Outcomes: aiResultDie holds {result_id: dice_weight}. Probability =
         # weight / total. Each result gets enriched with its bonus reward.
