@@ -1,0 +1,46 @@
+---
+// Collapsible explainer for how one-time yield rewards scale (per-city + the
+// game's turn ramp). Shared by the event pages so the ↗turn tag is understood.
+const base = import.meta.env.BASE_URL;
+---
+<details class="scale-help">
+  <summary>How yield rewards scale <span class="scale-help__tag">↗ turn</span></summary>
+  <div class="scale-help__body">
+    <p>A yield reward like <b>+40 Science <span class="scale-help__mut">+10/city ↗turn</span></b> is not a flat
+    number. The amount you actually receive is:</p>
+    <p class="scale-help__formula">(base + per-city × your cities) × turn multiplier</p>
+    <ul>
+      <li><b>Per-city</b> adds that much for every city you own (the rival's cities for Steal-Research-style effects).</li>
+      <li><b>Turn multiplier</b> is ×1 up through turn 60, then ×(turn ÷ 60) after — ×1.5 at turn 90, ×2 at turn 120, ×3.3 at turn 200.</li>
+    </ul>
+    <p class="scale-help__ex">Example — <b>+40 Science +10/city</b> with 4 cities: <b>80</b> early game → <b>120</b> at turn 90 → <b>160</b> at turn 120.
+    The <a href={`${base}rally`}>mission pages</a> have a live calculator for the exact ramp. ("Tiny / Small / Average / Large" in the game are just preset base/per tiers — shown here as their real numbers.)</p>
+  </div>
+</details>
+
+<style>
+  .scale-help {
+    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+    background: var(--bg-elev); margin: 0 0 1.2rem; max-width: 80ch; overflow: hidden;
+  }
+  .scale-help > summary {
+    cursor: pointer; padding: 0.5rem 0.8rem; font-family: var(--font-display); font-size: 0.86rem;
+    color: var(--text); list-style: none; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .scale-help > summary::-webkit-details-marker { display: none; }
+  .scale-help > summary::before { content: '▸'; color: var(--text-faint); font-size: 0.8rem; }
+  .scale-help[open] > summary::before { content: '▾'; }
+  .scale-help__tag {
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, var(--bg-elev));
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 5px; padding: 0.04rem 0.4rem;
+  }
+  .scale-help__body { padding: 0 0.9rem 0.7rem; color: var(--text-dim); font-size: 0.83rem; line-height: 1.5; }
+  .scale-help__body p { margin: 0 0 0.5rem; }
+  .scale-help__body ul { margin: 0 0 0.5rem; padding-left: 1.1rem; }
+  .scale-help__body b { color: var(--text); }
+  .scale-help__mut { color: var(--text-faint); font-weight: 400; }
+  .scale-help__formula { font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent); padding-left: 0.2rem; }
+  .scale-help__ex { font-size: 0.8rem; }
+  .scale-help__ex a { color: var(--accent); }
+</style>

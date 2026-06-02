@@ -17,7 +17,7 @@ const yk = (r.yield || classifyYield(r.text || '')?.toLowerCase() || 'misc');
 const amt = r.base != null ? r.base : r.eachCity;
 const sign = amt >= 0 ? '+' : '';
 const yieldName = r.yield ? r.yield.charAt(0).toUpperCase() + r.yield.slice(1) : '';
-const turnHelp = 'This yield grows with the game turn (and is one-time). See a mission page’s reward calculator for the exact ramp.';
+const turnHelp = 'One-time yield that grows with the game turn: the amount is multiplied by ×1 up to turn 60, then ×(turn ÷ 60) after (×2 at turn 120). Per-city values add per city you own. See a mission page for a live calculator.';
 ---
 {isYield ? (
   <span class={`chip rwd yield-${yk}`}>

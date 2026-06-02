@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import RewardChip from '../components/RewardChip.astro';
+import ScaleHelp from '../components/ScaleHelp.astro';
 import events from '../data/harvest_events.json';
 
 const base = import.meta.env.BASE_URL;
@@ -56,6 +57,8 @@ const resourceCount = sections.filter(s => s.icon).length;
       <code>bonus*.xml</code> payloads.
     </p>
   </section>
+
+  <ScaleHelp />
 
   <nav class="he-jump" aria-label="Jump to resource">
     {sections.map(s => (

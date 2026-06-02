@@ -6,6 +6,7 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import RewardChip from '../components/RewardChip.astro';
+import ScaleHelp from '../components/ScaleHelp.astro';
 import { classifyYield } from '../lib/entities';
 import sections from '../data/events.json';
 
@@ -55,6 +56,8 @@ const followups = sec.events.filter(e => e.isFollowup).length;
   ...(followups ? [{ label: 'follow-ups', value: followups }] : []),
 ]}>
   <p class="lede"><slot /></p>
+
+  <ScaleHelp />
 
   <div class="evt-filter">
     <input type="search" id="evt-search" class="evt-filter__search"
@@ -175,7 +178,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
   </script>
 
   <style>
-    .lede { color: var(--text-dim); font-size: 0.92rem; line-height: 1.55; max-width: 80ch; margin: 0 0 1.2rem; }
+    .lede { color: var(--text-dim); font-size: 0.92rem; line-height: 1.55; max-width: 80ch; margin: 0 0 0.9rem; }
     .lede a { color: var(--accent); }
 
     .evt-filter { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
