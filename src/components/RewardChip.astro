@@ -1,0 +1,46 @@
+---
+// One structured reward. Yield rewards render the icon + exact amount + scaling
+// tags (per-city, turn); everything else is a plain linked chip. Reward shape
+// comes from build_missions.humanize_bonus:
+//   {text, yield, base, per}   flat + per-city, turn-scales
+//   {text, yield, eachCity}    applied to each city, turn-scales
+//   {text}                     traits, units, relationships, …
+import LinkedText from './LinkedText.astro';
+import { classifyYield } from '../lib/entities';
+
+const { reward } = Astro.props as { reward: any };
+const base = import.meta.env.BASE_URL;
+const r = reward;
+
+const isYield = r.yield && (r.base != null || r.eachCity != null);
+const yk = (r.yield || classifyYield(r.text || '')?.toLowerCase() || 'misc');
+const amt = r.base != null ? r.base : r.eachCity;
+const sign = amt >= 0 ? '+' : '';
+const yieldName = r.yield ? r.yield.charAt(0).toUpperCase() + r.yield.slice(1) : '';
+const turnHelp = 'This yield grows with the game turn (and is one-time). See a mission page’s reward calculator for the exact ramp.';
+---
+{isYield ? (
+  <span class={`chip rwd yield-${yk}`}>
+    <img class="rwd__ico" src={`${base}img/icons/yields/${r.yield}.png`} alt="" onerror="this.style.display='none'" />
+    <b class="rwd__amt">{sign}{amt}</b>
+    <span class="rwd__yld">{yieldName}</span>
+    {r.per ? <span class="rwd__tag" title="Extra per city you own">+{r.per}/city</span> : null}
+    {r.eachCity != null ? <span class="rwd__tag" title="Applied to each city you own">each city</span> : null}
+    <span class="rwd__tag rwd__tag--turn" title={turnHelp}>↗ turn</span>
+  </span>
+) : (
+  <span class={`chip yield-${yk}`}><LinkedText text={r.text} showIcons={false} /></span>
+)}
+
+<style>
+  .rwd { display: inline-flex; align-items: center; gap: 0.28rem; }
+  .rwd__ico { width: 14px; height: 14px; object-fit: contain; }
+  .rwd__amt { font-family: var(--font-mono); font-weight: 700; }
+  .rwd__yld { font-weight: 500; }
+  .rwd__tag {
+    font-family: var(--font-mono); font-size: 0.86em; opacity: 0.82;
+    padding-left: 0.32rem; margin-left: 0.18rem;
+    border-left: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  }
+  .rwd__tag--turn { letter-spacing: 0.01em; }
+</style>

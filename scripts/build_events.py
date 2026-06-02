@@ -122,6 +122,10 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
     """Both option syntaxes → [{text, requirements, outcomes}]."""
     out: list[dict] = []
 
+    def link_of(opt: ET.Element):
+        link = opt.findtext("EventLinkAdd")
+        return link if link and link != "NONE" else None
+
     # Old syntax: list of eventOption references.
     for oz in s.findall("aeOptions/zValue"):
         opt = eopt_idx.get(oz.text or "")
@@ -131,17 +135,19 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
             "text": m.clean_text(text.get(opt.findtext("Text") or "", "")),
             "requirements": m.option_requirements(opt),
             "outcomes": m.option_outcomes(opt, eopt_idx, bonus_idx, text),
+            "linkAdd": link_of(opt),
         })
 
     # New syntax: inline EventOption with SubjectBonuses pairs.
     for opt in s.findall("EventOptions/EventOption"):
-        rewards: list[str] = []
+        rewards: list[dict] = []
         for p in opt.findall("SubjectBonuses/Pair"):
             rewards += m.humanize_bonus(p.findtext("Second") or "", bonus_idx, text)
         out.append({
             "text": m.clean_text(text.get(opt.findtext("Text") or "", "")),
             "requirements": m.option_requirements(opt),
             "outcomes": [{"probability": 1.0, "weight": None, "rewards": rewards, "label": None}],
+            "linkAdd": link_of(opt),
         })
 
     return out
@@ -165,10 +171,13 @@ def build_event(s: ET.Element, group_weight: int, eopt_idx: dict,
         "name": m.clean_text(text.get(s.findtext("Name") or "", m._tok(zt, "EVENTSTORY_"))),
         "text": m.clean_text(text.get(s.findtext("Text") or "", "")),
         "weight": weight,
-        "share": weight / group_weight if group_weight else 0,
+        # Follow-ups fire deterministically via a chain link, not from the
+        # weighted pool, so they have no meaningful share.
+        "share": None if link_prereq else (weight / group_weight if group_weight else 0),
         "prob": int(prob) if prob and prob.strip() and prob.strip() != "0" else None,
         "trigger": trigger_label(s.findtext("Trigger") or "", link_prereq),
         "isFollowup": bool(link_prereq),
+        "linkPrereq": link_prereq,
         "dlc": dlc_label(s.findtext("GameContentRequired") or ""),
         "url": url,
         "timing": timing(s),
@@ -184,12 +193,63 @@ def main() -> int:
     eopt_idx = m.index_many(*OPT_FILES)
     bonus_idx = m.index("bonus.xml")
 
-    active = [s for s in story_idx.values() if int(s.findtext("iWeight") or "0") > 0]
+    def story_link_adds(s: ET.Element) -> set[str]:
+        """Every EventLink a story can set — story-level + each of its options."""
+        links: set[str] = set()
+        for la in [s.findtext("EventLinkAdd")]:
+            if la and la != "NONE":
+                links.add(la)
+        for oz in s.findall("aeOptions/zValue"):
+            opt = eopt_idx.get(oz.text or "")
+            la = opt.findtext("EventLinkAdd") if opt is not None else None
+            if la and la != "NONE":
+                links.add(la)
+        for opt in s.findall("EventOptions/EventOption"):
+            la = opt.findtext("EventLinkAdd")
+            if la and la != "NONE":
+                links.add(la)
+        return links
 
-    ruins = [s for s in active
+    by_prereq: dict[str, list[ET.Element]] = {}
+    for s in story_idx.values():
+        lp = s.findtext("EventLinkPrereq")
+        if lp and lp != "NONE":
+            by_prereq.setdefault(lp, []).append(s)
+
+    # Expeditions: the EXPLORING class (incl. weight-0 follow-ups). Ruins: the
+    # RUINS_EXPLORED pop-ups PLUS the chain follow-ups they link to (transitive
+    # closure over EventLinkAdd→EventLinkPrereq), which carry no weight of their
+    # own so wouldn't otherwise surface.
+    expeditions = [s for s in story_idx.values() if (s.findtext("Class") or "") == "EVENTCLASS_EXPLORING"]
+    exp_ids = {s.findtext("zType") for s in expeditions}
+
+    ruins = [s for s in story_idx.values()
              if (s.findtext("Trigger") or "") == "EVENTTRIGGER_RUINS_EXPLORED"]
-    expeditions = [s for s in active
-                   if (s.findtext("Class") or "") == "EVENTCLASS_EXPLORING"]
+    ruin_ids = {s.findtext("zType") for s in ruins}
+    frontier = list(ruins)
+    while frontier:
+        links: set[str] = set()
+        for s in frontier:
+            links |= story_link_adds(s)
+        nxt = []
+        for ln in links:
+            for s in by_prereq.get(ln, []):
+                zt = s.findtext("zType")
+                if zt not in ruin_ids and zt not in exp_ids:
+                    ruin_ids.add(zt); ruins.append(s); nxt.append(s)
+        frontier = nxt
+
+    # Map every EventLinkPrereq to the story (id+name) that needs it — used to
+    # resolve where a choice's EventLinkAdd leads. Spans ALL stories so a chain
+    # link resolves even if the target sits in the other group.
+    def story_name(s: ET.Element) -> str:
+        zt = s.findtext("zType") or ""
+        return m.clean_text(text.get(s.findtext("Name") or "", m._tok(zt, "EVENTSTORY_")))
+    prereq_targets: dict[str, list[dict]] = {}
+    for s in story_idx.values():
+        lp = s.findtext("EventLinkPrereq")
+        if lp and lp != "NONE":
+            prereq_targets.setdefault(lp, []).append({"id": s.findtext("zType") or "", "name": story_name(s)})
 
     def group(stories: list[ET.Element], key: str, label: str, blurb: str) -> dict:
         total = sum(int(s.findtext("iWeight") or "0") for s in stories) or 1
@@ -208,6 +268,23 @@ def main() -> int:
               "Some entries are follow-ups that only fire after an earlier expedition "
               "via an event link."),
     ]
+
+    # ── Wire up chains ──────────────────────────────────────────────────────
+    # Forward: a choice with linkAdd L "may trigger" each story whose prereq is L.
+    # Backward: a follow-up (linkPrereq L) "follows from" each event whose choice
+    # adds L. Self-links are dropped.
+    all_events = [e for sec in sections for e in sec["events"]]
+    add_sources: dict[str, list[dict]] = {}
+    for e in all_events:
+        for opt in e["options"]:
+            la = opt.get("linkAdd")
+            if la:
+                opt["leadsTo"] = [t for t in prereq_targets.get(la, []) if t["id"] != e["id"]]
+                if opt["leadsTo"]:
+                    add_sources.setdefault(la, []).append({"id": e["id"], "name": e["name"]})
+    for e in all_events:
+        lp = e.get("linkPrereq")
+        e["followsFrom"] = [src for src in add_sources.get(lp, []) if src["id"] != e["id"]] if lp else []
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(sections, indent=2, sort_keys=True, ensure_ascii=False) + "\n")

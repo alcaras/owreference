@@ -24,7 +24,12 @@
           "No active wars"
         ],
         "guaranteed": [
-          "+40 Training (+10/city)"
+          {
+            "base": 40,
+            "per": 10,
+            "text": "+40 Training (+10/city)",
+            "yield": "training"
+          }
         ],
         "id": "EVENTSTORY_RALLY_STANDING_ARMIES",
         "name": "Standing Armies",
@@ -36,8 +41,12 @@
                 "label": "Rally Standing Armies Repair Four Improvements",
                 "probability": 0.8333333333333334,
                 "rewards": [
-                  "Progress ambition: Four Repaired",
-                  "+1 Worker"
+                  {
+                    "text": "Progress ambition: Four Repaired"
+                  },
+                  {
+                    "text": "+1 Worker"
+                  }
                 ],
                 "weight": 1000
               },
@@ -45,8 +54,12 @@
                 "label": "Rally Standing Armies Repair Cities",
                 "probability": 0.08333333333333333,
                 "rewards": [
-                  "Affects a city",
-                  "Affects a city"
+                  {
+                    "text": "Affects a city"
+                  },
+                  {
+                    "text": "Affects a city"
+                  }
                 ],
                 "weight": 100
               },
@@ -54,8 +67,12 @@
                 "label": "Rally Standing Armies Repair Eight Improvements",
                 "probability": 0.08333333333333333,
                 "rewards": [
-                  "Progress ambition: Eight Repaired",
-                  "+1 Worker"
+                  {
+                    "text": "Progress ambition: Eight Repaired"
+                  },
+                  {
+                    "text": "+1 Worker"
+                  }
                 ],
                 "weight": 100
               }
@@ -70,8 +87,18 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+30 Stone (+10/city)",
-                  "+30 Iron (+10/city)"
+                  {
+                    "base": 30,
+                    "per": 10,
+                    "text": "+30 Stone (+10/city)",
+                    "yield": "stone"
+                  },
+                  {
+                    "base": 30,
+                    "per": 10,
+                    "text": "+30 Iron (+10/city)",
+                    "yield": "iron"
+                  }
                 ],
                 "weight": null
               }
@@ -86,8 +113,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+1 Levy unit",
-                  "+1 Levy unit"
+                  {
+                    "text": "+1 Levy unit"
+                  },
+                  {
+                    "text": "+1 Levy unit"
+                  }
                 ],
                 "weight": null
               }
@@ -102,9 +133,18 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "-5 Orders",
-                  "Add Walls",
-                  "Add Walls"
+                  {
+                    "base": -5,
+                    "per": 0,
+                    "text": "-5 Orders",
+                    "yield": "orders"
+                  },
+                  {
+                    "text": "Add Walls"
+                  },
+                  {
+                    "text": "Add Walls"
+                  }
                 ],
                 "weight": null
               }
@@ -133,7 +173,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character"
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -148,8 +190,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+40 XP to the character",
-                  "1 rebel unit appear"
+                  {
+                    "text": "+40 XP to the character"
+                  },
+                  {
+                    "text": "1 rebel unit appear"
+                  }
                 ],
                 "weight": null
               }
@@ -168,7 +214,12 @@
           "Tribe nearby"
         ],
         "guaranteed": [
-          "+60 Training (+15/city)"
+          {
+            "base": 60,
+            "per": 15,
+            "text": "+60 Training (+15/city)",
+            "yield": "training"
+          }
         ],
         "id": "EVENTSTORY_RALLY_BLOOD_FOR_BLOOD",
         "name": "Blood for Blood",
@@ -180,7 +231,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Tribal Invasion"
+                  {
+                    "text": "Tribal Invasion"
+                  }
                 ],
                 "weight": null
               }
@@ -209,8 +262,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Possibly Strict",
-                  "Affects a character"
+                  {
+                    "text": "Possibly Strict"
+                  },
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -225,7 +282,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character"
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -240,8 +299,15 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+80 Training (+20/city)",
-                  "Leader relationship: Influenced By"
+                  {
+                    "base": 80,
+                    "per": 20,
+                    "text": "+80 Training (+20/city)",
+                    "yield": "training"
+                  },
+                  {
+                    "text": "Leader relationship: Influenced By"
+                  }
                 ],
                 "weight": null
               }
@@ -264,7 +330,12 @@
           "Unit Melee"
         ],
         "guaranteed": [
-          "+60 Training (+15/city)"
+          {
+            "base": 60,
+            "per": 15,
+            "text": "+60 Training (+15/city)",
+            "yield": "training"
+          }
         ],
         "id": "EVENTSTORY_RALLY_IN_THE_FIELD",
         "name": "In the Field",
@@ -276,8 +347,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a unit",
-                  "Affects a unit"
+                  {
+                    "text": "Affects a unit"
+                  },
+                  {
+                    "text": "Affects a unit"
+                  }
                 ],
                 "weight": null
               }
@@ -292,9 +367,15 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character",
-                  "Affects a unit",
-                  "Affects a unit"
+                  {
+                    "text": "Affects a character"
+                  },
+                  {
+                    "text": "Affects a unit"
+                  },
+                  {
+                    "text": "Affects a unit"
+                  }
                 ],
                 "weight": null
               }
@@ -323,8 +404,15 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "State Religion",
-                  "-60 Training (+-15/city)"
+                  {
+                    "text": "State Religion"
+                  },
+                  {
+                    "base": -60,
+                    "per": -15,
+                    "text": "-60 Training (+-15/city)",
+                    "yield": "training"
+                  }
                 ],
                 "weight": null
               }
@@ -339,8 +427,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect",
-                  "Affects a character"
+                  {
+                    "text": "Special effect"
+                  },
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -355,7 +447,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+60 Training (+15/city)"
+                  {
+                    "base": 60,
+                    "per": 15,
+                    "text": "+60 Training (+15/city)",
+                    "yield": "training"
+                  }
                 ],
                 "weight": null
               }
@@ -374,7 +471,12 @@
           "High Wisdom"
         ],
         "guaranteed": [
-          "+60 Training (+15/city)"
+          {
+            "base": 60,
+            "per": 15,
+            "text": "+60 Training (+15/city)",
+            "yield": "training"
+          }
         ],
         "id": "EVENTSTORY_RALLY_OVERLOOKED_INNOVATORS",
         "name": "Overlooked Innovators",
@@ -386,7 +488,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a city"
+                  {
+                    "text": "Affects a city"
+                  }
                 ],
                 "weight": null
               }
@@ -401,7 +505,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character"
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -420,7 +526,12 @@
           "High Charisma"
         ],
         "guaranteed": [
-          "+60 Training (+15/city)"
+          {
+            "base": 60,
+            "per": 15,
+            "text": "+60 Training (+15/city)",
+            "yield": "training"
+          }
         ],
         "id": "EVENTSTORY_RALLY_PROUD_THRONGS",
         "name": "Proud Throngs",
@@ -432,8 +543,16 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+40 Happiness in a City",
-                  "+40 Happiness in a City"
+                  {
+                    "eachCity": 40,
+                    "text": "+40 Happiness (each city)",
+                    "yield": "happiness"
+                  },
+                  {
+                    "eachCity": 40,
+                    "text": "+40 Happiness (each city)",
+                    "yield": "happiness"
+                  }
                 ],
                 "weight": null
               }
@@ -452,7 +571,12 @@
           "General"
         ],
         "guaranteed": [
-          "+60 Training (+15/city)"
+          {
+            "base": 60,
+            "per": 15,
+            "text": "+60 Training (+15/city)",
+            "yield": "training"
+          }
         ],
         "id": "EVENTSTORY_RALLY_THE_DRUNKEN_ARMY",
         "name": "The Drunken Army",
@@ -464,8 +588,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character",
-                  "Affects a unit"
+                  {
+                    "text": "Affects a character"
+                  },
+                  {
+                    "text": "Affects a unit"
+                  }
                 ],
                 "weight": null
               }
@@ -484,7 +612,12 @@
           "General"
         ],
         "guaranteed": [
-          "+80 Training (+20/city)"
+          {
+            "base": 80,
+            "per": 20,
+            "text": "+80 Training (+20/city)",
+            "yield": "training"
+          }
         ],
         "id": "EVENTSTORY_RALLY_THROWN_ROSES",
         "name": "Thrown Roses",
@@ -496,7 +629,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Gain trait: Inspiring"
+                  {
+                    "text": "Gain trait: Inspiring"
+                  }
                 ],
                 "weight": null
               }
@@ -511,7 +646,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character"
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -540,7 +677,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a rival"
+                  {
+                    "text": "Affects a rival"
+                  }
                 ],
                 "weight": null
               }
@@ -682,8 +821,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+20 XP to the character",
-                  "Grants a resource"
+                  {
+                    "text": "+20 XP to the character"
+                  },
+                  {
+                    "text": "Grants a resource"
+                  }
                 ],
                 "weight": null
               }
@@ -698,8 +841,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Affects a character"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -729,8 +876,15 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "-40 Civics (+-10/city)",
-                  "Affects a character"
+                  {
+                    "base": -40,
+                    "per": -10,
+                    "text": "-40 Civics (+-10/city)",
+                    "yield": "civics"
+                  },
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -745,8 +899,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Leader relationship: Vengeful Against",
-                  "Affects a character"
+                  {
+                    "text": "Leader relationship: Vengeful Against"
+                  },
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -761,7 +919,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character"
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -790,7 +950,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -805,7 +967,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -820,8 +984,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up",
-                  "Affects a character"
+                  {
+                    "text": "Happiness Up"
+                  },
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -853,8 +1021,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Unconvincing Verdict",
-                  "Leader relationship: Influenced By"
+                  {
+                    "text": "Unconvincing Verdict"
+                  },
+                  {
+                    "text": "Leader relationship: Influenced By"
+                  }
                 ],
                 "weight": null
               }
@@ -869,8 +1041,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Did Not Preside Over Case",
-                  "Leader relationship: Influenced By"
+                  {
+                    "text": "Did Not Preside Over Case"
+                  },
+                  {
+                    "text": "Leader relationship: Influenced By"
+                  }
                 ],
                 "weight": null
               }
@@ -900,9 +1076,18 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "-120 Money (+-30/city)",
-                  "Affects a family",
-                  "+1 Heavy Infantry unit"
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (+-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "+1 Heavy Infantry unit"
+                  }
                 ],
                 "weight": null
               }
@@ -917,8 +1102,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+20 XP to the character",
-                  "Affects a family"
+                  {
+                    "text": "+20 XP to the character"
+                  },
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -947,7 +1136,11 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+120 Happiness in a City"
+                  {
+                    "eachCity": 120,
+                    "text": "+120 Happiness (each city)",
+                    "yield": "happiness"
+                  }
                 ],
                 "weight": null
               }
@@ -962,7 +1155,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+40 Civics (+10/city)"
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Civics (+10/city)",
+                    "yield": "civics"
+                  }
                 ],
                 "weight": null
               }
@@ -977,7 +1175,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+8 Orders"
+                  {
+                    "base": 8,
+                    "per": 0,
+                    "text": "+8 Orders",
+                    "yield": "orders"
+                  }
                 ],
                 "weight": null
               }
@@ -1009,8 +1212,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Affects a family"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -1025,8 +1232,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Affects a family"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -1041,8 +1252,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Affects a family"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -1057,9 +1272,15 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up",
-                  "Affects a family",
-                  "Affects a family"
+                  {
+                    "text": "Happiness Up"
+                  },
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -1078,7 +1299,9 @@
           "Courtier Merchant"
         ],
         "guaranteed": [
-          "Special effect"
+          {
+            "text": "Special effect"
+          }
         ],
         "id": "EVENTSTORY_GP_LIFESTYLES_OF_THE_RICH",
         "name": "Lifestyles of the Rich",
@@ -1090,8 +1313,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Leader relationship: Endeared To",
-                  "Affects a family"
+                  {
+                    "text": "Leader relationship: Endeared To"
+                  },
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -1106,7 +1333,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character"
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -1121,7 +1350,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character"
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -1143,7 +1374,9 @@
           "Family Min Cautious"
         ],
         "guaranteed": [
-          "Special effect"
+          {
+            "text": "Special effect"
+          }
         ],
         "id": "EVENTSTORY_HOLD_COURT_HAPPY_FAMILIES",
         "name": "A Crowd of Admirers",
@@ -1155,7 +1388,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Gain trait: Famous"
+                  {
+                    "text": "Gain trait: Famous"
+                  }
                 ],
                 "weight": null
               }
@@ -1185,7 +1420,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "-160 Money (+-40/city)"
+                  {
+                    "base": -160,
+                    "per": -40,
+                    "text": "-160 Money (+-40/city)",
+                    "yield": "money"
+                  }
                 ],
                 "weight": null
               }
@@ -1200,7 +1440,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family"
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -1227,7 +1469,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1242,7 +1486,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1259,7 +1505,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up"
+                  {
+                    "text": "Happiness Up"
+                  }
                 ],
                 "weight": null
               }
@@ -1286,7 +1534,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1301,7 +1551,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1318,7 +1570,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up"
+                  {
+                    "text": "Happiness Up"
+                  }
                 ],
                 "weight": null
               }
@@ -1345,7 +1599,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1360,7 +1616,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1377,7 +1635,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up"
+                  {
+                    "text": "Happiness Up"
+                  }
                 ],
                 "weight": null
               }
@@ -1404,7 +1664,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1419,7 +1681,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1436,7 +1700,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up"
+                  {
+                    "text": "Happiness Up"
+                  }
                 ],
                 "weight": null
               }
@@ -1463,7 +1729,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1478,7 +1746,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1495,7 +1765,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up"
+                  {
+                    "text": "Happiness Up"
+                  }
                 ],
                 "weight": null
               }
@@ -1522,7 +1794,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1537,7 +1811,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1554,7 +1830,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up"
+                  {
+                    "text": "Happiness Up"
+                  }
                 ],
                 "weight": null
               }
@@ -1581,7 +1859,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1596,7 +1876,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1613,7 +1895,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Happiness Up"
+                  {
+                    "text": "Happiness Up"
+                  }
                 ],
                 "weight": null
               }
@@ -1640,7 +1924,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a city"
+                  {
+                    "text": "Affects a city"
+                  }
                 ],
                 "weight": null
               }
@@ -1655,7 +1941,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a character"
+                  {
+                    "text": "Affects a character"
+                  }
                 ],
                 "weight": null
               }
@@ -1670,8 +1958,15 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "-120 Money (+-30/city)",
-                  "Affects a city"
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (+-30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "Affects a city"
+                  }
                 ],
                 "weight": null
               }
@@ -1701,9 +1996,18 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Gain Wisdom 1",
-                  "-240 Money (+-60/city)",
-                  "Special effect"
+                  {
+                    "text": "Gain Wisdom 1"
+                  },
+                  {
+                    "base": -240,
+                    "per": -60,
+                    "text": "-240 Money (+-60/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1718,7 +2022,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+20 XP to the character"
+                  {
+                    "text": "+20 XP to the character"
+                  }
                 ],
                 "weight": null
               }
@@ -1735,7 +2041,9 @@
       {
         "conditions": [],
         "guaranteed": [
-          "Special effect"
+          {
+            "text": "Special effect"
+          }
         ],
         "id": "EVENTSTORY_HOLD_COURT_WEARY",
         "name": "An Exhausting Ordeal",
@@ -1747,7 +2055,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+60 XP to the character"
+                  {
+                    "text": "+60 XP to the character"
+                  }
                 ],
                 "weight": null
               }
@@ -1774,8 +2084,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Affects a family"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -1790,8 +2104,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Affects a family"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a family"
+                  }
                 ],
                 "weight": null
               }
@@ -1836,9 +2154,17 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Leader relationship: Influenced By",
-                  "+80 Discontent in a City"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Leader relationship: Influenced By"
+                  },
+                  {
+                    "eachCity": 80,
+                    "text": "+80 Discontent (each city)",
+                    "yield": "discontent"
+                  }
                 ],
                 "weight": null
               }
@@ -1853,9 +2179,17 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Affects a family",
-                  "+20 Happiness in a City"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "eachCity": 20,
+                    "text": "+20 Happiness (each city)",
+                    "yield": "happiness"
+                  }
                 ],
                 "weight": null
               }
@@ -1870,9 +2204,15 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a family",
-                  "Affects a family",
-                  "Leader relationship: Influenced By"
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Affects a family"
+                  },
+                  {
+                    "text": "Leader relationship: Influenced By"
+                  }
                 ],
                 "weight": null
               }
@@ -1902,8 +2242,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect",
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  },
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1918,8 +2262,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect",
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  },
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1934,7 +2282,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -1949,7 +2299,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -2074,7 +2426,12 @@
           "Freedom-leaning empire"
         ],
         "guaranteed": [
-          "+40 Science (+10/city)"
+          {
+            "base": 40,
+            "per": 10,
+            "text": "+40 Science (+10/city)",
+            "yield": "science"
+          }
         ],
         "id": "EVENTSTORY_STEAL_DEFECTING_SCIENTISTS",
         "name": "Defecting Scientists",
@@ -2086,7 +2443,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Special effect"
+                  {
+                    "text": "Special effect"
+                  }
                 ],
                 "weight": null
               }
@@ -2103,7 +2462,12 @@
       {
         "conditions": [],
         "guaranteed": [
-          "+40 Science (+10/city)"
+          {
+            "base": 40,
+            "per": 10,
+            "text": "+40 Science (+10/city)",
+            "yield": "science"
+          }
         ],
         "id": "EVENTSTORY_STEAL_SEEKING_HELP",
         "name": "Seeking Help",
@@ -2115,7 +2479,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Gain trait: Incubated"
+                  {
+                    "text": "Gain trait: Incubated"
+                  }
                 ],
                 "weight": null
               }
@@ -2132,7 +2498,9 @@
       {
         "conditions": [],
         "guaranteed": [
-          "Gain trait: Fugitive"
+          {
+            "text": "Gain trait: Fugitive"
+          }
         ],
         "id": "EVENTSTORY_STEAL_SELLING_SECRETS",
         "name": "Selling Secrets",
@@ -2144,7 +2512,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a rival"
+                  {
+                    "text": "Affects a rival"
+                  }
                 ],
                 "weight": null
               }
@@ -2161,7 +2531,9 @@
       {
         "conditions": [],
         "guaranteed": [
-          "Leader relationship: Vengeful Against"
+          {
+            "text": "Leader relationship: Vengeful Against"
+          }
         ],
         "id": "EVENTSTORY_STEAL_FINGERS",
         "name": "Fingers",
@@ -2173,7 +2545,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a rival"
+                  {
+                    "text": "Affects a rival"
+                  }
                 ],
                 "weight": null
               }
@@ -2188,7 +2562,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+60 Science (+15/city)"
+                  {
+                    "base": 60,
+                    "per": 15,
+                    "text": "+60 Science (+15/city)",
+                    "yield": "science"
+                  }
                 ],
                 "weight": null
               }
@@ -2207,7 +2586,9 @@
           "High Wisdom"
         ],
         "guaranteed": [
-          "Eventstory Steal Player Discovery Player 0"
+          {
+            "text": "Eventstory Steal Player Discovery Player 0"
+          }
         ],
         "id": "EVENTSTORY_STEAL_PLAYER_DISCOVERY",
         "name": "[rival] Discovery",
@@ -2219,7 +2600,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "Affects a rival"
+                  {
+                    "text": "Affects a rival"
+                  }
                 ],
                 "weight": null
               }
@@ -2234,7 +2617,12 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
-                  "+40 Science (+10/city)"
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Science (+10/city)",
+                    "yield": "science"
+                  }
                 ],
                 "weight": null
               }

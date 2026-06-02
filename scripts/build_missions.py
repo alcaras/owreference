@@ -209,50 +209,64 @@ def _fallback_label(bonus_id: str) -> str:
     return _tok(bonus_id, "BONUS_")
 
 
-def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict) -> list[str]:
-    """Readable one-liners for an event-reward bonus. Covers the structured
-    fields seen on mission events; falls back to a cleaned token name."""
+# A reward is a structured dict so the page can render the yield icon, exact
+# amount and scaling tags. `text` is always present (display + search fallback).
+#   yield gain : {text, yield, base, per}    base flat + per-city, turn-scales
+#   per-city   : {text, yield, eachCity}     applied to each city, turn-scales
+#   flat/other : {text}                      traits, units, relationships, …
+def _yld(ykey: str, base: int | None = None, per: int = 0, each: int | None = None) -> dict:
+    key = ykey.replace("YIELD_", "").lower()
+    yl = ykey.replace("YIELD_", "").title()
+    if each is not None:
+        return {"text": f"{'+' if each >= 0 else ''}{each} {yl} (each city)", "yield": key, "eachCity": each}
+    text = f"{'+' if base >= 0 else ''}{base} {yl}"
+    if per:
+        text += f" (+{per}/city)"
+    return {"text": text, "yield": key, "base": base, "per": per}
+
+
+def _txt(s: str) -> dict:
+    return {"text": s}
+
+
+def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict) -> list[dict]:
+    """Structured reward list for an event/mission bonus (see schema above).
+    Yields are display-scale (shown raw in-game) — no /10."""
     if not bonus_id:
         return []
     b = bonus_idx.get(bonus_id)
     if b is None:
-        return [_fallback_label(bonus_id)]
-    out: list[str] = []
+        return [_txt(_fallback_label(bonus_id))]
+    out: list[dict] = []
 
-    # Yields here are display-scale (shown raw in-game) — no /10. See scaling note.
     base = {y: v for y, v in pairs(b, "aiGlobalYieldsBase")}
     per = {y: v for y, v in pairs(b, "aiGlobalYieldsPer")}
     for y in list(base) + [k for k in per if k not in base]:
-        yl = y.replace("YIELD_", "").title()
-        bv, pv = base.get(y, 0), per.get(y, 0)
-        s = f"{'+' if bv >= 0 else ''}{bv} {yl}"
-        if pv:
-            s += f" (+{pv}/city)"
-        out.append(s)
+        out.append(_yld(y, base=base.get(y, 0), per=per.get(y, 0)))
     for y, v in pairs(b, "aiCityYields"):
-        out.append(f"{'+' if v >= 0 else ''}{v} {y.replace('YIELD_', '').title()} in a City")
+        out.append(_yld(y, each=v))
 
     xp = int(b.findtext("iXPCharacter") or "0")
     if xp:
-        out.append(f"+{xp} XP to the character")
+        out.append(_txt(f"+{xp} XP to the character"))
     for t in b.findall("aeAddTraits/zValue"):
         tr = t.text or ""
-        out.append(f"Gain trait: {text.get('TEXT_' + tr, _tok(tr, 'TRAIT_'))}")
+        out.append(_txt(f"Gain trait: {text.get('TEXT_' + tr, _tok(tr, 'TRAIT_'))}"))
     for u, v in pairs(b, "aiUnits"):
-        out.append(f"+{v} {text.get('TEXT_' + u, _tok(u, 'UNIT_'))}")
+        out.append(_txt(f"+{v} {text.get('TEXT_' + u, _tok(u, 'UNIT_'))}"))
     for u, v in pairs(b, "aiBonusUnits"):
-        out.append(f"+{v} {_tok(u, 'BONUSUNITCLASS_')} unit")
+        out.append(_txt(f"+{v} {_tok(u, 'BONUSUNITCLASS_')} unit"))
     reb = int(b.findtext("iRebelUnits") or "0")
     if reb:
-        out.append(f"{reb} rebel unit{'s' if reb != 1 else ''} appear")
+        out.append(_txt(f"{reb} rebel unit{'s' if reb != 1 else ''} appear"))
     rel = b.findtext("AddLeaderRelationship")
     if rel:
-        out.append(f"Leader relationship: {_tok(rel, 'RELATIONSHIP_')}")
+        out.append(_txt(f"Leader relationship: {_tok(rel, 'RELATIONSHIP_')}"))
     amb = b.findtext("Ambition")
     if amb:
-        out.append(f"Progress ambition: {_tok(amb, 'GOAL_')}")
+        out.append(_txt(f"Progress ambition: {_tok(amb, 'GOAL_')}"))
 
-    return out or [_fallback_label(bonus_id)]
+    return out or [_txt(_fallback_label(bonus_id))]
 
 
 def option_outcomes(opt: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[dict]:

@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
+import RewardChip from '../components/RewardChip.astro';
 import { classifyYield, yieldColors } from '../lib/entities';
 import missions from '../data/missions.json';
 
@@ -200,9 +201,10 @@ function pct(p: number): string {
 
       <div class="evt-list">
         {mission.events.map(ev => {
-          const evYield = classifyYield(ev.guaranteed.join(' '))?.toLowerCase()
-            || ev.options.flatMap((o: any) => o.outcomes.flatMap((oc: any) => oc.rewards)).map((r: string) => classifyYield(r)).find(Boolean)?.toLowerCase()
-            || 'misc';
+          const ry = (r: any) => r.yield || classifyYield(r.text || '');
+          const evYield = (ev.guaranteed.map(ry).find(Boolean)
+            || ev.options.flatMap((o: any) => o.outcomes.flatMap((oc: any) => oc.rewards)).map(ry).find(Boolean)
+            || 'misc').toLowerCase();
           return (
             <details class={`evt yield-${evYield}`}>
               <summary class="evt__summary">
@@ -217,9 +219,7 @@ function pct(p: number): string {
                 {ev.guaranteed.length > 0 && (
                   <div class="evt__guaranteed">
                     <span class="evt__label">Always</span>
-                    {ev.guaranteed.map((g: string) => (
-                      <span class={`chip yield-${classifyYield(g)?.toLowerCase() || 'misc'}`}><LinkedText text={g} showIcons={false} /></span>
-                    ))}
+                    {ev.guaranteed.map((g: any) => <RewardChip reward={g} />)}
                   </div>
                 )}
                 <ul class="evt__opts">
@@ -235,9 +235,7 @@ function pct(p: number): string {
                           <div class="oc">
                             {oc.probability < 1 && <span class="oc__prob">{pct(oc.probability)}</span>}
                             <div class="oc__rewards">
-                              {oc.rewards.filter(Boolean).map((r: string) => (
-                                <span class={`chip yield-${classifyYield(r)?.toLowerCase() || 'misc'}`}><LinkedText text={r} showIcons={false} /></span>
-                              ))}
+                              {oc.rewards.map((r: any) => <RewardChip reward={r} />)}
                             </div>
                           </div>
                         ))}

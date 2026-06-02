@@ -5,6 +5,7 @@
 // default slot so each page supplies its own intro copy.
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
+import RewardChip from '../components/RewardChip.astro';
 import { classifyYield } from '../lib/entities';
 import sections from '../data/events.json';
 
@@ -23,22 +24,26 @@ function pct(p: number): string {
   return (p * 100).toFixed(0) + '%';
 }
 
+function rewardYield(r: any): string | null {
+  return (r.yield || classifyYield(r.text || '') || null) as string | null;
+}
 function cardYield(ev: EventStory): string {
-  const g = classifyYield(ev.guaranteed.join(' '));
-  if (g) return g.toLowerCase();
+  for (const g of ev.guaranteed) { const y = rewardYield(g); if (y) return y.toLowerCase(); }
   for (const o of ev.options)
     for (const oc of o.outcomes)
-      for (const r of oc.rewards) {
-        const y = classifyYield(r);
-        if (y) return y.toLowerCase();
-      }
+      for (const r of oc.rewards) { const y = rewardYield(r); if (y) return y.toLowerCase(); }
   return 'misc';
 }
 
 function searchBlob(ev: EventStory): string {
   return [
-    ev.name, ev.text, ev.trigger, ev.dlc, ...ev.conditions, ...ev.guaranteed,
-    ...ev.options.flatMap(o => [o.text, ...o.requirements, ...o.outcomes.flatMap(oc => oc.rewards)]),
+    ev.name, ev.text, ev.trigger, ev.dlc, ...ev.conditions, ...ev.guaranteed.map((g: any) => g.text),
+    ...ev.options.flatMap(o => [
+      o.text, ...o.requirements,
+      ...o.outcomes.flatMap(oc => oc.rewards.map((r: any) => r.text)),
+      ...((o as any).leadsTo || []).map((t: any) => t.name),
+    ]),
+    ...((ev as any).followsFrom || []).map((f: any) => f.name),
   ].filter(Boolean).join(' ').toLowerCase();
 }
 
@@ -59,16 +64,26 @@ const followups = sec.events.filter(e => e.isFollowup).length;
 
   <div class="evt-list">
     {sec.events.map(ev => (
-      <details class={`evt yield-${cardYield(ev)}`} data-search={searchBlob(ev)}>
+      <details class={`evt yield-${cardYield(ev)}`} id={ev.id} data-search={searchBlob(ev)}>
         <summary class="evt__summary">
           <span class="evt__name">{ev.name}</span>
           <span class="evt__meta">
             <span class="chip--trigger">{ev.trigger}</span>
             {ev.dlc && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
-            <span class="evt__share" title="Share of the eligible-by-weight pool">~{pct(ev.share)}</span>
+            {(ev as any).followsFrom && (ev as any).followsFrom.length > 0
+              ? <span class="chip--chain" title="Fires as a follow-up in a chain">⛓ follow-up</span>
+              : (ev.share != null && <span class="evt__share" title="Share of the eligible-by-weight pool">~{pct(ev.share)}</span>)}
           </span>
         </summary>
         <div class="evt__body">
+          {(ev as any).followsFrom && (ev as any).followsFrom.length > 0 && (
+            <p class="evt__chain evt__chain--from">
+              ⛓ Follows from:{' '}
+              {(ev as any).followsFrom.map((f: any, i: number) => (
+                <>{i > 0 ? ', ' : ''}<a href={`#${f.id}`}>{f.name}</a></>
+              ))}
+            </p>
+          )}
           {ev.text && <p class="evt__flavor"><LinkedText text={ev.text} /></p>}
 
           {(Object.keys(ev.timing).length > 0 || ev.prob || ev.conditions.length > 0) && (
@@ -87,37 +102,37 @@ const followups = sec.events.filter(e => e.isFollowup).length;
           {ev.guaranteed.length > 0 && (
             <div class="evt__guaranteed">
               <span class="evt__label">Always</span>
-              {ev.guaranteed.map(g => (
-                <span class={`chip yield-${classifyYield(g)?.toLowerCase() || 'misc'}`}>
-                  <LinkedText text={g} showIcons={false} />
-                </span>
-              ))}
+              {ev.guaranteed.map((g: any) => <RewardChip reward={g} />)}
             </div>
           )}
 
           {ev.options.length > 0 && (
             <ul class="evt__opts">
-              {ev.options.map(o => (
+              {ev.options.map((o: any) => (
                 <li class="opt">
                   <div class="opt__text">
                     <span class="opt__bullet">▸</span>
                     <LinkedText text={o.text || 'Resolve'} />
-                    {o.requirements.map(r => <span class="chip--req" title="Requires">{r}</span>)}
+                    {o.requirements.map((r: string) => <span class="chip--req" title="Requires">{r}</span>)}
                   </div>
                   <div class="opt__outcomes">
-                    {o.outcomes.map(oc => (
+                    {o.outcomes.map((oc: any) => (
                       <div class="oc">
                         {oc.probability < 1 && <span class="oc__prob">{pct(oc.probability)}</span>}
                         <div class="oc__rewards">
-                          {oc.rewards.filter(Boolean).map(r => (
-                            <span class={`chip yield-${classifyYield(r)?.toLowerCase() || 'misc'}`}>
-                              <LinkedText text={r} showIcons={false} />
-                            </span>
-                          ))}
+                          {oc.rewards.map((r: any) => <RewardChip reward={r} />)}
                         </div>
                       </div>
                     ))}
                   </div>
+                  {o.leadsTo && o.leadsTo.length > 0 && (
+                    <div class="opt__leads">
+                      ↳ may trigger:{' '}
+                      {o.leadsTo.map((t: any, i: number) => (
+                        <>{i > 0 ? ', ' : ''}<a href={`#${t.id}`}>{t.name}</a></>
+                      ))}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -232,5 +247,22 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     .oc__rewards .chip, .evt__guaranteed .chip { font-size: 0.72rem; padding: 0.08rem 0.45rem; }
 
     .evt__url { display: inline-block; margin-top: 0.5rem; font-size: 0.76rem; color: var(--accent); font-family: var(--font-mono); }
+
+    /* Chains */
+    .chip--chain {
+      font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, var(--bg-elev));
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      padding: 0.06rem 0.44rem; border-radius: 5px;
+    }
+    .evt__chain {
+      font-size: 0.78rem; color: var(--text-dim); margin: 0 0 0.5rem;
+      padding: 0.25rem 0.5rem; border-left: 2px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 6%, transparent);
+    }
+    .evt__chain a, .opt__leads a { color: var(--accent); }
+    .opt__leads {
+      margin-top: 0.3rem; padding-left: 1rem; font-size: 0.78rem; color: var(--text-dim);
+    }
   </style>
 </Base>

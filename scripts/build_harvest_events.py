@@ -26,7 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
-from build_missions import pairs, _trim, _tok, _fallback_label  # noqa: E402
+from build_missions import pairs, _trim, _tok, _fallback_label, _yld, _txt  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -187,7 +187,9 @@ def _name(text: dict, key: str, fallback_tok: str, *prefixes: str) -> str:
     return text.get(key) or _tok(fallback_tok, *prefixes)
 
 
-def humanize_bonus(bonus_id: str, idx: dict, text: dict, _seen: set | None = None) -> list[str]:
+def humanize_bonus(bonus_id: str, idx: dict, text: dict, _seen: set | None = None) -> list[dict]:
+    """Structured reward list (see build_missions._yld / _txt). Yields are
+    display-scale (shown raw in-game) — no /10."""
     if not bonus_id:
         return []
     _seen = _seen or set()
@@ -197,22 +199,17 @@ def humanize_bonus(bonus_id: str, idx: dict, text: dict, _seen: set | None = Non
 
     b = idx.get(bonus_id)
     if b is None:
-        return [_fallback_label(bonus_id)]
-    out: list[str] = []
+        return [_txt(_fallback_label(bonus_id))]
+    out: list[dict] = []
 
     base = {y: v for y, v in pairs(b, "aiGlobalYieldsBase")}
     per = {y: v for y, v in pairs(b, "aiGlobalYieldsPer")}
     for y in list(base) + [k for k in per if k not in base]:
-        yl = y.replace("YIELD_", "").title()
-        bv, pv = base.get(y, 0) / 10, per.get(y, 0) / 10
-        s = f"{'+' if bv >= 0 else ''}{_trim(bv)} {yl}"
-        if pv:
-            s += f" ({'+' if pv >= 0 else ''}{_trim(pv)}/city)"
-        out.append(s)
+        out.append(_yld(y, base=base.get(y, 0), per=per.get(y, 0)))
     for y, v in pairs(b, "aiCityYields"):
-        out.append(f"{'+' if v >= 0 else ''}{_trim(v/10)} {y.replace('YIELD_', '').title()} in a City")
+        out.append(_yld(y, each=v))
 
-    # Culture-by-city-level: render the min–max range (values are 10×).
+    # Culture-by-city-level: render the min–max range (display-scale).
     culture_vals: list[int] = []
     for pair in b.findall("aaiCultureYield/Pair"):
         for sp in pair.findall("SubPair"):
@@ -220,80 +217,77 @@ def humanize_bonus(bonus_id: str, idx: dict, text: dict, _seen: set | None = Non
             if iv:
                 culture_vals.append(iv)
     if culture_vals:
-        lo, hi = min(culture_vals) / 10, max(culture_vals) / 10
-        rng = f"{_trim(lo)}" if lo == hi else f"{_trim(lo)}–{_trim(hi)}"
-        out.append(f"+{rng} Culture (by city culture)")
+        lo, hi = min(culture_vals), max(culture_vals)
+        rng = f"{lo}" if lo == hi else f"{lo}–{hi}"
+        out.append({"text": f"+{rng} Culture (by city culture)", "yield": "culture"})
 
     add_res = b.findtext("AddResource")
     if add_res:
-        rname = _name(text, "TEXT_" + add_res, add_res, "RESOURCE_")
-        out.append(f"Adds {rname}")
+        out.append(_txt(f"Adds {_name(text, 'TEXT_' + add_res, add_res, 'RESOURCE_')}"))
 
     for r, v in pairs(b, "aiRatings"):
-        out.append(f"{'+' if v >= 0 else ''}{v} {_name(text, 'TEXT_' + r, r, 'RATING_')}")
+        out.append(_txt(f"{'+' if v >= 0 else ''}{v} {_name(text, 'TEXT_' + r, r, 'RATING_')}"))
 
     hap = int(b.findtext("iHappinessLevels") or "0")
     if hap:
-        out.append(f"{'+' if hap >= 0 else ''}{hap} Happiness level{'s' if abs(hap) != 1 else ''}")
+        out.append(_txt(f"{'+' if hap >= 0 else ''}{hap} Happiness level{'s' if abs(hap) != 1 else ''}"))
 
     leg = int(b.findtext("iLegitimacy") or "0")
     if leg:
-        out.append(f"{'+' if leg >= 0 else ''}{leg} Legitimacy")
+        out.append(_txt(f"{'+' if leg >= 0 else ''}{leg} Legitimacy"))
 
     xp = int(b.findtext("iXPCharacter") or "0")
     if xp:
-        out.append(f"+{_trim(xp/10)} XP to the character")
+        out.append(_txt(f"+{xp} XP to the character"))
 
     cour = b.findtext("MakeCourtier")
     if cour:
-        out.append(f"Gain a {_name(text, 'TEXT_' + cour, cour, 'COURTIER_')}")
+        out.append(_txt(f"Gain a {_name(text, 'TEXT_' + cour, cour, 'COURTIER_')}"))
     for pair in b.findall("AddCourtier/Pair"):
         ct = pair.findtext("First") or ""
         if ct:
-            out.append(f"Gain a {_name(text, 'TEXT_' + ct, ct, 'COURTIER_')}")
+            out.append(_txt(f"Gain a {_name(text, 'TEXT_' + ct, ct, 'COURTIER_')}"))
 
     for sp in b.findall("aeAddSpecialistClasses/zValue"):
-        st = sp.text or ""
-        out.append(f"Gain a {_name(text, 'TEXT_' + st, st, 'SPECIALISTCLASS_')}")
+        out.append(_txt(f"Gain a {_name(text, 'TEXT_' + (sp.text or ''), sp.text or '', 'SPECIALISTCLASS_')}"))
 
     for pr in b.findall("aeAddProjects/zValue"):
-        pt = pr.text or ""
-        out.append(f"Begin project: {_name(text, 'TEXT_' + pt, pt, 'PROJECT_')}")
+        out.append(_txt(f"Begin project: {_name(text, 'TEXT_' + (pr.text or ''), pr.text or '', 'PROJECT_')}"))
 
     imp = b.findtext("SetImprovement")
     if imp:
-        out.append(f"Build {_name(text, 'TEXT_' + imp, imp, 'IMPROVEMENT_')} on the tile")
+        out.append(_txt(f"Build {_name(text, 'TEXT_' + imp, imp, 'IMPROVEMENT_')} on the tile"))
 
     if (b.findtext("bKillUnit") or "0") == "1":
-        out.append("A unit is killed")
+        out.append(_txt("A unit is killed"))
 
     for t in b.findall("aeAddTraits/zValue"):
         tr = t.text or ""
-        out.append(f"Gain trait: {_name(text, 'TEXT_' + tr, tr, 'TRAIT_')}")
+        out.append(_txt(f"Gain trait: {_name(text, 'TEXT_' + tr, tr, 'TRAIT_')}"))
 
     for u, v in pairs(b, "aiUnits"):
-        out.append(f"+{v} {_name(text, 'TEXT_' + u, u, 'UNIT_')}")
+        out.append(_txt(f"+{v} {_name(text, 'TEXT_' + u, u, 'UNIT_')}"))
     for u, v in pairs(b, "aiBonusUnits"):
-        out.append(f"+{v} {_tok(u, 'BONUSUNITCLASS_')} unit")
+        out.append(_txt(f"+{v} {_tok(u, 'BONUSUNITCLASS_')} unit"))
 
     reb = int(b.findtext("iRebelUnits") or "0")
     if reb:
-        out.append(f"{reb} rebel unit{'s' if reb != 1 else ''} appear")
+        out.append(_txt(f"{reb} rebel unit{'s' if reb != 1 else ''} appear"))
 
     rel = b.findtext("AddLeaderRelationship")
     if rel:
-        out.append(f"Leader relationship: {_tok(rel, 'RELATIONSHIP_')}")
+        out.append(_txt(f"Leader relationship: {_tok(rel, 'RELATIONSHIP_')}"))
     amb = b.findtext("Ambition")
     if amb:
-        out.append(f"Progress ambition: {_tok(amb, 'GOAL_')}")
+        out.append(_txt(f"Progress ambition: {_tok(amb, 'GOAL_')}"))
 
     # Nested bonuses (containers like *_OPTION_*_CITY group several payloads).
     for bz in b.findall("aeBonuses/zValue"):
         out += humanize_bonus(bz.text or "", idx, text, _seen)
     for bz in b.findall("aeAllCityBonuses/zValue"):
-        out += [f"{s} (every city)" for s in humanize_bonus(bz.text or "", idx, text, _seen)]
+        out += [{**r, "text": r["text"] + " (every city)"} for r in humanize_bonus(bz.text or "", idx, text, _seen)]
 
-    return out or [_fallback_label(bonus_id)]
+    return out or [_txt(_fallback_label(bonus_id))]
 
 
 def load_eventstories() -> list[tuple[str, ET.Element]]:
@@ -358,16 +352,16 @@ def main() -> int:
         author = entry.findtext("zAuthor") or ""
         bg = entry.findtext("zBackgroundName") or ""
 
-        def reward_strings(bonus_tokens: list[str]) -> list[str]:
-            out: list[str] = []
+        def reward_strings(bonus_tokens: list[str]) -> list[dict]:
+            out: list[dict] = []
             for tok in bonus_tokens:
                 out += humanize_bonus(tok, bonus_idx, texts)
-            # de-dup while preserving order
+            # de-dup by display text while preserving order
             seen, uniq = set(), []
-            for s in out:
-                if s not in seen:
-                    seen.add(s)
-                    uniq.append(s)
+            for r in out:
+                if r["text"] not in seen:
+                    seen.add(r["text"])
+                    uniq.append(r)
             return uniq
 
         option_objs: list[dict] = []
