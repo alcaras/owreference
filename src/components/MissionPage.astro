@@ -228,7 +228,10 @@ function pct(p: number): string {
                       <div class="opt__text">
                         <span class="opt__bullet">▸</span>
                         <LinkedText text={o.text || 'Resolve'} />
-                        {o.requirements.map((r: string) => <span class="chip chip--req" title="Requires">{r}</span>)}
+                        {o.requirements.map((r: any) => (
+                          <span class="chip chip--req has-tip" data-tip-title="Requirement"
+                                data-tip={(r.tip || []).join('\n')} tabindex="0">{r.label}</span>
+                        ))}
                       </div>
                       <div class="opt__outcomes">
                         {o.outcomes.map((oc: any) => (
@@ -543,6 +546,7 @@ function pct(p: number): string {
   }
   .chip--cond { background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; }
   .chip--req { background: color-mix(in srgb, #6b5ea6 24%, var(--bg-elev)); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 45%, transparent); padding: 0.04rem 0.4rem; font-size: 0.66rem; margin-left: 0.4rem; }
+  .chip--req.has-tip { cursor: help; }
 
   .evt__body { padding: 0 0.9rem 0.7rem 1.6rem; }
   .evt__flavor { color: var(--text-dim); font-size: 0.82rem; line-height: 1.45; margin: 0 0 0.6rem; font-style: italic; max-width: 75ch; }

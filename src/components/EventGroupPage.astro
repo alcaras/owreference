@@ -40,7 +40,7 @@ function searchBlob(ev: EventStory): string {
   return [
     ev.name, ev.text, ev.trigger, ev.dlc, ...ev.conditions, ...ev.guaranteed.map((g: any) => g.text),
     ...ev.options.flatMap(o => [
-      o.text, ...o.requirements,
+      o.text, ...o.requirements.map((r: any) => r.label),
       ...o.outcomes.flatMap(oc => oc.rewards.map((r: any) => r.text)),
       ...((o as any).leadsTo || []).map((t: any) => t.name),
     ]),
@@ -116,7 +116,10 @@ const followups = sec.events.filter(e => e.isFollowup).length;
                   <div class="opt__text">
                     <span class="opt__bullet">▸</span>
                     <LinkedText text={o.text || 'Resolve'} />
-                    {o.requirements.map((r: string) => <span class="chip--req" title="Requires">{r}</span>)}
+                    {o.requirements.map((r: any) => (
+                      <span class="chip--req has-tip" data-tip-title="Requirement"
+                            data-tip={(r.tip || []).join('\n')} tabindex="0">{r.label}</span>
+                    ))}
                   </div>
                   <div class="opt__outcomes">
                     {o.outcomes.map((oc: any) => (
@@ -228,6 +231,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     .chip--cond { background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; }
     .chip--time { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; font-family: var(--font-mono); letter-spacing: 0.02em; }
     .chip--req { background: color-mix(in srgb, #6b5ea6 24%, var(--bg-elev)); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 45%, transparent); padding: 0.04rem 0.4rem; font-size: 0.66rem; margin-left: 0.4rem; border-radius: 5px; }
+    .chip--req.has-tip { cursor: help; }
 
     .evt__body { padding: 0 0.9rem 0.7rem 1.6rem; }
     .evt__flavor { color: var(--text-dim); font-size: 0.82rem; line-height: 1.45; margin: 0 0 0.6rem; font-style: italic; max-width: 75ch; }

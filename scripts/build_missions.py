@@ -268,6 +268,52 @@ def _named(text: dict, token: str, prefix: str) -> str:
     return text.get("TEXT_" + token, _tok(token, prefix))
 
 
+# trait token → list of effect lines (what the trait does), for reward tooltips.
+# Built once from trait.xml via the shared effect humanizer.
+_TRAIT_TIPS: dict | None = None
+
+
+def _trait_tip(token: str) -> list[str]:
+    global _TRAIT_TIPS
+    if _TRAIT_TIPS is None:
+        _TRAIT_TIPS = {}
+        from humanize import (load_xml_indexes, render_effect_player,
+                              render_effect_city, render_effect_unit)
+        idx = load_xml_indexes(XML_DIR)
+        ec = idx.get("effectCity.xml", {})
+        eu = idx.get("effectUnit.xml", {})
+        tp = XML_DIR / "trait.xml"
+        if tp.exists():
+            for e in ET.parse(tp).getroot().findall("Entry"):
+                tid = e.findtext("zType")
+                if not tid:
+                    continue
+                lines: list[str] = []
+                lp = e.findtext("LeaderEffectPlayer")
+                if lp and lp != "NONE":
+                    lines += [f"As leader: {s}" for s in render_effect_player(lp, idx)]
+                gc = e.findtext("GovernorEffectCity")
+                if gc and gc in ec:
+                    lines += [f"As governor: {s}" for s in render_effect_city(ec[gc], per_city=True, indexes=idx)]
+                ge = e.findtext("GeneralEffectUnit")
+                if ge and ge in eu:
+                    lines += [f"As general: {s}" for s in render_effect_unit(eu[ge])]
+                for rt, v in pairs(e, "aiRatingFallback"):
+                    lines.append(f"{'+' if v >= 0 else ''}{v} {_tok(rt, 'RATING_')}")
+                op = int(e.findtext("iOpinion") or "0")
+                if op:
+                    lines.append(f"{'+' if op > 0 else ''}{op} base opinion of this character")
+                os_ = int(e.findtext("iOpinionSame") or "0")
+                if os_:
+                    lines.append(f"+{os_} opinion with same-trait characters")
+                if e.findtext("bRemoveLeader") == "1":
+                    lines.append("Removed as leader")
+                if e.findtext("bNoJob") == "1":
+                    lines.append("Cannot hold a job")
+                _TRAIT_TIPS[tid] = lines
+    return _TRAIT_TIPS.get(token, [])
+
+
 def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None = None) -> list[dict]:
     """Structured reward list for an event/mission bonus (see schema above).
     Yields are display-scale (shown raw in-game) — no /10. Recurses into nested
@@ -314,7 +360,10 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
 
     for t in b.findall("aeAddTraits/zValue"):
         if t.text:
-            out.append(_txt(f"Gain trait: {_named(text, t.text, 'TRAIT_')}"))
+            nm = _named(text, t.text, "TRAIT_")
+            tip = _trait_tip(t.text)
+            out.append({"text": f"Gain trait: {nm}",
+                        **({"tipTitle": f"{nm} — trait", "tip": tip} if tip else {})})
     if b.findall("aeRandomTraitDelay/zValue") or b.findall("aeRandomTrait/zValue"):
         out.append(_txt("Gain a random trait"))
     if b.findall("aeRandomLeaderRelationshipDelay/zValue") or b.findall("aeRandomLeaderRelationship/zValue"):
@@ -411,12 +460,26 @@ def option_outcomes(opt: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict
     return [{"probability": 1.0, "weight": None, "rewards": rewards, "label": None}]
 
 
-def option_requirements(opt: ET.Element) -> list[str]:
-    reqs: list[str] = []
+def _subject_kind(tok: str) -> str:
+    if "COGNOMEN_" in tok:
+        return " (a cognomen — an earned leader title)"
+    if "CHARACTER_" in tok:
+        return " (a character trait)"
+    return ""
+
+
+def option_requirements(opt: ET.Element) -> list[dict]:
+    """Each requirement: {label, tip}. The tip spells out what the gating
+    subjects are (cognomens are earned titles, etc.) so the chip is explainable."""
+    reqs: list[dict] = []
     for tag in ("LeaderSubjectAny", "LeaderSubject", "aeSubjectReqs", "SubjectReqs"):
         vals = [v.text for v in opt.findall(f"{tag}/zValue") if v.text]
-        if vals:
-            reqs.append(" / ".join(subject_label(v) for v in vals))
+        if not vals:
+            continue
+        who = "The leader" if tag.startswith("Leader") else "The character"
+        parts = [f"{subject_label(v)}{_subject_kind(v)}" for v in vals]
+        tip = [f"{who} must have " + ("one of: " if len(parts) > 1 else "") + "; ".join(parts)]
+        reqs.append({"label": " / ".join(subject_label(v) for v in vals), "tip": tip})
     return reqs
 
 

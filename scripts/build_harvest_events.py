@@ -26,7 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
-from build_missions import pairs, _trim, _tok, _fallback_label, _yld, _txt  # noqa: E402
+from build_missions import pairs, _trim, _tok, _fallback_label, _yld, _txt, _trait_tip  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -263,7 +263,10 @@ def humanize_bonus(bonus_id: str, idx: dict, text: dict, _seen: set | None = Non
 
     for t in b.findall("aeAddTraits/zValue"):
         tr = t.text or ""
-        out.append(_txt(f"Gain trait: {_name(text, 'TEXT_' + tr, tr, 'TRAIT_')}"))
+        nm = _name(text, "TEXT_" + tr, tr, "TRAIT_")
+        tip = _trait_tip(tr)
+        out.append({"text": f"Gain trait: {nm}",
+                    **({"tipTitle": f"{nm} — trait", "tip": tip} if tip else {})})
 
     for u, v in pairs(b, "aiUnits"):
         out.append(_txt(f"+{v} {_name(text, 'TEXT_' + u, u, 'UNIT_')}"))
