@@ -136,6 +136,7 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
             "requirements": m.option_requirements(opt),
             "outcomes": m.option_outcomes(opt, eopt_idx, bonus_idx, text),
             "linkAdd": link_of(opt),
+            "raw": m.option_raw(opt, eopt_idx, bonus_idx),
         })
 
     # New syntax: inline EventOption with SubjectBonuses pairs.
@@ -148,6 +149,7 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
             "requirements": m.option_requirements(opt),
             "outcomes": [{"probability": 1.0, "weight": None, "rewards": rewards, "label": None}],
             "linkAdd": link_of(opt),
+            "raw": m.option_raw(opt, eopt_idx, bonus_idx),
         })
 
     return out

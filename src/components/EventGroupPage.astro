@@ -7,6 +7,7 @@ import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import RewardChip from '../components/RewardChip.astro';
 import ScaleHelp from '../components/ScaleHelp.astro';
+import OptionRaw from '../components/OptionRaw.astro';
 import { classifyYield } from '../lib/entities';
 import sections from '../data/events.json';
 
@@ -62,10 +63,18 @@ const followups = sec.events.filter(e => e.isFollowup).length;
   <div class="evt-filter">
     <input type="search" id="evt-search" class="evt-filter__search"
            placeholder="Filter events — name, reward, condition…" autocomplete="off" />
+    <div class="mode-toggle" role="radiogroup" aria-label="Detail level">
+      <button type="button" class="mode-toggle__btn is-active" data-evmode="raw" role="radio" aria-checked="true">Raw XML</button>
+      <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Humanized</button>
+    </div>
   </div>
   <p class="evt-filter__note" id="evt-note" hidden></p>
 
-  <div class="evt-list">
+  <p class="evt-caveat">⚠ <b>Weights are not in-game odds.</b> Each story is gated by character/empire conditions (some
+  hidden in-game), so its real frequency is filtered in ways the XML can't predict — community analytics differ a lot
+  from raw weights. Treat the weight as the XML knob, not a probability.</p>
+
+  <div class="evt-list evtmode" data-mode="raw" id="evtmode">
     {sec.events.map(ev => (
       <details class={`evt yield-${cardYield(ev)}`} id={ev.id} data-search={searchBlob(ev)}>
         <summary class="evt__summary">
@@ -75,7 +84,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
             {ev.dlc && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
             {(ev as any).followsFrom && (ev as any).followsFrom.length > 0
               ? <span class="chip--chain" title="Fires as a follow-up in a chain">⛓ follow-up</span>
-              : (ev.share != null && <span class="evt__share" title="Share of the eligible-by-weight pool">~{pct(ev.share)}</span>)}
+              : (ev.weight != null && <span class="evt__share" title="Raw iWeight — NOT a probability (see caveat above)">weight {ev.weight}</span>)}
           </span>
         </summary>
         <div class="evt__body">
@@ -117,11 +126,11 @@ const followups = sec.events.filter(e => e.isFollowup).length;
                     <span class="opt__bullet">▸</span>
                     <LinkedText text={o.text || 'Resolve'} />
                     {o.requirements.map((r: any) => (
-                      <span class="chip--req has-tip" data-tip-title="Requirement"
+                      <span class="chip--req ev-human has-tip" data-tip-title="Requirement"
                             data-tip={(r.tip || []).join('\n')} tabindex="0">{r.label}</span>
                     ))}
                   </div>
-                  <div class="opt__outcomes">
+                  <div class="opt__outcomes ev-human">
                     {o.outcomes.map((oc: any) => (
                       <div class="oc">
                         {oc.probability < 1 && <span class="oc__prob">{pct(oc.probability)}</span>}
@@ -131,6 +140,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
                       </div>
                     ))}
                   </div>
+                  {o.raw && <OptionRaw raw={o.raw} />}
                   {o.leadsTo && o.leadsTo.length > 0 && (
                     <div class="opt__leads">
                       ↳ may trigger:{' '}
@@ -180,7 +190,40 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     })();
   </script>
 
+  <script is:inline>
+    (function () {
+      const root = document.getElementById('evtmode');
+      const btns = Array.from(document.querySelectorAll('.mode-toggle__btn'));
+      if (!root || !btns.length) return;
+      btns.forEach((btn) => btn.addEventListener('click', () => {
+        root.setAttribute('data-mode', btn.getAttribute('data-evmode'));
+        btns.forEach((b) => {
+          const on = b === btn;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-checked', String(on));
+        });
+      }));
+    })();
+  </script>
+
   <style>
+    .evt-caveat {
+      font-size: 0.8rem; color: var(--text-dim); line-height: 1.45; max-width: 80ch;
+      margin: 0 0 1rem; padding: 0.5rem 0.7rem; border-radius: var(--radius-lg);
+      border: 1px solid color-mix(in srgb, #d4a24e 35%, var(--border));
+      background: color-mix(in srgb, #d4a24e 8%, transparent);
+    }
+    .evt-caveat b { color: var(--text); }
+
+    .mode-toggle { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 7px; overflow: hidden; }
+    .mode-toggle__btn { font-family: var(--font-display); font-size: 0.76rem; padding: 0.32rem 0.7rem; background: var(--bg-elev); color: var(--text-dim); border: none; cursor: pointer; }
+    .mode-toggle__btn + .mode-toggle__btn { border-left: 1px solid var(--border-strong); }
+    .mode-toggle__btn:hover { color: var(--text); }
+    .mode-toggle__btn.is-active { background: color-mix(in srgb, var(--accent) 28%, var(--bg-elev) 72%); color: var(--text); }
+
+    .evtmode[data-mode='raw'] .ev-human { display: none; }
+    .evtmode[data-mode='human'] .ev-raw { display: none; }
+
     .lede { color: var(--text-dim); font-size: 0.92rem; line-height: 1.55; max-width: 80ch; margin: 0 0 0.9rem; }
     .lede a { color: var(--accent); }
 

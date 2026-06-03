@@ -483,6 +483,81 @@ def option_requirements(opt: ET.Element) -> list[dict]:
     return reqs
 
 
+# ── Raw view ────────────────────────────────────────────────────────────────
+# The humanizer launders raw weights/tokens into confident prose; for events we
+# also expose the underlying XML so nothing is hidden (and so the user can spot
+# where the humanizer is wrong). These emit the raw token/field payloads.
+def raw_bonus_fields(b: ET.Element) -> list[str]:
+    """Every non-empty effect field of a bonus, as 'tag value' lines."""
+    out: list[str] = []
+    for c in b:
+        if c.tag in ("zType", "Name", "Description"):
+            continue
+        kids = list(c)
+        if kids:
+            parts: list[str] = []
+            for p in c.findall("Pair"):
+                k = p.findtext("zIndex") or p.findtext("First") or ""
+                v = p.findtext("iValue") or p.findtext("Second") or ""
+                sub = [f"{sp.findtext('zSubIndex')}={sp.findtext('iValue')}" for sp in p.findall("SubPair")]
+                parts.append(f"{k}={v}" if v else (f"{k}[{','.join(sub)}]" if sub else k))
+            parts += [z.text for z in c.findall("zValue") if z.text]
+            out.append(f"{c.tag}: {', '.join(parts)}" if parts else c.tag)
+        elif (c.text or "").strip():
+            out.append(f"{c.tag} {c.text.strip()}")
+    return out
+
+
+GATE_TAGS = (
+    "LeaderSubject", "LeaderSubjectAny", "LeaderSubjectNotAny",
+    "PlayerSubject", "PlayerSubjectNotAny", "IndexSubject", "IndexSubjectAny",
+    "IndexSubjectNotAny", "aeSubjectReqs", "SubjectReqs",
+)
+
+
+def option_raw(opt: ET.Element, eopt_idx: dict, bonus_idx: dict) -> dict:
+    """Raw gates (every subject that qualifies the choice, incl. hidden prereqs)
+    and raw bonus payloads granted by the option."""
+    gates: list[dict] = []
+    for tag in GATE_TAGS:
+        vals = [v.text for v in opt.findall(f"{tag}/zValue") if v.text]
+        if not vals:
+            single = opt.findtext(tag)
+            if single and single != "NONE":
+                vals = [single]
+        if vals:
+            gates.append({"tag": tag, "values": vals})
+    if (opt.findtext("bHidePrereqs") or "0") == "1":
+        gates.append({"tag": "bHidePrereqs", "values": ["prereqs hidden in-game"]})
+
+    bonuses: list[dict] = []
+
+    def add(bid: str, weight=None, total=None):
+        if not bid or bid == "NONE":
+            return
+        b = bonus_idx.get(bid)
+        bonuses.append({"id": bid, "weight": weight,
+                        "pct": (weight / total) if (weight is not None and total) else None,
+                        "fields": raw_bonus_fields(b) if b is not None else ["(not in bonus tables)"]})
+
+    prob = pairs(opt, "aiEventOptionProb")
+    if prob:
+        total = sum(v for _, v in prob) or 1
+        for sub_id, w in prob:
+            sub = eopt_idx.get(sub_id)
+            if sub is not None:
+                for bz in sub.findall("aeBonuses/zValue"):
+                    add(bz.text or "", w, total)
+            else:
+                add(sub_id, w, total)
+    else:
+        for bz in opt.findall("aeBonuses/zValue"):
+            add(bz.text or "")
+        for p in opt.findall("SubjectBonuses/Pair"):
+            add(p.findtext("Second") or "")
+    return {"gates": gates, "bonuses": bonuses}
+
+
 def build_events(event_result_id: str, story_idx: dict, eopt_idx: dict,
                  bonus_idx: dict, text: dict) -> list[dict]:
     """Every event story a mission's *_EVENT result can fire, with options and
@@ -514,6 +589,7 @@ def build_events(event_result_id: str, story_idx: dict, eopt_idx: dict,
                 "text": clean_text(text.get(opt.findtext("Text") or "", "")),
                 "requirements": option_requirements(opt),
                 "outcomes": option_outcomes(opt, eopt_idx, bonus_idx, text),
+                "raw": option_raw(opt, eopt_idx, bonus_idx),
             })
 
         out.append({

@@ -83,6 +83,61 @@
                 "weight": 100
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Ambition GOAL_FOUR_REPAIRED",
+                    "aeBonuses: BONUS_RECENT_AMBITION"
+                  ],
+                  "id": "BONUS_AMBITION_FOUR_REPAIRED",
+                  "pct": 0.8333333333333334,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "aiUnits: UNIT_WORKER=1"
+                  ],
+                  "id": "BONUS_UNIT_WORKER",
+                  "pct": 0.8333333333333334,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_REPAIR"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_STANDING_ARMIES_OPTION_0_CITY_0",
+                  "pct": 0.08333333333333333,
+                  "weight": 100
+                },
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_REPAIR"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_STANDING_ARMIES_OPTION_0_CITY_1",
+                  "pct": 0.08333333333333333,
+                  "weight": 100
+                },
+                {
+                  "fields": [
+                    "Ambition GOAL_EIGHT_REPAIRED",
+                    "aeBonuses: BONUS_RECENT_AMBITION"
+                  ],
+                  "id": "BONUS_AMBITION_EIGHT_REPAIRED",
+                  "pct": 0.08333333333333333,
+                  "weight": 100
+                },
+                {
+                  "fields": [
+                    "aiUnits: UNIT_WORKER=1"
+                  ],
+                  "id": "BONUS_UNIT_WORKER",
+                  "pct": 0.08333333333333333,
+                  "weight": 100
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": ""
           },
@@ -109,6 +164,29 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_STONE=30",
+                    "aiGlobalYieldsPer: YIELD_STONE=10"
+                  ],
+                  "id": "BONUS_STONE_GAIN_SMALL",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_IRON=30",
+                    "aiGlobalYieldsPer: YIELD_IRON=10"
+                  ],
+                  "id": "BONUS_IRON_GAIN_SMALL",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "They will join laborers in the procurement of materials."
           },
@@ -129,6 +207,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiBonusUnits: BONUSUNITCLASS_LEVY=1"
+                  ],
+                  "id": "BONUS_UNITCLASS_LEVY",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiBonusUnits: BONUSUNITCLASS_LEVY=1"
+                  ],
+                  "id": "BONUS_UNITCLASS_LEVY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We need more troops to enforce the peace."
           },
@@ -155,6 +254,42 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_ORDERS=-5"
+                  ],
+                  "id": "BONUS_ORDERS_LOSS_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_WALLS"
+                  ],
+                  "id": "BONUS_ADD_WALLS",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_WALLS"
+                  ],
+                  "id": "BONUS_ADD_WALLS",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_CHARACTER_URBAN"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "Cities need more defensive fortifications."
           }
@@ -195,6 +330,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_ORDERS_LOSS_AVERAGE, BONUS_TRAINING_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_ANGRY_SOLDIERS_OPTION_0_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I need to try again. The soldiers must trust me."
           },
@@ -215,6 +363,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iXPCharacter 40"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iRebelUnits 1"
+                  ],
+                  "id": "BONUS_REBEL_UNITS_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "There is no more time for these speeches."
           }
@@ -253,6 +422,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bTribeInvade 1",
+                    "aeBonuses: BONUS_TRIBE_OFFER"
+                  ],
+                  "id": "BONUS_TRIBAL_INVASION",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "They want blood, they will have it."
           }
@@ -290,6 +473,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiTraitProbDelay: TRAIT_STRICT=25"
+                  ],
+                  "id": "BONUS_POSSIBLY_STRICT",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "bReleaseGeneral 1",
+                    "aeBonuses: BONUS_GIVE_TRAIT_SLIGHTED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_HOLLOW_RHETORIC_OPTION_0_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I will not stand for such insubordination."
           },
@@ -307,6 +512,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeRandomLeaderRelationshipDelay: RELATIONSHIP_DISAPPOINTED_WITH, RELATIONSHIP_SUSPICIOUS_OF, RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_HOLLOW_RHETORIC_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "It is an officer's duty to question his orders."
           },
@@ -330,6 +548,37 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_TRAINING=80",
+                    "aiGlobalYieldsPer: YIELD_TRAINING=20"
+                  ],
+                  "id": "BONUS_TRAINING_GAIN_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_LEADER_INFLUENCED_BY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectAny",
+                  "values": [
+                    "SUBJECT_COGNOMEN_WARRIOR",
+                    "SUBJECT_COGNOMEN_BRAVE",
+                    "SUBJECT_COGNOMEN_VALIANT"
+                  ]
+                }
+              ]
+            },
             "requirements": [
               {
                 "label": "Warrior / Brave / Valiant",
@@ -373,6 +622,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeEffectUnits: EFFECTUNIT_TRACKER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_IN_THE_FIELD_OPTION_0_UNIT_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeEffectUnits: EFFECTUNIT_RANGER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_IN_THE_FIELD_OPTION_0_UNIT_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Sadly, I do not have the time, but good luck."
           },
@@ -396,6 +666,35 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_ORDERS_LOSS_SMALL, BONUS_XP_CHARACTER_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_IN_THE_FIELD_OPTION_1_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeEffectUnits: EFFECTUNIT_TRACKER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_IN_THE_FIELD_OPTION_1_UNIT_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeEffectUnits: EFFECTUNIT_RANGER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_IN_THE_FIELD_OPTION_1_UNIT_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Of course, I will join you in the wilds of [rival]."
           }
@@ -430,6 +729,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bStateReligion 1"
+                  ],
+                  "id": "BONUS_STATE_RELIGION",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_TRAINING=-60",
+                    "aiGlobalYieldsPer: YIELD_TRAINING=-15"
+                  ],
+                  "id": "BONUS_TRAINING_LOSS_SMALL",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "All serve Ahura Mazda in the battle against evil."
           },
@@ -450,6 +771,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYRELIGION_SOLDIERS_FOR_RULER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RELIGION_OUR_ALLEGIANCE_OPTION_1_RELIGION",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iLegitimacy 3"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RELIGION_OUR_ALLEGIANCE_OPTION_1_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "They fight for the good of [rival] and its ruler."
           },
@@ -470,6 +812,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_TRAINING=60",
+                    "aiGlobalYieldsPer: YIELD_TRAINING=15"
+                  ],
+                  "id": "BONUS_TRAINING_GAIN_SMALL",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We are done following the whims of faith."
           }
@@ -508,6 +864,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_OFFICER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_OVERLOOKED_INNOVATORS_OPTION_0_CITY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Promote this man above his superiors."
           },
@@ -528,6 +897,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bRandomTech 1",
+                    "aeBonuses: BONUS_ORDERS_LOSS_AVERAGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_OVERLOOKED_INNOVATORS_OPTION_1_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I will take the time to listen."
           }
@@ -573,6 +956,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_HAPPINESS=40"
+                  ],
+                  "id": "BONUS_HAPPINESS_GAIN_TINY",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_HAPPINESS=40"
+                  ],
+                  "id": "BONUS_HAPPINESS_GAIN_TINY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We should always celebrate our brave soldiers."
           }
@@ -623,6 +1027,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_DRUNK, TRAIT_ILL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_THE_DRUNKEN_ARMY_OPTION_0_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iHPUnit -10"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_THE_DRUNKEN_ARMY_OPTION_0_UNIT",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I should be more careful with my wine."
           }
@@ -668,6 +1093,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_INSPIRING"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_INSPIRING",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Our forces are ready for anything."
           },
@@ -685,6 +1123,26 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeRandomTraitDelay: TRAIT_FAMOUS, TRAIT_DIVINE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RALLY_ROSES_OPTION_1_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_CHARACTER_VAIN"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "Allow my admirers to approach and touch me."
           }
@@ -722,6 +1180,21 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bMercenaryUnit 1",
+                    "aiBonusUnits: BONUSUNITCLASS_POLEARM_INFANTRY=1",
+                    "aeBonuses: BONUS_MONEY_LOSS_TINY_FLAT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RELIGIOUS_MERCENARIES_YES_PLAYER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We welcome them to fight for [rival], and for [religion]."
           },
@@ -735,6 +1208,10 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [],
+              "gates": []
+            },
             "requirements": [],
             "text": "We will not hire them."
           }
@@ -866,6 +1343,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iXPCharacter 20"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_SMALL",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iTradeResourceToSubject 1"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TECH_WINDLASS_ACCIDENTS_HAPPEN_OPTION_0_RESOURCE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Send the [family] gifts to ease their sorrow."
           },
@@ -883,6 +1381,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_SACKED_SCIENTIST"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TECH_WINDLASS_ACCIDENTS_HAPPEN_OPTION_2_FAMILY",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "bNoCourtier 1"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TECH_WINDLASS_ACCIDENTS_HAPPEN_OPTION_2_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Remove [character] from the court."
           }
@@ -921,6 +1440,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_CIVICS=-40",
+                    "aiGlobalYieldsPer: YIELD_CIVICS=-10"
+                  ],
+                  "id": "BONUS_CIVICS_LOSS_SMALL",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_NATIONAL_HOLIDAY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_IN_REMEMBRANCE_OPTION_0_CHARACTER_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "It is right to honor the great [family] rulers."
           },
@@ -941,6 +1482,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_VENGEFUL_AGAINST"
+                  ],
+                  "id": "BONUS_LEADER_VENGEFUL_AGAINST",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iLegitimacy 4"
+                  ],
+                  "id": "BONUS_EVENTOPTION_IN_REMEMBRANCE_OPTION_1_CHARACTER_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "No, not unless all past rulers receive this honor."
           },
@@ -968,6 +1530,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_NATIONAL_HOLIDAY",
+                    "aeAddTraits: TRAIT_INSPIRING"
+                  ],
+                  "id": "BONUS_EVENTOPTION_IN_REMEMBRANCE_OPTION_2_CHARACTER_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "PlayerSubject",
+                  "values": [
+                    "SUBJECT_PLAYER_DIVINE_RULE"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "A day for all past rulers of [rival] will be established."
           }
@@ -1007,6 +1590,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_MONEY_LOSS_LARGE, BONUS_HAPPINESS_GAIN_TINY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_BRUTAL_HEIR_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We will compensate those who have suffered."
           },
@@ -1032,6 +1628,21 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iRebelUnits 1",
+                    "iLegitimacy 4",
+                    "aeBonuses: BONUS_DISCONTENT_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_BRUTAL_HEIR_OPTION_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "It is an heir's right to punish the weak."
           },
@@ -1065,6 +1676,34 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_EXCLUDED, TRAIT_SLIGHTED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_BRUTAL_HEIR_OPTION_2_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_HIGH_WISDOM"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "[character] must be taught compassion."
           }
@@ -1102,6 +1741,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy -1"
+                  ],
+                  "id": "BONUS_UNCONVINCING_VERDICT",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_LEADER_INFLUENCED_BY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": ""
           },
@@ -1122,6 +1782,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_DID_NOT_PRESIDE_OVER_CASE"
+                  ],
+                  "id": "BONUS_DID_NOT_PRESIDE_OVER_CASE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_LEADER_INFLUENCED_BY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": ""
           }
@@ -1163,6 +1844,36 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_MONEY=-120",
+                    "aiGlobalYieldsPer: YIELD_MONEY=-30"
+                  ],
+                  "id": "BONUS_MONEY_LOSS_SMALL",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_WAR_COUNCIL_POS"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HOLD_COURT_OF_WAR_OPTION_FAMILY",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiBonusUnits: BONUSUNITCLASS_HEAVY_INFANTRY=1"
+                  ],
+                  "id": "BONUS_UNITCLASS_HEAVY_INFANTRY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "You honor me, [character]! Your bodyguard will fight bravely against the [rival]."
           },
@@ -1183,6 +1894,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iXPCharacter 20"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_SMALL",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_WAR_COUNCIL_NEG"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HOLD_COURT_OF_WAR_OPTION_FAMILY_NEG",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "That is a noble offer, [character], but we don't require such a sacrifice at this time."
           }
@@ -1216,6 +1948,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_HAPPINESS=120"
+                  ],
+                  "id": "BONUS_HAPPINESS_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Reduce the backlog of legal cases."
           },
@@ -1236,6 +1981,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_CIVICS=40",
+                    "aiGlobalYieldsPer: YIELD_CIVICS=10"
+                  ],
+                  "id": "BONUS_CIVICS_GAIN_SMALL",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Train additional advocates."
           },
@@ -1256,6 +2015,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_ORDERS=8"
+                  ],
+                  "id": "BONUS_ORDERS_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Find ways to improve efficiency."
           }
@@ -1293,6 +2065,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_LEGAL_DISPUTE_SUPPORT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGAL_DISPUTE_SIDE_WITH_MAJORITY_FAMILY_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_LEGAL_DISPUTE_AGAINST"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGAL_DISPUTE_SIDE_WITH_MAJORITY_FAMILY_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "[city] is a [family] city, so a property with disputed ownership is [family]."
           },
@@ -1313,6 +2106,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_LEGAL_DISPUTE_AGAINST"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGAL_DISPUTE_SIDE_WITH_MINORITY_FAMILY_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_LEGAL_DISPUTE_SUPPORT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGAL_DISPUTE_SIDE_WITH_MINORITY_FAMILY_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "If the judge says the [family] are rightful owners of the property, so be it."
           },
@@ -1333,6 +2147,34 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_LEGAL_DISPUTE_SUPPORT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGAL_DISPUTE_DECIDE_MYSELF_FAMILY_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_LEGAL_DISPUTE_SUPPORT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGAL_DISPUTE_DECIDE_MYSELF_FAMILY_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_INTELLIGENT"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "We can find a fair and just way for both families to share the property."
           },
@@ -1356,6 +2198,42 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_LEGAL_DISPUTE_AGAINST"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGAL_DISPUTE_SEIZE_FAMILY_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_LEGAL_DISPUTE_AGAINST"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGAL_DISPUTE_SEIZE_FAMILY_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_RIGHTEOUS"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "So much talk, so much chaos... turn it over to the common folk of [city]."
           }
@@ -1394,6 +2272,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_ENDEARED_TO"
+                  ],
+                  "id": "BONUS_LEADER_ENDEARED_TO",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_DENIED_MERCHANT_GUILD"
+                  ],
+                  "id": "BONUS_EVENTOPTION_GP_LIFESTYLES_OF_THE_RICH_OPTION_0_FAMILY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Send the cheats and plotters away!"
           },
@@ -1417,6 +2316,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "FreeLaw LAW_GUILDS",
+                    "aeBonuses: BONUS_MONEY_LOSS_AVERAGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_GP_LIFESTYLES_OF_THE_RICH_OPTION_2_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "A noble trading guild is a sound idea."
           },
@@ -1434,6 +2347,26 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "FreeLaw LAW_GUILDS"
+                  ],
+                  "id": "BONUS_EVENTOPTION_GP_LIFESTYLES_OF_THE_RICH_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_FRUGAL"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "They have approval, but they must fund it themselves."
           }
@@ -1476,6 +2409,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_FAMOUS"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_FAMOUS",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I will take a moment to reflect on the glory of [rival], and my well earned respect as her leader."
           }
@@ -1511,6 +2457,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_MONEY=-160",
+                    "aiGlobalYieldsPer: YIELD_MONEY=-40"
+                  ],
+                  "id": "BONUS_MONEY_LOSS_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I wish to make amends however I might. Please, allow me to finance the occasion."
           },
@@ -1528,6 +2488,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_SLIGHTED_AT_COURT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HOLD_COURT_SLIGHTED_FAMILY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I haven't got any time for this sniveling."
           }
@@ -1563,6 +2536,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_LAND",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Yes, [city] can spare the land."
           },
@@ -1596,6 +2583,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL, BONUS_CULTURE_GAIN_LARGE, BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_RELIGIOUS",
+                    "SUBJECT_RIGHTEOUS"
+                  ]
+                }
+              ]
+            },
             "requirements": [
               {
                 "label": "Religious / Righteous",
@@ -1620,6 +2629,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "No, that land is for the people."
           }
@@ -1655,6 +2677,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_LAND",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Yes, [city] can spare the land."
           },
@@ -1688,6 +2724,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL, BONUS_CULTURE_GAIN_LARGE, BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_RELIGIOUS",
+                    "SUBJECT_RIGHTEOUS"
+                  ]
+                }
+              ]
+            },
             "requirements": [
               {
                 "label": "Religious / Righteous",
@@ -1712,6 +2770,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "No, that land is for the people."
           }
@@ -1747,6 +2818,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_LAND",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Yes, [city] can spare the land."
           },
@@ -1780,6 +2865,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL, BONUS_CULTURE_GAIN_LARGE, BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_RELIGIOUS",
+                    "SUBJECT_RIGHTEOUS"
+                  ]
+                }
+              ]
+            },
             "requirements": [
               {
                 "label": "Religious / Righteous",
@@ -1804,6 +2911,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "No, that land is for the people."
           }
@@ -1839,6 +2959,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_LAND",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Yes, [city] can spare the land."
           },
@@ -1872,6 +3006,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL, BONUS_CULTURE_GAIN_LARGE, BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_RELIGIOUS",
+                    "SUBJECT_RIGHTEOUS"
+                  ]
+                }
+              ]
+            },
             "requirements": [
               {
                 "label": "Religious / Righteous",
@@ -1896,6 +3052,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "No, that land is for the people."
           }
@@ -1931,6 +3100,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_LAND",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Yes, [city] can spare the land."
           },
@@ -1964,6 +3147,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL, BONUS_CULTURE_GAIN_LARGE, BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_RELIGIOUS",
+                    "SUBJECT_RIGHTEOUS"
+                  ]
+                }
+              ]
+            },
             "requirements": [
               {
                 "label": "Religious / Righteous",
@@ -1988,6 +3193,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "No, that land is for the people."
           }
@@ -2023,6 +3241,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_LAND",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Yes, [city] can spare the land."
           },
@@ -2056,6 +3288,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL, BONUS_CULTURE_GAIN_LARGE, BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_RELIGIOUS",
+                    "SUBJECT_RIGHTEOUS"
+                  ]
+                }
+              ]
+            },
             "requirements": [
               {
                 "label": "Religious / Righteous",
@@ -2080,6 +3334,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "No, that land is for the people."
           }
@@ -2115,6 +3382,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_LAND",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Yes, [city] can spare the land."
           },
@@ -2148,6 +3429,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_ACOLYTE",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL, BONUS_CULTURE_GAIN_LARGE, BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PRIESTLY_DWELLING_RESIDENCE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_RELIGIOUS",
+                    "SUBJECT_RIGHTEOUS"
+                  ]
+                }
+              ]
+            },
             "requirements": [
               {
                 "label": "Religious / Righteous",
@@ -2172,6 +3475,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "No, that land is for the people."
           }
@@ -2201,6 +3517,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_CONSULAR_TRIBUNES"
+                  ],
+                  "id": "BONUS_EVENTOPTION_THE_FIGHTING_CLASS_OPTION_0_CITY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Permit the fighting class to form an assembly."
           },
@@ -2224,6 +3553,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Ambition GOAL_PROFESSIONAL_ARMY",
+                    "aeBonuses: BONUS_CIVICS_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_THE_FIGHTING_CLASS_OPTION_1_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Reevaluate our laws for better representation."
           },
@@ -2247,6 +3590,28 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_MONEY=-120",
+                    "aiGlobalYieldsPer: YIELD_MONEY=-30"
+                  ],
+                  "id": "BONUS_MONEY_LOSS_SMALL",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_FESTIVAL_2"
+                  ],
+                  "id": "BONUS_EVENTOPTION_THE_FIGHTING_CLASS_OPTION_2_CITY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Provide the masses with a short-lived distraction."
           }
@@ -2288,6 +3653,36 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_WISDOM=1"
+                  ],
+                  "id": "BONUS_GAIN_WISDOM_1",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_MONEY=-240",
+                    "aiGlobalYieldsPer: YIELD_MONEY=-60"
+                  ],
+                  "id": "BONUS_MONEY_LOSS_LARGE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "MakeCourtier COURTIER_MINISTER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HOLD_COURT_MAKE_COURTIER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "Appoint [character] to the position of Minister right away. Spare no expense!"
           },
@@ -2305,6 +3700,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iXPCharacter 20"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_SMALL",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We've no place for him at this time."
           }
@@ -2338,6 +3746,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iXPCharacter 60"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I am so relieved to be done with this. At least I have learned something from the ordeal."
           }
@@ -2370,6 +3791,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_FAMILY_SCUFFLE_FAVORED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HOLD_COURT_FAMILY_SCUFFLE_OPTION_0_FAMILY_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_FAMILY_SCUFFLE_UNFAVORED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HOLD_COURT_FAMILY_SCUFFLE_OPTION_0_FAMILY_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I will reluctantly take the side of the [family] in this dispute."
           },
@@ -2390,6 +3832,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_FAMILY_SCUFFLE_UNFAVORED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HOLD_COURT_FAMILY_SCUFFLE_OPTION_0_FAMILY_1",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_FAMILY_SCUFFLE_FAVORED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HOLD_COURT_FAMILY_SCUFFLE_OPTION_0_FAMILY_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I will reluctantly take the side of the [family] in this dispute."
           },
@@ -2403,6 +3866,23 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_CHARACTER_CHARMING"
+                  ]
+                },
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "Come now, let us end this needless quarrel without any mutual hostilities."
           }
@@ -2445,6 +3925,35 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORY_DEFIED_ACCUSATION"
+                  ],
+                  "id": "BONUS_EVENTOPTION_FAMILY_OSTRACIZED_OPTION_0_FAMILY_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_LEADER_INFLUENCED_BY",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_DISCONTENT=80"
+                  ],
+                  "id": "BONUS_DISCONTENT_GAIN_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "There is no compelling evidence against [character]."
           },
@@ -2478,6 +3987,36 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORY_BELIEVED_ACCUSATION"
+                  ],
+                  "id": "BONUS_EVENTOPTION_FAMILY_OSTRACIZED_OPTION_1_FAMILY_1",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_ESTRANGED_FROM",
+                    "aeAddTraits: TRAIT_EXILED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_FAMILY_OSTRACIZED_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_HAPPINESS=20"
+                  ],
+                  "id": "BONUS_HAPPINESS_GAIN_MINIMAL",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We have no choice but to cast out the villain!"
           },
@@ -2501,6 +4040,42 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORY_DEFIED_ACCUSATION"
+                  ],
+                  "id": "BONUS_EVENTOPTION_FAMILY_OSTRACIZED_OPTION_0_FAMILY_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_SAVED_ACCUSED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_FAMILY_OSTRACIZED_OPTION_2_FAMILY_1",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_LEADER_INFLUENCED_BY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_INTELLIGENT"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "Refute the charges against [character]."
           }
@@ -2536,6 +4111,34 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_TWO_MOTHERS_VICTORY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TWO_MOTHERS_ONE_CHILD_VICTORY",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_TWO_MOTHERS_DEFEAT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TWO_MOTHERS_ONE_CHILD_DEFEAT",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectNotAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_TERRIFYING"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "The [family] are known for their pale hair."
           },
@@ -2556,6 +4159,34 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_TWO_MOTHERS_DEFEAT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TWO_MOTHERS_ONE_CHILD_DEFEAT",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_TWO_MOTHERS_VICTORY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TWO_MOTHERS_ONE_CHILD_VICTORY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectNotAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_TERRIFYING"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "I recognize the classic [family] nose."
           },
@@ -2576,6 +4207,27 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "MemoryAllFamilies MEMORYFAMILY_TWO_MOTHERS_MURDER",
+                    "iLegitimacy 4"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TWO_MOTHERS_ONE_CHILD_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_CHARACTER_TERRIFYING"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "They can each have half of the child."
           },
@@ -2593,6 +4245,26 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "MemoryAllFamilies MEMORYFAMILY_TWO_MOTHERS_WISELY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TWO_MOTHERS_ONE_CHILD_3",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_HIGH_WISDOM"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "The mother is the one who would rather give up the child than see it die."
           }
@@ -2733,6 +4405,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddImprovement IMPROVEMENT_LIBRARY_1"
+                  ],
+                  "id": "BONUS_EVENTOPTION_STEAL_DEFECTING_SCIENTISTS_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We will provide whatever they need."
           }
@@ -2774,6 +4459,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_INCUBATED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_INCUBATED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I wish him a speedy recovery."
           }
@@ -2807,6 +4505,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bRandomTech 1"
+                  ],
+                  "id": "BONUS_EVENTOPTION_STEAL_SELLING_SECRETS_OPTION_0_PLAYER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "You never can trust a spy."
           }
@@ -2840,6 +4551,26 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYPLAYER_DENIED_RANSOM"
+                  ],
+                  "id": "BONUS_EVENTOPTION_STEAL_FINGERS_OPTION_0_PLAYER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectNotAny",
+                  "values": [
+                    "SUBJECT_COMPASSIONATE"
+                  ]
+                }
+              ]
+            },
             "requirements": [],
             "text": "We will not give in to threats."
           },
@@ -2860,6 +4591,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_SCIENCE=60",
+                    "aiGlobalYieldsPer: YIELD_SCIENCE=15"
+                  ],
+                  "id": "BONUS_SCIENCE_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "I refuse to have this blood on my hands."
           }
@@ -2891,6 +4636,19 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddCourtier: COURTIER_MINISTER=GENDER_FEMALE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_STEAL_PLAYER_DISCOVERY_OPTION_0_PLAYER_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "We can always use a fresh voice in court."
           },
@@ -2911,6 +4669,20 @@
                 "weight": null
               }
             ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_SCIENCE=40",
+                    "aiGlobalYieldsPer: YIELD_SCIENCE=10"
+                  ],
+                  "id": "BONUS_SCIENCE_GAIN_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
             "requirements": [],
             "text": "She must focus on understanding this discovery."
           }

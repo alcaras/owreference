@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import RewardChip from '../components/RewardChip.astro';
+import OptionRaw from '../components/OptionRaw.astro';
 import { classifyYield, yieldColors } from '../lib/entities';
 import missions from '../data/missions.json';
 
@@ -192,14 +193,20 @@ function pct(p: number): string {
       <h2 class="outcomes__title">Events</h2>
       <p class="outcomes__sub">
         <strong>{pct(mission.eventChance.probability)}</strong> of the time (a {mission.eventChance.weight}/{mission.eventChance.total} dice
-        result) the mission fires an <strong>event</strong> instead of its normal reward. One of the
-        {' '}{mission.events.length} stories below is drawn by weight, among those whose character/empire
-        conditions are met — then you pick a response. Percentages are each story's share of the weighted pool.
-        Bracketed values like <code>[character]</code> or <code>[family]</code> are filled in with the actual
-        names in-game.
+        result) the mission fires an <strong>event</strong> instead of its normal reward — then one of the
+        {' '}{mission.events.length} stories below is drawn, and you pick a response.
+        Bracketed values like <code>[character]</code> are filled in with the actual names in-game.
       </p>
+      <p class="evt-caveat">⚠ <b>Story weights are not in-game odds.</b> Each story is gated by character/empire
+      conditions (some hidden), so real frequency is filtered in ways the XML can't predict. The weight is the raw
+      XML knob, not a probability.</p>
 
-      <div class="evt-list">
+      <div class="mode-toggle" role="radiogroup" aria-label="Detail level">
+        <button type="button" class="mode-toggle__btn is-active" data-evmode="raw" role="radio" aria-checked="true">Raw XML</button>
+        <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Humanized</button>
+      </div>
+
+      <div class="evt-list evtmode" data-mode="raw" id="evtmode">
         {mission.events.map(ev => {
           const ry = (r: any) => r.yield || classifyYield(r.text || '');
           const evYield = (ev.guaranteed.map(ry).find(Boolean)
@@ -210,7 +217,7 @@ function pct(p: number): string {
               <summary class="evt__summary">
                 <span class="evt__name">{ev.name}</span>
                 <span class="evt__meta">
-                  <span class="evt__share" title="Share of the weighted event pool (among eligible stories)">~{pct(ev.share)}</span>
+                  <span class="evt__share" title="Raw iWeight — NOT a probability (see caveat above)">weight {ev.weight}</span>
                   {ev.conditions.map((c: string) => <span class="chip chip--cond">{c}</span>)}
                 </span>
               </summary>
@@ -229,11 +236,11 @@ function pct(p: number): string {
                         <span class="opt__bullet">▸</span>
                         <LinkedText text={o.text || 'Resolve'} />
                         {o.requirements.map((r: any) => (
-                          <span class="chip chip--req has-tip" data-tip-title="Requirement"
+                          <span class="chip chip--req ev-human has-tip" data-tip-title="Requirement"
                                 data-tip={(r.tip || []).join('\n')} tabindex="0">{r.label}</span>
                         ))}
                       </div>
-                      <div class="opt__outcomes">
+                      <div class="opt__outcomes ev-human">
                         {o.outcomes.map((oc: any) => (
                           <div class="oc">
                             {oc.probability < 1 && <span class="oc__prob">{pct(oc.probability)}</span>}
@@ -243,6 +250,7 @@ function pct(p: number): string {
                           </div>
                         ))}
                       </div>
+                      {o.raw && <OptionRaw raw={o.raw} />}
                     </li>
                   ))}
                 </ul>
@@ -367,9 +375,40 @@ function pct(p: number): string {
       draw();
     })();
   </script>
+
+  <script is:inline>
+    (function () {
+      const root = document.getElementById('evtmode');
+      const btns = Array.from(document.querySelectorAll('.mode-toggle__btn'));
+      if (!root || !btns.length) return;
+      btns.forEach((btn) => btn.addEventListener('click', () => {
+        root.setAttribute('data-mode', btn.getAttribute('data-evmode'));
+        btns.forEach((b) => {
+          const on = b === btn;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-checked', String(on));
+        });
+      }));
+    })();
+  </script>
 </Base>
 
 <style>
+  .evt-caveat {
+    font-size: 0.8rem; color: var(--text-dim); line-height: 1.45; max-width: 80ch;
+    margin: 0 0 0.8rem; padding: 0.5rem 0.7rem; border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, #d4a24e 35%, var(--border));
+    background: color-mix(in srgb, #d4a24e 8%, transparent);
+  }
+  .evt-caveat b { color: var(--text); }
+  .mode-toggle { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 7px; overflow: hidden; margin-bottom: 0.9rem; }
+  .mode-toggle__btn { font-family: var(--font-display); font-size: 0.76rem; padding: 0.32rem 0.7rem; background: var(--bg-elev); color: var(--text-dim); border: none; cursor: pointer; }
+  .mode-toggle__btn + .mode-toggle__btn { border-left: 1px solid var(--border-strong); }
+  .mode-toggle__btn:hover { color: var(--text); }
+  .mode-toggle__btn.is-active { background: color-mix(in srgb, var(--accent) 28%, var(--bg-elev) 72%); color: var(--text); }
+  .evtmode[data-mode='raw'] .ev-human { display: none; }
+  .evtmode[data-mode='human'] .ev-raw { display: none; }
+
   .mission-overview { margin-bottom: 1.5rem; }
   .mission-desc {
     color: var(--text-dim);

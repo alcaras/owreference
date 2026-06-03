@@ -1,0 +1,47 @@
+---
+// Raw view of a choice: the exact XML gates that qualify it (incl. hidden
+// prereqs) and the raw bonus payloads it grants. Shown when an event page is in
+// raw mode; the humanized chips are shown otherwise. Marked .ev-raw so the
+// page-level toggle can switch it.
+const { raw } = Astro.props as { raw: any };
+---
+<div class="ev-raw oraw">
+  {raw.gates.length > 0 && (
+    <div class="oraw__sec">
+      <span class="oraw__lbl">gated by</span>
+      {raw.gates.map((g: any) => (
+        <div class="oraw__line"><span class="oraw__tag">{g.tag}</span> {g.values.join(' / ')}</div>
+      ))}
+    </div>
+  )}
+  {raw.bonuses.length > 0 && (
+    <div class="oraw__sec">
+      <span class="oraw__lbl">grants</span>
+      {raw.bonuses.map((b: any) => (
+        <div class="oraw__bonus">
+          <div class="oraw__id">
+            {b.pct != null && <span class="oraw__w">{Math.round(b.pct * 100)}%</span>}
+            {b.id}
+          </div>
+          {b.fields.map((f: string) => <div class="oraw__field">{f}</div>)}
+        </div>
+      ))}
+    </div>
+  )}
+  {raw.gates.length === 0 && raw.bonuses.length === 0 && (
+    <div class="oraw__line oraw__none">(no gates or payload in XML)</div>
+  )}
+</div>
+
+<style>
+  .oraw { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.5; color: var(--text-dim); padding-left: 1rem; }
+  .oraw__sec { margin: 0.15rem 0; }
+  .oraw__lbl { display: block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
+  .oraw__line { white-space: pre-wrap; word-break: break-word; }
+  .oraw__tag { color: var(--accent); }
+  .oraw__bonus { margin: 0.15rem 0 0.25rem; }
+  .oraw__id { color: var(--text); word-break: break-all; }
+  .oraw__w { color: var(--accent); margin-right: 0.4rem; }
+  .oraw__field { padding-left: 1rem; color: var(--text-dim); word-break: break-word; }
+  .oraw__none { color: var(--text-faint); font-style: italic; }
+</style>
