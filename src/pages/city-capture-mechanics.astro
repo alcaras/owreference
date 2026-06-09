@@ -1,0 +1,323 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+
+// Constants from reference/XML/Infos/globalsInt.xml and culture.xml; mechanic
+// transcribed from City.cs (getCaptureThreshold / setCaptureTurns / doTribeTurn).
+//
+//   CITY_BASE_CAPTURE_TURNS      = 2
+//   CITY_CAPTURE_DAMAGE_PERCENT  = 50   (HP the city is left at after it flips)
+//   culture.iExtraCaptureTurns:  Weak 0 · Developing 1 · Strong 2 · Legendary 3
+//   +1 to the threshold when the capturer is NOT the city's original founder.
+
+const BASE_TURNS = 2;
+
+const cultures = [
+  { name: 'Weak',       extra: 0 },
+  { name: 'Developing', extra: 1 },
+  { name: 'Strong',     extra: 2 },
+  { name: 'Legendary',  extra: 3 },
+];
+
+// threshold = max(1, base + cultureExtra + (notFounder ? 1 : 0))
+const rows = cultures.map(c => ({
+  culture: c.name,
+  extra: c.extra,
+  foreign: Math.max(1, BASE_TURNS + c.extra + 1), // taking a city you didn't found
+  own:     Math.max(1, BASE_TURNS + c.extra),     // retaking a city your team founded
+}));
+---
+
+<Base
+  title="City Capture Mechanics"
+  active="city-capture-mechanics"
+  pageMark="🏰"
+  description="How long a city takes to flip after you occupy it in Old World: the capture-turns counter, the exact threshold formula (base + enemy culture level + the original-founder bonus), and the per-turn accrual rules — transcribed from City.cs."
+  pageStats={[
+    { label: 'base turns', value: BASE_TURNS },
+    { label: 'capture HP left', value: '50%' },
+  ]}
+>
+  <p class="lede">
+    Taking a city is not instant. When your unit occupies an enemy city, a
+    hidden <b>capture-turns counter</b> ticks up each turn you hold it; the city
+    flips to you only when the counter reaches its <b>threshold</b>. Leave or
+    get pushed off before then and the progress unwinds. The threshold depends
+    on the city's <b>culture level</b> and on whether you originally founded it.
+  </p>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">How the counter works</h2>
+    <ul class="cc-bullets">
+      <li>
+        Each turn your unit is actively occupying the city
+        (<code>isUnitCapturingCity</code>), the counter increases by
+        <b>+1</b> (<code>changeCaptureTurns(1)</code>).
+      </li>
+      <li>
+        The city flips the moment the counter reaches
+        <code>getCaptureThreshold()</code> — control transfers and the city is
+        left <b>damaged to 50% HP</b> (<code>CITY_CAPTURE_DAMAGE_PERCENT</code>).
+      </li>
+      <li>
+        If no one is occupying it, the counter ticks <b>−1</b> per turn and
+        resets to 0 — an interrupted capture is undone. You must hold the city
+        <b>continuously</b> for the full count.
+      </li>
+      <li>
+        Recapture / liberation also resets the counter to 0 when ownership
+        changes (<code>setCaptureTurns(0)</code>).
+      </li>
+    </ul>
+  </section>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">The threshold formula</h2>
+    <div class="cc-formula">
+      <div class="cc-line">
+        <span class="cc-eq">turns = CITY_BASE_CAPTURE_TURNS&nbsp;(2)</span>
+      </div>
+      <div class="cc-line">
+        <span class="cc-eq cc-add">+ culture(highest&nbsp;enemy&nbsp;culture).iExtraCaptureTurns</span>
+      </div>
+      <div class="cc-line">
+        <span class="cc-eq cc-add">+ 1&nbsp;&nbsp;if you are NOT the city's original founder</span>
+      </div>
+      <div class="cc-line cc-min">
+        <span class="cc-eq">→ minimum 1</span>
+      </div>
+    </div>
+
+    <p>
+      The culture term uses the <b>highest culture level of any team other than
+      the capturer</b> that has culture in the city — effectively the defender's
+      cultural entrenchment. Per <code>culture.xml</code>
+      (<code>iExtraCaptureTurns</code>):
+    </p>
+
+    <table class="cc-table cc-table--narrow">
+      <thead>
+        <tr><th>City culture</th><th class="cc-num">Extra turns</th></tr>
+      </thead>
+      <tbody>
+        {cultures.map(c => (
+          <tr>
+            <td><LinkedText text={c.name} /></td>
+            <td class="cc-num"><b>+{c.extra}</b></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <p class="cc-fineprint">
+      The <b>+1 original-founder</b> term is <code>getCaptureTeam() !=
+      getFirstTeam()</code>: it applies when you take a city your team did
+      <b>not</b> found, so <b>retaking your own former city is exactly one turn
+      faster</b> — and "your own" means the team that originally founded it, even
+      if an enemy captured and grew it since.
+    </p>
+  </section>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">Turns to flip</h2>
+    <p>
+      Hold-time required, by the city's culture level and whether you founded it:
+    </p>
+    <table class="cc-table">
+      <thead>
+        <tr>
+          <th>City culture</th>
+          <th class="cc-num">Taking a foreign city</th>
+          <th class="cc-num">Retaking your own</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(r => (
+          <tr>
+            <td><LinkedText text={r.culture} /> <span class="cc-dim">(+{r.extra})</span></td>
+            <td class="cc-num"><b>{r.foreign}</b></td>
+            <td class="cc-num"><b>{r.own}</b></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="cc-fineprint">
+      So a freshly-founded enemy outpost flips in <b>3</b> turns of unbroken
+      occupation; an old <LinkedText text="Legendary" /> enemy capital takes
+      <b>6</b>. Liberating one of your own cities shaves a turn off each.
+    </p>
+  </section>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">When a captured city is razed instead</h2>
+    <p>
+      On reaching the threshold, the city is normally transferred. It is
+      <b>razed</b> instead in two cases (<code>setCaptureTurns</code>):
+    </p>
+    <ul class="cc-bullets">
+      <li>
+        A <LinkedText text="Tribe" /> captures it and the
+        <code>GAMEOPTION_ALLOW_CITY_RAZING</code> option is on.
+      </li>
+      <li>
+        A player captures it but is already at their <b>city cap</b>
+        (<code>isCityMaxReached()</code>) — they can't hold another, so it burns.
+      </li>
+    </ul>
+  </section>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">Worked example</h2>
+    <ol class="cc-steps">
+      <li>
+        You assault a rival's <LinkedText text="Strong" />-culture city (you did
+        not found it). Threshold = 2 (base) + 2 (Strong) + 1 (not founder) =
+        <b>5</b>.
+      </li>
+      <li>
+        Your unit occupies the city. Each end of turn it holds, the counter goes
+        1 → 2 → 3 → 4 → 5.
+      </li>
+      <li>
+        If a relief force evicts your unit on, say, turn 3 (counter at 3), the
+        counter starts falling −1/turn back toward 0 — you'd have to start over.
+      </li>
+      <li>
+        Hold all 5 turns and the city flips to you at <b>50% HP</b>. If that same
+        city had originally been <i>yours</i>, it would have flipped in
+        <b>4</b>.
+      </li>
+    </ol>
+  </section>
+
+  <p class="cc-source">
+    Source: <code>City.cs</code> — <code>getCaptureThreshold()</code> (formula),
+    <code>setCaptureTurns()</code> (flip / raze / 50% damage), and the
+    <code>+1 / −1</code> accrual in <code>doTribeTurn()</code>. Constants from
+    <code>globalsInt.xml</code> (<code>CITY_BASE_CAPTURE_TURNS</code>,
+    <code>CITY_CAPTURE_DAMAGE_PERCENT</code>) and
+    <code>culture.xml</code> (<code>iExtraCaptureTurns</code>).
+  </p>
+</Base>
+
+<style>
+  .lede {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    max-width: 72ch;
+    margin: 0.4rem 0 1.5rem;
+  }
+  .lede b { color: var(--text); }
+
+  .cc-section { margin-top: 2rem; }
+  .cc-h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.5rem;
+    color: var(--text);
+  }
+  .cc-section p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 72ch;
+    margin: 0.3rem 0;
+  }
+  .cc-section p b { color: var(--text); }
+
+  .cc-bullets {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 0.4rem 0 0.8rem;
+    padding-left: 1.2rem;
+    max-width: 80ch;
+  }
+  .cc-bullets li { padding: 0.2rem 0; }
+  .cc-bullets b { color: var(--text); }
+
+  .cc-formula {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    margin: 0.6rem 0 0.9rem;
+    max-width: 60ch;
+  }
+  .cc-line { padding: 0.12rem 0; }
+  .cc-eq {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+  .cc-add { color: var(--text-dim); }
+  .cc-min .cc-eq { color: var(--accent); }
+
+  .cc-table {
+    width: 100%;
+    max-width: 64ch;
+    border-collapse: collapse;
+    margin: 0.6rem 0;
+    font-size: 0.8rem;
+  }
+  .cc-table--narrow { max-width: 36ch; }
+  .cc-table thead th {
+    text-align: left;
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .cc-table tbody td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .cc-table tbody tr:hover { background: var(--bg-elev); }
+  .cc-num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+  .cc-num b { color: var(--text); font-weight: 600; }
+  .cc-dim { color: var(--text-faint); font-size: 0.8em; }
+
+  .cc-steps {
+    list-style: decimal inside;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 72ch;
+    padding: 0;
+    margin: 0.5rem 0;
+  }
+  .cc-steps li { padding: 0.25rem 0; }
+  .cc-steps b { color: var(--text); }
+
+  .cc-fineprint {
+    color: var(--text-faint) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.5;
+    font-style: italic;
+    max-width: 72ch;
+  }
+  .cc-fineprint b { color: var(--text-dim); }
+
+  .cc-source {
+    margin-top: 2.2rem;
+    color: var(--text-faint);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    max-width: 80ch;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.78em;
+    background: var(--bg-elev);
+    padding: 0 0.25rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+</style>

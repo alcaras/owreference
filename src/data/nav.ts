@@ -25,6 +25,7 @@ export const NAV: NavItem[] = [
   { href: 'rural-specialists', label: 'Rural Specialists' },
   { href: 'units', label: 'Units' },
   { href: 'unique-units', label: 'Unique Units' },
+  { href: 'city-capture-mechanics', label: 'City Capture Mechanics' },
   { href: 'stat-scaling', label: 'Stat Scaling' },
   { href: 'rally', label: 'Rally Troops' },
   { href: 'hold-court', label: 'Hold Court' },

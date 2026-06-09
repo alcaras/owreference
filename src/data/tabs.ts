@@ -214,6 +214,16 @@ export const TABS: Tab[] = [
     summary: 'Full unit × unit damage table',
     willContain: ['Expected damage by attacker/defender pair'],
   },
+  {
+    slug: 'city-capture-mechanics', icon: '🏰', label: 'City Capture Mechanics', section: 'Military',
+    status: 'built', sourceSheet: '',
+    summary: 'How long a city takes to flip after you occupy it',
+    willContain: [
+      'Capture-turns counter: +1/turn occupying, −1/turn when not',
+      'Threshold = base 2 + enemy culture level + original-founder bonus',
+      'Turns-to-flip table; 50% HP on capture; raze conditions',
+    ],
+  },
 
   // ── Mechanics ─────────────────────────────────────────────────
   {
