@@ -182,12 +182,14 @@ for (const f of families) {
                   }
                   return (
                     <td class="cell cell--nations yield-misc" data-family={f.slug}>
-                      {nations.map(n => (
-                        <a class={`nation-tag n-${n.slug}`} href={`${base}nations#${n.slug}`} title={n.name}>
-                          <img src={`${base}img/crests/${n.slug}.png`} alt="" class="nation-tag__crest" />
-                          <span class="nation-tag__name">{n.name}</span>
-                        </a>
-                      ))}
+                      <div class="nation-tags">
+                        {nations.map(n => (
+                          <a class={`nation-tag n-${n.slug}`} href={`${base}nations#${n.slug}`} title={n.name}>
+                            <img src={`${base}img/crests/${n.slug}.png`} alt="" class="nation-tag__crest" />
+                            <span class="nation-tag__name">{n.name}</span>
+                          </a>
+                        ))}
+                      </div>
                     </td>
                   );
                 }
@@ -351,9 +353,14 @@ for (const f of families) {
     font-size: 0.72rem;
   }
 
-  /* Nation tags inside the "Nations" row */
+  /* Nation tags inside the "Nations" row.
+     Keep the <td> a real table-cell so it stays bound to its column;
+     do the flex wrapping on an inner container. */
   .cell--nations {
     padding: 0.3rem 0.45rem;
+    vertical-align: top;
+  }
+  .nation-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.2rem 0.3rem;
