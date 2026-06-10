@@ -50,6 +50,67 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
   iconic: pickIconic(cls),
   cells: DEFENDER_TARGETS.map(d => ({ defender: d, ...cellFor(cls, d) })),
 }));
+
+// ── Per-unit counter list (the spreadsheet's "If you're facing…" view) ──
+// Damage is the game's own InfoHelpers.getAttackDamage with BASE_DAMAGE=6
+// (globalsInt.xml) and BOTH sides' anti-trait modifiers applied:
+//   eff = strength × (1 + Σ applicable counter bonuses)
+//   damage = 6 × effAtt / effDef   (round up when effAtt > effDef, min 1)
+// 'melee vs' bonuses apply only in melee: for the attacker when it is a
+// melee unit; for the defender when the attacker is.
+const BASE_DAMAGE = 6;
+
+function counterBonus(u: Unit, otherTraits: string[], attacking: boolean, attackerIsMelee: boolean): number {
+  let b = 0;
+  for (const c of u.counters) {
+    if (!otherTraits.includes(c.target)) continue;
+    if (c.kind === 'vs') b += c.value;
+    else if (c.kind === 'melee vs' && (attacking ? u.isMelee : attackerIsMelee)) b += c.value;
+    else if (c.kind === 'attack vs' && attacking) b += c.value;
+  }
+  return b;
+}
+
+function attackDamage(att: Unit, def: Unit): number {
+  const effA = Math.floor(att.strength * (100 + counterBonus(att, def.traits, true, att.isMelee)) / 100);
+  const effD = Math.floor(def.strength * (100 + counterBonus(def, att.traits, false, att.isMelee)) / 100);
+  if (effA <= 0 || effD <= 0) return 0;
+  let d = BASE_DAMAGE * effA;
+  if (effA > effD) d += effD - 1;
+  return Math.max(1, Math.floor(d / effD));
+}
+
+const landCombat = (units as Unit[]).filter(u => u.isCombat && !u.isWater && u.primaryLabel !== 'Disciple');
+
+interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null }
+
+function countersFor(def: Unit): CounterPick[] {
+  const picks: CounterPick[] = [];
+  for (const att of landCombat) {
+    if (att.id === def.id) continue;
+    const bonus = counterBonus(att, def.traits, true, att.isMelee);
+    if (bonus <= 0) continue;            // only true counters, like the sheet
+    const dmg = attackDamage(att, def);
+    if (dmg < 7) continue;               // the sheet's "significant" bar
+    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null });
+  }
+  picks.sort((a, b) => b.dmg - a.dmg || a.name.localeCompare(b.name));
+  // One entry per name (upgrade dupes), capped for scan-ability.
+  const seen = new Set<string>();
+  return picks.filter(p => !seen.has(p.name) && seen.add(p.name) !== undefined).slice(0, 8);
+}
+
+const defenders = [...landCombat]
+  .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name))
+  .map(def => ({ def, picks: countersFor(def) }));
+
+const tiers = new Map<number, typeof defenders>();
+for (const d of defenders) {
+  const t = Math.round(d.def.strength / 10);
+  if (!tiers.has(t)) tiers.set(t, []);
+  tiers.get(t)!.push(d);
+}
+const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
 ---
 
 <Base
@@ -57,18 +118,59 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
   active="unit-counters"
   pageMark="⚔️"
   pageStats={[
+    { label: 'units covered', value: defenders.length },
     { label: 'attacker classes', value: ATTACKER_CLASSES.length },
-    { label: 'targets',           value: DEFENDER_TARGETS.length },
   ]}
 >
   <p class="lede">
-    A quick rock-paper-scissors view: each cell shows the biggest combat
-    modifier units of that <em>attacker</em> class have against units carrying
-    the listed <em>target</em> trait. Numbers are pulled directly from the
-    game's <code>EffectUnit</code> entries — anti-trait effects on
-    <code>aiUnitTraitModifier</code>.
+    <b>If you're facing a unit, build these.</b> Each number is the damage that
+    counter deals per attack — the game's own formula
+    (<code>6 × StrAtt / StrDef</code>, both sides' anti-trait modifiers applied,
+    full HP, open terrain, no promotions). Only true counters — attackers with
+    an anti-trait bonus against the target — make the list.
   </p>
 
+  {tierList.map(([tier, list]) => (
+    <section class="ctier">
+      <h2 class="ctier__h">Strength {tier} defenders</h2>
+      <div class="grid">
+        <div class="grid__scroll">
+          <table class="ntbl ntbl--counters">
+            <tbody>
+              {list.map(({ def, picks }) => (
+                <tr id={def.slug}>
+                  <th class="rowlabel" scope="row">
+                    <div class="rl">
+                      <span class="rl__name">
+                        <img class="rl__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt="" loading="lazy" />
+                        {def.name}
+                      </span>
+                      <span class="rl__sources">{def.primaryLabel}{def.nationLabel ? ` · ${def.nationLabel}` : ''}{def.isTribal ? ' · tribal' : ''}</span>
+                    </div>
+                  </th>
+                  <td class="cell cell--picks">
+                    {picks.length === 0 ? (
+                      <span class="cell__dash">no significant counters</span>
+                    ) : (
+                      picks.map(p => (
+                        <a class="pick yield-training" href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} deals ${p.dmg} damage per attack`}>
+                          <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
+                          <span class="pick__name">{p.name}</span>
+                          <span class="pick__dmg">{p.dmg}</span>
+                        </a>
+                      ))
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <h2 class="ctier__h ctier__h--matrix">Class overview</h2>
   <div class="grid">
     <div class="grid__scroll">
       <table class="ntbl">
@@ -157,6 +259,40 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
       padding: 0.05rem 0.35rem;
       border-radius: 3px;
       border: 1px solid var(--border);
+    }
+    .ctier { margin: 0 0 1.1rem; }
+    .ctier__h {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--text-dim);
+      margin: 0 0 0.4rem;
+    }
+    .ctier__h--matrix { margin-top: 1.6rem; }
+    .ntbl--counters .rowlabel { min-width: 13rem; }
+    .rl__icon { width: 1.15em; height: 1.15em; object-fit: contain; vertical-align: -0.2em; margin-right: 0.3em; }
+    .cell--picks { padding: 0.3rem 0.45rem; }
+    .pick {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      margin: 0.12rem 0.18rem 0.12rem 0;
+      padding: 0.14rem 0.4rem;
+      border: 1px solid color-mix(in srgb, var(--yield-bg) 55%, var(--border));
+      border-left: 3px solid var(--yield-bg);
+      border-radius: 5px;
+      background: color-mix(in srgb, var(--yield-bg) 12%, var(--bg-elev));
+      color: var(--text);
+      font-size: 0.74rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .pick:hover { background: color-mix(in srgb, var(--yield-bg) 22%, var(--bg-elev)); text-decoration: none; }
+    .pick__icon { width: 1.1em; height: 1.1em; object-fit: contain; }
+    .pick__dmg {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: var(--gold);
     }
     .rl { display: flex; flex-direction: column; gap: 0.1rem; }
     .rl__name {
