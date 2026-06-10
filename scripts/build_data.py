@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, render_nation_effects, render_shrine_effects,
     render_effect_player, render_effect_city, fmt_decimal, yield_name,
+    _lookup_name,
 )
 try:  # registry backstop (used to de-dup curated trait scalars)
     import effects as _effects  # noqa: E402
@@ -1034,7 +1035,7 @@ def load_nations() -> list[dict]:
         slot = int(color_idx) + 1
         hex_color = family_hex.get((nation, slot))
         class_label = text_infos.get(class_key, family_class.replace("FAMILYCLASS_", "").title())
-        families_by_nation[nation].append({
+        fam_obj = {
             "id": zt,
             "name": text_family.get(name_key, zt.replace("FAMILY_", "").title()),
             "class": class_label,
@@ -1042,7 +1043,27 @@ def load_nations() -> list[dict]:
             "colorIndex": int(color_idx),
             "ingameColor": hex_color,
             "ingameFg": best_fg(hex_color) if hex_color else "#f5f6f8",
-        })
+        }
+        # Coalition supremacy (Tamil): family.xml SupremacyEffectPlayer — the
+        # capital city's family grants its supremacy effects all game
+        # (City.cs founding hook, gated on nation.xml bCoalition).
+        sup_id = entry.findtext("SupremacyEffectPlayer") or ""
+        if sup_id:
+            sup_entry = xml_indexes.get("effectPlayer.xml", {}).get(sup_id)
+            sup_name = ""
+            if sup_entry is not None:
+                sup_name = _lookup_name(xml_indexes, sup_entry.findtext("Name") or "")
+            sup_effects = [
+                ln for ln in render_effect_player(sup_id, xml_indexes)
+                # drop the entry's own display name echoed via ExtraHelp
+                if ln != sup_name
+            ]
+            fam_obj["supremacy"] = {
+                "id": sup_id,
+                "name": sup_name or sup_id.replace("EFFECTPLAYER_", "").title(),
+                "effects": sup_effects,
+            }
+        families_by_nation[nation].append(fam_obj)
 
     # Build nations
     nations = []

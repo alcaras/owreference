@@ -92,6 +92,12 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
         </a>
         <nav class="hdr__nav" aria-label="Site sections">
           {navSections.map(({ section, items }) => (
+            items.length === 1 ? (
+              <a
+                href={`${base}${items[0].slug}`}
+                class={`hdr__navlink ${active === items[0].slug ? 'is-active' : ''}`}
+              >{items[0].label}</a>
+            ) : (
             <details class="hdr__menu" data-section={section}>
               <summary class={`hdr__navlink ${activeSection === section ? 'is-active' : ''}`}>
                 {section}<span class="hdr__caret" aria-hidden="true">▾</span>
@@ -108,6 +114,7 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
                 ))}
               </div>
             </details>
+            )
           ))}
         </nav>
         <script is:inline>

@@ -247,6 +247,7 @@ PER_CITY_YIELD_RATE_FIELDS: list[tuple[str, str]] = [
     ("aiYieldRatePopulation",          "Pop"),
     ("aiYieldRateSpecialist",          "Specialist"),
     ("aiYieldRateSpecialistUrban",     "Urban Specialist"),
+    ("aiYieldRateSpecialistRural",     "Rural Specialist"),
     ("aiYieldRateMilitary",            "Military Unit"),
     ("aiYieldRateHolyCityWorld",       "Holy City"),
     ("aiYieldRateSpecialistClass",     "Specialist Class"),
@@ -270,7 +271,8 @@ HANDLED_FIELDS: dict[str, set[str]] = {
         "aeEffectCityEffectCity", "aiYieldRateCulture", "aiYieldRateReligion",
         "aiYieldRatePaganReligion", "aiYieldRateReligionNonState",
         "aiYieldRatePopulation", "aiYieldRateSpecialist",
-        "aiYieldRateSpecialistUrban", "aiYieldRateMilitary",
+        "aiYieldRateSpecialistUrban", "aiYieldRateSpecialistRural",
+        "aiYieldRateMilitary",
         "aiYieldRateHolyCityWorld", "aiYieldRateSpecialistClass",
         "aiImprovementModifier", "aeFreeUnitEffectCity", "aeLuxuryResources",
         "abNoImprovementClassMax", "TerrainImprovementValid", "aeHurryMoney",
@@ -310,6 +312,7 @@ HANDLED_FIELDS: dict[str, set[str]] = {
     },
     "effectUnit": {
         "iPillageYieldModifier", "iFatigueExtra", "aiMilitaryKillYield",
+        "iHomeModifier",
     },
     "bonus": {
         "aiYieldStockpile", "aiGlobalYields", "aiYields", "aiYieldRate",
@@ -557,6 +560,11 @@ def render_effect_unit(e: ET.Element) -> list[str]:
         y = yield_name(pair.findtext("zIndex"))
         v = int(pair.findtext("iValue") or "0")
         out.append(f"{fmt_decimal(v)} {y}/Kill")
+    # Fighting from own tiles (Unit.cs homeModifier — applies when the
+    # from-tile owner is the unit's player)
+    hm = e.findtext("iHomeModifier")
+    if hm and hm != "0":
+        out.append(f"{fmt_decimal(int(hm))}% Strength in own territory")
     out.extend(_extra(e, "effectUnit", None))
     return out
 

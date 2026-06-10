@@ -1,11 +1,35 @@
 ---
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import Base from '../layouts/Base.astro';
 import scripts from '../data/mapscripts.json';
+
+const base = import.meta.env.BASE_URL;
 
 const generators = scripts.filter(s => !s.special);
 const special = scripts.filter(s => s.special);
 
 const totalOptions = scripts.reduce((n, s) => n + s.optionCount, 0);
+
+// Map previews — pre-rendered by scripts/render_map_previews.py
+// (owmapgen sweep, seeds 11/22/33). Build-time existence check so a
+// script with no rendered previews simply shows no strip.
+const previewDir = fileURLToPath(new URL('../../public/img/mapscripts/', import.meta.url));
+const DUEL_IDS = new Set(['DOTA']); // duel layouts render at their intended 1v1 size
+function previewsFor(slug: string) {
+  const out: { src: string; n: number }[] = [];
+  for (let n = 1; n <= 3; n++) {
+    if (fs.existsSync(previewDir + `${slug}-${n}.png`)) {
+      out.push({ src: `${base}img/mapscripts/${slug}-${n}.png`, n });
+    }
+  }
+  return out;
+}
+function previewCaption(s: { id: string }, count: number) {
+  const kind = DUEL_IDS.has(s.id) ? '1v1 Duel seed' : '6-player Medium seed';
+  return count === 1 ? kind : `${kind}s × ${count}`;
+}
+const totalPreviews = scripts.reduce((n, s) => n + previewsFor(s.slug).length, 0);
 
 const searchBlobs: Record<string, string> = {};
 for (const s of scripts) {
@@ -42,13 +66,27 @@ for (const s of scripts) {
     <section class="ms-sec">
       <h2 class="ms-sec__h">Generated map scripts</h2>
       <div class="ms-grid">
-        {generators.map(s => (
+        {generators.map(s => {
+          const prevs = previewsFor(s.slug);
+          return (
           <article class="ms-card" data-script={s.id}>
             <header class="ms-card__head">
               <h3 class="ms-card__name">{s.name}</h3>
               {s.optionCount > 0 && <span class="ms-card__opts">{s.optionCount} options</span>}
             </header>
             {s.description && <p class="ms-card__desc">{s.description}</p>}
+            {prevs.length > 0 && (
+              <figure class="ms-prev">
+                <div class="ms-prev__strip" data-n={prevs.length}>
+                  {prevs.map(p => (
+                    <a href={p.src} target="_blank" rel="noopener" title={`${s.name} — ${previewCaption(s, 1)} ${p.n} (click to enlarge)`}>
+                      <img src={p.src} alt={`${s.name} map preview, ${previewCaption(s, 1)} ${p.n}`} loading="lazy" decoding="async" />
+                    </a>
+                  ))}
+                </div>
+                <figcaption class="ms-prev__cap">{previewCaption(s, prevs.length)} · click to enlarge</figcaption>
+              </figure>
+            )}
             {s.optionGroups.length > 0 && (
               <dl class="ms-opts">
                 {s.optionGroups.map(g => (
@@ -64,7 +102,8 @@ for (const s of scripts) {
               </dl>
             )}
           </article>
-        ))}
+          );
+        })}
       </div>
     </section>
 

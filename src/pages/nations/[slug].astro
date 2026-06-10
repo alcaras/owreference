@@ -2,7 +2,19 @@
 import Base from '../../layouts/Base.astro';
 import LinkedText from '../../components/LinkedText.astro';
 import nations from '../../data/nations.json';
+import familyClasses from '../../data/families.json';
 import { classifyYield } from '../../lib/entities';
+
+// classKey (slug) → "Commander ×10 · Hero ×5" from the class's archetype die
+const tendenciesByClass: Record<string, string> = {};
+for (const fc of familyClasses as any[]) {
+  const w = fc.archetypeWeights || {};
+  const parts = Object.entries(w)
+    .filter(([, v]) => (v as number) > 1)
+    .sort((a, b) => (b[1] as number) - (a[1] as number))
+    .map(([k, v]) => `${k.replace('TRAIT_', '').replace('_ARCHETYPE', '').toLowerCase().replace(/^./, c => c.toUpperCase())} ×${v}`);
+  if (parts.length) tendenciesByClass[fc.slug] = parts.join(' · ');
+}
 
 const base = import.meta.env.BASE_URL;
 
@@ -177,6 +189,24 @@ const titles = (n as any).titles || {};
             {f.classKey && <img class="np-fam__icon" src={`${base}img/archetypes/${f.classKey}.png`} alt="" />}
             <span class="np-fam__class">{f.class}</span>
             <span class="np-fam__name">{f.name}</span>
+            {tendenciesByClass[f.classKey] && (
+              <a class="np-fam__arch" href={`${base}archetype-tendencies`} title="Archetype die weights for this family class">
+                {tendenciesByClass[f.classKey]}
+              </a>
+            )}
+            {f.supremacy && (
+              <span class="np-fam__sup">
+                <span class="np-fam__sup-name">{f.supremacy.name}</span>
+                {f.supremacy.effects.map((e: string) => {
+                  const yk = classifyYield(e)?.toLowerCase() || 'misc';
+                  return (
+                    <span class={`np-item np-item--sup yield-${yk}`}>
+                      <LinkedText text={e} showIcons={false} iconsForYields={true} />
+                    </span>
+                  );
+                })}
+              </span>
+            )}
           </li>
         ))}
       </ul>
@@ -457,7 +487,31 @@ const titles = (n as any).titles || {};
     background: var(--bg-elev);
     box-shadow: inset 3px 0 0 var(--fam-stripe, var(--border));
     border-radius: 0 4px 4px 0;
+    flex-wrap: wrap;
   }
+  /* Coalition supremacy payload (Tamil): name + effect chips inside the
+     family pill, on their own line. */
+  .np-fam__sup {
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.3rem;
+  }
+  .np-fam__sup-name {
+    font-style: italic;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+  .np-item--sup { font-size: 0.78rem; padding: 0.15rem 0.5rem 0.15rem 0.6rem; }
+  .np-fam__arch {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--text-faint);
+    text-decoration: none;
+  }
+  .np-fam__arch:hover { color: var(--gold); text-decoration: none; }
   .np-fam__icon { width: 1.1em; height: 1.1em; object-fit: contain; align-self: center; opacity: 0.85; }
   .np-fam__class { font-family: var(--font-display); font-weight: 600; font-size: 0.96rem; color: var(--text); }
   .np-fam__name { font-family: var(--font-display); font-style: italic; font-size: 0.78rem; color: var(--text-faint); }

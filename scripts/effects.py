@@ -269,9 +269,15 @@ def extra_lines(
         if not populated:
             continue
         if field in _TEXT_FIELDS:
-            # TEXT_* key → ready-made help line (needs the text index)
+            # TEXT_* key → ready-made help line (needs the text index).
+            # Skip self-referential help: some entries point ExtraHelp at
+            # their own Name key (e.g. the Tamil supremacy effectCities),
+            # which would render the entry's NAME as a phantom effect line.
+            key = (el.text or "").strip()
+            if key and key == (entry.findtext("Name") or "").strip():
+                continue
             if indexes:
-                nice = indexes.get("__text__", {}).get((el.text or "").strip(), "")
+                nice = indexes.get("__text__", {}).get(key, "")
                 if nice:
                     out.append(_clean_text(nice))
             continue

@@ -21,12 +21,12 @@ export interface Tab {
 export const TABS: Tab[] = [
   // ── Civilizations ──────────────────────────────────────────────
   {
-    slug: 'nations', icon: '👑', label: 'Nations', section: 'Civilizations',
+    slug: 'nations', icon: '👑', label: 'Nations', section: 'Nations & Families',
     status: 'built', sourceSheet: '👑 Nations',
     summary: 'Bonuses, shrines, unique units, families, leaders',
   },
   {
-    slug: 'families', icon: '👪', label: 'Families', section: 'Civilizations',
+    slug: 'families', icon: '👪', label: 'Families', section: 'Nations & Families',
     status: 'built', sourceSheet: '👪 Families',
     summary: 'Class bonuses, opinion modifiers, signature traits',
     willContain: [
@@ -36,7 +36,7 @@ export const TABS: Tab[] = [
     ],
   },
   {
-    slug: 'archetypes', icon: '🎓', label: 'Archetypes', section: 'Civilizations',
+    slug: 'archetypes', icon: '🎓', label: 'Archetypes', section: 'Characters',
     status: 'built', sourceSheet: '🎓 Archetypes',
     summary: 'Character archetypes, ratings, and traits',
     willContain: [
@@ -46,18 +46,18 @@ export const TABS: Tab[] = [
     ],
   },
   {
-    slug: 'archetype-tendencies', icon: '🎲', label: 'Archetype Tendencies', section: 'Civilizations',
+    slug: 'archetype-tendencies', icon: '🎲', label: 'Archetype Tendencies', section: 'Nations & Families',
     status: 'built', sourceSheet: '👑👪🎓 Nations, Families, and Archetype Tendencies',
     summary: 'Which families of each nation roll which archetypes (×10/×5 weights)',
   },
   {
-    slug: 'cognomens', icon: '👑', label: 'Cognomens', section: 'Civilizations',
+    slug: 'cognomens', icon: '👑', label: 'Cognomens', section: 'Characters',
     status: 'built', sourceSheet: '👑Cognomens',
     summary: 'Title/cognomen unlock conditions',
     willContain: ['All cognomens with unlock triggers and bonuses'],
   },
   {
-    slug: 'cognomens-tracker', icon: '🧮', label: 'Cognomens Tracker', section: 'Civilizations',
+    slug: 'cognomens-tracker', icon: '🧮', label: 'Cognomens Tracker', section: 'Characters',
     status: 'built', sourceSheet: '👑Cognomens (Tracker)',
     summary: 'Interactive calculator: which title your leader earns',
     willContain: [
@@ -68,20 +68,20 @@ export const TABS: Tab[] = [
   },
 
   {
-    slug: 'tribes', icon: '🏕️', label: 'Tribes', section: 'Civilizations',
+    slug: 'tribes', icon: '🏕️', label: 'Tribes', section: 'Nations & Families',
     status: 'built', sourceSheet: '',
     summary: 'Barbarian tribes — levels, units, sites, diplomacy',
   },
 
   // ── Characters ─────────────────────────────────────────────────
   {
-    slug: 'jobs', icon: '💼', label: 'Jobs', section: 'Characters',
+    slug: 'jobs', icon: '💼', label: 'Jobs', section: 'Court & Missions',
     status: 'built', sourceSheet: '💼 Jobs',
     summary: 'Court/governor/general assignments and effects',
     willContain: ['Each job slot, requirements, and ability output formula'],
   },
   {
-    slug: 'council', icon: '🏛️', label: 'Council & Courtiers', section: 'Characters',
+    slug: 'council', icon: '🏛️', label: 'Council & Courtiers', section: 'Court & Missions',
     status: 'built', sourceSheet: '',
     summary: 'Council seats (triangular rating yields) and the four courtier types',
   },
@@ -116,43 +116,43 @@ export const TABS: Tab[] = [
 
   // ── Empire ────────────────────────────────────────────────────
   {
-    slug: 'rural-improvements', icon: '⛏️', label: 'Rural Improvements', section: 'Empire',
+    slug: 'rural-improvements', icon: '⛏️', label: 'Rural Improvements', section: 'Cities',
     status: 'built', sourceSheet: '⛏️ Rural Improvements',
     summary: 'Tile improvements, yields, and adjacency',
     willContain: ['Yield, cost, prerequisites, and adjacency bonuses'],
   },
   {
-    slug: 'urban-improvements', icon: '🏡', label: 'Urban Improvements', section: 'Empire',
+    slug: 'urban-improvements', icon: '🏡', label: 'Urban Improvements', section: 'Cities',
     status: 'built', sourceSheet: '🏡 Urban Buildings',
     summary: 'City buildings — art, specialist slots, and effects',
     willContain: ['Cost, slots, yield, and required terrain/tech'],
   },
   {
-    slug: 'shrines', icon: '🔱', label: 'Shrines', section: 'Empire',
+    slug: 'shrines', icon: '🔱', label: 'Shrines', section: 'Religion',
     status: 'built', sourceSheet: '🔱 Shrines',
     summary: 'Shrine pool, yields per tier',
     willContain: ['All shrine outcomes, which nations roll which'],
   },
   {
-    slug: 'world-religion-buildings', icon: '🕍', label: 'World Religion Buildings', section: 'Empire',
+    slug: 'world-religion-buildings', icon: '🕍', label: 'World Religion Buildings', section: 'Religion',
     status: 'built', sourceSheet: '🕍 World Religion Buildings',
     summary: 'Religion-specific worship buildings',
     willContain: ['Building × religion grid with yields'],
   },
   {
-    slug: 'theologies', icon: '🙏', label: 'Theologies', section: 'Empire',
+    slug: 'theologies', icon: '🙏', label: 'Theologies', section: 'Religion',
     status: 'built', sourceSheet: '🙏 Theologies',
     summary: 'Religion picks and effects',
     willContain: ['Each theology tier with options and impact'],
   },
   {
-    slug: 'wonders', icon: '🏛️', label: 'Wonders', section: 'Empire',
+    slug: 'wonders', icon: '🏛️', label: 'Wonders', section: 'Cities',
     status: 'built', sourceSheet: '🏛️ Wonders',
     summary: 'Cost, prerequisites, and yields',
     willContain: ['Wonder grid: tech req, civic req, cost, build bonus, ongoing bonus'],
   },
   {
-    slug: 'projects', icon: '🏗️', label: 'Projects', section: 'Empire',
+    slug: 'projects', icon: '🏗️', label: 'Projects', section: 'Cities',
     status: 'built', sourceSheet: '',
     summary: 'City projects — cost, prerequisites, and effects',
   },
@@ -168,7 +168,7 @@ export const TABS: Tab[] = [
     willContain: ['All law pairs grouped by civic tier'],
   },
   {
-    slug: 'harvest-events', icon: '🌾', label: 'Harvest Events', section: 'Empire',
+    slug: 'harvest-events', icon: '🌾', label: 'Harvest Events', section: 'Events',
     status: 'built', sourceSheet: '🌾 Harvest Events',
     summary: 'Harvest events grouped by resource, with option rewards',
     willContain: ['Each harvest event and its option rewards'],
@@ -176,30 +176,30 @@ export const TABS: Tab[] = [
   {
     // Split into Urban Specialists + Rural Specialists. Slug kept as a
     // redirect; not surfaced in nav/index.
-    slug: 'specialists', icon: '👨‍🌾', label: 'Specialists', section: 'Empire',
+    slug: 'specialists', icon: '👨‍🌾', label: 'Specialists', section: 'Cities',
     status: 'skipped', sourceSheet: '👨‍🌾 Specialists',
     summary: 'Tile/building specialists and yields',
     willContain: ['Specialist type × yield per slot'],
   },
   {
-    slug: 'urban-specialists', icon: '🏺', label: 'Urban Specialists', section: 'Empire',
+    slug: 'urban-specialists', icon: '🏺', label: 'Urban Specialists', section: 'Cities',
     status: 'built', sourceSheet: '👨‍🌾 Specialists',
     summary: 'Tiered urban specialists (I/II/III), art, yields, slots',
     willContain: ['Each urban specialist class × tier yields and which buildings it slots into'],
   },
   {
-    slug: 'rural-specialists', icon: '🌾', label: 'Rural Specialists', section: 'Empire',
+    slug: 'rural-specialists', icon: '🌾', label: 'Rural Specialists', section: 'Cities',
     status: 'built', sourceSheet: '👨‍🌾 Specialists',
     summary: 'Rural specialists, art, yields, and slots',
     willContain: ['Each rural specialist class, yields, and which improvements it slots into'],
   },
   {
-    slug: 'culture', icon: '🎭', label: 'Culture & Development', section: 'Empire',
+    slug: 'culture', icon: '🎭', label: 'Culture & Development', section: 'Cities',
     status: 'built', sourceSheet: '',
     summary: 'City culture levels — thresholds, VP, consumption, and unlocks',
   },
   {
-    slug: 'hurrying', icon: '⏩', label: 'Hurrying Production', section: 'Empire',
+    slug: 'hurrying', icon: '⏩', label: 'Hurrying Production', section: 'Cities',
     status: 'built', sourceSheet: '⏩ Hurrying Production',
     summary: 'Hurry costs and yield equivalents',
     willContain: ['Hurry conversion math per resource'],
@@ -207,7 +207,7 @@ export const TABS: Tab[] = [
 
   // ── Technology ────────────────────────────────────────────────
   {
-    slug: 'technologies', icon: '🔮', label: 'Technologies', section: 'Technology',
+    slug: 'technologies', icon: '🔮', label: 'Technologies', section: 'Empire',
     status: 'built', sourceSheet: '🔮Technologies',
     summary: 'Tech tree with prerequisites and unlocks',
     willContain: ['Each tech: era, cost, prerequisites, unlocks'],
@@ -277,50 +277,45 @@ export const TABS: Tab[] = [
     status: 'built', sourceSheet: '',
     summary: 'Map generation scripts and their option chips',
   },
-  {
-    slug: 'continent', icon: '🌍', label: 'Continent', section: 'World',
-    status: 'built', sourceSheet: '',
-    summary: 'Continent map-script sweep — spawns, mirroring, resources',
-  },
 
   // ── Mechanics ─────────────────────────────────────────────────
   {
-    slug: 'events', icon: '📜', label: 'Story Events', section: 'Mechanics',
+    slug: 'events', icon: '📜', label: 'Story Events', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Every narrative event — browsable by class, trigger, and chain',
   },
   {
-    slug: 'diplomacy', icon: '🕊️', label: 'Diplomacy', section: 'Mechanics',
+    slug: 'diplomacy', icon: '🕊️', label: 'Diplomacy', section: 'Empire',
     status: 'built', sourceSheet: '',
     summary: 'States, war score, truces, alliances, tribute',
   },
   {
-    slug: 'occurrences', icon: '🌋', label: 'Occurrences', section: 'Mechanics',
+    slug: 'occurrences', icon: '🌋', label: 'Occurrences', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Calamities, world transformations, and era/crisis occurrences',
   },
   {
-    slug: 'subjects', icon: '🤝', label: 'Subjects', section: 'Mechanics',
+    slug: 'subjects', icon: '🤝', label: 'Subjects', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Event-system casting roles — 2,062 subject templates and their filters',
   },
   {
-    slug: 'concepts', icon: '📖', label: 'Concepts', section: 'Mechanics',
+    slug: 'concepts', icon: '📖', label: 'Concepts', section: 'Concepts',
     status: 'built', sourceSheet: '',
     summary: 'Game-mechanics glossary — every in-game encyclopedia entry, auto-linked',
   },
   {
-    slug: 'difficulty', icon: '🎚️', label: 'Difficulty & Advantages', section: 'Mechanics',
+    slug: 'difficulty', icon: '🎚️', label: 'Difficulty & Advantages', section: 'Empire',
     status: 'built', sourceSheet: '',
     summary: 'What each difficulty preset changes — prosperity, AI bonuses, tribes',
   },
   {
-    slug: 'missions', icon: '🎯', label: 'Missions', section: 'Mechanics',
+    slug: 'missions', icon: '🎯', label: 'Missions', section: 'Court & Missions',
     status: 'built', sourceSheet: '',
     summary: 'Character missions — costs, requirements, outcomes',
   },
   {
-    slug: 'ruin-events', icon: '🏚️', label: 'Ruin Events', section: 'Mechanics',
+    slug: 'ruin-events', icon: '🏚️', label: 'Ruin Events', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Ruins-tile events — triggers, odds, options, rewards',
     willContain: [
@@ -329,7 +324,7 @@ export const TABS: Tab[] = [
     ],
   },
   {
-    slug: 'expedition-events', icon: '🧭', label: 'Expedition Events', section: 'Mechanics',
+    slug: 'expedition-events', icon: '🧭', label: 'Expedition Events', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Explore-distant-lands expedition chains, incl. follow-ups',
     willContain: [
@@ -338,22 +333,22 @@ export const TABS: Tab[] = [
     ],
   },
   {
-    slug: 'rally', icon: '📯', label: 'Rally Troops', section: 'Mechanics',
+    slug: 'rally', icon: '📯', label: 'Rally Troops', section: 'Court & Missions',
     status: 'built', sourceSheet: '📈 Rally  Hold Court  Steal Res',
     summary: 'Leader mission: Training yields, dice outcomes',
   },
   {
-    slug: 'hold-court', icon: '⚖️', label: 'Hold Court', section: 'Mechanics',
+    slug: 'hold-court', icon: '⚖️', label: 'Hold Court', section: 'Court & Missions',
     status: 'built', sourceSheet: '📈 Rally  Hold Court  Steal Res',
     summary: 'Judge mission: Civics, courtier chance, event chance',
   },
   {
-    slug: 'steal-research', icon: '🕵', label: 'Steal Research', section: 'Mechanics',
+    slug: 'steal-research', icon: '🕵', label: 'Steal Research', section: 'Court & Missions',
     status: 'built', sourceSheet: '📈 Rally  Hold Court  Steal Res',
     summary: 'Spymaster mission: Science from rival, with exposure risk',
   },
   {
-    slug: 'religious-conversion', icon: '🙏', label: 'Religious Conversion', section: 'Mechanics',
+    slug: 'religious-conversion', icon: '🙏', label: 'Religious Conversion', section: 'Religion',
     status: 'built', sourceSheet: '🙏 Religious Conversion Mechani',
     summary: 'How religion spreads between cities',
     willContain: ['Spread formula, modifiers, examples'],
@@ -361,31 +356,31 @@ export const TABS: Tab[] = [
 
   // ── Character Skills ─────────────────────────────────────────
   {
-    slug: 'stat-scaling', icon: '📈', label: 'Stat Scaling', section: 'Character Skills',
+    slug: 'stat-scaling', icon: '📈', label: 'Stat Scaling', section: 'Ratings',
     status: 'built', sourceSheet: '🟣 Wisdom Base / CM (+ Charisma, Courage, Discipline)',
     summary: 'Per-rating yield/combat scaling by role, Non-competitive vs Competitive',
     willContain: ['All 4 stats, rating −3..+15, Leader/Governor/Agent/General, both modes'],
   },
   {
-    slug: 'wisdom', icon: '🟣', label: 'Wisdom', section: 'Character Skills',
+    slug: 'wisdom', icon: '🟣', label: 'Wisdom', section: 'Ratings',
     status: 'built', sourceSheet: '🟣 Wisdom Base',
     summary: 'Base bonuses + commander effects',
     willContain: ['Wisdom Base sheet + Wisdom CM (commander) sheet'],
   },
   {
-    slug: 'charisma', icon: '🧡', label: 'Charisma', section: 'Character Skills',
+    slug: 'charisma', icon: '🧡', label: 'Charisma', section: 'Ratings',
     status: 'built', sourceSheet: '🧡 Charisma Base',
     summary: 'Base bonuses + commander effects',
     willContain: ['Charisma Base sheet + Charisma CM (commander) sheet'],
   },
   {
-    slug: 'courage', icon: '🔺', label: 'Courage', section: 'Character Skills',
+    slug: 'courage', icon: '🔺', label: 'Courage', section: 'Ratings',
     status: 'built', sourceSheet: '🔺 Courage Base',
     summary: 'Base bonuses + commander effects',
     willContain: ['Courage Base sheet + Courage CM (commander) sheet'],
   },
   {
-    slug: 'discipline', icon: '⚡', label: 'Discipline', section: 'Character Skills',
+    slug: 'discipline', icon: '⚡', label: 'Discipline', section: 'Ratings',
     status: 'built', sourceSheet: '⚡ Discipline Base',
     summary: 'Base bonuses + commander effects',
     willContain: ['Discipline Base sheet + Discipline CM (commander) sheet'],
@@ -393,12 +388,15 @@ export const TABS: Tab[] = [
 ];
 
 export const SECTIONS = [
-  'Civilizations',
+  'Nations & Families',
   'Characters',
+  'Court & Missions',
+  'Ratings',
+  'Cities',
   'Empire',
-  'Technology',
   'Military',
+  'Religion',
+  'Events',
   'World',
-  'Mechanics',
-  'Character Skills',
+  'Concepts',
 ] as const;

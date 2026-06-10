@@ -24,15 +24,23 @@ function bonusSource(n: typeof nations[number]): string[] {
   return yaml || [];
 }
 
+// Families carrying a coalition-supremacy payload (family.xml
+// SupremacyEffectPlayer — currently Tamil's Pandya/Chola/Chera).
+function supremacies(n: any) {
+  return (n.families || []).filter((f: any) => f.supremacy);
+}
+
 const rows: Row[] = [
   { kind: 'section', label: 'Bonuses' },
   // Bonus 1/2/3 pull from a single source per nation. Use XML-canonical
   // effects when they're at least as complete as the yaml curation;
   // otherwise fall back entirely to yaml (so we don't mix-and-match
   // index-by-index, which produced duplicates and dropped entries).
-  { kind: 'bonus', label: 'Bonus 1', field: n => bonusSource(n)[0] },
-  { kind: 'bonus', label: 'Bonus 2', field: n => bonusSource(n)[1] },
-  { kind: 'bonus', label: 'Bonus 3', field: n => bonusSource(n)[2] },
+  // Coalition nations (Tamil) instead show one family-supremacy tile per
+  // row — the capital's family grants its supremacy effects all game.
+  { kind: 'bonus', label: 'Bonus 1', field: n => supremacies(n)[0] ?? bonusSource(n)[0] },
+  { kind: 'bonus', label: 'Bonus 2', field: n => supremacies(n)[1] ?? bonusSource(n)[1] },
+  { kind: 'bonus', label: 'Bonus 3', field: n => supremacies(n)[2] ?? bonusSource(n)[2] },
 
   { kind: 'section', label: 'Shrines' },
   { kind: 'shrine', label: 'Shrine 1', field: n => n.shrines?.[0] },
@@ -220,6 +228,34 @@ for (const n of nations) {
                         <span class="fam__class">{v.class}</span>
                         <span class="fam__name">{v.name}</span>
                       </span>
+                    </td>
+                  );
+                }
+
+                // Coalition family-supremacy tile (Tamil): shrine-style cell
+                // — family name as headline, class · Supremacy as the italic
+                // line, then the supremacy's effects.
+                if (row.kind === 'bonus' && typeof v === 'object' && v.supremacy) {
+                  const supEffects: string[] = v.supremacy.effects || [];
+                  const yieldKey = supEffects.map(e => classifyYield(e)?.toLowerCase()).find(Boolean) || 'misc';
+                  const iconUrl = v.classKey ? `${base}img/archetypes/${v.classKey}.png` : null;
+                  return (
+                    <td
+                      class={`cell n-${n.slug} yield-${yieldKey} hl`}
+                      data-nation={n.slug}
+                      data-hl={v.classKey ? `family:${v.classKey}` : undefined}
+                      title={`${v.supremacy.name} — granted all game when ${v.name} is your capital's family`}
+                    >
+                      <div class="shrine">
+                        <div class="shrine__head">
+                          {iconUrl && <img class="shrine__art" src={iconUrl} alt="" />}
+                          <span class="shrine__type">{v.name}</span>
+                          <span class="shrine__deity">{v.class} · Supremacy</span>
+                        </div>
+                        {supEffects.map(e => (
+                          <div class="shrine__effect"><LinkedText text={e} showIcons={false} iconsForYields={true} /></div>
+                        ))}
+                      </div>
                     </td>
                   );
                 }
