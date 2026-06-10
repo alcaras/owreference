@@ -124,13 +124,38 @@ def main() -> int:
                 tech_label = text_tech.get(tech_entry.findtext("Name") or "",
                                             tech_prereq.replace("TECH_", "").title())
 
-        # Effects from EffectCity (yield rate, modifiers) + theology-specific extras.
+        # Per-city effects from EffectCity (apply in every city following
+        # the religion once the theology is adopted).
         effects: list[str] = []
         ec_id = e.findtext("EffectCity") or ""
         if ec_id:
             ec = indexes.get("effectCity.xml", {}).get(ec_id)
             if ec is not None:
                 effects.extend(render_effect_city(ec, per_city=True, indexes=indexes))
+
+        # Building-conditional effects: improvementClass.xml
+        # aeTheologyCityEffect wires a theology to an extra EffectCity that
+        # only applies in cities with that worship building (e.g. Redemption
+        # → Cathedral can hurry Specialists/Projects with Training).
+        building_effects: list[dict] = []
+        for ic_entry in parse("improvementClass.xml").findall("Entry"):
+            for pair in ic_entry.findall("aeTheologyCityEffect/Pair"):
+                if (pair.findtext("zIndex") or "") != zt:
+                    continue
+                bec_id = pair.findtext("zValue") or ""
+                bec = indexes.get("effectCity.xml", {}).get(bec_id)
+                if bec is None:
+                    continue
+                ic_id = ic_entry.findtext("zType") or ""
+                bec_lines = render_effect_city(bec, per_city=True, indexes=indexes)
+                if not bec_lines:
+                    # Empty marker (Enlightenment's cathedral hook carries no
+                    # XML payload anywhere) — nothing honest to show.
+                    continue
+                building_effects.append({
+                    "building": ic_id.replace("IMPROVEMENTCLASS_", "").title(),
+                    "effects": bec_lines,
+                })
 
         # Per-theology law opinion bonus (e.g., Mythology favors Polytheism).
         law_op: list[dict] = []
@@ -153,6 +178,7 @@ def main() -> int:
             "techPrereq": tech_prereq,
             "techLabel": tech_label,
             "effects": effects,
+            "buildingEffects": building_effects,
             "lawOpinion": law_op,
         })
 

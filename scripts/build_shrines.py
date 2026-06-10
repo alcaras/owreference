@@ -54,6 +54,15 @@ def main() -> int:
     text_nation = load_text(XML_DIR, "text-nation.xml")
     indexes = load_xml_indexes(XML_DIR)
 
+    # Dynasty → nation (Serapis is gated on DYNASTY_PTOLEMY instead of a
+    # NationPrereq; resolve through nation.xml aeDynasties → Greece).
+    dynasty_nation: dict[str, str] = {}
+    for n_entry in parse("nation.xml").findall("Entry"):
+        n_id = n_entry.findtext("zType") or ""
+        for d in n_entry.findall("aeDynasties/zValue"):
+            if d.text:
+                dynasty_nation[d.text] = n_id
+
     shrines: list[dict] = []
     for entry in parse("improvement.xml").findall("Entry"):
         if (entry.findtext("Class") or "") != "IMPROVEMENTCLASS_SHRINE":
@@ -61,8 +70,11 @@ def main() -> int:
 
         zt = entry.findtext("zType") or ""
         nation = entry.findtext("NationPrereq") or ""
+        dynasty = entry.findtext("DynastyPrereq") or ""
+        if not nation.startswith("NATION_") and dynasty:
+            nation = dynasty_nation.get(dynasty, "")
         if not nation.startswith("NATION_"):
-            # Skip shrines without a clear nation prereq.
+            # Skip shrines without a clear nation (or dynasty) prereq.
             continue
 
         # Type from AssetVariation (WAR/WATER/etc.)
@@ -170,6 +182,7 @@ def main() -> int:
             "slug": zt.replace("IMPROVEMENT_SHRINE_", "").lower(),
             "deity": deity,
             "fullName": full_name,
+            "dynastyPrereq": dynasty.replace("DYNASTY_", "").title() if dynasty else None,
             "type": type_key,
             "typeLabel": type_key.title(),
             "primaryYield": SHRINE_TYPE_YIELD.get(type_key, "misc"),

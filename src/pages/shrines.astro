@@ -2,10 +2,42 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import data from '../data/shrines.json';
+import nations from '../data/nations.json';
 
 const base = import.meta.env.BASE_URL;
 
 const { groups } = data;
+
+// ── Type × nation matrix (the spreadsheet's signature view) ──
+// One row per (type, effect signature): a type whose shrines differ in
+// output splits into separate rows — e.g. the two Wisdom variants
+// (adjacent Odeon vs adjacent Courthouse), exactly like the sheet.
+const matrixNations = [...nations]
+  .filter(n => (data.shrines as any[]).some(s => s.nation.slug === n.slug))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const matrixRows: {
+  type: string; label: string; primaryYield: string;
+  outputs: string[]; effects: string[];
+  byNation: Record<string, any>; count: number;
+}[] = [];
+for (const g of groups) {
+  const bySig = new Map<string, any[]>();
+  for (const s of g.shrines) {
+    const sig = [...s.outputs, ...s.effects].join('|');
+    if (!bySig.has(sig)) bySig.set(sig, []);
+    bySig.get(sig)!.push(s);
+  }
+  for (const list of bySig.values()) {
+    const byNation: Record<string, any> = {};
+    for (const s of list) byNation[s.nation.slug] = s;
+    matrixRows.push({
+      type: g.type, label: g.label, primaryYield: g.primaryYield,
+      outputs: list[0].outputs, effects: list[0].effects,
+      byNation, count: list.length,
+    });
+  }
+}
 
 // Mirrors `SHRINE_GLYPH` in nations.astro — keeps the type headlines visually
 // linked across pages.
@@ -50,6 +82,63 @@ for (const g of groups) {
         <span class="chip__count">{g.shrines.length}</span>
       </a>
     ))}
+  </div>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl ntbl--shrinematrix" aria-label="Shrine types by nation">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Nation →</span>
+              <span class="rowlabel__big">Type ↓</span>
+            </th>
+            <th class="nhdr nhdr--family">Effects</th>
+            {matrixNations.map(n => (
+              <th class={`nhdr n-${n.slug}`} data-nation={n.slug}>
+                <div class="nhdr__inner">
+                  <a class="nhdr__link" href={`${base}nations/${n.slug}`}>
+                    <img class="nhdr__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
+                    <span class="nhdr__name">{n.name}</span>
+                  </a>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {matrixRows.map(row => (
+            <tr>
+              <th class={`rowlabel sm-type yield-${row.primaryYield}`} scope="row">
+                <a class="sm-type__link" href={`#type-${row.type.toLowerCase()}`}>
+                  <img class="sm-type__icon" src={`${base}img/icons/shrines/${row.type.toLowerCase()}.png`} alt="" />
+                  {row.label}
+                </a>
+              </th>
+              <td class={`cell yield-${row.primaryYield} sm-fx`}>
+                {[...row.outputs, ...row.effects].map(e => (
+                  <div class="sm-fx__line"><LinkedText text={e} showIcons={false} iconsForYields={true} /></div>
+                ))}
+              </td>
+              {matrixNations.map(n => {
+                const s = row.byNation[n.slug];
+                if (!s) {
+                  return <td class="cell is-empty" data-nation={n.slug}><span class="cell__dash">—</span></td>;
+                }
+                return (
+                  <td class="cell sm-deity" data-nation={n.slug}>
+                    <a href={`#${s.slug}`} class="sm-deity__link" style={`--nation-accent: ${n.color?.bg || 'var(--gold)'}`}>
+                      {s.deity}
+                      {s.dynastyPrereq && <span class="sm-deity__req">{s.dynastyPrereq} dynasty</span>}
+                    </a>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div id="shrines-grid">
@@ -157,6 +246,40 @@ for (const g of groups) {
     margin: 0.4rem 0 1.2rem;
   }
   .lede b { color: var(--text); }
+
+  /* ── Type × nation matrix ── */
+  .grid { margin: 0 0 1.6rem; }
+  .ntbl--shrinematrix .rowlabel { min-width: 7.5rem; }
+  .sm-type__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .sm-type__link:hover { color: var(--gold); text-decoration: none; }
+  .sm-type__icon { width: 1.3rem; height: 1.3rem; object-fit: contain; }
+  .sm-fx { min-width: 13rem; }
+  .sm-fx__line { font-size: 0.76rem; line-height: 1.45; }
+  .sm-deity { white-space: nowrap; }
+  .sm-deity__link {
+    display: inline-flex;
+    flex-direction: column;
+    color: var(--text);
+    font-size: 0.82rem;
+    text-decoration: none;
+    border-left: 3px solid var(--nation-accent, var(--border));
+    padding-left: 0.45rem;
+  }
+  .sm-deity__link:hover { color: var(--gold); text-decoration: none; }
+  .sm-deity__req {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    color: var(--text-faint);
+  }
 
   .legend--types { margin-bottom: 1.2rem; }
   .chip__glyph { margin-right: 0.2rem; font-size: 0.9em; }

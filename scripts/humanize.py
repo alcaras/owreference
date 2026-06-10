@@ -276,6 +276,7 @@ HANDLED_FIELDS: dict[str, set[str]] = {
         "aiYieldRateHolyCityWorld", "aiYieldRateSpecialistClass",
         "aiImprovementModifier", "aeFreeUnitEffectCity", "aeLuxuryResources",
         "abNoImprovementClassMax", "TerrainImprovementValid", "aeHurryMoney",
+        "aeHurryTraining", "aeHurryCivics", "aeHurryOrders", "aeHurryPopulation",
         "SpecialistNoPrereq", "aiUnitTraitLevel", "iCityHP", "iUnitHealAlways",
         "iUnitLevel", "iSpecialistUrbanTrainTimeModifier",
         "iImprovementCostModifier", "iRebelProb", "iRandomPromotions",
@@ -480,11 +481,18 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | 
         if terrain and imp:
             out.append(f"Can build {imp} on {terrain}")
 
-    # Hurry production with money
-    for r in e.findall("aeHurryMoney/zValue"):
-        token = (r.text or "")
-        thing = token.replace("BUILD_", "").replace("_", " ").title() if token else "Production"
-        out.append(f"Can hurry {thing} with Money")
+    # Hurry production with a yield (per-target BUILD_* lists)
+    for hurry_tag, hurry_yield in (
+        ("aeHurryMoney", "Money"), ("aeHurryTraining", "Training"),
+        ("aeHurryCivics", "Civics"), ("aeHurryOrders", "Orders"),
+        ("aeHurryPopulation", "Population"),
+    ):
+        things = [
+            (r.text or "").replace("BUILD_", "").replace("_", " ").title() + "s"
+            for r in e.findall(f"{hurry_tag}/zValue") if r.text
+        ]
+        if things:
+            out.append(f"Can hurry {' & '.join(sorted(things))} with {hurry_yield}")
 
     # Specialist unlock with no prerequisite (e.g., Guilds → Elder)
     sp = e.findtext("SpecialistNoPrereq") or ""

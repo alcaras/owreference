@@ -82,16 +82,32 @@ function theologyYield(eff: string[]): string {
               </header>
 
               {th.effects.length > 0 ? (
-                <ul class="theology__effects">
-                  {th.effects.map(e => (
-                    <li class="theology__effect">
-                      <LinkedText text={e} showIcons={false} iconsForYields={true} />
-                    </li>
-                  ))}
-                </ul>
+                <>
+                  <div class="theology__scope">Every city of the religion</div>
+                  <ul class="theology__effects">
+                    {th.effects.map(e => (
+                      <li class="theology__effect">
+                        <LinkedText text={e} showIcons={false} iconsForYields={true} />
+                      </li>
+                    ))}
+                  </ul>
+                </>
               ) : (
                 <p class="theology__effect theology__effect--empty">No direct city effect.</p>
               )}
+
+              {th.buildingEffects?.map((be: any) => (
+                <>
+                  <div class="theology__scope">In cities with a <LinkedText text={be.building} showIcons={false} /></div>
+                  <ul class="theology__effects">
+                    {be.effects.map((e: string) => (
+                      <li class="theology__effect">
+                        <LinkedText text={e} showIcons={false} iconsForYields={true} />
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ))}
 
               <footer class="theology__foot">
                 {th.lawOpinion.map(l => (
@@ -196,6 +212,13 @@ function theologyYield(eff: string[]): string {
     font-size: 0.65rem;
     opacity: 0.75;
     font-style: italic;
+  }
+  .theology__scope {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    color: var(--text-faint);
+    margin: 0.45rem 0 0.15rem;
   }
   .theology__effects {
     list-style: none;
