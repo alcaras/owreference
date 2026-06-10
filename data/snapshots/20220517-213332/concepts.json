@@ -1,0 +1,1354 @@
+{
+  "_meta": {
+    "skipped": [
+      {
+        "id": "(schema entry)",
+        "reason": "no zType"
+      },
+      {
+        "id": "CONCEPT_CAPITAL",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_CLEAR",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_COURTIER",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_EMPIRES_OF_THE_INDUS",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_EXPLORER",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_FRESH_WATER",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_HOLY_CITY",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_IGNORES_ZOC",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_RIVER",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_TRADE_NETWORK",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_WONDERS_AND_DYNASTIES",
+        "reason": "no help text (zHelpText=—)"
+      },
+      {
+        "id": "CONCEPT_ZOC",
+        "reason": "no help text (zHelpText=—)"
+      }
+    ],
+    "skippedCount": 13,
+    "source": "concept.xml",
+    "total": 134
+  },
+  "concepts": [
+    {
+      "dlc": "",
+      "help": [
+        "Agents can be sent to Cities with an Agent Network to gain visiblity of the City's territory and to conduct Treachery and Insurrection Missions. They also siphon off a percentage of its base Yields (before modifiers), depending on the Ratings of the Character. (For example, a Character's Wisdom will determine how much Science they will gather.)"
+      ],
+      "id": "CONCEPT_AGENT",
+      "name": "Agent",
+      "slug": "agent"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Once you have a Spymaster, a Scout can create an Agent Network in a foreign city. The Scout will remain unavailable for 5 turns.",
+        "A character can then be sent to the city to serve as an Agent, gaining yields, visibility of the city's territory, and access to missions like Treachery."
+      ],
+      "id": "CONCEPT_AGENT_NETWORK",
+      "name": "Agent Network",
+      "slug": "agent-network"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Complete ten Ambitions and Legacies to win an Ambition Victory (if enabled). Completing individual Ambitions (and Legacies) will also grant you a permanent boost to Legitimacy."
+      ],
+      "id": "CONCEPT_AMBITION",
+      "name": "Ambition",
+      "slug": "ambition"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Naval Units can Anchor to allow Land Units Water Transport through Water Tiles within the Naval Unit's Anchor range. Anchoring takes a full Turn to complete, so Land Units cannot move through the Tiles until the Turn after Anchoring."
+      ],
+      "id": "CONCEPT_ANCHORED",
+      "name": "Anchored",
+      "slug": "anchored"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Character can only have one Archetype, and they are Traits that determine which jobs a Character may have. (For example, a Judge can be either a Governor or a Chancellor.) Each Archetype also grants different bonuses, some of which only apply if the Character is doing a particular job, such as General or Governor. The field of study you choose for your Heirs determines their eventual Archetype."
+      ],
+      "id": "CONCEPT_ARCHETYPE",
+      "name": "Archetype",
+      "slug": "archetype"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "When a City is captured, its population will be resistant to their new foreign ruler. Assimilation results in reduced Growth, Training, Civics, Science, Culture, Money, and Goods() yields. The Assimilation penalty and duration are increased by the Culture Level of a City at the time it was captured. A City's Assimilation diminishes faster based on the Culture Level of the new Nation."
+      ],
+      "id": "CONCEPT_ASSIMILATION",
+      "name": "Assimilation",
+      "slug": "assimilation"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "There are four character Attributes (values for each is often based on Archetype and Traits): Wisdom, Charisma, Courage, and Discipline.",
+        "The Attributes of your Leader, each Spouse of your Leader, close Successors, and Courtiers all add to national yields (for example, the Wisdom of all of these Characters directly impacts your Nation's Science)",
+        "In addition, a Character's Attributes can further impact national yields and relations while appointed to roles as Councilors or Agents. For specific Units and Cities, the Attributes of a General impact their Units' combat ability, and those of a Governor act as a multiplier on some City outputs."
+      ],
+      "id": "CONCEPT_RATING",
+      "name": "Attribute",
+      "slug": "rating"
+    },
+    {
+      "dlc": "Behind the Throne",
+      "help": [
+        "The crown rests uneasily. Nobles plot in their protected Estates, and the disaffected gather ominously throughout the Nation's Slums. Come turbulent times, who might dare to Seize the Throne?"
+      ],
+      "id": "CONCEPT_BEHIND_THE_THRONE",
+      "name": "Behind the Throne",
+      "slug": "behind-the-throne"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Tech Cards with a one time bonus, such as Stone Boost. If not selected for research, they are trashed rather than returning to the Discard Pile."
+      ],
+      "id": "CONCEPT_BONUS_CARD",
+      "name": "Bonus Card",
+      "slug": "bonus-card"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Tiles can also be bought with a Unit adjacent to a City border when the Colonies law is active, or if the City is a Landowners Family Seat."
+      ],
+      "id": "CONCEPT_BUY_TILE",
+      "name": "Buy Tiles",
+      "slug": "buy-tile"
+    },
+    {
+      "dlc": "Wrath of Gods",
+      "help": [
+        "A Calamity is a type of Occurrence, such as a Drought, Plague, or Earthquake, that brings negative effects to your Nation and sometimes to the land itself. Some Calamities permanently change the map by altering the Terrain and/or Height of different Tiles."
+      ],
+      "id": "CONCEPT_CALAMITY",
+      "name": "Calamity",
+      "slug": "calamity"
+    },
+    {
+      "dlc": "Unavailable",
+      "help": [
+        "Canals connect bodies of water so that ships may pass through them. Longer canals can be built by placing multiple canal improvements in a row.",
+        "Ships cannot stop in a canal. They must start and end their move in a water tile."
+      ],
+      "id": "CONCEPT_CANAL",
+      "name": "Canal",
+      "slug": "canal"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Caravan Units can be sent on a Caravan Mission to a Foreign Capital. The Caravan moves once per Turn (costing one Order), and upon safe arrival, the Unit is consumed, producing a lump sum of Money and an Opinion boost. To gain Caravan Access, assign a Cunning Governor to a City or found a Traders Family Seat."
+      ],
+      "id": "CONCEPT_CARAVAN_MISSION",
+      "name": "Caravan Mission",
+      "slug": "caravan-mission"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Citizens are produced automatically by Cities from Growth. Each Citizen provides a small amount of Orders, can be trained to become a Specialist, and augments the output of certain Specialists such as Elder Priests and Elder Poets. Each Citizen imposes a small penalty to Family Opinion."
+      ],
+      "id": "CONCEPT_CITIZEN",
+      "name": "Citizen",
+      "slug": "citizen"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Cities are founded on City Sites by Settlers. Your Nation is made up of its Cities, each of which gains yields and other benefits from Projects and from Improvements built by your Workers. When founded or captured, a City is assigned to a Family, which will affect what type of bonuses apply to that City. Cities are also affected in various ways by such things as their controlling Nation's active Laws, the Religions practiced in the City, the Happiness level of the City, and the Traits and Attributes of the City's Governor, if present."
+      ],
+      "id": "CONCEPT_CITY",
+      "name": "City",
+      "slug": "city"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The map is full of City Sites, which are the only locations Settlers can found new Cities. (The City can be founded on any of the Urban Tiles connected to the City Site.) Many City Sites are occupied by Tribes, which must either be defeated or joined in Tribal Alliances before founding a City is possible.",
+        "A Unit placed directly on a City Site will block other Nations from founding Cities there."
+      ],
+      "id": "CONCEPT_CITY_SITE",
+      "name": "City Site",
+      "slug": "city-site"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "help": [
+        "Clergy are representatives of their Religion in your court. Each Clergy member gives a bonus to their Religion's Opinion, increased or decreased by their personal opinion of you. Clergy can be created through the Induct into the Clergy Mission. They can act as a Tutor and have extra abilities depending on if they are Pagan Clergy or World Clergy, although cannot act as a General or a Governor. Clergy also have an increased chance to be picked as the Head of their Religion when the current one dies."
+      ],
+      "id": "CONCEPT_CLERGY",
+      "name": "Clergy",
+      "slug": "clergy"
+    },
+    {
+      "dlc": "Empires of the Indus",
+      "help": [
+        "In a Coalition Nation, each Family has a Control score tracking the number of Characters appointed to positions of power. If the leading Family is overtaken, the upstart Family will try to take the throne, making their Family Seat the new Capital and their Family Head the Leader. Each Family has a different Supremacy effect, which is applied when they seize the throne."
+      ],
+      "id": "CONCEPT_COALITION_NATION",
+      "name": "Coalition",
+      "slug": "coalition-nation"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Cognomen is an acquired title that increases the Legitimacy of the Leader, such as the Invincible, the Wise, and the Great. New Cognomens are acquired when the specific stats associated with that Cognomen cross the necessary threshold. For example, one becomes the Wise by discovering a great number of Technologies. (The threshold increases for each subsequent Leader of a Nation.)"
+      ],
+      "id": "CONCEPT_COGNOMEN",
+      "name": "Cognomen",
+      "slug": "cognomen"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The Old World community on the official Discord server has created their own Community Shorthand to discuss concepts within the game. You may join the official Discord server by clicking the Discord icon on the main menu. A list of the most common shorthand follows.",
+        "• 1UPT - One Unit Per Tile, when only one unit is able to occupy a tile. A concept used by some strategy games, including Old World, for military units. There are cases when a civilian unit may stack with other units. For example, a settler may stack with a military unit.",
+        "• AAR - After Action Report, commentary and discussion of how a game went. Conducted after the game is completed.",
+        "• Alex - Refers to Alexander, first Heir of Greece.",
+        "• Babs - Refers to the Nation of Babylonia.",
+        "• Chad/Neb - Refers to Nebuchadnezzar, first Leader of Babylonia.",
+        "• COD - Carpet of Doom, when every tile contains a military unit.",
+        "• DAR - During Action Report, commentary and discussion of how an in progress game is going. Suggestions of what to do next are usually encouraged from readers.",
+        "• EA - Early Access, the period of time before release when the game was available to the public. Old World was in Early Access from 5 May 2020 till release on 1 July 2021.",
+        "• EGS - Epic Game Store, where Old World is currently available for purchase.",
+        "• - Have an Elephant, or using the elephant emoji, is an indication other readers think that comment is a great idea.",
+        "• FFA - Free For All, a way of playing where there are no teams. Everyone plays to win against everyone else.",
+        "• GOTW - Game Of The Week, a weekly game setup exactly the same for all players of Old World. Play and compare with others in the #game-of-the-week channel on the official Discord.",
+        "• Haty - Refers to Hatshepsut, first Leader of Egypt.",
+        "• ICS - Infinite City Sleaze, the process of packing in cities as tightly as possible to extract the maximum amount of resources for the least amount of development. A recurring issue in strategy games, Old World addresses this issue by using preset City Sites.",
+        "• Main - Main Branch, the public release version of the game. Mohawk applies updates to the Main branch only after being tested on the Test branch.",
+        "• Mod - An addition to the game that modifies how the base game plays. Popular mods are new Nations, game modes, and character portraits. Access the Mods Manager from the Main menu of the game.",
+        "• Mohawk/s - Refers to either Mohawk Games, the studio that created Old World, or Mohawks, the team at Mohawk Games.",
+        "• MP - Multiplayer, game mode where there are multiple Human players. May be played online via Network, Play By Cloud (similar to Play By Email), Hotseat, or Server mode (PITBOSS).",
+        "• OCC - One City Challenge, a game option where the Human player/s only have one City. They are unable to build Settlers.",
+        "• OTC - Offworld Trading Company, Mohawk Games' economic strategy game based on Mars.",
+        "• RAI/PTW - Ruthless AI (previously Play To Win), a game option where AI players will race to claim City Sites and receive negative opinion boosts towards a player who is approaching victory.",
+        "• RNG - Random Number Generator, refers to the random factor in a game mechanic. For example, the percentage chance of a critical hit incorporates a random number.",
+        "• Shurbie - Ashurbanipal, first Leader of Assyria.",
+        "• SOD - Stack of Doom, when an entire army of units are in a single tile. A concept used by some strategy games.",
+        "• SP - Single Player, a game mode where there is one Human player versus multiple AI players.",
+        "• Stomp - Comp Stomp, a way of playing where the Humans team up to eliminate all the AI players.",
+        "• Test - Test Branch, a public version of the game that Mohawk uses to test updates. Can be unstable as a result. Not recommended for Multiplayer or GOTW, use the Main branch instead.",
+        "• UU - Unique Unit, Nation specific units that become available to build in Cities that contain a Stronghold or Citadel. For example, the Legionary of Rome.",
+        "• VHA - Very High Advantage, a game option that gives the highest level of AI Handicap, where the AI receives many bonuses per turn. Combined with Fragile, Raging Barbarians, and Play to Win game option, makes for the hardest Old World game.",
+        "• XML - Text files with markup that store structures for events, characters, bonuses, etc in the game. They ship with the game in the Reference folder."
+      ],
+      "id": "CONCEPT_COMMUNITY_SHORTHAND",
+      "name": "Community Shorthand",
+      "slug": "community-shorthand"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Units currently in cooldown can no longer move or take actions. Causes for cooldown include attacking, appointing a General, building an Improvement, or upgrading the Unit."
+      ],
+      "id": "CONCEPT_COOLDOWN",
+      "name": "Cooldown",
+      "slug": "cooldown"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The Council includes the Chancellor, the Ambassador, the Spymaster, and the Grand Vizier. Each Councillor has a unique set of Missions that can help your Nation. (For example, the Ambassador can conduct a Trade Mission with a Foreign Nation to trade resources and improve Opinion: Foreign.)"
+      ],
+      "id": "CONCEPT_COUNCILOR",
+      "name": "Councilor",
+      "slug": "councilor"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Nation's Court consists of you, your Spouse, the first four Heirs in your Succession, and your Courtiers. The Ratings of Characters in your Court affect your Global Yields (at a non-linear rate). For example, their Courage will increase your Training."
+      ],
+      "id": "CONCEPT_COURT",
+      "name": "Court",
+      "slug": "court"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Critical Hits deal double damage to Units, and the chance to land a Critical Hit is improved with some Promotions and by Generals with Wisdom. Cities are immune to Critical Hits.",
+        "Enabling \"Show Pending Critical Hits\" during advanced game setup will show an icon () above units with a pending Critical Hit."
+      ],
+      "id": "CONCEPT_CRITICAL_HIT",
+      "name": "Critical Hit",
+      "slug": "critical-hit"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "help": [
+        "Cults are Improvements built via certain events. Each has a powerful effect, however having too many in your Nation may start to cause problems..."
+      ],
+      "id": "CONCEPT_LOCAL_CULT",
+      "name": "Cult Shrines",
+      "slug": "local-cult"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "When a City's Culture bar fills up, the City gains a Culture Level, and a positive Culture Event occurs. Higher Culture Levels unlock new Improvements and are worth extra Victory Points towards a Points Victory."
+      ],
+      "id": "CONCEPT_CULTURE_LEVEL",
+      "name": "Culture Level",
+      "slug": "culture-level"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "If a Resource stockpile falls below zero at the start of a turn, other Resources will be automatically sold or City Production will change to compensate, depending on the resource. For Food, Iron, Stone, and Wood, Money will be spent to buy the missing Resource. For a Money deficit, Resources will be automatically sold to make up the difference. To balance out a Civics or Training deficit, one or more Cities will automatically change Production to a Council. When Resource shortfalls cannot be fully made up using the above methods, stockpiles will remain at 0 and no further penalty will be applied."
+      ],
+      "id": "CONCEPT_DEFICIT",
+      "name": "Deficit",
+      "slug": "deficit"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Tech Cards here are not currently available for research, but will eventually become available, as Science progress on other cards is completed."
+      ],
+      "id": "CONCEPT_DISCARD_PILE",
+      "name": "Discard Pile",
+      "slug": "discard-pile"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Disciple can spread its Religion, build Improvements of its Religion, and (with the Orthodoxy Law) Purge other Religions from Cities. Disciples can only be built in Cities with its Religion if the City is its Holy City, if it is the State Religion, or if the Nation has the Tolerance Law.",
+        "Idle Disciples produce a small Yield amount if positioned on an Improvement of their Religion. For example, a Disciple on a Monastery will produce some Science each Turn."
+      ],
+      "id": "CONCEPT_DISCIPLE",
+      "name": "Disciple",
+      "slug": "disciple"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Ranged Units (excluding those with Siege) receive a -20%attack penalty per Tile of distance to the target."
+      ],
+      "id": "CONCEPT_DISTANCE_MODIFIER",
+      "name": "Distance Modifier",
+      "slug": "distance-modifier"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Convert a rival Unit to join your Nation."
+      ],
+      "id": "CONCEPT_ENLIST",
+      "name": "Enlist",
+      "slug": "enlist"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Families with fewer Cities than others will be more envious and have a lower Opinion of the Leader."
+      ],
+      "id": "CONCEPT_ENVY",
+      "name": "Envy",
+      "slug": "envy"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "If an event would grant a Trait that is a Strength or Weakness, and the Character is already at the limit of 3 Strengths or 3 Weaknesses, then the event will modify the Character's Attributes instead. The specific Attribute change depends on the Trait."
+      ],
+      "id": "CONCEPT_TRAIT_FALLBACK",
+      "name": "Fallback",
+      "slug": "trait-fallback"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Families represent prominent clans within your nation. Each city is associated with one of your families, and gains benefits depending on Family Class.",
+        "Family Opinion impacts the cities and units of a family. Major factors in Family Opinion include the Character Opinion of the family head, Discontent in cities of the family, Luxuries sent to the family, and Religion Opinion (if the family belongs to one.)"
+      ],
+      "id": "CONCEPT_FAMILY",
+      "name": "Family",
+      "slug": "family"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Family Classes determine what effects a Family has on its Cities, as well as what Laws, Luxuries, and other conditions make them happy.",
+        "Family classes include Landowners, Champions, Statesmen, Patrons, Clerics, Sages, Traders, Artisans, Riders, and Hunters."
+      ],
+      "id": "CONCEPT_FAMILY_CLASS",
+      "name": "Family Class",
+      "slug": "family-class"
+    },
+    {
+      "dlc": "Empires of the Indus",
+      "help": [
+        "In a Coalition, each Family has a Control score. The Leader, Religion Heads, and Council Members each add +2 to their Family's score. Each General, Governor, Agent, Courtier, or Clergy adds +1."
+      ],
+      "id": "CONCEPT_FAMILY_CONTROL",
+      "name": "Family Control",
+      "slug": "family-control"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The Seat is the first City given to a Family and receives a special bonus determined by the Family Class."
+      ],
+      "id": "CONCEPT_FAMILY_SEAT",
+      "name": "Family Seat",
+      "slug": "family-seat"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Unit becomes Fatigued after using all of its Moves. Once Fatigued, a Unit can only move again on the same Turn with a Forced March. (Fatigued Units always refresh their Moves the following turn.)"
+      ],
+      "id": "CONCEPT_FATIGUE",
+      "name": "Fatigue",
+      "slug": "fatigue"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Flanking occurs while attacking an Enemy Unit with a Friendly Military Unit on the opposite side. For example, if attacking from a Tile west of a target, there must be another Military Unit to its east.",
+        "The attacker does not receive any counterattack damage when performing a Flanking attack."
+      ],
+      "id": "CONCEPT_FLANKING",
+      "name": "Flanking",
+      "slug": "flanking"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Forced March permits a Unit to continue moving this Turn when out of Moves, at the cost of 100 Training and twice as many Orders per additional Move."
+      ],
+      "id": "CONCEPT_MARCH",
+      "name": "Forced March",
+      "slug": "march"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Fortified Units receive a +5% defensive bonus per Turn (up to a maximum of 5 Turns). A fully fortified unit counterattacks during melee combat, but each time the unit is attacked (during melee), it loses one turn of its fortification progress."
+      ],
+      "id": "CONCEPT_FORTIFY",
+      "name": "Fortify",
+      "slug": "fortify"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A General modifies the stats of a Unit. Generals must not be of a different Family from the Unit and also must be younger than 50 to be assigned. Generals can be Injured when attacked. (Generals retire at age 60.)"
+      ],
+      "id": "CONCEPT_GENERAL",
+      "name": "General",
+      "slug": "general"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Governor modifies a City's Yields. Most Governors must belong to the same Family as the City and have an appropriate Archetype. However, the Leader, Courtiers, and Diplomats can govern any City without these restrictions."
+      ],
+      "id": "CONCEPT_GOVERNOR",
+      "name": "Governor",
+      "slug": "governor"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Scouts, Settlers and Workers can spend an Order to harvest Yields from a Tile with a Resource, outside of any Territory. These Resources will then take a number of turns to renew before they can be Harvested again."
+      ],
+      "id": "CONCEPT_HARVEST_RESOURCE",
+      "name": "Harvest Resource",
+      "slug": "harvest-resource"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Idle Units in friendly territory will Heal 1 Hit Point (HP) each Turn. Units can also perform a Heal action in friendly territory to Heal 5 HP at the cost of one Order."
+      ],
+      "id": "CONCEPT_HEAL",
+      "name": "Heal",
+      "slug": "heal"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Hidden units cannot be seen by other Units. Scouts (and Ranged Units with a Tactician Leader) are Hidden while on a Trees Tile in neutral or friendly territory. Hidden Units have a +10%attack modifier (and will be visible for one Turn after attacking)."
+      ],
+      "id": "CONCEPT_HIDDEN",
+      "name": "Hidden",
+      "slug": "hidden"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Holy Site is a Religious Improvement which can only be built at the Holy City of a World Religion. For example, The Church of the Holy Sepulchre can only be built at the Christian Holy City."
+      ],
+      "id": "CONCEPT_HOLY_SITE",
+      "name": "Holy Site",
+      "slug": "holy-site"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Hit Points (HP) are a measure of how much damage a Unit or City can sustain before being respectively killed or breached."
+      ],
+      "id": "CONCEPT_HP",
+      "name": "HP",
+      "slug": "hp"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "You may Hurry Production in a City of at least Developing Culture at the cost of some Yields and increased Discontent. All Cities can Hurry Production with Civics while other types of Hurrying can be unlocked with Laws or Archetypes. The item being produced will be available on the following Turn."
+      ],
+      "id": "CONCEPT_HURRY",
+      "name": "Hurry Production",
+      "slug": "hurry"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Idle Units are not yet on Cooldown and are thus eligible to perform more actions this Turn, such as an Attack, a Promotion, or an Upgrade."
+      ],
+      "id": "CONCEPT_IDLE",
+      "name": "Idle",
+      "slug": "idle"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Immobile Units cannot move, but can perform any other type of action."
+      ],
+      "id": "CONCEPT_IMMOBILIZE",
+      "name": "Immobilize",
+      "slug": "immobilize"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Workers can build Urban and Rural Improvements on Tiles within a City's territory. Improvements increase the City's Maintenance."
+      ],
+      "id": "CONCEPT_IMPROVEMENT",
+      "name": "Improvement",
+      "slug": "improvement"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "An Improvement Class is a group of Improvements of the same type. For example, the Odeon Class includes Odeons, Theaters, and Amphitheaters."
+      ],
+      "id": "CONCEPT_IMPROVEMENTCLASS",
+      "name": "Improvement Class",
+      "slug": "improvementclass"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Generals whose Units are attacked have a 1% chance of suffering an Injury, such as Scarred, Crippled, and Blinded."
+      ],
+      "id": "CONCEPT_INJURY",
+      "name": "Injury",
+      "slug": "injury"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Invisible units are considered always Hidden and can also freely enter the territory of Nations during a Truce. Scouts are Invisible at all times with a Schemer Leader (unless on a City Site)."
+      ],
+      "id": "CONCEPT_INVISIBLE",
+      "name": "Invisible",
+      "slug": "invisible"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Items are similar to Traits but behave differently in events, where they can be acquired, lost, given, stolen, etc."
+      ],
+      "id": "CONCEPT_ITEM",
+      "name": "Item",
+      "slug": "item"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Comparison of the technological advancement of the two Nations, with the following levels:",
+        "• Primitive",
+        "• Naive",
+        "• Competent",
+        "• Learned",
+        "• Erudite"
+      ],
+      "id": "CONCEPT_KNOWLEDGE",
+      "name": "Knowledge",
+      "slug": "knowledge"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Removes the Attack Cooldown of Adjacent Units and gives Orders for each"
+      ],
+      "id": "CONCEPT_LAUNCH_OFFENSIVE",
+      "name": "Launch Offensive",
+      "slug": "launch-offensive"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Your Leader's ratings affect Global Yields, and other Leaders' Opinions of your Leader affect foreign Opinion. Leaders can always serve as Governor or General, disregarding other requirements."
+      ],
+      "id": "CONCEPT_LEADER",
+      "name": "Leader",
+      "slug": "leader"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Complete ten Ambitions and Legacies to win an Ambition Victory. When the Leader dies, all the current Ambitions become Legacies, which must be completed in 20 Turns. Failing to finish a Legacy will reduce Legitimacy."
+      ],
+      "id": "CONCEPT_LEGACY",
+      "name": "Legacy",
+      "slug": "legacy"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Legitimacy comes from achieving Ambitions and acquiring better Cognomens (such as the Great). (Legitimacy from the Cognomens of previous Leaders decays each time a new Leader takes control.)",
+        "Higher Legitimacy improves Family Opinion and produces more Orders per Turn."
+      ],
+      "id": "CONCEPT_LEGITIMACY",
+      "name": "Legitimacy",
+      "slug": "legitimacy"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Luxuries can be traded to a City to increase Happiness. They can also be traded to other Nations, Tribes, and Families to improve their Opinion of you.",
+        "Family Classes all have two specific Luxuries which give them a higher Opinion boost. (For example, Clerics prefer Incense and Lavender.)",
+        "Luxuries come from the following Resources:",
+        "• Salt",
+        "• Gems",
+        "• Fur",
+        "• Honey",
+        "• Incense",
+        "• Lavender",
+        "• Olives",
+        "• Wine",
+        "• Dyes",
+        "• Pearls"
+      ],
+      "id": "CONCEPT_LUXURY",
+      "name": "Luxuries",
+      "slug": "luxury"
+    },
+    {
+      "dlc": "Behind the Throne",
+      "help": [
+        "[Behind the Throne concept] Events can cause your leader to become Stressed. Being stressed reduces your ability to govern and command, and in particular lowers your income of Science, Civics, and Money while preventing the use of Influence.",
+        "It is possible being Stressed will go away with time, but a much more reliable path is to Indulge in Revelry, which can be chosen in the option from the action panel on the bottom left of the screen while your leader is selected."
+      ],
+      "id": "CONCEPT_MENTAL_STRAIN",
+      "name": "Mental Strain",
+      "slug": "mental-strain"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Tribal Mercenary Units can be hired from Tribes by Carthage and by Nations with Orator Leaders. (The price is determined by the Strength of the Unit, their Tribe's Opinion of you, and the number of Mercenaries recruited so far.) Other Mercenaries can be hired from Events.",
+        "Mercenaries have 50% higher consumption costs and no associated Families."
+      ],
+      "id": "CONCEPT_MERCENARY",
+      "name": "Mercenary",
+      "slug": "mercenary"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "City Sites without a Tribal Settlement can be turned into a Minor City if all of the Urban Tiles connected to the City Site are surrounded by your territory."
+      ],
+      "id": "CONCEPT_MINOR_CITY",
+      "name": "Minor City",
+      "slug": "minor-city"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Missions are actions, such as Tutor Child, Influence, or Make Ambassador, that can be performed by the Leader or other characters. The cost of most non-Leader Missions is modified by the character's Opinion."
+      ],
+      "id": "CONCEPT_MISSION",
+      "name": "Mission",
+      "slug": "mission"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Nations are the major states that are vying for Victory in Old World."
+      ],
+      "id": "CONCEPT_NATION",
+      "name": "Nation",
+      "slug": "nation"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Allied Nations share visibility and will declare War on Nations that declare War on their Ally. Each Nation can have an Alliance with only one other Nation. Only Diplomat Leaders can initiate National Alliances, and can move or attack with allied units."
+      ],
+      "id": "CONCEPT_ALLIANCE_PLAYER",
+      "name": "National Alliance",
+      "slug": "alliance-player"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "National ambitions are a final and necessary component of an Ambition Victory. While other ambitions are tied to a particular leader, National Ambitions are special and grander in scope: they remain in place rather than become Legacies, and you may never have more than one active.",
+        "If you complete nine other ambitions, a National Ambition will always be offered as the final capstone. However, a National Ambition can also sometimes be offered and completed early, making the final push to an Ambition Victory significantly easier."
+      ],
+      "id": "CONCEPT_NATIONAL_AMBITION",
+      "name": "National Ambition",
+      "slug": "national-ambition"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The two Nations at Peace cannot attack each other. They are also less likely to declare War on each other, and they can enter each other's territory."
+      ],
+      "id": "CONCEPT_PEACE_PLAYER",
+      "name": "National Peace",
+      "slug": "peace-player"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Neutral Territory is either unclaimed or belongs to a non-hostile Nation or Tribe. Territory of Cities that are in the process of being captured is also considered Neutral."
+      ],
+      "id": "CONCEPT_NEUTRAL",
+      "name": "Neutral",
+      "slug": "neutral"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The One City Challenge (OCC for short) is a game mode in which Human players are limited to one City, their Capital. Human players are not able to build Settlers, found more than one City, or capture Cities from other Nations (Cities captured by Human players are automatically razed). To play an OCC game, enable the \"One City Challenge\" toggle from the Advanced Setup menu when creating a new game."
+      ],
+      "id": "CONCEPT_ONE_CITY_CHALLENGE",
+      "name": "One City Challenge",
+      "slug": "one-city-challenge"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Character Opinion affects direct yields from successors, spouses, Agents, and Courtiers, the cost of Missions, combat effectiveness as Generals, and the Discontent of Cities as Governors. The Opinion of the Heads of Families, Religions, Nations, and Tribes will also affect the Opinion towards you of those entities as a whole. A spouse's Opinion will also proportionally affect your likelihood of having a child with them."
+      ],
+      "id": "CONCEPT_OPINION_CHARACTER",
+      "name": "Opinion: Character",
+      "slug": "opinion-character"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Family Opinion modifies the Strength of their Units and the Civics, Training, and Maintenance of their Cities. Further, a negative Opinion can lead to Rebels spawning near the Family Cities."
+      ],
+      "id": "CONCEPT_OPINION_FAMILY",
+      "name": "Opinion: Family",
+      "slug": "opinion-family"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Nation Opinion affects the success rates of diplomatic Mission like National Alliance, Peace, and Truce, as well as the odds that a Player will declare War on you."
+      ],
+      "id": "CONCEPT_OPINION_PLAYER",
+      "name": "Opinion: Foreign",
+      "slug": "opinion-player"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Religious Opinion directly modifies the opinion of followers of that religion - that is, characters, Families, Nations or Tribes.",
+        "In addition, religious opinion impacts Discontent, in cities where the religion is present."
+      ],
+      "id": "CONCEPT_OPINION_RELIGION",
+      "name": "Opinion: Religion",
+      "slug": "opinion-religion"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Tribe Opinion affects the success rates of diplomatic Missions like Tribal Alliance, Peace and Truce, as well as the odds that a Tribe will declare War on you or send Raiders into your lands. Tribe Opinion also affects the cost of both hiring them as Mercenaries and settling Cities on their Tribal sites."
+      ],
+      "id": "CONCEPT_OPINION_TRIBE",
+      "name": "Opinion: Tribe",
+      "slug": "opinion-tribe"
+    },
+    {
+      "dlc": "Behind the Throne",
+      "help": [
+        "[Behind the Throne concept] Opulence can make your nation the envy of the world, counting as Victory Points. But not only is such splendor expensive, the Opulence project is only available in cities with Estates to host them.",
+        "To unlock the ability to build Estates, send Luxuries to that city, using the button in the city screen."
+      ],
+      "id": "CONCEPT_OPULENCE",
+      "name": "Opulent Splendor",
+      "slug": "opulence"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The Unit will coordinate with other units in combat to achieve a tactical advantage."
+      ],
+      "id": "CONCEPT_CENTRAL_AI",
+      "name": "Organized Tribal Unit",
+      "slug": "central-ai"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Overflow is excess Production generated but not used on a given turn, for instance unused Training from producing a Unit. It is automatically added to the City Production capacity on the following turn. When completing a Hurried build, any excess is always discarded to the stockpile on completion. Overflow is capped at the current production rate of the City. Any amount beyond this cap is discarded to the stockpile."
+      ],
+      "id": "CONCEPT_OVERFLOW",
+      "name": "Overflow",
+      "slug": "overflow"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "help": [
+        "In addition to Clergy effects, Pagan Clergy can use the Sacrifices to the Gods Mission to increase Happiness in Pagan Cities and have an increased chance to become the next Religion Head, although cannot be appointed as a General or a Governor."
+      ],
+      "id": "CONCEPT_PAGAN_CLERGY",
+      "name": "Pagan Clergy",
+      "slug": "pagan-clergy"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Each Nation has a unique Pagan Religion which is founded and spread by building a Shrine. Polytheism allows building unlimited Shrines, and Divine Rule unlocks adopting Paganism as a State Religion. Pagan Religions don’t have the Disciples, Improvements, or Theologies of World Religions."
+      ],
+      "id": "CONCEPT_PAGAN_RELIGION",
+      "name": "Pagan Religion",
+      "slug": "pagan-religion"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Military Units can disable Improvements by pillaging them. When an Improvement is pillaged by a Unit with a Nation, Resources are added to that Nation's stockpile. Once pillaged, an Improvement will not grant any Resource yields or other bonuses until repaired by a Worker. If left in a Pillaged state, an Improvement will eventually be lost."
+      ],
+      "id": "CONCEPT_PILLAGE",
+      "name": "Pillage",
+      "slug": "pillage"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A City's Population is the sum of its Specialists and Citizens. Each point of a City's Population consumes Food and increases City Maintenance. Cities cost additional Food per population, while Cities of Developing, Strong, and Legendary Culture also cost Iron, Stone, and Wood respectively and cumulatively."
+      ],
+      "id": "CONCEPT_POPULATION",
+      "name": "Population",
+      "slug": "population"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Comparison of the military strength of the two Nations and/or Tribes, with the following levels:",
+        "• Much Weaker",
+        "• Weaker",
+        "• Similar",
+        "• Stronger",
+        "• Much Stronger"
+      ],
+      "id": "CONCEPT_POWER",
+      "name": "Power",
+      "slug": "power"
+    },
+    {
+      "dlc": "Behind the Throne",
+      "help": [
+        "[Behind the Throne concept] A Rising Star is an individual believed by many to be destined for great things. As they accumulate XP, A Rising Star can either offer great benefits to the nation or threaten to Seize the Throne. A Grand Vizier is another kind of rival, one invited to share your power as a compromise, or in exchange for potent mechanical benefits for your nation.",
+        "Both sorts of rival can be thwarted by the - potentially risky - Scheme Against Rival mission, provided you are not too Unpopular."
+      ],
+      "id": "CONCEPT_POWERFUL_RIVALS",
+      "name": "Powerful Rivals",
+      "slug": "powerful-rivals"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Projects are internal City enhancements such as an Archives or Walls, and they are produced using a City's Civics output."
+      ],
+      "id": "CONCEPT_PROJECT",
+      "name": "Project",
+      "slug": "project"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Promotions provide various combat bonuses to Units. They are earned when leveling up from either acquiring XP or spending some Training. Each time a Unit chooses a Promotion, three new ones are randomly chosen from the eligible pool for the Unit's next Level. (Units have a maximum of 5 Levels.)",
+        "Units also can temporarily inherit Promotions from the Traits of their Generals."
+      ],
+      "id": "CONCEPT_PROMOTION",
+      "name": "Promotion",
+      "slug": "promotion"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Comparison of the distance between the Cities of the two Nations and/or Tribes, with the following levels:",
+        "• Very Close",
+        "• Close",
+        "• Near",
+        "• Distant",
+        "• Far"
+      ],
+      "id": "CONCEPT_PROXIMITY",
+      "name": "Proximity",
+      "slug": "proximity"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Ranged units can attack units in tiles further away, up to their maximum range. Standing on a Hill tile increases range by 1, unless the target is also on a Hill. The Marksman promotion also increases range, as do Towers for ranged units within the city.",
+        "Some ranged units like Onagers also have a minimum range and some like Crossbowmen have a fixed range of 1, which cannot be increased."
+      ],
+      "id": "CONCEPT_RANGE",
+      "name": "Range",
+      "slug": "range"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "When an underage ruler takes the throne, an adult regent can take over until the rightful king or queen reaches the age of 18. Appointing a regent does not lead to Legitimacy decay the way Leader changes normally do. The rightful leader will automatically become the Chosen Heir, and the regent may not use the Make Chosen Heir Mission to change the succession."
+      ],
+      "id": "CONCEPT_REGENT",
+      "name": "Regent",
+      "slug": "regent"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "There are two types of Religions: World and Pagan. World Religions, such as Judaism, are founded by the first Nation to fulfill their specific requirements. Pagan Religions are founded by building the first of your Nation's Shrines.",
+        "All Religions give Culture and impact Happiness depending on Religion Opinion. Religions can also become State Religions for additional benefits (a Pagan Religion requires Divine Rule to be a State Religion.) World Religions can be further augmented by Theologies."
+      ],
+      "id": "CONCEPT_RELIGION",
+      "name": "Religion",
+      "slug": "religion"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "help": [
+        "Religious Dissent has a chance of appearing in Cities with an Upset Religion. It can be removed peacefully with the Quell Dissent Mission of a Clergy Character of the same Religion, or violently with the Suppress Dissent Project if the City has a Governor."
+      ],
+      "id": "CONCEPT_RELIGIOUS_DISSENT",
+      "name": "Religious Dissent",
+      "slug": "religious-dissent"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Units forced to Retreat will move to a valid adjacent Tile. If none exists, then the Unit is Disarmed."
+      ],
+      "id": "CONCEPT_RETREAT",
+      "name": "Retreat",
+      "slug": "retreat"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Roads extend your Trade Network and increase Unit movement range. Each step along a Road costs 2/3 of a movement point (and ignores any extra costs from Terrain, Height, or Vegetation). Roads in enemy territory do not affect movement."
+      ],
+      "id": "CONCEPT_ROAD",
+      "name": "Road",
+      "slug": "road"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "After killing an adjacent enemy, Units with Rout will advance into the now empty Tile, if there is another enemy Unit to attack from that tile, and can make another attack on the same turn. Each Rout costs the Unit 1 extra HP of damage. (Units with Rout on a City Tile or a City Site will not advance and attack again.)"
+      ],
+      "id": "CONCEPT_ROUT",
+      "name": "Rout",
+      "slug": "rout"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "All descendants of your dynasty's founder are Royals, which makes them eligible for the Succession and to be Tutored. Each Royal will cost some Money per Turn."
+      ],
+      "id": "CONCEPT_ROYAL",
+      "name": "Royal",
+      "slug": "royal"
+    },
+    {
+      "dlc": "Behind the Throne",
+      "help": [
+        "[Behind the Throne concept] Not only those in your nation's Succession can vie for the throne. Other characters can attempt to displace your leader and found their own dynasty. A Rising Star displeased with your rule can attempt to seize the throne as they gain experience levels (from XP), while Power Hungry characters might see an opportunity while your ruler is Unpopular.",
+        "The most prepared and determined individuals might even go so far as to start a Civil War to secure their claims."
+      ],
+      "id": "CONCEPT_SEIZE_THE_THRONE",
+      "name": "Seize the Throne",
+      "slug": "seize-the-throne"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Settlement Tiles include Cities and Tribal Sites."
+      ],
+      "id": "CONCEPT_SETTLEMENT",
+      "name": "Settlement",
+      "slug": "settlement"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Shrines can found and spread Pagan Religions and provide various benefits. For example, a Shrine of Bellona gives XP to Idle Infantry Units on its Tile and also provides the City extra Training."
+      ],
+      "id": "CONCEPT_SHRINE",
+      "name": "Shrine",
+      "slug": "shrine"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Specialists can boost the Yields of an Improvement at the cost of a Citizen and sometimes an amount of Food. All Specialists produce a small amount of Science. The Production time (in Civics) of Specialists in a City increases each time you train one in that City. Urban Improvement Specialists can be upgraded across three levels (Apprentice Specialist, Master Specialist, and Elder Specialist)."
+      ],
+      "id": "CONCEPT_SPECIALIST",
+      "name": "Specialist",
+      "slug": "specialist"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The Ratings of your Spouse(s) affect your Global Yields (at half the rate of the Leader). For example, their Discipline will increase your Money. Further, their Opinion of you will increase or decrease these Yield rates."
+      ],
+      "id": "CONCEPT_SPOUSE",
+      "name": "Spouse",
+      "slug": "spouse"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Each World Religion has a specific % chance (which can be modified by Theologies) of spreading to one random City or Tribal Site each Turn. Cities and Tribal Sites are more likely to get the Religion if they are closer to the Holy City and less likely if they already have Religions. World Religions can also be spread with Disciples, and Pagan Religions are spread with Shrines."
+      ],
+      "id": "CONCEPT_SPREAD_RELIGION",
+      "name": "Spread Religion",
+      "slug": "spread-religion"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Adopting a State Religion improves that Religion's Opinion, increases Happiness in Cities of that Religion, and also enables the recruitment of Disciples in those Cities (for World Religions)."
+      ],
+      "id": "CONCEPT_STATE_RELIGION",
+      "name": "State Religion",
+      "slug": "state-religion"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Positive Character Trait, of which Characters normally can have a maximum of 3."
+      ],
+      "id": "CONCEPT_STRENGTH",
+      "name": "Strength",
+      "slug": "strength"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Stunned Unit cannot move, attack, or take any other type of action."
+      ],
+      "id": "CONCEPT_STUN",
+      "name": "Stun",
+      "slug": "stun"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The Ratings of your first four Characters in your Succession affect your Global Yields (at half the rate of the Leader). For example, their Courage will increase your Training. Further, their Opinion of you will increase or decrease these Yield rates."
+      ],
+      "id": "CONCEPT_SUCCESSION",
+      "name": "Succession",
+      "slug": "succession"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Your Succession Law determines who is the next Heir. Changing Succession Laws costs Civics and can upset Characters who are moved farther from the throne."
+      ],
+      "id": "CONCEPT_SUCCESSION_LAW",
+      "name": "Succession Law",
+      "slug": "succession-law"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "As technology cards are unlocked, they are added to the Discard Pile, eventually making their way to be drawn as new research targets. Cards selected for research will accumulate progress proportional to your Science output, until completed. Cards not selected for research are sent back to the discard pile, except for Bonus Cards."
+      ],
+      "id": "CONCEPT_CARD",
+      "name": "Tech Card",
+      "slug": "card"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A City's Territory is made up of its surrounding Tiles within the City's border. Most Improvements can only be built within a City's Territory. City Territory is expanded by building Urban Improvements, training Specialists near City borders, or when you Buy Tiles. Water tiles within a City's territory allow Water Transport."
+      ],
+      "id": "CONCEPT_TERRITORY",
+      "name": "Territory",
+      "slug": "territory"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "help": [
+        "The gods watch closely. Religion is not yet a question of faith but an act of everyday life, collections of rituals and rites developing in an attempt to avoid the calamitous ruin of a god’s anger.",
+        "But this is a time of change, when not even divinity is constant. New gods and heroes attract followers to their social and mystical Cult Shrines, while world religions emerge and spread, seeking to establish their legal and theological footing among the common people and the courts of royalty alike. New leaders, the Clergy, guide the faithful, whose reverent passion can spill into the streets as Religious Dissent if not appeased.",
+        "Tread carefully as you navigate these rituals and religions; the beliefs of a nation may see it rise or fall."
+      ],
+      "id": "CONCEPT_THE_SACRED_AND_THE_PROFANE",
+      "name": "The Sacred and the Profane",
+      "slug": "the-sacred-and-the-profane"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Establishing a Theology grants additional bonuses to a World Religion. (Pagan Religions cannot have Theologies.) They are established using Disciples, and the Religion must be your Nation's State Religion. The effects of the Theology are Global and will be active for all Nations with the associated Religion."
+      ],
+      "id": "CONCEPT_THEOLOGY",
+      "name": "Theology",
+      "slug": "theology"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Trade Outposts generate Money and grant a small Tribe Opinion bonus for 10 turns before consuming the City Site and turning into a City owned by the player. Establishing a Trade Outpost consumes the unit and can only be established with a non-hostile Tribal City Site. The cost of establishing a Trade Outpost scales with Tribe Opinion. If War is declared between the Tribe and the owner of the Trade Outpost, progress towards a City will be paused for the duration of the war."
+      ],
+      "id": "CONCEPT_TRADE_OUTPOST",
+      "name": "Trade Outpost",
+      "slug": "trade-outpost"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A Trait describes a Character's personality. Traits can have various effects such as modifying a Character's Attributes, granting bonuses or penalties to Cities and Units when a Character is a Governor or General, and affecting the Opinions of other Characters towards them. Traits can also affect events and what outcomes are possible in them. Some Traits are classified as a Strength or a Weakness."
+      ],
+      "id": "CONCEPT_TRAIT",
+      "name": "Trait",
+      "slug": "trait"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "You can move and attack with Units of an Allied Tribe, and spend Money to found Cities near their Settlements. Allied Tribes are able to attack other Tribes, and declare War on Nations that declare War on you. You can have an Alliance with only one Tribe at a time. Only Diplomat Leaders can initiate Tribal Alliances."
+      ],
+      "id": "CONCEPT_ALLIANCE_TRIBE",
+      "name": "Tribal Alliance",
+      "slug": "alliance-tribe"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A wave of Units from a Tribe sets out to attack in a massive invasion."
+      ],
+      "id": "CONCEPT_TRIBE_INVASION",
+      "name": "Tribal Invasion",
+      "slug": "tribe-invasion"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The Nation and Tribe cannot attack each other. The Tribe will not target your Cities with Raiders (although Raider Units will still attack you if nearby). They can enter and heal in your territory."
+      ],
+      "id": "CONCEPT_PEACE_TRIBE",
+      "name": "Tribal Peace",
+      "slug": "peace-tribe"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Raids originate from Tribal Sites that have exceeded their Unit capacity. Some of the Tribe’s Units become Raiders, who set out to attack a nearby City that is either at War or under Truce with that Tribe. At higher difficulty levels, Raids may originate from distant lands and appear at the edges of the map."
+      ],
+      "id": "CONCEPT_TRIBE_RAID",
+      "name": "Tribal Raid",
+      "slug": "tribe-raid"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Tribes occupy most of the City Sites spread across the map, which can be used as locations to found new Cities. These Tribes (with the exception of Barbarians) can intermarry with your Characters, can convert to a Religion, and can conduct diplomacy with Nations, potentially leading to Tribal Peace or a Tribal Alliance."
+      ],
+      "id": "CONCEPT_TRIBE",
+      "name": "Tribe",
+      "slug": "tribe"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Courtiers can tutor Royal children at least 10 years old."
+      ],
+      "id": "CONCEPT_TUTOR",
+      "name": "Tutor",
+      "slug": "tutor"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "You can undo as many decisions as you want using CTRL+Z."
+      ],
+      "id": "CONCEPT_UNDO",
+      "name": "Undo",
+      "slug": "undo"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "You can queue Unit actions for following turns by holding Shift while issuing orders. Queued orders will resolve at the start of the following turns."
+      ],
+      "id": "CONCEPT_ACTION_QUEUE",
+      "name": "Unit Action Queue",
+      "slug": "action-queue"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Some Siege Units cannot attack until the Turn after they Unlimber. Units which are unlimbered have a -25% defense modifier."
+      ],
+      "id": "CONCEPT_UNLIMBERED",
+      "name": "Unlimbered",
+      "slug": "unlimbered"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Many Units can be Upgraded to a more advanced type, at the cost of some Training and other Yields."
+      ],
+      "id": "CONCEPT_UPGRADE",
+      "name": "Upgrade",
+      "slug": "upgrade"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Judge Leaders can Upgrade an Improvement to the next level (for example, an Odeon to a Theater). Specialists already present will also be upgraded to the new higher level."
+      ],
+      "id": "CONCEPT_UPGRADE_IMPROVEMENTS",
+      "name": "Upgrade Improvements",
+      "slug": "upgrade-improvements"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Most Urban improvements can only be built on tiles that are already Urban or adjacent to the city center or to two Urban tiles. If building on coast, only one adjacent coastal Urban tile is enough.",
+        "Some improvements like Hamlets or Shrines ignore these adjacency rules."
+      ],
+      "id": "CONCEPT_URBAN",
+      "name": "Urban",
+      "slug": "urban"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Vision is the range of Tiles around a Unit which are visible. (These Tiles must have been previously revealed.)"
+      ],
+      "id": "CONCEPT_VISION",
+      "name": "Vision",
+      "slug": "vision"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Land units may travel very quickly across any combination of owned water Territory tiles or tiles in range of already Anchored ships.",
+        "Units moving by water transport may not normally stop on a water tile, but travel via any number of anchored ships in one move is not restricted (within Fatigue limits)."
+      ],
+      "id": "CONCEPT_WATER_TRANSPORT",
+      "name": "Water Transport",
+      "slug": "water-transport"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Negative Character Trait, of which Characters can normally have a maximum of 3."
+      ],
+      "id": "CONCEPT_WEAKNESS",
+      "name": "Weakness",
+      "slug": "weakness"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Wonders are unique Improvements which can only be built once. As soon as one Nation begins a Wonder, no one else can build it unless a hostile Units enters the Tile of an unfinished Wonder and destroys it.",
+        "Not all Wonders are available each game; the Wonders available are chosen randomly at the start of the game."
+      ],
+      "id": "CONCEPT_WONDER",
+      "name": "Wonder",
+      "slug": "wonder"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "help": [
+        "In addition to Clergy effects, World Clergy can use the Quell Religious Dissent Mission to remove Religious Dissent from Cities without causing Discontent or act as Agents in Cities of their Religion, although cannot be appointed as a General, Governor or as a Family Head."
+      ],
+      "id": "CONCEPT_WORLD_CLERGY",
+      "name": "World Clergy",
+      "slug": "world-clergy"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "The four World Religions (Judaism, Zoroastrianism, Christianity, and Manichaeism) are founded when a Nation achieves each one's specific prerequisites. Cities with that Religion can then build Disciples which are capable of spreading the Religion to other Settlements. These Disciples can also build Monasteries, Temples, Cathedrals, and Holy Sites of their Religion. Finally, Disciples can establish a Theology for World Religions."
+      ],
+      "id": "CONCEPT_WORLD_RELIGION",
+      "name": "World Religion",
+      "slug": "world-religion"
+    },
+    {
+      "dlc": "Wrath of Gods",
+      "help": [
+        "Have the gods grown discontent and unleashed their wrath upon us, or are the Calamities the result of some other unexplained force of nature?"
+      ],
+      "id": "CONCEPT_CALAMITIES",
+      "name": "Wrath of Gods",
+      "slug": "calamities"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Units and Characters can earn XP (Experience), which leads to Promotions for units, and better Trait and Attribute for characters.",
+        "Units earn XP during combat or while located at certain Improvements. (Melee Units earn XP in a Barracks, and Ranged Units earn XP at a Range.)",
+        "Characters earn XP through performing Missions, holding roles such as General, Governor, or Councilor, and through events."
+      ],
+      "id": "CONCEPT_XP",
+      "name": "XP",
+      "slug": "xp"
+    }
+  ]
+}

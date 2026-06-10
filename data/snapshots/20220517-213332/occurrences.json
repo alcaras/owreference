@@ -1,0 +1,1822 @@
+{
+  "calamityClass": {
+    "balanceDistribution": true,
+    "defaultLevel": "OCCURRENCELEVEL_CALAMITIES_NORMAL",
+    "dlc": "CALAMITIES",
+    "dlcLabel": "Wrath of Gods",
+    "id": "OCCURRENCECLASS_CALAMITIES",
+    "levels": [
+      {
+        "aiMinTurns": 0,
+        "aiSkipChance": 0,
+        "help": "",
+        "id": "OCCURRENCELEVEL_CALAMITIES_NONE",
+        "isDefault": false,
+        "minTurnsModifier": 0,
+        "name": "None",
+        "noOccurrences": true,
+        "repeatTurnsModifier": 0
+      },
+      {
+        "aiMinTurns": 30,
+        "aiSkipChance": 2,
+        "help": "Calamities will occur much later in the game and much less frequently",
+        "id": "OCCURRENCELEVEL_CALAMITIES_VERY_LOW",
+        "isDefault": false,
+        "minTurnsModifier": 200,
+        "name": "Very Rare",
+        "noOccurrences": false,
+        "repeatTurnsModifier": 300
+      },
+      {
+        "aiMinTurns": 20,
+        "aiSkipChance": 5,
+        "help": "Calamities will occur later in the game and less frequently",
+        "id": "OCCURRENCELEVEL_CALAMITIES_LOW",
+        "isDefault": false,
+        "minTurnsModifier": 100,
+        "name": "Rare",
+        "noOccurrences": false,
+        "repeatTurnsModifier": 100
+      },
+      {
+        "aiMinTurns": 10,
+        "aiSkipChance": 10,
+        "help": "There will be a balanced level of Calamities",
+        "id": "OCCURRENCELEVEL_CALAMITIES_NORMAL",
+        "isDefault": true,
+        "minTurnsModifier": 0,
+        "name": "Default",
+        "noOccurrences": false,
+        "repeatTurnsModifier": 0
+      },
+      {
+        "aiMinTurns": 10,
+        "aiSkipChance": 15,
+        "help": "Calamities will occur earlier in the game and more frequently",
+        "id": "OCCURRENCELEVEL_CALAMITIES_HIGH",
+        "isDefault": false,
+        "minTurnsModifier": -25,
+        "name": "Common",
+        "noOccurrences": false,
+        "repeatTurnsModifier": -25
+      },
+      {
+        "aiMinTurns": 10,
+        "aiSkipChance": 20,
+        "help": "Calamities will occur much earlier in the game and much more frequently",
+        "id": "OCCURRENCELEVEL_CALAMITIES_VERY_HIGH",
+        "isDefault": false,
+        "minTurnsModifier": -50,
+        "name": "Very Common",
+        "noOccurrences": false,
+        "repeatTurnsModifier": -50
+      }
+    ],
+    "maxPendingTurns": 3,
+    "minRepeatPlayer": 5,
+    "name": "Calamities"
+  },
+  "calamityFamilies": [
+    {
+      "full": {
+        "baseId": "OCCURRENCE_DROUGHT",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [
+          "-100% Farm",
+          "-100% Pasture",
+          "-100% Camp",
+          "-100% Grove"
+        ],
+        "ending": [
+          "Lasts 3–5 turns",
+          "10% chance per turn to end, +10% each turn",
+          "Won't repeat while the Drought memory lingers"
+        ],
+        "flags": [
+          "Major — only one major occurrence at a time",
+          "Global",
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_DROUGHT",
+        "impact": [],
+        "name": "Drought",
+        "slug": "drought",
+        "terrainChanges": [
+          "Lake → Temperate (1% chance)",
+          "Arid → Sand (1% chance)",
+          "Temperate → Arid (1% chance)",
+          "Lush → Temperate (1% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "1%",
+            "from": "Lake",
+            "to": "Temperate"
+          },
+          {
+            "chance": "1%",
+            "from": "Arid",
+            "to": "Sand"
+          },
+          {
+            "chance": "1%",
+            "from": "Temperate",
+            "to": "Arid"
+          },
+          {
+            "chance": "1%",
+            "from": "Lush",
+            "to": "Temperate"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Can occur from turn 10",
+          "1% chance per turn to trigger",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_DROUGHT",
+      "mitigated": null,
+      "name": "Drought",
+      "slug": "drought"
+    },
+    {
+      "full": {
+        "baseId": "OCCURRENCE_PLAGUE",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [
+          "On start: [All Cities]",
+          "On start: Every City loses 1 Citizen",
+          "On start: -1 Citizens in every City",
+          "-50% Growth",
+          "Units in territory: 50% chance/turn to be Plagued (3 damage/turn, -1 Fatigue, spreads on contact)"
+        ],
+        "ending": [
+          "Lasts 2–4 turns",
+          "10% chance per turn to end, +5% each turn",
+          "When it ends: Infected characters recover",
+          "When it ends: Incubated characters recover",
+          "Won't repeat while the Plague memory lingers"
+        ],
+        "flags": [
+          "Major — only one major occurrence at a time",
+          "Global",
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_PLAGUE",
+        "impact": [],
+        "name": "Plague",
+        "slug": "plague",
+        "terrainChanges": [],
+        "terrainChangesRaw": [],
+        "traits": [
+          "Characters: 10% chance/turn to become Infected"
+        ],
+        "trigger": [
+          "Can occur from turn 20",
+          "1% chance per turn to trigger",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_PLAGUE",
+      "mitigated": null,
+      "name": "Plague",
+      "slug": "plague"
+    },
+    {
+      "full": {
+        "baseId": "OCCURRENCE_HURRICANE",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_HURRICANE",
+        "impact": [
+          "Units on affected tiles take 4 damage/turn",
+          "20% chance to pillage each improvement on affected tiles",
+          "-100% base yields on affected tiles",
+          "+2 movement cost on affected tiles",
+          "-3 visibility on affected tiles",
+          "Unanchors ships on affected tiles",
+          "20% chance to destroy vegetation on affected tiles (pillaging improvements)"
+        ],
+        "name": "Hurricane",
+        "slug": "hurricane",
+        "terrainChanges": [],
+        "terrainChangesRaw": [],
+        "traits": [],
+        "trigger": [
+          "Can occur from turn 10",
+          "5% chance per turn to trigger",
+          "Requires Ocean on the map",
+          "Strikes a player-owned Coastal Water tile",
+          "Spreads across contiguous Water within 10 tiles",
+          "Also affects tiles adjacent to the affected area",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_HURRICANE",
+      "mitigated": {
+        "baseId": "OCCURRENCE_HURRICANE",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [],
+        "helpText": "",
+        "id": "OCCURRENCE_HURRICANE_MITIGATED",
+        "impact": [
+          "Units on affected tiles take 3 damage/turn",
+          "10% chance to pillage each improvement on affected tiles",
+          "-50% base yields on affected tiles",
+          "+2 movement cost on affected tiles",
+          "-3 visibility on affected tiles",
+          "5% chance to destroy vegetation on affected tiles (pillaging improvements)"
+        ],
+        "name": "Minor Hurricane",
+        "slug": "hurricane-mitigated",
+        "terrainChanges": [],
+        "terrainChangesRaw": [],
+        "traits": [],
+        "trigger": [
+          "Strikes a player-owned Coastal Water tile",
+          "Spreads across contiguous Water within 5 tiles",
+          "Also affects tiles adjacent to the affected area"
+        ],
+        "variant": "Mitigated"
+      },
+      "name": "Hurricane",
+      "slug": "hurricane"
+    },
+    {
+      "full": {
+        "baseId": "OCCURRENCE_SANDSTORM",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_SANDSTORM",
+        "impact": [
+          "Units on affected tiles take 5 damage/turn",
+          "-100% base yields on affected tiles",
+          "+1 movement cost on affected tiles",
+          "-2 visibility on affected tiles"
+        ],
+        "name": "Sandstorm",
+        "slug": "sandstorm",
+        "terrainChanges": [
+          "Arid → Sand (2% chance)",
+          "Temperate → Arid (2% chance)",
+          "Lush → Temperate (2% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "2%",
+            "from": "Arid",
+            "to": "Sand"
+          },
+          {
+            "chance": "2%",
+            "from": "Temperate",
+            "to": "Arid"
+          },
+          {
+            "chance": "2%",
+            "from": "Lush",
+            "to": "Temperate"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Can occur from turn 10",
+          "5% chance per turn to trigger",
+          "Strikes a player-owned Arid or Desert tile",
+          "Spreads across contiguous Dry within 10 tiles",
+          "Also affects tiles adjacent to the affected area",
+          "Ignores Water tiles",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_SANDSTORM",
+      "mitigated": {
+        "baseId": "OCCURRENCE_SANDSTORM",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_SANDSTORM_MITIGATED",
+        "impact": [
+          "Units on affected tiles take 3 damage/turn",
+          "-50% base yields on affected tiles",
+          "+1 movement cost on affected tiles",
+          "-2 visibility on affected tiles"
+        ],
+        "name": "Minor Sandstorm",
+        "slug": "sandstorm-mitigated",
+        "terrainChanges": [
+          "Arid → Sand (1% chance)",
+          "Temperate → Arid (1% chance)",
+          "Lush → Temperate (1% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "1%",
+            "from": "Arid",
+            "to": "Sand"
+          },
+          {
+            "chance": "1%",
+            "from": "Temperate",
+            "to": "Arid"
+          },
+          {
+            "chance": "1%",
+            "from": "Lush",
+            "to": "Temperate"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Strikes a player-owned Arid or Desert tile",
+          "Spreads across contiguous Dry within 5 tiles",
+          "Ignores Water tiles"
+        ],
+        "variant": "Mitigated"
+      },
+      "name": "Sandstorm",
+      "slug": "sandstorm"
+    },
+    {
+      "full": {
+        "baseId": "OCCURRENCE_TSUNAMI",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_TSUNAMI",
+        "impact": [
+          "Units on affected tiles take 8 damage/turn",
+          "50% chance to pillage each improvement on affected tiles"
+        ],
+        "name": "Tsunami",
+        "slug": "tsunami",
+        "terrainChanges": [
+          "Flat → Water (2% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "2%",
+            "from": "Flat",
+            "to": "Water"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Can occur from turn 25",
+          "5% chance per turn to trigger",
+          "Strikes a player-owned Coastal Water tile",
+          "Spreads across contiguous Coast within 10 tiles",
+          "Also affects tiles adjacent to the affected area",
+          "Ignores Ocean tiles",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_TSUNAMI",
+      "mitigated": {
+        "baseId": "OCCURRENCE_TSUNAMI",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_TSUNAMI_MITIGATED",
+        "impact": [
+          "Units on affected tiles take 5 damage/turn",
+          "20% chance to pillage each improvement on affected tiles"
+        ],
+        "name": "Minor Tsunami",
+        "slug": "tsunami-mitigated",
+        "terrainChanges": [
+          "Flat → Water (1% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "1%",
+            "from": "Flat",
+            "to": "Water"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Strikes a player-owned Coastal Water tile",
+          "Spreads across contiguous Coast within 5 tiles",
+          "Also affects tiles adjacent to the affected area",
+          "Ignores Ocean tiles"
+        ],
+        "variant": "Mitigated"
+      },
+      "name": "Tsunami",
+      "slug": "tsunami"
+    },
+    {
+      "full": {
+        "baseId": "OCCURRENCE_FLOOD",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1–3 turns",
+          "50% chance per turn to end"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_FLOOD",
+        "impact": [
+          "20% chance to pillage each improvement on affected tiles",
+          "-100% base yields on affected tiles",
+          "Affected tiles are impassable"
+        ],
+        "name": "Flood",
+        "slug": "flood",
+        "terrainChanges": [
+          "Flat → Lake (1% chance)",
+          "Hill → Flat (2% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "1%",
+            "from": "Flat",
+            "to": "Lake"
+          },
+          {
+            "chance": "2%",
+            "from": "Hill",
+            "to": "Flat"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Can occur from turn 10",
+          "5% chance per turn to trigger",
+          "Strikes a player-owned River tile",
+          "Spreads along contiguous fresh water and river tiles",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_FLOOD",
+      "mitigated": {
+        "baseId": "OCCURRENCE_FLOOD",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [],
+        "helpText": "",
+        "id": "OCCURRENCE_FLOOD_MITIGATED",
+        "impact": [
+          "10% chance to pillage each improvement on affected tiles",
+          "-50% base yields on affected tiles",
+          "Affected tiles are impassable"
+        ],
+        "name": "Minor Flood",
+        "slug": "flood-mitigated",
+        "terrainChanges": [
+          "Hill → Flat (1% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "1%",
+            "from": "Hill",
+            "to": "Flat"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Strikes a player-owned River tile",
+          "Spreads across contiguous Lake within 5 tiles",
+          "Spreads along contiguous fresh water and river tiles"
+        ],
+        "variant": "Mitigated"
+      },
+      "name": "Flood",
+      "slug": "flood"
+    },
+    {
+      "full": {
+        "baseId": "OCCURRENCE_EARTHQUAKE",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [
+          "Affected Cities: -2 Stone / Urban",
+          "Affected Cities: -2 Stone on Urban tiles"
+        ],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_EARTHQUAKE",
+        "impact": [
+          "Units on affected tiles take 4 damage/turn",
+          "10% chance to pillage each improvement on affected tiles"
+        ],
+        "name": "Earthquake",
+        "slug": "earthquake",
+        "terrainChanges": [
+          "Flat → Hill (1% chance)",
+          "Hill → Flat (1% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "1%",
+            "from": "Flat",
+            "to": "Hill"
+          },
+          {
+            "chance": "1%",
+            "from": "Hill",
+            "to": "Flat"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Can occur from turn 10",
+          "5% chance per turn to trigger",
+          "Strikes a player-owned Urban tile",
+          "Spreads across contiguous Non Mountainous Land within 10 tiles",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_EARTHQUAKE",
+      "mitigated": {
+        "baseId": "OCCURRENCE_EARTHQUAKE",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [
+          "Affected Cities: -1 Stone / Urban",
+          "Affected Cities: -1 Stone on Urban tiles"
+        ],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_EARTHQUAKE_MITIGATED",
+        "impact": [
+          "Units on affected tiles take 3 damage/turn",
+          "5% chance to pillage each improvement on affected tiles"
+        ],
+        "name": "Minor Earthquake",
+        "slug": "earthquake-mitigated",
+        "terrainChanges": [
+          "Flat → Hill (1% chance)",
+          "Hill → Flat (1% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "1%",
+            "from": "Flat",
+            "to": "Hill"
+          },
+          {
+            "chance": "1%",
+            "from": "Hill",
+            "to": "Flat"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Strikes a player-owned Urban tile",
+          "Spreads across contiguous Non Mountainous Land within 5 tiles"
+        ],
+        "variant": "Mitigated"
+      },
+      "name": "Earthquake",
+      "slug": "earthquake"
+    },
+    {
+      "full": {
+        "baseId": "OCCURRENCE_WILDFIRE",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_WILDFIRE",
+        "impact": [
+          "Units on affected tiles take 4 damage/turn",
+          "Pillages all improvements on affected tiles",
+          "Affected tiles are impassable",
+          "20% chance to destroy vegetation on affected tiles (pillaging improvements)",
+          "Destruction spreads to adjacent tiles (80% chance, halving each step)"
+        ],
+        "name": "Wildfire",
+        "slug": "wildfire",
+        "terrainChanges": [
+          "Arid → Temperate (1% chance)",
+          "Temperate → Lush (1% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "1%",
+            "from": "Arid",
+            "to": "Temperate"
+          },
+          {
+            "chance": "1%",
+            "from": "Temperate",
+            "to": "Lush"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Can occur from turn 10",
+          "5% chance per turn to trigger",
+          "Strikes a player-owned Trees tile",
+          "Spreads across contiguous Trees within 10 tiles",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_WILDFIRE",
+      "mitigated": {
+        "baseId": "OCCURRENCE_WILDFIRE",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [],
+        "helpText": "",
+        "id": "OCCURRENCE_WILDFIRE_MITIGATED",
+        "impact": [
+          "Units on affected tiles take 2 damage/turn",
+          "50% chance to pillage each improvement on affected tiles",
+          "Affected tiles are impassable",
+          "10% chance to destroy vegetation on affected tiles (pillaging improvements)",
+          "Destruction spreads to adjacent tiles (80% chance, halving each step)"
+        ],
+        "name": "Minor Wildfire",
+        "slug": "wildfire-mitigated",
+        "terrainChanges": [
+          "Arid → Temperate (2% chance)"
+        ],
+        "terrainChangesRaw": [
+          {
+            "chance": "2%",
+            "from": "Arid",
+            "to": "Temperate"
+          }
+        ],
+        "traits": [],
+        "trigger": [
+          "Strikes a player-owned Trees tile",
+          "Spreads across contiguous Trees within 5 tiles",
+          "Ignores Water tiles"
+        ],
+        "variant": "Mitigated"
+      },
+      "name": "Wildfire",
+      "slug": "wildfire"
+    },
+    {
+      "full": {
+        "baseId": "OCCURRENCE_ERUPTION",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [
+          "Cities with affected territory: -100% Farm",
+          "Cities with affected territory: -100% Lumbermill"
+        ],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_ERUPTION",
+        "impact": [
+          "Units on affected tiles take 10 damage/turn",
+          "Pillages all improvements on affected tiles",
+          "Affected tiles are impassable"
+        ],
+        "name": "Volcanic Eruption",
+        "slug": "eruption",
+        "terrainChanges": [],
+        "terrainChangesRaw": [],
+        "traits": [],
+        "trigger": [
+          "Can occur from turn 10",
+          "5% chance per turn to trigger",
+          "Strikes a player-owned Volcano tile",
+          "Spreads across contiguous Volcano",
+          "Also affects tiles adjacent to the affected area",
+          "1-turn warning before it strikes"
+        ],
+        "variant": ""
+      },
+      "id": "OCCURRENCE_ERUPTION",
+      "mitigated": {
+        "baseId": "OCCURRENCE_ERUPTION",
+        "classId": "OCCURRENCECLASS_CALAMITIES",
+        "dlc": "CALAMITIES",
+        "dlcLabel": "Wrath of Gods",
+        "effects": [
+          "Cities with affected territory: -50% Farm",
+          "Cities with affected territory: -50% Lumbermill"
+        ],
+        "ending": [
+          "Lasts 1 turn"
+        ],
+        "flags": [
+          "No duplicates"
+        ],
+        "helpText": "",
+        "id": "OCCURRENCE_ERUPTION_MITIGATED",
+        "impact": [
+          "Units on affected tiles take 5 damage/turn",
+          "Pillages all improvements on affected tiles",
+          "Affected tiles are impassable"
+        ],
+        "name": "Minor Volcanic Eruption",
+        "slug": "eruption-mitigated",
+        "terrainChanges": [],
+        "terrainChangesRaw": [],
+        "traits": [],
+        "trigger": [
+          "Strikes a player-owned Volcano tile",
+          "Spreads across contiguous Volcano",
+          "Also affects tiles adjacent to the affected area"
+        ],
+        "variant": "Mitigated"
+      },
+      "name": "Volcanic Eruption",
+      "slug": "eruption"
+    }
+  ],
+  "eras": [
+    {
+      "baseId": "OCCURRENCE_ERA_OF_PEACE",
+      "classId": "",
+      "dlc": "",
+      "dlcLabel": "Base game",
+      "effects": [
+        "+2 Growth/City",
+        "+2 Happiness/City"
+      ],
+      "ending": [
+        "Chance to end grows by 2% each turn"
+      ],
+      "flags": [
+        "No duplicates"
+      ],
+      "helpText": "",
+      "id": "OCCURRENCE_ERA_OF_PEACE",
+      "impact": [],
+      "name": "Era of Peace",
+      "slug": "era-of-peace",
+      "terrainChanges": [],
+      "terrainChangesRaw": [],
+      "traits": [],
+      "trigger": [],
+      "variant": ""
+    },
+    {
+      "baseId": "OCCURRENCE_CIVIL_WAR",
+      "classId": "",
+      "dlc": "EVENTPACK_SCANDAL",
+      "dlcLabel": "Behind the Throne",
+      "effects": [
+        "-1 Vision Range",
+        "+10% Rebel Chance",
+        "-1 Vision for all Units"
+      ],
+      "ending": [
+        "Does not end on its own"
+      ],
+      "flags": [
+        "Major — only one major occurrence at a time",
+        "No duplicates"
+      ],
+      "helpText": "",
+      "id": "OCCURRENCE_CIVIL_WAR",
+      "impact": [
+        "5% chance to pillage each improvement on affected tiles"
+      ],
+      "name": "Civil War",
+      "slug": "civil-war",
+      "terrainChanges": [],
+      "terrainChangesRaw": [],
+      "traits": [
+        "Characters: 5% chance/turn to become Ambushed By Rebels"
+      ],
+      "trigger": [],
+      "variant": ""
+    },
+    {
+      "baseId": "OCCURRENCE_ERA_OF_DECADENCE",
+      "classId": "",
+      "dlc": "EVENTPACK_SCANDAL",
+      "dlcLabel": "Behind the Throne",
+      "effects": [],
+      "ending": [
+        "Chance to end grows by 2% each turn"
+      ],
+      "flags": [
+        "Major — only one major occurrence at a time",
+        "No duplicates"
+      ],
+      "helpText": "",
+      "id": "OCCURRENCE_ERA_OF_DECADENCE",
+      "impact": [],
+      "name": "Era of Decadence",
+      "slug": "era-of-decadence",
+      "terrainChanges": [],
+      "terrainChangesRaw": [],
+      "traits": [
+        "Characters: 2% chance/turn to become Debauched",
+        "Characters: 3% chance/turn to become Drunk"
+      ],
+      "trigger": [],
+      "variant": ""
+    },
+    {
+      "baseId": "OCCURRENCE_ERA_OF_REFORMS",
+      "classId": "",
+      "dlc": "EVENTPACK_SCANDAL",
+      "dlcLabel": "Behind the Throne",
+      "effects": [
+        "-20 Opinion Family",
+        "-1 Orders/City",
+        "-20 Family Opinion"
+      ],
+      "ending": [
+        "Chance to end grows by 3% each turn"
+      ],
+      "flags": [
+        "No duplicates"
+      ],
+      "helpText": "Can lead to new laws when the era ends",
+      "id": "OCCURRENCE_ERA_OF_REFORMS",
+      "impact": [],
+      "name": "Era of Reforms",
+      "slug": "era-of-reforms",
+      "terrainChanges": [],
+      "terrainChangesRaw": [],
+      "traits": [],
+      "trigger": [],
+      "variant": ""
+    },
+    {
+      "baseId": "OCCURRENCE_ERA_OF_CORRUPTION",
+      "classId": "",
+      "dlc": "EVENTPACK_SCANDAL",
+      "dlcLabel": "Behind the Throne",
+      "effects": [
+        "-20 Money/Turn",
+        "+50% Maintenance"
+      ],
+      "ending": [
+        "Chance to end grows by 2% each turn"
+      ],
+      "flags": [
+        "No duplicates"
+      ],
+      "helpText": "",
+      "id": "OCCURRENCE_ERA_OF_CORRUPTION",
+      "impact": [],
+      "name": "Era of Corruption",
+      "slug": "era-of-corruption",
+      "terrainChanges": [],
+      "terrainChangesRaw": [],
+      "traits": [
+        "Characters: 2% chance/turn to become Corrupt",
+        "Characters: 1% chance/turn to become Extravagant"
+      ],
+      "trigger": [],
+      "variant": ""
+    },
+    {
+      "baseId": "OCCURRENCE_RALLY_NATIONAL_DEFENSE",
+      "classId": "",
+      "dlc": "EVENTPACK_SCANDAL",
+      "dlcLabel": "Behind the Throne",
+      "effects": [
+        "[On Regular Military Unit Lost] Unit Emergency"
+      ],
+      "ending": [
+        "Lasts up to 10 turns"
+      ],
+      "flags": [
+        "No duplicates"
+      ],
+      "helpText": "",
+      "id": "OCCURRENCE_RALLY_NATIONAL_DEFENSE",
+      "impact": [],
+      "name": "Defense Rallied",
+      "slug": "rally-national-defense",
+      "terrainChanges": [],
+      "terrainChangesRaw": [],
+      "traits": [],
+      "trigger": [],
+      "variant": ""
+    },
+    {
+      "baseId": "OCCURRENCE_RELIGIOUS_UPHEAVAL",
+      "classId": "",
+      "dlc": "EMPIRES_OF_THE_INDUS",
+      "dlcLabel": "Empires of the Indus",
+      "effects": [
+        "+10%% Spread Chance for World Religion",
+        "+10% World Religion Spread Chance"
+      ],
+      "ending": [
+        "10% chance per turn to end, +2% each turn"
+      ],
+      "flags": [
+        "No duplicates"
+      ],
+      "helpText": "",
+      "id": "OCCURRENCE_RELIGIOUS_UPHEAVAL",
+      "impact": [],
+      "name": "Religious Upheaval",
+      "slug": "religious-upheaval",
+      "terrainChanges": [],
+      "terrainChangesRaw": [],
+      "traits": [],
+      "trigger": [],
+      "variant": ""
+    },
+    {
+      "baseId": "OCCURRENCE_PAX_KUSHANA",
+      "classId": "",
+      "dlc": "EMPIRES_OF_THE_INDUS",
+      "dlcLabel": "Empires of the Indus",
+      "effects": [
+        "+5% State Religion Spread Chance",
+        "-2 Training/City",
+        "+20 Money/City"
+      ],
+      "ending": [
+        "Does not end on its own"
+      ],
+      "flags": [
+        "No duplicates"
+      ],
+      "helpText": "",
+      "id": "OCCURRENCE_PAX_KUSHANA",
+      "impact": [],
+      "name": "Pax Kushana",
+      "slug": "pax-kushana",
+      "terrainChanges": [],
+      "terrainChangesRaw": [],
+      "traits": [],
+      "trigger": [],
+      "variant": ""
+    }
+  ],
+  "totals": {
+    "byDlc": {
+      "Base game": 1,
+      "Behind the Throne": 5,
+      "Empires of the Indus": 2,
+      "Wrath of Gods": 27
+    },
+    "calamities": 16,
+    "eras": 8,
+    "occurrences": 35,
+    "transformations": 11
+  },
+  "transformations": [
+    {
+      "id": "OCCURRENCE_EVAPORATE",
+      "name": "Ebbing Sea",
+      "slug": "evaporate",
+      "variants": [
+        {
+          "baseId": "OCCURRENCE_EVAPORATE",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Does not end on its own"
+          ],
+          "flags": [],
+          "helpText": "Each turn, Coastal Water and Lake Tiles have a chance to become Arid terrain. There is also a small chance that newly transformed tiles will have Scrub, Marble, Sorghum, or Salt added to them.",
+          "id": "OCCURRENCE_EVAPORATE_SLOW",
+          "impact": [],
+          "name": "Ebbing Sea",
+          "slug": "evaporate-slow",
+          "terrainChanges": [
+            "Lake → Arid (1% chance)",
+            "Coastal Water → Arid (1% chance)",
+            "Arid → Scrub (10% chance)",
+            "Arid → Marble (1% chance)",
+            "Arid → Salt (0.7% chance)",
+            "Arid → Sorghum (1% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "1%",
+              "from": "Lake",
+              "to": "Arid"
+            },
+            {
+              "chance": "1%",
+              "from": "Coastal Water",
+              "to": "Arid"
+            },
+            {
+              "chance": "10%",
+              "from": "Arid",
+              "to": "Scrub"
+            },
+            {
+              "chance": "1%",
+              "from": "Arid",
+              "to": "Marble"
+            },
+            {
+              "chance": "0.7%",
+              "from": "Arid",
+              "to": "Salt"
+            },
+            {
+              "chance": "1%",
+              "from": "Arid",
+              "to": "Sorghum"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Affects all Shallow Water tiles on the map"
+          ],
+          "variant": "Slow"
+        },
+        {
+          "baseId": "OCCURRENCE_EVAPORATE",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Does not end on its own"
+          ],
+          "flags": [],
+          "helpText": "Each turn, Coastal Water and Lake Tiles have a chance to become Arid terrain. There is also a small chance that newly transformed tiles will have Scrub, Marble, Sorghum, or Salt added to them.",
+          "id": "OCCURRENCE_EVAPORATE_MEDIUM",
+          "impact": [],
+          "name": "Ebbing Sea",
+          "slug": "evaporate-medium",
+          "terrainChanges": [
+            "Lake → Arid (2% chance)",
+            "Coastal Water → Arid (2% chance)",
+            "Arid → Scrub (10% chance)",
+            "Arid → Marble (1% chance)",
+            "Arid → Salt (0.7% chance)",
+            "Arid → Sorghum (1% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "2%",
+              "from": "Lake",
+              "to": "Arid"
+            },
+            {
+              "chance": "2%",
+              "from": "Coastal Water",
+              "to": "Arid"
+            },
+            {
+              "chance": "10%",
+              "from": "Arid",
+              "to": "Scrub"
+            },
+            {
+              "chance": "1%",
+              "from": "Arid",
+              "to": "Marble"
+            },
+            {
+              "chance": "0.7%",
+              "from": "Arid",
+              "to": "Salt"
+            },
+            {
+              "chance": "1%",
+              "from": "Arid",
+              "to": "Sorghum"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Affects all Shallow Water tiles on the map"
+          ],
+          "variant": "Medium"
+        },
+        {
+          "baseId": "OCCURRENCE_EVAPORATE",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Does not end on its own"
+          ],
+          "flags": [],
+          "helpText": "Each turn, Coastal Water and Lake Tiles have a chance to become Arid terrain. There is also a small chance that newly transformed tiles will have Scrub, Marble, Sorghum, or Salt added to them.",
+          "id": "OCCURRENCE_EVAPORATE_FAST",
+          "impact": [],
+          "name": "Ebbing Sea",
+          "slug": "evaporate-fast",
+          "terrainChanges": [
+            "Lake → Arid (3% chance)",
+            "Coastal Water → Arid (3% chance)",
+            "Arid → Scrub (10% chance)",
+            "Arid → Marble (1% chance)",
+            "Arid → Salt (0.7% chance)",
+            "Arid → Sorghum (1% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "3%",
+              "from": "Lake",
+              "to": "Arid"
+            },
+            {
+              "chance": "3%",
+              "from": "Coastal Water",
+              "to": "Arid"
+            },
+            {
+              "chance": "10%",
+              "from": "Arid",
+              "to": "Scrub"
+            },
+            {
+              "chance": "1%",
+              "from": "Arid",
+              "to": "Marble"
+            },
+            {
+              "chance": "0.7%",
+              "from": "Arid",
+              "to": "Salt"
+            },
+            {
+              "chance": "1%",
+              "from": "Arid",
+              "to": "Sorghum"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Affects all Shallow Water tiles on the map"
+          ],
+          "variant": "Fast"
+        }
+      ]
+    },
+    {
+      "id": "OCCURRENCE_DESOLATION",
+      "name": "Desolation",
+      "slug": "desolation",
+      "variants": [
+        {
+          "baseId": "OCCURRENCE_DESOLATION",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Does not end on its own"
+          ],
+          "flags": [],
+          "helpText": "Each turn, Tiles adjacent to desert become more arid. Deserts will expand to eventually cover the map.",
+          "id": "OCCURRENCE_DESOLATION_SLOW",
+          "impact": [],
+          "name": "Desolation",
+          "slug": "desolation-slow",
+          "terrainChanges": [
+            "Arid → Sand (5% chance)",
+            "Temperate → Arid (5% chance)",
+            "Lush → Temperate (5% chance)",
+            "Marsh → Lush (2.5% chance)",
+            "Lake → Marsh (1% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "5%",
+              "from": "Arid",
+              "to": "Sand"
+            },
+            {
+              "chance": "5%",
+              "from": "Temperate",
+              "to": "Arid"
+            },
+            {
+              "chance": "5%",
+              "from": "Lush",
+              "to": "Temperate"
+            },
+            {
+              "chance": "2.5%",
+              "from": "Marsh",
+              "to": "Lush"
+            },
+            {
+              "chance": "1%",
+              "from": "Lake",
+              "to": "Marsh"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Affects all Sand tiles on the map",
+            "Also affects tiles adjacent to the affected area"
+          ],
+          "variant": "Slow"
+        },
+        {
+          "baseId": "OCCURRENCE_DESOLATION",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Does not end on its own"
+          ],
+          "flags": [],
+          "helpText": "Each turn, Tiles adjacent to desert become more arid. Deserts will expand to eventually cover the map.",
+          "id": "OCCURRENCE_DESOLATION_MEDIUM",
+          "impact": [],
+          "name": "Desolation",
+          "slug": "desolation-medium",
+          "terrainChanges": [
+            "Arid → Sand (10% chance)",
+            "Temperate → Arid (10% chance)",
+            "Lush → Temperate (10% chance)",
+            "Marsh → Lush (5% chance)",
+            "Lake → Marsh (2.5% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "10%",
+              "from": "Arid",
+              "to": "Sand"
+            },
+            {
+              "chance": "10%",
+              "from": "Temperate",
+              "to": "Arid"
+            },
+            {
+              "chance": "10%",
+              "from": "Lush",
+              "to": "Temperate"
+            },
+            {
+              "chance": "5%",
+              "from": "Marsh",
+              "to": "Lush"
+            },
+            {
+              "chance": "2.5%",
+              "from": "Lake",
+              "to": "Marsh"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Affects all Sand tiles on the map",
+            "Also affects tiles adjacent to the affected area"
+          ],
+          "variant": "Medium"
+        },
+        {
+          "baseId": "OCCURRENCE_DESOLATION",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Does not end on its own"
+          ],
+          "flags": [],
+          "helpText": "Each turn, Tiles adjacent to desert become more arid. Deserts will expand to eventually cover the map.",
+          "id": "OCCURRENCE_DESOLATION_FAST",
+          "impact": [],
+          "name": "Desolation",
+          "slug": "desolation-fast",
+          "terrainChanges": [
+            "Arid → Sand (20% chance)",
+            "Temperate → Arid (20% chance)",
+            "Lush → Temperate (20% chance)",
+            "Marsh → Lush (10% chance)",
+            "Lake → Marsh (5% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "20%",
+              "from": "Arid",
+              "to": "Sand"
+            },
+            {
+              "chance": "20%",
+              "from": "Temperate",
+              "to": "Arid"
+            },
+            {
+              "chance": "20%",
+              "from": "Lush",
+              "to": "Temperate"
+            },
+            {
+              "chance": "10%",
+              "from": "Marsh",
+              "to": "Lush"
+            },
+            {
+              "chance": "5%",
+              "from": "Lake",
+              "to": "Marsh"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Affects all Sand tiles on the map",
+            "Also affects tiles adjacent to the affected area"
+          ],
+          "variant": "Fast"
+        }
+      ]
+    },
+    {
+      "id": "OCCURRENCE_REMOVE_MOUNTAINS",
+      "name": "Tumbling Mountain",
+      "slug": "remove-mountains",
+      "variants": [
+        {
+          "baseId": "OCCURRENCE_REMOVE_MOUNTAINS",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Ends immediately after it strikes"
+          ],
+          "flags": [
+            "Global"
+          ],
+          "helpText": "",
+          "id": "OCCURRENCE_REMOVE_MOUNTAINS_SHORT",
+          "impact": [],
+          "name": "Tumbling Mountain",
+          "slug": "remove-mountains-short",
+          "terrainChanges": [
+            "Mountain → Hill (100% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "100%",
+              "from": "Mountain",
+              "to": "Hill"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Spreads across contiguous Sand",
+            "59-turn warning before it strikes"
+          ],
+          "variant": "Short"
+        },
+        {
+          "baseId": "OCCURRENCE_REMOVE_MOUNTAINS",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Ends immediately after it strikes"
+          ],
+          "flags": [
+            "Global"
+          ],
+          "helpText": "",
+          "id": "OCCURRENCE_REMOVE_MOUNTAINS_MEDIUM",
+          "impact": [],
+          "name": "Tumbling Mountain",
+          "slug": "remove-mountains-medium",
+          "terrainChanges": [
+            "Mountain → Hill (100% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "100%",
+              "from": "Mountain",
+              "to": "Hill"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Spreads across contiguous Sand",
+            "79-turn warning before it strikes"
+          ],
+          "variant": "Medium"
+        },
+        {
+          "baseId": "OCCURRENCE_REMOVE_MOUNTAINS",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Ends immediately after it strikes"
+          ],
+          "flags": [
+            "Global"
+          ],
+          "helpText": "",
+          "id": "OCCURRENCE_REMOVE_MOUNTAINS_LONG",
+          "impact": [],
+          "name": "Tumbling Mountain",
+          "slug": "remove-mountains-long",
+          "terrainChanges": [
+            "Mountain → Hill (100% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "100%",
+              "from": "Mountain",
+              "to": "Hill"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Spreads across contiguous Sand",
+            "99-turn warning before it strikes"
+          ],
+          "variant": "Long"
+        },
+        {
+          "baseId": "OCCURRENCE_REMOVE_MOUNTAINS",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Does not end on its own"
+          ],
+          "flags": [
+            "Global"
+          ],
+          "helpText": "",
+          "id": "OCCURRENCE_REMOVE_MOUNTAINS_GRADUAL",
+          "impact": [],
+          "name": "Tumbling Mountain",
+          "slug": "remove-mountains-gradual",
+          "terrainChanges": [
+            "Mountain → Hill (1% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "1%",
+              "from": "Mountain",
+              "to": "Hill"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Spreads across contiguous Sand",
+            "19-turn warning before it strikes"
+          ],
+          "variant": "Gradual"
+        }
+      ]
+    },
+    {
+      "id": "OCCURRENCE_REJUVENATE",
+      "name": "Rejuvenation",
+      "slug": "rejuvenate",
+      "variants": [
+        {
+          "baseId": "OCCURRENCE_REJUVENATE",
+          "classId": "",
+          "dlc": "CALAMITIES",
+          "dlcLabel": "Wrath of Gods",
+          "effects": [],
+          "ending": [
+            "Does not end on its own"
+          ],
+          "flags": [],
+          "helpText": "Each turn, terrain becomes more temperate, and resources are slowly added to the map.",
+          "id": "OCCURRENCE_REJUVENATE",
+          "impact": [],
+          "name": "Rejuvenation",
+          "slug": "rejuvenate",
+          "terrainChanges": [
+            "Sand → Arid (3% chance)",
+            "Arid → Temperate (2% chance)",
+            "Temperate → Lush (1% chance)",
+            "Bare Arid → Scrub (0.2% chance)",
+            "Arid → Trees (0.1% chance)",
+            "Bare Temperate → Scrub (0.1% chance)",
+            "Temperate → Trees (0.2% chance)",
+            "Lush → Trees (0.3% chance)",
+            "Arid → Marble (0.04% chance)",
+            "Arid → Salt (0.02% chance)",
+            "Arid → Silver (0.03% chance)",
+            "Arid → Sorghum (0.04% chance)",
+            "Arid → Goats (0.04% chance)",
+            "Arid → Camels (0.04% chance)",
+            "Arid → Incense (0.02% chance)",
+            "Arid → Olives (0.03% chance)",
+            "Temperate → Gems (0.05% chance)",
+            "Temperate → Gold (0.05% chance)",
+            "Temperate → Horses (0.05% chance)",
+            "Temperate → Sheep (0.05% chance)",
+            "Temperate → Wheat (0.05% chance)",
+            "Temperate → Elephants (0.03% chance)",
+            "Temperate → Fur (0.05% chance)",
+            "Temperate → Lavender (0.04% chance)",
+            "Temperate → Wine (0.05% chance)",
+            "Lush → Ore (0.05% chance)",
+            "Lush → Cattle (0.05% chance)",
+            "Lush → Pigs (0.05% chance)",
+            "Lush → Barley (0.05% chance)",
+            "Lush → Game (0.05% chance)",
+            "Lush → Citrus (0.05% chance)",
+            "Lush → Honey (0.05% chance)",
+            "Coast → Dyes (0.03% chance)",
+            "Coast → Pearls (0.03% chance)",
+            "Coast → Fish (0.03% chance)",
+            "Coast → Crabs (0.03% chance)"
+          ],
+          "terrainChangesRaw": [
+            {
+              "chance": "3%",
+              "from": "Sand",
+              "to": "Arid"
+            },
+            {
+              "chance": "2%",
+              "from": "Arid",
+              "to": "Temperate"
+            },
+            {
+              "chance": "1%",
+              "from": "Temperate",
+              "to": "Lush"
+            },
+            {
+              "chance": "0.2%",
+              "from": "Bare Arid",
+              "to": "Scrub"
+            },
+            {
+              "chance": "0.1%",
+              "from": "Arid",
+              "to": "Trees"
+            },
+            {
+              "chance": "0.1%",
+              "from": "Bare Temperate",
+              "to": "Scrub"
+            },
+            {
+              "chance": "0.2%",
+              "from": "Temperate",
+              "to": "Trees"
+            },
+            {
+              "chance": "0.3%",
+              "from": "Lush",
+              "to": "Trees"
+            },
+            {
+              "chance": "0.04%",
+              "from": "Arid",
+              "to": "Marble"
+            },
+            {
+              "chance": "0.02%",
+              "from": "Arid",
+              "to": "Salt"
+            },
+            {
+              "chance": "0.03%",
+              "from": "Arid",
+              "to": "Silver"
+            },
+            {
+              "chance": "0.04%",
+              "from": "Arid",
+              "to": "Sorghum"
+            },
+            {
+              "chance": "0.04%",
+              "from": "Arid",
+              "to": "Goats"
+            },
+            {
+              "chance": "0.04%",
+              "from": "Arid",
+              "to": "Camels"
+            },
+            {
+              "chance": "0.02%",
+              "from": "Arid",
+              "to": "Incense"
+            },
+            {
+              "chance": "0.03%",
+              "from": "Arid",
+              "to": "Olives"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Temperate",
+              "to": "Gems"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Temperate",
+              "to": "Gold"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Temperate",
+              "to": "Horses"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Temperate",
+              "to": "Sheep"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Temperate",
+              "to": "Wheat"
+            },
+            {
+              "chance": "0.03%",
+              "from": "Temperate",
+              "to": "Elephants"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Temperate",
+              "to": "Fur"
+            },
+            {
+              "chance": "0.04%",
+              "from": "Temperate",
+              "to": "Lavender"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Temperate",
+              "to": "Wine"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Lush",
+              "to": "Ore"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Lush",
+              "to": "Cattle"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Lush",
+              "to": "Pigs"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Lush",
+              "to": "Barley"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Lush",
+              "to": "Game"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Lush",
+              "to": "Citrus"
+            },
+            {
+              "chance": "0.05%",
+              "from": "Lush",
+              "to": "Honey"
+            },
+            {
+              "chance": "0.03%",
+              "from": "Coast",
+              "to": "Dyes"
+            },
+            {
+              "chance": "0.03%",
+              "from": "Coast",
+              "to": "Pearls"
+            },
+            {
+              "chance": "0.03%",
+              "from": "Coast",
+              "to": "Fish"
+            },
+            {
+              "chance": "0.03%",
+              "from": "Coast",
+              "to": "Crabs"
+            }
+          ],
+          "traits": [],
+          "trigger": [
+            "Affects all Land or Coastal Water tiles on the map"
+          ],
+          "variant": ""
+        }
+      ]
+    }
+  ]
+}

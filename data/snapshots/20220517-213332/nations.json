@@ -5,6 +5,44 @@
       "Elephants add Ivory (with camp)",
       "Stele (civic and yield boost)"
     ],
+    "cityNames": [
+      "Adulis",
+      "Adwa",
+      "Agazi",
+      "Asmara",
+      "Axum",
+      "Azeba",
+      "Etchmara",
+      "Hawulti",
+      "Keskese",
+      "Kubar",
+      "Massawa",
+      "Matara",
+      "Mendefera",
+      "Qohaito",
+      "Sabae",
+      "Sabat",
+      "Sembel",
+      "Wuqro",
+      "Yeha",
+      "Zula"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger",
+        "trait": "ranged"
+      }
+    ],
     "color": {
       "bg": "#f8a3b4",
       "fg": "#f5f6f8",
@@ -17,31 +55,294 @@
       "Makeda",
       "Gadarat"
     ],
+    "dynastyDetails": [
+      {
+        "description": "Kaleb is a renowned champion of Christianity who helped expand the territory, trade network, and influence of the kingdom of Aksum.",
+        "firstRuler": "Kaleb",
+        "founder": "Kaleb",
+        "gameContent": "Aksum",
+        "id": "DYNASTY_KALEB",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+5% State Religion Spread Chance",
+              "+40 Opinion (same trait)",
+              "+10 Opinion as Religion Head",
+              "+1 Charisma"
+            ],
+            "icon": null,
+            "id": "TRAIT_PIOUS",
+            "label": "Pious",
+            "slug": "pious"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Kaleb_of_Axum",
+        "name": "Kaleb",
+        "portrait": "img/portraits/historical/kaleb.png",
+        "slug": "kaleb"
+      },
+      {
+        "description": "Ezana is known for converting Aksum to link(RELIGION_CHRISTIANITY). As an link(TRAIT_EVANGELIST), all link(UNITTRAIT_INFANTRY) Units produced in a City where he is link(CONCEPT_GOVERNOR) are link(EFFECTUNIT_ADEPT) and follow Christianity, allowing them to link(CONCEPT_SPREAD_RELIGION).",
+        "firstRuler": "Ezana",
+        "founder": "Ousanas",
+        "gameContent": "Aksum",
+        "id": "DYNASTY_EZANA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/zealot.png",
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot",
+            "slug": "zealot"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_EVANGELIST",
+            "label": "Evangelist",
+            "slug": "evangelist"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ezana_of_Axum",
+        "name": "Ezana",
+        "portrait": "img/portraits/historical/ezana.png",
+        "slug": "ezana"
+      },
+      {
+        "description": "Gudit burned down her nation's churches and monuments as revenge for the church selling her into slavery. Though link(TRAIT_INFAMOUS), she can link(MISSION_INTIMIDATE) her detractors into becoming link(RELATIONSHIP_TERRIFIED_OF) her.",
+        "firstRuler": "Gudit",
+        "founder": "Gudit",
+        "gameContent": "Aksum",
+        "id": "DYNASTY_GUDIT",
+        "leaderAge": 28,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+40 Opinion (same trait)",
+              "+2 Courage",
+              "-1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_RUTHLESS",
+            "label": "Ruthless",
+            "slug": "ruthless"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "-40 Family Opinion",
+              "-1 Charisma"
+            ],
+            "icon": null,
+            "id": "TRAIT_INFAMOUS",
+            "label": "Infamous",
+            "slug": "infamous"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Gudit",
+        "name": "Gudit",
+        "portrait": "img/portraits/historical/gudit.png",
+        "slug": "gudit"
+      },
+      {
+        "description": "Known in legend as the Queen of Sheba, Makeda is able to perform the unique link(MISSION_LEAD_DELEGATION) Mission, which leads to mutually beneficial outcomes with her neighbors.",
+        "firstRuler": "Makeda",
+        "founder": "Makeda",
+        "gameContent": "Aksum",
+        "id": "DYNASTY_MAKEDA",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/diplomat.png",
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat",
+            "slug": "diplomat"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Leader Opinion",
+              "+20 Opinion (same trait)",
+              "+10 Opinion as Family Head",
+              "+1 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_CUNNING",
+            "label": "Cunning",
+            "slug": "cunning"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_ENVOY",
+            "label": "Envoy",
+            "slug": "envoy"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Queen_of_Sheba",
+        "name": "Makeda",
+        "portrait": "img/portraits/historical/makeda.png",
+        "slug": "makeda"
+      },
+      {
+        "description": "One of the earliest rulers of Aksum, Gadarat expanded his nation from a mere city state to a mighty empire. A link(UNIT_WORKER) is granted for each Tribal Site cleared.",
+        "firstRuler": "Gadarat",
+        "founder": "Gadarat",
+        "gameContent": "Aksum",
+        "id": "DYNASTY_GADARAT",
+        "leaderAge": 25,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/tactician.png",
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician",
+            "slug": "tactician"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "On Tribe Cleared: Unit Worker No Family"
+            ],
+            "icon": null,
+            "id": "TRAIT_SUBJUGATOR",
+            "label": "Subjugator",
+            "slug": "subjugator"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Training/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_WARLIKE",
+            "label": "Warlike",
+            "slug": "warlike"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/GDRT",
+        "name": "Gadarat",
+        "portrait": "img/portraits/historical/gadarat.png",
+        "slug": "gadarat"
+      }
+    ],
+    "effectsXml": [
+      "Elephants give Ivory",
+      "Unlocks Mint Coin"
+    ],
     "families": [
       {
         "class": "Champions",
+        "classKey": "champions",
         "colorIndex": 0,
         "id": "FAMILY_AKSUM_AGAW",
+        "ingameColor": "#c83500",
+        "ingameFg": "#f5f6f8",
         "name": "Agaw"
       },
       {
         "class": "Traders",
+        "classKey": "traders",
         "colorIndex": 1,
         "id": "FAMILY_AKSUM_AGAZI",
+        "ingameColor": "#ffdf0b",
+        "ingameFg": "#111418",
         "name": "Agazi"
       },
       {
         "class": "Clerics",
+        "classKey": "clerics",
         "colorIndex": 2,
         "id": "FAMILY_AKSUM_TIGRAYAN",
+        "ingameColor": "#00c000",
+        "ingameFg": "#f5f6f8",
         "name": "Tigrayan"
       },
       {
         "class": "Patrons",
+        "classKey": "patrons",
         "colorIndex": 3,
         "id": "FAMILY_AKSUM_BARYA",
+        "ingameColor": "#eeede8",
+        "ingameFg": "#111418",
         "name": "Barya"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ababa_Esat",
+      "Adhana",
+      "Admas",
+      "Ahywa",
+      "Awsena",
+      "Esmeni",
+      "Garsemot",
+      "Gudit",
+      "Hadena",
+      "Ismenie",
+      "Kalina",
+      "Kuname",
+      "Lab",
+      "Makeda",
+      "Masoba",
+      "Nikanta",
+      "Nikawla",
+      "Sofya",
+      "Tsetisi",
+      "Wakana"
+    ],
+    "firstNamesMale": [
+      "Aderaz",
+      "Alameda",
+      "Angabo",
+      "Ayzor",
+      "Azaba",
+      "Bazen",
+      "Datawnas",
+      "Dil_Naod",
+      "Endubis",
+      "Ezana",
+      "Gabra_Maskal",
+      "Gadarat",
+      "Kaleb",
+      "Mawat",
+      "Menelik",
+      "Ousanas",
+      "Saizana",
+      "Wazeb",
+      "Zaqarnas",
+      "Zoskales"
     ],
     "gameContent": "AKSUM",
     "id": "NATION_AKSUM",
@@ -53,34 +354,246 @@
     },
     "name": "Aksum",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
+        "effectsXml": [
+          "+2 Growth"
+        ],
+        "fullName": "Shrine of Astar",
+        "id": "IMPROVEMENT_SHRINE_ASTAR",
+        "name": "Astar",
+        "primaryYield": "GROWTH",
+        "subClass": 2,
+        "type": "LOVE",
+        "typeLabel": "Love",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "growth"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Training, +10 Infantry XP",
+        "effectsXml": [
+          "+2 Training"
+        ],
+        "fullName": "Shrine of Mahrem",
+        "id": "IMPROVEMENT_SHRINE_MAHREM",
+        "name": "Mahrem",
+        "primaryYield": "TRAINING",
+        "subClass": 4,
+        "type": "WAR",
+        "typeLabel": "War",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "training"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "effectsXml": [
+          "+20 Money"
+        ],
+        "fullName": "Shrine of Beher",
+        "id": "IMPROVEMENT_SHRINE_BEHER",
+        "name": "Beher",
+        "primaryYield": "MONEY",
+        "subClass": 8,
+        "type": "WATER",
+        "typeLabel": "Water",
+        "yieldOutput": [
+          {
+            "value": 200,
+            "yield": "money"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "effectsXml": [],
+        "fullName": "Shrine of Medr",
+        "id": "IMPROVEMENT_SHRINE_MEDR",
+        "name": "Medr",
+        "primaryYield": null,
+        "subClass": 9,
+        "type": "FIRE",
+        "typeLabel": "Fire",
+        "yieldOutput": []
+      }
+    ],
     "shrines": [
-      "+2 Training, +10 XP / Unit",
-      "+1 Train/LM, +20% Mines",
-      "+20 Money, +20% Nets",
-      "+2 Growth, +20% Pastures"
+      {
+        "effect": "+2 Growth, +20% adjacent Pasture",
+        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
+          "effectsXml": [
+            "+2 Growth"
+          ],
+          "fullName": "Shrine of Astar",
+          "id": "IMPROVEMENT_SHRINE_ASTAR",
+          "name": "Astar",
+          "primaryYield": "GROWTH",
+          "subClass": 2,
+          "type": "LOVE",
+          "typeLabel": "Love",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "growth"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Shrine of Mahrem",
+          "id": "IMPROVEMENT_SHRINE_MAHREM",
+          "name": "Mahrem",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+          "effectsXml": [
+            "+20 Money"
+          ],
+          "fullName": "Shrine of Beher",
+          "id": "IMPROVEMENT_SHRINE_BEHER",
+          "name": "Beher",
+          "primaryYield": "MONEY",
+          "subClass": 8,
+          "type": "WATER",
+          "typeLabel": "Water",
+          "yieldOutput": [
+            {
+              "value": 200,
+              "yield": "money"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+          "effectsXml": [],
+          "fullName": "Shrine of Medr",
+          "id": "IMPROVEMENT_SHRINE_MEDR",
+          "name": "Medr",
+          "primaryYield": null,
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
+          "yieldOutput": []
+        }
+      }
     ],
     "slug": "aksum",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Labor Force",
       "Administration"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "150/200 iron",
-      "moveSight": "2 move, 4 vision",
-      "names": "D'mt / Shotelai",
-      "traits": "Melee Infantry Disarm",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2/-4 iron, -1 food"
+      "cost": "150/200 Iron",
+      "moveSight": "2 Move, 4 Vision",
+      "names": "D'mt Warrior / Shotelai",
+      "traits": "Melee, Infantry, Disarm",
+      "unitsResolved": [
+        {
+          "culture": "Initial",
+          "id": "UNIT_DMT_WARRIOR",
+          "name": "D'mt Warrior",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_SHOTELAI",
+          "name": "Shotelai",
+          "trait": "melee"
+        }
+      ],
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+2 Orders/Kill",
-      "Units start with Focus 1",
-      "+100% Pillage Yield"
+    "cityNames": [
+      "Assur",
+      "Nineveh",
+      "Kalhu",
+      "Arpad",
+      "Dur_Sharrukin",
+      "Qatna",
+      "Harran",
+      "Sareisa",
+      "Erbil",
+      "Mardaman",
+      "Ekallatum",
+      "Tushhan",
+      "Mardin",
+      "Arrapha",
+      "Carchemish",
+      "Kahat",
+      "Gozan",
+      "Nisibis",
+      "Pteria",
+      "Resen",
+      "Kar_Sulmanu_Asaredu",
+      "Tushpa",
+      "Gaza",
+      "Jerwan"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger",
+        "trait": "ranged"
+      }
     ],
     "color": {
       "bg": "#fadc3b",
@@ -94,31 +607,285 @@
       "Ashur_Uballit_I",
       "Sargon_Ii"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Ashurbanipal",
+        "founder": "Esarhaddon",
+        "gameContent": "",
+        "id": "DYNASTY_ASHURBANIPAL",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/zealot.png",
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot",
+            "slug": "zealot"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Opinion (same trait)",
+              "+2 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_EDUCATED",
+            "label": "Educated",
+            "slug": "educated"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ashurbanipal",
+        "name": "Ashurbanipal",
+        "portrait": "img/portraits/character_select/ashurbanipal.png",
+        "slug": "ashurbanipal"
+      },
+      {
+        "description": "",
+        "firstRuler": "Shammuramat",
+        "founder": "Shalmaneser III",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_SHAMMURAMAT",
+        "leaderAge": 28,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+0.5 Science/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_INTELLIGENT",
+            "label": "Intelligent",
+            "slug": "intelligent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Shammuramat",
+        "name": "Shammuramat",
+        "portrait": "img/portraits/historical/shammuramat.png",
+        "slug": "shammuramat"
+      },
+      {
+        "description": "",
+        "firstRuler": "Tukulti Ninurta I",
+        "founder": "Shalmaneser I",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_TUKULTI_NINURTA_I",
+        "leaderAge": 25,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "-1 Wisdom",
+              "+2 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_PROUD",
+            "label": "Proud",
+            "slug": "proud"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "On Team Declared War: King Of Kings Declared War"
+            ],
+            "icon": null,
+            "id": "TRAIT_KING_OF_KINGS",
+            "label": "King Of Kings",
+            "slug": "king_of_kings"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Tukulti-Ninurta_I",
+        "name": "Tukulti Ninurta I",
+        "portrait": "img/portraits/historical/tukulti_ninurta_i.png",
+        "slug": "tukulti_ninurta_i"
+      },
+      {
+        "description": "",
+        "firstRuler": "Ashur Uballit I",
+        "founder": "Eriba Adad I",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_ASHUR_UBALLIT_I",
+        "leaderAge": 31,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/diplomat.png",
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat",
+            "slug": "diplomat"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+40 Opinion (same trait)",
+              "+2 Courage",
+              "-1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_RUTHLESS",
+            "label": "Ruthless",
+            "slug": "ruthless"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ashur-uballit_I",
+        "name": "Ashur Uballit I",
+        "portrait": "img/portraits/historical/ashur_uballit_i.png",
+        "slug": "ashur_uballit_i"
+      },
+      {
+        "description": "",
+        "firstRuler": "Sargon II",
+        "founder": "Sargon II",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_SARGON_II",
+        "leaderAge": 35,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+2 Happiness/City",
+              "+40 Opinion (same trait)",
+              "+1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_RIGHTEOUS",
+            "label": "Righteous",
+            "slug": "righteous"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Sargon_II",
+        "name": "Sargon II",
+        "portrait": "img/portraits/historical/sargon_ii.png",
+        "slug": "sargon_ii"
+      }
+    ],
+    "effectsXml": [
+      "Units start with Focus I",
+      "+100% Pillage Yield",
+      "+2 Orders/Kill"
+    ],
     "families": [
       {
         "class": "Champions",
+        "classKey": "champions",
         "colorIndex": 0,
         "id": "FAMILY_SARGONID",
+        "ingameColor": "#b53c01",
+        "ingameFg": "#f5f6f8",
         "name": "Sargonid"
       },
       {
         "class": "Hunters",
+        "classKey": "hunters",
         "colorIndex": 1,
         "id": "FAMILY_TUDIYA",
+        "ingameColor": "#658d16",
+        "ingameFg": "#f5f6f8",
         "name": "Tudiya"
       },
       {
         "class": "Patrons",
+        "classKey": "patrons",
         "colorIndex": 2,
         "id": "FAMILY_ADASI",
+        "ingameColor": "#aeaa94",
+        "ingameFg": "#f5f6f8",
         "name": "Adasi"
       },
       {
         "class": "Clerics",
+        "classKey": "clerics",
         "colorIndex": 3,
         "id": "FAMILY_ERISHUM",
+        "ingameColor": "#ff829f",
+        "ingameFg": "#f5f6f8",
         "name": "Erishum"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Addati",
+      "Ahat_Abisha",
+      "Ahat_Abu",
+      "Ahi_Talli",
+      "Akbara",
+      "Ataliya",
+      "Attar_Palti",
+      "Balhiti",
+      "Banitu",
+      "Esharra_Hammat",
+      "Eziptu",
+      "Hama",
+      "Kabalaia",
+      "Kidiniti",
+      "Libbali_Sharrat",
+      "Marqihita",
+      "Naqia",
+      "Nur_Ekalli",
+      "Sammu_Ramat",
+      "Saraia",
+      "Shadditu",
+      "Tashmetu_Sharrat",
+      "Yaba",
+      "Zarpanitu"
+    ],
+    "firstNamesMale": [
+      "Adad_Nirari",
+      "Adamu",
+      "Aminu",
+      "Ashur_Dan",
+      "Ashur_Nirari",
+      "Ashur_Uballit",
+      "Ashurbanipal",
+      "Bazaya",
+      "Enlil_Nasir",
+      "Eriba_Adad",
+      "Esarhaddon",
+      "Giritu",
+      "Ishme_Dagan",
+      "Nimedu",
+      "Puzur_Ashur",
+      "Rimut_Adad",
+      "Sennacherib",
+      "Shalmaneser",
+      "Shamash_Shum",
+      "Shamshi_Adad",
+      "Sulili",
+      "Tiglath_Pileser",
+      "Tukulti_War",
+      "Ushpia",
+      "Zubir"
     ],
     "gameContent": "",
     "id": "NATION_ASSYRIA",
@@ -128,34 +895,243 @@
     },
     "name": "Assyria",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+        "effectsXml": [
+          "+2 Civics"
+        ],
+        "fullName": "Shrine of Ashur",
+        "id": "IMPROVEMENT_SHRINE_ASHUR",
+        "name": "Ashur",
+        "primaryYield": "CIVICS",
+        "subClass": 1,
+        "type": "KINGSHIP",
+        "typeLabel": "Kingship",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "civics"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Training, +10 Infantry XP",
+        "effectsXml": [
+          "+2 Training"
+        ],
+        "fullName": "Shrine of Ninurta",
+        "id": "IMPROVEMENT_SHRINE_NINURTA",
+        "name": "Ninurta",
+        "primaryYield": "TRAINING",
+        "subClass": 4,
+        "type": "WAR",
+        "typeLabel": "War",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "training"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "effectsXml": [],
+        "fullName": "Shrine of Nuska",
+        "id": "IMPROVEMENT_SHRINE_NUSKA",
+        "name": "Nuska",
+        "primaryYield": null,
+        "subClass": 9,
+        "type": "FIRE",
+        "typeLabel": "Fire",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
+        "effectsXml": [
+          "+0.5 Orders"
+        ],
+        "fullName": "Shrine of Shamash",
+        "id": "IMPROVEMENT_SHRINE_SHAMASH",
+        "name": "Shamash",
+        "primaryYield": "ORDERS",
+        "subClass": 10,
+        "type": "SUN",
+        "typeLabel": "Sun",
+        "yieldOutput": [
+          {
+            "value": 5,
+            "yield": "orders"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+2 Training, +10 XP / Unit",
-      "+1 Train/LM, +20% Mines",
-      "+0.5 Orders, +20% Farms",
-      "+2 Civics, +1 Order/Wonder"
+      {
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
+        "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+          "effectsXml": [
+            "+2 Civics"
+          ],
+          "fullName": "Shrine of Ashur",
+          "id": "IMPROVEMENT_SHRINE_ASHUR",
+          "name": "Ashur",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "civics"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Shrine of Ninurta",
+          "id": "IMPROVEMENT_SHRINE_NINURTA",
+          "name": "Ninurta",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+          "effectsXml": [],
+          "fullName": "Shrine of Nuska",
+          "id": "IMPROVEMENT_SHRINE_NUSKA",
+          "name": "Nuska",
+          "primaryYield": null,
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+0.5 Orders, +20% adjacent Farm",
+        "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
+          "effectsXml": [
+            "+0.5 Orders"
+          ],
+          "fullName": "Shrine of Shamash",
+          "id": "IMPROVEMENT_SHRINE_SHAMASH",
+          "name": "Shamash",
+          "primaryYield": "ORDERS",
+          "subClass": 10,
+          "type": "SUN",
+          "typeLabel": "Sun",
+          "yieldOutput": [
+            {
+              "value": 5,
+              "yield": "orders"
+            }
+          ]
+        }
+      }
     ],
     "slug": "assyria",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Administration",
       "Military Drill"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 wood, 50/100 iron",
-      "moveSight": "1 move, 3 vision",
+      "cost": "100 Wood, 50/100 Iron",
+      "moveSight": "1 Move, 3 Vision",
       "names": "Battering Ram / Siege Tower",
-      "traits": "Melee Siege Assault",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2/-4 wood"
+      "traits": "Melee, Siege, Assault",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_BATTERING_RAM",
+          "name": "Battering Ram",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_SIEGE_TOWER",
+          "name": "Siege Tower",
+          "trait": "melee"
+        }
+      ],
+      "upkeep": "-2/-4 Wood, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+1 Sci/City",
-      "+2 Culture/Treasury",
-      "+20% Growth"
+    "cityNames": [
+      "Babylon",
+      "Akkad",
+      "Nippur",
+      "Borsippa",
+      "Mari",
+      "Sippar",
+      "Eshnunna",
+      "Dur_Kurigalzu",
+      "Ellasar",
+      "Opis",
+      "Larsa",
+      "Ur",
+      "Kish",
+      "Shuruppak",
+      "Lagash",
+      "Kisurra",
+      "Eridu",
+      "Uruk",
+      "Marad",
+      "Dilbat",
+      "An_At"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger",
+        "trait": "ranged"
+      }
     ],
     "color": {
       "bg": "#82c83e",
@@ -169,70 +1145,566 @@
       "Nebuchadnezzar_I",
       "Kurigalzu_I"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Nebuchadnezzar",
+        "founder": "Nabopolassar",
+        "gameContent": "",
+        "id": "DYNASTY_NEBUCHADNEZZAR",
+        "leaderAge": 27,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/scholar.png",
+            "id": "TRAIT_SCHOLAR_ARCHETYPE",
+            "label": "Scholar",
+            "slug": "scholar"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+8 Money/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_PROSPEROUS",
+            "label": "Prosperous",
+            "slug": "prosperous"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nebuchadnezzar_II",
+        "name": "Nebuchadnezzar II",
+        "portrait": "img/portraits/character_select/nebuchadnezzar.png",
+        "slug": "nebuchadnezzar"
+      },
+      {
+        "description": "",
+        "firstRuler": "Adad-Guppi",
+        "founder": "Adad-Guppi",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_ADAD_GUPPI",
+        "leaderAge": 42,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/zealot.png",
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot",
+            "slug": "zealot"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+0.5 Science/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_INTELLIGENT",
+            "label": "Intelligent",
+            "slug": "intelligent"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_LONG_LIVED",
+            "label": "Long Lived",
+            "slug": "long_lived"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Adad-guppi",
+        "name": "Adad Guppi",
+        "portrait": "img/portraits/historical/adad_guppi.png",
+        "slug": "adad_guppi"
+      },
+      {
+        "description": "",
+        "firstRuler": "Hammurabi",
+        "founder": "Sîn-Muballit",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_HAMMURABI",
+        "leaderAge": 18,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/judge.png",
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge",
+            "slug": "judge"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+10 Opinion as Religion Head",
+              "+2 Charisma"
+            ],
+            "icon": null,
+            "id": "TRAIT_DIVINE",
+            "label": "Divine",
+            "slug": "divine"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hammurabi",
+        "name": "Hammurabi",
+        "portrait": "img/portraits/historical/hammurabi.png",
+        "slug": "hammurabi"
+      },
+      {
+        "description": "",
+        "firstRuler": "Nebuchadnezzar",
+        "founder": "Ninurta-Nadin-Shumi",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_NEBUCHADNEZZAR_I",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/tactician.png",
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician",
+            "slug": "tactician"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+2 Vision Extra",
+              "+20 Opinion (same trait)",
+              "+1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_TRACKER",
+            "label": "Tracker",
+            "slug": "tracker"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nebuchadnezzar_I",
+        "name": "Nebuchadnezzar I",
+        "portrait": "img/portraits/historical/nebuchadnezzar_i.png",
+        "slug": "nebuchadnezzar_i"
+      },
+      {
+        "description": "",
+        "firstRuler": "Kurigalzu I",
+        "founder": "Kurigalzu I",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_KURIGALZU_I",
+        "leaderAge": 27,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/builder.png",
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder",
+            "slug": "builder"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Leader Opinion",
+              "+20 Opinion (same trait)",
+              "+10 Opinion as Family Head",
+              "+1 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_CUNNING",
+            "label": "Cunning",
+            "slug": "cunning"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Can buy Tiles with Money"
+            ],
+            "icon": null,
+            "id": "TRAIT_PEACEFUL_EXPANSIONIST",
+            "label": "Peaceful Expansionist",
+            "slug": "peaceful_expansionist"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Kurigalzu_I",
+        "name": "Kurigalzu I",
+        "portrait": "img/portraits/historical/kurigalzu_i.png",
+        "slug": "kurigalzu_i"
+      }
+    ],
+    "effectsXml": [
+      "+1 Science/City",
+      "+20% Growth",
+      "+2 Culture/Treasury"
+    ],
     "families": [
       {
         "class": "Hunters",
+        "classKey": "hunters",
         "colorIndex": 0,
         "id": "FAMILY_KASSITE",
+        "ingameColor": "#c7ddff",
+        "ingameFg": "#111418",
         "name": "Kassite"
       },
       {
         "class": "Artisans",
+        "classKey": "artisans",
         "colorIndex": 1,
         "id": "FAMILY_CHALDEAN",
+        "ingameColor": "#6dadfb",
+        "ingameFg": "#f5f6f8",
         "name": "Chaldean"
       },
       {
         "class": "Traders",
+        "classKey": "traders",
         "colorIndex": 2,
         "id": "FAMILY_ISIN",
+        "ingameColor": "#ddff64",
+        "ingameFg": "#111418",
         "name": "Isin"
       },
       {
         "class": "Sages",
+        "classKey": "sages",
         "colorIndex": 3,
         "id": "FAMILY_AMORITE",
+        "ingameColor": "#8aff7f",
+        "ingameFg": "#111418",
         "name": "Amorite"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ahatsunu",
+      "Alittum",
+      "Amata",
+      "Belessunu",
+      "Beltum_Rimenni",
+      "Damiqtum",
+      "Erishti_Aya",
+      "Ettu",
+      "Gashansunu",
+      "Gemeti",
+      "Humusi",
+      "Iltani",
+      "Kashshaya",
+      "Lamassani",
+      "Melulatum",
+      "Nidintu",
+      "Ninsunu",
+      "Nishi_Inishu",
+      "Palatum",
+      "Ramtu",
+      "Sheritum",
+      "Sun_Gamelat",
+      "Tabni_Sun",
+      "Ubalnu",
+      "Ummi_Ningal",
+      "Zakiti"
+    ],
+    "firstNamesMale": [
+      "Abi_Rattash",
+      "Abil_Sin",
+      "Agum",
+      "Amel_Marduk",
+      "Burnaburiash",
+      "Eriba",
+      "Gandash",
+      "Hammurabi",
+      "Immerum",
+      "Kara_Hardash",
+      "Kashtiliash",
+      "Kudur_Enlil",
+      "Kurigalzu",
+      "Labashi_Marduk",
+      "Lutipri",
+      "Marduk_Nadin_Ahi",
+      "Meli_Shipak",
+      "Nabonidus",
+      "Nabopolassar",
+      "Nebuchadnezzar",
+      "Neriglissar",
+      "Sabium",
+      "Shuma",
+      "Sin_Muballit",
+      "Su_Abu",
+      "Ulamburiash"
     ],
     "gameContent": "",
     "id": "NATION_BABYLONIA",
     "leader": {
-      "heir1": "daughter (9)",
-      "heir2": "son (2)",
+      "heir1": "daughter, Schemer (9)",
+      "heir2": "son (1)",
       "name": "Prosperous Scholar (27)",
-      "spouse": "Insane Diplomat (24)"
+      "spouse": "Diplomat (24)"
     },
     "name": "Babylonia",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+        "effectsXml": [
+          "+2 Civics"
+        ],
+        "fullName": "Shrine of Marduk",
+        "id": "IMPROVEMENT_SHRINE_MARDUK",
+        "name": "Marduk",
+        "primaryYield": "CIVICS",
+        "subClass": 1,
+        "type": "KINGSHIP",
+        "typeLabel": "Kingship",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "civics"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
+        "effectsXml": [
+          "+2 Growth"
+        ],
+        "fullName": "Shrine of Ishtar",
+        "id": "IMPROVEMENT_SHRINE_ISHTAR",
+        "name": "Ishtar",
+        "primaryYield": "GROWTH",
+        "subClass": 2,
+        "type": "LOVE",
+        "typeLabel": "Love",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "growth"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "effectsXml": [
+          "+2 Culture"
+        ],
+        "fullName": "Shrine of Ereshkigal",
+        "id": "IMPROVEMENT_SHRINE_ERESHKIGAL",
+        "name": "Ereshkigal",
+        "primaryYield": "CULTURE",
+        "subClass": 5,
+        "type": "UNDERWORLD",
+        "typeLabel": "Underworld",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "culture"
+          }
+        ]
+      },
+      {
+        "effectStr": "+1 Science, +1 Civics/adjacent Odeon",
+        "effectsXml": [
+          "+1 Science"
+        ],
+        "fullName": "Shrine of Nabu",
+        "id": "IMPROVEMENT_SHRINE_NABU",
+        "name": "Nabu",
+        "primaryYield": "SCIENCE",
+        "subClass": 11,
+        "type": "WISDOM",
+        "typeLabel": "Wisdom",
+        "yieldOutput": [
+          {
+            "value": 10,
+            "yield": "science"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+1 Sci, +1 Civ/Odeon",
-      "+2 Growth, +20% Pastures",
-      "+2 Cult, +Cult%/MtnVolc",
-      "+2 Civics, +1 Order/Wonder"
+      {
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
+        "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+          "effectsXml": [
+            "+2 Civics"
+          ],
+          "fullName": "Shrine of Marduk",
+          "id": "IMPROVEMENT_SHRINE_MARDUK",
+          "name": "Marduk",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "civics"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Growth, +20% adjacent Pasture",
+        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
+          "effectsXml": [
+            "+2 Growth"
+          ],
+          "fullName": "Shrine of Ishtar",
+          "id": "IMPROVEMENT_SHRINE_ISHTAR",
+          "name": "Ishtar",
+          "primaryYield": "GROWTH",
+          "subClass": 2,
+          "type": "LOVE",
+          "typeLabel": "Love",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "growth"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "shrine": {
+          "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+          "effectsXml": [
+            "+2 Culture"
+          ],
+          "fullName": "Shrine of Ereshkigal",
+          "id": "IMPROVEMENT_SHRINE_ERESHKIGAL",
+          "name": "Ereshkigal",
+          "primaryYield": "CULTURE",
+          "subClass": 5,
+          "type": "UNDERWORLD",
+          "typeLabel": "Underworld",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+1 Science, +1 Civics/adjacent Odeon",
+        "shrine": {
+          "effectStr": "+1 Science, +1 Civics/adjacent Odeon",
+          "effectsXml": [
+            "+1 Science"
+          ],
+          "fullName": "Shrine of Nabu",
+          "id": "IMPROVEMENT_SHRINE_NABU",
+          "name": "Nabu",
+          "primaryYield": "SCIENCE",
+          "subClass": 11,
+          "type": "WISDOM",
+          "typeLabel": "Wisdom",
+          "yieldOutput": [
+            {
+              "value": 10,
+              "yield": "science"
+            }
+          ]
+        }
+      }
     ],
     "slug": "babylonia",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Administration",
       "Rhetoric"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "150/200 wood",
-      "moveSight": "2 moves, 3 range, 4 vision",
-      "names": "Akkadian / Cimmerian Archer",
-      "traits": "Ranged Splash",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2/-4 wood, -1 food"
+      "cost": "150/200 Wood",
+      "moveSight": "2 Move, 3 Range, 4 Vision",
+      "names": "Akkadian Archer / Cimmerian Archer",
+      "traits": "Ranged, Infantry, Splash I",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_AKKADIAN_ARCHER",
+          "name": "Akkadian Archer",
+          "trait": "ranged"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_CIMMERIAN_ARCHER",
+          "name": "Cimmerian Archer",
+          "trait": "ranged"
+        }
+      ],
+      "upkeep": "-1 Food, -2/-4 Wood, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "New Cities: +200 Civics",
-      "Can Hire Mercs from Tribes",
-      "+10 Money/Turn Connected"
+    "cityNames": [
+      "Carthago",
+      "Utica",
+      "Hadrumetum",
+      "Thapsus",
+      "Theveste",
+      "Sabrata",
+      "Leptis_Magna",
+      "Hippo_Regius",
+      "Cadiz",
+      "Panormus",
+      "Lilybaeum",
+      "Zama",
+      "Karalis",
+      "Kerkuane",
+      "Tingis",
+      "Sulci",
+      "Melite",
+      "Nora",
+      "Lixus",
+      "Carthago_Nova",
+      "Malaca",
+      "Cartenna",
+      "Saldae",
+      "Sicca",
+      "Neapolis",
+      "Thaenae",
+      "Arae_Philaenorum"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger",
+        "trait": "ranged"
+      }
     ],
     "color": {
       "bg": "#f6efe1",
@@ -245,67 +1717,589 @@
       "Hanno_Ii",
       "Hanno_Navigator"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Dido",
+        "founder": "Mattan",
+        "gameContent": "",
+        "id": "DYNASTY_DIDO",
+        "leaderAge": 23,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/diplomat.png",
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat",
+            "slug": "diplomat"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Leader Opinion",
+              "+20 Opinion (same trait)",
+              "+10 Opinion as Family Head",
+              "+1 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_CUNNING",
+            "label": "Cunning",
+            "slug": "cunning"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+10% Unit Trait Modifier / Siege",
+              "+10% Unit Trait Modifier / Ship",
+              "+20 Opinion (same trait)",
+              "+1 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_ENGINEER",
+            "label": "Engineer",
+            "slug": "engineer"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Dido",
+        "name": "Dido",
+        "portrait": "img/portraits/character_select/dido.png",
+        "slug": "dido"
+      },
+      {
+        "description": "",
+        "firstRuler": "Hannibal Leader",
+        "founder": "Hamilcar",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_HANNIBAL",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "-20 Family Opinion"
+            ],
+            "icon": null,
+            "id": "TRAIT_HANNIBAL_LEADER",
+            "label": "Hannibal Leader",
+            "slug": "hannibal_leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hannibal",
+        "name": "Hannibal",
+        "portrait": "img/portraits/historical/hannibal.png",
+        "slug": "hannibal"
+      },
+      {
+        "description": "",
+        "firstRuler": "Hanno II",
+        "founder": "Hanno II",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_HANNO_II",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "archetype": false,
+            "effects": [
+              "Can buy Tiles with Money",
+              "+2 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_HANNO_II_LEADER",
+            "label": "Hanno Ii Leader",
+            "slug": "hanno_ii_leader"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+8 Money/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_PROSPEROUS",
+            "label": "Prosperous",
+            "slug": "prosperous"
+          },
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/orator.png",
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator",
+            "slug": "orator"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hanno_II_the_Great",
+        "name": "Hanno II",
+        "portrait": "img/portraits/historical/hanno_ii.png",
+        "slug": "hanno_ii"
+      },
+      {
+        "description": "",
+        "firstRuler": "Hanno",
+        "founder": "Hanno",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_HANNO_NAVIGATOR",
+        "leaderAge": 37,
+        "leaderTraits": [
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_HANNO_NAVIGATOR_LEADER",
+            "label": "Hanno Navigator Leader",
+            "slug": "hanno_navigator_leader"
+          },
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/diplomat.png",
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat",
+            "slug": "diplomat"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hanno_the_Navigator",
+        "name": "Hanno Navigator",
+        "portrait": "img/portraits/historical/hanno_the_navigator.png",
+        "slug": "hanno_navigator"
+      }
+    ],
+    "effectsXml": [
+      "Can hire Mercenaries from Tribes",
+      "+10 Money/Connected",
+      "Found: 100 Civics"
+    ],
     "families": [
       {
         "class": "Riders",
+        "classKey": "riders",
         "colorIndex": 0,
         "id": "FAMILY_BARCID",
+        "ingameColor": "#4656b4",
+        "ingameFg": "#f5f6f8",
         "name": "Barcid"
       },
       {
         "class": "Artisans",
+        "classKey": "artisans",
         "colorIndex": 1,
         "id": "FAMILY_MAGONID",
+        "ingameColor": "#933838",
+        "ingameFg": "#f5f6f8",
         "name": "Magonid"
       },
       {
         "class": "Traders",
+        "classKey": "traders",
         "colorIndex": 2,
         "id": "FAMILY_HANNONID",
+        "ingameColor": "#158861",
+        "ingameFg": "#f5f6f8",
         "name": "Hannonid"
       },
       {
         "class": "Statesmen",
+        "classKey": "statesmen",
         "colorIndex": 3,
         "id": "FAMILY_DIDONIAN",
+        "ingameColor": "#b47800",
+        "ingameFg": "#f5f6f8",
         "name": "Didonian"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Amatbaal",
+      "Amatmelqart",
+      "Amatmilik",
+      "Anbar",
+      "Arishat",
+      "Arishatbaal",
+      "Ashdanat",
+      "Ashtarte",
+      "Baalzebel",
+      "Batbaal",
+      "Birich",
+      "Birqot",
+      "Dido",
+      "Elissar",
+      "Fairuz",
+      "Hanbi",
+      "Hannah",
+      "Ildash",
+      "Imilce",
+      "Mutunbaal",
+      "Nasma",
+      "Otr",
+      "Sapanbaal",
+      "Shamshye",
+      "Sophonisba",
+      "Tabiba",
+      "Thualath",
+      "Thubabath",
+      "Umashtart",
+      "Yasmin",
+      "Yzbaal",
+      "Zanbak",
+      "Zohur",
+      "Zmorrod",
+      "Zyara",
+      "Zyabqot"
+    ],
+    "firstNamesMale": [
+      "Abdosir",
+      "Acerbas",
+      "Adherbal",
+      "Adonibaal",
+      "Armilik",
+      "Azrubaal",
+      "Baalhanno",
+      "Baelbad",
+      "Bodashtart",
+      "Bomilcar",
+      "Bostar",
+      "Carthalo",
+      "Eshmunazar",
+      "Feroan",
+      "Gisco",
+      "Hamilcar",
+      "Hannibal",
+      "Hanno",
+      "Hasdrubal",
+      "Hishmat",
+      "Himilco",
+      "Hiram",
+      "Iboham",
+      "Mago",
+      "Maharbal",
+      "Malchus",
+      "Mattan",
+      "Melak",
+      "Navoel",
+      "Ozmelek",
+      "Pygmalion",
+      "Qamr",
+      "Qodmush",
+      "Rabih",
+      "Shada",
+      "Yutpan",
+      "Zoushan",
+      "Karaly"
     ],
     "gameContent": "",
     "id": "NATION_CARTHAGE",
     "leader": {
-      "name": "Cunning Diplomat (23)"
+      "heir1": "brother, King of Tyre Schemer (27)",
+      "name": "Cunning Engineer Diplomat (23)"
     },
     "name": "Carthage",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
+        "effectsXml": [
+          "+2 Growth"
+        ],
+        "fullName": "Shrine of Baal Hammon",
+        "id": "IMPROVEMENT_SHRINE_BAAL_HAMMON",
+        "name": "Baal Hammon",
+        "primaryYield": "GROWTH",
+        "subClass": 2,
+        "type": "LOVE",
+        "typeLabel": "Love",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "growth"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Culture, +10 Money per adjacent Resource",
+        "effectsXml": [
+          "+2 Culture"
+        ],
+        "fullName": "Shrine of Tanit",
+        "id": "IMPROVEMENT_SHRINE_TANIT",
+        "name": "Tanit",
+        "primaryYield": "CULTURE",
+        "subClass": 3,
+        "type": "HEARTH",
+        "typeLabel": "Hearth",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "culture"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+        "effectsXml": [],
+        "fullName": "Shrine of Eshmun",
+        "id": "IMPROVEMENT_SHRINE_ESHMUN",
+        "name": "Eshmun",
+        "primaryYield": null,
+        "subClass": 7,
+        "type": "HEALING",
+        "typeLabel": "Healing",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "effectsXml": [
+          "+20 Money"
+        ],
+        "fullName": "Shrine of Melqart",
+        "id": "IMPROVEMENT_SHRINE_MELQART",
+        "name": "Melqart",
+        "primaryYield": "MONEY",
+        "subClass": 8,
+        "type": "WATER",
+        "typeLabel": "Water",
+        "yieldOutput": [
+          {
+            "value": 200,
+            "yield": "money"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+20 Money, +20% Nets",
-      "+2 Growth, +20% Pastures",
-      "+2 Growth/Grove, +Healer",
-      "+2 Cult, +10 Money/Resource"
+      {
+        "effect": "+2 Growth, +20% adjacent Pasture",
+        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
+          "effectsXml": [
+            "+2 Growth"
+          ],
+          "fullName": "Shrine of Baal Hammon",
+          "id": "IMPROVEMENT_SHRINE_BAAL_HAMMON",
+          "name": "Baal Hammon",
+          "primaryYield": "GROWTH",
+          "subClass": 2,
+          "type": "LOVE",
+          "typeLabel": "Love",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "growth"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Culture, +10 Money per adjacent Resource",
+        "shrine": {
+          "effectStr": "+2 Culture, +10 Money per adjacent Resource",
+          "effectsXml": [
+            "+2 Culture"
+          ],
+          "fullName": "Shrine of Tanit",
+          "id": "IMPROVEMENT_SHRINE_TANIT",
+          "name": "Tanit",
+          "primaryYield": "CULTURE",
+          "subClass": 3,
+          "type": "HEARTH",
+          "typeLabel": "Hearth",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Growth/adjacent Grove, Units gain Healer",
+        "shrine": {
+          "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+          "effectsXml": [],
+          "fullName": "Shrine of Eshmun",
+          "id": "IMPROVEMENT_SHRINE_ESHMUN",
+          "name": "Eshmun",
+          "primaryYield": null,
+          "subClass": 7,
+          "type": "HEALING",
+          "typeLabel": "Healing",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+          "effectsXml": [
+            "+20 Money"
+          ],
+          "fullName": "Shrine of Melqart",
+          "id": "IMPROVEMENT_SHRINE_MELQART",
+          "name": "Melqart",
+          "primaryYield": "MONEY",
+          "subClass": 8,
+          "type": "WATER",
+          "typeLabel": "Water",
+          "yieldOutput": [
+            {
+              "value": 200,
+              "yield": "money"
+            }
+          ]
+        }
+      }
     ],
     "slug": "carthage",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Divination",
       "Aristocracy"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 wood",
-      "moveSight": "2 move, 4 vision",
-      "names": "African / Turreted Elephant",
-      "traits": "Elephant  Panic  Rout",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-4/-6 food"
+      "cost": "100 Food, 50/100 Wood",
+      "moveSight": "2 Move, 4 Vision",
+      "names": "African Elephant / Turreted Elephant",
+      "traits": "Melee, Mounted, Elephant, Rout, Panic",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_AFRICAN_ELEPHANT",
+          "name": "African Elephant",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_TURRETED_ELEPHANT",
+          "name": "Turreted Elephant",
+          "trait": "melee"
+        }
+      ],
+      "upkeep": "-4/-6 Food, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+400 Stone",
-      "+40% Farm on River",
-      "-20% Cost for Adj Imp"
+    "cityNames": [
+      "Waset",
+      "Pelusium",
+      "Memphis",
+      "Khem",
+      "Yamu",
+      "Khito",
+      "Ptkheka",
+      "Sais",
+      "Per_Wadjet",
+      "Khasut",
+      "Timinhor",
+      "Piemro",
+      "Thonis",
+      "Menouthis",
+      "Pikuat",
+      "Per_Atum",
+      "Busiris",
+      "Hut_Hery_Ib",
+      "Taremu",
+      "Setennu",
+      "Tjebnutjer",
+      "Pachnamunis",
+      "Heliopolis",
+      "Tjaru",
+      "Per_Amun",
+      "Weprehwy",
+      "Damietta",
+      "Djedet",
+      "Semabehdet",
+      "Per_Bast",
+      "Tanis",
+      "Avaris",
+      "Pi_Ramesses",
+      "Per_Sopdu",
+      "Abu",
+      "Swenett",
+      "Nubt",
+      "Behdet",
+      "Nekheb",
+      "Hieraconpolis",
+      "Te_Senet",
+      "Per_Hathor",
+      "Iuny",
+      "Sumenu",
+      "Djerty",
+      "Madu",
+      "Iushenshen",
+      "Gesy",
+      "Gebtu",
+      "Dendera",
+      "Seshesh",
+      "Abydos",
+      "Tjenu",
+      "Ipu",
+      "Hut_Repyt",
+      "Tjebu",
+      "Shashotep",
+      "Per_Nemty",
+      "Zawty",
+      "Qis",
+      "Akhetaten",
+      "Khmun",
+      "Herwer",
+      "Hebenu",
+      "Mer_Nefer_Et",
+      "Saka",
+      "Tayu_Djayet",
+      "Per_Medjed",
+      "Henen_Nesut",
+      "Shedet",
+      "Tepihu",
+      "Chenem_Waset",
+      "Iken",
+      "Buhen",
+      "Amunia",
+      "Meroe",
+      "Npy"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior",
+        "trait": "melee"
+      }
     ],
     "color": {
       "bg": "#bc6304",
@@ -320,69 +2314,613 @@
       "Akhenaten",
       "Ramesses_Ii"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Hatshepsut",
+        "founder": "Thutmose",
+        "gameContent": "",
+        "id": "DYNASTY_HATSHEPSUT",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/builder.png",
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder",
+            "slug": "builder"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Culture/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Charisma"
+            ],
+            "icon": null,
+            "id": "TRAIT_INSPIRING",
+            "label": "Inspiring",
+            "slug": "inspiring"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hatshepsut",
+        "name": "Hatshepsut",
+        "portrait": "img/portraits/character_select/hatshepsut.png",
+        "slug": "hatshepsut"
+      },
+      {
+        "description": "",
+        "firstRuler": "Merneith",
+        "founder": "Djet",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_MERNEITH",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+50 Unit Trait XP / Infantry",
+              "+20 Opinion (same trait)",
+              "+1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_STRICT",
+            "label": "Strict",
+            "slug": "strict"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": "img/icons/traits/connection_tactical_advantage.png",
+            "id": "TRAIT_CONNECTION_TACTICAL_ADVANTAGE",
+            "label": "Connection Tactical Advantage",
+            "slug": "connection_tactical_advantage"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Merneith",
+        "name": "Merneith",
+        "portrait": "img/portraits/historical/mereneith.png",
+        "slug": "merneith"
+      },
+      {
+        "description": "",
+        "firstRuler": "Khufu",
+        "founder": "Sneferu",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_KHUFU",
+        "leaderAge": 20,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/builder.png",
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder",
+            "slug": "builder"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20% Mine",
+              "+20% Quarry",
+              "+20 Opinion (same trait)",
+              "+1 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_DELVER",
+            "label": "Delver",
+            "slug": "delver"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "-25% Wonder Cost"
+            ],
+            "icon": null,
+            "id": "TRAIT_MONUMENTAL_EFFORT",
+            "label": "Monumental Effort",
+            "slug": "monumental_effort"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Khufu",
+        "name": "Khufu",
+        "portrait": "img/portraits/historical/khufu.png",
+        "slug": "khufu"
+      },
+      {
+        "description": "",
+        "firstRuler": "Mentuhotep II",
+        "founder": "Intef",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_MENTUHOTEP_II",
+        "leaderAge": 20,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/judge.png",
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge",
+            "slug": "judge"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Civics/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Charisma"
+            ],
+            "icon": null,
+            "id": "TRAIT_ELOQUENT",
+            "label": "Eloquent",
+            "slug": "eloquent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Mentuhotep_II",
+        "name": "Mentuhotep II",
+        "portrait": "img/portraits/historical/mentuhotep_ii.png",
+        "slug": "mentuhotep_ii"
+      },
+      {
+        "description": "",
+        "firstRuler": "Akhenaten",
+        "founder": "Akhenaten",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_AKHENATEN",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/zealot.png",
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot",
+            "slug": "zealot"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "-2 Wisdom",
+              "+2 Courage",
+              "-2 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_INSANE",
+            "label": "Insane",
+            "slug": "insane"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Must found Amarna City first",
+              "[State Religion] +1 Happiness/City"
+            ],
+            "icon": null,
+            "id": "TRAIT_RELIGIOUS_FERVOR",
+            "label": "Religious Fervor",
+            "slug": "religious_fervor"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Akhenaten",
+        "name": "Akhenaten",
+        "portrait": "img/portraits/historical/akhenaten.png",
+        "slug": "akhenaten"
+      },
+      {
+        "description": "",
+        "firstRuler": "Ramesses II",
+        "founder": "Ramesses",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_RAMESSES_II",
+        "leaderAge": 23,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "[Capital] Provides: Horse",
+              "[Capital] Trait Effect Unit: Chariot → Saddleborn",
+              "Start: Techs: Spoked Wheel"
+            ],
+            "icon": null,
+            "id": "TRAIT_CHARIOT_MASTER",
+            "label": "Chariot Master",
+            "slug": "chariot_master"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Culture/Culture Level"
+            ],
+            "icon": null,
+            "id": "TRAIT_GREAT_ANCESTOR",
+            "label": "Great Ancestor",
+            "slug": "great_ancestor"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ramesses_II",
+        "name": "Ramesses II",
+        "portrait": "img/portraits/historical/ramses_ii.png",
+        "slug": "ramesses_ii"
+      }
+    ],
+    "effectsXml": [
+      "+40% Farm on River",
+      "-20% Cost for Adjacent Improvements",
+      "Start: 400 Stone"
+    ],
     "families": [
       {
         "class": "Riders",
+        "classKey": "riders",
         "colorIndex": 0,
         "id": "FAMILY_RAMESSIDE",
+        "ingameColor": "#faebd3",
+        "ingameFg": "#111418",
         "name": "Ramesside"
       },
       {
         "class": "Landowners",
+        "classKey": "landowners",
         "colorIndex": 1,
         "id": "FAMILY_SAITE",
+        "ingameColor": "#fdba4d",
+        "ingameFg": "#f5f6f8",
         "name": "Saite"
       },
       {
         "class": "Clerics",
+        "classKey": "clerics",
         "colorIndex": 2,
         "id": "FAMILY_AMARNA",
+        "ingameColor": "#ab2c38",
+        "ingameFg": "#f5f6f8",
         "name": "Amarna"
       },
       {
         "class": "Sages",
+        "classKey": "sages",
         "colorIndex": 3,
         "id": "FAMILY_THUTMOSID",
+        "ingameColor": "#e8f815",
+        "ingameFg": "#111418",
         "name": "Thutmosid"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ankhesenamun",
+      "Berenib",
+      "Esenchebis",
+      "Hatshepsut",
+      "Hetepheres",
+      "Iput",
+      "Khenut",
+      "Mehaa",
+      "Meresankh",
+      "Mernit",
+      "Nebet",
+      "Nebwenet",
+      "Nefertari",
+      "Nefertiti",
+      "Nitiqret",
+      "Rekhetre",
+      "Sebat",
+      "Semat",
+      "Senminis",
+      "Serethor",
+      "Sobekneferu",
+      "Tetobastis",
+      "Tiye",
+      "Twosret",
+      "Udjebten"
+    ],
+    "firstNamesMale": [
+      "Ahmose",
+      "Akhenaten",
+      "Amenemhat",
+      "Amenhotep",
+      "Api",
+      "Besis",
+      "Djedefre",
+      "Djoser",
+      "Horapis",
+      "Horemheb",
+      "Inet",
+      "Kamose",
+      "Khafre",
+      "Khufu",
+      "Menkaure",
+      "Mentuhotep",
+      "Merenptah",
+      "Narmer",
+      "Neferkare",
+      "Pepi",
+      "Psamtik",
+      "Senusret",
+      "Seti",
+      "Tutankhamun",
+      "Werhetep"
     ],
     "gameContent": "",
     "id": "NATION_EGYPT",
     "leader": {
-      "heir1": "daughter (12)",
-      "heir2": "stepston (9)",
-      "name": "Inspiring Builder (35)"
+      "heir1": "daughter (11)",
+      "heir2": "stepson (8)",
+      "heir3": "co-wife, Extravagant Zealot (31)",
+      "name": "Inspiring Builder (34)"
     },
     "name": "Egypt",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "effectsXml": [
+          "+2 Culture"
+        ],
+        "fullName": "Shrine of Osiris",
+        "id": "IMPROVEMENT_SHRINE_OSIRIS",
+        "name": "Osiris",
+        "primaryYield": "CULTURE",
+        "subClass": 5,
+        "type": "UNDERWORLD",
+        "typeLabel": "Underworld",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "culture"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+        "effectsXml": [],
+        "fullName": "Shrine of Neith",
+        "id": "IMPROVEMENT_SHRINE_NEITH",
+        "name": "Neith",
+        "primaryYield": null,
+        "subClass": 6,
+        "type": "HUNTING",
+        "typeLabel": "Hunting",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+        "effectsXml": [],
+        "fullName": "Shrine of Isis",
+        "id": "IMPROVEMENT_SHRINE_ISIS",
+        "name": "Isis",
+        "primaryYield": null,
+        "subClass": 7,
+        "type": "HEALING",
+        "typeLabel": "Healing",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
+        "effectsXml": [
+          "+0.5 Orders"
+        ],
+        "fullName": "Shrine of Ra",
+        "id": "IMPROVEMENT_SHRINE_RA",
+        "name": "Ra",
+        "primaryYield": "ORDERS",
+        "subClass": 10,
+        "type": "SUN",
+        "typeLabel": "Sun",
+        "yieldOutput": [
+          {
+            "value": 5,
+            "yield": "orders"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+0.5 Orders, +20% Farms",
-      "+2 Cult, +Cult%/MtnVolc",
-      "+2 Growth/Grove, +Healer",
-      "+1 Ranged Lvl, +20% Camps"
+      {
+        "effect": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "shrine": {
+          "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+          "effectsXml": [
+            "+2 Culture"
+          ],
+          "fullName": "Shrine of Osiris",
+          "id": "IMPROVEMENT_SHRINE_OSIRIS",
+          "name": "Osiris",
+          "primaryYield": "CULTURE",
+          "subClass": 5,
+          "type": "UNDERWORLD",
+          "typeLabel": "Underworld",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Camp, +1 Level for new Ranged units",
+        "shrine": {
+          "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+          "effectsXml": [],
+          "fullName": "Shrine of Neith",
+          "id": "IMPROVEMENT_SHRINE_NEITH",
+          "name": "Neith",
+          "primaryYield": null,
+          "subClass": 6,
+          "type": "HUNTING",
+          "typeLabel": "Hunting",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+2 Growth/adjacent Grove, Units gain Healer",
+        "shrine": {
+          "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+          "effectsXml": [],
+          "fullName": "Shrine of Isis",
+          "id": "IMPROVEMENT_SHRINE_ISIS",
+          "name": "Isis",
+          "primaryYield": null,
+          "subClass": 7,
+          "type": "HEALING",
+          "typeLabel": "Healing",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+0.5 Orders, +20% adjacent Farm",
+        "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
+          "effectsXml": [
+            "+0.5 Orders"
+          ],
+          "fullName": "Shrine of Ra",
+          "id": "IMPROVEMENT_SHRINE_RA",
+          "name": "Ra",
+          "primaryYield": "ORDERS",
+          "subClass": 10,
+          "type": "SUN",
+          "typeLabel": "Sun",
+          "yieldOutput": [
+            {
+              "value": 5,
+              "yield": "orders"
+            }
+          ]
+        }
+      }
     ],
     "slug": "egypt",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Stonecutting",
       "Labor Force"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 wood",
-      "moveSight": "4 move, 2 range, 6 vision",
+      "cost": "100 Food, 50/100 Wood",
+      "moveSight": "4 Move, 2 Range, 6 Vision",
       "names": "Light Chariot / Mounted Lancer",
-      "traits": "Ranged Horse",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-4/-6 food"
+      "traits": "Ranged, Mounted, Horse, Chariot, High Vision",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_LIGHT_CHARIOT",
+          "name": "Light Chariot",
+          "trait": "ranged"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_MOUNTED_LANCER",
+          "name": "Mounted Lancer",
+          "trait": "ranged"
+        }
+      ],
+      "upkeep": "-4/-6 Food, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "Unlocks Olympiad",
-      "+2 Culture/City",
-      "-25% Settler Cost"
+    "cityNames": [
+      "Pella",
+      "Athens",
+      "Sparta",
+      "Corinth",
+      "Thebes",
+      "Argos",
+      "Eretria",
+      "Corcyra",
+      "Miletus",
+      "Syracuse",
+      "Ephesus",
+      "Cyrene",
+      "Halicarnassus",
+      "Pergamon",
+      "Byzantium",
+      "Thessalonike",
+      "Philippi",
+      "Amphipolis",
+      "Neapolis",
+      "Olynthus",
+      "Potidaea",
+      "Dion",
+      "Massalia",
+      "Larissa",
+      "Patras",
+      "Chalkis",
+      "Mytilene",
+      "Pylos",
+      "Gortyn",
+      "Croton",
+      "Rhegion",
+      "Alexandria",
+      "Ialysus",
+      "Lindos",
+      "Karystos",
+      "Heraclea",
+      "Lyctos",
+      "Apollonia",
+      "Phocaea",
+      "Megara",
+      "Cumae",
+      "Epidamnos",
+      "Attaleia",
+      "Nicodmedia",
+      "Nicaea",
+      "Trapezus",
+      "Antiocheia",
+      "Ambracia"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior",
+        "trait": "melee"
+      }
     ],
     "color": {
       "bg": "#2360bc",
@@ -396,31 +2934,315 @@
       "Pericles",
       "Alexander"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Philip",
+        "founder": "Philip",
+        "gameContent": "",
+        "id": "DYNASTY_PHILIP",
+        "leaderAge": 39,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Opinion (same trait)",
+              "+2 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_BOLD",
+            "label": "Bold",
+            "slug": "bold"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Philip_II_of_Macedon",
+        "name": "Philip",
+        "portrait": "img/portraits/character_select/philip.png",
+        "slug": "philip"
+      },
+      {
+        "description": "Ptolemy I Soter heads the science-oriented Ptolemaic dynasty. Ptolemy can recruit Court Scholars and build the Shrine of Serapis.",
+        "firstRuler": "Ptolemy",
+        "founder": "Ptolemy",
+        "gameContent": "",
+        "id": "DYNASTY_PTOLEMY",
+        "leaderAge": 48,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/scholar.png",
+            "id": "TRAIT_SCHOLAR_ARCHETYPE",
+            "label": "Scholar",
+            "slug": "scholar"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Opinion (same trait)",
+              "+2 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_EDUCATED",
+            "label": "Educated",
+            "slug": "educated"
+          }
+        ],
+        "leaderUrl": "",
+        "name": "Ptolemy",
+        "portrait": "img/portraits/historical/ptolemy.png",
+        "slug": "ptolemy"
+      },
+      {
+        "description": "Spartan King Leonidas is a uniquely powerful warrior who can greatly accelerate early expansion. He will however not live long and it will be up to his successors to secure their father's legacy.",
+        "firstRuler": "Leonidas",
+        "founder": "Leonidas",
+        "gameContent": "",
+        "id": "DYNASTY_LEONIDAS",
+        "leaderAge": 31,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_LEONIDAS_LEADER",
+            "label": "Indomitable",
+            "slug": "leonidas_leader"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_LEONIDAS_LEADER_DOOMED",
+            "label": "Fated to Die",
+            "slug": "leonidas_leader_doomed"
+          }
+        ],
+        "leaderUrl": "",
+        "name": "Leonidas",
+        "portrait": "img/portraits/historical/leonidas.png",
+        "slug": "leonidas"
+      },
+      {
+        "description": "The Athenian statesman Pericles is a very versatile leader, a patron of arts as skilled at nation-building as he is at warfare. Whether Pericles focuses on governance or battlefield leaderships, he will excel at the task.",
+        "firstRuler": "Pericles",
+        "founder": "Pericles",
+        "gameContent": "",
+        "id": "DYNASTY_PERICLES",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/orator.png",
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator",
+            "slug": "orator"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_PERICLES_LEADER",
+            "label": "First Citizen",
+            "slug": "pericles_leader"
+          }
+        ],
+        "leaderUrl": "",
+        "name": "Pericles",
+        "portrait": "img/portraits/historical/pericles.png",
+        "slug": "pericles"
+      },
+      {
+        "description": "Young Alexander leads Greece shortly after his father's death. In addition to being a powerful warrior, Alexander is helped by people like the great philosopher Aristotle and others that will join the court. Alexander's mother, the scheming Queen Olympias, is uniquely capable politically and can link(MISSION_INFLUENCE_OLYMPIAS) other Characters on the Leader's behalf.",
+        "firstRuler": "Alexander Leader",
+        "founder": "Philip",
+        "gameContent": "",
+        "id": "DYNASTY_ALEXANDER",
+        "leaderAge": 20,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Opinion (same trait)",
+              "+2 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_BOLD",
+            "label": "Bold",
+            "slug": "bold"
+          }
+        ],
+        "leaderUrl": "",
+        "name": "Alexander",
+        "portrait": null,
+        "slug": "alexander"
+      }
+    ],
+    "effectsXml": [
+      "+2 Culture/City",
+      "-25% Settler Cost",
+      "Unlocks Olympiad"
+    ],
     "families": [
       {
         "class": "Champions",
+        "classKey": "champions",
         "colorIndex": 0,
         "id": "FAMILY_ARGEAD",
+        "ingameColor": "#9293ff",
+        "ingameFg": "#f5f6f8",
         "name": "Argead"
       },
       {
         "class": "Artisans",
+        "classKey": "artisans",
         "colorIndex": 1,
         "id": "FAMILY_CYPSELID",
+        "ingameColor": "#32da72",
+        "ingameFg": "#f5f6f8",
         "name": "Cypselid"
       },
       {
         "class": "Patrons",
+        "classKey": "patrons",
         "colorIndex": 2,
         "id": "FAMILY_SELEUCID",
+        "ingameColor": "#fa6cf2",
+        "ingameFg": "#f5f6f8",
         "name": "Seleucid"
       },
       {
         "class": "Sages",
+        "classKey": "sages",
         "colorIndex": 3,
         "id": "FAMILY_ALCMAEONID",
+        "ingameColor": "#3fffdd",
+        "ingameFg": "#111418",
         "name": "Alcmaeonid"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Anyte",
+      "Archidamia",
+      "Arete",
+      "Arsinoe",
+      "Artemisia",
+      "Aspasia",
+      "Audata",
+      "Berenice",
+      "Bilistiche",
+      "Chilonis",
+      "Chryseis",
+      "Cynane",
+      "Deidamia",
+      "Dionassa",
+      "Diotima",
+      "Eryxo",
+      "Eurydice",
+      "Gorgo",
+      "Hipparchia",
+      "Hydna",
+      "Laodice",
+      "Lanassa",
+      "Lanike",
+      "Metrodora",
+      "Moralia",
+      "Myrtale",
+      "Nicaea",
+      "Nicasipolis",
+      "Olympias",
+      "Pheretima",
+      "Phila",
+      "Philinna",
+      "Phthia",
+      "Polycratia",
+      "Polyxena",
+      "Stratonice",
+      "Telesilla",
+      "Theano",
+      "Timaea",
+      "Xanthippe"
+    ],
+    "firstNamesMale": [
+      "Aeacides",
+      "Agis",
+      "Alcetas",
+      "Alcibiades",
+      "Alexander",
+      "Antigonus",
+      "Antiochus",
+      "Antipater",
+      "Aristander",
+      "Arybbas",
+      "Attalus",
+      "Balacrus",
+      "Bardylis",
+      "Cassander",
+      "Cimon",
+      "Cleisthenes",
+      "Cleitarchus",
+      "Cleomenes",
+      "Craterus",
+      "Derdas",
+      "Demetrius",
+      "Diodorus",
+      "Hephaestion",
+      "Hippias",
+      "Hippostratus",
+      "Leonidas",
+      "Leonnatus",
+      "Lysander",
+      "Lysimachus",
+      "Machatas",
+      "Meleager",
+      "Miltiades",
+      "Neoptlemus",
+      "Nicias",
+      "Orestes",
+      "Parmenio",
+      "Pausanias",
+      "Peithon",
+      "Pelopidas",
+      "Perdiccas",
+      "Periander",
+      "Pericles",
+      "Perseus",
+      "Philotas",
+      "Polyperchon",
+      "Philip",
+      "Pyrrhus",
+      "Seleucus",
+      "Sopolis",
+      "Themistocles"
     ],
     "gameContent": "",
     "id": "NATION_GREECE",
@@ -431,34 +3253,259 @@
     },
     "name": "Greece",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+        "effectsXml": [
+          "+2 Civics"
+        ],
+        "fullName": "Shrine of Zeus",
+        "id": "IMPROVEMENT_SHRINE_ZEUS",
+        "name": "Zeus",
+        "primaryYield": "CIVICS",
+        "subClass": 1,
+        "type": "KINGSHIP",
+        "typeLabel": "Kingship",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "civics"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "effectsXml": [
+          "+2 Culture"
+        ],
+        "fullName": "Shrine of Hades",
+        "id": "IMPROVEMENT_SHRINE_HADES",
+        "name": "Hades",
+        "primaryYield": "CULTURE",
+        "subClass": 5,
+        "type": "UNDERWORLD",
+        "typeLabel": "Underworld",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "culture"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "effectsXml": [
+          "+20 Money"
+        ],
+        "fullName": "Shrine of Poseidon",
+        "id": "IMPROVEMENT_SHRINE_POSEIDON",
+        "name": "Poseidon",
+        "primaryYield": "MONEY",
+        "subClass": 8,
+        "type": "WATER",
+        "typeLabel": "Water",
+        "yieldOutput": [
+          {
+            "value": 200,
+            "yield": "money"
+          }
+        ]
+      },
+      {
+        "effectStr": "+1 Science, +1 Civics/adjacent Courthouse",
+        "effectsXml": [
+          "+1 Science"
+        ],
+        "fullName": "Shrine of Athena",
+        "id": "IMPROVEMENT_SHRINE_ATHENA",
+        "name": "Athena",
+        "primaryYield": "SCIENCE",
+        "subClass": 11,
+        "type": "WISDOM",
+        "typeLabel": "Wisdom",
+        "yieldOutput": [
+          {
+            "value": 10,
+            "yield": "science"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+1 Sci, +1 Civ/Courthouse",
-      "+20 Money, +20% Nets",
-      "+2 Cult, +Cult%/MtnVolc",
-      "+2 Civics, +1 Order/Wonder"
+      {
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
+        "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+          "effectsXml": [
+            "+2 Civics"
+          ],
+          "fullName": "Shrine of Zeus",
+          "id": "IMPROVEMENT_SHRINE_ZEUS",
+          "name": "Zeus",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "civics"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "shrine": {
+          "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+          "effectsXml": [
+            "+2 Culture"
+          ],
+          "fullName": "Shrine of Hades",
+          "id": "IMPROVEMENT_SHRINE_HADES",
+          "name": "Hades",
+          "primaryYield": "CULTURE",
+          "subClass": 5,
+          "type": "UNDERWORLD",
+          "typeLabel": "Underworld",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+          "effectsXml": [
+            "+20 Money"
+          ],
+          "fullName": "Shrine of Poseidon",
+          "id": "IMPROVEMENT_SHRINE_POSEIDON",
+          "name": "Poseidon",
+          "primaryYield": "MONEY",
+          "subClass": 8,
+          "type": "WATER",
+          "typeLabel": "Water",
+          "yieldOutput": [
+            {
+              "value": 200,
+              "yield": "money"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+1 Science, +1 Civics/adjacent Courthouse",
+        "shrine": {
+          "effectStr": "+1 Science, +1 Civics/adjacent Courthouse",
+          "effectsXml": [
+            "+1 Science"
+          ],
+          "fullName": "Shrine of Athena",
+          "id": "IMPROVEMENT_SHRINE_ATHENA",
+          "name": "Athena",
+          "primaryYield": "SCIENCE",
+          "subClass": 11,
+          "type": "WISDOM",
+          "typeLabel": "Wisdom",
+          "yieldOutput": [
+            {
+              "value": 10,
+              "yield": "science"
+            }
+          ]
+        }
+      }
     ],
     "slug": "greece",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Stonecutting",
       "Drama"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 iron, 50/100 wood",
-      "moveSight": "2 move, 4 vision",
+      "cost": "50/100 Wood, 100 Iron",
+      "moveSight": "2 Move, 4 Vision",
       "names": "Hoplite / Phalangite",
-      "traits": "Polearm  Pierce  Formation",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2/-4 iron, -1 food"
+      "traits": "Melee, Infantry, Polearm, Formation, Anti-Mounted II, Pierce I",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_HOPLITE",
+          "name": "Hoplite",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_PHALANGITE",
+          "name": "Phalangite",
+          "trait": "melee"
+        }
+      ],
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+2 Civics/City",
-      "anyone can chop",
-      "no hill movement penalty"
+    "cityNames": [
+      "Hattusa",
+      "Sarissa",
+      "Kussara",
+      "Zalpuwa",
+      "Ankuwa",
+      "Tarhuntassa",
+      "Adana",
+      "Samuha",
+      "Kanesh",
+      "Halab",
+      "Ugarit",
+      "Alalah",
+      "Hapalla",
+      "Hatay",
+      "Azatiwataya",
+      "Tuwanuwa",
+      "Malidiya",
+      "Tawiniya",
+      "Tarsus",
+      "Qadesh",
+      "Hupisna",
+      "Parsuhanda",
+      "Lusna"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior",
+        "trait": "melee"
+      }
     ],
     "color": {
       "bg": "#80e3e8",
@@ -472,60 +3519,503 @@
       "Puduhepa",
       "Mursili_Ii"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Hattusili",
+        "founder": "Hattusili",
+        "gameContent": "",
+        "id": "DYNASTY_HATTUSILI",
+        "leaderAge": 46,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/judge.png",
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge",
+            "slug": "judge"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Training/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_WARLIKE",
+            "label": "Warlike",
+            "slug": "warlike"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/%E1%B8%AAattu%C5%A1ili_I",
+        "name": "Hattusili",
+        "portrait": "img/portraits/historical/hattusili.png",
+        "slug": "hattusili"
+      },
+      {
+        "description": "",
+        "firstRuler": "Suppiluliuma",
+        "founder": "Tudhaliya",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_SUPPILULIUMA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/tactician.png",
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician",
+            "slug": "tactician"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+5% Damaged Them Modifier",
+              "+20 Opinion (same trait)",
+              "+1 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_BLOODTHIRSTY",
+            "label": "Bloodthirsty",
+            "slug": "bloodthirsty"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+5 XP/turn for All Units"
+            ],
+            "icon": null,
+            "id": "TRAIT_AMBITIOUS",
+            "label": "Ambitious",
+            "slug": "ambitious"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/%C5%A0uppiluliuma_I",
+        "name": "Suppiluliuma",
+        "portrait": "img/portraits/historical/suppiluliuma_i.png",
+        "slug": "suppiluliuma"
+      },
+      {
+        "description": "",
+        "firstRuler": "Hantili",
+        "founder": "Mursili",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_HANTILI",
+        "leaderAge": 35,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/schemer.png",
+            "id": "TRAIT_SCHEMER_ARCHETYPE",
+            "label": "Schemer",
+            "slug": "schemer"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+0.5 Orders/City",
+              "+20 Opinion (same trait)",
+              "+1 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_ROBUST",
+            "label": "Robust",
+            "slug": "robust"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Unlocks Walls"
+            ],
+            "icon": null,
+            "id": "TRAIT_HANTILI_LEADER",
+            "label": "Hantili Leader",
+            "slug": "hantili_leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Hantili_I",
+        "name": "Hantili",
+        "portrait": "img/portraits/historical/hantili_i.png",
+        "slug": "hantili"
+      },
+      {
+        "description": "",
+        "firstRuler": "Puduhepa",
+        "founder": "Puduhepa",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_PUDUHEPA",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/diplomat.png",
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat",
+            "slug": "diplomat"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Civics/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Charisma"
+            ],
+            "icon": null,
+            "id": "TRAIT_ELOQUENT",
+            "label": "Eloquent",
+            "slug": "eloquent"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Start: Techs: Divination"
+            ],
+            "icon": null,
+            "id": "TRAIT_PUDUHEPA_LEADER",
+            "label": "Puduhepa Leader",
+            "slug": "puduhepa_leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Pudu%E1%B8%ABepa",
+        "name": "Puduhepa",
+        "portrait": "img/portraits/historical/puduhepa.png",
+        "slug": "puduhepa"
+      },
+      {
+        "description": "",
+        "firstRuler": "Mursili",
+        "founder": "Mursili",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_MURSILI_II",
+        "leaderAge": 19,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/scholar.png",
+            "id": "TRAIT_SCHOLAR_ARCHETYPE",
+            "label": "Scholar",
+            "slug": "scholar"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+10% Unit Trait Modifier / Tribal",
+              "+20 Opinion (same trait)",
+              "+1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_STEADFAST",
+            "label": "Steadfast",
+            "slug": "steadfast"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Start: -20 Legitimacy"
+            ],
+            "icon": null,
+            "id": "TRAIT_INEXPERIENCED",
+            "label": "Inexperienced",
+            "slug": "inexperienced"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Mur%C5%A1ili_II",
+        "name": "Mursili II",
+        "portrait": "img/portraits/historical/mursili_ii.png",
+        "slug": "mursili_ii"
+      }
+    ],
+    "effectsXml": [
+      "+2 Civics/City",
+      "Ignore Hill Movement Costs",
+      "Can Remove Vegetation"
+    ],
     "families": [
       {
         "class": "Riders",
+        "classKey": "riders",
         "colorIndex": 0,
         "id": "FAMILY_KUSSARAN",
+        "ingameColor": "#286ab0",
+        "ingameFg": "#f5f6f8",
         "name": "Kussaran"
       },
       {
         "class": "Landowners",
+        "classKey": "landowners",
         "colorIndex": 1,
         "id": "FAMILY_NENASSAN",
+        "ingameColor": "#ed916d",
+        "ingameFg": "#f5f6f8",
         "name": "Nenassan"
       },
       {
         "class": "Patrons",
+        "classKey": "patrons",
         "colorIndex": 2,
         "id": "FAMILY_ZALPUWAN",
+        "ingameColor": "#c7a5d6",
+        "ingameFg": "#f5f6f8",
         "name": "Zalpuwan"
       },
       {
         "class": "Traders",
+        "classKey": "traders",
         "colorIndex": 3,
         "id": "FAMILY_HATTUSAN",
+        "ingameColor": "#8f4373",
+        "ingameFg": "#f5f6f8",
         "name": "Hattusan"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Hittite_Female01",
+      "Hittite_Female02",
+      "Hittite_Female03",
+      "Hittite_Female04",
+      "Hittite_Female05",
+      "Hittite_Female06",
+      "Hittite_Female07",
+      "Hittite_Female08",
+      "Hittite_Female09",
+      "Hittite_Female10",
+      "Hittite_Female11",
+      "Hittite_Female12",
+      "Hittite_Female13",
+      "Hittite_Female14",
+      "Hittite_Female15",
+      "Hittite_Female16",
+      "Hittite_Female17",
+      "Hittite_Female18"
+    ],
+    "firstNamesMale": [
+      "Hittite_Male01",
+      "Hittite_Male02",
+      "Hittite_Male03",
+      "Hittite_Male04",
+      "Hittite_Male05",
+      "Hittite_Male06",
+      "Hittite_Male07",
+      "Hittite_Male08",
+      "Hittite_Male09",
+      "Hittite_Male10",
+      "Hittite_Male11",
+      "Hittite_Male12",
+      "Hittite_Male13",
+      "Hittite_Male14",
+      "Hittite_Male15",
+      "Hittite_Male16",
+      "Hittite_Male17",
+      "Hittite_Male18",
+      "Hittite_Male19",
+      "Hittite_Male20",
+      "Hittite_Male22",
+      "Hittite_Male22",
+      "Hittite_Male23",
+      "Hittite_Male24",
+      "Hittite_Male25"
     ],
     "gameContent": "NATION_HITTITES",
     "id": "NATION_HITTITE",
     "leader": {
-      "name": "Robust Judge (22)"
+      "heir1": "grandson (6)",
+      "name": "Warlike Judge (46)",
+      "spouse": "Intelligent Schemer (43)"
     },
     "name": "Hittite",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Culture, +10 Money per adjacent Resource",
+        "effectsXml": [
+          "+2 Culture"
+        ],
+        "fullName": "Arinnitti",
+        "id": "IMPROVEMENT_SHRINE_ARINNITTI",
+        "name": "Arinnitti",
+        "primaryYield": "CULTURE",
+        "subClass": 3,
+        "type": "HEARTH",
+        "typeLabel": "Hearth",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "culture"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Training, +10 Infantry XP",
+        "effectsXml": [
+          "+2 Training"
+        ],
+        "fullName": "Tarhun",
+        "id": "IMPROVEMENT_SHRINE_TARHUN",
+        "name": "Tarhun",
+        "primaryYield": "TRAINING",
+        "subClass": 4,
+        "type": "WAR",
+        "typeLabel": "War",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "training"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+        "effectsXml": [],
+        "fullName": "Halki",
+        "id": "IMPROVEMENT_SHRINE_HALKI",
+        "name": "Halki",
+        "primaryYield": null,
+        "subClass": 6,
+        "type": "HUNTING",
+        "typeLabel": "Hunting",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+        "effectsXml": [],
+        "fullName": "Kamrusepa",
+        "id": "IMPROVEMENT_SHRINE_KAMRUSEPA",
+        "name": "Kamrusepa",
+        "primaryYield": null,
+        "subClass": 7,
+        "type": "HEALING",
+        "typeLabel": "Healing",
+        "yieldOutput": []
+      }
+    ],
     "shrines": [
-      "+2 Training, +10 XP / Unit",
-      "+2 Cult, +10 Money/Resource",
-      "+2 Growth/Grove, +Healer",
-      "+1 Ranged Lvl, +20% Camps"
+      {
+        "effect": "+2 Culture, +10 Money per adjacent Resource",
+        "shrine": {
+          "effectStr": "+2 Culture, +10 Money per adjacent Resource",
+          "effectsXml": [
+            "+2 Culture"
+          ],
+          "fullName": "Arinnitti",
+          "id": "IMPROVEMENT_SHRINE_ARINNITTI",
+          "name": "Arinnitti",
+          "primaryYield": "CULTURE",
+          "subClass": 3,
+          "type": "HEARTH",
+          "typeLabel": "Hearth",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Tarhun",
+          "id": "IMPROVEMENT_SHRINE_TARHUN",
+          "name": "Tarhun",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Camp, +1 Level for new Ranged units",
+        "shrine": {
+          "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+          "effectsXml": [],
+          "fullName": "Halki",
+          "id": "IMPROVEMENT_SHRINE_HALKI",
+          "name": "Halki",
+          "primaryYield": null,
+          "subClass": 6,
+          "type": "HUNTING",
+          "typeLabel": "Hunting",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+2 Growth/adjacent Grove, Units gain Healer",
+        "shrine": {
+          "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+          "effectsXml": [],
+          "fullName": "Kamrusepa",
+          "id": "IMPROVEMENT_SHRINE_KAMRUSEPA",
+          "name": "Kamrusepa",
+          "primaryYield": null,
+          "subClass": 7,
+          "type": "HEALING",
+          "typeLabel": "Healing",
+          "yieldOutput": []
+        }
+      }
     ],
     "slug": "hittite",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Husbandry",
       "Administration"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 wood",
-      "moveSight": "3 move, 5 vision",
-      "names": "Three-Man Chariot",
-      "traits": "Melee Rout Circle Horse",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-4/-6 food"
+      "cost": "100 Food, 50/100 Wood",
+      "moveSight": "3 Move, 5 Vision",
+      "names": "Heavy Chariot / Three Man Chariot",
+      "traits": "Melee, Mounted, Horse, Chariot, Rout, Circle",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_HITTITE_CHARIOT_1",
+          "name": "Heavy Chariot",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_HITTITE_CHARIOT_2",
+          "name": "Three Man Chariot",
+          "trait": "melee"
+        }
+      ],
+      "upkeep": "-4/-6 Food, -1/-2 Training"
     }
   },
   {
@@ -533,6 +4023,73 @@
       "anyone can build Forts",
       "+50% Shrines",
       "Kushite Pyramids"
+    ],
+    "cityNames": [
+      "Meroe",
+      "Napata",
+      "Kerma",
+      "Faras",
+      "Kawa",
+      "Karanog",
+      "Ushara",
+      "Hamadab",
+      "Gabati",
+      "Sanam",
+      "Naqa",
+      "Basa",
+      "El_Hassa",
+      "Nuri",
+      "Qasr_Ibrim",
+      "Sedeinga",
+      "Tabo",
+      "El_Kurru",
+      "Dangeil",
+      "Sururab",
+      "El_Fura",
+      "Kadada",
+      "El_Gol",
+      "El_Usheir",
+      "Marru",
+      "Artul",
+      "Kurgus",
+      "Ghazali",
+      "El_Tuweina",
+      "El_Zuma",
+      "Korti",
+      "Kandruka",
+      "Tumbos",
+      "Sesebi",
+      "Soleb",
+      "Gebel_Dosha",
+      "Amara",
+      "Firka",
+      "Akasha",
+      "Kulubnarti",
+      "Semna",
+      "Dakka",
+      "Kuban",
+      "Sayala",
+      "Aniba",
+      "Gebel_Ada",
+      "Mirgissa",
+      "Debeira",
+      "Askurt"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger",
+        "trait": "ranged"
+      }
     ],
     "color": {
       "bg": "#ffffb6",
@@ -546,69 +4103,530 @@
       "Alara",
       "Shanakdakhete"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Amanirenas",
+        "founder": "Naqyrinsan",
+        "gameContent": "Pharaohs",
+        "id": "DYNASTY_AMANIRENA",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Fatigue Limit",
+              "+20 Opinion (same trait)",
+              "+1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_SWIFT",
+            "label": "Swift",
+            "slug": "swift"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Amanirenas",
+        "name": "Amanirena",
+        "portrait": "img/portraits/historical/amanirenas.png",
+        "slug": "amanirena"
+      },
+      {
+        "description": "",
+        "firstRuler": "Amanitore",
+        "founder": "Amanitore",
+        "gameContent": "Pharaohs",
+        "id": "DYNASTY_AMANITORE",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/builder.png",
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder",
+            "slug": "builder"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "On Improvement Finished: Orders Gain Kush"
+            ],
+            "icon": null,
+            "id": "TRAIT_DILIGENT",
+            "label": "Diligent",
+            "slug": "diligent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Amanitore",
+        "name": "Amanitore",
+        "portrait": "img/portraits/historical/amanitore.png",
+        "slug": "amanitore"
+      },
+      {
+        "description": "",
+        "firstRuler": "Piye",
+        "founder": "Piye",
+        "gameContent": "Pharaohs",
+        "id": "DYNASTY_PIYE",
+        "leaderAge": 30,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/zealot.png",
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot",
+            "slug": "zealot"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_FERVENT",
+            "label": "Fervent",
+            "slug": "fervent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Piye",
+        "name": "Piye",
+        "portrait": "img/portraits/historical/piye.png",
+        "slug": "piye"
+      },
+      {
+        "description": "",
+        "firstRuler": "Alara",
+        "founder": "Amenirdis",
+        "gameContent": "Pharaohs",
+        "id": "DYNASTY_ALARA",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+2 Culture/Kushite_Pyramids",
+              "Found: 30 Culture / Weak"
+            ],
+            "icon": null,
+            "id": "TRAIT_REVERED",
+            "label": "Revered",
+            "slug": "revered"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Alara_of_Kush",
+        "name": "Alara",
+        "portrait": "img/portraits/historical/alara.png",
+        "slug": "alara"
+      },
+      {
+        "description": "",
+        "firstRuler": "Shanakdakhete",
+        "founder": "Shanakdakhete",
+        "gameContent": "Pharaohs",
+        "id": "DYNASTY_SHANAKDAKHETE",
+        "leaderAge": 23,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/scholar.png",
+            "id": "TRAIT_SCHOLAR_ARCHETYPE",
+            "label": "Scholar",
+            "slug": "scholar"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "On Team Contacted: Kush Caravan"
+            ],
+            "icon": null,
+            "id": "TRAIT_DIPLOMATIC",
+            "label": "Diplomatic",
+            "slug": "diplomatic"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Shanakdakhete",
+        "name": "Shanakdakhete",
+        "portrait": "img/portraits/historical/shanakdakhete.png",
+        "slug": "shanakdakhete"
+      }
+    ],
+    "effectsXml": [
+      "+50% Shrine",
+      "Can build: Fort"
+    ],
     "families": [
       {
         "class": "Hunters",
+        "classKey": "hunters",
         "colorIndex": 0,
         "id": "FAMILY_YAM",
+        "ingameColor": "#c83500",
+        "ingameFg": "#f5f6f8",
         "name": "Yam"
       },
       {
         "class": "Artisans",
+        "classKey": "artisans",
         "colorIndex": 1,
         "id": "FAMILY_IRTJET",
+        "ingameColor": "#006cb9",
+        "ingameFg": "#f5f6f8",
         "name": "Irtjet"
       },
       {
         "class": "Traders",
+        "classKey": "traders",
         "colorIndex": 2,
         "id": "FAMILY_WAWAT",
+        "ingameColor": "#b2509e",
+        "ingameFg": "#f5f6f8",
         "name": "Wawat"
       },
       {
         "class": "Landowners",
+        "classKey": "landowners",
         "colorIndex": 3,
         "id": "FAMILY_SETJU",
+        "ingameColor": "#60724c",
+        "ingameFg": "#f5f6f8",
         "name": "Setju"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Abar",
+      "Khensa",
+      "Qalhata",
+      "Naparaye",
+      "Arty",
+      "Mutirdis",
+      "Amenirdis",
+      "Shepenupet",
+      "Amanirenas",
+      "Nawidemak",
+      "Amanipilade",
+      "Alakhebasken",
+      "Batahaliye",
+      "Akhrasan",
+      "Henutirdis",
+      "Atasamale",
+      "Tagtal",
+      "Akheqa",
+      "Maletasen",
+      "Nasalsa",
+      "Madiqen",
+      "Artaha",
+      "Asata",
+      "Khaliset",
+      "Kasaqa"
+    ],
+    "firstNamesMale": [
+      "Kashta",
+      "Shebitku",
+      "Shabaka",
+      "Taharqa",
+      "Tanamani",
+      "Atlanersa",
+      "Anlamani",
+      "Malonaqen",
+      "Siaspiqa",
+      "Nasakhma",
+      "Harsiotef",
+      "Akhraten",
+      "Amanibakhi",
+      "Nastasen",
+      "Khaliut",
+      "Karkamani",
+      "Talakhamani",
+      "Aryamani",
+      "Aktisanes",
+      "Amanislo",
+      "Amantekha",
+      "Teriteqas",
+      "Natakamani",
+      "Pisakar",
+      "Shorkaror"
     ],
     "gameContent": "PHARAOHS",
     "id": "NATION_KUSH",
     "leader": {
       "heir1": "son, Sickly (6)",
-      "heir2": "sister-in-law, Builder (26)",
+      "heir2": "sister-in-law, Prosperous Builder (26)",
       "name": "Swift Hero (34)"
     },
     "name": "Kush",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+        "effectsXml": [
+          "+2 Civics"
+        ],
+        "fullName": "Shrine of Amani",
+        "id": "IMPROVEMENT_SHRINE_AMUN",
+        "name": "Amani",
+        "primaryYield": "CIVICS",
+        "subClass": 1,
+        "type": "KINGSHIP",
+        "typeLabel": "Kingship",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "civics"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
+        "effectsXml": [
+          "+2 Growth"
+        ],
+        "fullName": "Shrine of Sabomakal",
+        "id": "IMPROVEMENT_SHRINE_SEBIUMEKER",
+        "name": "Sabomakal",
+        "primaryYield": "GROWTH",
+        "subClass": 2,
+        "type": "LOVE",
+        "typeLabel": "Love",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "growth"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Training, +10 Infantry XP",
+        "effectsXml": [
+          "+2 Training"
+        ],
+        "fullName": "Shrine of Apedemek",
+        "id": "IMPROVEMENT_SHRINE_APEDEMEK",
+        "name": "Apedemek",
+        "primaryYield": "TRAINING",
+        "subClass": 4,
+        "type": "WAR",
+        "typeLabel": "War",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "training"
+          }
+        ]
+      },
+      {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
+        "effectsXml": [
+          "+0.5 Orders"
+        ],
+        "fullName": "Shrine of Melul",
+        "id": "IMPROVEMENT_SHRINE_MANDULIS",
+        "name": "Melul",
+        "primaryYield": "ORDERS",
+        "subClass": 10,
+        "type": "SUN",
+        "typeLabel": "Sun",
+        "yieldOutput": [
+          {
+            "value": 5,
+            "yield": "orders"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+2 Training, +10 XP / Unit",
-      "+0.5 Orders, +20% Farms",
-      "+2 Growth, +20% Pastures",
-      "+2 Civics, +1 Order/Wonder"
+      {
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
+        "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+          "effectsXml": [
+            "+2 Civics"
+          ],
+          "fullName": "Shrine of Amani",
+          "id": "IMPROVEMENT_SHRINE_AMUN",
+          "name": "Amani",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "civics"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Growth, +20% adjacent Pasture",
+        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
+          "effectsXml": [
+            "+2 Growth"
+          ],
+          "fullName": "Shrine of Sabomakal",
+          "id": "IMPROVEMENT_SHRINE_SEBIUMEKER",
+          "name": "Sabomakal",
+          "primaryYield": "GROWTH",
+          "subClass": 2,
+          "type": "LOVE",
+          "typeLabel": "Love",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "growth"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Shrine of Apedemek",
+          "id": "IMPROVEMENT_SHRINE_APEDEMEK",
+          "name": "Apedemek",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+0.5 Orders, +20% adjacent Farm",
+        "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
+          "effectsXml": [
+            "+0.5 Orders"
+          ],
+          "fullName": "Shrine of Melul",
+          "id": "IMPROVEMENT_SHRINE_MANDULIS",
+          "name": "Melul",
+          "primaryYield": "ORDERS",
+          "subClass": 10,
+          "type": "SUN",
+          "typeLabel": "Sun",
+          "yieldOutput": [
+            {
+              "value": 5,
+              "yield": "orders"
+            }
+          ]
+        }
+      }
     ],
     "slug": "kush",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Trapping",
       "Stonecutting",
       "Divination"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "150/200 wood",
-      "moveSight": "2 moves, 3 range, 4 vision",
+      "cost": "150/200 Wood",
+      "moveSight": "2 Move, 3 Range, 4 Vision",
       "names": "Medjay Archer / Beja Archer",
-      "traits": "Ranged Infantry Volley",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2/-4 wood, -1 food"
+      "traits": "Ranged, Infantry, Volley",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_MEDJAY_ARCHER",
+          "name": "Medjay Archer",
+          "trait": "ranged"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_BEJA_ARCHER",
+          "name": "Beja Archer",
+          "trait": "ranged"
+        }
+      ],
+      "upkeep": "-1 Food, -2/-4 Wood, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "-50% Civic Mission Costs",
-      "-50% Training Mission Costs",
-      "☸️Found Buddhism☸️"
+    "cityNames": [
+      "Pataliputra",
+      "Tosali",
+      "Suvarnagiri",
+      "Taxila",
+      "Ujjain",
+      "Champa",
+      "Rajagriha",
+      "Tamralipti",
+      "Jaugada",
+      "Paudanyapura",
+      "Kundina",
+      "Tripuri",
+      "Varanasi",
+      "Kaushambi",
+      "Gujjara",
+      "Bairat",
+      "Mathura",
+      "Sopara",
+      "Indraprastha",
+      "Sagala",
+      "Pratisthana",
+      "Amaravati"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior",
+        "trait": "melee"
+      }
     ],
     "color": {
       "bg": "#a749ff",
@@ -622,80 +4640,538 @@
       "Nayanika",
       "Prabhavatigupta"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Ashoka",
+        "founder": "Ashoka",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_ASHOKA",
+        "leaderAge": 27,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/tactician.png",
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician",
+            "slug": "tactician"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Opinion (same trait)",
+              "+1 Charisma",
+              "+1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_COMPASSIONATE",
+            "label": "Compassionate",
+            "slug": "compassionate"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Ashoka",
+        "name": "Ashoka",
+        "portrait": "img/portraits/historical/ashoka.png",
+        "slug": "ashoka"
+      },
+      {
+        "description": "",
+        "firstRuler": "Mahapadma",
+        "founder": "Unknown Mother",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_MAHAPADMA",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+10% Money",
+              "+10% Rebel Chance",
+              "-25% Unit Trait Train Modifier / Infantry"
+            ],
+            "icon": null,
+            "id": "TRAIT_NANDA",
+            "label": "Nanda",
+            "slug": "nanda"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Mahapadma_Nanda",
+        "name": "Mahapadma",
+        "portrait": "img/portraits/historical/mahapadma_nanda.png",
+        "slug": "mahapadma"
+      },
+      {
+        "description": "",
+        "firstRuler": "Chandragupta",
+        "founder": "Chandragupta",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_CHANDRAGUPTA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/judge.png",
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge",
+            "slug": "judge"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Yield Rate Generals / Orders"
+            ],
+            "icon": null,
+            "id": "TRAIT_TRUSTED",
+            "label": "Trusted",
+            "slug": "trusted"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Chandragupta_Maurya",
+        "name": "Chandragupta",
+        "portrait": "img/portraits/historical/chandragupta_maurya.png",
+        "slug": "chandragupta"
+      },
+      {
+        "description": "",
+        "firstRuler": "Nayanika",
+        "founder": "Nayanika",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_NAYANIKA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/zealot.png",
+            "id": "TRAIT_ZEALOT_ARCHETYPE",
+            "label": "Zealot",
+            "slug": "zealot"
+          },
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_RITUALISTIC",
+            "label": "Ritualistic",
+            "slug": "ritualistic"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nayanika",
+        "name": "Nayanika",
+        "portrait": "img/portraits/historical/nayanika.png",
+        "slug": "nayanika"
+      },
+      {
+        "description": "",
+        "firstRuler": "Prabhavatigupta",
+        "founder": "Chandragupta II",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_PRABHAVATIGUPTA",
+        "leaderAge": 30,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/orator.png",
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator",
+            "slug": "orator"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Culture/Urban Specialist",
+              "On Improvement Finished: Culture Gain 5 Flat All"
+            ],
+            "icon": null,
+            "id": "TRAIT_GUPTA_PRINCESS",
+            "label": "Gupta Princess",
+            "slug": "gupta_princess"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Prabhavatigupta",
+        "name": "Prabhavatigupta",
+        "portrait": "img/portraits/historical/prabhavatigupta.png",
+        "slug": "prabhavatigupta"
+      }
+    ],
+    "effectsXml": [
+      "-50% Civics Mission Cost",
+      "-50% Training Mission Cost",
+      "Unlocks Found Buddhism"
+    ],
     "families": [
       {
         "class": "Champions",
+        "classKey": "champions",
         "colorIndex": 0,
         "id": "FAMILY_MAGADHA",
+        "ingameColor": "#8cfff5",
+        "ingameFg": "#111418",
         "name": "Magadha"
       },
       {
         "class": "Hunters",
+        "classKey": "hunters",
         "colorIndex": 1,
         "id": "FAMILY_GANDHARA",
+        "ingameColor": "#eeede8",
+        "ingameFg": "#111418",
         "name": "Gandhara"
       },
       {
         "class": "Statesmen",
+        "classKey": "statesmen",
         "colorIndex": 2,
         "id": "FAMILY_KOSALA",
+        "ingameColor": "#ffe163",
+        "ingameFg": "#111418",
         "name": "Kosala"
       },
       {
         "class": "Sages",
+        "classKey": "sages",
         "colorIndex": 3,
         "id": "FAMILY_AVANTI",
+        "ingameColor": "#4aff89",
+        "ingameFg": "#111418",
         "name": "Avanti"
       },
       {
         "class": "Patrons",
+        "classKey": "patrons",
         "colorIndex": 4,
         "id": "FAMILY_VATSA",
+        "ingameColor": "#ffacff",
+        "ingameFg": "#f5f6f8",
         "name": "Vatsa"
       },
       {
         "class": "Riders",
+        "classKey": "riders",
         "colorIndex": 5,
         "id": "FAMILY_KAMBOJA",
+        "ingameColor": "#ff854a",
+        "ingameFg": "#f5f6f8",
         "name": "Kamboja"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ambika",
+      "Asandhimitra",
+      "Charumitra",
+      "Dharini",
+      "Draupadi",
+      "Durdhara",
+      "Karuvaki",
+      "Khema",
+      "Kosala",
+      "Kumara",
+      "Maitreyi",
+      "Meera",
+      "Migavati",
+      "Naganika",
+      "Nandini",
+      "Orrisa",
+      "Rudrama",
+      "Sita",
+      "Subhandrangi",
+      "Vajira"
+    ],
+    "firstNamesMale": [
+      "Agnimitra",
+      "Bindusara",
+      "Brihadratha",
+      "Chavana",
+      "Devavarman",
+      "Ghosha",
+      "Hiranya",
+      "Jalauka",
+      "Kalashoka",
+      "Kritaka",
+      "Munda",
+      "Pratipa",
+      "Ranjeet",
+      "Samprati",
+      "Shalishuka",
+      "Shantanu",
+      "Sudhanu",
+      "Suhotra",
+      "Sumitra",
+      "Vijaya"
     ],
     "gameContent": "EMPIRES_OF_THE_INDUS",
     "id": "NATION_MAURYA",
     "leader": {
       "name": "Compassionate Tactician (27)",
-      "spouse": "Strict Judge ( 22) / Pious Scholar (26)"
+      "spouse": "Strict Judge (22) / Pious Scholar (26)"
     },
     "name": "Maurya",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+        "effectsXml": [
+          "+2 Civics"
+        ],
+        "fullName": "Yama",
+        "id": "IMPROVEMENT_SHRINE_YAMA",
+        "name": "Yama",
+        "primaryYield": "CIVICS",
+        "subClass": 1,
+        "type": "KINGSHIP",
+        "typeLabel": "Kingship",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "civics"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+        "effectsXml": [],
+        "fullName": "The_Maruts",
+        "id": "IMPROVEMENT_SHRINE_THE_MARUTS",
+        "name": "The_Maruts",
+        "primaryYield": null,
+        "subClass": 7,
+        "type": "HEALING",
+        "typeLabel": "Healing",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
+        "effectsXml": [
+          "+0.5 Orders"
+        ],
+        "fullName": "Surya",
+        "id": "IMPROVEMENT_SHRINE_SURYA",
+        "name": "Surya",
+        "primaryYield": "ORDERS",
+        "subClass": 10,
+        "type": "SUN",
+        "typeLabel": "Sun",
+        "yieldOutput": [
+          {
+            "value": 5,
+            "yield": "orders"
+          }
+        ]
+      },
+      {
+        "effectStr": "+1 Science, +1 Civics/adjacent Courthouse",
+        "effectsXml": [
+          "+1 Science"
+        ],
+        "fullName": "Indra",
+        "id": "IMPROVEMENT_SHRINE_INDRA",
+        "name": "Indra",
+        "primaryYield": "SCIENCE",
+        "subClass": 11,
+        "type": "WISDOM",
+        "typeLabel": "Wisdom",
+        "yieldOutput": [
+          {
+            "value": 10,
+            "yield": "science"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+1 Sci, +1 Civ/Courthouse",
-      "+0.5 Orders, +20% Farms",
-      "+2 Growth/Grove, +Healer",
-      "+2 Civics, +1 Order/Wonder"
+      {
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
+        "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+          "effectsXml": [
+            "+2 Civics"
+          ],
+          "fullName": "Yama",
+          "id": "IMPROVEMENT_SHRINE_YAMA",
+          "name": "Yama",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "civics"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Growth/adjacent Grove, Units gain Healer",
+        "shrine": {
+          "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+          "effectsXml": [],
+          "fullName": "The_Maruts",
+          "id": "IMPROVEMENT_SHRINE_THE_MARUTS",
+          "name": "The_Maruts",
+          "primaryYield": null,
+          "subClass": 7,
+          "type": "HEALING",
+          "typeLabel": "Healing",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+0.5 Orders, +20% adjacent Farm",
+        "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
+          "effectsXml": [
+            "+0.5 Orders"
+          ],
+          "fullName": "Surya",
+          "id": "IMPROVEMENT_SHRINE_SURYA",
+          "name": "Surya",
+          "primaryYield": "ORDERS",
+          "subClass": 10,
+          "type": "SUN",
+          "typeLabel": "Sun",
+          "yieldOutput": [
+            {
+              "value": 5,
+              "yield": "orders"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+1 Science, +1 Civics/adjacent Courthouse",
+        "shrine": {
+          "effectStr": "+1 Science, +1 Civics/adjacent Courthouse",
+          "effectsXml": [
+            "+1 Science"
+          ],
+          "fullName": "Indra",
+          "id": "IMPROVEMENT_SHRINE_INDRA",
+          "name": "Indra",
+          "primaryYield": "SCIENCE",
+          "subClass": 11,
+          "type": "WISDOM",
+          "typeLabel": "Wisdom",
+          "yieldOutput": [
+            {
+              "value": 10,
+              "yield": "science"
+            }
+          ]
+        }
+      }
     ],
     "slug": "maurya",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Stonecutting",
       "Administration"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 iron",
-      "moveSight": "2 move, 5 vision",
-      "names": "Armoured / Assault Elephant",
-      "traits": "Elephant  Panic  Assault",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2 food, -2/-4 iron"
+      "cost": "100 Food, 50/100 Iron",
+      "moveSight": "2 Move, 4 Vision",
+      "names": "Assault Elephant / Armored Elephant",
+      "traits": "Melee, Mounted, Elephant, Assault, Panic",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_ASSAULT_ELEPHANT",
+          "name": "Assault Elephant",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_ARMOURED_ELEPHANT",
+          "name": "Armored Elephant",
+          "trait": "melee"
+        }
+      ],
+      "upkeep": "-2 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+50% Harvest",
-      "-25% Cost Ranged",
-      "Pastures +0.5 Orders"
+    "cityNames": [
+      "Persepolis",
+      "Susa",
+      "Pasargadae",
+      "Ecbatana",
+      "Anshan",
+      "Sardis",
+      "Bactra",
+      "Gordium",
+      "Ctesiphon",
+      "Samarkand",
+      "Hatra",
+      "Shushtar",
+      "Nishapur",
+      "Shiraz",
+      "Kermanshah",
+      "Hyrba",
+      "Cyreschate",
+      "Ortospana",
+      "Pahrah",
+      "Prophthasia",
+      "Artacoana",
+      "Tus",
+      "Zadracarta",
+      "Saddarvazeh",
+      "Rhages",
+      "Gabae",
+      "Yazd",
+      "Carmania",
+      "Hormirzad",
+      "Teredon",
+      "Catura",
+      "Komis",
+      "Darband",
+      "Aspadana"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger",
+        "trait": "ranged"
+      }
     ],
     "color": {
       "bg": "#c04e4a",
@@ -709,67 +5185,558 @@
       "Stateira",
       "Cyaxares"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Cyrus",
+        "founder": "Astyages",
+        "gameContent": "",
+        "id": "DYNASTY_CYRUS",
+        "leaderAge": 26,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+5% Damaged Us Modifier",
+              "+20 Opinion (same trait)",
+              "+1 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_TOUGH",
+            "label": "Tough",
+            "slug": "tough"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Cyrus_the_Great",
+        "name": "Cyrus",
+        "portrait": "img/portraits/character_select/cyrus.png",
+        "slug": "cyrus"
+      },
+      {
+        "description": "",
+        "firstRuler": "Darius Leader",
+        "founder": "Hystaspes",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_DARIUS",
+        "leaderAge": 28,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/schemer.png",
+            "id": "TRAIT_SCHEMER_ARCHETYPE",
+            "label": "Schemer",
+            "slug": "schemer"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Governor assignment cost: -50%"
+            ],
+            "icon": null,
+            "id": "TRAIT_DARIUS_LEADER",
+            "label": "Darius Leader",
+            "slug": "darius_leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Darius_the_Great",
+        "name": "Darius",
+        "portrait": "img/portraits/historical/darius_i.png",
+        "slug": "darius"
+      },
+      {
+        "description": "",
+        "firstRuler": "Shapur Leader",
+        "founder": "Ardashir",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_SHAPUR",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/tactician.png",
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician",
+            "slug": "tactician"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Units gain Strike1"
+            ],
+            "icon": null,
+            "id": "TRAIT_SHAPUR_LEADER",
+            "label": "Shapur Leader",
+            "slug": "shapur_leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Shapur_I",
+        "name": "Shapur",
+        "portrait": "img/portraits/historical/shapur_i_adult.png",
+        "slug": "shapur"
+      },
+      {
+        "description": "",
+        "firstRuler": "Stateira Leader",
+        "founder": "Parysatis",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_STATEIRA",
+        "leaderAge": 25,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/builder.png",
+            "id": "TRAIT_BUILDER_ARCHETYPE",
+            "label": "Builder",
+            "slug": "builder"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+1 Growth/Culture Level",
+              "+20 Opinion (same trait)",
+              "+10 Opinion as Family Head",
+              "+1 Charisma"
+            ],
+            "icon": null,
+            "id": "TRAIT_AFFABLE",
+            "label": "Affable",
+            "slug": "affable"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Stateira_(wife_of_Artaxerxes_II)",
+        "name": "Stateira",
+        "portrait": "img/portraits/historical/stateira.png",
+        "slug": "stateira"
+      },
+      {
+        "description": "",
+        "firstRuler": "Cyaxares Leader",
+        "founder": "Cyaxares Leader",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_CYAXARES",
+        "leaderAge": 27,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+5% Strength Modifier"
+            ],
+            "icon": null,
+            "id": "TRAIT_CYAXARES_LEADER",
+            "label": "Cyaxares Leader",
+            "slug": "cyaxares_leader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Cyaxares",
+        "name": "Cyaxares",
+        "portrait": "img/portraits/historical/cyaxares_adult.png",
+        "slug": "cyaxares"
+      }
+    ],
+    "effectsXml": [
+      "+50% Harvest",
+      "-25% Ranged Cost",
+      "+0.5 Orders/Pasture"
+    ],
     "families": [
       {
         "class": "Clerics",
+        "classKey": "clerics",
         "colorIndex": 0,
         "id": "FAMILY_SASANID",
+        "ingameColor": "#ffdf0b",
+        "ingameFg": "#111418",
         "name": "Sasanid"
       },
       {
         "class": "Hunters",
+        "classKey": "hunters",
         "colorIndex": 1,
         "id": "FAMILY_MIHRANID",
+        "ingameColor": "#fff8e6",
+        "ingameFg": "#111418",
         "name": "Mihranid"
       },
       {
         "class": "Riders",
+        "classKey": "riders",
         "colorIndex": 2,
         "id": "FAMILY_ARSACID",
+        "ingameColor": "#ce9eff",
+        "ingameFg": "#f5f6f8",
         "name": "Arsacid"
       },
       {
         "class": "Statesmen",
+        "classKey": "statesmen",
         "colorIndex": 3,
         "id": "FAMILY_ACHAEMENID",
+        "ingameColor": "#5597e9",
+        "ingameFg": "#f5f6f8",
         "name": "Achaemenid"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Amestris",
+      "Amytis",
+      "Apama",
+      "Artakama",
+      "Artazostre",
+      "Artystone",
+      "Astar",
+      "Azarmidokht",
+      "Barsine",
+      "Boran",
+      "Cassandane",
+      "Gordiya",
+      "Gurdzad",
+      "Ifra",
+      "Irdabama",
+      "Khuranzim",
+      "Mandana",
+      "Myrod",
+      "Parmida",
+      "Parmys",
+      "Parysatis",
+      "Roxana",
+      "Shirin",
+      "Stateira",
+      "Sura",
+      "Zand",
+      "Zurvandokht"
+    ],
+    "firstNamesMale": [
+      "Ardashir",
+      "Ariaspes",
+      "Artabanus",
+      "Artaxerxes",
+      "Astyages",
+      "Aruku",
+      "Bahram",
+      "Bardiya",
+      "Cambyses",
+      "Cyrus",
+      "Darius",
+      "Harpagus",
+      "Hormizd",
+      "Hystaspes",
+      "Khosrau",
+      "Mazyar",
+      "Megabazus",
+      "Mithridates",
+      "Orodes",
+      "Oxathres",
+      "Pharnaspes",
+      "Phraates",
+      "Shapur",
+      "Smerdis",
+      "Sukhra",
+      "Teispes",
+      "Tiridates",
+      "Vologases",
+      "Xerxes",
+      "Yazdegerd"
     ],
     "gameContent": "",
     "id": "NATION_PERSIA",
     "leader": {
-      "heir1": "grandpa, Bitter Schemer (65)",
+      "heir1": "grandfather, Bitter Abdicated Schemer (65)",
       "name": "Tough Hero (26)"
     },
     "name": "Persia",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+        "effectsXml": [],
+        "fullName": "Shrine of Mithra",
+        "id": "IMPROVEMENT_SHRINE_MITHRA",
+        "name": "Mithra",
+        "primaryYield": null,
+        "subClass": 6,
+        "type": "HUNTING",
+        "typeLabel": "Hunting",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "effectsXml": [
+          "+20 Money"
+        ],
+        "fullName": "Shrine of Anahita",
+        "id": "IMPROVEMENT_SHRINE_ANAHITA",
+        "name": "Anahita",
+        "primaryYield": "MONEY",
+        "subClass": 8,
+        "type": "WATER",
+        "typeLabel": "Water",
+        "yieldOutput": [
+          {
+            "value": 200,
+            "yield": "money"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "effectsXml": [],
+        "fullName": "Shrine of Atar",
+        "id": "IMPROVEMENT_SHRINE_ATAR",
+        "name": "Atar",
+        "primaryYield": null,
+        "subClass": 9,
+        "type": "FIRE",
+        "typeLabel": "Fire",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
+        "effectsXml": [
+          "+0.5 Orders"
+        ],
+        "fullName": "Shrine of Hvar Khshaita",
+        "id": "IMPROVEMENT_SHRINE_HVAR_KHSHAITA",
+        "name": "Hvar Khshaita",
+        "primaryYield": "ORDERS",
+        "subClass": 10,
+        "type": "SUN",
+        "typeLabel": "Sun",
+        "yieldOutput": [
+          {
+            "value": 5,
+            "yield": "orders"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+1 Train/LM, +20% Mines",
-      "+0.5 Orders, +20% Farms",
-      "+20 Money, +20% Nets",
-      "+1 Ranged Lvl, +20% Camps"
+      {
+        "effect": "+20% adjacent Camp, +1 Level for new Ranged units",
+        "shrine": {
+          "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+          "effectsXml": [],
+          "fullName": "Shrine of Mithra",
+          "id": "IMPROVEMENT_SHRINE_MITHRA",
+          "name": "Mithra",
+          "primaryYield": null,
+          "subClass": 6,
+          "type": "HUNTING",
+          "typeLabel": "Hunting",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+          "effectsXml": [
+            "+20 Money"
+          ],
+          "fullName": "Shrine of Anahita",
+          "id": "IMPROVEMENT_SHRINE_ANAHITA",
+          "name": "Anahita",
+          "primaryYield": "MONEY",
+          "subClass": 8,
+          "type": "WATER",
+          "typeLabel": "Water",
+          "yieldOutput": [
+            {
+              "value": 200,
+              "yield": "money"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+          "effectsXml": [],
+          "fullName": "Shrine of Atar",
+          "id": "IMPROVEMENT_SHRINE_ATAR",
+          "name": "Atar",
+          "primaryYield": null,
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+0.5 Orders, +20% adjacent Farm",
+        "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
+          "effectsXml": [
+            "+0.5 Orders"
+          ],
+          "fullName": "Shrine of Hvar Khshaita",
+          "id": "IMPROVEMENT_SHRINE_HVAR_KHSHAITA",
+          "name": "Hvar Khshaita",
+          "primaryYield": "ORDERS",
+          "subClass": 10,
+          "type": "SUN",
+          "typeLabel": "Sun",
+          "yieldOutput": [
+            {
+              "value": 5,
+              "yield": "orders"
+            }
+          ]
+        }
+      }
     ],
     "slug": "persia",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Trapping",
       "Husbandry"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 iron, 50/100 food",
-      "moveSight": "3 move, 1 range, 4 vision",
-      "names": "Palton Cav. / Cataphract Archer",
-      "traits": "Ranged Horse Rout",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2/-4 iron, -1 food"
+      "cost": "50/100 Food, 100 Iron",
+      "moveSight": "3 Move, 1 Range, 5 Vision",
+      "names": "Palton Cavalry / Cataphract Archer",
+      "traits": "Ranged, Mounted, Horse, Rout",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_PALTON_CAVALRY",
+          "name": "Palton Cavalry",
+          "trait": "ranged"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_CATAPHRACT_ARCHER",
+          "name": "Cataphract Archer",
+          "trait": "ranged"
+        }
+      ],
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+1 Fatigue Limit",
-      "+2 Training/City"
+    "cityNames": [
+      "Roma",
+      "Ariminum",
+      "Bononia",
+      "Aquileia",
+      "Capua",
+      "Antium",
+      "Ostia",
+      "Florentia",
+      "Mediolanum",
+      "Patavium",
+      "Ravenna",
+      "Belum",
+      "Tarraco",
+      "Italica",
+      "Modicia",
+      "Salernum",
+      "Forum_Livii",
+      "Regium_Lepidi",
+      "Corduba",
+      "Ascrivium",
+      "Valentia",
+      "Scalabis",
+      "Villa_Euracini",
+      "Massa",
+      "Pistoria",
+      "Gerunda",
+      "Pompaleo",
+      "Naissus",
+      "Vesontio",
+      "Lutetia",
+      "Hispalis",
+      "Lugdunum",
+      "Siscia",
+      "Augusta_Treverorum",
+      "Castra_Legionis",
+      "Augusta_Taurinorum",
+      "Novaesium",
+      "Ovilava",
+      "Iuvavum",
+      "Turicum",
+      "Pompeii",
+      "Volubilis",
+      "Barium",
+      "Brixia",
+      "Comum",
+      "Theranda",
+      "Hadrianopolis",
+      "Durovigutum",
+      "Ponus_Aelius",
+      "Aquincum",
+      "Cibalae",
+      "Salona",
+      "Aeminium",
+      "Lentia",
+      "Nida",
+      "Sumelocenna",
+      "Calleva_Atrebatum",
+      "Camulodunum",
+      "Viminacium",
+      "Londinium",
+      "Aventicum",
+      "Faventia",
+      "Mogontiacum",
+      "Sirmium",
+      "Oescus",
+      "Heliopolis_Canaan",
+      "Petra"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_WARRIOR",
+        "name": "Warrior",
+        "slug": "warrior",
+        "trait": "melee"
+      }
     ],
     "color": {
       "bg": "#880d56",
@@ -785,68 +5752,584 @@
       "Augustus",
       "Agrippina"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Romulus",
+        "founder": "Ilia",
+        "gameContent": "",
+        "id": "DYNASTY_ROMULUS",
+        "leaderAge": 22,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/tactician.png",
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician",
+            "slug": "tactician"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+40 Opinion (same trait)",
+              "+2 Courage",
+              "-1 Discipline"
+            ],
+            "icon": null,
+            "id": "TRAIT_RUTHLESS",
+            "label": "Ruthless",
+            "slug": "ruthless"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Romulus",
+        "name": "Romulus",
+        "portrait": "img/portraits/character_select/romulus.png",
+        "slug": "romulus"
+      },
+      {
+        "description": "",
+        "firstRuler": "Scipio Leader",
+        "founder": "Scipio Leader",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_SCIPIO",
+        "leaderAge": 42,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/tactician.png",
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician",
+            "slug": "tactician"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Military Nation Kill Yield / Happiness"
+            ],
+            "icon": null,
+            "id": "TRAIT_AMBUSHER",
+            "label": "Ambusher",
+            "slug": "ambusher"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Scipio_Africanus",
+        "name": "Scipio",
+        "portrait": "img/portraits/historical/scipio.png",
+        "slug": "scipio"
+      },
+      {
+        "description": "",
+        "firstRuler": "Sulla",
+        "founder": "Sulla",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_SULLA",
+        "leaderAge": 32,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/schemer.png",
+            "id": "TRAIT_SCHEMER_ARCHETYPE",
+            "label": "Schemer",
+            "slug": "schemer"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "-20 Family Opinion"
+            ],
+            "icon": null,
+            "id": "TRAIT_DICTATOR",
+            "label": "Dictator",
+            "slug": "dictator"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Sulla",
+        "name": "Sulla",
+        "portrait": "img/portraits/historical/sulla.png",
+        "slug": "sulla"
+      },
+      {
+        "description": "",
+        "firstRuler": "Marius",
+        "founder": "Marius",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_GAIUS_MARIUS",
+        "leaderAge": 36,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+10% Has General Modifier"
+            ],
+            "icon": null,
+            "id": "TRAIT_THIRD_FOUNDER",
+            "label": "Third Founder",
+            "slug": "third_founder"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Gaius_Marius",
+        "name": "Gaius Marius",
+        "portrait": "img/portraits/historical/gaius_marius.png",
+        "slug": "gaius_marius"
+      },
+      {
+        "description": "",
+        "firstRuler": "Caesar",
+        "founder": "Caesar",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_JULIUS_CAESAR",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+80 Unit Trait XP / Infantry",
+              "+20 Military Tribe Kill Yield / Training"
+            ],
+            "icon": null,
+            "id": "TRAIT_EXPANSIONIST",
+            "label": "Expansionist",
+            "slug": "expansionist"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Julius_Caesar",
+        "name": "Julius Caesar",
+        "portrait": "img/portraits/historical/julius.png",
+        "slug": "julius_caesar"
+      },
+      {
+        "description": "",
+        "firstRuler": "Augustus",
+        "founder": "Augustus",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_AUGUSTUS",
+        "leaderAge": 36,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/judge.png",
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge",
+            "slug": "judge"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Culture Bonus: Refined"
+            ],
+            "icon": null,
+            "id": "TRAIT_REFINED",
+            "label": "Refined",
+            "slug": "refined"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Augustus",
+        "name": "Augustus",
+        "portrait": "img/portraits/historical/augustus.png",
+        "slug": "augustus"
+      },
+      {
+        "description": "",
+        "firstRuler": "Agrippina",
+        "founder": "Germanicus",
+        "gameContent": "Wonders & Dynasties",
+        "id": "DYNASTY_AGRIPPINA",
+        "leaderAge": 29,
+        "leaderTraits": [
+          {
+            "archetype": false,
+            "effects": [],
+            "icon": null,
+            "id": "TRAIT_CALCULATING",
+            "label": "Calculating",
+            "slug": "calculating"
+          },
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/diplomat.png",
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat",
+            "slug": "diplomat"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Agrippina_the_Younger",
+        "name": "Agrippina",
+        "portrait": "img/portraits/historical/agrippina.png",
+        "slug": "agrippina"
+      }
+    ],
+    "effectsXml": [
+      "+2 Training/City",
+      "+1 Fatigue Limit"
+    ],
     "families": [
       {
         "class": "Champions",
+        "classKey": "champions",
         "colorIndex": 0,
         "id": "FAMILY_FABIUS",
+        "ingameColor": "#ffae8b",
+        "ingameFg": "#f5f6f8",
         "name": "Fabius"
       },
       {
         "class": "Landowners",
+        "classKey": "landowners",
         "colorIndex": 1,
         "id": "FAMILY_CLAUDIUS",
+        "ingameColor": "#c9abff",
+        "ingameFg": "#f5f6f8",
         "name": "Claudius"
       },
       {
         "class": "Patrons",
+        "classKey": "patrons",
         "colorIndex": 2,
         "id": "FAMILY_VALERIUS",
+        "ingameColor": "#6a86d7",
+        "ingameFg": "#f5f6f8",
         "name": "Valerius"
       },
       {
         "class": "Statesmen",
+        "classKey": "statesmen",
         "colorIndex": 3,
         "id": "FAMILY_JULIUS",
+        "ingameColor": "#e9bf4e",
+        "ingameFg": "#f5f6f8",
         "name": "Julius"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Aemilia",
+      "Agrippina",
+      "Antonia",
+      "Atia",
+      "Aurelia",
+      "Calpurnia",
+      "Camilla",
+      "Clodia",
+      "Cornelia",
+      "Domitia",
+      "Drusilla",
+      "Fulvia",
+      "Hortensia",
+      "Ilia",
+      "Livia",
+      "Lucilla",
+      "Marcia",
+      "Plautia",
+      "Pompeia",
+      "Porcia",
+      "Rhea",
+      "Scribonia",
+      "Sempronia",
+      "Servilia",
+      "Sulpicia",
+      "Tullia",
+      "Vipsania"
+    ],
+    "firstNamesMale": [
+      "Appius",
+      "Aulus",
+      "Decimus",
+      "Faustus",
+      "Gaius",
+      "Gnaeus",
+      "Hostus",
+      "Kaeso",
+      "Lucius",
+      "Mamercus",
+      "Manius",
+      "Marcus",
+      "Nonus",
+      "Numerius",
+      "Octavius",
+      "Postumus",
+      "Publius",
+      "Quintus",
+      "Romulus",
+      "Remus",
+      "Servius",
+      "Sextus",
+      "Spurius",
+      "Statius",
+      "Tiberius",
+      "Titus",
+      "Vibius"
     ],
     "gameContent": "",
     "id": "NATION_ROME",
     "leader": {
       "heir1": "brother, Bold Schemer (22)",
+      "heir2": "mother, Romantic Orator (44)",
       "name": "Ruthless Tactician (22)"
     },
     "name": "Rome",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
+        "effectsXml": [
+          "+2 Growth"
+        ],
+        "fullName": "Shrine of Feronia",
+        "id": "IMPROVEMENT_SHRINE_FERONIA",
+        "name": "Feronia",
+        "primaryYield": "GROWTH",
+        "subClass": 2,
+        "type": "LOVE",
+        "typeLabel": "Love",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "growth"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Culture, +10 Money per adjacent Resource",
+        "effectsXml": [
+          "+2 Culture"
+        ],
+        "fullName": "Shrine of Ceres",
+        "id": "IMPROVEMENT_SHRINE_CERES",
+        "name": "Ceres",
+        "primaryYield": "CULTURE",
+        "subClass": 3,
+        "type": "HEARTH",
+        "typeLabel": "Hearth",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "culture"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Training, +10 Infantry XP",
+        "effectsXml": [
+          "+2 Training"
+        ],
+        "fullName": "Shrine of Bellona",
+        "id": "IMPROVEMENT_SHRINE_BELLONA",
+        "name": "Bellona",
+        "primaryYield": "TRAINING",
+        "subClass": 4,
+        "type": "WAR",
+        "typeLabel": "War",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "training"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "effectsXml": [],
+        "fullName": "Shrine of Sol",
+        "id": "IMPROVEMENT_SHRINE_SOL",
+        "name": "Sol",
+        "primaryYield": null,
+        "subClass": 9,
+        "type": "FIRE",
+        "typeLabel": "Fire",
+        "yieldOutput": []
+      }
+    ],
     "shrines": [
-      "+2 Training, +10 XP / Unit",
-      "+1 Train/LM, +20% Mines",
-      "+2 Growth, +20% Pastures",
-      "+2 Cult, +10 Money/Resource"
+      {
+        "effect": "+2 Growth, +20% adjacent Pasture",
+        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
+          "effectsXml": [
+            "+2 Growth"
+          ],
+          "fullName": "Shrine of Feronia",
+          "id": "IMPROVEMENT_SHRINE_FERONIA",
+          "name": "Feronia",
+          "primaryYield": "GROWTH",
+          "subClass": 2,
+          "type": "LOVE",
+          "typeLabel": "Love",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "growth"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Culture, +10 Money per adjacent Resource",
+        "shrine": {
+          "effectStr": "+2 Culture, +10 Money per adjacent Resource",
+          "effectsXml": [
+            "+2 Culture"
+          ],
+          "fullName": "Shrine of Ceres",
+          "id": "IMPROVEMENT_SHRINE_CERES",
+          "name": "Ceres",
+          "primaryYield": "CULTURE",
+          "subClass": 3,
+          "type": "HEARTH",
+          "typeLabel": "Hearth",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Shrine of Bellona",
+          "id": "IMPROVEMENT_SHRINE_BELLONA",
+          "name": "Bellona",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+          "effectsXml": [],
+          "fullName": "Shrine of Sol",
+          "id": "IMPROVEMENT_SHRINE_SOL",
+          "name": "Sol",
+          "primaryYield": null,
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
+          "yieldOutput": []
+        }
+      }
     ],
     "slug": "rome",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Ironworking",
       "Stonecutting",
       "Polis"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "150/200 iron",
-      "moveSight": "2 move, 4 vision",
+      "cost": "150/200 Iron",
+      "moveSight": "2 Move, 4 Vision",
       "names": "Hastatus / Legionary",
-      "traits": "Melee Infantry Testudo Centurion",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2/-4 iron, -1 food"
+      "traits": "Melee, Infantry, Centurion, Testudo",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_HASTATUS",
+          "name": "Hastatus",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_LEGIONARY",
+          "name": "Legionary",
+          "trait": "melee"
+        }
+      ],
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
     "bonuses": [
       "+1 Civic/Shrine & Sangam",
       "+2 Training+Elephant/City",
-      "+1     Harbor & 20% national str"
+      "+1 Order/Harbor"
+    ],
+    "cityNames": [
+      "Uraiyur",
+      "Vanchi",
+      "Korkai",
+      "Muziris",
+      "Madurai",
+      "Ollaiyur",
+      "Pazhi",
+      "Tondi",
+      "Muchiri",
+      "Karuvur",
+      "Kanyakumari",
+      "Kaverippattanam",
+      "Chennai",
+      "Kasaragodu",
+      "Madurai",
+      "Vengi",
+      "Thanjavur"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 1,
+        "id": "UNIT_SLINGER",
+        "name": "Slinger",
+        "slug": "slinger",
+        "trait": "ranged"
+      }
     ],
     "color": {
       "bg": "#00b281",
@@ -860,54 +6343,462 @@
       "Alli",
       "Nedum"
     ],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Karikala",
+        "founder": "Karikala",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_KARIKALA",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/orator.png",
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator",
+            "slug": "orator"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+0.5 Science/Culture Level",
+              "+20 Opinion (same trait)",
+              "+1 Wisdom"
+            ],
+            "icon": null,
+            "id": "TRAIT_INTELLIGENT",
+            "label": "Intelligent",
+            "slug": "intelligent"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Karikala",
+        "name": "Karikala",
+        "portrait": "img/portraits/historical/karikala.png",
+        "slug": "karikala"
+      },
+      {
+        "description": "",
+        "firstRuler": "Nedunjeliyan",
+        "founder": "Nedunjeliyan",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_NEDUNJELIYAN",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/tactician.png",
+            "id": "TRAIT_TACTICIAN_ARCHETYPE",
+            "label": "Tactician",
+            "slug": "tactician"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Ignore Ranged modifier from attacking into Scrub, Trees, Jungle"
+            ],
+            "icon": null,
+            "id": "TRAIT_PURSUER",
+            "label": "Pursuer",
+            "slug": "pursuer"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nedunjeliyan_II",
+        "name": "Nedunjeliyan",
+        "portrait": null,
+        "slug": "nedunjeliyan"
+      },
+      {
+        "description": "",
+        "firstRuler": "Cenkuttuvan",
+        "founder": "Nedum Dead",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_CENKUTTUVAN",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/diplomat.png",
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat",
+            "slug": "diplomat"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+2 Civics/Culture Level"
+            ],
+            "icon": null,
+            "id": "TRAIT_KINGMAKER",
+            "label": "Kingmaker",
+            "slug": "kingmaker"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Cenkuttuvan",
+        "name": "Cenkuttuvan",
+        "portrait": "img/portraits/historical/chenkuttuvan.png",
+        "slug": "cenkuttuvan"
+      },
+      {
+        "description": "",
+        "firstRuler": "Alli",
+        "founder": "Killi",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_ALLI",
+        "leaderAge": 21,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+5% Per Level Attack Modifier"
+            ],
+            "icon": null,
+            "id": "TRAIT_LEGENDARY",
+            "label": "Legendary",
+            "slug": "legendary"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Alli_Raani",
+        "name": "Alli",
+        "portrait": null,
+        "slug": "alli"
+      },
+      {
+        "description": "",
+        "firstRuler": "Nedum",
+        "founder": "Nedum",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_NEDUM",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/commander.png",
+            "id": "TRAIT_COMMANDER_ARCHETYPE",
+            "label": "Commander",
+            "slug": "commander"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Units gain Amphibious"
+            ],
+            "icon": null,
+            "id": "TRAIT_COASTAL_WARLORD",
+            "label": "Coastal Warlord",
+            "slug": "coastal_warlord"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Nedum_Cheralathan",
+        "name": "Nedum",
+        "portrait": "img/portraits/historical/nedum_cheralathan.png",
+        "slug": "nedum"
+      }
+    ],
+    "effectsXml": [
+      "Unlocks Give Wootz Steel"
+    ],
     "families": [
       {
         "class": "Traders",
+        "classKey": "traders",
         "colorIndex": 0,
         "id": "FAMILY_PANDYA",
+        "ingameColor": "#4656b4",
+        "ingameFg": "#f5f6f8",
         "name": "Pandya"
       },
       {
         "class": "Artisans",
+        "classKey": "artisans",
         "colorIndex": 1,
         "id": "FAMILY_CHOLA",
+        "ingameColor": "#933838",
+        "ingameFg": "#f5f6f8",
         "name": "Chola"
       },
       {
         "class": "Landowners",
+        "classKey": "landowners",
         "colorIndex": 3,
         "id": "FAMILY_CHERA",
+        "ingameColor": null,
+        "ingameFg": "#f5f6f8",
         "name": "Chera"
       }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Pilivalai",
+      "Kannagi",
+      "Madhavi",
+      "Vanavan",
+      "Puteri",
+      "Mukkokilan",
+      "Panchavan",
+      "Vira",
+      "Arulmoli",
+      "Ammangadevi",
+      "Vanathi",
+      "Dantisakti",
+      "Trailokya",
+      "Lata",
+      "Prithvi",
+      "Meenavan",
+      "Viranarayani",
+      "Villavan",
+      "Kundavai",
+      "Ilaada",
+      "Neriyan",
+      "Manakkilli",
+      "Iilanko",
+      "Mari"
+    ],
+    "firstNamesMale": [
+      "Virakurcha",
+      "Simhavarman",
+      "Bharavi",
+      "Mahendravarman",
+      "Kovalan",
+      "Ellalan",
+      "Kulakkottan",
+      "Killivalavan",
+      "Perunarkilli",
+      "Konchenganan",
+      "Vijayalaya",
+      "Rajaraja",
+      "Rajendra",
+      "Vikrama",
+      "Palyani",
+      "Kanaikkal",
+      "Kalangai",
+      "Perum",
+      "Kudakko",
+      "Ilanko",
+      "Paranar",
+      "Killi"
     ],
     "gameContent": "EMPIRES_OF_THE_INDUS",
     "id": "NATION_TAMIL",
     "leader": {
-      "name": "Intelligent Orator"
+      "heir1": "son (11)",
+      "heir2": "son (9)",
+      "name": "Intelligent Orator (34)",
+      "spouse": "Velir Judge (30)"
     },
     "name": "Tamil",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
+        "effectsXml": [
+          "+2 Growth"
+        ],
+        "fullName": "Tirumal",
+        "id": "IMPROVEMENT_SHRINE_TIRUMAL",
+        "name": "Tirumal",
+        "primaryYield": "GROWTH",
+        "subClass": 2,
+        "type": "LOVE",
+        "typeLabel": "Love",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "growth"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "effectsXml": [
+          "+20 Money"
+        ],
+        "fullName": "Varuna",
+        "id": "IMPROVEMENT_SHRINE_VARUNA",
+        "name": "Varuna",
+        "primaryYield": "MONEY",
+        "subClass": 8,
+        "type": "WATER",
+        "typeLabel": "Water",
+        "yieldOutput": [
+          {
+            "value": 200,
+            "yield": "money"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "effectsXml": [],
+        "fullName": "Murugan",
+        "id": "IMPROVEMENT_SHRINE_MURUGAN",
+        "name": "Murugan",
+        "primaryYield": null,
+        "subClass": 9,
+        "type": "FIRE",
+        "typeLabel": "Fire",
+        "yieldOutput": []
+      },
+      {
+        "effectStr": "+1 Science, +1 Civics/adjacent Odeon",
+        "effectsXml": [
+          "+1 Science"
+        ],
+        "fullName": "Mayon",
+        "id": "IMPROVEMENT_SHRINE_MAYON",
+        "name": "Mayon",
+        "primaryYield": "SCIENCE",
+        "subClass": 11,
+        "type": "WISDOM",
+        "typeLabel": "Wisdom",
+        "yieldOutput": [
+          {
+            "value": 10,
+            "yield": "science"
+          }
+        ]
+      }
+    ],
     "shrines": [
-      "+1 Sci, +1 Civ/Odeon",
-      "+1 Train/LM, +20% Mines",
-      "+2 Growth, +20% Pastures",
-      "+20 Money, +20% Nets"
+      {
+        "effect": "+2 Growth, +20% adjacent Pasture",
+        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
+          "effectsXml": [
+            "+2 Growth"
+          ],
+          "fullName": "Tirumal",
+          "id": "IMPROVEMENT_SHRINE_TIRUMAL",
+          "name": "Tirumal",
+          "primaryYield": "GROWTH",
+          "subClass": 2,
+          "type": "LOVE",
+          "typeLabel": "Love",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "growth"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+          "effectsXml": [
+            "+20 Money"
+          ],
+          "fullName": "Varuna",
+          "id": "IMPROVEMENT_SHRINE_VARUNA",
+          "name": "Varuna",
+          "primaryYield": "MONEY",
+          "subClass": 8,
+          "type": "WATER",
+          "typeLabel": "Water",
+          "yieldOutput": [
+            {
+              "value": 200,
+              "yield": "money"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+          "effectsXml": [],
+          "fullName": "Murugan",
+          "id": "IMPROVEMENT_SHRINE_MURUGAN",
+          "name": "Murugan",
+          "primaryYield": null,
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+1 Science, +1 Civics/adjacent Odeon",
+        "shrine": {
+          "effectStr": "+1 Science, +1 Civics/adjacent Odeon",
+          "effectsXml": [
+            "+1 Science"
+          ],
+          "fullName": "Mayon",
+          "id": "IMPROVEMENT_SHRINE_MAYON",
+          "name": "Mayon",
+          "primaryYield": "SCIENCE",
+          "subClass": 11,
+          "type": "WISDOM",
+          "typeLabel": "Wisdom",
+          "yieldOutput": [
+            {
+              "value": 10,
+              "yield": "science"
+            }
+          ]
+        }
+      }
     ],
     "slug": "tamil",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Divination",
       "Trapping",
       "Ironworking"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 wood",
-      "moveSight": "2 move, 1 range, 5 vision",
-      "names": "Javelin Elephant / E. Archer",
-      "traits": "Elephant Panic Cleave Formidable",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2 food, -2/4 wood"
+      "cost": "100 Food, 50/100 Wood",
+      "moveSight": "2 Move, 1 Range, 4 Vision",
+      "names": "Javelin Elephant / Elephant Archer",
+      "traits": "Ranged, Mounted, Elephant, Panic, Cleave I, Formidable",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_JAVELIN_ELEPHANT",
+          "name": "Javelin Elephant",
+          "trait": "ranged"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_ARCHER_ELEPHANT",
+          "name": "Elephant Archer",
+          "trait": "ranged"
+        }
+      ],
+      "upkeep": "-2 Food, -2/-4 Wood, -1/-2 Training"
     }
   },
   {
@@ -915,6 +6806,38 @@
       "1 Horse in each city",
       "Steppe Riders",
       "Vassalize Tribe / +Ally Fatigue"
+    ],
+    "cityNames": [
+      "Surkh_Kotal",
+      "Purushapura",
+      "Kapisa",
+      "Saketa",
+      "Mathura",
+      "Bazira",
+      "Varnu",
+      "Aornos",
+      "Begram",
+      "Kandahar",
+      "Butkara",
+      "Srinagar",
+      "Khalatse",
+      "Sanchi"
+    ],
+    "cityUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_WORKER",
+        "name": "Worker",
+        "slug": "worker",
+        "trait": "infantry"
+      },
+      {
+        "count": 2,
+        "id": "UNIT_STEPPE_RIDER",
+        "name": "Steppe Rider",
+        "slug": "steppe-rider",
+        "trait": "ranged"
+      }
     ],
     "color": {
       "bg": "#ad7e00",
@@ -928,35 +6851,472 @@
       "Vima_Takto",
       "Kanishka"
     ],
-    "families": [],
+    "dynastyDetails": [
+      {
+        "description": "",
+        "firstRuler": "Kujula",
+        "founder": "Kujula",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_KUJULA",
+        "leaderAge": 28,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/schemer.png",
+            "id": "TRAIT_SCHEMER_ARCHETYPE",
+            "label": "Schemer",
+            "slug": "schemer"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+20 Opinion (same trait)",
+              "+2 Courage"
+            ],
+            "icon": null,
+            "id": "TRAIT_BOLD",
+            "label": "Bold",
+            "slug": "bold"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Kujula_Kadphises",
+        "name": "Kujula",
+        "portrait": "img/portraits/historical/kujula_kadphises.png",
+        "slug": "kujula"
+      },
+      {
+        "description": "",
+        "firstRuler": "Luo",
+        "founder": "Luo",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_LUO",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/diplomat.png",
+            "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+            "label": "Diplomat",
+            "slug": "diplomat"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+10 Money/Pasture"
+            ],
+            "icon": null,
+            "id": "TRAIT_SILK_ROAD_TRADER",
+            "label": "Silk Road Trader",
+            "slug": "silk_road_trader"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Yuezhi#Earliest_references_in_Chinese_texts",
+        "name": "Luo",
+        "portrait": "img/portraits/historical/luo.png",
+        "slug": "luo"
+      },
+      {
+        "description": "",
+        "firstRuler": "Rukhana",
+        "founder": "Rukhana",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_RUKHANA",
+        "leaderAge": 34,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/hero.png",
+            "id": "TRAIT_HERO_ARCHETYPE",
+            "label": "Hero",
+            "slug": "hero"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Can Harvest Resource"
+            ],
+            "icon": null,
+            "id": "TRAIT_NOMADIC",
+            "label": "Nomadic",
+            "slug": "nomadic"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Yuezhi#Yuezhi_and_Xiongnu",
+        "name": "Rukhana",
+        "portrait": "img/portraits/historical/rukhana.png",
+        "slug": "rukhana"
+      },
+      {
+        "description": "",
+        "firstRuler": "Vima Takto Leader",
+        "founder": "Kujula Dead",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_VIMA_TAKTO",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/judge.png",
+            "id": "TRAIT_JUDGE_ARCHETYPE",
+            "label": "Judge",
+            "slug": "judge"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "Connected Effect City: Coin Minter"
+            ],
+            "icon": null,
+            "id": "TRAIT_COIN_MINTER",
+            "label": "Coin Minter",
+            "slug": "coin_minter"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Vima_Takto",
+        "name": "Vima Takto",
+        "portrait": "img/portraits/historical/vima_takto.png",
+        "slug": "vima_takto"
+      },
+      {
+        "description": "",
+        "firstRuler": "Kanishka",
+        "founder": "Vima Kadphises",
+        "gameContent": "Empires & Of & The & Indus",
+        "id": "DYNASTY_KANISHKA",
+        "leaderAge": 24,
+        "leaderTraits": [
+          {
+            "archetype": true,
+            "effects": [],
+            "icon": "img/icons/traits/orator.png",
+            "id": "TRAIT_ORATOR_ARCHETYPE",
+            "label": "Orator",
+            "slug": "orator"
+          },
+          {
+            "archetype": false,
+            "effects": [
+              "+0.5 Orders/Religion"
+            ],
+            "icon": null,
+            "id": "TRAIT_RELIGIOUS_PATRON",
+            "label": "Religious Patron",
+            "slug": "religious_patron"
+          }
+        ],
+        "leaderUrl": "https://en.wikipedia.org/wiki/Kanishka",
+        "name": "Kanishka",
+        "portrait": null,
+        "slug": "kanishka"
+      }
+    ],
+    "effectsXml": [
+      "+1 Tribe Fatigue Change",
+      "Found: Add Resource: Horses"
+    ],
+    "families": [
+      {
+        "class": "Riders",
+        "classKey": "riders",
+        "colorIndex": 0,
+        "id": "FAMILY_XIUMI",
+        "ingameColor": "#97440f",
+        "ingameFg": "#f5f6f8",
+        "name": "Xiumi"
+      },
+      {
+        "class": "Champions",
+        "classKey": "champions",
+        "colorIndex": 1,
+        "id": "FAMILY_SHUANGMI",
+        "ingameColor": "#00ad7a",
+        "ingameFg": "#f5f6f8",
+        "name": "Shuangmi"
+      },
+      {
+        "class": "Clerics",
+        "classKey": "clerics",
+        "colorIndex": 2,
+        "id": "FAMILY_XIDUN",
+        "ingameColor": "#ad002c",
+        "ingameFg": "#f5f6f8",
+        "name": "Xidun"
+      },
+      {
+        "class": "Traders",
+        "classKey": "traders",
+        "colorIndex": 3,
+        "id": "FAMILY_DUMI",
+        "ingameColor": "#4e51a4",
+        "ingameFg": "#f5f6f8",
+        "name": "Dumi"
+      }
+    ],
+    "firstBuild": {
+      "id": "UNIT_SETTLER",
+      "name": "Settler"
+    },
+    "firstNamesFemale": [
+      "Ahatsunu",
+      "Alittum",
+      "Amata",
+      "Belessunu",
+      "Beltum_Rimenni",
+      "Damiqtum",
+      "Erishti_Aya",
+      "Ettu",
+      "Gashansunu",
+      "Gemeti",
+      "Humusi",
+      "Iltani",
+      "Kashshaya",
+      "Lamassani",
+      "Melulatum",
+      "Nidintu",
+      "Ninsunu",
+      "Nishi_Inishu",
+      "Palatum",
+      "Ramtu",
+      "Sheritum",
+      "Sun_Gamelat",
+      "Tabni_Sun",
+      "Ubalnu",
+      "Ummi_Ningal",
+      "Zakiti"
+    ],
+    "firstNamesMale": [
+      "Huvishka",
+      "Vasudeva",
+      "Vashishka",
+      "Mahi",
+      "Kipunada",
+      "Shaka",
+      "Heraios",
+      "Touman",
+      "Meng",
+      "Modun",
+      "Jizhu",
+      "Jiyu",
+      "Chastana",
+      "Nahapana",
+      "Bhumaka",
+      "Abhiraka",
+      "Damasena",
+      "Vijaysena",
+      "Vanaspara",
+      "Sodasa",
+      "Hagana",
+      "Rajuvula",
+      "Bhadayasa",
+      "Kharapallana"
+    ],
     "gameContent": "EMPIRES_OF_THE_INDUS",
     "id": "NATION_YUEZHI",
     "leader": {
-      "name": "Bold Schemer (28)",
-      "spouse": "Son (5)"
+      "heir1": "son (5)",
+      "name": "Bold Schemer (28)"
     },
     "name": "Yuezhi",
     "playable": true,
+    "shrineXml": [
+      {
+        "effectStr": "+2 Culture, +10 Money per adjacent Resource",
+        "effectsXml": [
+          "+2 Culture"
+        ],
+        "fullName": "Ardaksho",
+        "id": "IMPROVEMENT_SHRINE_ARDAKSHO",
+        "name": "Ardaksho",
+        "primaryYield": "CULTURE",
+        "subClass": 3,
+        "type": "HEARTH",
+        "typeLabel": "Hearth",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "culture"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Training, +10 Infantry XP",
+        "effectsXml": [
+          "+2 Training"
+        ],
+        "fullName": "Orlagno",
+        "id": "IMPROVEMENT_SHRINE_ORLAGNO",
+        "name": "Orlagno",
+        "primaryYield": "TRAINING",
+        "subClass": 4,
+        "type": "WAR",
+        "typeLabel": "War",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "training"
+          }
+        ]
+      },
+      {
+        "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "effectsXml": [
+          "+2 Culture"
+        ],
+        "fullName": "Oesho",
+        "id": "IMPROVEMENT_SHRINE_OESHO",
+        "name": "Oesho",
+        "primaryYield": "CULTURE",
+        "subClass": 5,
+        "type": "UNDERWORLD",
+        "typeLabel": "Underworld",
+        "yieldOutput": [
+          {
+            "value": 20,
+            "yield": "culture"
+          }
+        ]
+      },
+      {
+        "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+        "effectsXml": [],
+        "fullName": "Nana",
+        "id": "IMPROVEMENT_SHRINE_NANA",
+        "name": "Nana",
+        "primaryYield": null,
+        "subClass": 6,
+        "type": "HUNTING",
+        "typeLabel": "Hunting",
+        "yieldOutput": []
+      }
+    ],
     "shrines": [
-      "+2 Training, +10 XP / Unit",
-      "+2 Cult, +10 Money/Resource",
-      "+2 Cult, +Cult%/MtnVolc",
-      "+1 Ranged Lvl, +20% Camps"
+      {
+        "effect": "+2 Culture, +10 Money per adjacent Resource",
+        "shrine": {
+          "effectStr": "+2 Culture, +10 Money per adjacent Resource",
+          "effectsXml": [
+            "+2 Culture"
+          ],
+          "fullName": "Ardaksho",
+          "id": "IMPROVEMENT_SHRINE_ARDAKSHO",
+          "name": "Ardaksho",
+          "primaryYield": "CULTURE",
+          "subClass": 3,
+          "type": "HEARTH",
+          "typeLabel": "Hearth",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Orlagno",
+          "id": "IMPROVEMENT_SHRINE_ORLAGNO",
+          "name": "Orlagno",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "shrine": {
+          "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+          "effectsXml": [
+            "+2 Culture"
+          ],
+          "fullName": "Oesho",
+          "id": "IMPROVEMENT_SHRINE_OESHO",
+          "name": "Oesho",
+          "primaryYield": "CULTURE",
+          "subClass": 5,
+          "type": "UNDERWORLD",
+          "typeLabel": "Underworld",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Camp, +1 Level for new Ranged units",
+        "shrine": {
+          "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+          "effectsXml": [],
+          "fullName": "Nana",
+          "id": "IMPROVEMENT_SHRINE_NANA",
+          "name": "Nana",
+          "primaryYield": null,
+          "subClass": 6,
+          "type": "HUNTING",
+          "typeLabel": "Hunting",
+          "yieldOutput": []
+        }
+      }
     ],
     "slug": "yuezhi",
+    "startUnits": [
+      {
+        "count": 1,
+        "id": "UNIT_SCOUT",
+        "name": "Scout",
+        "slug": "scout",
+        "trait": "infantry"
+      }
+    ],
     "startingLaw": [],
     "startingTech": [
       "Military Drill",
       "Husbandry"
     ],
+    "titles": {
+      "heir": "",
+      "leader": "",
+      "regent": "",
+      "successor": ""
+    },
     "uniqueUnit": {
-      "cost": "100 iron, 50/100 food",
-      "moveSight": "3 move, 6 vision",
-      "names": "Kushan Cavalry / Warlord",
-      "traits": "Melee Horse Rout Charge",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
-      "upkeep": "-2/-4 iron, -1 food"
+      "cost": "100 Food, 50/100 Iron",
+      "moveSight": "3 Move, 5 Vision",
+      "names": "Kushan Cavalry / Kushan Warlord",
+      "traits": "Melee, Mounted, Horse, Rout, Shock Cavalry",
+      "unitsResolved": [
+        {
+          "culture": "Developing",
+          "id": "UNIT_KUSHAN_CAVALRY",
+          "name": "Kushan Cavalry",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_KUSHAN_WARLORDS",
+          "name": "Kushan Warlord",
+          "trait": "melee"
+        }
+      ],
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   }
 ]

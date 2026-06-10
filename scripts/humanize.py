@@ -17,6 +17,14 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Callable
 
+# Registry-driven completeness backstop: fields the game's own help system
+# renders but the curated renderers below don't cover yet get a generic
+# line appended via effects.extra_lines(). See scripts/effects.py.
+try:
+    import effects as _effects
+except ImportError:  # registry not extracted yet — curated coverage only
+    _effects = None
+
 # ────────────────────────────────────────────────────────────────────────────
 # Loaders + label helpers
 # ────────────────────────────────────────────────────────────────────────────
@@ -41,9 +49,11 @@ def load_xml_indexes(xml_dir: Path) -> dict[str, dict[str, ET.Element]]:
         if p.exists():
             out[f] = _index_entries(ET.parse(p).getroot())
 
-    # Merge bonus-event-*.xml entries into bonus.xml lookup
+    # Merge bonus-event*.xml entries into bonus.xml lookup (the glob must
+    # catch the suffix-less base file too — bonus-event.xml holds e.g.
+    # BONUS_CIVICS_GAIN_40_FLAT used by trait rewards)
     bonus_idx = out.setdefault("bonus.xml", {})
-    for p in xml_dir.glob("bonus-event-*.xml"):
+    for p in xml_dir.glob("bonus-event*.xml"):
         for k, v in _index_entries(ET.parse(p).getroot()).items():
             bonus_idx.setdefault(k, v)
 
@@ -70,7 +80,8 @@ def _lookup_name(indexes: dict, name_key: str) -> str:
     return text.get(name_key, "")
 
 
-_LINK_RE = re.compile(r"\{?lowercase:link\(([A-Z_]+)(?:,\d+)?\)\}?|link\(([A-Z_]+)(?:,\d+)?\)")
+# Token class includes digits — IMPROVEMENT_GARRISON_1, FOCUS2, etc.
+_LINK_RE = re.compile(r"\{?lowercase:link\(([A-Z0-9_]+)(?:,\d+)?\)\}?|link\(([A-Z0-9_]+)(?:,\d+)?\)")
 
 
 def _strip_link_templates(s: str) -> str:
@@ -194,6 +205,7 @@ SCALAR_LABELS: list[tuple[str, str, str]] = [
     ("bNoSellPenalty",         "Sell at the same price as buying", "bool"),
     ("bPurgeReligions",        "Disciples can purge World Religions", "bool"),
     ("bPaganStateReligion",    "Can adopt Pagan State Religions",  "bool"),
+    ("bRemoveAllVegetation",   "Can remove all Vegetation",        "bool"),
 ]
 
 
@@ -210,6 +222,82 @@ PER_CITY_YIELD_RATE_FIELDS: list[tuple[str, str]] = [
     ("aiYieldRateHolyCityWorld",       "Holy City"),
     ("aiYieldRateSpecialistClass",     "Specialist Class"),
 ]
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# Curated coverage — fields each renderer below phrases itself. Everything
+# else that the game renders (per scripts/data/helptext_registry.json) is
+# appended generically by effects.extra_lines(). scripts/audit_coverage.py
+# reads this to verify nothing player-facing is silently dropped.
+# ────────────────────────────────────────────────────────────────────────────
+
+HANDLED_FIELDS: dict[str, set[str]] = {
+    "effectCity": {
+        "aiYieldRate", "aiYieldModifier", "aaiEffectCityYieldRate",
+        "aaiTileYieldRateAdjacentDouble", "aaiTileYieldModifier",
+        "aeFreeEffectUnit", "aiImprovementRiverModifier", "aiUnitCostModifier",
+        "iAdjacentClassCostModifier", "aiUnitTraitCostModifier",
+        "aaiImprovementClassYield", "aiImprovementClassModifier",
+        "aeEffectCityEffectCity", "aiYieldRateCulture", "aiYieldRateReligion",
+        "aiYieldRatePaganReligion", "aiYieldRateReligionNonState",
+        "aiYieldRatePopulation", "aiYieldRateSpecialist",
+        "aiYieldRateSpecialistUrban", "aiYieldRateMilitary",
+        "aiYieldRateHolyCityWorld", "aiYieldRateSpecialistClass",
+        "aiImprovementModifier", "aeFreeUnitEffectCity", "aeLuxuryResources",
+        "abNoImprovementClassMax", "TerrainImprovementValid", "aeHurryMoney",
+        "SpecialistNoPrereq", "aiUnitTraitLevel", "iCityHP", "iUnitHealAlways",
+        "iUnitLevel", "iSpecialistUrbanTrainTimeModifier",
+        "iImprovementCostModifier", "iRebelProb", "iRandomPromotions",
+        "iHurryDiscontentModifier", "bHurryOrders", "bHurryPopulation",
+        "bNoReligionSpread",
+        # Deliberately phrased by build_families.py (City Defense / Specialist
+        # Cost lines control order + wording there).
+        "iStrengthModifier", "iSpecialistCostModifier",
+        # Structural / traversal fields, not effect lines of their own.
+        "EffectCityUnlock",
+    },
+    "effectPlayer": {
+        # SCALAR_LABELS tags
+        "bHireMercenaries", "bAlwaysConnected", "bAdjacentToOwn",
+        "bIgnoreHill", "iHarvestModifier", "iCultureRate",
+        "iCultureRateModifier", "iGrowthModifier", "iTrainingModifier",
+        "iCivicsModifier", "iScienceModifier", "iMoneyModifier",
+        "iFatigueLimit", "iPillageYieldModifier", "iSettlerCostModifier",
+        "iRangedCostModifier", "iVP", "iStartLawModifier",
+        "iTechsAvailableChange", "iReligionOpinionChange",
+        "iConsumptionModifier", "iWonderModifier", "iXPModifier",
+        "iMaxActions", "iStateReligionSpread", "bNoUnitConsumption",
+        "bBuildAllReligions", "bRiverMovement", "bRiverBridging",
+        "bNoSellPenalty", "bPurgeReligions", "bPaganStateReligion",
+        "bRemoveAllVegetation",
+        # Explicit pair/list fields
+        "aiMissionYieldCostModifier", "iTribeFatigueChange", "aiYieldRate",
+        "aiYieldRateLaws", "aiWarYield", "aeTradeYield", "aeWaterUnit",
+        "aeBuyTile", "bBuyTile",
+        # Structural traversal (rendered by recursing, not as lines)
+        "EffectCity", "EffectCityExtra", "StateReligionEffectCity",
+        "CapitalEffectCity", "StartBonus", "FoundBonus", "Bonus",
+        "EffectUnit", "EffectPlayer",
+    },
+    "effectUnit": {
+        "iPillageYieldModifier", "iFatigueExtra", "aiMilitaryKillYield",
+    },
+    "bonus": {
+        "aiYieldStockpile", "aiGlobalYields", "aiYields", "aiYieldRate",
+        "aeFreeProject", "aeAddProjects", "aeFreeUnit", "aiUnits",
+        "aiCityYields", "iHappinessLevels", "AddImprovementClass",
+        "bHolyCityAgents", "iLegitimacy",
+    },
+}
+
+
+def _extra(entry: ET.Element, section: str, indexes: dict | None) -> list[str]:
+    """Registry-backstop lines for fields the curated renderers skip."""
+    if _effects is None:
+        return []
+    return _effects.extra_lines(
+        entry, section, exclude=HANDLED_FIELDS[section], indexes=indexes
+    )
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -411,6 +499,7 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | 
         if (e.findtext(tag) or "") == "1":
             out.append(label)
 
+    out.extend(_extra(e, "effectCity", indexes))
     return out
 
 
@@ -439,6 +528,7 @@ def render_effect_unit(e: ET.Element) -> list[str]:
         y = yield_name(pair.findtext("zIndex"))
         v = int(pair.findtext("iValue") or "0")
         out.append(f"{fmt_decimal(v)} {y}/Kill")
+    out.extend(_extra(e, "effectUnit", None))
     return out
 
 
@@ -506,6 +596,7 @@ def render_effect_player_scalars(e: ET.Element) -> list[str]:
     if bt or (e.findtext("bBuyTile") == "1"):
         out.append("Can buy Tiles with Money")
 
+    out.extend(_extra(e, "effectPlayer", None))
     return out
 
 
@@ -563,6 +654,12 @@ def render_bonus(e: ET.Element, indexes: dict | None = None) -> list[str]:
     # Holy-city agents (e.g., the Oracle)
     if (e.findtext("bHolyCityAgents") or "0") == "1":
         out.append("Holy City spawns Agents")
+    # Legitimacy grants (event/trait bonuses; rendered by the event-option
+    # help builder in-game, so it's absent from the helptext registry)
+    leg = e.findtext("iLegitimacy")
+    if leg and leg != "0":
+        out.append(f"{fmt_decimal(int(leg))} Legitimacy")
+    out.extend(_extra(e, "bonus", indexes))
     return out
 
 

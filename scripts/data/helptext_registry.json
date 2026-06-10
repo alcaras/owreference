@@ -1,0 +1,5648 @@
+{
+  "_argVocab": {
+    "A|B": "either A or B depending on a runtime condition; \"|false\" / \"|empty\" = optional slot",
+    "XLink (improvementLink, terrainLink, unitTypeLink, religionLink, ...)": "buildXLinkVariable -- linked, iconed name of entity X",
+    "attackValueLink/defenseValueLink/unitStrengthValueLink": "signed percent with attack/defense/strength icon",
+    "bool": "boolean TEXTVAR feeding a {true_n:...} conditional slot; \"(...)\" notes its meaning; \"bool(false)\" = constant false",
+    "conceptLink(Luxury)": "link to a concept page",
+    "cooldown": "cooldown type mapped to stun/immobilize text",
+    "criticalLink/movementLink/rangeLink": "value with critical/movement/range icon",
+    "effectCitySourceLink": "buildEffectCitySourceLinkVariable -- human name of what grants an effectCity (religion/improvement/law/etc.)",
+    "effectUnitEligibleLink": "buildEffectUnitEligibleLinkVariable -- \"eligible\" link",
+    "list(X)": "comma/AND/OR list of X items (TextBuilder scope)",
+    "nestedBonusHelp": "recursive buildBonusHelp output",
+    "nestedEffectCityHelp": "recursive buildEffectCityHelp output",
+    "nestedEffectUnitHelp": "recursive buildEffectUnitHelp output",
+    "number": "plain integer count",
+    "percentValue": "buildPercentTextValue -- \"N%\" (unsigned)",
+    "raw": "a TEXT_* key stored in the field itself, rendered verbatim",
+    "selfApplyEffectUnitLink": "buildSelfApplyEffectUnitLinkVariable",
+    "signed": "buildSignedTextVariable(v) -- \"+N\"/\"-N\"",
+    "signedPercent": "buildSignedTextVariable(v, true) -- \"+N%\"/\"-N%\"",
+    "slash(A,B)": "TEXT_HELPTEXT_SLASH_TWO -- \"A/B\"",
+    "statName/victoryName/missionResultName/occurrenceName/memoryText/nameText": "plain TEXT of the referenced info",
+    "turnScale": "buildTurnScaleName -- \"year\"/\"turn\" word, scaled by game speed",
+    "turnScalePlural": "buildTurnScaleNamePlural",
+    "value": "plain integer TEXTVAR; \"(abs)\"/\"(prob)\"/\"(final)\"/\"(turns)\" qualify what the number is",
+    "warning(X)": "buildWarningTextVariable wrapper (red highlight)",
+    "yieldIconLink(TRAINING)": "buildYieldIconLinkVariable for a fixed yield (icon only)",
+    "yieldText": "buildYieldTextVariable -- plain \"N Yield\" text",
+    "yieldValueIconLink": "buildYieldValueIconLinkVariable -- yield icon + signed value link; \":rate\" suffix = bRate:true, \":percent\" suffix = bPercent:true; \"(CIVICS)\"/\"(TRAINING)\" = fixed yield"
+  },
+  "_meta": {
+    "crossReferenceRenders": [
+      "effectCity: \"Can build <units>\" -- unit.xml entries whose prereq references the effectCity (TEXT_HELPTEXT_CAN_BUILD_UNITS)",
+      "effectCity: \"Unlocks <project>\" -- project.xml meEffectCityPrereq reverse lookup (TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNLOCKS_PROJECT)",
+      "effectCity: \"Disabled improvements\" -- improvementClass.xml maeEffectCityDisabled reverse lookup (TEXT_HELPTEXT_EFFECT_CITY_HELP_DISABLED_IMPROVEMENTS)",
+      "effectCity: \"Unlocked by\" -- other effectCity.EffectCityUnlock reverse lookup (TEXT_HELPTEXT_UNLOCKED_BY)",
+      "effectCity: per-source yield counts -- other effectCity aaiEffectCityYieldRate/Modifier indexed by this effectCity (TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELDS_EFFECT_CITY_YIELD_COUNT)",
+      "effectPlayer: \"Unlocks <tech/project/improvement>\" -- tech.xml/project.xml meEffectPlayerPrereq, project meCapitalEffectPlayerPrereq, improvement meEffectPlayerPrereq reverse lookups (TEXT_HELPTEXT_EFFECT_PLAYER_HELP_UNLOCKS_EFFECT / _UNLOCKS_PROJECT / _UNLOCKS_PROJECT_CAPITAL / TEXT_HELPTEXT_TECH_UNLOCKS_IMPROVEMENT)",
+      "effectPlayer: \"Disabled laws\" -- law.xml maeEffectPlayerDisabled reverse lookup (TEXT_HELPTEXT_EFFECT_PLAYER_HELP_DISABLED_LAWS)",
+      "effectUnit: vegetation attack penalty -- vegetation.xml maiDefendEffectUnit indexed by this effectUnit (TEXT_HELPTEXT_EFFECT_UNIT_HELP_ATTACK_INTO with negated value)",
+      "effectUnit: \"Units\" list -- units carrying the effect (TEXT_HELPTEXT_EFFECTUNIT_UNITS)"
+    ],
+    "keyNaming": "registry keys are the C# InfoEffect*/InfoBonus member names (m-prefixed); xmlField is the tag the game actually reads from the Infos XML",
+    "sourceFiles": [
+      "reference/Source/Base/Game/GameCore/HelpText/HelpText.Effect.cs (buildEffectCityHelpYields / NoYields / YieldsPotential, buildEffectCityEffectCityHelp, buildEffectPlayerHelp)",
+      "reference/Source/Base/Game/GameCore/HelpText/HelpText.Unit.cs (buildEffectUnitHelp, lines 727-1852)",
+      "reference/Source/Base/Game/GameCore/HelpText/HelpText.Bonus.cs (buildBonusHelp, lines 1334-4293)",
+      "reference/Source/Base/Game/GameCore/InfoBase.cs (member -> XML tag mapping via infos.read*() calls)",
+      "reference/XML/Infos/text-*.xml (en-US templates)",
+      "reference/XML/Infos/{effectCity,effectPlayer,effectUnit,bonus}.xml (field-occurrence verification)"
+    ],
+    "templateMarkup": "templates kept verbatim from <en-US>, including {N_type} arg slots, {true_N:...}/{false} conditionals, <true_N>...<false>...<end> branch markup and |pipe| grammar alternates; CDATA wrappers stripped",
+    "unmappedFields": [
+      {
+        "field": "meMemoryAllFamilies / meMemory / mbTeamAlliance / mbTribeAlliance / mbTribeInvade / meAddLeaderRelationship / miDivorcedBySubject / mlpAddRelationship*",
+        "reason": "rendered, but the exact TEXT key sits in code regions outside the audited grep windows or is composed from runtime context; textKey left null or set to the dominant variant -- see notes on each entry",
+        "section": "bonus"
+      },
+      {
+        "field": "buildBonusHelpRolePlaying (HelpText.Bonus.cs:15) and buildBonusDetailHelp (:957)",
+        "reason": "condensed event-option renderers reusing the same fields with abbreviated keys; not separately enumerated",
+        "section": "bonus"
+      },
+      {
+        "field": "maiOtherYieldsBase/maiOtherYieldsPer/maiYieldsSendBase/maiYieldsSendPerUs/maiYieldsTribute*",
+        "reason": "occur in bonus.xml but are rendered by trade/tribute mission helpers, not by buildBonusHelp itself",
+        "section": "bonus"
+      },
+      {
+        "field": "meAchievement*/meGoal*/meOccurrence*/meMission/mlpFreeImprovementBuilders/maeMapScriptTileBonuses/meAmbition*/miOccurrenceTargetSubject/bCouncilCheck/bIgnoreDelayTurns/bOccurrence*/bAnnounceStatBonus",
+        "reason": "not rendered in buildBonusHelp main path (achievement/goal/occurrence/AI/scenario plumbing or render handled elsewhere)",
+        "section": "bonus"
+      },
+      {
+        "field": "meSource* family (SourceReligion, SourceImprovement, SourceLaw, ...)",
+        "reason": "drive buildEffectCitySourceLinkVariable (attribution label), not effect lines; intentionally not registry entries",
+        "section": "effectCity"
+      },
+      {
+        "field": "maeEffectUnitInvalid/mabUnitTraitValid/mabUnitTraitInvalid/miEnlistHealPercent/mbMultiTeams/mbSkipIcon/miClassNum/maSelfApplyEffectUnitYieldCost",
+        "reason": "validity/eligibility plumbing or rendered only as modifiers inside other lines (e.g. unit-trait validity selects the {1} slot of NEW_UNITS_WITH; iClassNum renders as roman numeral in the class link)",
+        "section": "effectUnit"
+      }
+    ],
+    "valueScaleConvention": "valueScale 0.1 == C# passes iMultiplier: Constants.YIELDS_MULTIPLIER to buildYieldValueIconLinkVariable (XML stores 10x display value); valueScale 1 == XML value shown as-is",
+    "yieldsMultiplier": 10,
+    "yieldsMultiplierSource": "reference/Source/Base/Game/GameCore/Constants.cs:47 -- public const int YIELDS_MULTIPLIER = 10"
+  },
+  "bonus": {
+    "mName": {
+      "args": [
+        "raw"
+      ],
+      "notes": "Name TEXT_* shown via TEXT_HELPTEXT_ENTRY_COLON_SPACE prefix; with bOverrideDescription it replaces the whole help",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "Name"
+    },
+    "maaiCultureYield": {
+      "args": [
+        "list(yieldValueIconLink)"
+      ],
+      "notes": "yields at current city culture level, values as-is; without city, per-level breakdown colonSpace(cultureLink, yield)",
+      "perEntry": "culture,yield",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aaiCultureYield"
+    },
+    "maeAddCharacter": {
+      "args": [
+        "characterPresetLink",
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "character",
+      "template": "{0_character} joins {1_nation}",
+      "textKey": "TEXT_HELPTEXT_BONUS_ADD_CHARACTER",
+      "valueScale": 1,
+      "xmlField": "AddCharacter"
+    },
+    "maeAddCourtier": {
+      "args": [
+        "courtierLink"
+      ],
+      "notes": "",
+      "perEntry": "courtier",
+      "template": "New Courtier: {0_courtier}",
+      "textKey": "TEXT_HELPTEXT_BONUS_JOIN_COURTIER_GENDER",
+      "valueScale": 1,
+      "xmlField": "AddCourtier"
+    },
+    "maeAddCourtierOther": {
+      "args": [
+        "playerLink",
+        "courtierLink"
+      ],
+      "notes": "falls back to ..._JOIN_COURTIER_GENDER without other player",
+      "perEntry": "courtier",
+      "template": "New Courtier: {0,1_player} {1_courtier}",
+      "textKey": "TEXT_HELPTEXT_BONUS_JOIN_COURTIER_OTHER",
+      "valueScale": 1,
+      "xmlField": "AddCourtierOther"
+    },
+    "maeAddProjects": {
+      "args": [
+        "projectLink"
+      ],
+      "notes": "",
+      "perEntry": "project",
+      "template": "Gain {0_projectOrSpecialist}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_BUILD",
+      "valueScale": 1,
+      "xmlField": "aeAddProjects"
+    },
+    "maeAddSpecialistClasses": {
+      "args": [
+        "specialistClassLink"
+      ],
+      "notes": "",
+      "perEntry": "specialistClass",
+      "template": "Gain {0_projectOrSpecialist}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_BUILD",
+      "valueScale": 1,
+      "xmlField": "aeAddSpecialistClasses"
+    },
+    "maeAddTraitReligion": {
+      "args": [
+        "traitLink"
+      ],
+      "notes": "trait granted only when character has the religion",
+      "perEntry": "religion",
+      "template": "Becomes {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS",
+      "valueScale": 1,
+      "xmlField": "AddTraitReligion"
+    },
+    "maeAddTraits": {
+      "args": [
+        "traitLink"
+      ],
+      "notes": "item traits use TEXT_GAME_DO_BONUS_GAINS_ITEM; replacement renders TEXT_GAME_DO_BONUS_REPLACES / LOSES for displaced trait",
+      "perEntry": "trait",
+      "template": "Becomes {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS",
+      "valueScale": 1,
+      "xmlField": "aeAddTraits"
+    },
+    "maeAllCityBonuses": {
+      "args": [],
+      "notes": "",
+      "perEntry": "bonus",
+      "template": "[All Cities]",
+      "textKey": "TEXT_HELPTEXT_BONUS_MEMORY_ALL_CITIES_STARTLINE",
+      "valueScale": 1,
+      "xmlField": "aeAllCityBonuses"
+    },
+    "maeBonuses": {
+      "args": [
+        "nestedBonusHelp"
+      ],
+      "notes": "recursive sub-bonuses rendered inline",
+      "perEntry": "bonus",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aeBonuses"
+    },
+    "maeCultureProject": {
+      "args": [
+        "projectLink"
+      ],
+      "notes": "indexed by city culture level; without city context lists every culture level via colonSpace(cultureLink, projectLink)",
+      "perEntry": "culture",
+      "template": "Gain {0_projectOrSpecialist}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_BUILD",
+      "valueScale": 1,
+      "xmlField": "aeCultureProject"
+    },
+    "maeEffectUnits": {
+      "args": [
+        "effectUnitLink"
+      ],
+      "notes": "grants effectUnits to the subject unit (rendered as effectUnit links / nested help)",
+      "perEntry": "effectUnit",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aeEffectUnits"
+    },
+    "maeFamilyBonuses": {
+      "args": [
+        "familyLink"
+      ],
+      "notes": "startline prefix; nested bonus help follows",
+      "perEntry": "bonus",
+      "template": "[{0_family} Cities]",
+      "textKey": "TEXT_HELPTEXT_BONUS_MEMORY_ALL_FAMILY_CITIES_STARTLINE",
+      "valueScale": 1,
+      "xmlField": "aeFamilyBonuses"
+    },
+    "maeForceResources": {
+      "args": [
+        "list(resourceLink)"
+      ],
+      "notes": "",
+      "perEntry": "resource",
+      "template": "Add {0_improvementOrResource}",
+      "textKey": "TEXT_GAME_DO_BONUS_ADD_X",
+      "valueScale": 1,
+      "xmlField": "aeForceResources"
+    },
+    "maeImportResources": {
+      "args": [
+        "number",
+        "resourceLink"
+      ],
+      "notes": "count omitted when 1",
+      "perEntry": "resource",
+      "template": "Add {0_improvementOrResource}",
+      "textKey": "TEXT_GAME_DO_BONUS_ADD_X",
+      "valueScale": 1,
+      "xmlField": "aeImportResources"
+    },
+    "maeRandomLeaderRelationship": {
+      "args": [
+        "list(relationshipLink)"
+      ],
+      "notes": "COMMA_OR scope",
+      "perEntry": "relationship",
+      "template": "Becomes {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS",
+      "valueScale": 1,
+      "xmlField": "aeRandomLeaderRelationship"
+    },
+    "maeRandomLeaderRelationshipDelay": {
+      "args": [
+        "list(relationshipLink)",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "relationship",
+      "template": "becomes {LIST} (Next {0_turn})",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS_DELAY",
+      "valueScale": 1,
+      "xmlField": "aeRandomLeaderRelationshipDelay"
+    },
+    "maeRandomTrait": {
+      "args": [
+        "list(traitLink)"
+      ],
+      "notes": "COMMA_OR; probabilistic variants: TEXT_GAME_DO_BONUS_GAINS_PROB_WITH(OUT)_DELAY[_FALLBACK], list variants TEXT_GAME_DO_BONUS_LIST_WITH(OUT)_DELAY, GAINS_WITH/WITHOUT_DELAY, GAINS_ITEMS_*",
+      "perEntry": "trait",
+      "template": "Becomes {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS",
+      "valueScale": 1,
+      "xmlField": "aeRandomTrait"
+    },
+    "maeRandomTraitDelay": {
+      "args": [
+        "list(traitLink)",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "trait",
+      "template": "Becomes {LIST} (Next {0_turn})",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS_WITH_DELAY",
+      "valueScale": 1,
+      "xmlField": "aeRandomTraitDelay"
+    },
+    "maeReligionBonuses": {
+      "args": [
+        "religionLink"
+      ],
+      "notes": "",
+      "perEntry": "bonus",
+      "template": "[{0,1_religion} Cities ({1_count})]",
+      "textKey": "TEXT_HELPTEXT_BONUS_MEMORY_ALL_RELIGION_CITIES_STARTLINE",
+      "valueScale": 1,
+      "xmlField": "aeReligionBonuses"
+    },
+    "maeRemoveProjects": {
+      "args": [
+        "projectLink"
+      ],
+      "notes": "",
+      "perEntry": "project",
+      "template": "Remove {0_project}",
+      "textKey": "TEXT_HELPTEXT_BONUS_REMOVE_PROJECT",
+      "valueScale": 1,
+      "xmlField": "aeRemoveProjects"
+    },
+    "maeRemoveTraitReligion": {
+      "args": [
+        "traitLink"
+      ],
+      "notes": "",
+      "perEntry": "religion",
+      "template": "No longer {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_LOSES",
+      "valueScale": 1,
+      "xmlField": "RemoveTraitReligion"
+    },
+    "maeRemoveTraits": {
+      "args": [
+        "traitLink"
+      ],
+      "notes": "item traits use TEXT_GAME_DO_BONUS_LOSES_ITEM",
+      "perEntry": "trait",
+      "template": "No longer {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_LOSES",
+      "valueScale": 1,
+      "xmlField": "aeRemoveTraits"
+    },
+    "maeTechs": {
+      "args": [
+        "list(techLink)"
+      ],
+      "notes": "COMMA_AND scope surroundingText",
+      "perEntry": "tech",
+      "template": "Acquire {LIST}",
+      "textKey": "TEXT_HELPTEXT_BONUS_ACQUIRE_TECH",
+      "valueScale": 1,
+      "xmlField": "aeTechs"
+    },
+    "maiBonusUnits": {
+      "args": [
+        "unitTypeLink",
+        "number|false",
+        "cityLink|false"
+      ],
+      "notes": "bonusUnitClass resolved to a concrete unit per player; mercenary variant as for aiUnits",
+      "perEntry": "bonusUnitClass",
+      "template": "Gain {0_unit}{true_1: (x{1_number})}{true_2: in {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_UNIT",
+      "valueScale": 1,
+      "xmlField": "aiBonusUnits"
+    },
+    "maiCityYields": {
+      "args": [
+        "list(yieldValueIconLink)"
+      ],
+      "notes": "city stockpile yields, values as-is (no /10); joined into the city AND-list, suffixed by TEXT_HELPTEXT_BONUS_IN_CITY when city shown",
+      "perEntry": "yield",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiCityYields"
+    },
+    "maiGlobalYields": {
+      "args": [
+        "list(yieldValueIconLink:rate)"
+      ],
+      "notes": "COMMA_AND list of stockpile yields, values as-is (no /10); warning color when stockpile would go negative; merged with aiGlobalYieldsBase/Per",
+      "perEntry": "yield",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiGlobalYields"
+    },
+    "maiGlobalYieldsBase": {
+      "args": [
+        "list(yieldValueIconLink:rate)"
+      ],
+      "notes": "base part of computed global yields: base + per*cities, then game-adjusted",
+      "perEntry": "yield",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiGlobalYieldsBase"
+    },
+    "maiGlobalYieldsPer": {
+      "args": [
+        "list(yieldValueIconLink:rate)"
+      ],
+      "notes": "per-city part of computed global yields",
+      "perEntry": "yield",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiGlobalYieldsPer"
+    },
+    "maiLawOpinion": {
+      "args": [
+        "familyLink",
+        "signed",
+        "lawLink"
+      ],
+      "notes": "",
+      "perEntry": "law",
+      "template": "{0_family}: {1_value} link(CONCEPT_OPINION_FAMILY,3) of {2_law}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FAMILY_LAW_OPINION",
+      "valueScale": 1,
+      "xmlField": "aiLawOpinion"
+    },
+    "maiRatings": {
+      "args": [
+        "signed"
+      ],
+      "notes": "rendered by buildBonusRatingsHelp (rating name + signed value lines)",
+      "perEntry": "rating",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiRatings"
+    },
+    "maiRebelUnits": {
+      "args": [
+        "signed",
+        "rebelTribeLink"
+      ],
+      "notes": "per bonus-unit-class rebel counts summed into the same line",
+      "perEntry": "bonusUnitClass",
+      "template": "{0_value} {1_rebel} {singular_0:Unit:Units}",
+      "textKey": "TEXT_GAME_DO_BONUS_REBEL_UNITS",
+      "valueScale": 1,
+      "xmlField": "aiRebelUnits"
+    },
+    "maiStats": {
+      "args": [
+        "statName",
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "stat",
+      "template": "{0}: {1}",
+      "textKey": "TEXT_HELPTEXT_ENTRY_COLON_SPACE_ONE",
+      "valueScale": 1,
+      "xmlField": "aiStats"
+    },
+    "maiTraitProb": {
+      "args": [
+        "value(prob)",
+        "traitLink",
+        "turnScale"
+      ],
+      "notes": "rendered by buildTraitProbHelp; fallback key ..._FALLBACK with rating text",
+      "perEntry": "trait",
+      "template": "{0_prob}% Chance to Become {1_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS_PROB_WITHOUT_DELAY",
+      "valueScale": 1,
+      "xmlField": "aiTraitProb"
+    },
+    "maiTraitProbDelay": {
+      "args": [
+        "value(prob)",
+        "traitLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "trait",
+      "template": "{0_prob}% Chance to Become {1_trait} (Next {2_turn})",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS_PROB_WITH_DELAY",
+      "valueScale": 1,
+      "xmlField": "aiTraitProbDelay"
+    },
+    "maiTribeUnits": {
+      "args": [
+        "tribeLink",
+        "unitTypeLink",
+        "number|false",
+        "tileLink|false"
+      ],
+      "notes": "",
+      "perEntry": "unit",
+      "template": "New {0,1_tribe} {1_unit}{true_2: (x{2_number})} on {3_tile}",
+      "textKey": "TEXT_HELPTEXT_BONUS_TRIBE_UNIT",
+      "valueScale": 1,
+      "xmlField": "aiTribeUnits"
+    },
+    "maiUnits": {
+      "args": [
+        "unitTypeLink",
+        "number|false",
+        "cityLink|false"
+      ],
+      "notes": "mbMercenaryUnit -> TEXT_HELPTEXT_BONUS_FREE_UNIT_MERCENARY",
+      "perEntry": "unit",
+      "template": "Gain {0_unit}{true_1: (x{1_number})}{true_2: in {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_UNIT",
+      "valueScale": 1,
+      "xmlField": "aiUnits"
+    },
+    "maiVegetationTerritory": {
+      "args": [
+        "value",
+        "vegetationLink",
+        "cityLink"
+      ],
+      "notes": "",
+      "perEntry": "vegetation",
+      "template": "{0_value} {1_vegetation} {singular_0:Tile:Tiles} near {2_city}",
+      "textKey": "TEXT_GAME_DO_BONUS_SET_VEGETATION_TERRITORY",
+      "valueScale": 1,
+      "xmlField": "aiVegetationTerritory"
+    },
+    "maiYieldLevels": {
+      "args": [
+        "signed",
+        "yieldLink"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_value} {1_yield} {singular_0:Level:Levels}",
+      "textKey": "TEXT_GAME_DO_BONUS_YIELD_LEVELS",
+      "valueScale": 1,
+      "xmlField": "aiYieldLevels"
+    },
+    "mbAbandonCity": {
+      "args": [
+        "cityLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_city} is abandoned",
+      "textKey": "TEXT_HELPTEXT_BONUS_ABANDON_CITY",
+      "valueScale": 1,
+      "xmlField": "bAbandonCity"
+    },
+    "mbAbdicate": {
+      "args": [
+        "characterLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Abdicate the Throne (New Leader: {true_0:{0_leader}:None})",
+      "textKey": "TEXT_HELPTEXT_BONUS_ABDICATE_THRONE",
+      "valueScale": 1,
+      "xmlField": "bAbdicate"
+    },
+    "mbAddAgentNetwork": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Add link(CONCEPT_AGENT_NETWORK)",
+      "textKey": "TEXT_GAME_DO_BONUS_ADD_AGENT_NETWORK",
+      "valueScale": 1,
+      "xmlField": "bAddAgentNetwork"
+    },
+    "mbAddAmbition": {
+      "args": [
+        "goalLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Starts link(CONCEPT_AMBITION) {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_AMBITION",
+      "valueScale": 1,
+      "xmlField": "bAddAmbition"
+    },
+    "mbAddAmbitionIgnoreEligible": {
+      "args": [
+        "goalLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Starts link(CONCEPT_AMBITION) {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_AMBITION",
+      "valueScale": 1,
+      "xmlField": "bAddAmbitionIgnoreEligible"
+    },
+    "mbAddCharacter": {
+      "args": [
+        "characterLink",
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_character} joins the link(CONCEPT_NATION) of {1_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CHARACTER_JOIN",
+      "valueScale": 1,
+      "xmlField": "bAddCharacter"
+    },
+    "mbAdoptReligion": {
+      "args": [
+        "religionLink",
+        "warning(yieldValueIconLink)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Adopt {0_religion} ({1_cost}) as link(CONCEPT_STATE_RELIGION)",
+      "textKey": "TEXT_HELPTEXT_BONUS_ADOPT_RELIGION",
+      "valueScale": 1,
+      "xmlField": "bAdoptReligion"
+    },
+    "mbCancelTrade": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cancel Trade with {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CANCEL_TRADE",
+      "valueScale": 1,
+      "xmlField": "bCancelTrade"
+    },
+    "mbCancelTribute": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cancel Tribute to {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CANCEL_TRIBUTE",
+      "valueScale": 1,
+      "xmlField": "bCancelTribute"
+    },
+    "mbCapitalCity": {
+      "args": [
+        "cityLink",
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_city} becomes link(CONCEPT_CAPITAL) of {1_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CAPITAL_CITY",
+      "valueScale": 1,
+      "xmlField": "bCapitalCity"
+    },
+    "mbChangeSuccession": {
+      "args": [
+        "lawLink"
+      ],
+      "notes": "renders best succession law as free law; generic TEXT_HELPTEXT_BONUS_CHANGE_SUCCESSION_GENERIC; player-level fallback TEXT_HELPTEXT_BONUS_CHANGE_SUCCESSION",
+      "perEntry": "none",
+      "template": "Free Law: {0_law}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_LAW",
+      "valueScale": 1,
+      "xmlField": "bChangeSuccession"
+    },
+    "mbChangeTheology": {
+      "args": [
+        "religionLink|false",
+        "theologyLink"
+      ],
+      "notes": "REPLACES_THEOLOGY wrapper when replacing",
+      "perEntry": "none",
+      "template": "Change link(CONCEPT_THEOLOGY){true_0: ({0_religion})}: {1_theology}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CHANGE_THEOLOGY",
+      "valueScale": 1,
+      "xmlField": "bChangeTheology"
+    },
+    "mbChosenHeir": {
+      "args": [
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Is Chosen Heir",
+      "textKey": "TEXT_GAME_DO_BONUS_CHOSEN_HEIR",
+      "valueScale": 1,
+      "xmlField": "bChosenHeir"
+    },
+    "mbClearImprovement": {
+      "args": [
+        "improvementLink",
+        "tileLink"
+      ],
+      "notes": "no tile -> TEXT_HELPTEXT_BONUS_CLEAR_ANY_IMPROVEMENT",
+      "perEntry": "none",
+      "template": "Clear {0_improvement} from {1_tile}",
+      "textKey": "TEXT_GAME_DO_BONUS_CLEAR_IMPROVEMENT",
+      "valueScale": 1,
+      "xmlField": "bClearImprovement"
+    },
+    "mbClearResource": {
+      "args": [
+        "resourceLink",
+        "tileLink"
+      ],
+      "notes": "no tile -> TEXT_HELPTEXT_BONUS_CLEAR_ANY_RESOURCE",
+      "perEntry": "none",
+      "template": "Clear {0_resource} from {1_tile}",
+      "textKey": "TEXT_GAME_DO_BONUS_CLEAR_RESOURCE",
+      "valueScale": 1,
+      "xmlField": "bClearResource"
+    },
+    "mbConvertStateReligion": {
+      "args": [
+        "religionLink"
+      ],
+      "notes": "no concrete religion -> TEXT_HELPTEXT_BONUS_CONVERT_STATE_RELIGION",
+      "perEntry": "none",
+      "template": "Converts to {0_religion}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CONVERT_RELIGION",
+      "valueScale": 1,
+      "xmlField": "bConvertStateReligion"
+    },
+    "mbDistantRaid": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Distant link(CONCEPT_TRIBE_RAID)",
+      "textKey": "TEXT_GAME_DO_BONUS_DISTANT_RAID",
+      "valueScale": 1,
+      "xmlField": "bDistantRaid"
+    },
+    "mbEndLaw": {
+      "args": [
+        "lawLink"
+      ],
+      "notes": "law from event subject",
+      "perEntry": "none",
+      "template": "End Law: {0_law}",
+      "textKey": "TEXT_HELPTEXT_BONUS_END_LAW",
+      "valueScale": 1,
+      "xmlField": "bEndLaw"
+    },
+    "mbExposeAgentNetwork": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Expose Foreign link(CONCEPT_AGENT_NETWORK)",
+      "textKey": "TEXT_GAME_DO_BONUS_EXPOSE_AGENT_NETWORK",
+      "valueScale": 1,
+      "xmlField": "bExposeAgentNetwork"
+    },
+    "mbFoundReligion": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Found a link(CONCEPT_WORLD_RELIGION)",
+      "textKey": "TEXT_HELPTEXT_BONUS_FOUND_RELIGION",
+      "valueScale": 1,
+      "xmlField": "bFoundReligion"
+    },
+    "mbFoundReligionCity": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Found a link(CONCEPT_WORLD_RELIGION)",
+      "textKey": "TEXT_HELPTEXT_BONUS_FOUND_RELIGION",
+      "valueScale": 1,
+      "xmlField": "bFoundReligionCity"
+    },
+    "mbFreeLaw": {
+      "args": [
+        "lawLink"
+      ],
+      "notes": "law from event subject; REPLACES_LAW wrapper when replacing",
+      "perEntry": "none",
+      "template": "Free Law: {0_law}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_LAW",
+      "valueScale": 1,
+      "xmlField": "bFreeLaw"
+    },
+    "mbFreeTheology": {
+      "args": [
+        "religionLink|false",
+        "theologyLink"
+      ],
+      "notes": "theology from event subject",
+      "perEntry": "none",
+      "template": "Free link(CONCEPT_THEOLOGY){true_0: ({0_religion})}: {1_theology}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_THEOLOGY",
+      "valueScale": 1,
+      "xmlField": "bFreeTheology"
+    },
+    "mbHaveBastard": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Has an Illegitimate Child",
+      "textKey": "TEXT_GAME_DO_BONUS_HAS_ILLEGITIMATE_CHILD",
+      "valueScale": 1,
+      "xmlField": "bHaveBastard"
+    },
+    "mbHolyCityAgents": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Free link(CONCEPT_AGENT_NETWORK) in all Holy Cities",
+      "textKey": "TEXT_HELPTEXT_BONUS_HOLY_CITY_AGENTS",
+      "valueScale": 1,
+      "xmlField": "bHolyCityAgents"
+    },
+    "mbKillCharacter": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Dies",
+      "textKey": "TEXT_GAME_DO_BONUS_KILL_CHARACTER",
+      "valueScale": 1,
+      "xmlField": "bKillCharacter"
+    },
+    "mbKillCharacterSafe": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Dies",
+      "textKey": "TEXT_GAME_DO_BONUS_KILL_CHARACTER",
+      "valueScale": 1,
+      "xmlField": "bKillCharacterSafe"
+    },
+    "mbKillUnit": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Dies",
+      "textKey": "TEXT_GAME_DO_BONUS_KILL_UNIT",
+      "valueScale": 1,
+      "xmlField": "bKillUnit"
+    },
+    "mbLeaveCouncil": {
+      "args": [
+        "councilLink"
+      ],
+      "notes": "generic variant TEXT_HELPTEXT_BONUS_LEAVE_COUNCIL_GENERIC",
+      "perEntry": "none",
+      "template": "Resign as {0_council}",
+      "textKey": "TEXT_HELPTEXT_BONUS_LEAVE_COUNCIL",
+      "valueScale": 1,
+      "xmlField": "bLeaveCouncil"
+    },
+    "mbLoseAgentNetwork": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Lose link(CONCEPT_AGENT_NETWORK)",
+      "textKey": "TEXT_GAME_DO_BONUS_LOSE_AGENT_NETWORK",
+      "valueScale": 1,
+      "xmlField": "bLoseAgentNetwork"
+    },
+    "mbMakeRoyal": {
+      "args": [
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Becomes link(CONCEPT_ROYAL)",
+      "textKey": "TEXT_GAME_DO_BONUS_MAKE_ROYAL",
+      "valueScale": 1,
+      "xmlField": "bMakeRoyal"
+    },
+    "mbMercenaryUnit": {
+      "args": [
+        "bool"
+      ],
+      "notes": "flag only: switches FREE_UNIT lines to TEXT_HELPTEXT_BONUS_FREE_UNIT_MERCENARY",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "bMercenaryUnit"
+    },
+    "mbNoCourtier": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Leaves Court",
+      "textKey": "TEXT_HELPTEXT_BONUS_NO_COURTIER",
+      "valueScale": 1,
+      "xmlField": "bNoCourtier"
+    },
+    "mbOverrideDescription": {
+      "args": [
+        "bool"
+      ],
+      "notes": "flag: render only Name, skip detail lines",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "bOverrideDescription"
+    },
+    "mbPeaceOffer": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Trigger link(DIPLOMACY_PEACE) Offer from {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_PEACE_OFFER",
+      "valueScale": 1,
+      "xmlField": "bPeaceOffer"
+    },
+    "mbPillageAdjacent": {
+      "args": [
+        "improvementLink",
+        "tileLink"
+      ],
+      "notes": "applied to each adjacent improved tile",
+      "perEntry": "none",
+      "template": "Pillage {0_improvement} on {1_tile}",
+      "textKey": "TEXT_GAME_DO_BONUS_PILLAGE_IMPROVEMENT",
+      "valueScale": 1,
+      "xmlField": "bPillageAdjacent"
+    },
+    "mbPillageImprovement": {
+      "args": [
+        "improvementLink",
+        "tileLink"
+      ],
+      "notes": "no tile -> TEXT_HELPTEXT_BONUS_PILLAGE_ANY_IMPROVEMENT",
+      "perEntry": "none",
+      "template": "Pillage {0_improvement} on {1_tile}",
+      "textKey": "TEXT_GAME_DO_BONUS_PILLAGE_IMPROVEMENT",
+      "valueScale": 1,
+      "xmlField": "bPillageImprovement"
+    },
+    "mbRandomCourtier": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Acquire New Courtier",
+      "textKey": "TEXT_HELPTEXT_BONUS_RANDOM_COURTIER",
+      "valueScale": 1,
+      "xmlField": "bRandomCourtier"
+    },
+    "mbRandomTech": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Acquire random Technology",
+      "textKey": "TEXT_HELPTEXT_BONUS_RANDOM_TECH",
+      "valueScale": 1,
+      "xmlField": "bRandomTech"
+    },
+    "mbRazeCity": {
+      "args": [
+        "cityLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_city} is razed",
+      "textKey": "TEXT_HELPTEXT_BONUS_RAZE_CITY",
+      "valueScale": 1,
+      "xmlField": "bRazeCity"
+    },
+    "mbReleaseAgent": {
+      "args": [
+        "cityLink"
+      ],
+      "notes": "generic variant ..._GENERIC",
+      "perEntry": "none",
+      "template": "Leave role of link(CONCEPT_AGENT) in {0_city}",
+      "textKey": "TEXT_HELPTEXT_BONUS_RELEASE_AGENT",
+      "valueScale": 1,
+      "xmlField": "bReleaseAgent"
+    },
+    "mbReleaseExplorer": {
+      "args": [
+        "unitLink"
+      ],
+      "notes": "generic variant ..._GENERIC",
+      "perEntry": "none",
+      "template": "Leave {0_unit}",
+      "textKey": "TEXT_HELPTEXT_BONUS_RELEASE_EXPLORER",
+      "valueScale": 1,
+      "xmlField": "bReleaseExplorer"
+    },
+    "mbReleaseGeneral": {
+      "args": [
+        "unitLink"
+      ],
+      "notes": "generic variant ..._GENERIC",
+      "perEntry": "none",
+      "template": "Leave {0_unit}",
+      "textKey": "TEXT_HELPTEXT_BONUS_RELEASE_GENERAL",
+      "valueScale": 1,
+      "xmlField": "bReleaseGeneral"
+    },
+    "mbReleaseGovernor": {
+      "args": [
+        "cityLink"
+      ],
+      "notes": "generic variant ..._GENERIC",
+      "perEntry": "none",
+      "template": "Leave Governorship of {0_city}",
+      "textKey": "TEXT_HELPTEXT_BONUS_RELEASE_GOVERNOR",
+      "valueScale": 1,
+      "xmlField": "bReleaseGovernor"
+    },
+    "mbRemoveReligion": {
+      "args": [
+        "religionLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "No longer follows {0_religion}",
+      "textKey": "TEXT_HELPTEXT_BONUS_LEAVE_RELIGION",
+      "valueScale": 1,
+      "xmlField": "bRemoveReligion"
+    },
+    "mbRemoveVegetation": {
+      "args": [
+        "vegetationLink",
+        "tileLink"
+      ],
+      "notes": "no tile context -> TEXT_HELPTEXT_BONUS_REMOVE_ANY_VEGETATION",
+      "perEntry": "none",
+      "template": "Remove {0_vegetation} from {1_tile}",
+      "textKey": "TEXT_GAME_DO_BONUS_REMOVE_VEGETATION",
+      "valueScale": 1,
+      "xmlField": "bRemoveVegetation"
+    },
+    "mbRepairImprovement": {
+      "args": [
+        "improvementLink",
+        "tileLink"
+      ],
+      "notes": "no tile -> TEXT_HELPTEXT_BONUS_REPAIR_ANY_IMPROVEMENT",
+      "perEntry": "none",
+      "template": "Repair {0_improvement} on {1_tile}",
+      "textKey": "TEXT_GAME_DO_BONUS_REPAIR_IMPROVEMENT",
+      "valueScale": 1,
+      "xmlField": "bRepairImprovement"
+    },
+    "mbRevealTerritory": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Reveal Territory of {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_REVEAL_TERRITORY",
+      "valueScale": 1,
+      "xmlField": "bRevealTerritory"
+    },
+    "mbSetFamilySupremacy": {
+      "args": [
+        "effectPlayerLink",
+        "effectPlayerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Start {0_effectPlayer} (Replaces {1_effectPlayer})",
+      "textKey": "TEXT_GAME_DO_BONUS_FAMILY_SUPREMACY",
+      "valueScale": 1,
+      "xmlField": "bSetFamilySupremacy"
+    },
+    "mbStateReligion": {
+      "args": [
+        "religionLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Adopt {0_religion} as link(CONCEPT_STATE_RELIGION)",
+      "textKey": "TEXT_HELPTEXT_BONUS_STATE_RELIGION",
+      "valueScale": 1,
+      "xmlField": "bStateReligion"
+    },
+    "mbStateReligionEnd": {
+      "args": [
+        "religionLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "End link(CONCEPT_STATE_RELIGION){true_0: ({0_religion})}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STATE_RELIGION_END",
+      "valueScale": 1,
+      "xmlField": "bStateReligionEnd"
+    },
+    "mbTeamAlliance": {
+      "args": [
+        "allianceTeamLink"
+      ],
+      "notes": "alliance start line (key composed near line 1598)",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "bTeamAlliance"
+    },
+    "mbTeamAllianceEnd": {
+      "args": [
+        "teamLink",
+        "allianceTeamLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_subject}: End {1_alliance}",
+      "textKey": "TEXT_HELPTEXT_BONUS_END_ALLIANCE",
+      "valueScale": 1,
+      "xmlField": "bTeamAllianceEnd"
+    },
+    "mbTribeAlliance": {
+      "args": [
+        "allianceTribeLink"
+      ],
+      "notes": "alliance start line, ~line 1965",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "bTribeAlliance"
+    },
+    "mbTribeAllianceEnd": {
+      "args": [
+        "tribeLink",
+        "allianceTribeLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_subject}: End {1_alliance}",
+      "textKey": "TEXT_HELPTEXT_BONUS_END_ALLIANCE",
+      "valueScale": 1,
+      "xmlField": "bTribeAllianceEnd"
+    },
+    "mbTribeInvade": {
+      "args": [
+        "tribeLink"
+      ],
+      "notes": "invasion line, key near HelpText.Bonus.cs:1973 (not captured in audit window)",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "bTribeInvade"
+    },
+    "mbTribeRaid": {
+      "args": [
+        "tribeLink",
+        "improvementLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_TRIBE_RAID) from {0,1_tribe} {1_improvement} from {2_tile}",
+      "textKey": "TEXT_GAME_DO_BONUS_TRIBE_RAID",
+      "valueScale": 1,
+      "xmlField": "bTribeRaid"
+    },
+    "mbTruceOffer": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Trigger link(DIPLOMACY_TRUCE) Offer from {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_TRUCE_OFFER",
+      "valueScale": 1,
+      "xmlField": "bTruceOffer"
+    },
+    "meAddImprovement": {
+      "args": [
+        "improvementLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Add {0_improvementOrResource}",
+      "textKey": "TEXT_GAME_DO_BONUS_ADD_X",
+      "valueScale": 1,
+      "xmlField": "AddImprovement"
+    },
+    "meAddImprovementClass": {
+      "args": [
+        "improvementClassLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Add Random {0_improvementOrResource}",
+      "textKey": "TEXT_GAME_DO_BONUS_ADD_RANDOM_X",
+      "valueScale": 1,
+      "xmlField": "AddImprovementClass"
+    },
+    "meAddLeaderRelationship": {
+      "args": [
+        "relationshipLink"
+      ],
+      "notes": "relationship-add line (key near HelpText.Bonus.cs:2948, gains/relationship template)",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "AddLeaderRelationship"
+    },
+    "meAddResource": {
+      "args": [
+        "resourceLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Add {0_improvementOrResource}",
+      "textKey": "TEXT_GAME_DO_BONUS_ADD_X",
+      "valueScale": 1,
+      "xmlField": "AddResource"
+    },
+    "meCharacterName": {
+      "args": [
+        "nameText"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Renamed {0_name}",
+      "textKey": "TEXT_GAME_DO_BONUS_RENAME",
+      "valueScale": 1,
+      "xmlField": "CharacterName"
+    },
+    "meCityName": {
+      "args": [
+        "nameText"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Renamed {0_name}",
+      "textKey": "TEXT_GAME_DO_BONUS_RENAME",
+      "valueScale": 1,
+      "xmlField": "CityName"
+    },
+    "meCouncil": {
+      "args": [
+        "councilLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Make Council ({0_council})",
+      "textKey": "TEXT_HELPTEXT_BONUS_MAKE_COUNCIL",
+      "valueScale": 1,
+      "xmlField": "Council"
+    },
+    "meDiplomacyAllPlayers": {
+      "args": [
+        "diplomacyLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[All Nations] {0_diplomacy}",
+      "textKey": "TEXT_HELPTEXT_BONUS_DIPLOMACY_ALL_PLAYERS",
+      "valueScale": 1,
+      "xmlField": "DiplomacyAllPlayers"
+    },
+    "meDiplomacyPlayerFrom": {
+      "args": [
+        "teamLink",
+        "diplomacyLink"
+      ],
+      "notes": "hostile/at-war variants chosen by diplomacy type",
+      "perEntry": "none",
+      "template": "Declare {1_war} on {0_subject}",
+      "textKey": "TEXT_HELPTEXT_BONUS_DIPLOMACY_HOSTILE_FROM",
+      "valueScale": 1,
+      "xmlField": "DiplomacyPlayerFrom"
+    },
+    "meDiplomacyPlayerTo": {
+      "args": [
+        "teamLink",
+        "diplomacyLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_subject} declares {1_war}",
+      "textKey": "TEXT_HELPTEXT_BONUS_DIPLOMACY_HOSTILE_TO",
+      "valueScale": 1,
+      "xmlField": "DiplomacyPlayerTo"
+    },
+    "meDiplomacyTribe": {
+      "args": [
+        "tribeLink",
+        "diplomacyLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "The {0_subject} declare {1_war}",
+      "textKey": "TEXT_HELPTEXT_BONUS_TRIBE_DIPLOMACY_HOSTILE_TO",
+      "valueScale": 1,
+      "xmlField": "DiplomacyTribe"
+    },
+    "meEndLaw": {
+      "args": [
+        "lawLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "End Law: {0_law}",
+      "textKey": "TEXT_HELPTEXT_BONUS_END_LAW",
+      "valueScale": 1,
+      "xmlField": "EndLaw"
+    },
+    "meForget": {
+      "args": [
+        "subjectLink",
+        "memoryText",
+        "signed"
+      ],
+      "notes": "character context uses TEXT_GAME_DO_BONUS_FORGET_CHARACTER",
+      "perEntry": "none",
+      "template": "{0_subject}: Forgets {1_memory} (Currently {2_value} Opinion)",
+      "textKey": "TEXT_GAME_DO_BONUS_FORGET_SUBJECT",
+      "valueScale": 1,
+      "xmlField": "Forget"
+    },
+    "meFoundReligion": {
+      "args": [
+        "religionLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Found {0_religion}",
+      "textKey": "TEXT_GAME_DO_BONUS_FOUND_RELIGION_CITY",
+      "valueScale": 1,
+      "xmlField": "FoundReligion"
+    },
+    "meFreeLaw": {
+      "args": [
+        "lawLink"
+      ],
+      "notes": "wrapped in TEXT_HELPTEXT_BONUS_REPLACES_LAW when replacing",
+      "perEntry": "none",
+      "template": "Free Law: {0_law}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_LAW",
+      "valueScale": 1,
+      "xmlField": "FreeLaw"
+    },
+    "meFreeTheology": {
+      "args": [
+        "religionLink|false",
+        "theologyLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Free link(CONCEPT_THEOLOGY){true_0: ({0_religion})}: {1_theology}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_THEOLOGY",
+      "valueScale": 1,
+      "xmlField": "FreeTheology"
+    },
+    "meMakeCourtier": {
+      "args": [
+        "courtierLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Make Courtier ({0_courtier})",
+      "textKey": "TEXT_HELPTEXT_BONUS_MAKE_COURTIER",
+      "valueScale": 1,
+      "xmlField": "MakeCourtier"
+    },
+    "meMemory": {
+      "args": [
+        "memoryText",
+        "signed"
+      ],
+      "notes": "opinion memory line, context-dependent (tribe/religion/family/character startline + TEXT_HELPTEXT_ENTRY_COLON_SPACE)",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "Memory"
+    },
+    "meMemoryAllFamilies": {
+      "args": [
+        "memoryText"
+      ],
+      "notes": "per-family memory startline (TEXT key composed at runtime, see ~line 1493 HelpText.Bonus.cs)",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "MemoryAllFamilies"
+    },
+    "meMemoryAllPlayers": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "memory opinion line per player",
+      "perEntry": "none",
+      "template": "[All Nations]",
+      "textKey": "TEXT_HELPTEXT_BONUS_MEMORY_ALL_PLAYERS_START",
+      "valueScale": 1,
+      "xmlField": "MemoryAllPlayers"
+    },
+    "meMemoryAllTribes": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[All Tribes]",
+      "textKey": "TEXT_HELPTEXT_BONUS_MEMORY_ALL_TRIBES_START",
+      "valueScale": 1,
+      "xmlField": "MemoryAllTribes"
+    },
+    "meRemoveLeaderRelationship": {
+      "args": [
+        "relationshipLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "No longer {0_relationshipCharacter}",
+      "textKey": "TEXT_GAME_DO_BONUS_RELATIONSHIP_REMOVE",
+      "valueScale": 1,
+      "xmlField": "RemoveLeaderRelationship"
+    },
+    "meSetArchetype": {
+      "args": [
+        "traitLink"
+      ],
+      "notes": "replaced archetype rendered with TEXT_GAME_DO_BONUS_LOSES",
+      "perEntry": "none",
+      "template": "Becomes {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS",
+      "valueScale": 1,
+      "xmlField": "SetArchetype"
+    },
+    "meSetCognomen": {
+      "args": [
+        "cognomenLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Now known as {0_cognomen}",
+      "textKey": "TEXT_GAME_DO_BONUS_CHARACTER_COGNOMEN_CHANGE",
+      "valueScale": 1,
+      "xmlField": "SetCognomen"
+    },
+    "meSetCooldown": {
+      "args": [
+        "cooldown"
+      ],
+      "notes": "STUNNED_COOLDOWN -> TEXT_HELPTEXT_EFFECT_UNIT_HELP_STUN; IMMOBILE_COOLDOWN -> TEXT_HELPTEXT_EFFECT_UNIT_HELP_IMMOBILIZE",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "SetCooldown"
+    },
+    "meSetHeight": {
+      "args": [
+        "heightLink",
+        "tileLink",
+        "cityLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Set {0_height} on {1_tile}{true_2: near {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SET_HEIGHT",
+      "valueScale": 1,
+      "xmlField": "SetHeight"
+    },
+    "meSetImprovement": {
+      "args": [
+        "improvementLink",
+        "tileLink",
+        "cityLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Set {0_improvement} on {1_tile}{true_2: near {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SET_IMPROVEMENT",
+      "valueScale": 1,
+      "xmlField": "SetImprovement"
+    },
+    "meSetName": {
+      "args": [
+        "nameText"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Now known as {0_character}",
+      "textKey": "TEXT_GAME_DO_BONUS_CHARACTER_NAME_CHANGE",
+      "valueScale": 1,
+      "xmlField": "SetName"
+    },
+    "meSetNickname": {
+      "args": [
+        "nameText"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Now known as {0_nickname}",
+      "textKey": "TEXT_GAME_DO_BONUS_CHARACTER_NICKNAME_CHANGE",
+      "valueScale": 1,
+      "xmlField": "SetNickname"
+    },
+    "meSetResource": {
+      "args": [
+        "resourceLink",
+        "tileLink",
+        "cityLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Set {0_resource} on {1_tile}{true_2: near {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SET_RESOURCE",
+      "valueScale": 1,
+      "xmlField": "SetResource"
+    },
+    "meSetSpecialist": {
+      "args": [
+        "specialistLink",
+        "tileLink",
+        "cityLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Set {0_specialist} on {1_tile}{true_2: near {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SET_SPECIALIST",
+      "valueScale": 1,
+      "xmlField": "SetSpecialist"
+    },
+    "meSetTerrain": {
+      "args": [
+        "terrainLink",
+        "tileLink",
+        "cityLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Set {0_terrain} on {1_tile}{true_2: near {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SET_TERRAIN",
+      "valueScale": 1,
+      "xmlField": "SetTerrain"
+    },
+    "meSetTitle": {
+      "args": [
+        "nameText"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Granted the title of {0_title}",
+      "textKey": "TEXT_GAME_DO_BONUS_CHARACTER_TITLE_CHANGE",
+      "valueScale": 1,
+      "xmlField": "SetTitle"
+    },
+    "meSetVegetation": {
+      "args": [
+        "vegetationLink",
+        "tileLink",
+        "cityLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Set {0_vegetation} on {1_tile}{true_2: near {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SET_VEGETATION",
+      "valueScale": 1,
+      "xmlField": "SetVegetation"
+    },
+    "meStartLaw": {
+      "args": [
+        "yieldValueIconLink(CIVICS)",
+        "lawLink"
+      ],
+      "notes": "cost shown as negative civics; wrapped in TEXT_HELPTEXT_BONUS_REPLACES_LAW if it replaces an active law",
+      "perEntry": "none",
+      "template": "Start Law ({0_cost}): {1_law}",
+      "textKey": "TEXT_HELPTEXT_BONUS_START_LAW",
+      "valueScale": 1,
+      "xmlField": "StartLaw"
+    },
+    "meUnitName": {
+      "args": [
+        "nameText"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Renamed {0_name}",
+      "textKey": "TEXT_GAME_DO_BONUS_RENAME",
+      "valueScale": 1,
+      "xmlField": "UnitName"
+    },
+    "meVictory": {
+      "args": [
+        "victoryName"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_victory} Victory",
+      "textKey": "TEXT_HOF_VICTORY",
+      "valueScale": 1,
+      "xmlField": "Victory"
+    },
+    "miAcquireTechSubject": {
+      "args": [
+        "playerLink",
+        "techLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_player} acquires {1_tech}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SUBJECT_ACQUIRE_TECH",
+      "valueScale": 1,
+      "xmlField": "iAcquireTechSubject"
+    },
+    "miAddTechToDiscardSubject": {
+      "args": [
+        "techLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Add {0_tech} to the link(CONCEPT_DISCARD_PILE)",
+      "textKey": "TEXT_HELPTEXT_BONUS_ADD_TECH_TO_DISCARD",
+      "valueScale": 1,
+      "xmlField": "iAddTechToDiscardSubject"
+    },
+    "miAddTraitSubject": {
+      "args": [
+        "characterLink",
+        "traitLink"
+      ],
+      "notes": "via TEXT_HELPTEXT_CONCAT_SPACE_TWO character + gains",
+      "perEntry": "none",
+      "template": "Becomes {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_GAINS",
+      "valueScale": 1,
+      "xmlField": "iAddTraitSubject"
+    },
+    "miAdoptedBySubject": {
+      "args": [
+        "characterLink",
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Adopted by {0_parent}",
+      "textKey": "TEXT_GAME_DO_BONUS_ADOPTION",
+      "valueScale": 1,
+      "xmlField": "iAdoptedBySubject"
+    },
+    "miAgentCitySubject": {
+      "args": [
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_character} becomes link(CONCEPT_AGENT)",
+      "textKey": "TEXT_GAME_DO_BONUS_AGENT_CITY",
+      "valueScale": 1,
+      "xmlField": "iAgentCitySubject"
+    },
+    "miAllianceSubject": {
+      "args": [
+        "playerLink",
+        "playerLink|tribeLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_player} Alliance with {1_other}",
+      "textKey": "TEXT_HELPTEXT_BONUS_ALLIANCE_WITH",
+      "valueScale": 1,
+      "xmlField": "iAllianceSubject"
+    },
+    "miAmbitionFamilySubject": {
+      "args": [
+        "goalLink"
+      ],
+      "notes": "family-flavored ambition; completion memory via TEXT_HELPTEXT_GOAL_HELP_COMPLETION",
+      "perEntry": "none",
+      "template": "Starts link(CONCEPT_AMBITION) {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_AMBITION",
+      "valueScale": 1,
+      "xmlField": "iAmbitionFamilySubject"
+    },
+    "miAmbitionReligionSubject": {
+      "args": [
+        "goalLink"
+      ],
+      "notes": "religion-flavored ambition",
+      "perEntry": "none",
+      "template": "Starts link(CONCEPT_AMBITION) {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_AMBITION",
+      "valueScale": 1,
+      "xmlField": "iAmbitionReligionSubject"
+    },
+    "miAttackCitySubject": {
+      "args": [
+        "playerLink",
+        "cityLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_player} prepares to attack {1_city}",
+      "textKey": "TEXT_GAME_DO_BONUS_TARGET_CITY",
+      "valueScale": 1,
+      "xmlField": "iAttackCitySubject"
+    },
+    "miBirthWithSubject": {
+      "args": [
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Has Child with {0_parent}",
+      "textKey": "TEXT_GAME_DO_BONUS_BIRTH_WITH",
+      "valueScale": 1,
+      "xmlField": "iBirthWithSubject"
+    },
+    "miBorderGrowth": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Border {singular_0:Tile:Tiles}",
+      "textKey": "TEXT_GAME_DO_BONUS_BORDER_GROWTH",
+      "valueScale": 1,
+      "xmlField": "iBorderGrowth"
+    },
+    "miBuildTurns": {
+      "args": [
+        "bool(positive)",
+        "value(abs)",
+        "improvementLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{true_0:Increase:Decrease} build turns by {1_value} on {2_improvement}",
+      "textKey": "TEXT_GAME_DO_BONUS_CHANGE_BUILD_TURNS",
+      "valueScale": 1,
+      "xmlField": "iBuildTurns"
+    },
+    "miCitizens": {
+      "args": [
+        "signed",
+        "citizenLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {singular_0:{1_citizenLink}:{1,2_citizenLink}}",
+      "textKey": "TEXT_GAME_DO_BONUS_CITIZENS",
+      "valueScale": 1,
+      "xmlField": "iCitizens"
+    },
+    "miContactSubject": {
+      "args": [
+        "playerLink|tribeLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Make contact with {0_playerOrTribe}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CONTACT_WITH",
+      "valueScale": 1,
+      "xmlField": "iContactSubject"
+    },
+    "miConvertReligionSubject": {
+      "args": [
+        "characterLink",
+        "religionLink"
+      ],
+      "notes": "unit subject uses TEXT_GAME_DO_BONUS_UNIT_CONVERT_RELIGION",
+      "perEntry": "none",
+      "template": "{0_character} Converts {true_1:to {1_religion}:link(CONCEPT_RELIGION)}",
+      "textKey": "TEXT_GAME_DO_BONUS_CONVERT_RELIGION",
+      "valueScale": 1,
+      "xmlField": "iConvertReligionSubject"
+    },
+    "miConvertUnitSubject": {
+      "args": [
+        "unitLink",
+        "playerLink|tribeLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_unit} Converts to {1_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CONVERT_UNIT",
+      "valueScale": 1,
+      "xmlField": "iConvertUnitSubject"
+    },
+    "miConvertedBySubject": {
+      "args": [
+        "religionLink|text",
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Converts {true_0:to {0_religion}:link(CONCEPT_RELIGION)}",
+      "textKey": "TEXT_GAME_DO_BONUS_CONVERTED_BY",
+      "valueScale": 1,
+      "xmlField": "iConvertedBySubject"
+    },
+    "miCultureLevels": {
+      "args": [
+        "signed",
+        "cultureLevelLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {singular_0:{1_culture}:{1,2_culture}}",
+      "textKey": "TEXT_GAME_DO_BONUS_CULTURE_LEVELS",
+      "valueScale": 1,
+      "xmlField": "iCultureLevels"
+    },
+    "miDestroyImprovements": {
+      "args": [
+        "value"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {singular_0:Improvement:Improvements} Destroyed",
+      "textKey": "TEXT_GAME_DO_BONUS_IMPROVEMENTS_DESTROYED",
+      "valueScale": 1,
+      "xmlField": "iDestroyImprovements"
+    },
+    "miDivorcedBySubject": {
+      "args": [
+        "characterLink"
+      ],
+      "notes": "divorce line near HelpText.Bonus.cs:3321 (key outside audit window)",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iDivorcedBySubject"
+    },
+    "miEmergencyUnits": {
+      "args": [
+        "unitTypeLink",
+        "number|false",
+        "bool(false)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Gain {0_unit}{true_1: (x{1_number})}{true_2: in {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_UNIT",
+      "valueScale": 1,
+      "xmlField": "iEmergencyUnits"
+    },
+    "miExplorerOfSubject": {
+      "args": [
+        "unitLink",
+        "characterLink"
+      ],
+      "notes": "TEXT key not found in text-*.xml",
+      "perEntry": "none",
+      "template": null,
+      "textKey": "TEXT_HELPTEXT_BONUS_MAKE_EXPLORER",
+      "valueScale": 1,
+      "xmlField": "iExplorerOfSubject"
+    },
+    "miFatigueUnit": {
+      "args": [
+        "signed"
+      ],
+      "notes": "value negated for display",
+      "perEntry": "none",
+      "template": "{0_value} Moves",
+      "textKey": "TEXT_GAME_DO_BONUS_FATIGUE",
+      "valueScale": 1,
+      "xmlField": "iFatigueUnit"
+    },
+    "miGeneralOfSubject": {
+      "args": [
+        "unitLink",
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_GENERAL) of {0_unit}",
+      "textKey": "TEXT_HELPTEXT_BONUS_MAKE_GENERAL",
+      "valueScale": 1,
+      "xmlField": "iGeneralOfSubject"
+    },
+    "miGovernorOfSubject": {
+      "args": [
+        "cityLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_GOVERNOR) of {0_city}",
+      "textKey": "TEXT_HELPTEXT_BONUS_MAKE_GOVERNOR",
+      "valueScale": 1,
+      "xmlField": "iGovernorOfSubject"
+    },
+    "miHPCity": {
+      "args": [
+        "signed",
+        "value(final)|false"
+      ],
+      "notes": "with city context combines with iHPCityPercent into one computed value",
+      "perEntry": "none",
+      "template": "{0_damage} HP {true_1:(to {1_final} HP)}",
+      "textKey": "TEXT_GAME_DO_BONUS_HP",
+      "valueScale": 1,
+      "xmlField": "iHPCity"
+    },
+    "miHPCityPercent": {
+      "args": [
+        "signedPercent",
+        "bool(false)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_damage} HP {true_1:(to {1_final} HP)}",
+      "textKey": "TEXT_GAME_DO_BONUS_HP",
+      "valueScale": 1,
+      "xmlField": "iHPCityPercent"
+    },
+    "miHPUnit": {
+      "args": [
+        "signed",
+        "value(final)|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_damage} HP {true_1:(to {1_final} HP)}",
+      "textKey": "TEXT_GAME_DO_BONUS_HP",
+      "valueScale": 1,
+      "xmlField": "iHPUnit"
+    },
+    "miHPUnitAdjacent": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_damage} HP to adjacent units",
+      "textKey": "TEXT_GAME_DO_BONUS_HP_ADJACENT",
+      "valueScale": 1,
+      "xmlField": "iHPUnitAdjacent"
+    },
+    "miHappinessLevels": {
+      "args": [
+        "signed"
+      ],
+      "notes": "negative renders TEXT_GAME_DO_BONUS_DISCONTENT_LEVELS with negated value",
+      "perEntry": "none",
+      "template": "{0_value} link(YIELD_HAPPINESS) {singular_0:Level:Levels}",
+      "textKey": "TEXT_GAME_DO_BONUS_HAPPINESS_LEVELS",
+      "valueScale": 1,
+      "xmlField": "iHappinessLevels"
+    },
+    "miHeadFamilySubject": {
+      "args": [
+        "characterLink",
+        "familyLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_character} Becomes Head of {1_family}",
+      "textKey": "TEXT_GAME_DO_BONUS_HEAD_FAMILY",
+      "valueScale": 1,
+      "xmlField": "iHeadFamilySubject"
+    },
+    "miHeadReligionSubject": {
+      "args": [
+        "characterLink",
+        "religionLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_character} Becomes Head of {1_religion}",
+      "textKey": "TEXT_GAME_DO_BONUS_HEAD_RELIGION",
+      "valueScale": 1,
+      "xmlField": "iHeadReligionSubject"
+    },
+    "miJoinReverse": {
+      "args": [
+        "characterLink",
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_character} joins the link(CONCEPT_NATION) of {1_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_CHARACTER_JOIN",
+      "valueScale": 1,
+      "xmlField": "iJoinReverse"
+    },
+    "miJoinSubject": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "tribe subject uses TEXT_HELPTEXT_BONUS_JOIN_TRIBE",
+      "perEntry": "none",
+      "template": "Joins the link(CONCEPT_NATION) of {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_JOIN",
+      "valueScale": 1,
+      "xmlField": "iJoinSubject"
+    },
+    "miMarryAwaySubject": {
+      "args": [
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Marries {0_suitor}",
+      "textKey": "TEXT_GAME_DO_BONUS_MARRIES",
+      "valueScale": 1,
+      "xmlField": "iMarryAwaySubject"
+    },
+    "miMarrySubject": {
+      "args": [
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Marries {0_suitor}",
+      "textKey": "TEXT_GAME_DO_BONUS_MARRIES",
+      "valueScale": 1,
+      "xmlField": "iMarrySubject"
+    },
+    "miMoveNetworkCitySubject": {
+      "args": [
+        "cityLink",
+        "cityLink|false"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Move link(CONCEPT_AGENT_NETWORK) from {0_city}{true_1: to {1_city}}",
+      "textKey": "TEXT_GAME_BONUS_MOVE_AGENT_NETWORK_CITY",
+      "valueScale": 1,
+      "xmlField": "iMoveNetworkCitySubject"
+    },
+    "miNextCritical": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value}% link(CONCEPT_CRITICAL_HIT) chance on the next attack",
+      "textKey": "TEXT_GAME_DO_BONUS_CRITICAL_CHANCE",
+      "valueScale": 1,
+      "xmlField": "iNextCritical"
+    },
+    "miPolyMarrySubject": {
+      "args": [
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Marries {0_suitor}",
+      "textKey": "TEXT_GAME_DO_BONUS_MARRIES",
+      "valueScale": 1,
+      "xmlField": "iPolyMarrySubject"
+    },
+    "miRebelUnits": {
+      "args": [
+        "signed",
+        "rebelTribeLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {1_rebel} {singular_0:Unit:Units}",
+      "textKey": "TEXT_GAME_DO_BONUS_REBEL_UNITS",
+      "valueScale": 1,
+      "xmlField": "iRebelUnits"
+    },
+    "miRegentOfSubject": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Becomes link(CONCEPT_REGENT) of {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_REGENT",
+      "valueScale": 1,
+      "xmlField": "iRegentOfSubject"
+    },
+    "miRemoveFromSubject": {
+      "args": [
+        "religionLink",
+        "cityLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Removes {0_religion} from {1_city}",
+      "textKey": "TEXT_GAME_DO_BONUS_REMOVE_RELIGION",
+      "valueScale": 1,
+      "xmlField": "iRemoveFromSubject"
+    },
+    "miRemoveTraitSubject": {
+      "args": [
+        "characterLink",
+        "traitLink"
+      ],
+      "notes": "item variant TEXT_GAME_DO_BONUS_LOSES_ITEM",
+      "perEntry": "none",
+      "template": "No longer {0_trait}",
+      "textKey": "TEXT_GAME_DO_BONUS_LOSES",
+      "valueScale": 1,
+      "xmlField": "iRemoveTraitSubject"
+    },
+    "miRevealRange": {
+      "args": [
+        "value"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Reveals Map Within {0_dist} {singular_0:Tile:Tiles}",
+      "textKey": "TEXT_GAME_DO_BONUS_REVEAL_RANGE",
+      "valueScale": 1,
+      "xmlField": "iRevealRange"
+    },
+    "miSeizeThroneSubject": {
+      "args": [
+        "playerLink"
+      ],
+      "notes": "tribe variant TEXT_HELPTEXT_BONUS_SEIZE_THRONE_TRIBE",
+      "perEntry": "none",
+      "template": "Seizes the Throne of {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SEIZE_THRONE",
+      "valueScale": 1,
+      "xmlField": "iSeizeThroneSubject"
+    },
+    "miSpreadToSubject": {
+      "args": [
+        "religionLink",
+        "cityLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_religion} Spreads to {1_city}",
+      "textKey": "TEXT_GAME_DO_BONUS_SPREAD_RELIGION",
+      "valueScale": 1,
+      "xmlField": "iSpreadToSubject"
+    },
+    "miSpreadUnits": {
+      "args": [
+        "unitTypeLink",
+        "number|false",
+        "bool(false)"
+      ],
+      "notes": "religion spread units",
+      "perEntry": "none",
+      "template": "Gain {0_unit}{true_1: (x{1_number})}{true_2: in {2_city}}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FREE_UNIT",
+      "valueScale": 1,
+      "xmlField": "iSpreadUnits"
+    },
+    "miTradeCitySubject": {
+      "args": [
+        "playerLink|tribeLink|familyLink",
+        "cityLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_link} gains {1_city}",
+      "textKey": "TEXT_HELPTEXT_BONUS_TRADE_CITY",
+      "valueScale": 1,
+      "xmlField": "iTradeCitySubject"
+    },
+    "miTradeResourceFromSubject": {
+      "args": [
+        "resourceLink",
+        "playerLink",
+        "value(turns)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{1_player} sends {0_luxury} (for {2} {3_turnScale})",
+      "textKey": "TEXT_HELPTEXT_BONUS_SEND_LUXURY_FROM",
+      "valueScale": 1,
+      "xmlField": "iTradeResourceFromSubject"
+    },
+    "miTradeResourceToSubject": {
+      "args": [
+        "resourceLink",
+        "playerLink|tribeLink|familyLink",
+        "luxuryLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Send {0_luxury} to {1_familyOrPlayer} as {2_luxuryLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SEND_LUXURY_TO",
+      "valueScale": 1,
+      "xmlField": "iTradeResourceToSubject"
+    },
+    "miTradeTurns": {
+      "args": [
+        "value"
+      ],
+      "notes": "turn count folded into SEND_LUXURY_FROM line",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iTradeTurns"
+    },
+    "miXPCharacter": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} XP",
+      "textKey": "TEXT_GAME_DO_BONUS_XP",
+      "valueScale": 1,
+      "xmlField": "iXPCharacter"
+    },
+    "miXPUnit": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} XP",
+      "textKey": "TEXT_GAME_DO_BONUS_XP",
+      "valueScale": 1,
+      "xmlField": "iXPUnit"
+    },
+    "mlpAddRelationshipReverse": {
+      "args": [
+        "relationshipLink",
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "relationship",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "AddRelationshipReverse"
+    },
+    "mlpAddRelationshipSubject": {
+      "args": [
+        "relationshipLink",
+        "characterLink"
+      ],
+      "notes": "relationship gain lines (~HelpText.Bonus.cs:3735); removal counterpart uses TEXT_GAME_DO_BONUS_RELATIONSHIP_REMOVE",
+      "perEntry": "relationship",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "AddRelationshipSubjects"
+    },
+    "mlpDiplomacyReverse": {
+      "args": [
+        "playerLink",
+        "diplomacyLink"
+      ],
+      "notes": "",
+      "perEntry": "diplomacy",
+      "template": "{0_other} at {1_diplomacy} with {2_target}",
+      "textKey": "TEXT_GAME_DO_BONUS_OTHER_PLAYER_DIPLOMACY",
+      "valueScale": 1,
+      "xmlField": "DiplomacyReverse"
+    },
+    "mlpDiplomacySubjects": {
+      "args": [
+        "playerLink",
+        "diplomacyLink"
+      ],
+      "notes": "also tribe variant TEXT_GAME_DO_BONUS_TRIBE_DIPLOMACY_PLAYER when subject is tribe",
+      "perEntry": "diplomacy",
+      "template": "{0_other} at {1_diplomacy} with {2_target}",
+      "textKey": "TEXT_GAME_DO_BONUS_OTHER_PLAYER_DIPLOMACY",
+      "valueScale": 1,
+      "xmlField": "DiplomacySubjects"
+    },
+    "mlpRemoveRelationshipReverse": {
+      "args": [
+        "relationshipLink",
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "relationship",
+      "template": "No longer {0_relationshipCharacter}",
+      "textKey": "TEXT_GAME_DO_BONUS_RELATIONSHIP_REMOVE",
+      "valueScale": 1,
+      "xmlField": "RemoveRelationshipReverse"
+    },
+    "mlpRemoveRelationshipReverseOption": {
+      "args": [
+        "relationshipLink",
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "relationship",
+      "template": "No longer {0_relationshipCharacter}",
+      "textKey": "TEXT_GAME_DO_BONUS_RELATIONSHIP_REMOVE",
+      "valueScale": 1,
+      "xmlField": "RemoveRelationshipReverseOption"
+    },
+    "mlpRemoveRelationshipSubject": {
+      "args": [
+        "relationshipLink",
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "relationship",
+      "template": "No longer {0_relationshipCharacter}",
+      "textKey": "TEXT_GAME_DO_BONUS_RELATIONSHIP_REMOVE",
+      "valueScale": 1,
+      "xmlField": "RemoveRelationshipSubjects"
+    },
+    "mlpRemoveRelationshipSubjectOption": {
+      "args": [
+        "relationshipLink",
+        "characterLink"
+      ],
+      "notes": "",
+      "perEntry": "relationship",
+      "template": "No longer {0_relationshipCharacter}",
+      "textKey": "TEXT_GAME_DO_BONUS_RELATIONSHIP_REMOVE",
+      "valueScale": 1,
+      "xmlField": "RemoveRelationshipSubjectsOption"
+    }
+  },
+  "effectCity": {
+    "maaiEffectCityYieldModifier": {
+      "args": [
+        "list(yieldValueIconLink:percent)",
+        "effectCitySourceLink",
+        "bool"
+      ],
+      "notes": "percent values not scaled; computed city totals (x0.1) appended in parentheses; reverse direction uses TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELDS_EFFECT_CITY_YIELD_COUNT",
+      "perEntry": "effectCity,yield",
+      "template": "{0_yield} {true_2:with:per} {1_effectCity}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_MODIFIER_FROM_EFFECT_CITY",
+      "valueScale": 1,
+      "xmlField": "aaiEffectCityYieldModifier"
+    },
+    "maaiEffectCityYieldRate": {
+      "args": [
+        "list(yieldValueIconLink)",
+        "turnScale",
+        "effectCitySourceLink",
+        "bool"
+      ],
+      "notes": "{3}=plural flag (!bSingle of source effectCity); reverse direction also rendered on the source effectCity page via TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELDS_EFFECT_CITY_YIELD_COUNT",
+      "perEntry": "effectCity,yield",
+      "template": "{0_yield}/{1_turnScale} {true_3:with:per} {2_effectCity}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_FROM_EFFECT_CITY",
+      "valueScale": 0.1,
+      "xmlField": "aaiEffectCityYieldRate"
+    },
+    "maaiImprovementClassYield": {
+      "args": [
+        "list(improvementClassLink)",
+        "slash(yieldValueIconLink,turnScale)"
+      ],
+      "notes": "same colon+slash composition as aaiImprovementYield",
+      "perEntry": "improvementClass,yield",
+      "template": "{0}: {1}",
+      "textKey": "TEXT_HELPTEXT_ENTRY_COLON_SPACE_ONE",
+      "valueScale": 0.1,
+      "xmlField": "aaiImprovementClassYield"
+    },
+    "maaiImprovementYield": {
+      "args": [
+        "list(improvementLink)",
+        "slash(yieldValueIconLink,turnScale)"
+      ],
+      "notes": "no dedicated key: rendered via buildColonSpaceOne + buildSlashText(TEXT_HELPTEXT_SLASH_TWO) => \"Improvements: +X Yield/turnScale\"; improvements with equal value for the yield grouped",
+      "perEntry": "improvement,yield",
+      "template": "{0}: {1}",
+      "textKey": "TEXT_HELPTEXT_ENTRY_COLON_SPACE_ONE",
+      "valueScale": 0.1,
+      "xmlField": "aaiImprovementYield"
+    },
+    "maaiTerrainYield": {
+      "args": [
+        "list(terrainLink)",
+        "slash(yieldValueIconLink,turnScale)"
+      ],
+      "notes": "terrains with equal value grouped",
+      "perEntry": "terrain,yield",
+      "template": "{0_terrain_list} Tiles: {1_yields}",
+      "textKey": "TEXT_HELPTEXT_TERRAIN_TILES",
+      "valueScale": 0.1,
+      "xmlField": "aaiTerrainYield"
+    },
+    "maaiTerritoryEffectUnitChanceTurns": {
+      "args": [
+        "signedPercent",
+        "effectUnitLink"
+      ],
+      "notes": "tuple (effectUnit, chance%, turns); turns component not rendered by this key",
+      "perEntry": "effectUnit",
+      "template": "{0_percent} chance that units in territory will gain {1_effectUnit}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_TERRITORY_EFFECT_UNIT_CHANCE",
+      "valueScale": 1,
+      "xmlField": "aaiTerritoryEffectUnitChanceTurns"
+    },
+    "mabNoImprovementClassMax": {
+      "args": [
+        "improvementClassLink"
+      ],
+      "notes": "",
+      "perEntry": "improvementClass",
+      "template": "Can build each {0_improvementClass} in every City",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_NO_IMPROVEMENT_CLASS_MAX",
+      "valueScale": 1,
+      "xmlField": "abNoImprovementClassMax"
+    },
+    "mabUrbanTerrainValid": {
+      "args": [
+        "terrainLink"
+      ],
+      "notes": "",
+      "perEntry": "terrain",
+      "template": "Can build link(CONCEPT_URBAN) Improvements on {0_terrain}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_URBAN_TERRAIN_VALID",
+      "valueScale": 1,
+      "xmlField": "abUrbanTerrainValid"
+    },
+    "maeBuildAnyReligionUnit": {
+      "args": [
+        "list(unitTypeLink)"
+      ],
+      "notes": "",
+      "perEntry": "unit",
+      "template": "Can train {0_unitlist} without link(CONCEPT_RELIGION)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_BUILD_ANY_RELIGION_UNIT",
+      "valueScale": 1,
+      "xmlField": "aeBuildAnyReligionUnit"
+    },
+    "maeBuyTile": {
+      "args": [
+        "buyTilesLink",
+        "yieldLink"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "Can {0_buyTiles} with {1_yield}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CAN_BUY_TILES",
+      "valueScale": 1,
+      "xmlField": "aeBuyTile"
+    },
+    "maeEffectCityEffectCity": {
+      "args": [
+        "effectCityLink",
+        "effectCityLink"
+      ],
+      "notes": "rendered by buildEffectCityEffectCityHelp: having {0} also grants {1}",
+      "perEntry": "effectCity",
+      "template": "{0_effectCity} adds {1_effectCity}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_EFFECT_CITY_EFFECT_CITY",
+      "valueScale": 1,
+      "xmlField": "aeEffectCityEffectCity"
+    },
+    "maeFreeEffectUnit": {
+      "args": [
+        "effectUnitLink",
+        "false|unitTraitLink|effectUnitEligibleLink"
+      ],
+      "notes": "{1}: false when effect valid for all traits; single valid trait -> that trait link; otherwise \"eligible\" link",
+      "perEntry": "effectUnit",
+      "template": "New {true_1:{1_type} :}Units start with {0_link}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_NEW_UNITS_WITH",
+      "valueScale": 1,
+      "xmlField": "aeFreeEffectUnit"
+    },
+    "maeFreeUnitEffectCity": {
+      "args": [
+        "list(effectCityLink)"
+      ],
+      "notes": "COMMA_OR scope",
+      "perEntry": "effectCity",
+      "template": "Can train Units that require {LIST}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_FREE_UNIT_EFFECT_CITY",
+      "valueScale": 1,
+      "xmlField": "aeFreeUnitEffectCity"
+    },
+    "maeHurryCivics": {
+      "args": [
+        "list(buildLink)"
+      ],
+      "notes": "",
+      "perEntry": "build",
+      "template": "Can link(CONCEPT_HURRY,2) {0,2_build} with link(YIELD_CIVICS)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_HURRY_CIVICS",
+      "valueScale": 1,
+      "xmlField": "aeHurryCivics"
+    },
+    "maeHurryMoney": {
+      "args": [
+        "list(buildLink)"
+      ],
+      "notes": "",
+      "perEntry": "build",
+      "template": "Can link(CONCEPT_HURRY,2) {0,2_build} with link(YIELD_MONEY)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_HURRY_MONEY",
+      "valueScale": 1,
+      "xmlField": "aeHurryMoney"
+    },
+    "maeHurryOrders": {
+      "args": [
+        "list(buildLink)"
+      ],
+      "notes": "",
+      "perEntry": "build",
+      "template": "Can link(CONCEPT_HURRY,2) {0,2_build} with link(YIELD_ORDERS)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_HURRY_ORDERS",
+      "valueScale": 1,
+      "xmlField": "aeHurryOrders"
+    },
+    "maeHurryPopulation": {
+      "args": [
+        "list(buildLink)"
+      ],
+      "notes": "",
+      "perEntry": "build",
+      "template": "Can link(CONCEPT_HURRY,2) {0,2_build} with Population",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_HURRY_POPULATION",
+      "valueScale": 1,
+      "xmlField": "aeHurryPopulation"
+    },
+    "maeHurryTraining": {
+      "args": [
+        "list(buildLink)"
+      ],
+      "notes": "",
+      "perEntry": "build",
+      "template": "Can link(CONCEPT_HURRY,2) {0,2_build} with link(YIELD_TRAINING)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_HURRY_TRAINING",
+      "valueScale": 1,
+      "xmlField": "aeHurryTraining"
+    },
+    "maeLuxuryResources": {
+      "args": [
+        "conceptLink(Luxury)",
+        "number|false",
+        "list(resourceLink)"
+      ],
+      "notes": "{1}=multiplier count when >1 else false",
+      "perEntry": "resource",
+      "template": "Adds {true_3:{0,0_luxuryLink}:{0,1_luxuryLink}}{true_1: {1_cityYield}} ({2_resource})",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_ADDS_LUXURY",
+      "valueScale": 1,
+      "xmlField": "aeLuxuryResources"
+    },
+    "maeTraitEffectUnit": {
+      "args": [
+        "list(unitTraitLink)",
+        "effectUnitLink"
+      ],
+      "notes": "traits granting same effectUnit grouped",
+      "perEntry": "unitTrait",
+      "template": "New {0_unitTrait} Units start with {1_effectUnit}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_TRAIT_FREE_EFFECT_UNITS",
+      "valueScale": 1,
+      "xmlField": "aeTraitEffectUnit"
+    },
+    "maeVoidTechPrereqImprovementClass": {
+      "args": [
+        "improvementClassLink",
+        "techLink"
+      ],
+      "notes": "tech arg = the improvement class normal TechPrereq being voided",
+      "perEntry": "improvementClass",
+      "template": "Can build {0,2_improvementclass} without {1_tech}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_VOID_TECH_PREREQ_IMPROVEMENTCLASS",
+      "valueScale": 1,
+      "xmlField": "aeVoidTechPrereqImprovementClass"
+    },
+    "maiImprovementClassCostModifier": {
+      "args": [
+        "signed",
+        "improvementClassLink"
+      ],
+      "notes": "C# passes buildSignedTextVariable WITHOUT bPercent (template carries the % if any)",
+      "perEntry": "improvementClass",
+      "template": "{0_value}% Goods Cost for {1,2_improvementClass}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_CLASS_COST",
+      "valueScale": 1,
+      "xmlField": "aiImprovementClassCostModifier"
+    },
+    "maiImprovementClassModifier": {
+      "args": [
+        "list(improvementClassLink)",
+        "signedPercent"
+      ],
+      "notes": "classes sharing the same value grouped into one AND-list",
+      "perEntry": "improvementClass",
+      "template": "{0,2_improvementClassList}: {1_value} Output",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELDS_IMPROVEMENT_CLASS_MODIFIER_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiImprovementClassModifier"
+    },
+    "maiImprovementClassUpgradeTurnChange": {
+      "args": [
+        "signed",
+        "turnScalePlural",
+        "improvementClassLink"
+      ],
+      "notes": "",
+      "perEntry": "improvementClass",
+      "template": "{0_value} Upgrade {1_turnScale} for {2_improvement} Improvements",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_IMPROVEMENT_UPGRADE_TURNS",
+      "valueScale": 1,
+      "xmlField": "aiImprovementClassUpgradeTurnChange"
+    },
+    "maiImprovementModifier": {
+      "args": [
+        "signedPercent",
+        "list(improvementLink)"
+      ],
+      "notes": "COMMA_AND scope: {0}=signed percent (surroundingText arg), {LIST}=all improvements sharing that modifier value; grouped by equal value; a per-city computed-yield breakdown branch exists when city context present",
+      "perEntry": "improvement",
+      "template": "{LIST,2}: {0_value} Output",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELDS_IMPROVEMENT_MODIFIER_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiImprovementModifier"
+    },
+    "maiImprovementRiverModifier": {
+      "args": [
+        "signedPercent",
+        "improvementLink",
+        "riverLink"
+      ],
+      "notes": "",
+      "perEntry": "improvement",
+      "template": "{0_value} from {1_improvement} on {2_riverLink}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELDS_IMPROVEMENT_RIVER_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "aiImprovementRiverModifier"
+    },
+    "maiReligionOpinion": {
+      "args": [
+        "signed",
+        "religionLink"
+      ],
+      "notes": "",
+      "perEntry": "religion",
+      "template": "{0_value} {1_religion} link(CONCEPT_OPINION_RELIGION,3)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_IMPROVEMENT_RELIGION_OPINION",
+      "valueScale": 1,
+      "xmlField": "aiReligionOpinion"
+    },
+    "maiStateReligionUnitTraitTrainModifier": {
+      "args": [
+        "signedPercent",
+        "list(unitTraitLink)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "{0_value} production time for {1_unitTrait} Units of link(CONCEPT_STATE_RELIGION)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_TRAIT_STATE_RELIGION_TRAIN_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "aiStateReligionUnitTraitTrainModifier"
+    },
+    "maiUnitCostModifier": {
+      "args": [
+        "signedPercent",
+        "unitTypeLink"
+      ],
+      "notes": "",
+      "perEntry": "unit",
+      "template": "{0_value} Goods Cost for {1,2_unit}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_COST_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "aiUnitCostModifier"
+    },
+    "maiUnitTrainModifier": {
+      "args": [
+        "signedPercent",
+        "unitTypeLink"
+      ],
+      "notes": "",
+      "perEntry": "unit",
+      "template": "{0_value} production time for {1,2_unit}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_TRAIN_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "aiUnitTrainModifier"
+    },
+    "maiUnitTraitCostModifier": {
+      "args": [
+        "signedPercent",
+        "list(unitTraitLink)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "{0_value} Goods Cost for {1_unitTrait} Units",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_TRAIT_COST_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitCostModifier"
+    },
+    "maiUnitTraitLevel": {
+      "args": [
+        "signed",
+        "list(unitTraitLink)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "New {1_unitTrait} Units: {0_value} {singular_0:Level:Levels}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_TRAIT_LEVEL",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitLevel"
+    },
+    "maiUnitTraitTrainModifier": {
+      "args": [
+        "signedPercent",
+        "list(unitTraitLink)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "{0_value} production time for {1_unitTrait} Units",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_TRAIT_TRAIN_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitTrainModifier"
+    },
+    "maiUnitTraitXP": {
+      "args": [
+        "signed",
+        "list(unitTraitLink)"
+      ],
+      "notes": "traits with equal value grouped",
+      "perEntry": "unitTrait",
+      "template": "New {1_unitTrait} Units: {0_value} XP",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_TRAIT_XP",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitXP"
+    },
+    "maiYieldModifier": {
+      "args": [
+        "yieldValueIconLink:rate:percent",
+        "yieldValueIconLink|false"
+      ],
+      "notes": "{0}=percent modifier (bRate+bPercent, no /10); {1}=computed city yield change (x0.1) when totals shown, else false",
+      "perEntry": "yield",
+      "template": "{0_yield}{true_1: ({1_yieldModified})}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "aiYieldModifier"
+    },
+    "maiYieldRate": {
+      "args": [
+        "list(yieldValueIconLink)",
+        "turnScale"
+      ],
+      "notes": "COMMA_AND list scope surroundingText; {LIST} = nonzero yields; two passes (normal then warning-colored yields); if game has no characters, iLegitimacy*yield.iPerLegitimacy is folded in; per-city totals appended in parentheses",
+      "perEntry": "yield",
+      "template": "{LIST}/{0_turnScale}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_YEAR",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRate"
+    },
+    "maiYieldRateCulture": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per link(YIELD_CULTURE) Level",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_CULTURE_LEVEL",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateCulture"
+    },
+    "maiYieldRateDefending": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "characters enabled uses TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_IF_DEFENDING_FAMILY instead",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} if military Unit in City Territory",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_IF_DEFENDING",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateDefending"
+    },
+    "maiYieldRateHolyCityWorld": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale",
+        "holyCityLink"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{2_holyCity}: {0_yield}/{1_turnScale} per Cities with Religion",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_HOLY_CITY_WORLD",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateHolyCityWorld"
+    },
+    "maiYieldRateLeaderStrength": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "total multiplies by number of leader strength ratings",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per Leader's link(CONCEPT_STRENGTH)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_LEADER_STRENGTH",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateLeaderStrength"
+    },
+    "maiYieldRateLeaderWeakness": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per Leader's link(CONCEPT_WEAKNESS)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_LEADER_WEAKNESS",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateLeaderWeakness"
+    },
+    "maiYieldRateMilitary": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per Military Unit in Territory",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_MILITARY_IN_CITY",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateMilitary"
+    },
+    "maiYieldRateOpinion": {
+      "args": [
+        "list(yieldValueIconLink)",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per link(CONCEPT_OPINION_FAMILY,1) Level",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_FAMILY_OPINION",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateOpinion"
+    },
+    "maiYieldRatePaganReligion": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per Pagan Religion",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_PAGAN_RELIGION",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRatePaganReligion"
+    },
+    "maiYieldRatePopulation": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "total (rate * population, modified) appended in parentheses when city known",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per Population",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_POPULATION",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRatePopulation"
+    },
+    "maiYieldRateReligion": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per Religion",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_RELIGION",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateReligion"
+    },
+    "maiYieldRateReligionNonState": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per Non-State Religion",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_RELIGION_NON_STATE",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateReligionNonState"
+    },
+    "maiYieldRateSpecialist": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per link(CONCEPT_SPECIALIST)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_SPECIALIST",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateSpecialist"
+    },
+    "maiYieldRateSpecialistClass": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} for each different type of link(CONCEPT_SPECIALIST)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_SPECIALIST_CLASS",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateSpecialistClass"
+    },
+    "maiYieldRateSpecialistRural": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per link(EFFECTCITY_SPECIALIST_RURAL)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_SPECIALIST_RURAL",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateSpecialistRural"
+    },
+    "maiYieldRateSpecialistUrban": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per link(CONCEPT_URBAN) link(CONCEPT_SPECIALIST)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_YIELD_RATE_PER_SPECIALIST_URBAN",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateSpecialistUrban"
+    },
+    "mbAlwaysConnected": {
+      "args": [
+        "connectedLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cities always {0_connectedLink}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_ALWAYS_CONNECTED",
+      "valueScale": 1,
+      "xmlField": "bAlwaysConnected"
+    },
+    "mbAutoBuild": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cannot Choose Production",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_AUTO_BUILD",
+      "valueScale": 1,
+      "xmlField": "bAutoBuild"
+    },
+    "mbHurryCivics": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_HURRY) with link(YIELD_CIVICS)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_HURRY_CIVICS",
+      "valueScale": 1,
+      "xmlField": "bHurryCivics"
+    },
+    "mbHurryMoney": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_HURRY) with link(YIELD_MONEY)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_HURRY_MONEY",
+      "valueScale": 1,
+      "xmlField": "bHurryMoney"
+    },
+    "mbHurryOrders": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_HURRY) with link(YIELD_ORDERS)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_HURRY_ORDERS",
+      "valueScale": 1,
+      "xmlField": "bHurryOrders"
+    },
+    "mbHurryPopulation": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_HURRY) with Population",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_HURRY_POPULATION",
+      "valueScale": 1,
+      "xmlField": "bHurryPopulation"
+    },
+    "mbHurryTraining": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_HURRY) with link(YIELD_TRAINING)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_HURRY_TRAINING",
+      "valueScale": 1,
+      "xmlField": "bHurryTraining"
+    },
+    "mbLuxury": {
+      "args": [
+        "luxuryLink",
+        "number|false",
+        "resourceLink"
+      ],
+      "notes": "only when SourceResource set; resource taken from meSourceResource",
+      "perEntry": "none",
+      "template": "Adds {true_3:{0,0_luxuryLink}:{0,1_luxuryLink}}{true_1: {1_cityYield}} ({2_resource})",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_ADDS_LUXURY",
+      "valueScale": 1,
+      "xmlField": "bLuxury"
+    },
+    "mbNoBuildUnits": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cannot Build Units",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_UNIT_BUILD",
+      "valueScale": 1,
+      "xmlField": "bNoBuildUnits"
+    },
+    "mbNoHurry": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cannot link(CONCEPT_HURRY)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_NO_HURRY",
+      "valueScale": 1,
+      "xmlField": "bNoHurry"
+    },
+    "mbNoReligionSpread": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "No Random Non-link(CONCEPT_STATE_RELIGION) link(CONCEPT_SPREAD_RELIGION,1)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_NO_RELIGION_SPREAD",
+      "valueScale": 1,
+      "xmlField": "bNoReligionSpread"
+    },
+    "meCultureBonus": {
+      "args": [
+        "nestedBonusHelp"
+      ],
+      "notes": "bonus granted on next culture level",
+      "perEntry": "none",
+      "template": "{0_bonus} per link(YIELD_CULTURE) event",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_CULTURE_BONUS",
+      "valueScale": 1,
+      "xmlField": "CultureBonus"
+    },
+    "meDefaultGovernor": {
+      "args": [
+        "councilLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_character} acts as a link(CONCEPT_GOVERNOR)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_DEFAULT_GOVERNOR",
+      "valueScale": 1,
+      "xmlField": "DefaultGovernor"
+    },
+    "meDescription": {
+      "args": [
+        "raw"
+      ],
+      "notes": "Description TEXT_* rendered verbatim at bottom of help",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "Description"
+    },
+    "meEffectCityUnlock": {
+      "args": [
+        "effectCityLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Unlocks {0_effectCity}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNLOCKS",
+      "valueScale": 1,
+      "xmlField": "EffectCityUnlock"
+    },
+    "meExtraHelp": {
+      "args": [
+        "raw"
+      ],
+      "notes": "ExtraHelp TEXT_* rendered verbatim at top of help; also replaces the source link",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "ExtraHelp"
+    },
+    "meNewUnitReligion": {
+      "args": [
+        "religionLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "New Units follow {0_religion}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_NEW_UNITS_RELIGION",
+      "valueScale": 1,
+      "xmlField": "NewUnitReligion"
+    },
+    "meSpecialistNoPrereq": {
+      "args": [
+        "effectCitySourceLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can build any {0_effectSpecialist} without prerequisite link(CONCEPT_SPECIALIST,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_FREE_SPECIALIST_UPGRADE",
+      "valueScale": 1,
+      "xmlField": "SpecialistNoPrereq"
+    },
+    "miAdjacentClassCostModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Cost for Adjacent link(CONCEPT_IMPROVEMENTCLASS,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_ADJACENT_COST",
+      "valueScale": 1,
+      "xmlField": "iAdjacentClassCostModifier"
+    },
+    "miBuildTurnChange": {
+      "args": [
+        "signed",
+        "turnScale"
+      ],
+      "notes": "turnScale pluralized by change magnitude",
+      "perEntry": "none",
+      "template": "{0_value} {1_turnScale} to build Improvements",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_BUILD_TURNS",
+      "valueScale": 1,
+      "xmlField": "iBuildTurnChange"
+    },
+    "miCityHP": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Max HP for City",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_MAX_HP",
+      "valueScale": 1,
+      "xmlField": "iCityHP"
+    },
+    "miFamilyOpinion": {
+      "args": [
+        "signed",
+        "bool",
+        "familyLink|empty"
+      ],
+      "notes": "{1}=whether a concrete family is known (via source improvement family seat); {2}=family link or empty",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_OPINION_FAMILY,1){true_1: ({2_familyLink})}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_FAMILY_OPINION",
+      "valueScale": 1,
+      "xmlField": "iFamilyOpinion"
+    },
+    "miHurryDiscontentModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "value == -100 renders TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_HURRY_DISCONTENT_NONE (no args) instead",
+      "perEntry": "none",
+      "template": "{0_value} {YIELD_DISCONTENT} from Hurrying",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_HURRY_DISCONTENT",
+      "valueScale": 1,
+      "xmlField": "iHurryDiscontentModifier"
+    },
+    "miImprovementCostModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Improvement Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_IMPROVEMENT_COST",
+      "valueScale": 1,
+      "xmlField": "iImprovementCostModifier"
+    },
+    "miLegitimacy": {
+      "args": [
+        "signed"
+      ],
+      "notes": "characters enabled: rendered as Legitimacy line (NoYields section); characters disabled: converted to yields via yield.iPerLegitimacy inside aiYieldRate block",
+      "perEntry": "none",
+      "template": "{0_value}  icon(YIELD_LEGITIMACY)Legitimacy",
+      "textKey": "TEXT_HELPTEXT_IMPROVEMENT_HELP_LEGITIMACY",
+      "valueScale": 1,
+      "xmlField": "iLegitimacy"
+    },
+    "miProjectCostModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_PROJECT) Goods Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_PROJECT_COST",
+      "valueScale": 1,
+      "xmlField": "iProjectCostModifier"
+    },
+    "miRandomPromotions": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Random {singular_0:Promotion:Promotions} for New Units",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_RANDOM_PROMOTIONS",
+      "valueScale": 1,
+      "xmlField": "iRandomPromotions"
+    },
+    "miRangeChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Unit {RANGE}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_RANGE",
+      "valueScale": 1,
+      "xmlField": "iRangeChange"
+    },
+    "miRebelProb": {
+      "args": [
+        "signedPercent",
+        "rebelTribeLink"
+      ],
+      "notes": "player override pPlayer.getEffectCityRebelProb used when player context present",
+      "perEntry": "none",
+      "template": "{0_value} {1_rebel} Chance",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_REBEL_PROBABILITY",
+      "valueScale": 1,
+      "xmlField": "iRebelProb"
+    },
+    "miRegrowthModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Vegetation Regrowth Rate",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_REGROWTH_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iRegrowthModifier"
+    },
+    "miSpecialistCostModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_SPECIALIST) Goods Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_SPECIALIST_COST",
+      "valueScale": 1,
+      "xmlField": "iSpecialistCostModifier"
+    },
+    "miSpecialistRuralTrainTimeModifier": {
+      "args": [
+        "signedPercent",
+        "specialistRuralLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {1_specialist} production time",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_RURAL_SPECIALIST_TRAIN_TIME",
+      "valueScale": 1,
+      "xmlField": "iSpecialistRuralTrainTimeModifier"
+    },
+    "miSpecialistUrbanCostModifier": {
+      "args": [
+        "signedPercent",
+        "specialistUrbanLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {1_specialist} Goods Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_URBAN_SPECIALIST_COST",
+      "valueScale": 1,
+      "xmlField": "iSpecialistUrbanCostModifier"
+    },
+    "miSpecialistUrbanTrainTimeModifier": {
+      "args": [
+        "signedPercent",
+        "specialistUrbanLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {1_specialist} production time",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_URBAN_SPECIALIST_TRAIN_TIME",
+      "valueScale": 1,
+      "xmlField": "iSpecialistUrbanTrainTimeModifier"
+    },
+    "miStrengthModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} City Defense",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_CITY_STRENGTH",
+      "valueScale": 1,
+      "xmlField": "iStrengthModifier"
+    },
+    "miTradeValueModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} National Trade Value",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_TRADE_VALUE_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iTradeValueModifier"
+    },
+    "miUnitHeal": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} HP from link(CONCEPT_HEAL) Action",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_HEAL_EXTRA",
+      "valueScale": 1,
+      "xmlField": "iUnitHeal"
+    },
+    "miUnitHealAlways": {
+      "args": [
+        "signed",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} HP/{1_turn} for Units in City Territory",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNIT_HEAL_ALWAYS",
+      "valueScale": 1,
+      "xmlField": "iUnitHealAlways"
+    },
+    "miUnitLevel": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {singular_0:Level:Levels} for New Units",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_NEW_UNIT_LEVEL",
+      "valueScale": 1,
+      "xmlField": "iUnitLevel"
+    },
+    "miUnitXP": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} XP for New Units",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_NEW_UNIT_XP",
+      "valueScale": 1,
+      "xmlField": "iUnitXP"
+    },
+    "miUrbanBuildTurnChange": {
+      "args": [
+        "signed",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {1_turnScale} to build link(CONCEPT_URBAN) Improvements",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_URBAN_BUILD_TURNS",
+      "valueScale": 1,
+      "xmlField": "iUrbanBuildTurnChange"
+    },
+    "mlpTerrainImprovementValid": {
+      "args": [
+        "terrainTargetLink",
+        "improvementLink"
+      ],
+      "notes": "",
+      "perEntry": "terrainTarget,improvement",
+      "template": "Can build {1,2_improvement} on {0_terrain}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_TERRAIN_IMPROVEMENT_VALID",
+      "valueScale": 1,
+      "xmlField": "TerrainImprovementValid"
+    }
+  },
+  "effectPlayer": {
+    "maeBuyTile": {
+      "args": [
+        "buyTilesLink",
+        "yieldLink"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "Can {0_buyTiles} with {1_yield}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CAN_BUY_TILES",
+      "valueScale": 1,
+      "xmlField": "aeBuyTile"
+    },
+    "maeConnectedForeign": {
+      "args": [
+        "yieldLink"
+      ],
+      "notes": "runtime per-team breakdown via TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CONNECTED_FOREIGN_FROM_TEAM and ..._WILL_GAIN",
+      "perEntry": "yield",
+      "template": "Connected Foreign Cities give {0_yield}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CONNECTED_FOREIGN",
+      "valueScale": 1,
+      "xmlField": "aeConnectedForeign"
+    },
+    "maeEffectUnit": {
+      "args": [
+        "unitTypeLink",
+        "nestedEffectUnitHelp"
+      ],
+      "notes": "",
+      "perEntry": "unit",
+      "template": "{0_unit}: {LIST}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_UNITS_EFFECT",
+      "valueScale": 1,
+      "xmlField": "aeEffectUnit"
+    },
+    "maeEffectUnitTrait": {
+      "args": [
+        "unitTraitLink",
+        "nestedEffectUnitHelp"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "[{0_trait} Units] {LIST}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_TRAIT_UNITS_EFFECT",
+      "valueScale": 1,
+      "xmlField": "aeEffectUnitTrait"
+    },
+    "maeFamilyClassEffectCity": {
+      "args": [
+        "familyClassLink",
+        "nestedEffectCityHelp"
+      ],
+      "notes": "",
+      "perEntry": "familyClass",
+      "template": "[{0,1_family} Cities] {1_cityEffectText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_FAMILY_CLASS_CITIES_EFFECT",
+      "valueScale": 1,
+      "xmlField": "aeFamilyClassEffectCity"
+    },
+    "maeForceFamily": {
+      "args": [
+        "familyLink"
+      ],
+      "notes": "",
+      "perEntry": "family",
+      "template": "Must found {0_family} City first",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_FORCE_FAMILY",
+      "valueScale": 1,
+      "xmlField": "aeForceFamily"
+    },
+    "maeImprovementSpreadBorders": {
+      "args": [
+        "improvementLink"
+      ],
+      "notes": "",
+      "perEntry": "improvement",
+      "template": "{0,2_improvement} spread borders when built",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_IMPROVEMENT_SPREAD_BORDER",
+      "valueScale": 1,
+      "xmlField": "aeImprovementSpreadBorders"
+    },
+    "maeInvisibleUnit": {
+      "args": [
+        "unitTypeLink"
+      ],
+      "notes": "",
+      "perEntry": "unit",
+      "template": "{0,2_unit} are link(CONCEPT_INVISIBLE)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_INVISIBLE_UNIT",
+      "valueScale": 1,
+      "xmlField": "aeInvisibleUnit"
+    },
+    "maeNoBuyYield": {
+      "args": [
+        "yieldLink"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "Cannot Buy {0_yield}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_NO_BUY_YIELD",
+      "valueScale": 1,
+      "xmlField": "aeNoBuyYield"
+    },
+    "maeNoFamilyRestrictionJob": {
+      "args": [
+        "jobLink"
+      ],
+      "notes": "",
+      "perEntry": "job",
+      "template": "Can assign {0,2_job} from other Families",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_NO_FAMILY_RESTRICTION_JOB",
+      "valueScale": 1,
+      "xmlField": "aeNoFamilyRestrictionJob"
+    },
+    "maeNoSellPenaltyYield": {
+      "args": [
+        "yieldLink"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "Can Sell {0_yield} for the same price as Buying",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_NO_SELL_PENALTY_YIELD",
+      "valueScale": 1,
+      "xmlField": "aeNoSellPenaltyYield"
+    },
+    "maeTradeYield": {
+      "args": [
+        "yieldLink"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "Can Buy/Sell {0_yield}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_TRADE_YIELD",
+      "valueScale": 1,
+      "xmlField": "aeTradeYield"
+    },
+    "maeWaterUnit": {
+      "args": [
+        "unitTypeLink"
+      ],
+      "notes": "",
+      "perEntry": "unit",
+      "template": "{0,2_unit} Move on Water",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_WATER_UNIT",
+      "valueScale": 1,
+      "xmlField": "aeWaterUnit"
+    },
+    "maiImprovementClassPrereqLawsChange": {
+      "args": [
+        "signed",
+        "improvementClassLink"
+      ],
+      "notes": "",
+      "perEntry": "improvementClass",
+      "template": "{0_value} Laws required to build {1_improvementClass} Class Improvements",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_IMPROVEMENT_LAWS_REQUIRED_CHANGE",
+      "valueScale": 1,
+      "xmlField": "aiImprovementClassPrereqLawsChange"
+    },
+    "maiJobOpinionRate": {
+      "args": [
+        "jobLink",
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "job",
+      "template": "{0} Opinion: {1_value}",
+      "textKey": "TEXT_HELPTEXT_OPINION_COLON",
+      "valueScale": 1,
+      "xmlField": "aiJobOpinionRate"
+    },
+    "maiMissionYieldCostModifier": {
+      "args": [
+        "bool(allCities)",
+        "list(yieldValueIconLink:percent)",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "{true_0:[Global] }{1_yield} Mission Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_MISSION_COST_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiMissionYieldCostModifier"
+    },
+    "maiUnitTraitConsumptionModifier": {
+      "args": [
+        "unitTraitLink",
+        "signedPercent"
+      ],
+      "notes": "computed per-yield consumption delta appended when totals shown",
+      "perEntry": "unitTrait",
+      "template": "{0_unittrait} Units: {1} Consumption",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_UNIT_TRAIT_CONSUMPTION_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitConsumptionModifier"
+    },
+    "maiWarYield": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "per war; total (value * num wars) appended in parentheses",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per link(DIPLOMACY_WAR)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_WAR_YIELD",
+      "valueScale": 0.1,
+      "xmlField": "aiWarYield"
+    },
+    "maiYieldRate": {
+      "args": [
+        "bool(allCities)",
+        "list(yieldValueIconLink)",
+        "turnScale"
+      ],
+      "notes": "{0}=true prepends [Global]",
+      "perEntry": "yield",
+      "template": "{true_0:[Global] }{1_yield}/{2_turnScale}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_YIELD_RATE",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRate"
+    },
+    "maiYieldRateGenerals": {
+      "args": [
+        "bool(allCities)",
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "total = value * generals",
+      "perEntry": "yield",
+      "template": "{true_0:[Global] }{1_yield}/{2_turnScale} per General",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_YIELD_RATE_GENERALS",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateGenerals"
+    },
+    "maiYieldRateLaws": {
+      "args": [
+        "bool(allCities)",
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "total = value * active laws",
+      "perEntry": "yield",
+      "template": "{true_0:[Global] }{1_yield}/{2_turnScale} per Active Law",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_YIELD_RATE_LAWS",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldRateLaws"
+    },
+    "maiYieldUpkeep": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale"
+      ],
+      "notes": "per city; total = value * cities, modified by yield upkeep modifier",
+      "perEntry": "yield",
+      "template": "{0_yield}/{1_turnScale} per City",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_YIELD_UPKEEP",
+      "valueScale": 0.1,
+      "xmlField": "aiYieldUpkeep"
+    },
+    "mbAddRoad": {
+      "args": [
+        "roadLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Add {0_road}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CAN_ADD_ROAD",
+      "valueScale": 1,
+      "xmlField": "bAddRoad"
+    },
+    "mbAddUrban": {
+      "args": [
+        "urbanLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Add {0_urban} Tiles",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CAN_ADD_URBAN",
+      "valueScale": 1,
+      "xmlField": "bAddUrban"
+    },
+    "mbAgent": {
+      "args": [
+        "agentNetworkLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Create {0_agentNetwork} in Foreign Cities",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CAN_AGENT",
+      "valueScale": 1,
+      "xmlField": "bAgent"
+    },
+    "mbAutomateScouts": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Automate link(UNIT_SCOUT,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_AUTOMATE_SCOUTS",
+      "valueScale": 1,
+      "xmlField": "bAutomateScouts"
+    },
+    "mbAutomateWorkers": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Automate link(UNIT_WORKER,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_AUTOMATE_WORKERS",
+      "valueScale": 1,
+      "xmlField": "bAutomateWorkers"
+    },
+    "mbBuildAllReligions": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can build Non-link(CONCEPT_STATE_RELIGION) Disciples",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_BUILD_ALL_RELIGIONS",
+      "valueScale": 1,
+      "xmlField": "bBuildAllReligions"
+    },
+    "mbHireMercenaries": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Hire link(CONCEPT_MERCENARY,2) from Tribes",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_HIRE_MERCENARIES",
+      "valueScale": 1,
+      "xmlField": "bHireMercenaries"
+    },
+    "mbLegitimacyOrders": {
+      "args": [
+        "legitimacyLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Use {0_legitimacy} to buy link(YIELD_ORDERS,1)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_LEGITIMACY_ORDERS",
+      "valueScale": 1,
+      "xmlField": "bLegitimacyOrders"
+    },
+    "mbMoveAlliedUnits": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can control Units in link(CONCEPT_ALLIANCE_PLAYER,1)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_MOVE_ALLIED_UNITS",
+      "valueScale": 1,
+      "xmlField": "bMoveAlliedUnits"
+    },
+    "mbMultipleWorkers": {
+      "args": [
+        "connectedLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Multiple link(UNIT_WORKER,2) can build Improvements",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_MULTIPLER_WORKERS",
+      "valueScale": 1,
+      "xmlField": "bMultipleWorkers"
+    },
+    "mbNoEndWars": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cannot end ongoing wars",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_NO_END_WARS",
+      "valueScale": 1,
+      "xmlField": "bNoEndWars"
+    },
+    "mbNoOutsideConsumption": {
+      "args": [
+        "unitConsumptionOutsideLink"
+      ],
+      "notes": "XML tag is bNoUnitConsumption",
+      "perEntry": "none",
+      "template": "No Extra Unit Consumption when {0_outsideBorders}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_NO_OUTSIDE_UNIT_CONSUMPTION",
+      "valueScale": 1,
+      "xmlField": "bNoUnitConsumption"
+    },
+    "mbNoSellPenalty": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Sell for the same price as Buying",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_NO_SELL_PENALTY",
+      "valueScale": 1,
+      "xmlField": "bNoSellPenalty"
+    },
+    "mbNoStartWars": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cannot declare war on other Nations",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_NO_START_WARS",
+      "valueScale": 1,
+      "xmlField": "bNoStartWars"
+    },
+    "mbOrdersScience": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Sell link(YIELD_ORDERS,1) for link(YIELD_SCIENCE,1)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_ORDERS_SCIENCE",
+      "valueScale": 1,
+      "xmlField": "bOrdersScience"
+    },
+    "mbPaganStateReligion": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Adopt Pagan State Religions",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_PAGAN_STATE_RELIGION",
+      "valueScale": 1,
+      "xmlField": "bPaganStateReligion"
+    },
+    "mbPurgeReligions": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Disciples Can Purge World Religions",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_PURGE_RELIGIONS",
+      "valueScale": 1,
+      "xmlField": "bPurgeReligions"
+    },
+    "mbRecruitMercenaries": {
+      "args": [
+        "legitimacyLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Recruit Tribal link(CONCEPT_MERCENARY,2) with {0_legitimacy}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_RECRUIT_MERCENARIES",
+      "valueScale": 1,
+      "xmlField": "bRecruitMercenaries"
+    },
+    "mbRedrawTechs": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Redraw Techs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CAN_REDRAW_TECHS",
+      "valueScale": 1,
+      "xmlField": "bRedrawTechs"
+    },
+    "mbRemoveAllVegetation": {
+      "args": [
+        "list(vegetationLink)"
+      ],
+      "notes": "COMMA_OR scope of all vegetation types",
+      "perEntry": "none",
+      "template": "Can {0_harvestLink}",
+      "textKey": "TEXT_HELPTEXT_UNIT_TYPE_CAN_HARVEST_RESOURCE",
+      "valueScale": 1,
+      "xmlField": "bRemoveAllVegetation"
+    },
+    "mbRiverBridging": {
+      "args": [
+        "riverLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_ROAD,2) bridge across link(CONCEPT_RIVER,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_RIVER_BRIDGING_BONUS",
+      "valueScale": 1,
+      "xmlField": "bRiverBridging"
+    },
+    "mbRiverMovement": {
+      "args": [
+        "riverLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Movement Bonus along link(CONCEPT_NEUTRAL) {0,2_river}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_RIVER_MOVEMENT_BONUS",
+      "valueScale": 1,
+      "xmlField": "bRiverMovement"
+    },
+    "mbStartMusic": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Starts the Music",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_START_MUSIC",
+      "valueScale": 1,
+      "xmlField": "bStartMusic"
+    },
+    "mbUpgradeImprovement": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_UPGRADE_IMPROVEMENTS)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CAN_UPGRADE_IMPROVEMENT",
+      "valueScale": 1,
+      "xmlField": "bUpgradeImprovement"
+    },
+    "meCapitalEffectCity": {
+      "args": [
+        "nestedEffectCityHelp"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[Capital City] {0_cityEffectText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CAPITAL_EFFECT",
+      "valueScale": 1,
+      "xmlField": "CapitalEffectCity"
+    },
+    "meConnectedEffectCity": {
+      "args": [
+        "nestedEffectCityHelp"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[link(EFFECTCITY_CONNECTED) Cities] {0_cityEffectText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CONNECTED_EFFECT",
+      "valueScale": 1,
+      "xmlField": "ConnectedEffectCity"
+    },
+    "meDescription": {
+      "args": [
+        "raw"
+      ],
+      "notes": "Description TEXT_* rendered verbatim at bottom",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "Description"
+    },
+    "meEffectCity": {
+      "args": [
+        "nestedEffectCityHelp"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[All Cities] {0_cityEffectText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_ALL_CITIES_EFFECT",
+      "valueScale": 1,
+      "xmlField": "EffectCity"
+    },
+    "meEffectCityExtra": {
+      "args": [
+        "nestedEffectCityHelp"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[All Cities] {0_cityEffectText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_ALL_CITIES_EFFECT",
+      "valueScale": 1,
+      "xmlField": "EffectCityExtra"
+    },
+    "meEffectPlayer": {
+      "args": [
+        "effectPlayerLink"
+      ],
+      "notes": "chained EffectPlayer unlock",
+      "perEntry": "none",
+      "template": "Unlocks {0_effectPlayer}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_UNLOCKS_EFFECT",
+      "valueScale": 1,
+      "xmlField": "EffectPlayer"
+    },
+    "meEffectUnit": {
+      "args": [
+        "nestedEffectUnitHelp"
+      ],
+      "notes": "COMMA scope surroundingText",
+      "perEntry": "none",
+      "template": "[All Units] {LIST}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_ALL_UNITS_EFFECT",
+      "valueScale": 1,
+      "xmlField": "EffectUnit"
+    },
+    "meFoundBonus": {
+      "args": [
+        "nestedBonusHelp"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "New Cities: {0_bonusText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_FOUND_BONUS",
+      "valueScale": 1,
+      "xmlField": "FoundBonus"
+    },
+    "meNoGovernorEffectCity": {
+      "args": [
+        "nestedEffectCityHelp"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[Cities without link(CONCEPT_GOVERNOR)] {0_cityEffectText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_NO_GOVERNOR_EFFECT",
+      "valueScale": 1,
+      "xmlField": "NoGovernorEffectCity"
+    },
+    "meStartBonus": {
+      "args": [
+        "nestedBonusHelp"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "On Start: {0_bonusText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_START_BONUS",
+      "valueScale": 1,
+      "xmlField": "StartBonus"
+    },
+    "meStateReligionEffectCity": {
+      "args": [
+        "nestedEffectCityHelp"
+      ],
+      "notes": "if a concrete state religion known, TEXT_HELPTEXT_EFFECT_PLAYER_HELP_RELIGIOUS_CITIES_EFFECT with religionLink is used",
+      "perEntry": "none",
+      "template": "[link(CONCEPT_STATE_RELIGION) Cities] {0_cityEffectText}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_STATE_RELIGION_CITIES_EFFECT",
+      "valueScale": 1,
+      "xmlField": "StateReligionEffectCity"
+    },
+    "miBuildModifier": {
+      "args": [
+        "signedPercent",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {1_turnScale} to build Improvements",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_BUILD_TURN_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iBuildModifier"
+    },
+    "miBuildTurnChange": {
+      "args": [
+        "signed",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {1_turnScale} to build Improvements",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_BUILD_TURN_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iBuildTurnChange"
+    },
+    "miConsumptionModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "computed per-yield consumption delta appended in parentheses when totals shown",
+      "perEntry": "none",
+      "template": "{0_value} Unit Consumption",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_CONSUMPTION_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iConsumptionModifier"
+    },
+    "miFamilyOpinionChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_OPINION_FAMILY,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_FAMILY_OPINION_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iFamilyOpinionChange"
+    },
+    "miGovernorCostModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_GOVERNOR) assignment cost: {0_modifier}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_GOVERNOR_COST_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iGovernorCostModifier"
+    },
+    "miHarvestModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Harvest Production",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_HARVEST_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iHarvestModifier"
+    },
+    "miLeaderDescendantOpinionChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Leader's Descendants: {0_value} Opinion",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_LEADER_DESCENDANT_OPINION_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iLeaderDescendantOpinionChange"
+    },
+    "miLeaderOpinionChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "uses TEXT_HELPTEXT_EFFECT_PLAYER_HEAD_OPINION_CHANGE variant in the no-characters case",
+      "perEntry": "none",
+      "template": "{0_value} Foreign/Tribal Leader Opinions",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_LEADER_OPINION_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iLeaderOpinionChange"
+    },
+    "miLeaderReligionOpinionChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_OPINION_RELIGION,3) for Leader's link(CONCEPT_RELIGION)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_LEADER_RELIGION_OPINION_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iLeaderReligionOpinionChange"
+    },
+    "miLegitimacy": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value}  icon(YIELD_LEGITIMACY)Legitimacy",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_LEGITIMACY",
+      "valueScale": 1,
+      "xmlField": "iLegitimacy"
+    },
+    "miMaxCities": {
+      "args": [
+        "value",
+        "turnScalePlural"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can have at most {0_value} Cities",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_MAX_CITIES",
+      "valueScale": 1,
+      "xmlField": "iMaxCities"
+    },
+    "miMaxOrders": {
+      "args": [
+        "value",
+        "turnScalePlural"
+      ],
+      "notes": "XML tag is iMaxActions (C# member miMaxOrders)",
+      "perEntry": "none",
+      "template": "Store {0_value} link(YIELD_ORDERS) between {1_turnScale}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_MAX_ACTIONS",
+      "valueScale": 1,
+      "xmlField": "iMaxActions"
+    },
+    "miMissionModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_MISSION) Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_MISSION_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iMissionModifier"
+    },
+    "miReligionOpinionChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_OPINION_RELIGION,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_RELIGION_OPINION_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iReligionOpinionChange"
+    },
+    "miRepairModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} costs to repair link(CONCEPT_PILLAGE,1) Improvements",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_REPAIR_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iRepairModifier"
+    },
+    "miSellPenaltyModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Sell Price Penalty",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_SELL_PENALTY_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iSellPenaltyModifier"
+    },
+    "miStartLawModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Start Law Cost",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_START_LAW_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iStartLawModifier"
+    },
+    "miStateReligionOpinionChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_STATE_RELIGION) link(CONCEPT_OPINION_RELIGION,3)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_STATE_RELIGION_OPINION_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iStateReligionOpinionChange"
+    },
+    "miStateReligionSpread": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value}% link(CONCEPT_STATE_RELIGION) Spread Chance for link(CONCEPT_WORLD_RELIGION,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_STATE_RELIGION_SPREAD_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iStateReligionSpread"
+    },
+    "miSwitchLawMaximum": {
+      "args": [
+        "yieldValueIconLink(CIVICS)"
+      ],
+      "notes": "value passed unscaled (no YIELDS_MULTIPLIER)",
+      "perEntry": "none",
+      "template": "Can Switch Laws for {0}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_SWITCH_LAW_MAXIMUM",
+      "valueScale": 1,
+      "xmlField": "iSwitchLawMaximum"
+    },
+    "miSwitchLawModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Switch Law Cost",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_SWITCH_LAW_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iSwitchLawModifier"
+    },
+    "miTechCostModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} to Tech cost",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_TECH_COST_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iTechCostModifier"
+    },
+    "miTechsAvailableChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Tech Card Hand Size",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_TECH_AVAILABLE_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iTechsAvailableChange"
+    },
+    "miTrainingOrderModifier": {
+      "args": [
+        "signedPercent",
+        "yieldIconLink(TRAINING)",
+        "yieldText"
+      ],
+      "notes": "per +1 Training (buildYieldTextVariable(1, TRAINING))",
+      "perEntry": "none",
+      "template": "{0_value} Cost to Spend {1_trainingIcon} for {2_yield}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_TRAINING_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iTrainingOrderModifier"
+    },
+    "miTribeFatigueChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[Allied Tribe Units] {0_value} link(CONCEPT_FATIGUE)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_TRIBE_FATIGUE_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iTribeFatigueChange"
+    },
+    "miTribeLeaderOpinionChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Tribal Leader Opinions",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_TRIBE_LEADER_OPINION_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iTribeLeaderOpinionChange"
+    },
+    "miVP": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} {singular_0:link(CONCEPT_VICTORY_POINT):link(CONCEPT_VICTORY_POINT,2)}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_VPS",
+      "valueScale": 1,
+      "xmlField": "iVP"
+    },
+    "miVisionChange": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_VISION) Range",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_VISION_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iVisionChange"
+    },
+    "miWonderModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} link(CONCEPT_WONDER) Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_WONDER_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iWonderModifier"
+    },
+    "miWorldReligionSpread": {
+      "args": [
+        "signed"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value}% Spread Chance for link(CONCEPT_WORLD_RELIGION,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_WORLD_RELIGION_SPREAD_CHANGE",
+      "valueScale": 1,
+      "xmlField": "iWorldReligionSpread"
+    },
+    "miXPAllTurn": {
+      "args": [
+        "signed",
+        "turnScale"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} XP/{1_turnScale} for All Units",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_ALL_UNIT_XP",
+      "valueScale": 1,
+      "xmlField": "iXPAllTurn"
+    },
+    "miXPIdleTurn": {
+      "args": [
+        "signed",
+        "turnScale",
+        "idleLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} XP/{1_turnScale} for {2_idle} Units",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_IDLE_UNIT_XP",
+      "valueScale": 1,
+      "xmlField": "iXPIdleTurn"
+    },
+    "miXPModifier": {
+      "args": [
+        "signedPercent"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} XP for All Units during Combat",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_XP_COMBAT_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iXPModifier"
+    },
+    "miYieldUpkeepModifier": {
+      "args": [
+        "percentValue"
+      ],
+      "notes": "TEXT key not found in text-*.xml",
+      "perEntry": "none",
+      "template": null,
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_YIELD_UPKEEP_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iYieldUpkeepModifier"
+    },
+    "mlpMissionPlayerBonus": {
+      "args": [
+        "missionResultName",
+        "nestedBonusHelp"
+      ],
+      "notes": "",
+      "perEntry": "missionResult",
+      "template": "[On {0_mission}] {1_bonus}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_MISSION_PLAYER_BONUS",
+      "valueScale": 1,
+      "xmlField": "MissionPlayerBonus"
+    },
+    "mlpMissionTargetBonus": {
+      "args": [
+        "missionResultName",
+        "nestedBonusHelp"
+      ],
+      "notes": "",
+      "perEntry": "missionResult",
+      "template": "[On {0_missionResult}, Mission Target] {1_bonus}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_MISSION_TARGET_BONUS",
+      "valueScale": 1,
+      "xmlField": "MissionTargetBonus"
+    },
+    "mlpReligionSpreadBonus": {
+      "args": [
+        "religionLink",
+        "nestedBonusHelp"
+      ],
+      "notes": "",
+      "perEntry": "religion",
+      "template": "[On Spreading {0_religion}] {1_bonus}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_RELIGION_SPREAD_BONUS",
+      "valueScale": 1,
+      "xmlField": "ReligionSpreadBonus"
+    },
+    "mlpStatBonus": {
+      "args": [
+        "statName",
+        "nestedBonusHelp"
+      ],
+      "notes": "",
+      "perEntry": "stat",
+      "template": "[On {0_stat}] {1_bonus}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_STAT_BONUS",
+      "valueScale": 1,
+      "xmlField": "StatBonus"
+    },
+    "mlpTeamDiplomacyYields": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale",
+        "diplomacyLink"
+      ],
+      "notes": "",
+      "perEntry": "diplomacy,yield",
+      "template": "{0_yield}/{1_turnScale} per link(CONCEPT_NATION) at {2_diplomacy}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_DIPLOMACY_YIELD",
+      "valueScale": 0.1,
+      "xmlField": "TeamDiplomacyYields"
+    },
+    "mlpTribeDiplomacyYields": {
+      "args": [
+        "yieldValueIconLink",
+        "turnScale",
+        "diplomacyLink"
+      ],
+      "notes": "",
+      "perEntry": "diplomacy,yield",
+      "template": "{0_yield}/{1_turnScale} per link(CONCEPT_TRIBE) at {2_diplomacy}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_PLAYER_HELP_TRIBE_DIPLOMACY_YIELD",
+      "valueScale": 0.1,
+      "xmlField": "TribeDiplomacyYields"
+    }
+  },
+  "effectUnit": {
+    "mabHideTerrainTarget": {
+      "args": [
+        "list(terrainLink|heightLink|vegetationLink|freshWaterLink)"
+      ],
+      "notes": "terrain target expanded into its terrains/heights/vegetations/fresh-water members",
+      "perEntry": "terrainTarget",
+      "template": "link(CONCEPT_HIDDEN) in Friendly or link(CONCEPT_NEUTRAL) {0_vegetation}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HIDDEN_IN",
+      "valueScale": 1,
+      "xmlField": "abHideTerrainTarget"
+    },
+    "maeBuildImprovements": {
+      "args": [
+        "list(improvementLink)"
+      ],
+      "notes": "",
+      "perEntry": "improvement",
+      "template": "Can build: {0_improvementList}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_IMPROVEMENTS",
+      "valueScale": 1,
+      "xmlField": "aeBuildImprovements"
+    },
+    "maeBuyTileYield": {
+      "args": [
+        "list(yieldLink)"
+      ],
+      "notes": "",
+      "perEntry": "yield",
+      "template": "Can buy Tiles with {0_yieldList}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_BUY_TILE_YIELD",
+      "valueScale": 1,
+      "xmlField": "aeBuyTileYield"
+    },
+    "maeEffectUnitImmune": {
+      "args": [
+        "list(effectUnitLink)"
+      ],
+      "notes": "",
+      "perEntry": "effectUnit",
+      "template": "Immune from {0_effectList}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_IMMUNE",
+      "valueScale": 1,
+      "xmlField": "aeEffectUnitImmune"
+    },
+    "maeEffectUnitUnlock": {
+      "args": [
+        "effectUnitLink"
+      ],
+      "notes": "rendered as bare chained effectUnit link (bIncludeIndirect only), no TEXT wrapper",
+      "perEntry": "effectUnit",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aeEffectUnitUnlock"
+    },
+    "maeIgnoreHeightCost": {
+      "args": [
+        "list(heightLink)"
+      ],
+      "notes": "",
+      "perEntry": "height",
+      "template": "Ignore {0_landType} Movement Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_IGNORE_HEIGHT_COST",
+      "valueScale": 1,
+      "xmlField": "aeIgnoreHeightCost"
+    },
+    "maeIgnoreVegetationCost": {
+      "args": [
+        "list(vegetationLink)"
+      ],
+      "notes": "reuses the IGNORE_HEIGHT_COST key with vegetation list",
+      "perEntry": "vegetation",
+      "template": "Ignore {0_landType} Movement Costs",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_IGNORE_HEIGHT_COST",
+      "valueScale": 1,
+      "xmlField": "aeIgnoreVegetationCost"
+    },
+    "maeIgnoreVegetationDefense": {
+      "args": [
+        "list(vegetationLink)"
+      ],
+      "notes": "",
+      "perEntry": "vegetation",
+      "template": "Ignore link(UNITTRAIT_RANGED) modifier from attacking into {0_vegetation}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_IGNORE_VEGETATION_DEFENSE",
+      "valueScale": 1,
+      "xmlField": "aeIgnoreVegetationDefense"
+    },
+    "maeKillGrantsEffectUnit": {
+      "args": [
+        "list(effectUnitLink)"
+      ],
+      "notes": "COMMA_AND scope surroundingText",
+      "perEntry": "effectUnit",
+      "template": "When this Unit is killed, the killing unit gets {LIST}",
+      "textKey": "TEXT_HELPTEXT_GRANTS_PROMOTION",
+      "valueScale": 1,
+      "xmlField": "aeKillGrantsEffectUnit"
+    },
+    "maeUnitTraitZOC": {
+      "args": [
+        "list(unitTraitLink)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "link(CONCEPT_ZOC) blocks {0_unitTraitList}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_ZOC_BLOCKS",
+      "valueScale": 1,
+      "xmlField": "aeUnitTraitZOC"
+    },
+    "maiAttackPercent": {
+      "args": [
+        "attackLink",
+        "value|false",
+        "percentValue|false"
+      ],
+      "notes": "rendered jointly with aiAttackValue",
+      "perEntry": "attack",
+      "template": "Attacks {0_attackType}{true_1: {1_attackValue}}{true_2: at {2_attackPercent}%}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_ATTACK_VALUE_ITEM",
+      "valueScale": 1,
+      "xmlField": "aiAttackPercent"
+    },
+    "maiAttackValue": {
+      "args": [
+        "attackLink",
+        "value|false",
+        "percentValue|false"
+      ],
+      "notes": "paired with aiAttackPercent for the same attack type",
+      "perEntry": "attack",
+      "template": "Attacks {0_attackType}{true_1: {1_attackValue}}{true_2: at {2_attackPercent}%}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_ATTACK_VALUE_ITEM",
+      "valueScale": 1,
+      "xmlField": "aiAttackValue"
+    },
+    "maiHarvestResourceModifier": {
+      "args": [
+        "signedPercent",
+        "bool(rightJustify)",
+        "list(resourceLink)"
+      ],
+      "notes": "COMMA_AND scope; resources sharing value grouped",
+      "perEntry": "resource",
+      "template": "<true_1>{LIST} link(CONCEPT_HARVEST_RESOURCE,4) Yields: {0_value}<false>{0_value} {LIST} link(CONCEPT_HARVEST_RESOURCE,4) Yields<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HARVEST_RESOURCE_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiHarvestResourceModifier"
+    },
+    "maiHeightFromModifier": {
+      "args": [
+        "list(heightLink)",
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "height",
+      "template": "<true_2>From {0_tileLink}: {1_value}<false>{1_value} From {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_FIGHT_FROM",
+      "valueScale": 1,
+      "xmlField": "aiHeightFromModifier"
+    },
+    "maiImprovementToModifier": {
+      "args": [
+        "list(improvementLink)",
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "improvement",
+      "template": "<true_2>Into {0_tileLink}: {1_value}<false>{1_value} Into {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ATTACK_INTO",
+      "valueScale": 1,
+      "xmlField": "aiImprovementToModifier"
+    },
+    "maiMeleeToClearTerrainTargetModifier": {
+      "args": [
+        "list(terrainTargetLink)",
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "terrainTarget",
+      "template": "<true_2>Into {0_tileLink} & link(CONCEPT_CLEAR): {1_value} (Melee Combat)<false>{1_value} (Melee Combat) Into {0_tileLink} & link(CONCEPT_CLEAR)<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ATTACK_INTO_MELEE",
+      "valueScale": 1,
+      "xmlField": "aiMeleeToClearTerrainTargetModifier"
+    },
+    "maiMilitaryKillYield": {
+      "args": [
+        "yieldValueIconLink:rate",
+        "bool(false)"
+      ],
+      "notes": "value NOT divided by 10 (no YIELDS_MULTIPLIER passed)",
+      "perEntry": "yield",
+      "template": "{0_yield} per Unit killed{true_1: (in nearest City)}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_UNIT_MILITARY_KILL_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiMilitaryKillYield"
+    },
+    "maiMilitaryNationKillYield": {
+      "args": [
+        "yieldValueIconLink:rate",
+        "bool(false)"
+      ],
+      "notes": "value not /10",
+      "perEntry": "yield",
+      "template": "{0_yield} per link(CONCEPT_NATION,3) Unit killed{true_1: (in nearest City)}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_UNIT_MILITARY_NATION_KILL_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiMilitaryNationKillYield"
+    },
+    "maiMilitaryTribeKillYield": {
+      "args": [
+        "yieldValueIconLink:rate",
+        "bool(false)"
+      ],
+      "notes": "value not /10",
+      "perEntry": "yield",
+      "template": "{0_yield} per link(CONCEPT_TRIBE,3) Unit killed{true_1: (in nearest City)}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_UNIT_MILITARY_TRIBE_KILL_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiMilitaryTribeKillYield"
+    },
+    "maiOccurrenceFromModifier": {
+      "args": [
+        "occurrenceName",
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "occurrence",
+      "template": "<true_2>From {0_tileLink}: {1_value}<false>{1_value} From {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_FIGHT_FROM",
+      "valueScale": 1,
+      "xmlField": "aiOccurrenceFromModifier"
+    },
+    "maiTerrainFromModifier": {
+      "args": [
+        "list(terrainLink)",
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "terrains with equal modifier grouped",
+      "perEntry": "terrain",
+      "template": "<true_2>From {0_tileLink}: {1_value}<false>{1_value} From {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_FIGHT_FROM",
+      "valueScale": 1,
+      "xmlField": "aiTerrainFromModifier"
+    },
+    "maiUnitTraitModifier": {
+      "args": [
+        "list(unitTraitLink)",
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "<true_2>Vs. {0_unitTrait} Units: {1_value}<false>{1_value} Vs. {0_unitTrait} Units<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_VS_UNIT_TRAIT",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitModifier"
+    },
+    "maiUnitTraitModifierAttack": {
+      "args": [
+        "list(unitTraitLink)",
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "<true_2>Vs. {0_unitTrait} Units: {1_value}<false>{1_value} Vs. {0_unitTrait} Units<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_VS_UNIT_TRAIT",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitModifierAttack"
+    },
+    "maiUnitTraitModifierDefense": {
+      "args": [
+        "list(unitTraitLink)",
+        "defenseValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "<true_2>Vs. {0_unitTrait} Units: {1_value}<false>{1_value} Vs. {0_unitTrait} Units<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_VS_UNIT_TRAIT",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitModifierDefense"
+    },
+    "maiUnitTraitModifierMelee": {
+      "args": [
+        "list(unitTraitLink)",
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "unitTrait",
+      "template": "<true_2>link(UNITTRAIT_MELEE) Combat Vs. {0_unitTrait} Units: {1_value}<false>{1_value} link(UNITTRAIT_MELEE) Combat Vs. {0_unitTrait} Units<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_IN_MELEE_VS",
+      "valueScale": 1,
+      "xmlField": "aiUnitTraitModifierMelee"
+    },
+    "maiVegetationFromModifier": {
+      "args": [
+        "list(vegetationLink)",
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "vegetation",
+      "template": "<true_2>From {0_tileLink}: {1_value}<false>{1_value} From {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_FIGHT_FROM",
+      "valueScale": 1,
+      "xmlField": "aiVegetationFromModifier"
+    },
+    "mbApplyEffectUnitAdjacentOnly": {
+      "args": [
+        "bool"
+      ],
+      "notes": "passed as bool arg into the APPLIES* templates, no key of its own",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "bApplyEffectUnitAdjacentOnly"
+    },
+    "mbBuildRoad": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can build Roads",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_BUILD_ROAD",
+      "valueScale": 1,
+      "xmlField": "bBuildRoad"
+    },
+    "mbCriticalImmune": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Immune to link(CONCEPT_CRITICAL_HIT)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_CRITICAL_IMMUNE",
+      "valueScale": 1,
+      "xmlField": "bCriticalImmune"
+    },
+    "mbEndRout": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "A unit cannot link(CONCEPT_ROUT) (attack again) while this is in effect",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_END_ROUT",
+      "valueScale": 1,
+      "xmlField": "bEndRout"
+    },
+    "mbEnlistNext": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Next Kill will link(CONCEPT_ENLIST) and remove this effect",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ENLIST_NEXT",
+      "valueScale": 1,
+      "xmlField": "bEnlistNext"
+    },
+    "mbFamilyTerritoryOnly": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Cannot leave Family territory",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_FAMILY_TERRITORY_ONLY",
+      "valueScale": 1,
+      "xmlField": "bFamilyTerritoryOnly"
+    },
+    "mbGeneralHopping": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Upon the unit's death, the link(CONCEPT_GENERAL) will move to the nearest eligible unit.",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_GENERAL_HOPPING",
+      "valueScale": 1,
+      "xmlField": "bGeneralHopping"
+    },
+    "mbHarvest": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_HARVEST_RESOURCE,1)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HARVEST",
+      "valueScale": 1,
+      "xmlField": "bHarvest"
+    },
+    "mbHealKill": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_HEAL,2) on Unit killed",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HEAL_KILL",
+      "valueScale": 1,
+      "xmlField": "bHealKill"
+    },
+    "mbHealNeutral": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_HEAL) in link(CONCEPT_NEUTRAL) Territory",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HEAL_NEUTRAL",
+      "valueScale": 1,
+      "xmlField": "bHealNeutral"
+    },
+    "mbHealPillage": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_HEAL) while Pillaging",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HEAL_PILLAGE",
+      "valueScale": 1,
+      "xmlField": "bHealPillage"
+    },
+    "mbIgnoreZOC": {
+      "args": [
+        "ignoreZOCLink"
+      ],
+      "notes": "rendered as bare buildIgnoreZOCLinkVariable(), no TEXT wrapper",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "bIgnoreZOC"
+    },
+    "mbIgnoresDistance": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Ignores link(CONCEPT_DISTANCE_MODIFIER)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_IGNORES_DISTANCE",
+      "valueScale": 1,
+      "xmlField": "bIgnoresDistance"
+    },
+    "mbImmobilize": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_IMMOBILIZE,1) Target for one Turn",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_IMMOBILIZE",
+      "valueScale": 1,
+      "xmlField": "bImmobilize"
+    },
+    "mbLastStand": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Unit cannot die with {gt}1 HP",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_LAST_STAND",
+      "valueScale": 1,
+      "xmlField": "bLastStand"
+    },
+    "mbLaunchOffensive": {
+      "args": [
+        "launchOffensiveLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can {0_link}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_LAUNCH_OFFENSIVE",
+      "valueScale": 1,
+      "xmlField": "bLaunchOffensive"
+    },
+    "mbMercenary": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can be hired as a link(CONCEPT_MERCENARY)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_MERCENARY",
+      "valueScale": 1,
+      "xmlField": "bMercenary"
+    },
+    "mbNoRoadCooldown": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Add Multiple Roads per Year",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_NO_ROAD_COOLDOWN",
+      "valueScale": 1,
+      "xmlField": "bNoRoadCooldown"
+    },
+    "mbPillage": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_PILLAGE) link(CONCEPT_IMPROVEMENT,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_PILLAGE",
+      "valueScale": 1,
+      "xmlField": "bPillage"
+    },
+    "mbPromote": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can gain link(CONCEPT_XP,1) and link(CONCEPT_PROMOTION,2)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_PROMOTE",
+      "valueScale": 1,
+      "xmlField": "bPromote"
+    },
+    "mbPush": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Target attempts to link(CONCEPT_RETREAT) or else link(EFFECTUNIT_DISARMED)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_PUSH",
+      "valueScale": 1,
+      "xmlField": "bPush"
+    },
+    "mbPushWater": {
+      "args": [],
+      "notes": "else-if after bPush",
+      "perEntry": "none",
+      "template": "Target attempts to link(CONCEPT_RETREAT) or else link(EFFECTUNIT_DISARMED) (Water Only)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_PUSH_WATER",
+      "valueScale": 1,
+      "xmlField": "bPushWater"
+    },
+    "mbRemoveVegetation": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Remove Vegetation",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_REMOVE_VEGETATION",
+      "valueScale": 1,
+      "xmlField": "bRemoveVegetation"
+    },
+    "mbRout": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_ROUT) (attack again) after defeating a Unit in Combat",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_CAN_ROUT",
+      "valueScale": 1,
+      "xmlField": "bRout"
+    },
+    "mbSpreadReligion": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can link(CONCEPT_SPREAD_RELIGION)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_SPREAD_RELIGION",
+      "valueScale": 1,
+      "xmlField": "bSpreadReligion"
+    },
+    "mbStun": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "link(CONCEPT_STUN,1) Target for one Turn",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_STUN",
+      "valueScale": 1,
+      "xmlField": "bStun"
+    },
+    "mbTheology": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can Establish link(CONCEPT_THEOLOGY)",
+      "textKey": "TEXT_HELPTEXT_UNIT_TRAIT_CAN_ESTABLISH_THEOLOGY",
+      "valueScale": 1,
+      "xmlField": "bTheology"
+    },
+    "mbTradeOutpost": {
+      "args": [],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can establish a link(CONCEPT_TRADE_OUTPOST)",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_TRADE_OUTPOST",
+      "valueScale": 1,
+      "xmlField": "bTradeOutpost"
+    },
+    "mbZOC": {
+      "args": [
+        "zocLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Has {0_zocLink}",
+      "textKey": "TEXT_HELPTEXT_UNIT_TYPE_HAS_ZOC",
+      "valueScale": 1,
+      "xmlField": "bZOC"
+    },
+    "meAdjacentEffectUnit": {
+      "args": [
+        "effectUnitLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[Adjacent Units] {0_unitEffect}",
+      "textKey": "TEXT_HELPTEXT_ADJACENT_UNITS",
+      "valueScale": 1,
+      "xmlField": "AdjacentEffectUnit"
+    },
+    "meDescription": {
+      "args": [
+        "raw"
+      ],
+      "notes": "Description TEXT_* rendered verbatim at bottom",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "Description"
+    },
+    "meNoMoveEffectUnit": {
+      "args": [
+        "effectUnitLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "[When Stationary] {0_unitEffect}",
+      "textKey": "TEXT_HELPTEXT_NO_MOVE_EFFECT",
+      "valueScale": 1,
+      "xmlField": "NoMoveEffectUnit"
+    },
+    "miActionsExtra": {
+      "args": [
+        "signed",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} Free {singular_0:Action:Actions}",
+      "textKey": "TEXT_HELPTEXT_UNIT_FREE_ACTIONS",
+      "valueScale": 1,
+      "xmlField": "iActionsExtra"
+    },
+    "miAdjacentDifferentModifier": {
+      "args": [
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>If Different Unit Adjacent: {0_value}<false>{0_value} If Different Unit Adjacent<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_DIFFERENT_UNIT_ADJACENT",
+      "valueScale": 1,
+      "xmlField": "iAdjacentDifferentModifier"
+    },
+    "miAdjacentSameAttackModifier": {
+      "args": [
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>If Same Unit Adjacent: {0_value}<false>{0_value} If Same Unit Adjacent<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_SAME_UNIT_ADJACENT",
+      "valueScale": 1,
+      "xmlField": "iAdjacentSameAttackModifier"
+    },
+    "miAdjacentSameDefenseModifier": {
+      "args": [
+        "defenseValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>If Same Unit Adjacent: {0_value}<false>{0_value} If Same Unit Adjacent<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_SAME_UNIT_ADJACENT",
+      "valueScale": 1,
+      "xmlField": "iAdjacentSameDefenseModifier"
+    },
+    "miAdjacentSameModifier": {
+      "args": [
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>If Same Unit Adjacent: {0_value}<false>{0_value} If Same Unit Adjacent<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_SAME_UNIT_ADJACENT",
+      "valueScale": 1,
+      "xmlField": "iAdjacentSameModifier"
+    },
+    "miAttackModifier": {
+      "args": [
+        "attackValueLink"
+      ],
+      "notes": "icon-only render, signed percent",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iAttackModifier"
+    },
+    "miConnectedAttackModifier": {
+      "args": [
+        "connectedLink",
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_2>Into {0_tileLink}: {1_value}<false>{1_value} Into {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ATTACK_INTO",
+      "valueScale": 1,
+      "xmlField": "iConnectedAttackModifier"
+    },
+    "miConnectedDefenseModifier": {
+      "args": [
+        "connectedLink",
+        "defenseValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_2>From {0_tileLink}: {1_value}<false>{1_value} From {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_FIGHT_FROM",
+      "valueScale": 1,
+      "xmlField": "iConnectedDefenseModifier"
+    },
+    "miCriticalChance": {
+      "args": [
+        "criticalLink"
+      ],
+      "notes": "icon-only render",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iCriticalChance"
+    },
+    "miDamageAlways": {
+      "args": [
+        "signed",
+        "turnScale",
+        "bool(rightJustify)"
+      ],
+      "notes": "value negated for display",
+      "perEntry": "none",
+      "template": "{0_value} HP/{1_turn}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_DAMAGE_ALWAYS",
+      "valueScale": 1,
+      "xmlField": "iDamageAlways"
+    },
+    "miDamagedThemModifier": {
+      "args": [
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>Vs. Damaged: {0_value}<false>{0_value} Vs. Damaged<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_VS_DAMAGED",
+      "valueScale": 1,
+      "xmlField": "iDamagedThemModifier"
+    },
+    "miDamagedUsDefenseModifier": {
+      "args": [
+        "defenseValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>If Damaged: {0_value}<false>{0_value} If Damaged<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_IF_DAMAGED",
+      "valueScale": 1,
+      "xmlField": "iDamagedUsDefenseModifier"
+    },
+    "miDamagedUsModifier": {
+      "args": [
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>If Damaged: {0_value}<false>{0_value} If Damaged<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_IF_DAMAGED",
+      "valueScale": 1,
+      "xmlField": "iDamagedUsModifier"
+    },
+    "miDefenseModifier": {
+      "args": [
+        "defenseValueLink"
+      ],
+      "notes": "icon-only render, signed percent",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iDefenseModifier"
+    },
+    "miEnlistOnKillChance": {
+      "args": [
+        "signedPercent",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_ENLIST) chance on Kill: {0_value}<false>{0_value} link(CONCEPT_ENLIST) chance on Kill<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_ENLIST_ON_KILL",
+      "valueScale": 1,
+      "xmlField": "iEnlistOnKillChance"
+    },
+    "miFatigueExtra": {
+      "args": [
+        "signed",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>Fatigue Limit: {0_value}<false>{0_value} Fatigue Limit<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_FATIGUE_LIMIT",
+      "valueScale": 1,
+      "xmlField": "iFatigueExtra"
+    },
+    "miFlankingAttackModifier": {
+      "args": [
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>If link(CONCEPT_FLANKING): {0_value}<false>{0_value} If link(CONCEPT_FLANKING)<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_FLANKING_ATTACK",
+      "valueScale": 1,
+      "xmlField": "iFlankingAttackModifier"
+    },
+    "miHarvestDistanceModifier": {
+      "args": [
+        "signedPercent",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_HARVEST_RESOURCE) Distance: {0_value}<false>{0_value} link(CONCEPT_HARVEST_RESOURCE) Distance<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HARVEST_DISTANCE",
+      "valueScale": 1,
+      "xmlField": "iHarvestDistanceModifier"
+    },
+    "miHarvestYieldModifier": {
+      "args": [
+        "signedPercent",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_HARVEST_RESOURCE) Yields: {0_value}<false>{0_value} link(CONCEPT_HARVEST_RESOURCE) Yields<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HARVEST_YIELD",
+      "valueScale": 1,
+      "xmlField": "iHarvestYieldModifier"
+    },
+    "miHasGeneralModifier": {
+      "args": [
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>With link(CONCEPT_GENERAL): {0_value}<false>{0_value} With link(CONCEPT_GENERAL)<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HAS_GENERAL",
+      "valueScale": 1,
+      "xmlField": "iHasGeneralModifier"
+    },
+    "miHealAlways": {
+      "args": [
+        "signed",
+        "turnScale",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "{0_value} HP/{1_turn}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HEAL_ALWAYS",
+      "valueScale": 1,
+      "xmlField": "iHealAlways"
+    },
+    "miHealExtra": {
+      "args": [
+        "signed",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_HEAL) Action: {0_value} HP<false>{0_value} HP from link(CONCEPT_HEAL) Action<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HEAL_EXTRA",
+      "valueScale": 1,
+      "xmlField": "iHealExtra"
+    },
+    "miHomeModifier": {
+      "args": [
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>National Territory: {0_value}<false>{0_value} in National Territory<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_HOME_MODIFIER",
+      "valueScale": 1,
+      "xmlField": "iHomeModifier"
+    },
+    "miMarchCostModifier": {
+      "args": [
+        "signedPercent",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_MARCH) link(YIELD_TRAINING,1) Cost: {0_value}<false>{0_value} link(CONCEPT_MARCH) link(YIELD_TRAINING,1) Cost<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_MARCH_COST",
+      "valueScale": 1,
+      "xmlField": "iMarchCostModifier"
+    },
+    "miMeleeCounter": {
+      "args": [
+        "value"
+      ],
+      "notes": "value negated for display",
+      "perEntry": "none",
+      "template": "Melee Counterattack: {0} link(CONCEPT_HP)",
+      "textKey": "TEXT_HELPTEXT_MELEE_COUNTER",
+      "valueScale": 1,
+      "xmlField": "iMeleeCounter"
+    },
+    "miMeleeCounterPercent": {
+      "args": [
+        "value",
+        "bool"
+      ],
+      "notes": "only if > 0; {1}=value != 100",
+      "perEntry": "none",
+      "template": "Counterattacks during Melee{true_1: at {0_percent}%}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_MELEE_COUNTER",
+      "valueScale": 1,
+      "xmlField": "iMeleeCounterPercent"
+    },
+    "miMovementExtra": {
+      "args": [
+        "movementLink"
+      ],
+      "notes": "icon-only render",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iMovementExtra"
+    },
+    "miPerLevelAttackModifier": {
+      "args": [
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>Per Unit Level: {0_value}<false>{0_value} per Unit Level<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_PER_LEVEL_ATTACK",
+      "valueScale": 1,
+      "xmlField": "iPerLevelAttackModifier"
+    },
+    "miPillageYieldModifier": {
+      "args": [
+        "signedPercent",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_PILLAGE) Yield: {0_value}<false>{0_value} link(CONCEPT_PILLAGE) Yield<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_PILLAGE_YIELD",
+      "valueScale": 1,
+      "xmlField": "iPillageYieldModifier"
+    },
+    "miRangeExtra": {
+      "args": [
+        "rangeLink"
+      ],
+      "notes": "icon-only render",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iRangeExtra"
+    },
+    "miRevealExtra": {
+      "args": [
+        "signed",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>Reveal: {0_value}<false>{0_value} Reveal<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_REVEAL",
+      "valueScale": 1,
+      "xmlField": "iRevealExtra"
+    },
+    "miRiverAttackModifier": {
+      "args": [
+        "riverLink",
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_2>Across {0_riverLink}: {1_value}<false>{1_value} Across {0_riverLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ATTACK_ACROSS_RIVER",
+      "valueScale": 1,
+      "xmlField": "iRiverAttackModifier"
+    },
+    "miRoadMovementModifier": {
+      "args": [
+        "signedPercent",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_ROAD) icon(MOVEMENT) Cost: {0_value}<false>{0_value} link(CONCEPT_ROAD) icon(MOVEMENT) Cost<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ROAD_MOVEMENT",
+      "valueScale": 1,
+      "xmlField": "iRoadMovementModifier"
+    },
+    "miSettlementAttackModifier": {
+      "args": [
+        "settlementLink",
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_2>Into {0_tileLink}: {1_value}<false>{1_value} Into {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ATTACK_INTO",
+      "valueScale": 1,
+      "xmlField": "iSettlementAttackModifier"
+    },
+    "miStrengthModifier": {
+      "args": [
+        "unitStrengthValueLink"
+      ],
+      "notes": "icon-only render (no TEXT key): strength icon + signed percent, skipped when bSkipIcons",
+      "perEntry": "none",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iStrengthModifier"
+    },
+    "miUrbanAttackModifier": {
+      "args": [
+        "urbanLink",
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_2>Into {0_tileLink}: {1_value}<false>{1_value} Into {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ATTACK_INTO",
+      "valueScale": 1,
+      "xmlField": "iUrbanAttackModifier"
+    },
+    "miUrbanDefenseModifier": {
+      "args": [
+        "urbanLink",
+        "defenseValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_2>From {0_tileLink}: {1_value}<false>{1_value} From {0_tileLink}<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_FIGHT_FROM",
+      "valueScale": 1,
+      "xmlField": "iUrbanDefenseModifier"
+    },
+    "miVisionExtra": {
+      "args": [
+        "signed",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_VISION): {0_value}<false>{0_value} link(CONCEPT_VISION)<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_VISION",
+      "valueScale": 1,
+      "xmlField": "iVisionExtra"
+    },
+    "miVsGeneralDefenseModifier": {
+      "args": [
+        "defenseValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>Vs. link(CONCEPT_GENERAL): {0_value}<false>{0_value} Vs. link(CONCEPT_GENERAL)<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_VS_GENERAL",
+      "valueScale": 1,
+      "xmlField": "iVsGeneralDefenseModifier"
+    },
+    "miVsGeneralModifier": {
+      "args": [
+        "unitStrengthValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>Vs. link(CONCEPT_GENERAL): {0_value}<false>{0_value} Vs. link(CONCEPT_GENERAL)<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_VS_GENERAL",
+      "valueScale": 1,
+      "xmlField": "iVsGeneralModifier"
+    },
+    "miWaterControlExtra": {
+      "args": [
+        "signed",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>link(CONCEPT_ANCHORED,1) Range: {0_value}<false>{0_value} link(CONCEPT_ANCHORED,1) Range<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_WATER_CONTROL",
+      "valueScale": 1,
+      "xmlField": "iWaterControlExtra"
+    },
+    "miWaterLandAttackModifier": {
+      "args": [
+        "attackValueLink",
+        "bool(rightJustify)"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "<true_1>Land/Water Combat: {0_value}<false>{0_value} Land/Water Combat<end>",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_ATTACK_LAND_WATER",
+      "valueScale": 1,
+      "xmlField": "iWaterLandAttackModifier"
+    },
+    "mzAttackApplyEffectUnitTurns": {
+      "args": [
+        "effectUnitLink",
+        "value",
+        "turnScale",
+        "bool(adjacentOnly)"
+      ],
+      "notes": "turns==0 -> TEXT_HELPTEXT_EFFECT_UNIT_APPLIES_0; turns<0 -> TEXT_HELPTEXT_EFFECT_UNIT_APPLIES; same target as attacker-apply -> TEXT_HELPTEXT_EFFECT_UNIT_APPLIES_BOTH[_0|_NUM]",
+      "perEntry": "none",
+      "template": "Applies {0_value} to {true_3:adjacent :}attacked Units for {1_num} {2_turnScale}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_APPLIES_NUM",
+      "valueScale": 1,
+      "xmlField": "AttackApplyEffectUnitTurns"
+    },
+    "mzAttackerApplyEffectUnitTurns": {
+      "args": [
+        "effectUnitLink",
+        "value",
+        "turnScale",
+        "bool(adjacentOnly)"
+      ],
+      "notes": "turns==0 -> ..._ATTACKER_0; turns<0 -> ..._ATTACKER; merged into APPLIES_BOTH when equal to defender-apply",
+      "perEntry": "none",
+      "template": "Applies {0_value} to {true_3:adjacent :}attacking Units for {1_num} {2_turnScale}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_APPLIES_ATTACKER_NUM",
+      "valueScale": 1,
+      "xmlField": "AttackerApplyEffectUnitTurns"
+    },
+    "mzRemoveApplyEffectUnitTurns": {
+      "args": [
+        "value",
+        "turnScale"
+      ],
+      "notes": "pair (effectUnit, turns); when replacement effectUnit set uses TEXT_HELPTEXT_EFFECT_UNIT_REPLACE_TURNS with effectUnitLink first",
+      "perEntry": "none",
+      "template": "Removed after {0_num} {1_turnScale}",
+      "textKey": "TEXT_HELPTEXT_TRAIT_REMOVE_TURNS",
+      "valueScale": 1,
+      "xmlField": "RemoveApplyEffectUnitTurns"
+    },
+    "mzSelfApplyEffectUnitTurns": {
+      "args": [
+        "selfApplyEffectUnitLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can apply {0_link}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_SELF_APPLY_EFFECT",
+      "valueScale": 1,
+      "xmlField": "SelfApplyEffectUnitTurns"
+    },
+    "mzUnitTraitFormation": {
+      "args": [
+        "defensiveFormationLink",
+        "unitTraitLink"
+      ],
+      "notes": "",
+      "perEntry": "none",
+      "template": "Can {0_formation} against {1_trait} Units.",
+      "textKey": "TEXT_HELPTEXT_UNIT_TYPE_CAN_FORMATION",
+      "valueScale": 1,
+      "xmlField": "UnitTraitFormation"
+    }
+  }
+}

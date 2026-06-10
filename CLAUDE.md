@@ -21,14 +21,19 @@ Every fact in the site should be **derivable from XML**. The legacy spreadsheet 
 ```
 make sync       scripts/sync_patch.sh     → rsync Steam's Reference/ → ./reference/
 make art        scripts/extract_art.py    → pinacotheca-style sprite pull → public/img/{crests,yields,resources,techs,specialists,families,tribes,archetypes}/
-make data       scripts/build_data.py     → reads XML+humanizer → src/data/nations.json + src/styles/nation-tokens.css
-                scripts/build_entities.py → registry of 367+ entities + alias index → src/data/entities.json
+make data       scripts/build_*.py (40+, see Makefile data: target) → src/data/*.json
+                scripts/build_entities.py → registry of entities + alias index → src/data/entities.json
                 scripts/build_backlinks.py→ src/data/backlinks.json
-make changelog  scripts/changelog.py      → diff snapshots → CHANGELOG.md
+make audit      scripts/audit_coverage.py → HARD GATE: any XML effect field the game
+                                            renders but we drop fails the pipeline
+                scripts/verify_source_constants.py → warns when watched game-source
+                                            functions changed (hand-curated constants)
+make changelog  scripts/changelog.py      → diffs EVERY src/data/*.json vs snapshot → CHANGELOG.md
 make build      npx astro build           → dist/
+make check      scripts/check_links.py    → no broken internal links / unresolved <Term>s
 ```
 
-Per-patch flow: `make patch` → review CHANGELOG → `git push` → GH Actions deploys.
+Per-patch flow: `make patch` (= sync art data audit changelog build check) → review CHANGELOG → `git push` → GH Actions deploys. New `build_*.py` outputs join the changelog automatically; new XML fields trip the audit until handled.
 
 ---
 
@@ -37,13 +42,20 @@ Per-patch flow: `make patch` → review CHANGELOG → `git push` → GH Actions 
 ```
 reference/XML/Infos/*.xml            # synced from Steam install, DO NOT hand-edit
 scripts/
-  humanize.py                        # XML effect tree → human strings
+  humanize.py                        # XML effect tree → human strings (curated phrasing)
+  effects.py                         # registry-driven completeness backstop (see below)
+  data/helptext_registry.json        # extracted from game source HelpText.*.cs:
+                                     #   every field the game renders + its TEXT template
+  audit_coverage.py                  # patch tripwire: populated vs renderable vs handled
+  verify_source_constants.py         # hashes watched game-source functions (drift alarm)
+  check_links.py                     # post-build link + unresolved-<Term> check
   build_data.py                      # XML+humanizer → src/data/nations.json
+  build_*.py                         # one per dataset/tab (40+, registered in Makefile)
   build_entities.py                  # entity registry + alias index
   build_backlinks.py                 # backlinks PKM-graph
   extract_art.py                     # UnityPy Sprite extraction
   sync_patch.sh                      # rsync from Steam install
-  changelog.py
+  changelog.py                       # diffs ALL generated JSON vs last snapshot
 src/
   data/
     nations.json, entities.json, backlinks.json   # generated
@@ -145,6 +157,30 @@ make data && npx astro build
 
 ---
 
+## Effect rendering: curated phrasing + registry backstop
+
+Two layers, one output:
+
+1. **humanize.py** renders the fields it covers with curated, spreadsheet-validated
+   phrasing. Its coverage is declared in `humanize.HANDLED_FIELDS` (per section:
+   effectCity / effectPlayer / effectUnit / bonus).
+2. **effects.py** renders *every other populated field* generically, grounded in
+   `scripts/data/helptext_registry.json` — a machine extraction of the game's own
+   HelpText builders (which field → which TEXT template, arg semantics, ÷10 scaling).
+   humanize's renderers call `effects.extra_lines(entry, section, exclude=HANDLED, …)`
+   at the end, so a brand-new patch field renders (honest generic phrasing) instead
+   of silently vanishing.
+
+`audit_coverage.py` ties it together: populated ∧ game-renderable ∧ ¬(curated ∪
+backstop ∪ conscious-skip) ⇒ pipeline failure. To improve phrasing for a field,
+move it from backstop to curated: render it in humanize.py AND add it to
+`HANDLED_FIELDS` there. To consciously hide a field, add it to `effects.SKIP_FIELDS`
+with a reason comment. Never delete registry entries to silence the audit; re-extract
+the registry instead when Mohawk ships new HelpText code (the extraction recipe is in
+the git history of `scripts/data/helptext_registry.json`).
+
+---
+
 ## Humanizer reference
 
 `scripts/humanize.py` turns the structured effect XML into one-line strings. Key entry points:
@@ -196,6 +232,20 @@ Add new fields to the humanizer as you encounter them. Always test against the s
 - **The "Bonuses" cell layout** is a single row, vertical stack of `.effect` mini-tiles (one per humanized effect) — not 3 separate rows. Some nations have 1 effect, some have 4.
 - **Effect text falls back to yaml** when `effectsXml` is empty (only Aksum/Tamil currently — and they have partial XML coverage now too).
 - **Cells that don't classify to a yield** get `.yield-misc` (slate). Don't hand-assign row defaults — let `classifyYield(text)` decide, and use `skipClassify: true` on rows where the text describes non-yield content (UU names/traits, royal family members).
+- **Value scaling is per-field, never blanket ÷10.** Rates (`aiYieldRate` etc.) are 10× display, but: `aiYieldStockpile` grants are ×10 in code so XML = display (`Player.cs:15843`); `aiYieldHarvest`/`aiYieldReveal` display raw; goal/subject yield thresholds are display units (`PlayerGoal.cs` divides before comparing); vegetation chop yields raw. The helptext registry records `valueScale` per field — trust it.
+- **`MOVEMENT_MULTIPLER` = 9** (typo is the game's): 9 = 1 MP. Occurrence terrain-change chances are per-10,000.
+- **`difficulty.xml` is the Prosperity dial, not difficulty levels** — the picker presets ("The Able"…) live in `difficultyMode.xml`. AI always plays at Prosperity "Thriving" (`globalsType.xml AI_DIFFICULTY`).
+- **`development.xml` is the advanced-start setup option** (AI starting cities/techs/no-wonder turns), not city development.
+- **`subject.xml` is the event-system casting layer** (role templates events bind), not vassals. No SaP "Sons of Adad" — `-sap` = The Sacred and the Profane.
+- **`diplomacy.xml` holds only the 4 states**; diplomatic *actions* are missions in `mission.xml`; war-score deltas are source-only (`City.cs`/`Unit.cs`).
+- **Council seat rating yields scale triangularly** — base × R(R+1)/2 (`InfoHelpers.getRatingYieldRateCouncil → triangleOffset`), not linearly. Grand Vizier's seat lives in `council-btt.xml`.
+- **Bonus-card tech zTypes lie about prereqs** (`TECH_FORESTRY_BONUS_SCIENTIST` requires Metaphysics) — always read `abTechPrereq`, never parse the zType.
+- **`resource.xml` has no category field** — luxury = union of `effectCity aeLuxuryResources`; strategic = unit `EffectCityPrereq` chains. Worked-resource yields live on `improvementClass.xml`, not `improvement.xml`. `zIconName` redirects shared art (Marble→stone.png, Ore→iron.png).
+- **Terrains have no base yields in XML** — tile yields come from improvements/resources; `aiDefendEffectUnit` is an *attack penalty into* the tile; `TerrainValid` targets are OR'd; `iRemoveCost` is Orders, not worker-turns.
+- **Culture gates**: `RequiresCulture` = exactly that level; `MinimumCulture` = at least. Past Legendary, each culture step costs 5,000×(step+1) and is +1 VP.
+- **Ambition "tier" = which ambition slot (1st–10th)** it can be offered as; goals have no per-goal reward fields (Legitimacy/VP flow indirectly).
+- **DLC event text lives in oddly named files**: Wonders & Dynasties → `text-wonders-dynasties-events.xml`, Wrath of Gods → `text-calamities-events.xml` (there is no `text-eventStory-wd/-wog.xml`). ~16 eventStory entries legitimately have no `Name` (hidden setup events); ~372 have no class/trigger (engine-invoked).
+- **Occurrences aren't all WoG** — badge by `GameContentRequired`, not by file. `occurrenceEffect.xml` is cosmetic only.
 - **Mods folder (`reference/XML/Mods/`) is excluded from the repo** to keep size down. The pipeline only reads from `reference/XML/Infos/`.
 - **`reference/Graphics/` and `reference/Source/`** are excluded too (binary game assets, Unity controllers).
 - **Cognomen tracker OCR — the OCR is reliable; don't blame Tesseract.** On a real F5 capture Tesseract.js read **every digit correctly** (17/17 scoring stats, zero number errors). What looks "garbled" is *gutter noise*, not bad text: bullet glyphs (●) become `e`/`eo`/`®`/`¢`, the left UI rail bleeds in as `J{`/`U`/`|` prefixes, and right-edge game-world text appends junk like `54 C`, `5 in`, `1 Is`. The fix was always in the **parser**, never the image. Don't add OpenCV.js / heavier preprocessing on a hunch — diagnose against a real screenshot first.
@@ -269,10 +319,18 @@ is the fastest regression check (see git history of commit `5c37ecd`).
 
 ---
 
-## Open work (as of 2026-05-11)
+## Open work (as of 2026-06-09)
 
-- **Humanizer extensions** — fields not yet handled: `aiYieldRateGlobal`, `aiYieldBonus`, `aiBuildModifier`, `iUnitBuildModifier`, `iWalls`, `iRiver`, etc. Add as you need them; always test against the spreadsheet.
-- **Aksum / Tamil** — XML coverage is partial (Aksum missing Stele, Tamil missing more Bonuses). Falls back to yaml for now.
-- **Remaining tabs** — see `src/data/tabs.ts`. Status `'placeholder'` means the route serves a stub; `'built'` means full content.
+- **Field-coverage is audited, not aspirational** — `make audit` fails on any populated
+  field the game renders that neither humanize.py nor effects.py covers. To raise
+  phrasing quality, promote fields from the generic backstop into curated humanize.py
+  rendering (see "Effect rendering" section).
+- **Backstop phrasing polish** — generic lines like "+10% Vegetation From Modifier / Trees"
+  are honest but clunky; promote the common ones to curated phrasing as they're noticed.
+- **Header nav (`nav.ts`) is still the narrow curated set** — the home page now lists
+  every built tab by section; decide which of the new pages earn header slots.
+- **Registry re-extraction** — when a patch changes `reference/Source` HelpText code,
+  re-extract `scripts/data/helptext_registry.json` (recipe in its git history).
 
-If you're an agent building one of those tabs, this doc plus `src/pages/nations.astro` and `scripts/build_data.py` are your reference.
+If you're an agent building a new tab, this doc plus `src/pages/nations.astro` and
+`scripts/build_data.py` are your reference.
