@@ -91,9 +91,21 @@ for (const j of jobs) searchBlobs[j.slug] = JSON.stringify(j).toLowerCase();
                   <td class={`cell ${j.effects.length ? 'cell--effects' : 'is-empty'}`}>
                     {j.effects.length ? j.effects.map(text => {
                       const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                      // "+1 Civics × tri(Charisma)" → base + ×△ marker, same as the Council page
+                      const tri = text.match(/^(.+) × tri\((\w+)\)$/);
                       return (
-                        <div class={`effect yield-${yieldKey}`}>
-                          <LinkedText text={text} showIcons={false} />
+                        <div class={`effect yield-${yieldKey}${tri ? ' effect--tri' : ''}`}>
+                          {tri ? (
+                            <>
+                              <span class="rating-label">{tri[2]}</span>
+                              <span class="effect__out">
+                                <LinkedText text={tri[1]} showIcons={false} />
+                                <span class="tri-mark" title="Scales with the triangle of the rating: ×R·(R+1)/2">×△</span>
+                              </span>
+                            </>
+                          ) : (
+                            <LinkedText text={text} showIcons={false} />
+                          )}
                         </div>
                       );
                     }) : <span class="cell__dash">—</span>}
@@ -104,6 +116,15 @@ for (const j of jobs) searchBlobs[j.slug] = JSON.stringify(j).toLowerCase();
           ))}
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <div class="legends">
+    <div class="legend">
+      <span class="legend__label">×△ Triangular scaling</span>
+      Council yields and opinions multiply their base by tri(R) = R·(R+1)/2 of the assigned character's rating —
+      rating 1/2/3/4/5 → ×1/×3/×6/×10/×15. Opinions are also rounded out to the nearest 5.
+      See <a href={`${base}council`}>Council</a> for the full breakdown.
     </div>
   </div>
 
@@ -175,6 +196,28 @@ for (const j of jobs) searchBlobs[j.slug] = JSON.stringify(j).toLowerCase();
   }
 
   .srow__icon { color: var(--accent); margin-right: 0.3rem; }
+
+  /* Triangular-scaled effects — same presentation as the Council page */
+  .effect--tri {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .effect--tri .rating-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+  }
+  .effect--tri .effect__out { text-align: right; }
+  .tri-mark {
+    margin-left: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--gold-soft, var(--text-faint));
+    cursor: help;
+  }
 
   /* Wider job-name column for legibility */
   .ntbl .nhdr:nth-child(2) { min-width: 8rem; }

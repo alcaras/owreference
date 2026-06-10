@@ -144,10 +144,12 @@ def main() -> int:
                 v = int(sp.findtext("iValue") or "0")
                 effects.append(f"{fmt_decimal(v)}% {y}/adjacent {h}")
 
-        # Unit-trait XP grants (e.g., Bellona → +1 XP to Infantry).
+        # Unit-trait XP grants (e.g., Bellona → +10 XP to Infantry).
+        # XP is raw, NOT a /10 yield rate — HelpText.Improvement.cs renders
+        # aiUnitTraitXP unscaled (matches the in-game tooltip).
         for pair in entry.findall("aiUnitTraitXP/Pair"):
             trait = (pair.findtext("zIndex") or "").replace("UNITTRAIT_", "").title()
-            v = int(pair.findtext("iValue") or "0") / 10
+            v = int(pair.findtext("iValue") or "0")
             effects.append(f"{fmt_decimal(v)} {trait} XP")
 
         # EffectCity attached to the shrine (extra per-city yield).

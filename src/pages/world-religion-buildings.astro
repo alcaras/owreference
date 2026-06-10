@@ -89,20 +89,20 @@ function cellYield(cell: any): string {
                     {cell.outputs.length > 0 && (
                       <ul class="bld__yields">
                         {cell.outputs.map(o => (
-                          <li><LinkedText text={o} showIcons={false} /></li>
+                          <li><LinkedText text={o} showIcons={false} iconsForYields={true} /></li>
                         ))}
                       </ul>
                     )}
                     {cell.effects.length > 0 && (
                       <ul class="bld__effects">
                         {cell.effects.map(e => (
-                          <li><LinkedText text={e} showIcons={false} /></li>
+                          <li><LinkedText text={e} showIcons={false} iconsForYields={true} /></li>
                         ))}
                       </ul>
                     )}
                     <footer class="bld__foot">
                       {cell.costs.map(c => (
-                        <span class="bld__cost"><LinkedText text={c} showIcons={false} /></span>
+                        <span class="bld__cost"><LinkedText text={c} showIcons={false} iconsForYields={true} /></span>
                       ))}
                       {cell.culturePrereq && (
                         <span class="bld__culture">{cell.culturePrereq} culture</span>

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import tribes from '../../data/tribes.json';
+import { existsSync } from 'node:fs';
 
 export function getStaticPaths() {
   return tribes.map(t => ({ params: { slug: t.slug }, props: { tribe: t } }));
@@ -8,6 +9,13 @@ export function getStaticPaths() {
 
 const { tribe } = Astro.props;
 const base = import.meta.env.BASE_URL;
+// Build-time art lookup: some tribes (Anarchy, Barbarians, Raiders) and a few
+// tribal-only units ship no extracted sprite, so fall back / omit instead of 404.
+const crestSrc = (slug: string) =>
+  existsSync(`public/img/tribes/${slug}.png`) ? `${base}img/tribes/${slug}.png` : `${base}img/tribes/generic.png`;
+const unitIconSrc = (icon: string) =>
+  existsSync(`public/img/icons/units/${icon}.png`) ? `${base}img/icons/units/${icon}.png` : null;
+
 
 const isDiplomatic = tribe.diplomacy && !!tribe.unit;
 const unit = tribe.unit;
@@ -25,7 +33,7 @@ const unit = tribe.unit;
   </nav>
 
   <header class="tribe-hero">
-    <img class="tribe-hero__crest" src={`${base}img/tribes/${tribe.slug}.png`} alt="" onerror="this.style.visibility='hidden'" />
+    <img class="tribe-hero__crest" src={crestSrc(tribe.slug)} alt="" onerror="this.style.visibility='hidden'" />
     <div class="tribe-hero__title">
       <h1 class="tribe-hero__name">{tribe.name}</h1>
       {tribe.nickname && <div class="tribe-hero__nick">{tribe.nickname}</div>}
@@ -43,12 +51,13 @@ const unit = tribe.unit;
       <section class="card card--unit">
         <h2 class="card__h">Signature unit</h2>
         <div class="unit-row">
-          <img
-            class="unit-row__icon"
-            src={`${base}img/icons/units/${unit.unitIcon}.png`}
-            alt=""
-            onerror="this.style.visibility='hidden'"
-          />
+          {unitIconSrc(unit.unitIcon) && (
+            <img
+              class="unit-row__icon"
+              src={unitIconSrc(unit.unitIcon)}
+              alt=""
+            />
+          )}
           <div class="unit-row__body">
             <div class="unit-row__name">{unit.unitName}</div>
             <div class="unit-row__sub">

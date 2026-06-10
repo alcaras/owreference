@@ -356,6 +356,7 @@
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
         "effectsXml": [
           "+2 Growth"
         ],
@@ -374,6 +375,7 @@
         ]
       },
       {
+        "effectStr": "+2 Training, +10 Infantry XP",
         "effectsXml": [
           "+2 Training"
         ],
@@ -392,6 +394,7 @@
         ]
       },
       {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "effectsXml": [
           "+20 Money"
         ],
@@ -410,6 +413,7 @@
         ]
       },
       {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
         "effectsXml": [],
         "fullName": "Shrine of Medr",
         "id": "IMPROVEMENT_SHRINE_MEDR",
@@ -423,8 +427,31 @@
     ],
     "shrines": [
       {
-        "effect": "+2 Training, +10 XP / Unit",
+        "effect": "+2 Growth, +20% adjacent Pasture",
         "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
+          "effectsXml": [
+            "+2 Growth"
+          ],
+          "fullName": "Shrine of Astar",
+          "id": "IMPROVEMENT_SHRINE_ASTAR",
+          "name": "Astar",
+          "primaryYield": "GROWTH",
+          "subClass": 2,
+          "type": "LOVE",
+          "typeLabel": "Love",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "growth"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
           "effectsXml": [
             "+2 Training"
           ],
@@ -444,22 +471,9 @@
         }
       },
       {
-        "effect": "+1 Train/LM, +20% Mines",
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "shrine": {
-          "effectsXml": [],
-          "fullName": "Shrine of Medr",
-          "id": "IMPROVEMENT_SHRINE_MEDR",
-          "name": "Medr",
-          "primaryYield": null,
-          "subClass": 9,
-          "type": "FIRE",
-          "typeLabel": "Fire",
-          "yieldOutput": []
-        }
-      },
-      {
-        "effect": "+20 Money, +20% Nets",
-        "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
           "effectsXml": [
             "+20 Money"
           ],
@@ -479,24 +493,18 @@
         }
       },
       {
-        "effect": "+2 Growth, +20% Pastures",
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
         "shrine": {
-          "effectsXml": [
-            "+2 Growth"
-          ],
-          "fullName": "Shrine of Astar",
-          "id": "IMPROVEMENT_SHRINE_ASTAR",
-          "name": "Astar",
-          "primaryYield": "GROWTH",
-          "subClass": 2,
-          "type": "LOVE",
-          "typeLabel": "Love",
-          "yieldOutput": [
-            {
-              "value": 20,
-              "yield": "growth"
-            }
-          ]
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+          "effectsXml": [],
+          "fullName": "Shrine of Medr",
+          "id": "IMPROVEMENT_SHRINE_MEDR",
+          "name": "Medr",
+          "primaryYield": null,
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
+          "yieldOutput": []
         }
       }
     ],
@@ -523,33 +531,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "150/200 iron",
-      "moveSight": "2 move, 4 vision",
-      "names": "D'mt / Shotelai",
-      "traits": "Melee Infantry Disarm",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "cost": "150/200 Iron",
+      "moveSight": "2 Move, 4 Vision",
+      "names": "D'mt Warrior / Shotelai",
+      "traits": "Melee, Infantry, Disarm",
       "unitsResolved": [
         {
-          "id": "",
-          "name": "D'mt",
-          "trait": ""
+          "culture": "Initial",
+          "id": "UNIT_DMT_WARRIOR",
+          "name": "D'mt Warrior",
+          "trait": "melee"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_SHOTELAI",
           "name": "Shotelai",
           "trait": "melee"
         }
       ],
-      "upkeep": "-2/-4 iron, -1 food"
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+2 Orders/Kill",
-      "Units start with Focus 1",
-      "+100% Pillage Yield"
-    ],
     "cityNames": [
       "Assur",
       "Nineveh",
@@ -894,6 +897,7 @@
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
         "effectsXml": [
           "+2 Civics"
         ],
@@ -912,6 +916,7 @@
         ]
       },
       {
+        "effectStr": "+2 Training, +10 Infantry XP",
         "effectsXml": [
           "+2 Training"
         ],
@@ -930,6 +935,7 @@
         ]
       },
       {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
         "effectsXml": [],
         "fullName": "Shrine of Nuska",
         "id": "IMPROVEMENT_SHRINE_NUSKA",
@@ -941,6 +947,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
         "effectsXml": [
           "+0.5 Orders"
         ],
@@ -961,8 +968,31 @@
     ],
     "shrines": [
       {
-        "effect": "+2 Training, +10 XP / Unit",
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
         "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
+          "effectsXml": [
+            "+2 Civics"
+          ],
+          "fullName": "Shrine of Ashur",
+          "id": "IMPROVEMENT_SHRINE_ASHUR",
+          "name": "Ashur",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "civics"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
           "effectsXml": [
             "+2 Training"
           ],
@@ -982,8 +1012,9 @@
         }
       },
       {
-        "effect": "+1 Train/LM, +20% Mines",
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
         "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
           "effectsXml": [],
           "fullName": "Shrine of Nuska",
           "id": "IMPROVEMENT_SHRINE_NUSKA",
@@ -996,8 +1027,9 @@
         }
       },
       {
-        "effect": "+0.5 Orders, +20% Farms",
+        "effect": "+0.5 Orders, +20% adjacent Farm",
         "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
           "effectsXml": [
             "+0.5 Orders"
           ],
@@ -1012,27 +1044,6 @@
             {
               "value": 5,
               "yield": "orders"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+2 Civics, +1 Order/Wonder",
-        "shrine": {
-          "effectsXml": [
-            "+2 Civics"
-          ],
-          "fullName": "Shrine of Ashur",
-          "id": "IMPROVEMENT_SHRINE_ASHUR",
-          "name": "Ashur",
-          "primaryYield": "CIVICS",
-          "subClass": 1,
-          "type": "KINGSHIP",
-          "typeLabel": "Kingship",
-          "yieldOutput": [
-            {
-              "value": 20,
-              "yield": "civics"
             }
           ]
         }
@@ -1061,33 +1072,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 wood, 50/100 iron",
-      "moveSight": "1 move, 3 vision",
+      "cost": "100 Wood, 50/100 Iron",
+      "moveSight": "1 Move, 3 Vision",
       "names": "Battering Ram / Siege Tower",
-      "traits": "Melee Siege Assault",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "traits": "Melee, Siege, Assault",
       "unitsResolved": [
         {
+          "culture": "Developing",
           "id": "UNIT_BATTERING_RAM",
           "name": "Battering Ram",
           "trait": "melee"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_SIEGE_TOWER",
           "name": "Siege Tower",
           "trait": "melee"
         }
       ],
-      "upkeep": "-2/-4 wood"
+      "upkeep": "-2/-4 Wood, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+1 Sci/City",
-      "+2 Culture/Treasury",
-      "+20% Growth"
-    ],
     "cityNames": [
       "Babylon",
       "Akkad",
@@ -1268,6 +1274,7 @@
           {
             "archetype": false,
             "effects": [
+              "+2 Vision Extra",
               "+20 Opinion (same trait)",
               "+1 Discipline"
             ],
@@ -1434,15 +1441,16 @@
     "gameContent": "",
     "id": "NATION_BABYLONIA",
     "leader": {
-      "heir1": "daughter (9)",
-      "heir2": "son (2)",
+      "heir1": "daughter, Schemer (9)",
+      "heir2": "son (1)",
       "name": "Prosperous Scholar (27)",
-      "spouse": "Insane Diplomat (24)"
+      "spouse": "Diplomat (24)"
     },
     "name": "Babylonia",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
         "effectsXml": [
           "+2 Civics"
         ],
@@ -1461,6 +1469,7 @@
         ]
       },
       {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
         "effectsXml": [
           "+2 Growth"
         ],
@@ -1479,6 +1488,7 @@
         ]
       },
       {
+        "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
         "effectsXml": [
           "+2 Culture"
         ],
@@ -1497,6 +1507,7 @@
         ]
       },
       {
+        "effectStr": "+1 Science, +1 Civics/adjacent Odeon",
         "effectsXml": [
           "+1 Science"
         ],
@@ -1517,29 +1528,31 @@
     ],
     "shrines": [
       {
-        "effect": "+1 Sci, +1 Civ/Odeon",
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
         "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
           "effectsXml": [
-            "+1 Science"
+            "+2 Civics"
           ],
-          "fullName": "Shrine of Nabu",
-          "id": "IMPROVEMENT_SHRINE_NABU",
-          "name": "Nabu",
-          "primaryYield": "SCIENCE",
-          "subClass": 11,
-          "type": "WISDOM",
-          "typeLabel": "Wisdom",
+          "fullName": "Shrine of Marduk",
+          "id": "IMPROVEMENT_SHRINE_MARDUK",
+          "name": "Marduk",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
           "yieldOutput": [
             {
-              "value": 10,
-              "yield": "science"
+              "value": 20,
+              "yield": "civics"
             }
           ]
         }
       },
       {
-        "effect": "+2 Growth, +20% Pastures",
+        "effect": "+2 Growth, +20% adjacent Pasture",
         "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
           "effectsXml": [
             "+2 Growth"
           ],
@@ -1559,8 +1572,9 @@
         }
       },
       {
-        "effect": "+2 Cult, +Cult%/MtnVolc",
+        "effect": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
         "shrine": {
+          "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
           "effectsXml": [
             "+2 Culture"
           ],
@@ -1580,22 +1594,23 @@
         }
       },
       {
-        "effect": "+2 Civics, +1 Order/Wonder",
+        "effect": "+1 Science, +1 Civics/adjacent Odeon",
         "shrine": {
+          "effectStr": "+1 Science, +1 Civics/adjacent Odeon",
           "effectsXml": [
-            "+2 Civics"
+            "+1 Science"
           ],
-          "fullName": "Shrine of Marduk",
-          "id": "IMPROVEMENT_SHRINE_MARDUK",
-          "name": "Marduk",
-          "primaryYield": "CIVICS",
-          "subClass": 1,
-          "type": "KINGSHIP",
-          "typeLabel": "Kingship",
+          "fullName": "Shrine of Nabu",
+          "id": "IMPROVEMENT_SHRINE_NABU",
+          "name": "Nabu",
+          "primaryYield": "SCIENCE",
+          "subClass": 11,
+          "type": "WISDOM",
+          "typeLabel": "Wisdom",
           "yieldOutput": [
             {
-              "value": 20,
-              "yield": "civics"
+              "value": 10,
+              "yield": "science"
             }
           ]
         }
@@ -1624,33 +1639,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "150/200 wood",
-      "moveSight": "2 moves, 3 range, 4 vision",
-      "names": "Akkadian / Cimmerian Archer",
-      "traits": "Ranged Splash",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "cost": "150/200 Wood",
+      "moveSight": "2 Move, 3 Range, 4 Vision",
+      "names": "Akkadian Archer / Cimmerian Archer",
+      "traits": "Ranged, Infantry, Splash I",
       "unitsResolved": [
         {
-          "id": "",
-          "name": "Akkadian",
-          "trait": ""
+          "culture": "Developing",
+          "id": "UNIT_AKKADIAN_ARCHER",
+          "name": "Akkadian Archer",
+          "trait": "ranged"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_CIMMERIAN_ARCHER",
           "name": "Cimmerian Archer",
           "trait": "ranged"
         }
       ],
-      "upkeep": "-2/-4 wood, -1 food"
+      "upkeep": "-1 Food, -2/-4 Wood, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "New Cities: +200 Civics",
-      "Can Hire Mercs from Tribes",
-      "+10 Money/Turn Connected"
-    ],
     "cityNames": [
       "Carthago",
       "Utica",
@@ -1740,6 +1750,8 @@
           {
             "archetype": false,
             "effects": [
+              "+10% Unit Trait Modifier / Siege",
+              "+10% Unit Trait Modifier / Ship",
               "+20 Opinion (same trait)",
               "+1 Wisdom"
             ],
@@ -1990,12 +2002,14 @@
     "gameContent": "",
     "id": "NATION_CARTHAGE",
     "leader": {
-      "name": "Cunning Diplomat (23)"
+      "heir1": "brother, King of Tyre Schemer (27)",
+      "name": "Cunning Engineer Diplomat (23)"
     },
     "name": "Carthage",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
         "effectsXml": [
           "+2 Growth"
         ],
@@ -2014,6 +2028,7 @@
         ]
       },
       {
+        "effectStr": "+2 Culture, +10 Money per adjacent Resource",
         "effectsXml": [
           "+2 Culture"
         ],
@@ -2032,6 +2047,7 @@
         ]
       },
       {
+        "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
         "effectsXml": [],
         "fullName": "Shrine of Eshmun",
         "id": "IMPROVEMENT_SHRINE_ESHMUN",
@@ -2043,6 +2059,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "effectsXml": [
           "+20 Money"
         ],
@@ -2063,29 +2080,9 @@
     ],
     "shrines": [
       {
-        "effect": "+20 Money, +20% Nets",
+        "effect": "+2 Growth, +20% adjacent Pasture",
         "shrine": {
-          "effectsXml": [
-            "+20 Money"
-          ],
-          "fullName": "Shrine of Melqart",
-          "id": "IMPROVEMENT_SHRINE_MELQART",
-          "name": "Melqart",
-          "primaryYield": "MONEY",
-          "subClass": 8,
-          "type": "WATER",
-          "typeLabel": "Water",
-          "yieldOutput": [
-            {
-              "value": 200,
-              "yield": "money"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+2 Growth, +20% Pastures",
-        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
           "effectsXml": [
             "+2 Growth"
           ],
@@ -2105,22 +2102,9 @@
         }
       },
       {
-        "effect": "+2 Growth/Grove, +Healer",
+        "effect": "+2 Culture, +10 Money per adjacent Resource",
         "shrine": {
-          "effectsXml": [],
-          "fullName": "Shrine of Eshmun",
-          "id": "IMPROVEMENT_SHRINE_ESHMUN",
-          "name": "Eshmun",
-          "primaryYield": null,
-          "subClass": 7,
-          "type": "HEALING",
-          "typeLabel": "Healing",
-          "yieldOutput": []
-        }
-      },
-      {
-        "effect": "+2 Cult, +10 Money/Resource",
-        "shrine": {
+          "effectStr": "+2 Culture, +10 Money per adjacent Resource",
           "effectsXml": [
             "+2 Culture"
           ],
@@ -2135,6 +2119,43 @@
             {
               "value": 20,
               "yield": "culture"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Growth/adjacent Grove, Units gain Healer",
+        "shrine": {
+          "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+          "effectsXml": [],
+          "fullName": "Shrine of Eshmun",
+          "id": "IMPROVEMENT_SHRINE_ESHMUN",
+          "name": "Eshmun",
+          "primaryYield": null,
+          "subClass": 7,
+          "type": "HEALING",
+          "typeLabel": "Healing",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+        "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
+          "effectsXml": [
+            "+20 Money"
+          ],
+          "fullName": "Shrine of Melqart",
+          "id": "IMPROVEMENT_SHRINE_MELQART",
+          "name": "Melqart",
+          "primaryYield": "MONEY",
+          "subClass": 8,
+          "type": "WATER",
+          "typeLabel": "Water",
+          "yieldOutput": [
+            {
+              "value": 200,
+              "yield": "money"
             }
           ]
         }
@@ -2163,33 +2184,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 wood",
-      "moveSight": "2 move, 4 vision",
-      "names": "African / Turreted Elephant",
-      "traits": "Elephant  Panic  Rout",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "cost": "100 Food, 50/100 Wood",
+      "moveSight": "2 Move, 4 Vision",
+      "names": "African Elephant / Turreted Elephant",
+      "traits": "Melee, Mounted, Elephant, Rout, Panic",
       "unitsResolved": [
         {
-          "id": "",
-          "name": "African",
-          "trait": ""
+          "culture": "Developing",
+          "id": "UNIT_AFRICAN_ELEPHANT",
+          "name": "African Elephant",
+          "trait": "melee"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_TURRETED_ELEPHANT",
           "name": "Turreted Elephant",
           "trait": "melee"
         }
       ],
-      "upkeep": "-4/-6 food"
+      "upkeep": "-4/-6 Food, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+400 Stone",
-      "+40% Farm on River",
-      "-20% Cost for Adj Imp"
-    ],
     "cityNames": [
       "Waset",
       "Pelusium",
@@ -2352,6 +2368,7 @@
           {
             "archetype": false,
             "effects": [
+              "+50 Unit Trait XP / Infantry",
               "+20 Opinion (same trait)",
               "+1 Discipline"
             ],
@@ -2484,6 +2501,7 @@
           {
             "archetype": false,
             "effects": [
+              "Must found Amarna City first",
               "[State Religion] +1 Happiness/City"
             ],
             "icon": null,
@@ -2516,7 +2534,9 @@
           {
             "archetype": false,
             "effects": [
-              "[Capital] Provides: Horse"
+              "[Capital] Provides: Horse",
+              "[Capital] Trait Effect Unit: Chariot → Saddleborn",
+              "Start: Techs: Spoked Wheel"
             ],
             "icon": null,
             "id": "TRAIT_CHARIOT_MASTER",
@@ -2644,14 +2664,16 @@
     "gameContent": "",
     "id": "NATION_EGYPT",
     "leader": {
-      "heir1": "daughter (12)",
-      "heir2": "stepston (9)",
-      "name": "Inspiring Builder (35)"
+      "heir1": "daughter (11)",
+      "heir2": "stepson (8)",
+      "heir3": "co-wife, Extravagant Zealot (31)",
+      "name": "Inspiring Builder (34)"
     },
     "name": "Egypt",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
         "effectsXml": [
           "+2 Culture"
         ],
@@ -2670,6 +2692,7 @@
         ]
       },
       {
+        "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
         "effectsXml": [],
         "fullName": "Shrine of Neith",
         "id": "IMPROVEMENT_SHRINE_NEITH",
@@ -2681,6 +2704,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
         "effectsXml": [],
         "fullName": "Shrine of Isis",
         "id": "IMPROVEMENT_SHRINE_ISIS",
@@ -2692,6 +2716,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
         "effectsXml": [
           "+0.5 Orders"
         ],
@@ -2712,29 +2737,9 @@
     ],
     "shrines": [
       {
-        "effect": "+0.5 Orders, +20% Farms",
+        "effect": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
         "shrine": {
-          "effectsXml": [
-            "+0.5 Orders"
-          ],
-          "fullName": "Shrine of Ra",
-          "id": "IMPROVEMENT_SHRINE_RA",
-          "name": "Ra",
-          "primaryYield": "ORDERS",
-          "subClass": 10,
-          "type": "SUN",
-          "typeLabel": "Sun",
-          "yieldOutput": [
-            {
-              "value": 5,
-              "yield": "orders"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+2 Cult, +Cult%/MtnVolc",
-        "shrine": {
+          "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
           "effectsXml": [
             "+2 Culture"
           ],
@@ -2754,8 +2759,24 @@
         }
       },
       {
-        "effect": "+2 Growth/Grove, +Healer",
+        "effect": "+20% adjacent Camp, +1 Level for new Ranged units",
         "shrine": {
+          "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
+          "effectsXml": [],
+          "fullName": "Shrine of Neith",
+          "id": "IMPROVEMENT_SHRINE_NEITH",
+          "name": "Neith",
+          "primaryYield": null,
+          "subClass": 6,
+          "type": "HUNTING",
+          "typeLabel": "Hunting",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+2 Growth/adjacent Grove, Units gain Healer",
+        "shrine": {
+          "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
           "effectsXml": [],
           "fullName": "Shrine of Isis",
           "id": "IMPROVEMENT_SHRINE_ISIS",
@@ -2768,17 +2789,25 @@
         }
       },
       {
-        "effect": "+1 Ranged Lvl, +20% Camps",
+        "effect": "+0.5 Orders, +20% adjacent Farm",
         "shrine": {
-          "effectsXml": [],
-          "fullName": "Shrine of Neith",
-          "id": "IMPROVEMENT_SHRINE_NEITH",
-          "name": "Neith",
-          "primaryYield": null,
-          "subClass": 6,
-          "type": "HUNTING",
-          "typeLabel": "Hunting",
-          "yieldOutput": []
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
+          "effectsXml": [
+            "+0.5 Orders"
+          ],
+          "fullName": "Shrine of Ra",
+          "id": "IMPROVEMENT_SHRINE_RA",
+          "name": "Ra",
+          "primaryYield": "ORDERS",
+          "subClass": 10,
+          "type": "SUN",
+          "typeLabel": "Sun",
+          "yieldOutput": [
+            {
+              "value": 5,
+              "yield": "orders"
+            }
+          ]
         }
       }
     ],
@@ -2805,33 +2834,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 wood",
-      "moveSight": "4 move, 2 range, 6 vision",
+      "cost": "100 Food, 50/100 Wood",
+      "moveSight": "4 Move, 2 Range, 6 Vision",
       "names": "Light Chariot / Mounted Lancer",
-      "traits": "Ranged Horse",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "traits": "Ranged, Mounted, Horse, Chariot, High Vision",
       "unitsResolved": [
         {
+          "culture": "Developing",
           "id": "UNIT_LIGHT_CHARIOT",
           "name": "Light Chariot",
           "trait": "ranged"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_MOUNTED_LANCER",
           "name": "Mounted Lancer",
           "trait": "ranged"
         }
       ],
-      "upkeep": "-4/-6 food"
+      "upkeep": "-4/-6 Food, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "Unlocks Olympiad",
-      "+2 Culture/City",
-      "-25% Settler Cost"
-    ],
     "cityNames": [
       "Pella",
       "Athens",
@@ -3231,6 +3255,7 @@
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
         "effectsXml": [
           "+2 Civics"
         ],
@@ -3249,6 +3274,7 @@
         ]
       },
       {
+        "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
         "effectsXml": [
           "+2 Culture"
         ],
@@ -3267,6 +3293,7 @@
         ]
       },
       {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "effectsXml": [
           "+20 Money"
         ],
@@ -3285,6 +3312,7 @@
         ]
       },
       {
+        "effectStr": "+1 Science, +1 Civics/adjacent Courthouse",
         "effectsXml": [
           "+1 Science"
         ],
@@ -3305,50 +3333,31 @@
     ],
     "shrines": [
       {
-        "effect": "+1 Sci, +1 Civ/Courthouse",
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
         "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
           "effectsXml": [
-            "+1 Science"
+            "+2 Civics"
           ],
-          "fullName": "Shrine of Athena",
-          "id": "IMPROVEMENT_SHRINE_ATHENA",
-          "name": "Athena",
-          "primaryYield": "SCIENCE",
-          "subClass": 11,
-          "type": "WISDOM",
-          "typeLabel": "Wisdom",
+          "fullName": "Shrine of Zeus",
+          "id": "IMPROVEMENT_SHRINE_ZEUS",
+          "name": "Zeus",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
           "yieldOutput": [
             {
-              "value": 10,
-              "yield": "science"
+              "value": 20,
+              "yield": "civics"
             }
           ]
         }
       },
       {
-        "effect": "+20 Money, +20% Nets",
+        "effect": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
         "shrine": {
-          "effectsXml": [
-            "+20 Money"
-          ],
-          "fullName": "Shrine of Poseidon",
-          "id": "IMPROVEMENT_SHRINE_POSEIDON",
-          "name": "Poseidon",
-          "primaryYield": "MONEY",
-          "subClass": 8,
-          "type": "WATER",
-          "typeLabel": "Water",
-          "yieldOutput": [
-            {
-              "value": 200,
-              "yield": "money"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+2 Cult, +Cult%/MtnVolc",
-        "shrine": {
+          "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
           "effectsXml": [
             "+2 Culture"
           ],
@@ -3368,22 +3377,45 @@
         }
       },
       {
-        "effect": "+2 Civics, +1 Order/Wonder",
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
           "effectsXml": [
-            "+2 Civics"
+            "+20 Money"
           ],
-          "fullName": "Shrine of Zeus",
-          "id": "IMPROVEMENT_SHRINE_ZEUS",
-          "name": "Zeus",
-          "primaryYield": "CIVICS",
-          "subClass": 1,
-          "type": "KINGSHIP",
-          "typeLabel": "Kingship",
+          "fullName": "Shrine of Poseidon",
+          "id": "IMPROVEMENT_SHRINE_POSEIDON",
+          "name": "Poseidon",
+          "primaryYield": "MONEY",
+          "subClass": 8,
+          "type": "WATER",
+          "typeLabel": "Water",
           "yieldOutput": [
             {
-              "value": 20,
-              "yield": "civics"
+              "value": 200,
+              "yield": "money"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+1 Science, +1 Civics/adjacent Courthouse",
+        "shrine": {
+          "effectStr": "+1 Science, +1 Civics/adjacent Courthouse",
+          "effectsXml": [
+            "+1 Science"
+          ],
+          "fullName": "Shrine of Athena",
+          "id": "IMPROVEMENT_SHRINE_ATHENA",
+          "name": "Athena",
+          "primaryYield": "SCIENCE",
+          "subClass": 11,
+          "type": "WISDOM",
+          "typeLabel": "Wisdom",
+          "yieldOutput": [
+            {
+              "value": 10,
+              "yield": "science"
             }
           ]
         }
@@ -3412,33 +3444,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 iron, 50/100 wood",
-      "moveSight": "2 move, 4 vision",
+      "cost": "50/100 Wood, 100 Iron",
+      "moveSight": "2 Move, 4 Vision",
       "names": "Hoplite / Phalangite",
-      "traits": "Polearm  Pierce  Formation",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "traits": "Melee, Infantry, Polearm, Formation, Anti-Mounted II, Pierce I",
       "unitsResolved": [
         {
+          "culture": "Developing",
           "id": "UNIT_HOPLITE",
           "name": "Hoplite",
           "trait": "melee"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_PHALANGITE",
           "name": "Phalangite",
           "trait": "melee"
         }
       ],
-      "upkeep": "-2/-4 iron, -1 food"
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+2 Civics/City",
-      "anyone can chop",
-      "no hill movement penalty"
-    ],
     "cityNames": [
       "Hattusa",
       "Sarissa",
@@ -3546,6 +3573,7 @@
           {
             "archetype": false,
             "effects": [
+              "+5% Damaged Them Modifier",
               "+20 Opinion (same trait)",
               "+1 Courage"
             ],
@@ -3556,7 +3584,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "+5 XP/turn for All Units"
+            ],
             "icon": null,
             "id": "TRAIT_AMBITIOUS",
             "label": "Ambitious",
@@ -3642,7 +3672,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "Start: Techs: Divination"
+            ],
             "icon": null,
             "id": "TRAIT_PUDUHEPA_LEADER",
             "label": "Puduhepa Leader",
@@ -3673,6 +3705,7 @@
           {
             "archetype": false,
             "effects": [
+              "+10% Unit Trait Modifier / Tribal",
               "+20 Opinion (same trait)",
               "+1 Discipline"
             ],
@@ -3683,7 +3716,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "Start: -20 Legitimacy"
+            ],
             "icon": null,
             "id": "TRAIT_INEXPERIENCED",
             "label": "Inexperienced",
@@ -3697,7 +3732,9 @@
       }
     ],
     "effectsXml": [
-      "+2 Civics/City"
+      "+2 Civics/City",
+      "Ignore Hill Movement Costs",
+      "Can Remove Vegetation"
     ],
     "families": [
       {
@@ -3791,12 +3828,15 @@
     "gameContent": "NATION_HITTITES",
     "id": "NATION_HITTITE",
     "leader": {
-      "name": "Robust Judge (22)"
+      "heir1": "grandson (6)",
+      "name": "Warlike Judge (46)",
+      "spouse": "Intelligent Schemer (43)"
     },
     "name": "Hittite",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Culture, +10 Money per adjacent Resource",
         "effectsXml": [
           "+2 Culture"
         ],
@@ -3815,6 +3855,7 @@
         ]
       },
       {
+        "effectStr": "+2 Training, +10 Infantry XP",
         "effectsXml": [
           "+2 Training"
         ],
@@ -3833,6 +3874,7 @@
         ]
       },
       {
+        "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
         "effectsXml": [],
         "fullName": "Halki",
         "id": "IMPROVEMENT_SHRINE_HALKI",
@@ -3844,6 +3886,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
         "effectsXml": [],
         "fullName": "Kamrusepa",
         "id": "IMPROVEMENT_SHRINE_KAMRUSEPA",
@@ -3857,29 +3900,9 @@
     ],
     "shrines": [
       {
-        "effect": "+2 Training, +10 XP / Unit",
+        "effect": "+2 Culture, +10 Money per adjacent Resource",
         "shrine": {
-          "effectsXml": [
-            "+2 Training"
-          ],
-          "fullName": "Tarhun",
-          "id": "IMPROVEMENT_SHRINE_TARHUN",
-          "name": "Tarhun",
-          "primaryYield": "TRAINING",
-          "subClass": 4,
-          "type": "WAR",
-          "typeLabel": "War",
-          "yieldOutput": [
-            {
-              "value": 20,
-              "yield": "training"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+2 Cult, +10 Money/Resource",
-        "shrine": {
+          "effectStr": "+2 Culture, +10 Money per adjacent Resource",
           "effectsXml": [
             "+2 Culture"
           ],
@@ -3899,22 +3922,31 @@
         }
       },
       {
-        "effect": "+2 Growth/Grove, +Healer",
+        "effect": "+2 Training, +10 Infantry XP",
         "shrine": {
-          "effectsXml": [],
-          "fullName": "Kamrusepa",
-          "id": "IMPROVEMENT_SHRINE_KAMRUSEPA",
-          "name": "Kamrusepa",
-          "primaryYield": null,
-          "subClass": 7,
-          "type": "HEALING",
-          "typeLabel": "Healing",
-          "yieldOutput": []
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Tarhun",
+          "id": "IMPROVEMENT_SHRINE_TARHUN",
+          "name": "Tarhun",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
         }
       },
       {
-        "effect": "+1 Ranged Lvl, +20% Camps",
+        "effect": "+20% adjacent Camp, +1 Level for new Ranged units",
         "shrine": {
+          "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
           "effectsXml": [],
           "fullName": "Halki",
           "id": "IMPROVEMENT_SHRINE_HALKI",
@@ -3923,6 +3955,21 @@
           "subClass": 6,
           "type": "HUNTING",
           "typeLabel": "Hunting",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+2 Growth/adjacent Grove, Units gain Healer",
+        "shrine": {
+          "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+          "effectsXml": [],
+          "fullName": "Kamrusepa",
+          "id": "IMPROVEMENT_SHRINE_KAMRUSEPA",
+          "name": "Kamrusepa",
+          "primaryYield": null,
+          "subClass": 7,
+          "type": "HEALING",
+          "typeLabel": "Healing",
           "yieldOutput": []
         }
       }
@@ -3950,20 +3997,25 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 wood",
-      "moveSight": "3 move, 5 vision",
-      "names": "Three-Man Chariot",
-      "traits": "Melee Rout Circle Horse",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "cost": "100 Food, 50/100 Wood",
+      "moveSight": "3 Move, 5 Vision",
+      "names": "Heavy Chariot / Three Man Chariot",
+      "traits": "Melee, Mounted, Horse, Chariot, Rout, Circle",
       "unitsResolved": [
         {
-          "id": "",
-          "name": "Three-Man Chariot",
-          "trait": ""
+          "culture": "Developing",
+          "id": "UNIT_HITTITE_CHARIOT_1",
+          "name": "Heavy Chariot",
+          "trait": "melee"
+        },
+        {
+          "culture": "Strong",
+          "id": "UNIT_HITTITE_CHARIOT_2",
+          "name": "Three Man Chariot",
+          "trait": "melee"
         }
       ],
-      "upkeep": "-4/-6 food"
+      "upkeep": "-4/-6 Food, -1/-2 Training"
     }
   },
   {
@@ -4167,7 +4219,8 @@
           {
             "archetype": false,
             "effects": [
-              "+2 Culture/Kushite_Pyramids"
+              "+2 Culture/Kushite_Pyramids",
+              "Found: 30 Culture / Weak"
             ],
             "icon": null,
             "id": "TRAIT_REVERED",
@@ -4214,7 +4267,8 @@
       }
     ],
     "effectsXml": [
-      "+50% Shrine"
+      "+50% Shrine",
+      "Can build: Fort"
     ],
     "families": [
       {
@@ -4316,13 +4370,14 @@
     "id": "NATION_KUSH",
     "leader": {
       "heir1": "son, Sickly (6)",
-      "heir2": "sister-in-law, Builder (26)",
+      "heir2": "sister-in-law, Prosperous Builder (26)",
       "name": "Swift Hero (34)"
     },
     "name": "Kush",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
         "effectsXml": [
           "+2 Civics"
         ],
@@ -4341,6 +4396,7 @@
         ]
       },
       {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
         "effectsXml": [
           "+2 Growth"
         ],
@@ -4359,6 +4415,7 @@
         ]
       },
       {
+        "effectStr": "+2 Training, +10 Infantry XP",
         "effectsXml": [
           "+2 Training"
         ],
@@ -4377,6 +4434,7 @@
         ]
       },
       {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
         "effectsXml": [
           "+0.5 Orders"
         ],
@@ -4397,50 +4455,31 @@
     ],
     "shrines": [
       {
-        "effect": "+2 Training, +10 XP / Unit",
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
         "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
           "effectsXml": [
-            "+2 Training"
+            "+2 Civics"
           ],
-          "fullName": "Shrine of Apedemek",
-          "id": "IMPROVEMENT_SHRINE_APEDEMEK",
-          "name": "Apedemek",
-          "primaryYield": "TRAINING",
-          "subClass": 4,
-          "type": "WAR",
-          "typeLabel": "War",
+          "fullName": "Shrine of Amani",
+          "id": "IMPROVEMENT_SHRINE_AMUN",
+          "name": "Amani",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
           "yieldOutput": [
             {
               "value": 20,
-              "yield": "training"
+              "yield": "civics"
             }
           ]
         }
       },
       {
-        "effect": "+0.5 Orders, +20% Farms",
+        "effect": "+2 Growth, +20% adjacent Pasture",
         "shrine": {
-          "effectsXml": [
-            "+0.5 Orders"
-          ],
-          "fullName": "Shrine of Melul",
-          "id": "IMPROVEMENT_SHRINE_MANDULIS",
-          "name": "Melul",
-          "primaryYield": "ORDERS",
-          "subClass": 10,
-          "type": "SUN",
-          "typeLabel": "Sun",
-          "yieldOutput": [
-            {
-              "value": 5,
-              "yield": "orders"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+2 Growth, +20% Pastures",
-        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
           "effectsXml": [
             "+2 Growth"
           ],
@@ -4460,22 +4499,45 @@
         }
       },
       {
-        "effect": "+2 Civics, +1 Order/Wonder",
+        "effect": "+2 Training, +10 Infantry XP",
         "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
           "effectsXml": [
-            "+2 Civics"
+            "+2 Training"
           ],
-          "fullName": "Shrine of Amani",
-          "id": "IMPROVEMENT_SHRINE_AMUN",
-          "name": "Amani",
-          "primaryYield": "CIVICS",
-          "subClass": 1,
-          "type": "KINGSHIP",
-          "typeLabel": "Kingship",
+          "fullName": "Shrine of Apedemek",
+          "id": "IMPROVEMENT_SHRINE_APEDEMEK",
+          "name": "Apedemek",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
           "yieldOutput": [
             {
               "value": 20,
-              "yield": "civics"
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+0.5 Orders, +20% adjacent Farm",
+        "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
+          "effectsXml": [
+            "+0.5 Orders"
+          ],
+          "fullName": "Shrine of Melul",
+          "id": "IMPROVEMENT_SHRINE_MANDULIS",
+          "name": "Melul",
+          "primaryYield": "ORDERS",
+          "subClass": 10,
+          "type": "SUN",
+          "typeLabel": "Sun",
+          "yieldOutput": [
+            {
+              "value": 5,
+              "yield": "orders"
             }
           ]
         }
@@ -4504,33 +4566,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "150/200 wood",
-      "moveSight": "2 moves, 3 range, 4 vision",
+      "cost": "150/200 Wood",
+      "moveSight": "2 Move, 3 Range, 4 Vision",
       "names": "Medjay Archer / Beja Archer",
-      "traits": "Ranged Infantry Volley",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "traits": "Ranged, Infantry, Volley",
       "unitsResolved": [
         {
+          "culture": "Developing",
           "id": "UNIT_MEDJAY_ARCHER",
           "name": "Medjay Archer",
           "trait": "ranged"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_BEJA_ARCHER",
           "name": "Beja Archer",
           "trait": "ranged"
         }
       ],
-      "upkeep": "-2/-4 wood, -1 food"
+      "upkeep": "-1 Food, -2/-4 Wood, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "-50% Civic Mission Costs",
-      "-50% Training Mission Costs",
-      "☸️Found Buddhism☸️"
-    ],
     "cityNames": [
       "Pataliputra",
       "Tosali",
@@ -4638,7 +4695,8 @@
             "archetype": false,
             "effects": [
               "+10% Money",
-              "+10% Rebel Chance"
+              "+10% Rebel Chance",
+              "-25% Unit Trait Train Modifier / Infantry"
             ],
             "icon": null,
             "id": "TRAIT_NANDA",
@@ -4669,7 +4727,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "+1 Yield Rate Generals / Orders"
+            ],
             "icon": null,
             "id": "TRAIT_TRUSTED",
             "label": "Trusted",
@@ -4858,12 +4918,13 @@
     "id": "NATION_MAURYA",
     "leader": {
       "name": "Compassionate Tactician (27)",
-      "spouse": "Strict Judge ( 22) / Pious Scholar (26)"
+      "spouse": "Strict Judge (22) / Pious Scholar (26)"
     },
     "name": "Maurya",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
         "effectsXml": [
           "+2 Civics"
         ],
@@ -4882,6 +4943,7 @@
         ]
       },
       {
+        "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
         "effectsXml": [],
         "fullName": "The_Maruts",
         "id": "IMPROVEMENT_SHRINE_THE_MARUTS",
@@ -4893,6 +4955,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
         "effectsXml": [
           "+0.5 Orders"
         ],
@@ -4911,6 +4974,7 @@
         ]
       },
       {
+        "effectStr": "+1 Science, +1 Civics/adjacent Courthouse",
         "effectsXml": [
           "+1 Science"
         ],
@@ -4931,29 +4995,46 @@
     ],
     "shrines": [
       {
-        "effect": "+1 Sci, +1 Civ/Courthouse",
+        "effect": "+2 Civics, +1 Orders per adjacent Wonder",
         "shrine": {
+          "effectStr": "+2 Civics, +1 Orders per adjacent Wonder",
           "effectsXml": [
-            "+1 Science"
+            "+2 Civics"
           ],
-          "fullName": "Indra",
-          "id": "IMPROVEMENT_SHRINE_INDRA",
-          "name": "Indra",
-          "primaryYield": "SCIENCE",
-          "subClass": 11,
-          "type": "WISDOM",
-          "typeLabel": "Wisdom",
+          "fullName": "Yama",
+          "id": "IMPROVEMENT_SHRINE_YAMA",
+          "name": "Yama",
+          "primaryYield": "CIVICS",
+          "subClass": 1,
+          "type": "KINGSHIP",
+          "typeLabel": "Kingship",
           "yieldOutput": [
             {
-              "value": 10,
-              "yield": "science"
+              "value": 20,
+              "yield": "civics"
             }
           ]
         }
       },
       {
-        "effect": "+0.5 Orders, +20% Farms",
+        "effect": "+2 Growth/adjacent Grove, Units gain Healer",
         "shrine": {
+          "effectStr": "+2 Growth/adjacent Grove, Units gain Healer",
+          "effectsXml": [],
+          "fullName": "The_Maruts",
+          "id": "IMPROVEMENT_SHRINE_THE_MARUTS",
+          "name": "The_Maruts",
+          "primaryYield": null,
+          "subClass": 7,
+          "type": "HEALING",
+          "typeLabel": "Healing",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+0.5 Orders, +20% adjacent Farm",
+        "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
           "effectsXml": [
             "+0.5 Orders"
           ],
@@ -4973,36 +5054,23 @@
         }
       },
       {
-        "effect": "+2 Growth/Grove, +Healer",
+        "effect": "+1 Science, +1 Civics/adjacent Courthouse",
         "shrine": {
-          "effectsXml": [],
-          "fullName": "The_Maruts",
-          "id": "IMPROVEMENT_SHRINE_THE_MARUTS",
-          "name": "The_Maruts",
-          "primaryYield": null,
-          "subClass": 7,
-          "type": "HEALING",
-          "typeLabel": "Healing",
-          "yieldOutput": []
-        }
-      },
-      {
-        "effect": "+2 Civics, +1 Order/Wonder",
-        "shrine": {
+          "effectStr": "+1 Science, +1 Civics/adjacent Courthouse",
           "effectsXml": [
-            "+2 Civics"
+            "+1 Science"
           ],
-          "fullName": "Yama",
-          "id": "IMPROVEMENT_SHRINE_YAMA",
-          "name": "Yama",
-          "primaryYield": "CIVICS",
-          "subClass": 1,
-          "type": "KINGSHIP",
-          "typeLabel": "Kingship",
+          "fullName": "Indra",
+          "id": "IMPROVEMENT_SHRINE_INDRA",
+          "name": "Indra",
+          "primaryYield": "SCIENCE",
+          "subClass": 11,
+          "type": "WISDOM",
+          "typeLabel": "Wisdom",
           "yieldOutput": [
             {
-              "value": 20,
-              "yield": "civics"
+              "value": 10,
+              "yield": "science"
             }
           ]
         }
@@ -5031,33 +5099,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 iron",
-      "moveSight": "2 move, 5 vision",
-      "names": "Armoured / Assault Elephant",
-      "traits": "Elephant  Panic  Assault",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "cost": "100 Food, 50/100 Iron",
+      "moveSight": "2 Move, 4 Vision",
+      "names": "Assault Elephant / Armored Elephant",
+      "traits": "Melee, Mounted, Elephant, Assault, Panic",
       "unitsResolved": [
         {
-          "id": "",
-          "name": "Armoured",
-          "trait": ""
+          "culture": "Developing",
+          "id": "UNIT_ASSAULT_ELEPHANT",
+          "name": "Assault Elephant",
+          "trait": "melee"
         },
         {
-          "id": "",
-          "name": "Assault Elephant",
-          "trait": ""
+          "culture": "Strong",
+          "id": "UNIT_ARMOURED_ELEPHANT",
+          "name": "Armored Elephant",
+          "trait": "melee"
         }
       ],
-      "upkeep": "-2 food, -2/-4 iron"
+      "upkeep": "-2 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+50% Harvest",
-      "-25% Cost Ranged",
-      "Pastures +0.5 Orders"
-    ],
     "cityNames": [
       "Persepolis",
       "Susa",
@@ -5142,6 +5205,7 @@
           {
             "archetype": false,
             "effects": [
+              "+5% Damaged Us Modifier",
               "+20 Opinion (same trait)",
               "+1 Courage"
             ],
@@ -5174,7 +5238,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "Governor assignment cost: -50%"
+            ],
             "icon": null,
             "id": "TRAIT_DARIUS_LEADER",
             "label": "Darius Leader",
@@ -5271,7 +5337,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "+5% Strength Modifier"
+            ],
             "icon": null,
             "id": "TRAIT_CYAXARES_LEADER",
             "label": "Cyaxares Leader",
@@ -5395,13 +5463,14 @@
     "gameContent": "",
     "id": "NATION_PERSIA",
     "leader": {
-      "heir1": "grandpa, Bitter Schemer (65)",
+      "heir1": "grandfather, Bitter Abdicated Schemer (65)",
       "name": "Tough Hero (26)"
     },
     "name": "Persia",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
         "effectsXml": [],
         "fullName": "Shrine of Mithra",
         "id": "IMPROVEMENT_SHRINE_MITHRA",
@@ -5413,6 +5482,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "effectsXml": [
           "+20 Money"
         ],
@@ -5431,6 +5501,7 @@
         ]
       },
       {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
         "effectsXml": [],
         "fullName": "Shrine of Atar",
         "id": "IMPROVEMENT_SHRINE_ATAR",
@@ -5442,6 +5513,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+0.5 Orders, +20% adjacent Farm",
         "effectsXml": [
           "+0.5 Orders"
         ],
@@ -5462,43 +5534,24 @@
     ],
     "shrines": [
       {
-        "effect": "+1 Train/LM, +20% Mines",
+        "effect": "+20% adjacent Camp, +1 Level for new Ranged units",
         "shrine": {
+          "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
           "effectsXml": [],
-          "fullName": "Shrine of Atar",
-          "id": "IMPROVEMENT_SHRINE_ATAR",
-          "name": "Atar",
+          "fullName": "Shrine of Mithra",
+          "id": "IMPROVEMENT_SHRINE_MITHRA",
+          "name": "Mithra",
           "primaryYield": null,
-          "subClass": 9,
-          "type": "FIRE",
-          "typeLabel": "Fire",
+          "subClass": 6,
+          "type": "HUNTING",
+          "typeLabel": "Hunting",
           "yieldOutput": []
         }
       },
       {
-        "effect": "+0.5 Orders, +20% Farms",
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "shrine": {
-          "effectsXml": [
-            "+0.5 Orders"
-          ],
-          "fullName": "Shrine of Hvar Khshaita",
-          "id": "IMPROVEMENT_SHRINE_HVAR_KHSHAITA",
-          "name": "Hvar Khshaita",
-          "primaryYield": "ORDERS",
-          "subClass": 10,
-          "type": "SUN",
-          "typeLabel": "Sun",
-          "yieldOutput": [
-            {
-              "value": 5,
-              "yield": "orders"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+20 Money, +20% Nets",
-        "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
           "effectsXml": [
             "+20 Money"
           ],
@@ -5518,17 +5571,40 @@
         }
       },
       {
-        "effect": "+1 Ranged Lvl, +20% Camps",
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
         "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
           "effectsXml": [],
-          "fullName": "Shrine of Mithra",
-          "id": "IMPROVEMENT_SHRINE_MITHRA",
-          "name": "Mithra",
+          "fullName": "Shrine of Atar",
+          "id": "IMPROVEMENT_SHRINE_ATAR",
+          "name": "Atar",
           "primaryYield": null,
-          "subClass": 6,
-          "type": "HUNTING",
-          "typeLabel": "Hunting",
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
           "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+0.5 Orders, +20% adjacent Farm",
+        "shrine": {
+          "effectStr": "+0.5 Orders, +20% adjacent Farm",
+          "effectsXml": [
+            "+0.5 Orders"
+          ],
+          "fullName": "Shrine of Hvar Khshaita",
+          "id": "IMPROVEMENT_SHRINE_HVAR_KHSHAITA",
+          "name": "Hvar Khshaita",
+          "primaryYield": "ORDERS",
+          "subClass": 10,
+          "type": "SUN",
+          "typeLabel": "Sun",
+          "yieldOutput": [
+            {
+              "value": 5,
+              "yield": "orders"
+            }
+          ]
         }
       }
     ],
@@ -5555,32 +5631,28 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 iron, 50/100 food",
-      "moveSight": "3 move, 1 range, 4 vision",
-      "names": "Palton Cav. / Cataphract Archer",
-      "traits": "Ranged Horse Rout",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "cost": "50/100 Food, 100 Iron",
+      "moveSight": "3 Move, 1 Range, 5 Vision",
+      "names": "Palton Cavalry / Cataphract Archer",
+      "traits": "Ranged, Mounted, Horse, Rout",
       "unitsResolved": [
         {
-          "id": "",
-          "name": "Palton Cav.",
-          "trait": ""
+          "culture": "Developing",
+          "id": "UNIT_PALTON_CAVALRY",
+          "name": "Palton Cavalry",
+          "trait": "ranged"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_CATAPHRACT_ARCHER",
           "name": "Cataphract Archer",
           "trait": "ranged"
         }
       ],
-      "upkeep": "-2/-4 iron, -1 food"
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
-    "bonuses": [
-      "+1 Fatigue Limit",
-      "+2 Training/City"
-    ],
     "cityNames": [
       "Roma",
       "Ariminum",
@@ -5733,7 +5805,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "+20 Military Nation Kill Yield / Happiness"
+            ],
             "icon": null,
             "id": "TRAIT_AMBUSHER",
             "label": "Ambusher",
@@ -5795,7 +5869,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "+10% Has General Modifier"
+            ],
             "icon": null,
             "id": "TRAIT_THIRD_FOUNDER",
             "label": "Third Founder",
@@ -5825,7 +5901,10 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "+80 Unit Trait XP / Infantry",
+              "+20 Military Tribe Kill Yield / Training"
+            ],
             "icon": null,
             "id": "TRAIT_EXPANSIONIST",
             "label": "Expansionist",
@@ -5855,7 +5934,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "Culture Bonus: Refined"
+            ],
             "icon": null,
             "id": "TRAIT_REFINED",
             "label": "Refined",
@@ -6006,12 +6087,14 @@
     "id": "NATION_ROME",
     "leader": {
       "heir1": "brother, Bold Schemer (22)",
+      "heir2": "mother, Romantic Orator (44)",
       "name": "Ruthless Tactician (22)"
     },
     "name": "Rome",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
         "effectsXml": [
           "+2 Growth"
         ],
@@ -6030,6 +6113,7 @@
         ]
       },
       {
+        "effectStr": "+2 Culture, +10 Money per adjacent Resource",
         "effectsXml": [
           "+2 Culture"
         ],
@@ -6048,6 +6132,7 @@
         ]
       },
       {
+        "effectStr": "+2 Training, +10 Infantry XP",
         "effectsXml": [
           "+2 Training"
         ],
@@ -6066,6 +6151,7 @@
         ]
       },
       {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
         "effectsXml": [],
         "fullName": "Shrine of Sol",
         "id": "IMPROVEMENT_SHRINE_SOL",
@@ -6079,43 +6165,9 @@
     ],
     "shrines": [
       {
-        "effect": "+2 Training, +10 XP / Unit",
+        "effect": "+2 Growth, +20% adjacent Pasture",
         "shrine": {
-          "effectsXml": [
-            "+2 Training"
-          ],
-          "fullName": "Shrine of Bellona",
-          "id": "IMPROVEMENT_SHRINE_BELLONA",
-          "name": "Bellona",
-          "primaryYield": "TRAINING",
-          "subClass": 4,
-          "type": "WAR",
-          "typeLabel": "War",
-          "yieldOutput": [
-            {
-              "value": 20,
-              "yield": "training"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+1 Train/LM, +20% Mines",
-        "shrine": {
-          "effectsXml": [],
-          "fullName": "Shrine of Sol",
-          "id": "IMPROVEMENT_SHRINE_SOL",
-          "name": "Sol",
-          "primaryYield": null,
-          "subClass": 9,
-          "type": "FIRE",
-          "typeLabel": "Fire",
-          "yieldOutput": []
-        }
-      },
-      {
-        "effect": "+2 Growth, +20% Pastures",
-        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
           "effectsXml": [
             "+2 Growth"
           ],
@@ -6135,8 +6187,9 @@
         }
       },
       {
-        "effect": "+2 Cult, +10 Money/Resource",
+        "effect": "+2 Culture, +10 Money per adjacent Resource",
         "shrine": {
+          "effectStr": "+2 Culture, +10 Money per adjacent Resource",
           "effectsXml": [
             "+2 Culture"
           ],
@@ -6153,6 +6206,43 @@
               "yield": "culture"
             }
           ]
+        }
+      },
+      {
+        "effect": "+2 Training, +10 Infantry XP",
+        "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Shrine of Bellona",
+          "id": "IMPROVEMENT_SHRINE_BELLONA",
+          "name": "Bellona",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+          "effectsXml": [],
+          "fullName": "Shrine of Sol",
+          "id": "IMPROVEMENT_SHRINE_SOL",
+          "name": "Sol",
+          "primaryYield": null,
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
+          "yieldOutput": []
         }
       }
     ],
@@ -6179,25 +6269,25 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "150/200 iron",
-      "moveSight": "2 move, 4 vision",
+      "cost": "150/200 Iron",
+      "moveSight": "2 Move, 4 Vision",
       "names": "Hastatus / Legionary",
-      "traits": "Melee Infantry Testudo Centurion",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "traits": "Melee, Infantry, Centurion, Testudo",
       "unitsResolved": [
         {
+          "culture": "Developing",
           "id": "UNIT_HASTATUS",
           "name": "Hastatus",
           "trait": "melee"
         },
         {
+          "culture": "Strong",
           "id": "UNIT_LEGIONARY",
           "name": "Legionary",
           "trait": "melee"
         }
       ],
-      "upkeep": "-2/-4 iron, -1 food"
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   },
   {
@@ -6306,7 +6396,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "Ignore Ranged modifier from attacking into Scrub, Trees, Jungle"
+            ],
             "icon": null,
             "id": "TRAIT_PURSUER",
             "label": "Pursuer",
@@ -6368,7 +6460,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "+5% Per Level Attack Modifier"
+            ],
             "icon": null,
             "id": "TRAIT_LEGENDARY",
             "label": "Legendary",
@@ -6502,12 +6596,16 @@
     "gameContent": "EMPIRES_OF_THE_INDUS",
     "id": "NATION_TAMIL",
     "leader": {
-      "name": "Intelligent Orator"
+      "heir1": "son (11)",
+      "heir2": "son (9)",
+      "name": "Intelligent Orator (34)",
+      "spouse": "Velir Judge (30)"
     },
     "name": "Tamil",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Growth, +20% adjacent Pasture",
         "effectsXml": [
           "+2 Growth"
         ],
@@ -6526,6 +6624,7 @@
         ]
       },
       {
+        "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "effectsXml": [
           "+20 Money"
         ],
@@ -6544,6 +6643,7 @@
         ]
       },
       {
+        "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
         "effectsXml": [],
         "fullName": "Murugan",
         "id": "IMPROVEMENT_SHRINE_MURUGAN",
@@ -6555,6 +6655,7 @@
         "yieldOutput": []
       },
       {
+        "effectStr": "+1 Science, +1 Civics/adjacent Odeon",
         "effectsXml": [
           "+1 Science"
         ],
@@ -6575,43 +6676,9 @@
     ],
     "shrines": [
       {
-        "effect": "+1 Sci, +1 Civ/Odeon",
+        "effect": "+2 Growth, +20% adjacent Pasture",
         "shrine": {
-          "effectsXml": [
-            "+1 Science"
-          ],
-          "fullName": "Mayon",
-          "id": "IMPROVEMENT_SHRINE_MAYON",
-          "name": "Mayon",
-          "primaryYield": "SCIENCE",
-          "subClass": 11,
-          "type": "WISDOM",
-          "typeLabel": "Wisdom",
-          "yieldOutput": [
-            {
-              "value": 10,
-              "yield": "science"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+1 Train/LM, +20% Mines",
-        "shrine": {
-          "effectsXml": [],
-          "fullName": "Murugan",
-          "id": "IMPROVEMENT_SHRINE_MURUGAN",
-          "name": "Murugan",
-          "primaryYield": null,
-          "subClass": 9,
-          "type": "FIRE",
-          "typeLabel": "Fire",
-          "yieldOutput": []
-        }
-      },
-      {
-        "effect": "+2 Growth, +20% Pastures",
-        "shrine": {
+          "effectStr": "+2 Growth, +20% adjacent Pasture",
           "effectsXml": [
             "+2 Growth"
           ],
@@ -6631,8 +6698,9 @@
         }
       },
       {
-        "effect": "+20 Money, +20% Nets",
+        "effect": "+20 Money, +20% adjacent Nets, +2 Money / Water",
         "shrine": {
+          "effectStr": "+20 Money, +20% adjacent Nets, +2 Money / Water",
           "effectsXml": [
             "+20 Money"
           ],
@@ -6647,6 +6715,43 @@
             {
               "value": 200,
               "yield": "money"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+        "shrine": {
+          "effectStr": "+20% adjacent Mine, +1 Training/adjacent Lumbermill",
+          "effectsXml": [],
+          "fullName": "Murugan",
+          "id": "IMPROVEMENT_SHRINE_MURUGAN",
+          "name": "Murugan",
+          "primaryYield": null,
+          "subClass": 9,
+          "type": "FIRE",
+          "typeLabel": "Fire",
+          "yieldOutput": []
+        }
+      },
+      {
+        "effect": "+1 Science, +1 Civics/adjacent Odeon",
+        "shrine": {
+          "effectStr": "+1 Science, +1 Civics/adjacent Odeon",
+          "effectsXml": [
+            "+1 Science"
+          ],
+          "fullName": "Mayon",
+          "id": "IMPROVEMENT_SHRINE_MAYON",
+          "name": "Mayon",
+          "primaryYield": "SCIENCE",
+          "subClass": 11,
+          "type": "WISDOM",
+          "typeLabel": "Wisdom",
+          "yieldOutput": [
+            {
+              "value": 10,
+              "yield": "science"
             }
           ]
         }
@@ -6675,25 +6780,25 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 food, 50/100 wood",
-      "moveSight": "2 move, 1 range, 5 vision",
-      "names": "Javelin Elephant / E. Archer",
-      "traits": "Elephant Panic Cleave Formidable",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "cost": "100 Food, 50/100 Wood",
+      "moveSight": "2 Move, 1 Range, 4 Vision",
+      "names": "Javelin Elephant / Elephant Archer",
+      "traits": "Ranged, Mounted, Elephant, Panic, Cleave I, Formidable",
       "unitsResolved": [
         {
-          "id": "",
+          "culture": "Developing",
+          "id": "UNIT_JAVELIN_ELEPHANT",
           "name": "Javelin Elephant",
-          "trait": ""
+          "trait": "ranged"
         },
         {
-          "id": "",
-          "name": "E. Archer",
-          "trait": ""
+          "culture": "Strong",
+          "id": "UNIT_ARCHER_ELEPHANT",
+          "name": "Elephant Archer",
+          "trait": "ranged"
         }
       ],
-      "upkeep": "-2 food, -2/4 wood"
+      "upkeep": "-2 Food, -2/-4 Wood, -1/-2 Training"
     }
   },
   {
@@ -6830,7 +6935,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "Can Harvest Resource"
+            ],
             "icon": null,
             "id": "TRAIT_NOMADIC",
             "label": "Nomadic",
@@ -6860,7 +6967,9 @@
           },
           {
             "archetype": false,
-            "effects": [],
+            "effects": [
+              "Connected Effect City: Coin Minter"
+            ],
             "icon": null,
             "id": "TRAIT_COIN_MINTER",
             "label": "Coin Minter",
@@ -6906,7 +7015,8 @@
       }
     ],
     "effectsXml": [
-      "+1 Tribe Fatigue Change"
+      "+1 Tribe Fatigue Change",
+      "Found: Add Resource: Horses"
     ],
     "families": [
       {
@@ -7007,13 +7117,14 @@
     "gameContent": "EMPIRES_OF_THE_INDUS",
     "id": "NATION_YUEZHI",
     "leader": {
-      "name": "Bold Schemer (28)",
-      "spouse": "Son (5)"
+      "heir1": "son (5)",
+      "name": "Bold Schemer (28)"
     },
     "name": "Yuezhi",
     "playable": true,
     "shrineXml": [
       {
+        "effectStr": "+2 Culture, +10 Money per adjacent Resource",
         "effectsXml": [
           "+2 Culture"
         ],
@@ -7032,6 +7143,7 @@
         ]
       },
       {
+        "effectStr": "+2 Training, +10 Infantry XP",
         "effectsXml": [
           "+2 Training"
         ],
@@ -7050,6 +7162,7 @@
         ]
       },
       {
+        "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
         "effectsXml": [
           "+2 Culture"
         ],
@@ -7068,6 +7181,7 @@
         ]
       },
       {
+        "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
         "effectsXml": [],
         "fullName": "Nana",
         "id": "IMPROVEMENT_SHRINE_NANA",
@@ -7081,29 +7195,9 @@
     ],
     "shrines": [
       {
-        "effect": "+2 Training, +10 XP / Unit",
+        "effect": "+2 Culture, +10 Money per adjacent Resource",
         "shrine": {
-          "effectsXml": [
-            "+2 Training"
-          ],
-          "fullName": "Orlagno",
-          "id": "IMPROVEMENT_SHRINE_ORLAGNO",
-          "name": "Orlagno",
-          "primaryYield": "TRAINING",
-          "subClass": 4,
-          "type": "WAR",
-          "typeLabel": "War",
-          "yieldOutput": [
-            {
-              "value": 20,
-              "yield": "training"
-            }
-          ]
-        }
-      },
-      {
-        "effect": "+2 Cult, +10 Money/Resource",
-        "shrine": {
+          "effectStr": "+2 Culture, +10 Money per adjacent Resource",
           "effectsXml": [
             "+2 Culture"
           ],
@@ -7123,8 +7217,31 @@
         }
       },
       {
-        "effect": "+2 Cult, +Cult%/MtnVolc",
+        "effect": "+2 Training, +10 Infantry XP",
         "shrine": {
+          "effectStr": "+2 Training, +10 Infantry XP",
+          "effectsXml": [
+            "+2 Training"
+          ],
+          "fullName": "Orlagno",
+          "id": "IMPROVEMENT_SHRINE_ORLAGNO",
+          "name": "Orlagno",
+          "primaryYield": "TRAINING",
+          "subClass": 4,
+          "type": "WAR",
+          "typeLabel": "War",
+          "yieldOutput": [
+            {
+              "value": 20,
+              "yield": "training"
+            }
+          ]
+        }
+      },
+      {
+        "effect": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
+        "shrine": {
+          "effectStr": "+2 Culture, +50% Culture/adjacent Mountain, +100% Culture/adjacent Volcano",
           "effectsXml": [
             "+2 Culture"
           ],
@@ -7144,8 +7261,9 @@
         }
       },
       {
-        "effect": "+1 Ranged Lvl, +20% Camps",
+        "effect": "+20% adjacent Camp, +1 Level for new Ranged units",
         "shrine": {
+          "effectStr": "+20% adjacent Camp, +1 Level for new Ranged units",
           "effectsXml": [],
           "fullName": "Nana",
           "id": "IMPROVEMENT_SHRINE_NANA",
@@ -7180,25 +7298,25 @@
       "successor": ""
     },
     "uniqueUnit": {
-      "cost": "100 iron, 50/100 food",
-      "moveSight": "3 move, 6 vision",
-      "names": "Kushan Cavalry / Warlord",
-      "traits": "Melee Horse Rout Charge",
-      "u6Card": "Strong Culture",
-      "u8Card": "Legendary Culture",
+      "cost": "100 Food, 50/100 Iron",
+      "moveSight": "3 Move, 5 Vision",
+      "names": "Kushan Cavalry / Kushan Warlord",
+      "traits": "Melee, Mounted, Horse, Rout, Shock Cavalry",
       "unitsResolved": [
         {
-          "id": "",
+          "culture": "Developing",
+          "id": "UNIT_KUSHAN_CAVALRY",
           "name": "Kushan Cavalry",
-          "trait": ""
+          "trait": "melee"
         },
         {
-          "id": "UNIT_WARLORD_1",
-          "name": "Warlord",
+          "culture": "Strong",
+          "id": "UNIT_KUSHAN_WARLORDS",
+          "name": "Kushan Warlord",
           "trait": "melee"
         }
       ],
-      "upkeep": "-2/-4 iron, -1 food"
+      "upkeep": "-1 Food, -2/-4 Iron, -1/-2 Training"
     }
   }
 ]

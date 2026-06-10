@@ -110,6 +110,15 @@ h1, h2, h3 {
 .yield-wrath       { --yield-bg:#a83838; }
 .yield-misc        { --yield-bg: var(--border-strong); }
 
+/* Light token backgrounds need dark text on filled .effect tiles — the
+   25% black scrim alone leaves near-white text at ~2.5:1 there. Pages
+   reference var(--yield-fg, var(--text)); dark tokens fall through to
+   the default near-white. */
+.yield-money, .yield-happiness, .yield-stone, .yield-orders,
+.yield-influence, .yield-divine_favor {
+  --yield-fg: #16171c;
+}
+
 /* Legend chips */
 .chip {
   display: inline-flex; align-items: center; gap: 0.35rem;

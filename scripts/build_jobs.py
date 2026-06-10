@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 """
-Build src/data/jobs.json from job.xml + council.xml.
+Build src/data/jobs.json from job.xml + council.xml + council-btt.xml.
 
 Each job in job.xml is one of three families:
   • Council slots (Ambassador, Chancellor, Spymaster, Grand Vizier) — bonus
     yields scale with the assigned character's ratings, defined in council.xml
-    via aaiRatingYieldCity and aaiRatingYieldGlobal.
+    (and council-btt.xml for the Behind the Throne Grand Vizier seat) via
+    aaiRatingYieldCity and aaiRatingYieldGlobal.
   • Slot flags (bGeneral, bGovernor, bAgent, bExplorer) — generic command roles
     with a flat assignment opinion modifier.
 
+Rating scaling is TRIANGULAR, not linear: per the game source
+(InfoHelpers.getRatingYieldRateCouncil → modifyRating → triangleOffset with
+offset 0) a rating of R multiplies the base by tri(R) = R·(R+1)/2. We emit
+the base (display units, raw ÷ 10 per CLAUDE.md) with an "× tri(Rating)"
+suffix that jobs.astro renders as the ×△ marker, same as the Council page.
+
 We render each job as: name, slot type, prereq tech (Council jobs), trait
 prereqs, assignment opinion, and an `effects` list of humanized rating-yield
-bonuses for Council jobs.
+bonuses plus flat EffectPlayer riders for Council jobs.
 """
 from __future__ import annotations
 
@@ -87,28 +94,53 @@ def slot_type(entry: ET.Element) -> str:
 
 
 def humanize_rating_yields(council_entry: ET.Element, scope: str) -> list[str]:
-    """Render aaiRatingYieldCity / aaiRatingYieldGlobal as 'Rating → +N Yield'."""
+    """Render aaiRatingYieldCity / aaiRatingYieldGlobal as '+N Yield × tri(Rating)'.
+
+    XML values are rate units (10 = 1.0/turn display) → divide by 10. The
+    rating multiplier is triangular (InfoHelpers.getRatingYieldRateCouncil →
+    modifyRating with offset 0): base × R·(R+1)/2.
+    """
     out: list[str] = []
     tag = "aaiRatingYieldCity" if scope == "City" else "aaiRatingYieldGlobal"
     for pair in council_entry.findall(f"{tag}/Pair"):
         rating = RATING_LABELS.get(pair.findtext("zIndex") or "", pair.findtext("zIndex") or "")
         for sp in pair.findall("SubPair"):
             y = yield_name(sp.findtext("zSubIndex"))
-            v = int(sp.findtext("iValue") or "0")
-            # The aaiRatingYieldCity field is "+N yield per rating point" — already
-            # a percentage on the per-city yield in-game, so leave as raw int.
+            base = int(sp.findtext("iValue") or "0") / 10
             suffix = "/City" if scope == "City" else ""
-            out.append(f"+{v} {y}{suffix} per {rating}")
+            out.append(f"{fmt_decimal(base)} {y}{suffix} × tri({rating})")
     return out
 
 
 def humanize_opinion_pairs(council_entry: ET.Element, tag: str, label: str) -> list[str]:
-    """Render aiPlayerOpinion / aiTribeOpinion / aiReligionOpinion / aiFamilyOpinion."""
+    """Render aiPlayerOpinion / aiTribeOpinion / aiReligionOpinion / aiFamilyOpinion.
+
+    Opinion values are flat points (not ×10 rate units) but the rating scaling
+    is triangular too (InfoHelpers.getPlayerOpinionCouncil → modifyRating with
+    offset 0, rounded out to 5).
+    """
     out: list[str] = []
     for pair in council_entry.findall(f"{tag}/Pair"):
         rating = RATING_LABELS.get(pair.findtext("zIndex") or "", pair.findtext("zIndex") or "")
         v = int(pair.findtext("iValue") or "0")
-        out.append(f"+{v} {label} Opinion per {rating}")
+        out.append(f"+{v} {label} Opinion × tri({rating})")
+    return out
+
+
+def humanize_effect_player(ep_entry: ET.Element | None) -> list[str]:
+    """Flat EffectPlayer riders on a Council seat that the rating tables miss."""
+    if ep_entry is None:
+        return []
+    out: list[str] = []
+    # Spymaster: <bAgent>1</bAgent> unlocks the Agent job in foreign cities
+    # (Player.cs changeAgentUnlock via mbAgent).
+    if ep_entry.findtext("bAgent") == "1":
+        out.append("Unlocks Agents in foreign cities")
+    # Grand Vizier: NoGovernorEffectCity → EFFECTCITY_SHARED_POWER — the Vizier
+    # acts as default Governor of every governor-less city (DefaultGovernor =
+    # COUNCIL_GRAND_VIZIER), with auto-build and no hurrying.
+    if ep_entry.findtext("NoGovernorEffectCity"):
+        out.append("Acts as default Governor in every city without one (auto-build, no hurrying)")
     return out
 
 
@@ -116,7 +148,20 @@ def main() -> int:
     text_infos = load_text("text-infos.xml", "text-concept.xml")
 
     job_entries = parse("job.xml").findall("Entry")
-    council_idx = {e.findtext("zType"): e for e in parse("council.xml").findall("Entry") if e.findtext("zType")}
+    # council-btt.xml (Behind the Throne) holds the Grand Vizier seat.
+    council_idx: dict[str, ET.Element] = {}
+    for fn in ("council.xml", "council-btt.xml"):
+        if (XML_DIR / fn).exists():
+            for e in parse(fn).findall("Entry"):
+                if e.findtext("zType"):
+                    council_idx[e.findtext("zType")] = e
+    # EffectPlayer riders (Spymaster bAgent, Vizier shared power).
+    effect_player_idx: dict[str, ET.Element] = {}
+    for fn in ("effectPlayer.xml", "effectPlayer-btt.xml"):
+        if (XML_DIR / fn).exists():
+            for e in parse(fn).findall("Entry"):
+                if e.findtext("zType"):
+                    effect_player_idx[e.findtext("zType")] = e
 
     jobs: list[dict] = []
 
@@ -157,21 +202,28 @@ def main() -> int:
 
             mission = (ce.findtext("AssignMission") or "").replace("MISSION_", "").title()
 
-            # Trait prereqs (any of these archetypes can fill the slot)
+            # Trait prereqs (any of these archetypes can fill the slot).
+            # replace("_", " ") matters for the Vizier's POWER_HUNGRY/RISING_STAR.
             for pair in ce.findall("abTraitPrereq/Pair"):
                 tid = pair.findtext("zIndex") or ""
                 if (pair.findtext("bValue") or "0") == "1":
-                    trait_prereqs.append(tid.replace("TRAIT_", "").replace("_ARCHETYPE", "").title())
+                    trait_prereqs.append(
+                        tid.replace("TRAIT_", "").replace("_ARCHETYPE", "").replace("_", " ").title())
 
             # Rating-scaled yields — both global and per-city
             effects.extend(humanize_rating_yields(ce, "Global"))
             effects.extend(humanize_rating_yields(ce, "City"))
 
-            # Rating-scaled opinion modifiers (Ambassador: +3 Player Opinion / Charisma)
+            # Rating-scaled opinion modifiers (Ambassador: +3 Foreign Leader Opinion × tri(Charisma))
             effects.extend(humanize_opinion_pairs(ce, "aiPlayerOpinion", "Foreign Leader"))
-            effects.extend(humanize_opinion_pairs(ce, "aiTribeOpinion", "Tribal"))
+            effects.extend(humanize_opinion_pairs(ce, "aiTribeOpinion", "Tribe"))
             effects.extend(humanize_opinion_pairs(ce, "aiReligionOpinion", "Religion"))
             effects.extend(humanize_opinion_pairs(ce, "aiFamilyOpinion", "Family"))
+
+            # Flat EffectPlayer riders (Spymaster: unlock Agents; Vizier: shared power)
+            ep_id = ce.findtext("EffectPlayer") or ""
+            if ep_id:
+                effects.extend(humanize_effect_player(effect_player_idx.get(ep_id)))
 
         jobs.append({
             "id": zid,

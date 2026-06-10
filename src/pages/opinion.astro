@@ -82,7 +82,7 @@ const BRACKET_TONE: Record<string, string> = {
                                   const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
                                   return (
                                     <div class={`effect yield-${yieldKey}`}>
-                                      <LinkedText text={text} showIcons={false} />
+                                      <LinkedText text={text} showIcons={false} iconsForYields={true} />
                                     </div>
                                   );
                                 })}
@@ -110,7 +110,7 @@ const BRACKET_TONE: Record<string, string> = {
                                   const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
                                   return (
                                     <div class={`effect yield-${yieldKey}`}>
-                                      <LinkedText text={text} showIcons={false} />
+                                      <LinkedText text={text} showIcons={false} iconsForYields={true} />
                                     </div>
                                   );
                                 })}

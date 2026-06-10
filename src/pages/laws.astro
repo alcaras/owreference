@@ -59,7 +59,7 @@ for (const g of laws.groups) {
                           const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
                           return (
                             <li class={`effect yield-${yieldKey}`}>
-                              <LinkedText text={text} showIcons={false} />
+                              <LinkedText text={text} showIcons={false} iconsForYields={true} />
                             </li>
                           );
                         })}

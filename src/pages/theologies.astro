@@ -42,7 +42,7 @@ function theologyYield(eff: string[]): string {
     <span class="legend__label">Available to</span>
     {religions.map(r => (
       <a class="chip chip--neutral" href={`${base}world-religion-buildings#${r.slug}`}>
-        <img class="chip__icon" src={`${base}img/yields/divine_favor.png`} alt="" onerror="this.style.display='none'" />
+        <img class="chip__icon" src={`${base}img/icons/yields/divine_favor.png`} alt="" />
         {r.name}
       </a>
     ))}
@@ -73,7 +73,7 @@ function theologyYield(eff: string[]): string {
                 <ul class="theology__effects">
                   {th.effects.map(e => (
                     <li class="theology__effect">
-                      <LinkedText text={e} showIcons={false} />
+                      <LinkedText text={e} showIcons={false} iconsForYields={true} />
                     </li>
                   ))}
                 </ul>

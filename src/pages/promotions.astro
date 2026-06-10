@@ -70,7 +70,7 @@ for (const p of promotions) {
                     const yieldKey = classifyYield(line)?.toLowerCase() || 'misc';
                     return (
                       <div class={`effect yield-${yieldKey}`}>
-                        <LinkedText text={line} showIcons={false} />
+                        <LinkedText text={line} showIcons={false} iconsForYields={true} />
                       </div>
                     );
                   })}

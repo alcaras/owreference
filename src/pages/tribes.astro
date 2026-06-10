@@ -1,8 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
 import tribes from '../data/tribes.json';
+import { existsSync } from 'node:fs';
 
 const base = import.meta.env.BASE_URL;
+// Build-time art lookup: some tribes (Anarchy, Barbarians, Raiders) and a few
+// tribal-only units ship no extracted sprite, so fall back / omit instead of 404.
+const crestSrc = (slug: string) =>
+  existsSync(`public/img/tribes/${slug}.png`) ? `${base}img/tribes/${slug}.png` : `${base}img/tribes/generic.png`;
+const unitIconSrc = (icon: string) =>
+  existsSync(`public/img/icons/units/${icon}.png`) ? `${base}img/icons/units/${icon}.png` : null;
+
 
 // Combat tribes (Danes, Gauls, Huns, Numidians, Scythians, Thracians,
 // Vandals) field a full roster and become the matrix columns. The
@@ -96,7 +104,7 @@ const specialCount = combat.reduce(
                   <a class="nhdr__link" href={`${base}tribes/${t.slug}`}>
                     <img
                       class="nhdr__crest"
-                      src={`${base}img/tribes/${t.slug}.png`}
+                      src={crestSrc(t.slug)}
                       alt=""
                       onerror="this.style.visibility='hidden'"
                     />
@@ -141,12 +149,13 @@ const specialCount = combat.reduce(
                         {sorted.map(u => (
                           <div class={`tunit ${u.special ? 'tunit--special' : ''}`}>
                             <span class="tunit__glyphwrap">
-                              <img
-                                class="tunit__icon"
-                                src={`${base}img/icons/units/${u.icon}.png`}
-                                alt=""
-                                onerror="this.style.visibility='hidden'"
-                              />
+                              {unitIconSrc(u.icon) && (
+                                <img
+                                  class="tunit__icon"
+                                  src={unitIconSrc(u.icon)}
+                                  alt=""
+                                />
+                              )}
                               {u.mounted && (
                                 <img
                                   class="tunit__mounted"
@@ -192,7 +201,7 @@ const specialCount = combat.reduce(
           <li class="tribe-generic__item">
             <img
               class="tribe-generic__crest"
-              src={`${base}img/tribes/${t.slug}.png`}
+              src={crestSrc(t.slug)}
               alt=""
               onerror="this.style.visibility='hidden'"
             />

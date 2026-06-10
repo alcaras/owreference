@@ -69,7 +69,7 @@ const authors = Array.from(new Set(events.map(e => e.author).filter(Boolean))).s
                           const yieldKey = classifyYield(o)?.toLowerCase() || 'misc';
                           return (
                             <span class={`effect-pill yield-${yieldKey}`}>
-                              <LinkedText text={o} showIcons={false} />
+                              <LinkedText text={o} showIcons={false} iconsForYields={true} />
                             </span>
                           );
                         })}

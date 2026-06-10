@@ -100,7 +100,7 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
                               const yieldKey = classifyYield(o)?.toLowerCase() || 'misc';
                               return (
                                 <span class={`effect-pill yield-${yieldKey}`}>
-                                  <LinkedText text={o} showIcons={false} />
+                                  <LinkedText text={o} showIcons={false} iconsForYields={true} />
                                 </span>
                               );
                             })}

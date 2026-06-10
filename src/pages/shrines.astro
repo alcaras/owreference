@@ -90,7 +90,7 @@ for (const g of groups) {
               {s.outputs.length > 0 && (
                 <ul class="shrine-card__outputs">
                   {s.outputs.map(o => (
-                    <li><LinkedText text={o} showIcons={false} /></li>
+                    <li><LinkedText text={o} showIcons={false} iconsForYields={true} /></li>
                   ))}
                 </ul>
               )}
@@ -98,14 +98,14 @@ for (const g of groups) {
               {s.effects.length > 0 && (
                 <ul class="shrine-card__effects">
                   {s.effects.map(e => (
-                    <li><LinkedText text={e} showIcons={false} /></li>
+                    <li><LinkedText text={e} showIcons={false} iconsForYields={true} /></li>
                   ))}
                 </ul>
               )}
 
               <footer class="shrine-card__foot">
                 {s.costs.map(c => (
-                  <span class="shrine-card__cost"><LinkedText text={c} showIcons={false} /></span>
+                  <span class="shrine-card__cost"><LinkedText text={c} showIcons={false} iconsForYields={true} /></span>
                 ))}
                 {s.specialist && (
                   <span class="shrine-card__spec">→ {s.specialist}</span>
