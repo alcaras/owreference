@@ -25,9 +25,11 @@ function previewsFor(slug: string) {
   }
   return out;
 }
+function previewKind(s: { id: string }) {
+  return DUEL_IDS.has(s.id) ? '1v1 Duel' : '6-player Medium';
+}
 function previewCaption(s: { id: string }, count: number) {
-  const kind = DUEL_IDS.has(s.id) ? '1v1 Duel seed' : '6-player Medium seed';
-  return count === 1 ? kind : `${kind}s × ${count}`;
+  return `${previewKind(s)} seed${count === 1 ? '' : 's'}${count > 1 ? ` × ${count}` : ''}`;
 }
 const totalPreviews = scripts.reduce((n, s) => n + previewsFor(s.slug).length, 0);
 
@@ -49,6 +51,7 @@ for (const s of scripts) {
     { label: 'generated scripts', value: generators.length },
     { label: 'special layouts', value: special.length },
     { label: 'tunable options', value: totalOptions },
+    { label: 'map previews', value: totalPreviews },
   ]}
 >
   <p class="lede">
@@ -56,6 +59,10 @@ for (const s of scripts) {
     not the hand-authored preset scenario maps. Each script below lists
     the generation knobs it exposes (player start, tribes, terrain,
     water). Scripts with no options generate a fixed layout.
+    Previews are real sample generations (three seeds each) at default
+    options — 6-player Medium maps, or the intended 1v1 Duel size for
+    duel scripts — showing terrain, rivers, resources, city sites (pink
+    dots) and player capitals (stars).
   </p>
 
   <div class="ms-toolbar">
@@ -79,8 +86,8 @@ for (const s of scripts) {
               <figure class="ms-prev">
                 <div class="ms-prev__strip" data-n={prevs.length}>
                   {prevs.map(p => (
-                    <a href={p.src} target="_blank" rel="noopener" title={`${s.name} — ${previewCaption(s, 1)} ${p.n} (click to enlarge)`}>
-                      <img src={p.src} alt={`${s.name} map preview, ${previewCaption(s, 1)} ${p.n}`} loading="lazy" decoding="async" />
+                    <a href={p.src} target="_blank" rel="noopener" title={`${s.name} — ${previewKind(s)} sample ${p.n} (click to enlarge)`}>
+                      <img src={p.src} alt={`${s.name} map preview, ${previewKind(s)} sample ${p.n}`} loading="lazy" decoding="async" />
                     </a>
                   ))}
                 </div>
@@ -112,14 +119,29 @@ for (const s of scripts) {
         <h2 class="ms-sec__h">Special / fixed layouts</h2>
         <p class="ms-sec__sub">Constrained scripts for duels and symmetric starts.</p>
         <div class="ms-grid">
-          {special.map(s => (
+          {special.map(s => {
+            const prevs = previewsFor(s.slug);
+            return (
             <article class="ms-card ms-card--special" data-script={s.id}>
               <header class="ms-card__head">
                 <h3 class="ms-card__name">{s.name}</h3>
               </header>
               {s.description && <p class="ms-card__desc">{s.description}</p>}
+              {prevs.length > 0 && (
+                <figure class="ms-prev">
+                  <div class="ms-prev__strip" data-n={prevs.length}>
+                    {prevs.map(p => (
+                      <a href={p.src} target="_blank" rel="noopener" title={`${s.name} — ${previewKind(s)} sample ${p.n} (click to enlarge)`}>
+                        <img src={p.src} alt={`${s.name} map preview, ${previewKind(s)} sample ${p.n}`} loading="lazy" decoding="async" />
+                      </a>
+                    ))}
+                  </div>
+                  <figcaption class="ms-prev__cap">{previewCaption(s, prevs.length)} · click to enlarge</figcaption>
+                </figure>
+              )}
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
     )}
@@ -213,6 +235,25 @@ for (const s of scripts) {
   .ms-card__desc {
     font-size: 0.86rem; line-height: 1.45;
     color: var(--text-soft); margin: 0;
+  }
+
+  .ms-prev { margin: 0.1rem 0 0; }
+  .ms-prev__strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.35rem;
+  }
+  .ms-prev__strip[data-n="1"] { grid-template-columns: 1fr; }
+  .ms-prev__strip[data-n="2"] { grid-template-columns: repeat(2, 1fr); }
+  .ms-prev__strip a { display: block; line-height: 0; }
+  .ms-prev__strip img {
+    width: 100%; height: auto; display: block;
+    border: 1px solid var(--border); border-radius: 3px;
+    background: #0c0d10;
+    transition: border-color 0.12s ease;
+  }
+  .ms-prev__strip a:hover img { border-color: var(--gold-soft); }
+  .ms-prev__cap {
+    font-family: var(--font-mono); font-size: 0.62rem;
+    color: var(--text-dim); margin: 0.3rem 0 0;
   }
 
   .ms-opts {
