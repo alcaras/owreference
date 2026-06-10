@@ -135,11 +135,13 @@ def main() -> int:
         return 0
 
     def color_hex(entry: ET.Element) -> str:
+        # color.xml stores the hex directly in zHexValue (there are no
+        # iRed/iGreen/iBlue fields — reading those yielded #000000).
         c = color_idx.get(entry.findtext("zColor") or "")
         if c is None:
             return "#c9a04a"
-        r = int(c.findtext("iRed") or "0"); g = int(c.findtext("iGreen") or "0"); b = int(c.findtext("iBlue") or "0")
-        return f"#{r:02x}{g:02x}{b:02x}"
+        hexv = (c.findtext("zHexValue") or "").strip()
+        return hexv.lower() if hexv.startswith("#") else "#c9a04a"
 
     ratings = list(range(RATING_MIN, RATING_MAX + 1))
     stats_out: list[dict] = []

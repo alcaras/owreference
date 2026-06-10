@@ -21,6 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, load_text, fmt_decimal, yield_name,
+    world_religions,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -35,13 +36,8 @@ CLASSES = [
     ("IMPROVEMENTCLASS_HOLY_SITE",  "Holy Site",  "HOLY_SITE"),
 ]
 
-WORLD_RELIGIONS = [
-    ("RELIGION_ZOROASTRIANISM", "Zoroastrianism"),
-    ("RELIGION_JUDAISM",        "Judaism"),
-    ("RELIGION_CHRISTIANITY",   "Christianity"),
-    ("RELIGION_MANICHAEISM",    "Manichaeism"),
-    ("RELIGION_BUDDHISM",       "Buddhism"),
-]
+# World-religion list comes from humanize.world_religions(XML_DIR) — derived
+# from religion.xml (SpreadUnit present), never hardcoded.
 
 
 def parse(name: str) -> ET.Element:
@@ -79,13 +75,9 @@ def render_costs(entry: ET.Element) -> list[str]:
     return out
 
 
-def render_effect_city_extra(ec: ET.Element) -> list[str]:
-    """Extra scalar fields on EffectCity that we want for Cathedrals."""
-    out: list[str] = []
-    leg = ec.findtext("iLegitimacy")
-    if leg and leg != "0":
-        out.append(f"{fmt_decimal(int(leg))} Legitimacy")
-    return out
+# NOTE: iLegitimacy used to be rendered here as a local extra; it now comes
+# from the registry backstop inside render_effect_city — a local copy would
+# duplicate the line.
 
 
 def render_effect_player_holy_site(ep: ET.Element) -> list[str]:
@@ -98,7 +90,9 @@ def render_effect_player_holy_site(ep: ET.Element) -> list[str]:
 
 
 def main() -> int:
-    text_improvement = load_text(XML_DIR, "text-improvement.xml")
+    # text-eoti.xml carries the Empires of the Indus names (Hindu Matha /
+    # Mandir / Shikhara); text-new.xml is a later-additions overflow file.
+    text_improvement = load_text(XML_DIR, "text-improvement.xml", "text-eoti.xml", "text-new.xml")
     text_religion = load_text(XML_DIR, "text-religion.xml")
     indexes = load_xml_indexes(XML_DIR)
 
@@ -110,18 +104,24 @@ def main() -> int:
         if cls in {c[0] for c in CLASSES} and rel:
             imp_by_key[(cls, rel)] = entry
 
+    wr = world_religions(XML_DIR)
+
     religions: list[dict] = []
-    for rid, default_name in WORLD_RELIGIONS:
+    for rid, default_name, quirks in wr:
         religions.append({
             "id": rid,
             "slug": rid.replace("RELIGION_", "").lower(),
             "name": text_religion.get(f"TEXT_{rid}", default_name),
+            "dlc": quirks["dlc"],
+            "noSpread": quirks["noSpread"],
+            "forceTheologies": quirks["forceTheologies"],
+            "paganNations": quirks["paganNations"],
         })
 
     rows: list[dict] = []
     for cls_id, cls_label, cls_short in CLASSES:
         cells: list[dict | None] = []
-        for rid, _ in WORLD_RELIGIONS:
+        for rid, _, _quirks in wr:
             entry = imp_by_key.get((cls_id, rid))
             if entry is None:
                 cells.append(None)
@@ -142,7 +142,6 @@ def main() -> int:
                 ec = indexes.get("effectCity.xml", {}).get(ec_id)
                 if ec is not None:
                     effects.extend(render_effect_city(ec, per_city=True, indexes=indexes))
-                    effects.extend(render_effect_city_extra(ec))
             ep_id = entry.findtext("EffectPlayer") or ""
             if ep_id:
                 ep = indexes.get("effectPlayer.xml", {}).get(ep_id)

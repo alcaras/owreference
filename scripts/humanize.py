@@ -118,6 +118,35 @@ def load_text(xml_dir: Path, *filenames: str) -> dict[str, str]:
     return out
 
 
+def world_religions(xml_dir: Path) -> list[tuple[str, str, dict]]:
+    """Derive the world-religion list from religion.xml: a world religion is
+    any entry with a SpreadUnit (pagan religions and Atenism have none).
+    Hinduism qualifies despite bHidden/bNoSpread — it's a hybrid: the pagan
+    religion of the Indus nations that builds worship buildings and is
+    FORCED to adopt theologies (bForceTheologies). Never hardcode this list;
+    DLC adds members (Hinduism ships with Empires of the Indus).
+
+    Returns (id, display name, quirks) in religion.xml order."""
+    text = load_text(xml_dir, "text-religion.xml", "text-religion-hittite.xml")
+    out: list[tuple[str, str, dict]] = []
+    for e in ET.parse(xml_dir / "religion.xml").getroot().findall("Entry"):
+        rid = e.findtext("zType") or ""
+        if not rid or not e.findtext("SpreadUnit"):
+            continue
+        name = text.get(f"TEXT_{rid}", rid.replace("RELIGION_", "").title())
+        quirks = {
+            "dlc": e.findtext("GameContentRequired") or None,
+            "noSpread": e.findtext("bNoSpread") == "1",
+            "forceTheologies": e.findtext("bForceTheologies") == "1",
+            "paganNations": [
+                (v.text or "").replace("NATION_", "").title()
+                for v in e.findall("PaganNations/zValue")
+            ],
+        }
+        out.append((rid, name, quirks))
+    return out
+
+
 def fmt_decimal(v: float) -> str:
     """Format an integer-or-decimal nicely. 1 → '+1', 0.5 → '+0.5', -2 → '-2'."""
     if v == int(v):

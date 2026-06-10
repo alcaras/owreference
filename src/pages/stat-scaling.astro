@@ -211,6 +211,9 @@ const graphData = {
         const role = stat.roles.find((r) => r.key === roleKey);
         const baseS = stat.base[roleKey], cmS = stat.cm[roleKey];
         titleEl.textContent = `${stat.name} · ${role.label} — ${role.effect}`;
+        // Legend swatch tracks the active stat's in-game color (color.xml)
+        const sw = document.querySelector('.sg-swatch--cm');
+        if (sw) sw.style.borderTopColor = stat.color;
 
         let lo = 0, hi = 0;
         for (const v of baseS.concat(cmS)) { lo = Math.min(lo, v); hi = Math.max(hi, v); }

@@ -41,12 +41,24 @@ function theologyYield(eff: string[]): string {
   <div class="legend legend--audience">
     <span class="legend__label">Available to</span>
     {religions.map(r => (
-      <a class="chip chip--neutral" href={`${base}world-religion-buildings#${r.slug}`}>
+      <a
+        class="chip chip--neutral"
+        href={`${base}world-religion-buildings#${r.slug}`}
+        title={r.paganNations?.length
+          ? `Pagan religion of ${r.paganNations.join(', ')} — always adopts theologies, never spreads (Empires of the Indus)`
+          : undefined}
+      >
         <img class="chip__icon" src={`${base}img/icons/yields/divine_favor.png`} alt="" />
         {r.name}
+        {r.forceTheologies && <span class="chip__mark">hybrid</span>}
       </a>
     ))}
   </div>
+  <p class="note note--hybrid">
+    <LinkedText text="Hinduism" showIcons={false} /> is a hybrid: the pagan religion of the
+    Empires of the Indus nations (Maurya, Yuezhi, Tamil). It never spreads to other
+    players, but it builds the full worship chain and <em>always</em> adopts theologies.
+  </p>
 
   {tiers.map(tier => (
     <section class="tier" id={`tier-${tier.tier}`}>
@@ -112,7 +124,23 @@ function theologyYield(eff: string[]): string {
   }
   .lede b { color: var(--text); }
 
-  .legend--audience { margin-bottom: 1.4rem; }
+  .legend--audience { margin-bottom: 0.5rem; }
+  .chip__mark {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    padding: 0.05rem 0.3rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    color: var(--text-faint);
+  }
+  .note--hybrid {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    max-width: 72ch;
+    margin: 0 0 1.4rem;
+  }
 
   .tier { margin-top: 1.4rem; }
   .tier__title {

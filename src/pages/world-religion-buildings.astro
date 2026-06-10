@@ -56,9 +56,19 @@ function cellYield(cell: any): string {
               <span class="rowlabel__big">Building ↓</span>
             </th>
             {religions.map(r => (
-              <th class="nhdr nhdr--religion" data-religion={r.slug} id={r.slug} title={r.id}>
+              <th
+                class="nhdr nhdr--religion"
+                data-religion={r.slug}
+                id={r.slug}
+                title={r.paganNations?.length
+                  ? `${r.id} — pagan religion of ${r.paganNations.join(', ')}; never spreads, always adopts theologies`
+                  : r.id}
+              >
                 <div class="nhdr__inner">
                   <span class="nhdr__name">{r.name}</span>
+                  {r.paganNations?.length > 0 && (
+                    <span class="nhdr__sub">pagan hybrid · Indus nations</span>
+                  )}
                 </div>
               </th>
             ))}
@@ -120,6 +130,14 @@ function cellYield(cell: any): string {
 </Base>
 
 <style>
+  .nhdr__sub {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.05em;
+    color: var(--text-faint);
+    margin-top: 0.15rem;
+  }
   .lede {
     color: var(--text-dim);
     font-size: 0.85rem;
