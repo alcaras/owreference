@@ -2,8 +2,19 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import catalog from '../data/mission-catalog.json';
+import detailMissions from '../data/missions.json';
 
 const base = import.meta.env.BASE_URL;
+
+// Missions with a dice-outcome detail page (missions.json) get their catalog
+// name linked. Folded internal variants (e.g. MISSION_SLANDER_ANY) point at
+// their base mission's page.
+const detailHref: Record<string, string> = {};
+for (const dm of detailMissions) {
+  const href = `${base}${dm.path}`;
+  detailHref[dm.id] = href;
+  for (const fid of dm.foldedIds || []) detailHref[fid] = href;
+}
 
 // Organized by WHO can run the mission. Order + blurbs mirror the
 // builder's PERFORMER_ORDER.
@@ -108,7 +119,11 @@ for (const m of catalog) {
                 data-internal={m.internal ? '1' : '0'}
               >
                 <td class="mtbl__c-name">
-                  <span class="mname">{m.name}</span>
+                  {detailHref[m.id] ? (
+                    <a class="mname mname--link" href={detailHref[m.id]}>{m.name}</a>
+                  ) : (
+                    <span class="mname">{m.name}</span>
+                  )}
                   {m.target && <span class="mtarget">→ {m.target}</span>}
                   {m.description && (
                     <span class="mdesc"><LinkedText text={m.description} showIcons={false} /></span>
@@ -303,6 +318,8 @@ for (const m of catalog) {
     font-family: var(--font-display);
     font-weight: 600; font-size: 0.98rem; color: var(--text);
   }
+  .mname--link { text-decoration: none; }
+  .mname--link:hover { color: var(--gold, var(--accent)); text-decoration: underline; }
   .mtarget { display: block; font-size: 0.72rem; color: var(--text-faint); }
   .mdesc {
     display: block; margin-top: 0.15rem;

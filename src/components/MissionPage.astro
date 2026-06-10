@@ -9,8 +9,9 @@ import missions from '../data/missions.json';
 interface Props {
   slug: string;
   pageMark: string;
+  active?: string;
 }
-const { slug, pageMark } = Astro.props;
+const { slug, pageMark, active = slug } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
 const mission = missions.find(m => m.slug === slug)!;
@@ -18,14 +19,24 @@ const mission = missions.find(m => m.slug === slug)!;
 function pct(p: number): string {
   return (p * 100).toFixed(0) + '%';
 }
+
+// "2" or "2+" — iMissionTurnsScaled adds a game-speed-scaled term on top.
+const turnsLabel = `${mission.turns}${mission.turnsScaled ? '+' : ''}`;
+const instant = mission.turns === 0 && !mission.turnsScaled;
+const durationLabel = instant
+  ? 'Instant'
+  : `${turnsLabel} turn${mission.turns === 1 && !mission.turnsScaled ? '' : 's'}`;
+const eventGroups = mission.eventGroups || [];
 ---
 
-<Base title={mission.name} active={slug} pageMark={pageMark} pageStats={[
-  { label: 'turns', value: mission.turns },
+<Base title={mission.name} active={active} pageMark={pageMark} pageStats={[
+  { label: 'turns', value: instant ? 'instant' : turnsLabel },
   { label: 'outcomes', value: mission.outcomes.length },
 ]}>
   <section class="mission-overview">
-    <p class="mission-desc"><LinkedText text={mission.description} /></p>
+    {mission.description && (
+      <p class="mission-desc"><LinkedText text={mission.description} /></p>
+    )}
 
     <div class="mission-chips">
       {mission.subject && (
@@ -40,9 +51,15 @@ function pct(p: number): string {
           <strong>{mission.techPrereq.label}</strong>
         </a>
       )}
+      {mission.dlc && (
+        <span class="chip chip--neutral">
+          <span class="chip__label">Requires</span>
+          <strong>{mission.dlc}</strong>
+        </span>
+      )}
       <span class="chip chip--neutral">
         <span class="chip__label">Duration</span>
-        <strong>{mission.turns} turn{mission.turns === 1 ? '' : 's'}</strong>
+        <strong>{durationLabel}</strong>
       </span>
       {mission.cost.map(c => (
         <span class={`chip yield-${c.yield}`}>
@@ -50,7 +67,19 @@ function pct(p: number): string {
           <strong>{c.value} {c.label}</strong>
         </span>
       ))}
+      {(mission.opinionCost || []).map(c => (
+        <span class={`chip yield-${c.yield}`} title="Base amount — scales with the target's opinion of you">
+          <span class="chip__label">Cost (opinion-scaled)</span>
+          <strong>{c.value} {c.label}</strong>
+        </span>
+      ))}
     </div>
+
+    {(mission.variantNotes || []).length > 0 && (
+      <div class="variant-notes">
+        {mission.variantNotes.map((n: string) => <p class="variant-note">{n}</p>)}
+      </div>
+    )}
   </section>
 
   <section class="outcomes">
@@ -99,7 +128,9 @@ function pct(p: number): string {
                       <span>{r.label}</span>
                     ) : (
                       <>
-                        <span class="reward-val">{r.scope.endsWith('Per') ? `+${r.value} per City` : `+${r.value}`}</span>
+                        <span class="reward-val">{r.scope.endsWith('Per')
+                          ? `+${r.value} per ${r.scope.startsWith('aiOther') ? 'Rival City' : 'City'}`
+                          : `+${r.value}`}</span>
                         <span class="reward-yield">{r.label}</span>
                       </>
                     )}
@@ -112,12 +143,26 @@ function pct(p: number): string {
       })}
     </div>
 
-    <p class="outcomes__legend">
-      <strong>Base</strong> is the flat reward; <strong>per City</strong> values stack with the size of your empire
-      (see Reward scaling below). The subject's character rating shifts the dice — e.g. Wisdom raises the
-      Steal Research success chance — but does not change the yield amounts.
-    </p>
+    {(mission.scaling || mission.scalingNote) ? (
+      <p class="outcomes__legend">
+        <strong>Base</strong> is the flat reward; <strong>per City</strong> values stack with the size of your empire
+        (see Reward scaling below). The subject's character rating shifts the dice — e.g. Wisdom raises the
+        Steal Research success chance — but does not change the yield amounts.
+      </p>
+    ) : (
+      <p class="outcomes__legend">
+        The subject's character rating shifts the dice where a <strong>Rating influence</strong> is shown,
+        but does not change the reward amounts.
+      </p>
+    )}
   </section>
+
+  {!mission.scaling && mission.scalingNote && (
+    <section class="scaling">
+      <h2 class="outcomes__title">Reward scaling</h2>
+      <p class="outcomes__sub">{mission.scalingNote}</p>
+    </section>
+  )}
 
   {mission.scaling && (
     <section class="scaling">
@@ -188,15 +233,9 @@ function pct(p: number): string {
     </section>
   )}
 
-  {mission.events && mission.events.length > 0 && mission.eventChance && (
+  {eventGroups.length > 0 && (
     <section class="events">
       <h2 class="outcomes__title">Events</h2>
-      <p class="outcomes__sub">
-        <strong>{pct(mission.eventChance.probability)}</strong> of the time (a {mission.eventChance.weight}/{mission.eventChance.total} dice
-        result) the mission fires an <strong>event</strong> instead of its normal reward — then one of the
-        {' '}{mission.events.length} stories below is drawn, and you pick a response.
-        Bracketed values like <code>[character]</code> are filled in with the actual names in-game.
-      </p>
       <p class="evt-caveat">⚠ <b>Story weights are not in-game odds.</b> Each story is gated by character/empire
       conditions (some hidden), so real frequency is filtered in ways the XML can't predict. The weight is the raw
       XML knob, not a probability.</p>
@@ -207,7 +246,24 @@ function pct(p: number): string {
       </div>
 
       <div class="evt-list evtmode" data-mode="raw" id="evtmode">
-        {mission.events.map(ev => {
+        {eventGroups.map(g => (
+          <>
+            {g.isEventResult ? (
+              <p class="outcomes__sub evtgrp__intro">
+                <strong>{pct(g.probability)}</strong> of the time (a {g.weight}/{g.total} dice
+                result) the mission fires an <strong>event</strong> instead of its normal reward — then one of the
+                {' '}{g.events.length} stories below is drawn, and you pick a response.
+                Bracketed values like <code>[character]</code> are filled in with the actual names in-game.
+              </p>
+            ) : (
+              <p class="outcomes__sub evtgrp__intro">
+                After the <strong>{g.outcomeName}</strong> result (a {g.weight}/{g.total} dice result, {pct(g.probability)}),
+                {g.events.length === 1 ? ' this follow-up story' : ` one of the ${g.events.length} follow-up stories below`} can
+                fire, conditions permitting. Bracketed values like <code>[character]</code> are filled in with the
+                actual names in-game.
+              </p>
+            )}
+            {g.events.map(ev => {
           const ry = (r: any) => r.yield || classifyYield(r.text || '');
           const evYield = (ev.guaranteed.map(ry).find(Boolean)
             || ev.options.flatMap((o: any) => o.outcomes.flatMap((oc: any) => oc.rewards)).map(ry).find(Boolean)
@@ -258,6 +314,8 @@ function pct(p: number): string {
             </details>
           );
         })}
+          </>
+        ))}
       </div>
     </section>
   )}
@@ -410,6 +468,13 @@ function pct(p: number): string {
   .evtmode[data-mode='human'] .ev-raw { display: none; }
 
   .mission-overview { margin-bottom: 1.5rem; }
+  .variant-notes { margin-top: 0.8rem; }
+  .variant-note {
+    font-size: 0.78rem; color: var(--text-faint); line-height: 1.45;
+    margin: 0.25rem 0; max-width: 80ch;
+  }
+  .evtgrp__intro { margin: 0.6rem 0 0.2rem; }
+  .evt-list .evtgrp__intro:first-child { margin-top: 0; }
   .mission-desc {
     color: var(--text-dim);
     font-size: 0.95rem;

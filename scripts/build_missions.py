@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """
-Build src/data/missions.json — Rally Troops, Hold Court, Steal Research.
+Build src/data/missions.json — every base-game mission with a dice-weighted
+outcome table (≥2 aiResultDie results).
 
 Source XMLs:
   mission.xml          — mission metadata (prereqs, cost, dice weights, subject)
   missionResult.xml    — each outcome (success/event/etc.) and the bonus it grants
-  bonus.xml            — the actual yield rewards (base + per-rating scaling)
-  text-mission.xml     — human-friendly names + descriptions
+  bonus.xml            — the actual yield rewards (base + per-city scaling)
+  text-mission*.xml    — human-friendly names + descriptions
 
-These three missions all share the dice-weighted outcome structure. We
-fold their XML into one JSON keyed by mission slug, ready for the page.
+Rally / Hold Court / Steal Research keep their dedicated top-level pages
+(`dedicated: true`); everything else renders at /missions/<slug> via the same
+MissionPage component. Scenario / named-leader variants (Olympias, Mentuhotep,
+Court of the Divine King, Rising Star, …) are excluded; `_ANY`-style internal
+duplicates are folded into their base mission with a note (`variantNotes`).
 """
 from __future__ import annotations
 
@@ -21,6 +25,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
+# Shared curation: readable SubjectCharacter labels + DLC display names.
+from build_mission_catalog import WHO_LABELS, DLC_LABELS  # noqa: E402
 
 
 # Event/option prose is full of runtime template vars the static site can't
@@ -79,10 +85,80 @@ ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "missions.json"
 
+# Each entry: slug, mission id, options.
+#   dedicated    — page lives at /<slug> (the three original pages); everything
+#                  else renders at /missions/<slug>.
+#   folds        — internal `_ANY` / role-variant duplicates folded into this
+#                  page: (variant id, dice_identical?, note shown on the page).
+#                  dice_identical is asserted against the XML at build time.
+#   scalingNote  — shown when the reward calculator is honestly impossible.
+#
+# Excluded on purpose: scenario / named-leader variants (OLYMPIAS, MENTUHOTEP,
+# COURT_OF_THE_DIVINE_KING, SCHEME_AGAINST_RIVAL_RISING_STAR, …) and the
+# per-religion Quell Dissent missions (single-result — no dice table).
 MISSIONS = [
-    ("rally",          "MISSION_RALLY_TROOPS"),
-    ("hold-court",     "MISSION_HOLD_COURT"),
-    ("steal-research", "MISSION_STEAL_RESEARCH"),
+    ("rally",          "MISSION_RALLY_TROOPS",  {"dedicated": True}),
+    ("hold-court",     "MISSION_HOLD_COURT",    {"dedicated": True}),
+    ("steal-research", "MISSION_STEAL_RESEARCH", {"dedicated": True}),
+
+    ("influence",             "MISSION_INFLUENCE", {}),
+    ("intercession-religion", "MISSION_INTERCESSION_RELIGION", {}),
+    ("intercession-family",   "MISSION_INTERCESSION_FAMILY", {}),
+    # In-game text names both MISSION_CONVERT_SELF and MISSION_CONVERT_RELIGION
+    # "Convert Religion"; suffix the self-conversion so the two pages differ.
+    ("convert-self",          "MISSION_CONVERT_SELF", {"nameSuffix": " (Self)"}),
+    ("convert-state",         "MISSION_CONVERT_STATE", {}),
+    ("convert-religion",      "MISSION_CONVERT_RELIGION", {}),
+    ("adopt",                 "MISSION_ADOPT", {}),
+    ("legitimize",            "MISSION_LEGITIMIZE", {}),
+    ("chosen-heir",           "MISSION_CHOSEN_HEIR", {}),
+    ("divorce",               "MISSION_DIVORCE", {}),
+    ("infiltrate",            "MISSION_INFILTRATE", {"folds": [
+        ("MISSION_INFILTRATE_ANY", True,
+         "An internal any-character variant (MISSION_INFILTRATE_ANY) rolls the "
+         "same outcome dice — it differs only in who may run it."),
+    ]}),
+    ("slander",               "MISSION_SLANDER", {"folds": [
+        ("MISSION_SLANDER_ANY", True,
+         "An internal any-character variant (MISSION_SLANDER_ANY) rolls the "
+         "same outcome dice — it differs only in who may run it."),
+    ]}),
+    ("assassinate",           "MISSION_ASSASSINATE", {"folds": [
+        ("MISSION_ASSASSINATE_ANY", False,
+         "The internal any-character variant (MISSION_ASSASSINATE_ANY) rolls 4 "
+         "outcomes instead of 5: the undetected-failure outcome is dropped and "
+         "exposed failure takes its weight (2/6)."),
+    ]}),
+    ("expose-agent",          "MISSION_EXPOSE_AGENT", {}),
+    ("treachery",             "MISSION_TREACHERY", {}),
+    ("insurrection",          "MISSION_INSURRECTION", {}),
+    ("move-network",          "MISSION_MOVE_NETWORK", {}),
+    ("high-synod",            "MISSION_HIGH_SYNOD", {}),
+    ("family-gift",           "MISSION_FAMILY_GIFT", {}),
+    ("pacify-city",           "MISSION_PACIFY_CITY", {}),
+    ("imprison",              "MISSION_IMPRISON", {}),
+    ("release",               "MISSION_RELEASE", {}),
+    ("capture",               "MISSION_CAPTURE", {}),
+    ("tutor",                 "MISSION_TUTOR", {"folds": [
+        ("MISSION_TUTOR_SCHOLAR", True,
+         "MISSION_TUTOR_SCHOLAR — the same mission run by a Scholar-archetype "
+         "leader instead of a Tutor — rolls the same outcome dice and skips "
+         "the opinion-scaled Money cost."),
+    ]}),
+    ("revel",                 "MISSION_REVEL", {}),
+    ("scheme-against-rival",  "MISSION_SCHEME_AGAINST_RIVAL", {}),
+    ("seek-political-allies", "MISSION_SEEK_POLITICAL_ALLIES", {}),
+    ("gamble",                "MISSION_GAMBLE", {}),
+    ("plot-vengeance",        "MISSION_PLOT_MURDER", {}),
+    ("intimidate",            "MISSION_INTIMIDATE", {}),
+    ("lead-delegation",       "MISSION_LEAD_DELEGATION", {"scalingNote":
+        "Each delegation outcome pays a base amount plus a per-city amount for "
+        "both your cities and the rival's (e.g. Science: 40 + 10 per your city "
+        "+ 50 + 20 per rival city), then turn-scales like other mission "
+        "rewards. The single-axis calculator can't chart two city counts, so "
+        "it is omitted — the outcome cards above carry the exact values."}),
+    ("pagan-sacrifices",      "MISSION_PAGAN_SACRIFICES", {}),
+    ("impart-stewardship",    "MISSION_IMPART_STEWARDSHIP", {}),
 ]
 
 
@@ -128,22 +204,30 @@ def _trim(v: float):
     return int(v) if v == int(v) else round(v, 1)
 
 
-def scaling_from_outcome(outcome: dict) -> dict | None:
-    """Pull the Base + Per(-city) yield off a mission's primary success
-    outcome and tabulate the reward across a few empire sizes."""
-    base = per = None
-    yld = lbl = None
-    other = False  # aiOtherYields scale by the TARGET player's cities, not yours
+def scaling_from_outcome(outcome: dict):
+    """Pull the Base + Per(-city) yield off a mission outcome and tabulate the
+    reward across a few empire sizes. Returns the scaling dict, None (no
+    turn-scaled reward), or "mixed" when the bonus pays along BOTH your city
+    count and the rival's (two axes the single-slider calculator can't chart,
+    e.g. Lead Delegation)."""
+    fams: dict[str, dict] = {}
     for r in outcome["rewards"]:
         if r["value"] is None:
             continue
-        if r["scope"].endswith("Base"):
-            base, yld, lbl = r["value"], r["yield"], r["label"]
-            other = r["scope"].startswith("aiOther")
-        elif r["scope"].endswith("Per"):
-            per = r["value"]
-    if base is None:
+        sc = r["scope"]
+        if sc.endswith("Base") or sc.endswith("Per"):
+            f = "other" if sc.startswith("aiOther") else "own"
+            fams.setdefault(f, {})["base" if sc.endswith("Base") else "per"] = r
+    if not fams:
         return None
+    if len(fams) > 1:
+        return "mixed"
+    fam_key, d = next(iter(fams.items()))
+    if "base" not in d:
+        return None
+    base, yld, lbl = d["base"]["value"], d["base"]["yield"], d["base"]["label"]
+    per = d["per"]["value"] if "per" in d else None
+    other = fam_key == "other"  # aiOtherYields scale by the TARGET player's cities
     # Mission reward yields are authored at DISPLAY scale and shown raw in-game
     # (the bonus display call passes no YIELDS_MULTIPLIER), so we do NOT divide
     # by 10 here. e.g. Rally = 90 + 10/city Training, reaching 230+ late game.
@@ -218,7 +302,9 @@ def _yld(ykey: str, base: int | None = None, per: int = 0, each: int | None = No
     key = ykey.replace("YIELD_", "").lower()
     yl = ykey.replace("YIELD_", "").title()
     if each is not None:
-        return {"text": f"{'+' if each >= 0 else ''}{each} {yl} (each city)", "yield": key, "eachCity": each}
+        # aiCityYields pays the bonus CITY (source: PlayerBonus.cs ~7238), not
+        # every city — aeAllCityBonuses adds its own "(every city)" suffix.
+        return {"text": f"{'+' if each >= 0 else ''}{each} {yl} (city)", "yield": key, "eachCity": each}
     text = f"{'+' if base >= 0 else ''}{base} {yl}"
     if per:
         text += f" ({'+' if per >= 0 else ''}{per}/city)"
@@ -242,15 +328,25 @@ def bonus_index() -> dict:
     return index_many(*BONUS_FILES)
 
 
-# Memory token → opinion delta (a "memory" is the lasting opinion shift a
-# subject keeps after an event). Lazily loaded + cached.
-_MEMORY_OPINION: dict | None = None
+# Memory token → (opinion delta, duration turns). A "memory" is the lasting
+# opinion shift a subject keeps after an event; entries either carry iOpinion
+# directly or point at a MemoryLevel (memoryLevel.xml: iValue + iTurns,
+# missing iTurns = permanent). Lazily loaded + cached.
+_MEMORY_INFO: dict | None = None
 
 
-def _memory_opinion(token: str):
-    global _MEMORY_OPINION
-    if _MEMORY_OPINION is None:
-        _MEMORY_OPINION = {}
+def _memory_opinion(token: str) -> tuple[int | None, int | None]:
+    global _MEMORY_INFO
+    if _MEMORY_INFO is None:
+        levels: dict = {}
+        lp = XML_DIR / "memoryLevel.xml"
+        if lp.exists():
+            for e in ET.parse(lp).getroot().findall("Entry"):
+                zt = e.findtext("zType")
+                if zt:
+                    levels[zt] = (int(e.findtext("iValue") or "0") or None,
+                                  int(e.findtext("iTurns") or "0") or None)
+        _MEMORY_INFO = {}
         for fn in ("memory-character.xml", "memory-player.xml", "memory-family.xml",
                    "memory-tribe.xml", "memory-religion.xml", "memory-eoti.xml"):
             p = XML_DIR / fn
@@ -258,10 +354,14 @@ def _memory_opinion(token: str):
                 continue
             for e in ET.parse(p).getroot().findall("Entry"):
                 zt = e.findtext("zType")
+                if not zt:
+                    continue
                 op = e.findtext("iOpinion")
-                if zt:
-                    _MEMORY_OPINION[zt] = int(op) if op and op.strip() else None
-    return _MEMORY_OPINION.get(token)
+                if op and op.strip():
+                    _MEMORY_INFO[zt] = (int(op), None)
+                else:
+                    _MEMORY_INFO[zt] = levels.get(e.findtext("MemoryLevel") or "", (None, None))
+    return _MEMORY_INFO.get(token, (None, None))
 
 
 def _named(text: dict, token: str, prefix: str) -> str:
@@ -333,6 +433,12 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
     per = {y: v for y, v in pairs(b, "aiGlobalYieldsPer")}
     for y in list(base) + [k for k in per if k not in base]:
         out.append(_yld(y, base=base.get(y, 0), per=per.get(y, 0)))
+    # Flat aiGlobalYields are added AFTER getAdjustedValue (PlayerBonus.cs
+    # ~5820): a fixed amount that does NOT turn-scale.
+    for y, v in pairs(b, "aiGlobalYields"):
+        key = y.replace("YIELD_", "").lower()
+        yl = y.replace("YIELD_", "").title()
+        out.append({"text": f"{'+' if v >= 0 else ''}{v} {yl}", "yield": key, "flat": v})
     for y, v in pairs(b, "aiCityYields"):
         out.append(_yld(y, each=v))
 
@@ -364,6 +470,12 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
             tip = _trait_tip(t.text)
             out.append({"text": f"Gain trait: {nm}",
                         **({"tipTitle": f"{nm} — trait", "tip": tip} if tip else {})})
+    for t in b.findall("aeRemoveTraits/zValue"):
+        if t.text:
+            nm = _named(text, t.text, "TRAIT_")
+            tip = _trait_tip(t.text)
+            out.append({"text": f"Loses trait: {nm}",
+                        **({"tipTitle": f"{nm} — trait", "tip": tip} if tip else {})})
     if b.findall("aeRandomTraitDelay/zValue") or b.findall("aeRandomTrait/zValue"):
         out.append(_txt("Gain a random trait"))
     if b.findall("aeRandomLeaderRelationshipDelay/zValue") or b.findall("aeRandomLeaderRelationship/zValue"):
@@ -372,6 +484,8 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
     cour = b.findtext("MakeCourtier")
     if cour:
         out.append(_txt(f"Gain a {_named(text, cour, 'COURTIER_')}"))
+    if b.findtext("bRandomCourtier") == "1":
+        out.append(_txt("Gain a random Courtier"))
     for p in b.findall("AddCourtier/Pair"):
         ct = p.findtext("First")
         if ct:
@@ -390,6 +504,32 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
         out.append(_txt(f"Adds {_named(text, addres, 'RESOURCE_')}"))
     if (b.findtext("bKillUnit") or "0") == "1":
         out.append(_txt("A unit is killed"))
+    if (b.findtext("bKillCharacter") or "0") == "1":
+        out.append(_txt("The character is killed"))
+
+    # Character / religion / dynasty state changes. The i*Subject fields hold
+    # an event-subject slot index (often 0) — presence is what matters.
+    for tag, line in (
+        ("iConvertReligionSubject", "Converts to the target religion"),
+        ("iConvertedBySubject",     "The target converts to the subject's religion"),
+        ("iAdoptedBySubject",       "The target is adopted"),
+        ("iDivorcedBySubject",      "The marriage is dissolved"),
+        ("iMoveNetworkCitySubject", "Your agent network moves to the target city"),
+    ):
+        if b.find(tag) is not None:
+            out.append(_txt(line))
+    for tag, line in (
+        ("bConvertStateReligion", "Changes the state religion"),
+        ("bChosenHeir",           "Becomes the chosen heir"),
+        ("bRevealTerritory",      "Reveals the target player's territory"),
+        ("bExposeAgentNetwork",   "Exposes a foreign agent network in the city"),
+        ("bLoseAgentNetwork",     "Your agent network there is lost"),
+    ):
+        if (b.findtext(tag) or "0") == "1":
+            out.append(_txt(line))
+    hp = int(b.findtext("iHPCity") or "0")
+    if hp:
+        out.append(_txt(f"{'+' if hp > 0 else ''}{hp} HP to the city"))
 
     for u, v in pairs(b, "aiUnits"):
         out.append(_txt(f"+{v} {_named(text, u, 'UNIT_')}"))
@@ -407,11 +547,16 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
 
     # Opinion memories — the lasting opinion shift a subject keeps.
     for tag, who in (("Memory", ""), ("MemoryLeader", " (leader of you)"),
-                     ("MemoryAllFamilies", " (all families)")):
+                     ("MemoryAllFamilies", " (all families)"),
+                     ("MemoryAllPlayers", " (all rivals)")):
         mem = b.findtext(tag)
         if mem and mem != "NONE":
-            op = _memory_opinion(mem)
-            out.append(_txt(f"{'+' if op >= 0 else ''}{op} opinion{who}" if op else f"Opinion memory{who}"))
+            op, turns = _memory_opinion(mem)
+            if op:
+                dur = f" for {turns} turns" if turns else ""
+                out.append(_txt(f"{'+' if op >= 0 else ''}{op} opinion{who}{dur}"))
+            else:
+                out.append(_txt(f"Opinion memory{who}"))
 
     fl = b.findtext("FreeLaw")
     if fl and fl != "NONE":
@@ -423,6 +568,12 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
             out.append(_txt(f"Gain tech: {_named(text, t.text, 'TECH_')}"))
     if b.find("aiLawOpinion/Pair") is not None:
         out.append(_txt("Law-based opinion shift"))
+    for tag, suffix in (("Achievement", ""),
+                        ("AchievementIfHeir", " (if the target is an heir)"),
+                        ("AchievementIfOtherLeader", " (if the target leads a rival nation)")):
+        ach = b.findtext(tag)
+        if ach and ach != "NONE":
+            out.append(_txt(f"Steam achievement{suffix}: {_tok(ach, 'ACHIEVEMENT_')}"))
 
     # Nested bonus containers (BONUS_*_OPTION_* often wrap several payloads).
     for bz in b.findall("aeBonuses/zValue"):
@@ -624,11 +775,17 @@ def index_many(*names: str) -> dict[str, ET.Element]:
 
 def main() -> int:
     text = load_text(
-        "text-mission.xml", "text-missionResult.xml", "text-infos.xml",
-        "text-tech.xml", "text-subject.xml",
+        "text-mission.xml", "text-mission-btt.xml", "text-mission-sap.xml",
+        "text-mission-wog.xml",
+        "text-missionResult.xml", "text-missionResult-btt.xml",
+        "text-missionResult-sap.xml", "text-missionResult-wog.xml",
+        "text-infos.xml", "text-tech.xml", "text-subject.xml", "text-subject-sap.xml",
         # Event chain text: story titles/flavor, option prose, traits, units.
-        "text-eventStory.xml", "text-eventStory-sap.xml", "text-eventStoryTitle.xml",
-        "text-eventOption.xml", "text-eventOption-sap.xml",
+        "text-eventStory.xml", "text-eventStory-sap.xml", "text-eventStory-btt.xml",
+        "text-eventStory-eoti.xml",
+        "text-eventStoryTitle.xml", "text-eventStoryTitle-sap.xml",
+        "text-eventStoryTitle-btt.xml",
+        "text-eventOption.xml", "text-eventOption-sap.xml", "text-eventOption-btt.xml",
         "text-trait.xml", "text-unit.xml",
     )
     missions_idx = index("mission.xml")
@@ -640,37 +797,80 @@ def main() -> int:
     gint = {e.findtext("zType"): int(e.findtext("iValue") or "0")
             for e in parse("globalsInt.xml").findall("Entry") if e.findtext("zType")}
     inflation_turns = gint.get("MONEY_INFLATION_TURNS", 60)
-    story_idx = index_many("eventStory.xml", "eventStory-sap.xml", "eventStory-btt.xml")
+    story_idx = index_many("eventStory.xml", "eventStory-sap.xml", "eventStory-btt.xml",
+                           "eventStory-eoti.xml", "eventStory-wd.xml", "eventStory-wog.xml")
     eopt_idx = index_many(
         "eventOption.xml", "eventOption-sap.xml", "eventOption-btt.xml",
         "eventOption-eoti.xml", "eventOption-wd.xml", "eventOption-wog.xml",
     )
 
+    def who_label(token: str) -> str:
+        """Readable 'run by' label for a SubjectCharacter token."""
+        if not token:
+            return ""
+        if token in WHO_LABELS:
+            return WHO_LABELS[token]
+        t = text.get(f"TEXT_{token}")
+        if t:  # text-subject entries may still carry bare link(TOKEN) markup
+            return _LINK_BARE_RE.sub(_link_bare, t).strip()
+        return token.replace("SUBJECT_", "").replace("_", " ").title()
+
+    def dice_pairs(entry: ET.Element) -> list[tuple[str, int]]:
+        return [(p.findtext("zIndex") or "", int(p.findtext("iValue") or "0"))
+                for p in entry.findall("aiResultDie/Pair")]
+
     out: list[dict] = []
-    for slug, mid in MISSIONS:
+    for slug, mid, opts in MISSIONS:
         m = missions_idx.get(mid)
         if m is None:
             print(f"⚠ missing mission {mid}", file=sys.stderr)
             continue
 
-        name = text.get(m.findtext("Name") or "", mid.replace("MISSION_", "").title())
+        name = text.get(m.findtext("Name") or "", mid.replace("MISSION_", "").title()) \
+            + opts.get("nameSuffix", "")
         desc = text.get(m.findtext("Description") or "", "")
         turns = int(m.findtext("iMissionTurns") or "0")
+        turns_scaled = (m.findtext("iMissionTurnsScaled") or "0") != "0"
         tech_prereq = m.findtext("TechPrereq")
         tech_name = (
             text.get(f"TEXT_{tech_prereq}", tech_prereq.replace("TECH_", "").replace("_", " ").title())
             if tech_prereq else None
         )
-        subject = (m.findtext("SubjectCharacter") or "").replace("SUBJECT_", "")
-        subject_disp = subject.replace("_", " ").title() if subject else ""
+        subject_disp = who_label(m.findtext("SubjectCharacter") or "")
+        dlc_token = m.findtext("GameContentRequired") or ""
+        dlc = DLC_LABELS.get(dlc_token, dlc_token.replace("_", " ").title()) if dlc_token else None
 
-        cost = []
-        for pair in m.findall("aiYieldCost/Pair"):
-            y = (pair.findtext("zIndex") or "").replace("YIELD_", "")
-            v = int(pair.findtext("iValue") or "0")
-            # Mission costs are display-scale and shown raw in-game (the cost
-            # text builder passes no YIELDS_MULTIPLIER), so no /10 here.
-            cost.append({"yield": y.lower(), "label": y.title(), "value": v})
+        def costs(tag: str) -> list[dict]:
+            o = []
+            for pair in m.findall(f"{tag}/Pair"):
+                y = (pair.findtext("zIndex") or "").replace("YIELD_", "")
+                v = int(pair.findtext("iValue") or "0")
+                # Mission costs are display-scale and shown raw in-game (the cost
+                # text builder passes no YIELDS_MULTIPLIER), so no /10 here.
+                o.append({"yield": y.lower(), "label": y.title(), "value": v})
+            return o
+
+        cost = costs("aiYieldCost")
+        # aiYieldCostOpinion is a base cost modified by the target's opinion of
+        # you (PlayerEvent.cs getMissionCost) — shown as a separate chip.
+        opinion_cost = costs("aiYieldCostOpinion")
+
+        # Fold internal `_ANY`-style duplicates into this page; verify the
+        # claimed dice-identity against the XML so notes can't go stale.
+        folded_ids: list[str] = []
+        variant_notes: list[str] = []
+        for fid, same_dice, note in opts.get("folds", []):
+            fm = missions_idx.get(fid)
+            if fm is None:
+                print(f"⚠ missing fold {fid} for {mid}", file=sys.stderr)
+                continue
+            identical = dice_pairs(fm) == dice_pairs(m)
+            if identical != same_dice:
+                print(f"⚠ fold {fid}: dice identity changed (expected "
+                      f"{'identical' if same_dice else 'different'}) — update its note",
+                      file=sys.stderr)
+            folded_ids.append(fid)
+            variant_notes.append(note)
 
         # Outcomes: aiResultDie holds {result_id: dice_weight}. Probability =
         # weight / total. Each result gets enriched with its bonus reward.
@@ -686,14 +886,14 @@ def main() -> int:
                 "id": rid,
                 "weight": weight,
                 "probability": (weight / total_weight) if total_weight else 0,
-                "name": text.get(
+                "name": clean_text(text.get(
                     (result.findtext("Name") if result is not None else "") or "",
                     rid.replace("MISSIONRESULT_", "").replace("_", " ").title(),
-                ),
-                "description": text.get(
+                )),
+                "description": clean_text(text.get(
                     (result.findtext("Description") if result is not None else "") or "",
                     "",
-                ),
+                )),
                 "rewards": [],
                 "ratingModifier": [],
             }
@@ -704,66 +904,125 @@ def main() -> int:
                     v = int(rp.findtext("iValue") or "0")
                     outcome["ratingModifier"].append({"rating": r.lower(), "label": r.title(), "value": v})
 
-                # Resolve the bonus → yield rewards (base + per-rating scaling)
+                # Resolve the bonus → structured yield rows (Base + Per turn-
+                # scale; flat aiGlobalYields don't), then everything else the
+                # bonus does via the shared humanizer (traits, kills,
+                # conversions, memories, nested bonuses, …) as label rows.
                 bonus_id = result.findtext("TargetBonus")
                 bonus = bonus_idx.get(bonus_id) if bonus_id else None
                 if bonus is not None:
                     outcome["rewards"] = (
                         yield_pairs(bonus, "aiGlobalYieldsBase", "aiOtherYieldsBase", "aiYieldsBase")
                         + yield_pairs(bonus, "aiGlobalYieldsPer", "aiOtherYieldsPer", "aiYieldsPer")
+                        + yield_pairs(bonus, "aiGlobalYields", "aiOtherYields")
                     )
-                    if bonus.findtext("bRandomCourtier") == "1":
-                        outcome["rewards"].append({"label": "Gain a random Courtier", "value": None, "scope": "Special"})
+                    # The humanizer re-emits top-level Global yields; drop those
+                    # duplicates (matched by their rendered text), keep the rest.
+                    top_texts = set()
+                    gbase = {y: v for y, v in pairs(bonus, "aiGlobalYieldsBase")}
+                    gper = {y: v for y, v in pairs(bonus, "aiGlobalYieldsPer")}
+                    for y in list(gbase) + [k for k in gper if k not in gbase]:
+                        top_texts.add(_yld(y, base=gbase.get(y, 0), per=gper.get(y, 0))["text"])
+                    for y, v in pairs(bonus, "aiGlobalYields"):
+                        yl = y.replace("YIELD_", "").title()
+                        top_texts.add(f"{'+' if v >= 0 else ''}{v} {yl}")
+                    for r in humanize_bonus(bonus_id, bonus_idx, text):
+                        if r["text"] in top_texts:
+                            continue
+                        outcome["rewards"].append({"label": r["text"], "value": None, "scope": "Special"})
+
+                # Bonuses applied to a mission SUBJECT (slot-indexed list) —
+                # e.g. the imprisoned character's family resents you.
+                for bz in result.findall("SubjectBonuses/zValue"):
+                    for r in humanize_bonus(bz.text or "", bonus_idx, text):
+                        outcome["rewards"].append({"label": r["text"], "value": None, "scope": "Special"})
 
             outcomes.append(outcome)
 
-        # Reward scaling: read off the primary (highest-weight, non-event)
-        # success outcome — the first non-_EVENT outcome with a base reward.
+        # Reward scaling for the calculator. Only honest when the non-event
+        # outcomes agree on a single Base(+Per) reward along ONE city axis;
+        # otherwise skip it and explain why (scalingNote).
         scaling = None
+        scaling_note = opts.get("scalingNote")
+        candidates = []
+        mixed = False
         for o in outcomes:
-            if not o["id"].endswith("_EVENT"):
-                scaling = scaling_from_outcome(o)
-                if scaling:
-                    break
-        if scaling:
+            if o["id"].endswith("_EVENT"):
+                continue
+            s = scaling_from_outcome(o)
+            if s == "mixed":
+                mixed = True
+            elif s:
+                candidates.append(s)
+        uniq = {(c["yield"], c["rawBase"], c["rawPer"], c["citiesLabel"]) for c in candidates}
+        if mixed:
+            scaling_note = scaling_note or (
+                "This mission's reward scales with both your city count and the "
+                "rival's, which the single-axis calculator can't chart — the "
+                "outcome cards above carry the exact base + per-city values.")
+            print(f"  ⚠ {slug}: two-axis reward scaling — calculator skipped", file=sys.stderr)
+        elif len(uniq) == 1:
+            scaling = candidates[0]
             scaling["cap"] = gint.get(f"MAX_{scaling['yield'].upper()}")  # raw cap, or None
             scaling["inflationTurns"] = inflation_turns
+            scaling_note = None
+        elif len(uniq) > 1:
+            scaling_note = scaling_note or (
+                "Different outcomes scale differently with empire size — the "
+                "outcome cards above carry each one's base + per-city values.")
+            print(f"  ⚠ {slug}: outcomes scale differently — calculator skipped", file=sys.stderr)
 
-        # Event chain: the *_EVENT outcome's dice share is the trigger chance;
-        # the stories it can fire (with options + outcomes) hang off it.
-        event_outcome = next((o for o in outcomes if o["id"].endswith("_EVENT")), None)
-        events = build_events(event_outcome["id"], story_idx, eopt_idx, bonus_idx, text) if event_outcome else []
-        event_chance = ({
-            "weight": event_outcome["weight"],
-            "total": total_weight,
-            "probability": event_outcome["probability"],
-        } if event_outcome else None)
+        # Event chains: any outcome whose result id has stories hanging off
+        # EVENTTRIGGER_MISSION_FINISHED gets a group (usually the *_EVENT
+        # result, but e.g. Tutor's rating results fire follow-ups too).
+        event_groups = []
+        for o in outcomes:
+            evs = build_events(o["id"], story_idx, eopt_idx, bonus_idx, text)
+            if evs:
+                event_groups.append({
+                    "outcomeId": o["id"],
+                    "outcomeName": o["name"],
+                    "weight": o["weight"],
+                    "total": total_weight,
+                    "probability": o["probability"],
+                    "isEventResult": o["id"].endswith("_EVENT"),
+                    "events": evs,
+                })
 
         out.append({
             "slug": slug,
             "id": mid,
+            "dedicated": bool(opts.get("dedicated")),
+            "path": slug if opts.get("dedicated") else f"missions/{slug}",
+            "foldedIds": folded_ids,
+            "variantNotes": variant_notes,
             "name": name,
             "description": desc,
             "turns": turns,
+            "turnsScaled": turns_scaled,
             "subject": subject_disp,
+            "dlc": dlc,
             "techPrereq": (
                 {"id": tech_prereq, "label": tech_name, "slug": tech_prereq.replace("TECH_", "").lower().replace("_", "-")}
                 if tech_prereq else None
             ),
             "cost": cost,
+            "opinionCost": opinion_cost,
             "outcomes": outcomes,
             "totalDiceWeight": total_weight,
             "scaling": scaling,
-            "eventChance": event_chance,
-            "events": events,
+            "scalingNote": scaling_note,
+            "eventGroups": event_groups,
         })
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(out)} missions")
     for m in out:
-        cost_str = ", ".join(f"{c['value']} {c['label']}" for c in m["cost"])
-        print(f"  · {m['name']:20} {m['turns']} turn · {len(m['outcomes'])} outcomes · cost {cost_str}")
+        cost_str = ", ".join(f"{c['value']} {c['label']}" for c in m["cost"]) or "—"
+        stories = sum(len(g["events"]) for g in m["eventGroups"])
+        print(f"  · {m['name']:24} {m['turns']}t · {len(m['outcomes'])} outcomes · "
+              f"{stories:3d} stories · cost {cost_str}")
     return 0
 
 

@@ -1,0 +1,16 @@
+---
+// Detail page for every dice-outcome mission that doesn't have a dedicated
+// top-level page (those are /rally, /hold-court, /steal-research — their slugs
+// are linked elsewhere and stay put). Data comes from build_missions.py.
+import MissionPage from '../../components/MissionPage.astro';
+import missions from '../../data/missions.json';
+
+export function getStaticPaths() {
+  return missions
+    .filter(m => !m.dedicated)
+    .map(m => ({ params: { slug: m.slug } }));
+}
+
+const { slug } = Astro.params;
+---
+<MissionPage slug={slug!} pageMark="🎲" active="missions" />
