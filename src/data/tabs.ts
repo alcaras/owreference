@@ -361,30 +361,6 @@ export const TABS: Tab[] = [
     summary: 'Per-rating yield/combat scaling by role, Non-competitive vs Competitive',
     willContain: ['All 4 stats, rating −3..+15, Leader/Governor/Agent/General, both modes'],
   },
-  {
-    slug: 'wisdom', icon: '🟣', label: 'Wisdom', section: 'Ratings',
-    status: 'built', sourceSheet: '🟣 Wisdom Base',
-    summary: 'Base bonuses + commander effects',
-    willContain: ['Wisdom Base sheet + Wisdom CM (commander) sheet'],
-  },
-  {
-    slug: 'charisma', icon: '🧡', label: 'Charisma', section: 'Ratings',
-    status: 'built', sourceSheet: '🧡 Charisma Base',
-    summary: 'Base bonuses + commander effects',
-    willContain: ['Charisma Base sheet + Charisma CM (commander) sheet'],
-  },
-  {
-    slug: 'courage', icon: '🔺', label: 'Courage', section: 'Ratings',
-    status: 'built', sourceSheet: '🔺 Courage Base',
-    summary: 'Base bonuses + commander effects',
-    willContain: ['Courage Base sheet + Courage CM (commander) sheet'],
-  },
-  {
-    slug: 'discipline', icon: '⚡', label: 'Discipline', section: 'Ratings',
-    status: 'built', sourceSheet: '⚡ Discipline Base',
-    summary: 'Base bonuses + commander effects',
-    willContain: ['Discipline Base sheet + Discipline CM (commander) sheet'],
-  },
 ];
 
 export const SECTIONS = [

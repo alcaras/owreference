@@ -104,9 +104,10 @@ def humanize_effect_city(idx: dict, effect_city_id: str) -> list[str]:
     # Hurry / rebel flags
     if (ec.findtext("bNoHurry") or "0") == "1":
         out.append("Cannot hurry production")
-    rebel = ec.findtext("iRebelChance") or "0"
+    # XML field is iRebelProb (NOT iRebelChance — that field doesn't exist)
+    rebel = ec.findtext("iRebelProb") or "0"
     if rebel and rebel != "0":
-        out.append(f"Rebel chance +{rebel}%")
+        out.append(f"+{rebel}% Rebel Chance")
     return out
 
 

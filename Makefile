@@ -50,7 +50,6 @@ data:
 	@python3 scripts/build_study_events.py
 	@python3 scripts/build_archetypes.py
 	@python3 scripts/build_cognomens.py
-	@python3 scripts/build_stats.py
 	@python3 scripts/build_missions.py
 	@python3 scripts/build_mission_catalog.py
 	@python3 scripts/build_events.py

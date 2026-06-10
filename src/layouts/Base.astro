@@ -136,6 +136,25 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
             }
           });
         </script>
+        <details class="hdr__mobilemenu">
+          <summary class="hdr__navlink">Menu<span class="hdr__caret" aria-hidden="true">▾</span></summary>
+          <nav class="hdr__mobilepanel" aria-label="All pages">
+            {navSections.map(({ section, items }) => (
+              <div class="hdr__mgroup">
+                <div class="hdr__mgroup-label">{section}</div>
+                {items.map(t => (
+                  <a
+                    href={`${base}${t.slug}`}
+                    class={`hdr__panellink ${active === t.slug ? 'is-active' : ''}`}
+                  >
+                    <span class="hdr__panelicon" aria-hidden="true">{t.icon}</span>
+                    {t.label}
+                  </a>
+                ))}
+              </div>
+            ))}
+          </nav>
+        </details>
         <span class="hdr__spacer" aria-hidden="true"></span>
         <label class="hdr__search">
           <span class="hdr__search-ico" aria-hidden="true">⌕</span>
