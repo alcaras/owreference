@@ -58,6 +58,7 @@ data:
 	@python3 scripts/build_diplomacy.py
 	@python3 scripts/build_subjects.py
 	@python3 scripts/build_mapscripts.py
+	@python3 scripts/build_turn_order.py
 	@python3 scripts/build_conversion.py
 	@python3 scripts/build_concepts.py
 	@python3 scripts/build_terrain.py

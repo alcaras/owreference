@@ -162,6 +162,11 @@ export const TABS: Tab[] = [
     summary: 'All 400+ ambition goals by tier and class, plus victory types',
   },
   {
+    slug: 'turn-order', icon: '🔄', label: 'Turn Order', section: 'Empire',
+    status: 'built', sourceSheet: '',
+    summary: 'Exact order of operations at turn start — rollover and per-player, from the game code',
+  },
+  {
     slug: 'laws', icon: '⚖️', label: 'Laws', section: 'Empire',
     status: 'built', sourceSheet: '⚖️ Laws',
     summary: 'Law pairs and their effects',
