@@ -141,7 +141,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
             {ratingCols.map((s) => (
               <th class="nhdr" style={`--nation-bg:${s.color}`} title={`${s.name} — in-game color`}>
                 <div class="nhdr__inner">
-                  <a class="nhdr__link" href={`${base}${s.slug}`}>
+                  <a class="nhdr__link" href={`${base}stat-scaling`}>
                     <img class="nhdr__crest" src={`${base}img/icons/yields/${s.yield}.png`} alt="" loading="lazy" onerror="this.style.display='none'" />
                     <span class="nhdr__name">{s.name}</span>
                   </a>
