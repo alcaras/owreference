@@ -133,29 +133,48 @@ def main() -> int:
             if ec is not None:
                 effects.extend(render_effect_city(ec, per_city=True, indexes=indexes))
 
-        # Building-conditional effects: improvementClass.xml
-        # aeTheologyCityEffect wires a theology to an extra EffectCity that
-        # only applies in cities with that worship building (e.g. Redemption
-        # → Cathedral can hurry Specialists/Projects with Training).
+        # Building effects — two wirings on improvementClass.xml:
+        #   aaiTheologyYieldOutput: extra yields on the worship building
+        #     itself while this theology is adopted (÷10 rates — Legalism
+        #     gives Monasteries +2 Civics, Revelation gives Temples +0.5
+        #     Orders, …)
+        #   aeTheologyCityEffect: an extra EffectCity active in cities with
+        #     that building (Redemption → Cathedral Training-hurry).
         building_effects: list[dict] = []
         for ic_entry in parse("improvementClass.xml").findall("Entry"):
+            ic_id = ic_entry.findtext("zType") or ""
+            building = ic_id.replace("IMPROVEMENTCLASS_", "").title()
+            lines: list[str] = []
+            for pair in ic_entry.findall("aaiTheologyYieldOutput/Pair"):
+                if (pair.findtext("zIndex") or "") != zt:
+                    continue
+                for sp in pair.findall("SubPair"):
+                    y = (sp.findtext("zSubIndex") or "").replace("YIELD_", "").title()
+                    v = int(sp.findtext("iValue") or "0") / 10
+                    lines.append(f"{fmt_decimal(v)} {y}")
             for pair in ic_entry.findall("aeTheologyCityEffect/Pair"):
                 if (pair.findtext("zIndex") or "") != zt:
                     continue
-                bec_id = pair.findtext("zValue") or ""
-                bec = indexes.get("effectCity.xml", {}).get(bec_id)
-                if bec is None:
+                bec = indexes.get("effectCity.xml", {}).get(pair.findtext("zValue") or "")
+                if bec is not None:
+                    # Empty markers (Enlightenment's cathedral hook) render
+                    # nothing — honest omission.
+                    lines.extend(render_effect_city(bec, per_city=True, indexes=indexes))
+            if lines:
+                building_effects.append({"building": building, "effects": lines})
+
+        # Specialist effects: specialistClass.xml aaiTheologyYieldRate —
+        # Enlightenment gives every Monk +3 Happiness (÷10 rate). Folded
+        # into the per-city effects list, "+3 Happiness/Monk".
+        for sc_entry in parse("specialistClass.xml").findall("Entry"):
+            for pair in sc_entry.findall("aaiTheologyYieldRate/Pair"):
+                if (pair.findtext("zIndex") or "") != zt:
                     continue
-                ic_id = ic_entry.findtext("zType") or ""
-                bec_lines = render_effect_city(bec, per_city=True, indexes=indexes)
-                if not bec_lines:
-                    # Empty marker (Enlightenment's cathedral hook carries no
-                    # XML payload anywhere) — nothing honest to show.
-                    continue
-                building_effects.append({
-                    "building": ic_id.replace("IMPROVEMENTCLASS_", "").title(),
-                    "effects": bec_lines,
-                })
+                sc_label = (sc_entry.findtext("zType") or "").replace("SPECIALISTCLASS_", "").title()
+                for sp in pair.findall("SubPair"):
+                    y = (sp.findtext("zSubIndex") or "").replace("YIELD_", "").title()
+                    v = int(sp.findtext("iValue") or "0") / 10
+                    effects.append(f"{fmt_decimal(v)} {y}/{sc_label}")
 
         # Per-theology law opinion bonus (e.g., Mythology favors Polytheism).
         law_op: list[dict] = []

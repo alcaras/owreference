@@ -60,6 +60,69 @@ function theologyYield(eff: string[]): string {
     players, but it builds the full worship chain and <em>always</em> adopts theologies.
   </p>
 
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl ntbl--theology" aria-label="Theologies by tier">
+        <thead>
+          <tr>
+            <th class="nhdr nhdr--family">Theology</th>
+            <th class="nhdr nhdr--family">Cost</th>
+            <th class="nhdr nhdr--family">Spread</th>
+            <th class="nhdr nhdr--family">Every city</th>
+            <th class="nhdr nhdr--family">Worship building</th>
+            <th class="nhdr nhdr--family">Tech</th>
+            <th class="nhdr nhdr--family">Law opinion</th>
+          </tr>
+        </thead>
+        {tiers.map(tier => (
+          <tbody>
+            <tr class="srow">
+              <th class="srow__th" colspan={7}>
+                <span class="srow__chevron">▸</span>{tier.label}
+              </th>
+            </tr>
+            {tier.theologies.map(th => {
+              const yk = theologyYield(th.effects);
+              return (
+                <tr>
+                  <th class="rowlabel" scope="row">
+                    <a class="tt-name" href={`#${th.slug}`}>{th.name}</a>
+                  </th>
+                  <td class="cell tt-num">{th.cost} <span class="tt-dim">Civics</span></td>
+                  <td class="cell tt-num">+{th.spreadChange}%</td>
+                  <td class={`cell yield-${yk}`}>
+                    {th.effects.length === 0 ? <span class="cell__dash">—</span> :
+                      th.effects.map(e => (
+                        <div class="tt-fx"><LinkedText text={e} showIcons={false} iconsForYields={true} /></div>
+                      ))}
+                  </td>
+                  <td class="cell">
+                    {(!th.buildingEffects || th.buildingEffects.length === 0) ? <span class="cell__dash">—</span> :
+                      th.buildingEffects.map((be: any) => (
+                        <div class="tt-fx">
+                          <span class="tt-dim">{be.building}:</span>{' '}
+                          <LinkedText text={be.effects.join(', ')} showIcons={false} iconsForYields={true} />
+                        </div>
+                      ))}
+                  </td>
+                  <td class="cell">
+                    {th.techLabel ? <LinkedText text={th.techLabel} showIcons={false} /> : <span class="cell__dash">—</span>}
+                  </td>
+                  <td class="cell">
+                    {th.lawOpinion.length === 0 ? <span class="cell__dash">—</span> :
+                      th.lawOpinion.map(l => (
+                        <div class="tt-fx">+{l.value} <LinkedText text={l.label} showIcons={false} /></div>
+                      ))}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        ))}
+      </table>
+    </div>
+  </div>
+
   {tiers.map(tier => (
     <section class="tier" id={`tier-${tier.tier}`}>
       <h2 class="tier__title">
@@ -141,6 +204,20 @@ function theologyYield(eff: string[]): string {
   .lede b { color: var(--text); }
 
   .legend--audience { margin-bottom: 0.5rem; }
+
+  .grid { margin: 0 0 1.6rem; }
+  .ntbl--theology .rowlabel { min-width: 8rem; }
+  .tt-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .tt-name:hover { color: var(--gold); text-decoration: none; }
+  .tt-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tt-dim { color: var(--text-faint); font-size: 0.74rem; }
+  .tt-fx { font-size: 0.78rem; line-height: 1.5; white-space: nowrap; }
   .chip__mark {
     font-family: var(--font-mono);
     font-size: 0.6rem;
