@@ -10,10 +10,17 @@ const base = import.meta.env.BASE_URL;
 // name linked. Folded internal variants (e.g. MISSION_SLANDER_ANY) point at
 // their base mission's page.
 const detailHref: Record<string, string> = {};
+// id → {href, outcomes, stories} so each row can advertise what the
+// detail page holds (dice outcomes + event stories) instead of hiding
+// it behind a subtly-linked name.
+const detailMeta: Record<string, { href: string; outcomes: number; stories: number }> = {};
 for (const dm of detailMissions) {
   const href = `${base}${dm.path}`;
+  const stories = (dm.eventGroups || []).reduce((n: number, g: any) => n + g.events.length, 0);
+  const meta = { href, outcomes: (dm.outcomes || []).length, stories };
   detailHref[dm.id] = href;
-  for (const fid of dm.foldedIds || []) detailHref[fid] = href;
+  detailMeta[dm.id] = meta;
+  for (const fid of dm.foldedIds || []) { detailHref[fid] = href; detailMeta[fid] = meta; }
 }
 
 // Organized by WHO can run the mission. Order + blurbs mirror the
@@ -123,6 +130,15 @@ for (const m of catalog) {
                     <a class="mname mname--link" href={detailHref[m.id]}>{m.name}</a>
                   ) : (
                     <span class="mname">{m.name}</span>
+                  )}
+                  {detailMeta[m.id] && (
+                    <a
+                      class="mdetail"
+                      href={detailMeta[m.id].stories ? `${detailMeta[m.id].href}#events` : detailMeta[m.id].href}
+                      title="Dice odds, scaled rewards, and every event story this mission can fire"
+                    >
+                      {detailMeta[m.id].outcomes} outcomes{detailMeta[m.id].stories ? ` · ${detailMeta[m.id].stories} events` : ''} →
+                    </a>
                   )}
                   {m.target && <span class="mtarget">→ {m.target}</span>}
                   {m.description && (
@@ -320,6 +336,24 @@ for (const m of catalog) {
   }
   .mname--link { text-decoration: none; }
   .mname--link:hover { color: var(--gold, var(--accent)); text-decoration: underline; }
+  .mdetail {
+    display: inline-block;
+    margin-left: 0.45rem;
+    padding: 0.04rem 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    color: var(--gold-soft, var(--accent));
+    border: 1px solid color-mix(in srgb, var(--gold, var(--accent)) 40%, var(--border));
+    border-radius: 4px;
+    text-decoration: none;
+    white-space: nowrap;
+    vertical-align: 0.1em;
+  }
+  .mdetail:hover {
+    color: var(--text);
+    background: color-mix(in srgb, var(--gold, var(--accent)) 18%, var(--bg-elev));
+    text-decoration: none;
+  }
   .mtarget { display: block; font-size: 0.72rem; color: var(--text-faint); }
   .mdesc {
     display: block; margin-top: 0.15rem;
