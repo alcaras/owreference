@@ -57,12 +57,104 @@ for (const b of buildings) {
 }
 
 const classCount = new Set(buildings.map(b => b.class)).size;
+
+// ── Building-line progression (legacy 🏡 Urban Buildings idiom) ──
+// One row per upgrade line, one column per culture tier, so the whole
+// Market → Grocer → Fair chain reads left-to-right at a glance.
+// Chains come from the XML upgrade links (upgradesTo / replaces names),
+// not from class, so a non-upgrading building still gets its own
+// single-cell line.
+const TIERS = ['Weak', 'Developing', 'Strong', 'Legendary'] as const;
+type Tier = typeof TIERS[number];
+
+const byName = new Map(buildings.map(b => [b.name, b]));
+const upgradeTargets = new Set(buildings.map(b => b.upgradesTo).filter(Boolean));
+
+// Chain bases: don't replace anything we know about, and aren't another
+// building's upgrade target.
+const chainBases = buildings.filter(b =>
+  !(b.replaces && byName.has(b.replaces)) && !upgradeTargets.has(b.name));
+
+type Chain = { label: string; tiers: Record<Tier, Building[]> };
+const chains: Chain[] = chainBases.map(start => {
+  const tiers: Record<Tier, Building[]> = { Weak: [], Developing: [], Strong: [], Legendary: [] };
+  const seen = new Set<string>();
+  let cur: Building | undefined = start;
+  while (cur && !seen.has(cur.name)) {
+    seen.add(cur.name);
+    // No culture prereq = buildable from the start → Weak column.
+    const tier: Tier = (TIERS as readonly string[]).includes(cur.culturePrereq)
+      ? cur.culturePrereq as Tier : 'Weak';
+    tiers[tier].push(cur);
+    cur = cur.upgradesTo ? byName.get(cur.upgradesTo) : undefined;
+  }
+  return { label: start.class.replace(/_/g, ' '), tiers };
+}).sort((a, b) => a.label.localeCompare(b.label));
 ---
 
 <Base title="Urban Improvements" active="urban-improvements" pageMark="🏡" pageStats={[
   { label: 'improvements', value: buildings.length },
   { label: 'classes',      value: classCount },
+  { label: 'lines',        value: chains.length },
 ]}>
+  <section class="lines">
+    <h2 class="lines__title">Building Lines</h2>
+    <p class="lines__sub">Each line upgrades as the city's culture level rises — names link to the full details below.</p>
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            <th class="nhdr nhdr--col nhdr--line" data-col="line">
+              <div class="nhdr__inner"><span class="nhdr__name">Line</span></div>
+            </th>
+            {TIERS.map(t => (
+              <th class="nhdr nhdr--col" data-col={t.toLowerCase()}>
+                <div class="nhdr__inner nhdr__inner--culture">
+                  <img class="culture-ico" src={`${base}${cultureIcon[t]}`} alt="" onerror="this.style.display='none'" />
+                  <span class="nhdr__name">{t}</span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {chains.map(ch => (
+            <tr>
+              <th class="rowlabel rowlabel--line" scope="row">{ch.label}</th>
+              {TIERS.map(t => {
+                const members = ch.tiers[t];
+                return members.length > 0 ? (
+                  <td class="cell cell--tier">
+                    {members.map(b => (
+                      <div class="tier">
+                        <a class="tier__name" href={`#${b.slug}`}>
+                          {b.icon ? (
+                            <img class="tier__art" src={`${base}${b.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />
+                          ) : null}
+                          <span>{b.name}</span>
+                        </a>
+                        {b.effects && b.effects.length > 0 && (
+                          <div class="tier__chips">
+                            {b.effects.map(line => {
+                              const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                              return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <div class="grid" id="ub-grid">
     <div class="grid__scroll">
       <table class="ntbl">
@@ -262,6 +354,65 @@ const classCount = new Set(buildings.map(b => b.class)).size;
 </Base>
 
 <style>
+  /* ── Building-line progression matrix ── */
+  .lines { margin-bottom: 1.6rem; }
+  .lines__title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    margin: 0 0 0.15rem;
+  }
+  .lines__sub {
+    color: var(--text-faint);
+    font-size: 0.72rem;
+    margin: 0 0 0.6rem;
+  }
+  .nhdr--line { min-width: 7rem; }
+  .nhdr__inner--culture { display: flex; align-items: center; gap: 0.35rem; }
+  .rowlabel--line {
+    text-align: left;
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.45rem 0.6rem;
+    background: var(--bg-elev);
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .cell--tier {
+    vertical-align: top;
+    padding: 0.4rem 0.55rem;
+    min-width: 11rem;
+  }
+  .tier + .tier { margin-top: 0.45rem; }
+  .tier__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-display);
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .tier__name:hover span { text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 2px; }
+  .tier__art { width: 22px; height: 22px; object-fit: contain; flex: none; }
+  .tier__chips { margin-top: 0.2rem; }
+  .tier__chips .effect {
+    padding: 0.18rem 0.45rem;
+    margin: 0.12rem 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.7rem;
+    line-height: 1.3;
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.32));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
+  }
+
   /* Column headers — neutral (no per-nation colors here) */
   .nhdr--col {
     background: var(--bg-elev-2);

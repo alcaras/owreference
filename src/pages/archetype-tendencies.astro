@@ -1,0 +1,408 @@
+---
+import Base from '../layouts/Base.astro';
+import nations from '../data/nations.json';
+import archetypes from '../data/archetypes.json';
+import families from '../data/families.json';
+
+const base = import.meta.env.BASE_URL;
+
+// Spreadsheet "👑👪🎓 Nations, Families and Archetype Tendencies" cross-matrix:
+// archetype rows × nation columns; each cell lists which of that nation's
+// family classes roll that archetype on their aiTraitDie and at what weight
+// (×10 signature / ×5 secondary). Every class also rolls every archetype at
+// a baseline ×1 — like the spreadsheet, we gray the cell when no family of
+// the nation weights it above baseline.
+
+const SLOT_GLYPH: Record<string, string> = {
+  General: '⚔', Governor: '🏛', Agent: '⌬', Leader: '⚜',
+};
+
+const RATING_TONE: Record<string, string> = {
+  Wisdom:     'yield-science',
+  Charisma:   'yield-civics',
+  Courage:    'yield-training',
+  Discipline: 'yield-orders',
+};
+
+const ordered = [...nations].sort((a, b) => a.name.localeCompare(b.name));
+
+// nation slug → family classes it has (in families.json canonical order)
+const classesByNation: Record<string, typeof families> = {};
+for (const n of ordered) classesByNation[n.slug] = [];
+for (const f of families) {
+  for (const fn of f.nations) {
+    if (classesByNation[fn.slug]) classesByNation[fn.slug].push(f);
+  }
+}
+
+// cell content: nation slug → archetype id → [{class, weight}] (weight ≥ 5)
+type Tendency = { cls: typeof families[number]; weight: number };
+const cells: Record<string, Record<string, Tendency[]>> = {};
+for (const n of ordered) {
+  cells[n.slug] = {};
+  for (const a of archetypes) {
+    const list: Tendency[] = [];
+    for (const f of classesByNation[n.slug]) {
+      const w = (f.archetypeWeights as Record<string, number>)[a.id] || 0;
+      if (w >= 5) list.push({ cls: f, weight: w });
+    }
+    list.sort((x, y) => y.weight - x.weight);
+    cells[n.slug][a.id] = list;
+  }
+}
+
+// Pre-compute a search blob per nation for the column-filter search.
+const searchBlobs: Record<string, string> = {};
+for (const n of ordered) {
+  const parts: string[] = [n.name, n.slug];
+  for (const a of archetypes) {
+    for (const t of cells[n.slug][a.id]) {
+      parts.push(a.name, t.cls.name, `x${t.weight}`);
+    }
+  }
+  searchBlobs[n.slug] = parts.join(' ').toLowerCase();
+}
+---
+
+<Base
+  title="Archetype Tendencies"
+  active="archetype-tendencies"
+  pageMark="🎓"
+  description="Which family classes of each Old World nation tend to produce each character archetype — the aiTraitDie weights (×10 signature, ×5 secondary) from familyClass.xml, crossed against every nation's family lineup."
+>
+  <div class="page-meta">
+    <h1 class="page-title">Archetype Tendencies</h1>
+    <div class="page-stats">
+      <span class="stat"><b>{archetypes.length}</b> archetypes</span>
+      <button
+        type="button"
+        class="stat stat--button"
+        id="nation-picker-toggle"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="nation-picker"
+      >
+        <b id="nation-visible-count">{ordered.length}</b> of <b>{ordered.length}</b> visible <span class="stat__chev">▾</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="nation-picker" id="nation-picker" hidden role="dialog" aria-label="Filter nations">
+    <div class="nation-picker__actions">
+      <button type="button" class="nation-picker__action" data-pick="all">Select all</button>
+      <button type="button" class="nation-picker__action" data-pick="none">Clear</button>
+      <button type="button" class="nation-picker__action nation-picker__action--close" data-pick="close">Done</button>
+    </div>
+    <ul class="nation-picker__list">
+      {ordered.map(n => (
+        <li class="nation-picker__item">
+          <label class={`nation-picker__row n-${n.slug}`}>
+            <input type="checkbox" class="nation-picker__cb" value={n.slug} checked />
+            <img class="nation-picker__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
+            <span class="nation-picker__name">{n.name}</span>
+          </label>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="grid__searchnote" id="grid-searchnote" hidden></div>
+
+  <div class="grid" id="tendencies-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          {ordered.map(n => <col data-nation={n.slug} />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Nation →</span>
+              <span class="rowlabel__big">Archetype ↓</span>
+            </th>
+            {ordered.map(n => (
+              <th class={`nhdr n-${n.slug}`} data-nation={n.slug} title={n.id} id={n.slug}>
+                <div class="nhdr__inner">
+                  <a class="nhdr__link" href={`${base}nations/${n.slug}`}>
+                    <img class="nhdr__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
+                    <span class="nhdr__name">{n.name}</span>
+                  </a>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {archetypes.map(a => (
+            <tr>
+              <th class="rowlabel rowlabel--arc" scope="row">
+                <a class="arc-label" href={`${base}archetypes#${a.slug}`}>
+                  {a.icon && <img class="arc-label__icon" src={`${base}${a.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />}
+                  <span class="arc-label__name">{a.name}</span>
+                </a>
+                <span class="arc-label__slots">
+                  {(a.slots as string[]).map(s => `${SLOT_GLYPH[s] || ''} ${s}`).join(' · ')}
+                </span>
+                <span class="arc-label__ratings">
+                  {(a.ratings as { label: string; value: number }[]).map(r => (
+                    <span class={`arc-rating ${RATING_TONE[r.label] || 'yield-misc'}`}>
+                      {r.label} {r.value >= 0 ? '+' : ''}{r.value}
+                    </span>
+                  ))}
+                </span>
+              </th>
+              {ordered.map(n => {
+                const list = cells[n.slug][a.id];
+                if (list.length === 0) {
+                  return (
+                    <td class="cell is-empty cell--unavail" data-nation={n.slug} title={`No ${n.name} family favors ${a.name}`}>
+                      <span class="cell__dash">—</span>
+                    </td>
+                  );
+                }
+                return (
+                  <td class="cell cell--tendency" data-nation={n.slug}>
+                    {list.map(t => (
+                      <a class={`tendency tendency--x${t.weight}`} href={`${base}families#${t.cls.slug}`}>
+                        <img class="tendency__icon" src={`${base}${t.cls.icon}`} alt="" loading="lazy" />
+                        <span class="tendency__name">{t.cls.name}</span>
+                        <span class="tendency__weight">×{t.weight}</span>
+                      </a>
+                    ))}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="matrix-note">
+    Weights come from each family class's archetype die (<code>aiTraitDie</code> in
+    <code>familyClass.xml</code>): ×10 is the class's signature archetype, ×5 secondary.
+    Every class can still roll any archetype at a baseline ×1 — grayed cells mean no
+    family of that nation weights the archetype above baseline.
+  </p>
+
+  <script type="application/json" id="nation-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    // Combined column-picker + search, mirroring the Nations page
+    // (state of the art), keyed by data-nation.
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('nation-search-blobs');
+      const grid = document.getElementById('tendencies-grid');
+      const note = document.getElementById('grid-searchnote');
+      const toggle = document.getElementById('nation-picker-toggle');
+      const picker = document.getElementById('nation-picker');
+      const visibleCount = document.getElementById('nation-visible-count');
+      if (!blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      const slugs = Object.keys(blobs);
+      const picked = new Set(slugs);
+
+      function applyFilters() {
+        const q = ((input && input.value) || '').trim().toLowerCase();
+        let visibleN = 0, hiddenBySearch = 0;
+        for (const slug of slugs) {
+          const matchesSearch = !q || blobs[slug].includes(q);
+          const isPicked = picked.has(slug);
+          const visible = matchesSearch && isPicked;
+          if (visible) visibleN++;
+          if (!matchesSearch) hiddenBySearch++;
+          for (const el of grid.querySelectorAll('[data-nation="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !visible);
+          }
+        }
+        if (visibleCount) visibleCount.textContent = String(visibleN);
+        if (note) {
+          if (q && hiddenBySearch > 0) {
+            note.hidden = false;
+            note.textContent =
+              'Showing ' + (slugs.length - hiddenBySearch) + ' of ' + slugs.length +
+              ' nations matching "' + (input ? input.value : '') + '"';
+          } else {
+            note.hidden = true;
+            note.textContent = '';
+          }
+        }
+      }
+
+      if (input) input.addEventListener('input', applyFilters);
+
+      if (toggle && picker) {
+        toggle.addEventListener('click', () => {
+          const open = !picker.hidden;
+          picker.hidden = open;
+          toggle.setAttribute('aria-expanded', String(!open));
+        });
+        document.addEventListener('click', (e) => {
+          if (picker.hidden) return;
+          if (picker.contains(e.target) || toggle.contains(e.target)) return;
+          picker.hidden = true;
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !picker.hidden) {
+            picker.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.focus();
+          }
+        });
+      }
+
+      const cbs = picker ? picker.querySelectorAll('.nation-picker__cb') : [];
+      cbs.forEach((cb) => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) picked.add(cb.value);
+          else picked.delete(cb.value);
+          applyFilters();
+        });
+      });
+
+      if (picker) {
+        picker.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-pick]');
+          if (!btn) return;
+          const action = btn.getAttribute('data-pick');
+          if (action === 'all') {
+            slugs.forEach((s) => picked.add(s));
+            cbs.forEach((cb) => (cb.checked = true));
+            applyFilters();
+          } else if (action === 'none') {
+            picked.clear();
+            cbs.forEach((cb) => (cb.checked = false));
+            applyFilters();
+          } else if (action === 'close') {
+            picker.hidden = true;
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      applyFilters();
+    })();
+  </script>
+</Base>
+
+<style>
+  /* Archetype row label: icon + name, slot glyphs, rating chips */
+  .rowlabel--arc {
+    vertical-align: top;
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+  }
+  .arc-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* row labels are right-aligned site-wide */
+    gap: 0.35rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  .arc-label:hover .arc-label__name { color: var(--gold); }
+  .arc-label__icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex: none;
+  }
+  .arc-label__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+  .arc-label__slots {
+    display: block;
+    margin-top: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+  }
+  .arc-label__ratings {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.2rem;
+    margin-top: 0.25rem;
+  }
+  .arc-rating {
+    display: inline-block;
+    padding: 0.05rem 0.35rem;
+    border-radius: 3px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25));
+  }
+
+  /* Tendency cell: one mini-tile per family class that rolls the archetype */
+  .cell--tendency {
+    padding: 0.3rem 0.4rem;
+    vertical-align: top;
+    background: var(--bg-elev);
+    background-image: none;
+  }
+  .tendency {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.12rem 0.3rem;
+    margin: 0.1rem 0;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.72rem;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+  }
+  .tendency:hover { text-decoration: none; border-color: var(--gold); }
+  .tendency:hover .tendency__name { color: var(--gold); }
+  .tendency--x10 {
+    border-color: color-mix(in srgb, var(--gold) 55%, var(--border) 45%);
+    background: color-mix(in srgb, var(--gold) 12%, transparent);
+  }
+  .tendency--x10 .tendency__weight { color: var(--gold); }
+  .tendency--x5 .tendency__name { color: var(--text-dim); }
+  .tendency__icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    flex: none;
+  }
+  .tendency__name {
+    flex: 1;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .tendency__weight {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+
+  /* Grayed: archetype not favored by any of the nation's families */
+  .cell--unavail {
+    background: rgba(255,255,255,0.025);
+  }
+
+  .matrix-note {
+    margin: 0.8rem 0 0;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    max-width: 64ch;
+  }
+  .matrix-note code {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text);
+  }
+</style>

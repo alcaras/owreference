@@ -3,7 +3,8 @@
 Build src/data/families.json from familyClass.xml, effectCity.xml, bonus.xml,
 family.xml. Mirrors the spreadsheet's Families tab columns (10 family classes)
 with rows: city bonus, seat bonus, seat founding, opinions, preferred laws,
-favored improvements, luxuries, and which nations have each class.
+favored improvements, luxuries, archetype tendencies (aiTraitDie weights),
+and which nations have each class.
 """
 from __future__ import annotations
 
@@ -192,6 +193,16 @@ def main() -> int:
             )
             laws.append({"id": law_id, "label": label, "value": iv})
 
+        # Archetype tendencies — aiTraitDie: TRAIT_*_ARCHETYPE → die weight
+        # (10 = signature, 5 = secondary, 1 = baseline). Characters born into
+        # a family of this class roll their archetype on this weighted die.
+        archetype_weights: dict[str, int] = {}
+        for pair in e.findall("aiTraitDie/Pair"):
+            trait = pair.findtext("zIndex") or ""
+            weight = int(pair.findtext("iValue") or "0")
+            if trait and weight:
+                archetype_weights[trait] = weight
+
         # Nations that have this class (via family.xml mapping)
         nations = []
         for nid in nations_by_class.get(cls_id, []):
@@ -207,6 +218,7 @@ def main() -> int:
             "name": name,
             "widget": e.findtext("zUnitWidget") or "",
             "icon": f"img/archetypes/{slug}.png",
+            "archetypeWeights": archetype_weights,
             "cityBonus": city_bonus,
             "seatBonus": seat_bonus,
             "seatFounding": seat_found,

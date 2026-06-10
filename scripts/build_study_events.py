@@ -24,6 +24,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "study_events.json"
+COURSES_OUT = ROOT / "src" / "data" / "study_courses.json"
+
+# The four heir-education courses a tutor can set (TRAIT_STUDY_* in trait.xml).
+COURSES = ["PHILOSOPHY", "POLITICS", "TACTICS", "COMMERCE"]
 
 
 RATING_LABELS: dict[str, str] = {
@@ -147,6 +151,45 @@ def subject_label(token: str) -> str:
     return s.replace("_", " ").title()
 
 
+def build_study_courses(option_idx: dict[str, ET.Element],
+                        bonus_idx: dict[str, ET.Element]) -> list[dict]:
+    """Per-course metadata for the Jobs at-a-glance matrix.
+
+    Two XML facts per course:
+    - The rating bump granted when the tutor sets the course:
+      bonus-event.xml BONUS_EVENTOPTION_STUDY_<COURSE> → aiRatings
+      (Philosophy +1 Wisdom, Politics +1 Charisma, …).
+    - The archetype pool offered at graduation:
+      eventOption.xml EVENTOPTION_STUDY_<COURSE>_ARCHETYPES → aiEventOptionProb
+      lists the EVENTOPTION_ARCHETYPE_<X> choices (all weight 1000). The same
+      pools are mirrored in TEXT_TRAIT_STUDY_<COURSE>_DESCRIPTION.
+    """
+    courses: list[dict] = []
+    for course in COURSES:
+        rating, value = "", 0
+        b = bonus_idx.get(f"BONUS_EVENTOPTION_STUDY_{course}")
+        if b is not None:
+            for pair in b.findall("aiRatings/Pair"):
+                rating = RATING_LABELS.get(pair.findtext("zIndex") or "", "")
+                value = int(pair.findtext("iValue") or "0")
+        archetypes: list[str] = []
+        opt = option_idx.get(f"EVENTOPTION_STUDY_{course}_ARCHETYPES")
+        if opt is not None:
+            for pair in opt.findall("aiEventOptionProb/Pair"):
+                ref = pair.findtext("zIndex") or ""
+                if ref.startswith("EVENTOPTION_ARCHETYPE_"):
+                    # EVENTOPTION_ARCHETYPE_TACTICIAN → "Tactician" (single-word
+                    # names; matches archetypes.json "name")
+                    archetypes.append(ref.removeprefix("EVENTOPTION_ARCHETYPE_").title())
+        courses.append({
+            "course": course.title(),
+            "rating": rating,
+            "ratingBonus": value,
+            "archetypes": archetypes,
+        })
+    return courses
+
+
 def main() -> int:
     text = load_text_all()
 
@@ -236,6 +279,10 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(events, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(events)} study events")
+
+    courses = build_study_courses(option_idx, bonus_idx)
+    COURSES_OUT.write_text(json.dumps(courses, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+    print(f"✓ wrote {COURSES_OUT.relative_to(ROOT)} — {len(courses)} study courses")
     return 0
 
 

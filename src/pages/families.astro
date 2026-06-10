@@ -11,10 +11,22 @@ type FamilyClass = typeof families[number];
 type Row =
   | { kind: 'section'; label: string }
   | {
-      kind: 'effects' | 'opinions' | 'list' | 'nations';
+      kind: 'effects' | 'opinions' | 'list' | 'nations' | 'archetypes';
       label: string;
       field: (f: FamilyClass) => any;
     };
+
+// aiTraitDie weights ≥5, compacted to "Commander ×10 · Hero ×5"
+function archetypeTendencies(f: FamilyClass): { name: string; slug: string; weight: number }[] {
+  const w = (f.archetypeWeights || {}) as Record<string, number>;
+  return Object.entries(w)
+    .filter(([, v]) => v >= 5)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, v]) => {
+      const slug = id.replace('TRAIT_', '').replace('_ARCHETYPE', '').toLowerCase();
+      return { name: slug.charAt(0).toUpperCase() + slug.slice(1), slug, weight: v };
+    });
+}
 
 const rows: Row[] = [
   { kind: 'section', label: 'City Bonus' },
@@ -31,6 +43,9 @@ const rows: Row[] = [
   { kind: 'list', label: 'Favored Buildings', field: f => f.favored },
   { kind: 'list', label: 'Preferred Laws',    field: f => f.preferredLaws },
   { kind: 'list', label: 'Luxuries (-/missing)', field: f => f.luxuries },
+
+  { kind: 'section', label: 'Characters' },
+  { kind: 'archetypes', label: 'Archetypes',  field: f => archetypeTendencies(f) },
 
   { kind: 'section', label: 'Nations' },
   { kind: 'nations', label: 'Nations',        field: f => f.nations },
@@ -171,6 +186,27 @@ for (const f of families) {
                           <span class={`opinion__val opinion--${it.value >= 0 ? 'pos' : 'neg'}`}>{it.value >= 0 ? '+' : ''}{it.value}</span>
                         </div>
                       ))}
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'archetypes') {
+                  const items: { name: string; slug: string; weight: number }[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-family={f.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell cell--archetypes yield-misc" data-family={f.slug}>
+                      <span class="arc-tendencies">
+                        {items.map((it, i) => (
+                          <>
+                            {i > 0 && <span class="arc-tendency__sep"> · </span>}
+                            <a class="arc-tendency" href={`${base}archetypes#${it.slug}`}>
+                              {it.name} <b class={it.weight >= 10 ? 'arc-tendency__w10' : ''}>×{it.weight}</b>
+                            </a>
+                          </>
+                        ))}
+                      </span>
                     </td>
                   );
                 }
@@ -352,6 +388,26 @@ for (const f of families) {
     padding: 0.1rem 0;
     font-size: 0.72rem;
   }
+
+  /* Archetype tendencies row — compact inline "Commander ×10 · Hero ×5" */
+  .cell--archetypes {
+    padding: 0.3rem 0.45rem;
+    font-size: 0.72rem;
+  }
+  .arc-tendency {
+    color: var(--text);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .arc-tendency:hover { color: var(--gold); text-decoration: none; }
+  .arc-tendency b {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+  .arc-tendency .arc-tendency__w10 { color: var(--gold); }
+  .arc-tendency__sep { color: var(--text-faint); }
 
   /* Nation tags inside the "Nations" row.
      Keep the <td> a real table-cell so it stays bound to its column;

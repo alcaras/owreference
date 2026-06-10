@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import archetypes from '../data/archetypes.json';
+import families from '../data/families.json';
 import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
@@ -26,10 +27,25 @@ const ARCHETYPE_GROUP: Record<string, string> = {
   schemer: 'Spymaster',
 };
 
+// Inverted view of the family classes' aiTraitDie: archetype id →
+// which classes weight it ×10/×5 (baseline ×1 omitted).
+const familiesByArchetype: Record<string, { name: string; slug: string; icon: string; weight: number }[]> = {};
+for (const a of archetypes) {
+  familiesByArchetype[a.id] = families
+    .map(f => ({
+      name: f.name,
+      slug: f.slug,
+      icon: f.icon,
+      weight: (f.archetypeWeights as Record<string, number>)[a.id] || 0,
+    }))
+    .filter(f => f.weight >= 5)
+    .sort((x, y) => y.weight - x.weight);
+}
+
 type Row =
   | { kind: 'section'; label: string }
   | {
-      kind: 'list' | 'effects' | 'opposite' | 'ratings' | 'laws' | 'slots' | 'misc';
+      kind: 'list' | 'effects' | 'opposite' | 'ratings' | 'laws' | 'slots' | 'misc' | 'families';
       label: string;
       field: (a: Archetype) => any;
     };
@@ -40,6 +56,7 @@ const rows: Row[] = [
   { kind: 'ratings', label: 'Rating Bonus',     field: a => a.ratings },
   { kind: 'opposite',label: 'Opposite (-60)',   field: a => a.opposite },
   { kind: 'laws',    label: 'Favored Laws',     field: a => a.favoredLaws },
+  { kind: 'families',label: 'Common in families', field: a => familiesByArchetype[a.id] },
 
   { kind: 'section', label: 'Leader Effects' },
   { kind: 'effects', label: 'As Leader',        field: a => a.leaderEffects },
@@ -193,6 +210,25 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
                           </span>
                         </div>
                       ))}
+                    </td>
+                  );
+                }
+
+                if (row.kind === 'families') {
+                  const items: { name: string; slug: string; icon: string; weight: number }[] = v || [];
+                  if (items.length === 0) {
+                    return <td class="cell is-empty" data-archetype={a.slug}><span class="cell__dash">—</span></td>;
+                  }
+                  return (
+                    <td class="cell yield-misc" data-archetype={a.slug}>
+                      <div class="chiplist">
+                        {items.map(f => (
+                          <a class={`chip chip--neutral famchip ${f.weight >= 10 ? 'famchip--x10' : ''}`} href={`${base}families#${f.slug}`}>
+                            <img class="famchip__icon" src={`${base}${f.icon}`} alt="" loading="lazy" />
+                            {f.name} <b>×{f.weight}</b>
+                          </a>
+                        ))}
+                      </div>
                     </td>
                   );
                 }
@@ -367,6 +403,28 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
   .chiplist .chip {
     padding: 0.08rem 0.4rem;
     font-size: 0.66rem;
+  }
+
+  /* "Common in families" chips — inverted aiTraitDie view */
+  .famchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .famchip:hover { text-decoration: none; color: var(--gold); }
+  .famchip b {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+  .famchip--x10 b { color: var(--gold); }
+  .famchip__icon {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
   }
 
   .cell--effects .effect {

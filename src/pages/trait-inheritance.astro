@@ -1,8 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
-import traits from '../data/trait_inheritance.json';
+import data from '../data/trait_inheritance.json';
 const base = import.meta.env.BASE_URL;
+
+const traits = data.traits;
+const inheritance = data.inheritance;
 
 type Trait = typeof traits[number];
 
@@ -16,23 +19,87 @@ const RATING_TONE: Record<string, string> = {
   Discipline: 'yield-orders',
 };
 
+// Anchor targets that exist in the personality-matrix table below
+const traitSlugs = new Set(traits.map(t => t.slug));
+
 const searchBlobs: Record<string, string> = {};
 for (const t of traits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
+for (const r of inheritance) searchBlobs[`inh-${r.parent.slug}`] = JSON.stringify(r).toLowerCase();
 ---
 
 <Base title="Trait Inheritance" active="trait-inheritance" pageMark="🧬" pageStats={[
+  { label: 'inheritance events', value: inheritance.length },
   { label: 'personality traits', value: traits.length },
   { label: 'strengths', value: strengths.length },
   { label: 'weaknesses', value: weaknesses.length },
 ]}>
+  <h2 class="ti-h2">Inheritance — parent trait → possible child traits</h2>
+  <p class="trait-intro">
+    Derived from the <code>EVENTCLASS_TRAIT_INHERITANCE</code> events in
+    <code>eventStory.xml</code> ("Like father, like son"). Each event needs a
+    living non-leader parent with the trait; it can fire on that parent's child
+    in the line of succession at the listed age (5% eligibility roll per turn
+    via <code>iProb</code>). The single option grants <em>one</em> of the three
+    candidate traits, picked at random among those the child can legally gain
+    (<code>Character.doRandomTrait</code>). Trait 1 is always the parent's own
+    trait. Note the "Mother's/Father's Disposition"
+    <a href={`${base}study-events`}>Study Events</a> are a different mechanic —
+    they pass on <em>ratings</em> (±1 Charisma etc.), not traits.
+  </p>
+
+  <div class="grid" id="inherit-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Parent →</span>
+              <span class="rowlabel__big">Child ↓</span>
+            </th>
+            <th class="nhdr nhdr--family">Parent Trait</th>
+            <th class="nhdr nhdr--family">Inheritance Trait 1</th>
+            <th class="nhdr nhdr--family">Inheritance Trait 2</th>
+            <th class="nhdr nhdr--family">Inheritance Trait 3</th>
+            <th class="nhdr nhdr--family">Fires On</th>
+          </tr>
+        </thead>
+        <tbody>
+          {inheritance.map(r => (
+            <tr data-trait={`inh-${r.parent.slug}`}>
+              <th class="rowlabel" scope="row">{r.parent.name}</th>
+              <td class="cell yield-misc">
+                <span class="trait__name">{r.parent.name}</span>
+                <span class={`trait__kind trait__kind--${r.parent.kind}`}>{r.parent.kind}</span>
+              </td>
+              {[0, 1, 2].map(i => {
+                const c = r.children[i];
+                return c ? (
+                  <td class="cell yield-misc">
+                    {traitSlugs.has(c.slug)
+                      ? <a class={`chip chip--inherit chip--${c.kind}`} href={`#${c.slug}`}>{c.name}</a>
+                      : <span class={`chip chip--inherit chip--${c.kind}`}>{c.name}</span>}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                );
+              })}
+              <td class="cell yield-misc">
+                <span class="inherit__age">{r.childAge}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2 class="ti-h2">Personality matrix</h2>
   <p class="trait-intro">
     The personality matrix as it ships in <code>trait.xml</code>. Each trait shows
     its polar opposite (which it overwrites if granted), the character rating it
     shifts, and the modifiers it applies — including the family-head opinion bump
     so you can see at a glance which traits help a courtier rise to head their
-    family. The legacy "Inheritance Trait 1/2/3" view (which child trait a parent
-    can pass on) was community-curated; the game's actual inheritance happens via
-    the Mother's/Father's Disposition events under <a href={`${base}study-events`}>Study Events</a>.
+    family.
   </p>
 
   <div class="grid" id="trait-grid">
@@ -168,15 +235,14 @@ for (const t of traits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('trait-search-blobs');
-      const grid = document.getElementById('trait-grid');
-      if (!input || !blobNode || !grid) return;
+      if (!input || !blobNode) return;
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
       function apply() {
         const q = (input.value || '').trim().toLowerCase();
         for (const slug of Object.keys(blobs)) {
           const match = !q || blobs[slug].includes(q);
-          for (const el of grid.querySelectorAll('[data-trait="' + slug + '"]')) {
+          for (const el of document.querySelectorAll('[data-trait="' + slug + '"]')) {
             el.classList.toggle('is-hidden', !match);
           }
         }
@@ -223,6 +289,38 @@ for (const t of traits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
   }
   .trait__kind--strength { background: color-mix(in srgb, #5e8c43 25%, var(--bg-elev)); color: #b5d68f; border-color: color-mix(in srgb, #5e8c43 40%, var(--border)); }
   .trait__kind--weakness { background: color-mix(in srgb, #c25555 25%, var(--bg-elev)); color: #f0a8a8; border-color: color-mix(in srgb, #c25555 40%, var(--border)); }
+  .trait__kind--neutral  { background: var(--bg-elev); color: var(--text-dim); }
+
+  .ti-h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--gold);
+    margin: 1.4rem 0 0.5rem;
+  }
+  .ti-h2:first-of-type { margin-top: 0; }
+
+  /* Inheritance lookup chips — tinted by what the child would gain */
+  .chip--inherit {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.12rem 0.5rem;
+  }
+  .chip--strength { background: color-mix(in srgb, #5e8c43 25%, var(--bg-elev)); color: #b5d68f; border-color: color-mix(in srgb, #5e8c43 40%, var(--border)); }
+  .chip--weakness { background: color-mix(in srgb, #c25555 25%, var(--bg-elev)); color: #f0a8a8; border-color: color-mix(in srgb, #c25555 40%, var(--border)); }
+  a.chip--strength:hover { color: #d2eab2; }
+  a.chip--weakness:hover { color: #f8c6c6; }
+
+  .inherit__age {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: inherit;
+    opacity: 0.85;
+    white-space: nowrap;
+  }
 
   .chiplist {
     display: flex;

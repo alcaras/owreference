@@ -3,8 +3,12 @@
     {
       "costBase": 400,
       "costPerChange": 200,
+      "dlc": null,
+      "forceTheologies": false,
       "id": "RELIGION_ZOROASTRIANISM",
       "name": "Zoroastrianism",
+      "noSpread": false,
+      "paganNations": [],
       "requiresCitizens": 0,
       "requiresLaw": "",
       "requiresReligions": [],
@@ -23,8 +27,12 @@
     {
       "costBase": 400,
       "costPerChange": 200,
+      "dlc": null,
+      "forceTheologies": false,
       "id": "RELIGION_JUDAISM",
       "name": "Judaism",
+      "noSpread": false,
+      "paganNations": [],
       "requiresCitizens": 0,
       "requiresLaw": "",
       "requiresReligions": [],
@@ -43,8 +51,12 @@
     {
       "costBase": 400,
       "costPerChange": 200,
+      "dlc": null,
+      "forceTheologies": false,
       "id": "RELIGION_CHRISTIANITY",
       "name": "Christianity",
+      "noSpread": false,
+      "paganNations": [],
       "requiresCitizens": 12,
       "requiresLaw": "",
       "requiresReligions": [
@@ -62,8 +74,12 @@
     {
       "costBase": 400,
       "costPerChange": 200,
+      "dlc": null,
+      "forceTheologies": false,
       "id": "RELIGION_MANICHAEISM",
       "name": "Manichaeism",
+      "noSpread": false,
+      "paganNations": [],
       "requiresCitizens": 0,
       "requiresLaw": "",
       "requiresReligions": [
@@ -85,8 +101,34 @@
     {
       "costBase": 400,
       "costPerChange": 200,
+      "dlc": "EMPIRES_OF_THE_INDUS",
+      "forceTheologies": true,
+      "id": "RELIGION_HINDUISM",
+      "name": "Hinduism",
+      "noSpread": true,
+      "paganNations": [
+        "Maurya",
+        "Yuezhi",
+        "Tamil"
+      ],
+      "requiresCitizens": 0,
+      "requiresLaw": "",
+      "requiresReligions": [],
+      "requiresSpecialists": [],
+      "requiresTech": "",
+      "requiresTheologies": 0,
+      "slug": "hinduism",
+      "spreadPercent": 0
+    },
+    {
+      "costBase": 400,
+      "costPerChange": 200,
+      "dlc": "EMPIRES_OF_THE_INDUS",
+      "forceTheologies": false,
       "id": "RELIGION_BUDDHISM",
       "name": "Buddhism",
+      "noSpread": false,
+      "paganNations": [],
       "requiresCitizens": 0,
       "requiresLaw": "LAW_PHILOSOPHY",
       "requiresReligions": [],
@@ -144,8 +186,7 @@
         {
           "cost": 200,
           "effects": [
-            "-5% Rebel Chance",
-            "-5% Rebellion Chance"
+            "-5% Rebel Chance"
           ],
           "id": "THEOLOGY_VENERATION",
           "lawOpinion": [
@@ -171,7 +212,6 @@
         {
           "cost": 400,
           "effects": [
-            "+1 Science/Religion",
             "+1 Science/Religion"
           ],
           "id": "THEOLOGY_DUALISM",
@@ -277,7 +317,7 @@
     }
   ],
   "totals": {
-    "religions": 5,
+    "religions": 6,
     "theologies": 8
   }
 }

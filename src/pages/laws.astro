@@ -65,17 +65,41 @@ for (const g of laws.groups) {
                         })}
                       </ul>
                     )}
-                    {law.cost > 0 && (
+                    {law.opinions.length > 0 && (
+                      <div class="lawcard__opinions">
+                        {law.opinions.map(op => (
+                          <span
+                            class="lawcard__opinion-chip"
+                            title={op.group === 'family'
+                              ? `${op.label} families gain +${op.value} opinion while this law is active`
+                              : `${op.label} characters gain +${op.value} opinion while this law is active`}
+                          >
+                            +{op.value} {op.label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {(law.cost > 0 || law.upkeep.length > 0) && (
                       <footer class="lawcard__cost">
-                        <span class="lawcard__cost-chip" title="Civics cost to adopt">
-                          <img class="chip__icon" src={`${base}img/icons/yields/civics.png`} alt="" onerror="this.style.display='none'" />
-                          <b>{law.cost}</b> adopt
-                        </span>
-                        {law.switchCost > 0 && law.switchCost !== law.cost && (
+                        {law.cost > 0 && (
+                          <span class="lawcard__cost-chip" title="Civics cost to adopt">
+                            <img class="chip__icon" src={`${base}img/icons/yields/civics.png`} alt="" onerror="this.style.display='none'" />
+                            <b>{law.cost}</b> adopt
+                          </span>
+                        )}
+                        {law.cost > 0 && law.switchCost > 0 && law.switchCost !== law.cost && (
                           <span class="lawcard__cost-chip" title="Civics cost to switch later">
                             <b>{law.switchCost}</b> switch
                           </span>
                         )}
+                        {law.upkeep.map(u => (
+                          <span
+                            class={`lawcard__cost-chip lawcard__upkeep yield-${classifyYield(u)?.toLowerCase() || 'misc'}`}
+                            title="Per-turn upkeep while active (scales with number of cities)"
+                          >
+                            <b>{u}</b> upkeep
+                          </span>
+                        ))}
                       </footer>
                     )}
                   </article>
@@ -258,5 +282,29 @@ for (const g of laws.groups) {
   .lawcard__cost-chip b {
     color: var(--text);
     font-weight: 700;
+  }
+
+  /* Per-turn upkeep — colored by the yield it drains */
+  .lawcard__upkeep {
+    background: color-mix(in srgb, var(--yield-bg, var(--bg-elev-3)) 22%, var(--bg-elev-3) 78%);
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 45%, transparent);
+  }
+  .lawcard__upkeep b {
+    color: color-mix(in srgb, var(--yield-bg, var(--text)) 65%, #fff 35%);
+  }
+
+  /* Faction opinion chips — who likes this law */
+  .lawcard__opinions {
+    display: flex; gap: 0.3rem; flex-wrap: wrap;
+  }
+  .lawcard__opinion-chip {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    color: var(--text-soft);
+    background: var(--bg-elev-3);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
   }
 </style>

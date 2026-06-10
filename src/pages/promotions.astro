@@ -28,6 +28,46 @@ const searchBlobs: Record<string, string> = {};
 for (const p of promotions) {
   searchBlobs[p.slug] = JSON.stringify(p).toLowerCase();
 }
+
+// ── Availability matrix ──────────────────────────────────────────────
+// Columns = the unit-trait combinations that actually occur on promotable
+// units in unit.xml. A single "Siege" or "Mounted" column would be lossy:
+// Strike (invalid: Ranged) reaches Battering Rams but not Onagers, and
+// Shrapnel (valid: Ranged) the reverse — so Melee/Ranged are split out.
+const unitClasses = [
+  { key: 'inf-melee',   label: 'Infantry', sub: 'Melee',  traits: ['Promotable', 'Infantry', 'Melee'],  eg: 'Warrior, Axeman, Spearman, Swordsman' },
+  { key: 'inf-ranged',  label: 'Infantry', sub: 'Ranged', traits: ['Promotable', 'Infantry', 'Ranged'], eg: 'Slinger, Archer, Longbowman, Crossbowman' },
+  { key: 'mtd-melee',   label: 'Mounted',  sub: 'Melee',  traits: ['Promotable', 'Mounted', 'Melee'],   eg: 'Horseman, Chariot, War Elephant, Cataphract' },
+  { key: 'mtd-ranged',  label: 'Mounted',  sub: 'Ranged', traits: ['Promotable', 'Mounted', 'Ranged'],  eg: 'Horse Archer, Light Chariot, Camel Archer' },
+  { key: 'siege-melee', label: 'Siege',    sub: 'Melee',  traits: ['Promotable', 'Siege', 'Melee'],     eg: 'Battering Ram, Siege Tower' },
+  { key: 'siege-ranged',label: 'Siege',    sub: 'Ranged', traits: ['Promotable', 'Siege', 'Ranged'],    eg: 'Ballista, Polybolos, Onager, Mangonel' },
+  { key: 'ship',        label: 'Ship',     sub: '',       traits: ['Promotable', 'Ship'],               eg: 'Bireme, Trireme, Dromon' },
+];
+
+// Game.cs canPromote: a unit qualifies if it has at least one valid trait
+// (when any are listed) and none of the invalid traits — and it must also
+// qualify for the whole prereq chain to ever be offered the promotion.
+const promById = new Map(promotions.map(p => [p.id, p]));
+function ownEligible(p: Promotion, traits: Set<string>): boolean {
+  if (p.validTraits.length > 0 && !p.validTraits.some(t => traits.has(t))) return false;
+  if (p.invalidTraits.some(t => traits.has(t))) return false;
+  return true;
+}
+function eligible(p: Promotion, traits: Set<string>): boolean {
+  let cur: Promotion | undefined = p;
+  while (cur) {
+    if (!ownEligible(cur, traits)) return false;
+    cur = cur.prereqId ? promById.get(cur.prereqId) : undefined;
+  }
+  return true;
+}
+const classTraitSets = unitClasses.map(c => new Set(c.traits));
+
+const prereqSlug = (p: Promotion) => p.prereqId.replace('PROMOTION_', '').toLowerCase();
+
+// Promotions that additionally require the unit to already have a given
+// attack type (Game.cs aiAttackPercent gate — e.g. Shrapnel needs Splash).
+const condPromos = promotions.filter(p => p.requiresAttack.length > 0);
 ---
 
 <Base
@@ -39,6 +79,91 @@ for (const p of promotions) {
     { label: 'tiers',      value: byTier.size },
   ]}
 >
+  <section class="grid prom-matrix" aria-labelledby="prom-matrix-title">
+    <h2 class="prom-tier__title" id="prom-matrix-title">
+      Availability by unit class
+      <span class="prom-tier__count">✓ eligible · — not offered</span>
+    </h2>
+    <p class="grid__searchnote">
+      On production and on each upgrade, a unit draws 4 random promotions from those it is eligible for.
+    </p>
+    <div class="grid__scroll">
+      <table class="ntbl prom-matrix__tbl" aria-label="Promotion availability by unit class">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          <col class="prom-matrix__prereq-col" />
+          {unitClasses.map(c => <col class="prom-matrix__class-col" data-class={c.key} />)}
+          <col class="prom-matrix__fx-col" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner" scope="col">
+              <span class="rowlabel__small">Class →</span>
+              <span class="rowlabel__big">Promotion ↓</span>
+            </th>
+            <th class="nhdr pm-hdr" scope="col">
+              <span class="pm-hdr__name">Prereq</span>
+            </th>
+            {unitClasses.map(c => (
+              <th class="nhdr pm-hdr pm-hdr--class" scope="col" title={`e.g. ${c.eg}`}>
+                <span class="pm-hdr__name">{c.label}</span>
+                {c.sub && <span class="pm-hdr__sub">{c.sub}</span>}
+              </th>
+            ))}
+            <th class="nhdr pm-hdr" scope="col">
+              <span class="pm-hdr__name">Effect</span>
+            </th>
+          </tr>
+        </thead>
+        {tiers.filter(t => byTier.has(t)).map(t => (
+          <tbody>
+            <tr class="srow">
+              <th class="srow__th" colspan={unitClasses.length + 3}>Tier {t}</th>
+            </tr>
+            {byTier.get(t)!.map(p => (
+              <tr data-prom={p.slug}>
+                <th class="rowlabel" scope="row">
+                  <a href={`#${p.slug}`}>{p.name}</a>
+                </th>
+                <td class="cell pm-prereq">
+                  {p.prereqId
+                    ? <a class="chip chip--neutral chip--mini" href={`#${prereqSlug(p)}`}>{p.prereqName}</a>
+                    : <span class="cell__dash">—</span>}
+                </td>
+                {unitClasses.map((c, i) => {
+                  const ok = eligible(p, classTraitSets[i]);
+                  const cond = ok && p.requiresAttack.length > 0;
+                  return ok ? (
+                    <td
+                      class="cell pm-avail is-avail"
+                      title={cond
+                        ? `${p.name}: only units that already have a ${p.requiresAttack.join('/')} attack`
+                        : `${p.name} — available to ${c.label}${c.sub ? ` (${c.sub})` : ''}`}
+                    >{cond ? '✓*' : '✓'}</td>
+                  ) : (
+                    <td class="cell pm-avail is-empty"><span class="cell__dash">—</span></td>
+                  );
+                })}
+                <td class="cell pm-fx">
+                  {p.effects.length > 0
+                    ? <LinkedText text={p.effects.join(' · ')} showIcons={false} />
+                    : <span class="cell__dash">—</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        ))}
+      </table>
+    </div>
+    {condPromos.length > 0 && (
+      <p class="grid__searchnote">
+        {condPromos.map(p => (
+          <span>✓* {p.name} is only offered to units that already have a {p.requiresAttack.join('/')} attack.</span>
+        ))}
+      </p>
+    )}
+  </section>
+
   <div id="prom-grid">
     {tiers.filter(t => byTier.has(t)).map(t => (
       <section class="prom-tier" data-tier={t}>
@@ -112,13 +237,18 @@ for (const p of promotions) {
         const q = (input.value || '').trim().toLowerCase();
         for (const slug of Object.keys(blobs)) {
           const match = !q || blobs[slug].includes(q);
-          for (const el of grid.querySelectorAll('[data-prom="' + slug + '"]')) {
+          // Both the tier card (li.prom) and the matrix row (tr) carry data-prom.
+          for (const el of document.querySelectorAll('[data-prom="' + slug + '"]')) {
             el.classList.toggle('is-hidden', !match);
           }
         }
         for (const tier of grid.querySelectorAll('.prom-tier')) {
           const visible = tier.querySelectorAll('.prom:not(.is-hidden)').length;
           tier.classList.toggle('is-hidden', visible === 0);
+        }
+        for (const tb of document.querySelectorAll('.prom-matrix__tbl tbody')) {
+          const visible = tb.querySelectorAll('tr[data-prom]:not(.is-hidden)').length;
+          tb.classList.toggle('is-hidden', visible === 0);
         }
       }
       input.addEventListener('input', apply);
@@ -128,6 +258,66 @@ for (const p of promotions) {
 </Base>
 
 <style>
+  /* ── Availability matrix ─────────────────────────────── */
+  .prom-matrix { margin: 1.4rem 0 2.2rem; }
+  .prom-matrix__tbl { min-width: 58rem; }
+  .prom-matrix__tbl col.prom-matrix__prereq-col { width: 6.5rem; }
+  .prom-matrix__tbl col.prom-matrix__class-col { width: 4.7rem; }
+  /* fx col takes the remaining width via table-layout: fixed */
+
+  .prom-matrix__tbl .rowlabel a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .prom-matrix__tbl .rowlabel a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+  }
+
+  .pm-hdr {
+    border-bottom: 1px solid var(--border);
+  }
+  .pm-hdr__name {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+  .pm-hdr__sub {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+    margin-top: 0.1rem;
+  }
+  .pm-hdr--class { text-align: center; }
+  .pm-hdr--class .pm-hdr__name,
+  .pm-hdr--class .pm-hdr__sub { text-align: center; }
+
+  .pm-avail {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+  .pm-avail.is-avail {
+    color: var(--accent);
+    background: var(--gold-glow);
+  }
+  .pm-prereq .chip { font-size: 0.62rem; }
+  .pm-fx {
+    font-size: 0.74rem;
+    color: var(--text-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .prom-matrix .grid__searchnote span { margin-right: 0.8rem; }
+
   .prom-tier { margin: 1.4rem 0; }
   .prom-tier__title {
     display: flex;

@@ -4,82 +4,161 @@ import LinkedText from '../components/LinkedText.astro';
 
 const base = import.meta.env.BASE_URL;
 
-// Constants from reference/XML/Infos/globalsInt.xml. These are the canonical
-// values the game engine uses for Hurry cost arithmetic. Kept here as a small
-// hand-curated mirror; if they drift in a future patch, the build will still
-// pass and we'll catch it by glancing at this list.
+// ───────────────────────────────────────────────────────────────────────────
+// Availability matrix — resource × build-target, grounded in XML.
 //
-//   HURRY_DISCONTENT_COST_BASE  =  100  (per Hurry)
-//   HURRY_DISCONTENT_COST_PER   =   10  (per item turn skipped)
-//   HURRY_CIVICS_COST_BASE      =  100
-//   HURRY_CIVICS_COST_MODIFIER  =   50   (% on top of remaining production)
-//   HURRY_TRAINING_COST_BASE    =  100
-//   HURRY_TRAINING_COST_MODIFIER=   50
-//   HURRY_MONEY_COST_BASE       =   10
-//   HURRY_MONEY_COST_PER        =    5
-//   HURRY_POPULATION_COST_BASE  =    1
-//   HURRY_POPULATION_COST_PER   =   80
-//   HURRY_ORDERS_COST_BASE      =    2
-//   HURRY_ORDERS_COST_MODIFIER  =  -90  (% reduction)
+// How hurry unlocks actually work (reference/Source/Base/Game/GameCore/City.cs
+// canHurry* + reference/XML/Infos):
+//   • build.xml — each BuildType (BUILD_UNIT / BUILD_SPECIALIST / BUILD_PROJECT)
+//     carries default bHurry* flags. Only bHurryCivics=1 is set, on all three —
+//     that is why Civics hurry is always available.
+//   • effectCity.xml — bHurry{Orders,Population,...} grant a channel for ALL
+//     builds; aeHurry{Money,Training,...} grant it for the listed BuildTypes only.
+//   • Those EffectCity entries are wired from law.xml (via effectPlayer.xml's
+//     EffectCity / StateReligionEffectCity), trait.xml (LeaderEffectPlayer /
+//     GovernorEffectCity), and improvementClass.xml (aeTheologyCityEffect).
+//
+// Exact chains per cell (verified against the 1.0.78-line XML):
+//   Civics  · all targets   build.xml BUILD_*: bHurryCivics=1
+//   Training· Units         trait.xml TRAIT_ZEALOT_ARCHETYPE → LeaderEffectPlayer
+//                           EFFECTPLAYER_TRAIT_ZEALOT_ARCHETYPE → StateReligionEffectCity
+//                           EFFECTCITY_TRAIT_ZEALOT_ARCHETYPE_STATE: aeHurryTraining=[BUILD_UNIT]
+//   Training· Spec/Proj     improvementClass.xml IMPROVEMENTCLASS_CATHEDRAL →
+//                           aeTheologyCityEffect[THEOLOGY_REDEMPTION] →
+//                           EFFECTCITY_IMPROVEMENTCLASS_CATHEDRAL_REDEMPTION:
+//                           aeHurryTraining=[BUILD_PROJECT, BUILD_SPECIALIST]
+//   Money   · Units         law.xml LAW_HOLY_WAR → EFFECTPLAYER_LAW_HOLY_WAR →
+//                           StateReligionEffectCity → EFFECTCITY_LAW_HOLY_WAR_STATE:
+//                           aeHurryMoney=[BUILD_UNIT]
+//                           (also project-event-eoti.xml PROJECT_FORTIFIED_MONASTERIES
+//                           → EFFECTCITY_FORTIFIED_MONASTERIES: aeHurryMoney=[BUILD_UNIT],
+//                           hidden event project, Empires of the Indus DLC)
+//   Money   · Spec/Proj     trait.xml TRAIT_JUDGE_ARCHETYPE → GovernorEffectCity →
+//                           EFFECTCITY_TRAIT_JUDGE: aeHurryMoney=[BUILD_PROJECT, BUILD_SPECIALIST]
+//   Orders  · all targets   law.xml LAW_ORTHODOXY → EFFECTPLAYER_LAW_ORTHODOXY →
+//                           StateReligionEffectCity → EFFECTCITY_LAW_ORTHODOXY_STATE:
+//                           bHurryOrders=1
+//   Citizens· all targets   law.xml LAW_VOLUNTEERS → EFFECTPLAYER_LAW_VOLUNTEERS →
+//                           EffectCity (all cities) → EFFECTCITY_LAW_VOLUNTEERS:
+//                           bHurryPopulation=1
+//
+// Where the legacy spreadsheet disagrees, the XML wins (see notes below).
+// ───────────────────────────────────────────────────────────────────────────
 
-type HurryRow = {
-  yieldKey: string;
-  name: string;
-  unlock: string;
-  formula: string;
-  notes: string;
+type MatrixCell = {
+  source: string;        // headline, LinkedText'd
+  cond?: string;         // requirement sub-line
+  extra?: string;        // rare alternate source, smaller print
 };
 
-const rows: HurryRow[] = [
+type MatrixRow = {
+  yieldKey: string;
+  name: string;
+  cells: [MatrixCell, MatrixCell, MatrixCell]; // Units, Specialists, Projects
+};
+
+const alwaysCell: MatrixCell = { source: 'Always available', cond: 'every City (Developing Culture or higher)' };
+const orthodoxyCell: MatrixCell = { source: 'Orthodoxy Law', cond: 'state religion present in the City' };
+const volunteersCell: MatrixCell = { source: 'Volunteers Law', cond: 'all Cities' };
+const cathedralCell: MatrixCell = { source: 'Cathedral', cond: 'its religion has adopted the Redemption theology' };
+const judgeCell: MatrixCell = { source: 'Judge Governor', cond: 'governing the City' };
+
+const matrix: MatrixRow[] = [
   {
     yieldKey: 'civics',
     name: 'Civics',
-    unlock: 'All Cities (default)',
-    formula: '100 Civics base + 50% of remaining production cost',
-    notes: 'Universal hurry channel. Available to every city as soon as it has Developing Culture.',
+    cells: [alwaysCell, alwaysCell, alwaysCell],
   },
   {
     yieldKey: 'training',
     name: 'Training',
-    unlock: 'Riders family · Statesman archetype · certain Laws',
-    formula: '100 Training base + 50% of remaining production cost',
-    notes: 'Mirrors Civics but spends Training. Best on military units in a Riders seat.',
+    cells: [
+      { source: 'Zealot Leader', cond: 'state religion present in the City' },
+      cathedralCell,
+      cathedralCell,
+    ],
   },
   {
     yieldKey: 'money',
     name: 'Money',
-    unlock: 'Patrons family · certain Laws',
-    formula: '10 Money base + 5 per remaining production turn',
-    notes: 'Linear in turns remaining (not in production cost). Cheap on long projects.',
+    cells: [
+      {
+        source: 'Holy War Law',
+        cond: 'state religion present in the City',
+        extra: 'also: Fortified Monasteries event project (Empires of the Indus)',
+      },
+      judgeCell,
+      judgeCell,
+    ],
   },
   {
     yieldKey: 'orders',
     name: 'Orders',
-    unlock: 'Champions archetype · certain Laws',
-    formula: '2 Orders base, reduced by 90% of remaining production',
-    notes: 'A flat, very cheap "bonus" hurry. The modifier is negative, so big projects get nearly free.',
+    cells: [orthodoxyCell, orthodoxyCell, orthodoxyCell],
   },
   {
     yieldKey: 'growth',
-    name: 'Population',
-    unlock: 'Volunteers law',
-    formula: '1 City Population base + 80 per remaining production turn',
-    notes: 'Spends actual citizens. Last-resort hurry for emergency production.',
+    name: 'Citizens',
+    cells: [volunteersCell, volunteersCell, volunteersCell],
   },
 ];
 
-const totalChannels = rows.length;
+const targets = ['Units', 'Specialists', 'Projects'];
 
-// Discontent is the universal side-cost across every channel.
-const discontentRow = {
-  base: 100,
-  per: 10,
-  desc: 'Every Hurry adds Discontent: +1 per Hurry, plus an extra +0.1 for each production turn you skipped.',
-};
+// ───────────────────────────────────────────────────────────────────────────
+// Cost formulas — from reference/XML/Infos/globalsInt.xml and the engine code
+// in City.cs (getHurryCivicsCost & friends). mp = missing production: total
+// production cost of the item minus production already completed (overflow
+// doesn't count). All values in display units.
+//
+//   HURRY_CIVICS_COST_BASE=100   HURRY_CIVICS_COST_MODIFIER=50  → 100 + 1.5·mp
+//   HURRY_TRAINING_COST_BASE=100 HURRY_TRAINING_COST_MODIFIER=50→ 100 + 1.5·mp
+//   HURRY_MONEY_COST_BASE=10     HURRY_MONEY_COST_PER=5         → 10 + 5·mp
+//   HURRY_ORDERS_COST_BASE=2     HURRY_ORDERS_COST_MODIFIER=-90 → 2 + 0.1·mp
+//   HURRY_POPULATION_COST_BASE=1 HURRY_POPULATION_COST_PER=80   → 1 + mp/80
+//   HURRY_DISCONTENT_COST_BASE=100 (yield-tenths = 10 display)
+//   HURRY_DISCONTENT_COST_PER=10                                → 10 + mp/100
+// ───────────────────────────────────────────────────────────────────────────
+
+type CostRow = { yieldKey: string; name: string; formula: string; notes: string };
+
+const costs: CostRow[] = [
+  {
+    yieldKey: 'civics',
+    name: 'Civics',
+    formula: '100 + 1.5 × missing production',
+    notes: 'The default channel: scales with the cost of what is left to build.',
+  },
+  {
+    yieldKey: 'training',
+    name: 'Training',
+    formula: '100 + 1.5 × missing production',
+    notes: 'Same shape as Civics, paid from the Training stockpile.',
+  },
+  {
+    yieldKey: 'money',
+    name: 'Money',
+    formula: '10 + 5 × missing production',
+    notes: 'Steep per-production rate — cheapest when the item is nearly done.',
+  },
+  {
+    yieldKey: 'orders',
+    name: 'Orders',
+    formula: '2 + 0.1 × missing production',
+    notes: 'Tiny Yield cost, but Orders are your turn\'s action budget.',
+  },
+  {
+    yieldKey: 'growth',
+    name: 'Citizens',
+    formula: '1 + missing production ÷ 80',
+    notes: 'Spends actual Citizens from the City. Emergency lever.',
+  },
+];
 ---
 
 <Base title="Hurrying Production" active="hurrying" pageMark="⏩" pageStats={[
-  { label: 'channels', value: totalChannels },
+  { label: 'resources', value: matrix.length },
+  { label: 'targets', value: targets.length },
   { label: 'discontent cost', value: 'always' },
 ]}>
   <section class="hurry-intro">
@@ -91,32 +170,70 @@ const discontentRow = {
       turn — not instantly.
     </p>
     <p class="hurry-intro__note">
-      Every City can Hurry with Civics from the start. Other channels (Training, Money, Orders, Population)
-      unlock through family classes, character archetypes, or specific Laws. The formulas come straight from
-      <code>globalsInt.xml</code>, which is the engine's single source of truth.
+      Every City can Hurry with Civics from the start (<code>build.xml</code> grants it to all
+      build types). The other resources unlock per build target — Units, Specialists, Projects —
+      through specific Laws, an archetype Leader, a Governor, or a themed Improvement, as wired in
+      <code>effectCity.xml</code>.
     </p>
   </section>
 
+  <h2 class="hurry-h2">What can hurry what</h2>
   <div class="grid">
     <div class="grid__scroll">
       <table class="ntbl">
         <thead>
           <tr>
-            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Channel</span></div></th>
-            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Unlocked By</span></div></th>
-            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Formula</span></div></th>
-            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Notes</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Resource</span></div></th>
+            {targets.map(t => (
+              <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">{t}</span></div></th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map(r => (
+          {matrix.map(r => (
             <tr>
               <th class="rowlabel rowlabel--item" scope="row">
                 <div class={`hurry-pill yield-${r.yieldKey}`}>{r.name}</div>
               </th>
-              <td class="cell yield-misc"><LinkedText text={r.unlock} /></td>
+              {r.cells.map(c => (
+                <td class={`cell yield-${r.yieldKey}`}>
+                  <div class="unlock__source"><LinkedText text={c.source} /></div>
+                  {c.cond && <div class="unlock__cond"><LinkedText text={c.cond} /></div>}
+                  {c.extra && <div class="unlock__extra"><LinkedText text={c.extra} /></div>}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <p class="hurry-footnote">
+    The legacy spreadsheet listed the Zealot Leader as unlocking Training hurry for all three
+    targets; in the current XML it covers <strong>Units only</strong>
+    (<code>aeHurryTraining = BUILD_UNIT</code>) — Training hurry for Specialists and Projects
+    instead comes from a <LinkedText text="Cathedral" /> whose religion holds the Redemption theology.
+  </p>
+
+  <h2 class="hurry-h2">What it costs</h2>
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Resource</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Base cost</span></div></th>
+            <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Notes</span></div></th>
+          </tr>
+        </thead>
+        <tbody>
+          {costs.map(r => (
+            <tr>
+              <th class="rowlabel rowlabel--item" scope="row">
+                <div class={`hurry-pill yield-${r.yieldKey}`}>{r.name}</div>
+              </th>
               <td class={`cell yield-${r.yieldKey}`}>
-                <code class="formula"><LinkedText text={r.formula} /></code>
+                <code class="formula">{r.formula}</code>
               </td>
               <td class="cell yield-misc"><LinkedText text={r.notes} /></td>
             </tr>
@@ -125,25 +242,31 @@ const discontentRow = {
             <th class="rowlabel rowlabel--item" scope="row">
               <div class="hurry-pill yield-discontent">Discontent</div>
             </th>
-            <td class="cell yield-misc" colspan="3">
-              <strong>Always charged on top of the chosen channel.</strong>{' '}
-              {discontentRow.base / 10} Discontent base, plus {discontentRow.per / 10} per remaining production turn skipped.
-              <span class="hurry-note"> ({discontentRow.desc})</span>
+            <td class="cell yield-discontent">
+              <code class="formula">10 + missing production ÷ 100</code>
+            </td>
+            <td class="cell yield-misc">
+              <strong>Always added on top of the chosen resource</strong> — except under the
+              Monetary Reform Law, which removes it entirely.
             </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+  <p class="hurry-footnote">
+    <em>mp = missing production</em>: the item's total production cost minus production already
+    completed (overflow doesn't count). Constants from <code>globalsInt.xml</code>; arithmetic from
+    the engine's <code>City.cs</code>.
+  </p>
 
   <section class="hurry-tips">
-    <h2>How to think about it</h2>
+    <h2>Cost modifiers (apply to every resource, Discontent included)</h2>
     <ul>
-      <li><strong>Civics</strong> is the default — every City has it, and it scales with the cost of what you're building.</li>
-      <li><strong>Money</strong> and <strong>Population</strong> scale with <em>turns remaining</em>, so they shine when the project is far from done.</li>
-      <li><strong>Orders</strong> is almost free in raw Yield but it eats your turn's action budget — best used to crash-finish something already close to done.</li>
-      <li><strong>Training</strong> mirrors Civics but spends Training instead — natural for military-focused cities.</li>
-      <li>Stacking multiple Hurries in one turn is allowed; each one re-rolls the Discontent surcharge.</li>
+      <li>Items <strong>less than 50% complete</strong> cost extra: +(50 − %complete)%. An untouched item is +50%; anything half-done or better pays no surcharge.</li>
+      <li><strong>+10% per previous Hurry</strong> with that same resource in that City. The counter is per-resource and per-City — hurrying with Civics never makes Training hurries (or other Cities) more expensive.</li>
+      <li>Items produced with <strong>Growth</strong> (Settlers, Workers, Disciples) cost +50% to hurry.</li>
+      <li>You cannot Hurry: a damaged City, a City below Developing Culture, an item that finishes next turn anyway, or items flagged no-hurry (most decrees and event projects).</li>
     </ul>
   </section>
 </Base>
@@ -158,7 +281,7 @@ const discontentRow = {
   }
   .hurry-intro p { margin: 0 0 0.6rem; }
   .hurry-intro__note { font-size: 0.82rem; color: var(--text-faint); }
-  .hurry-intro code, .formula {
+  .hurry-intro code, .hurry-footnote code {
     background: var(--bg-elev);
     border: 1px solid var(--border);
     border-radius: 3px;
@@ -171,6 +294,13 @@ const discontentRow = {
     border: 0;
     padding: 0;
     color: inherit;
+  }
+
+  .hurry-h2 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--text);
+    margin: 1.4rem 0 0.5rem;
   }
 
   .nhdr--col {
@@ -207,7 +337,31 @@ const discontentRow = {
     background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.2));
   }
 
-  .hurry-note { color: var(--text-faint); font-size: 0.85em; }
+  .unlock__source {
+    font-family: var(--font-display);
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .unlock__cond {
+    font-size: 0.76rem;
+    font-style: italic;
+    opacity: 0.85;
+    margin-top: 0.1rem;
+  }
+  .unlock__extra {
+    font-size: 0.72rem;
+    opacity: 0.7;
+    margin-top: 0.25rem;
+  }
+
+  .hurry-footnote {
+    max-width: 920px;
+    margin: 0.5rem 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-faint);
+  }
 
   .hurry-tips {
     margin-top: 1.5rem;

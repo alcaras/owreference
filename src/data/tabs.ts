@@ -46,6 +46,11 @@ export const TABS: Tab[] = [
     ],
   },
   {
+    slug: 'archetype-tendencies', icon: '🎲', label: 'Archetype Tendencies', section: 'Civilizations',
+    status: 'built', sourceSheet: '👑👪🎓 Nations, Families, and Archetype Tendencies',
+    summary: 'Which families of each nation roll which archetypes (×10/×5 weights)',
+  },
+  {
     slug: 'cognomens', icon: '👑', label: 'Cognomens', section: 'Civilizations',
     status: 'built', sourceSheet: '👑Cognomens',
     summary: 'Title/cognomen unlock conditions',

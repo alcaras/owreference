@@ -19,7 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
-    load_xml_indexes, render_effect_player,
+    load_xml_indexes, render_effect_player, yield_name, fmt_decimal,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -55,9 +55,69 @@ def load_text(*filenames: str) -> dict[str, str]:
     return out
 
 
+def render_upkeep(ep_upkeep_id: str, indexes: dict) -> list[str]:
+    """Render an EFFECTPLAYER_UPKEEP_* entry's aiYieldUpkeep pairs.
+
+    Per the game source (Player.getYieldUpkeepNet), the upkeep value is
+    multiplied by the number of cities, so it's a per-city per-turn cost.
+    Values are 10× display (e.g. -10 CIVICS → "-1 Civics/City").
+    """
+    ep = indexes.get("effectPlayer.xml", {}).get(ep_upkeep_id)
+    if ep is None:
+        return []
+    out: list[str] = []
+    for pair in ep.findall("aiYieldUpkeep/Pair"):
+        y = yield_name(pair.findtext("zIndex"))
+        v = int(pair.findtext("iValue") or "0") / 10
+        if v:
+            out.append(f"{fmt_decimal(v)} {y}/City")
+    return out
+
+
+def load_law_opinions(text_infos: dict[str, str]) -> dict[str, list[dict]]:
+    """Invert aiLawOpinion from familyClass.xml and trait.xml (archetypes).
+
+    Returns LAW_X → [{group, label, value}], families first, then archetypes,
+    each alphabetical by label. Opinion values come straight from the XML
+    (currently all +20).
+    """
+    by_law: dict[str, list[dict]] = defaultdict(list)
+
+    # Family classes: Name → TEXT_FAMILYCLASS_* lives in text-infos.xml
+    for e in parse("familyClass.xml").findall("Entry"):
+        zt = e.findtext("zType") or ""
+        if not zt:
+            continue
+        label = text_infos.get(e.findtext("Name") or "",
+                               zt.replace("FAMILYCLASS_", "").replace("_", " ").title())
+        for pair in e.findall("aiLawOpinion/Pair"):
+            law_id = pair.findtext("zIndex") or ""
+            val = int(pair.findtext("iValue") or "0")
+            if law_id and val:
+                by_law[law_id].append({"group": "family", "label": label, "value": val})
+
+    # Archetype traits: no Name field — derive from zType (TRAIT_HERO_ARCHETYPE → Hero)
+    for e in parse("trait.xml").findall("Entry"):
+        zt = e.findtext("zType") or ""
+        if not zt:
+            continue
+        label = zt.replace("TRAIT_", "").replace("_ARCHETYPE", "").replace("_", " ").title()
+        for pair in e.findall("aiLawOpinion/Pair"):
+            law_id = pair.findtext("zIndex") or ""
+            val = int(pair.findtext("iValue") or "0")
+            if law_id and val:
+                by_law[law_id].append({"group": "archetype", "label": label, "value": val})
+
+    group_rank = {"family": 0, "archetype": 1}
+    for law_id in by_law:
+        by_law[law_id].sort(key=lambda o: (group_rank[o["group"]], o["label"]))
+    return by_law
+
+
 def main() -> int:
     text_law = load_text("text-law.xml")
     text_tech = load_text("text-tech.xml")
+    text_infos = load_text("text-infos.xml")
 
     # Map TECH_X → iColumn (0..7). Used to derive civic tier.
     tech_col: dict[str, int] = {}
@@ -75,6 +135,7 @@ def main() -> int:
                                           zt.replace("TECH_", "").replace("_", " ").title())
 
     indexes = load_xml_indexes(XML_DIR)
+    law_opinions = load_law_opinions(text_infos)
 
     # Read every LawClass with its TechPrereq
     classes: dict[str, dict] = {}
@@ -117,6 +178,10 @@ def main() -> int:
         if not effects and zt in SUCCESSION_EFFECTS:
             effects = SUCCESSION_EFFECTS[zt]
 
+        # Per-city per-turn upkeep (EFFECTPLAYER_UPKEEP_*)
+        ep_upkeep_id = (e.findtext("EffectPlayerUpkeep") or "").strip()
+        upkeep = render_upkeep(ep_upkeep_id, indexes) if ep_upkeep_id else []
+
         laws_by_class[cls].append({
             "id": zt,
             "slug": zt.replace("LAW_", "").lower(),
@@ -126,6 +191,8 @@ def main() -> int:
             "perChangeCost": per_change,
             "successionOrder": succession_order,
             "effects": effects,
+            "upkeep": upkeep,
+            "opinions": law_opinions.get(zt, []),
         })
 
     # Build the grouped output: list of groups, each {tier, label, classes: [{class, laws}]}

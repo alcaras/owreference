@@ -20,6 +20,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import effects  # noqa: E402
 from humanize import (  # noqa: E402
     load_xml_indexes, fmt_decimal,
 )
@@ -144,6 +145,42 @@ def render_promotion_effect(e: ET.Element) -> list[str]:
     if (e.findtext("bAmphibious") or "0") == "1":
         out.append("Amphibious")
 
+    # Registry backstop: any other populated field the game renders
+    # (iVisionExtra, iRiverAttackModifier, cooldowns, …) gets a generic line
+    # instead of vanishing. Exclude what this renderer phrases itself.
+    out.extend(effects.extra_lines(e, "effectUnit", exclude=_PROMO_COVERED))
+
+    return out
+
+
+_PROMO_COVERED = frozenset({
+    "iStrengthModifier", "iAttackModifier", "iDefenseModifier",
+    "iMoraleModifier", "iCityStrengthModifier", "iCityDefenseModifier",
+    "aiUnitTraitModifier", "aiUnitTraitModifierAttack",
+    "aiUnitTraitModifierDefense", "aiUnitTraitModifierMelee",
+    "aiAttackValue", "aiAttackPercent", "aiTerrainFromModifier",
+    "aiVegetationFromModifier", "aiHeightFromModifier",
+    "iHealExtra", "iHealAlways", "iMovement", "iVision",
+    "iRangeMin", "iRangeMax", "iFatigueExtra", "iFatigueChange",
+    "bIgnoreZOC", "bIgnoreHill", "bAmphibious",
+})
+
+
+def gather_requires_attack(e: ET.Element) -> list[str]:
+    """Attack types this promotion only *modifies* (aiAttackPercent > 0 with no
+    aiAttackValue grant). Game.cs canPromote: such a promotion is only offered
+    to units that already have that attack type (e.g. Shrapnel → Splash units
+    like Onager / Mangonel / Akkadian & Cimmerian Archer)."""
+    values = {
+        p.findtext("zIndex"): int(p.findtext("iValue") or "0")
+        for p in e.findall("aiAttackValue/Pair")
+    }
+    out: list[str] = []
+    for pair in e.findall("aiAttackPercent/Pair"):
+        a = pair.findtext("zIndex") or ""
+        v = int(pair.findtext("iValue") or "0")
+        if v > 0 and values.get(a, 0) == 0:
+            out.append(attack_label(a))
     return out
 
 
@@ -221,9 +258,11 @@ def main() -> int:
 
         valid_traits, invalid_traits = ([], [])
         effects: list[str] = []
+        requires_attack: list[str] = []
         if effect_entry is not None:
             effects = render_promotion_effect(effect_entry)
             valid_traits, invalid_traits = gather_valid_traits(effect_entry)
+            requires_attack = gather_requires_attack(effect_entry)
 
         tier = derive_tier(zt, effect_id, effect_entry)
         cls = derive_class(zt, effect_entry)
@@ -245,6 +284,7 @@ def main() -> int:
             "effects": effects,
             "validTraits": valid_traits,
             "invalidTraits": invalid_traits,
+            "requiresAttack": requires_attack,
             "priority": (entry.findtext("bPriority") or "0") == "1",
             "gameContent": entry.findtext("GameContentRequired") or "",
         })

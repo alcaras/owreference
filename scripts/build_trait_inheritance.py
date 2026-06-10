@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 """
-Build src/data/trait_inheritance.json from trait.xml.
+Build src/data/trait_inheritance.json from trait.xml + eventStory.xml.
 
-The spreadsheet's "Trait Inheritance" tab compiles a community-sourced table
-of which child traits a parent trait can pass on. That data isn't directly
-modeled as inheritance probabilities in the XML — the actual mechanic is
-the "Mother/Father's Disposition" event family in eventStory.xml, which
-fires once during childhood and grants a related trait.
+Output shape: {"traits": [...], "inheritance": [...]}.
 
-We render what *is* XML-canonical:
+"traits" is the XML-canonical personality matrix:
   • Personality traits (iAdjectiveDie > 0, bStrength or bWeakness set)
   • The trait's polar opposite (aeTraitReplaces — Affable replaces Cruel)
   • The character rating it strengthens/weakens (aePositiveRating / aeNegativeRating)
@@ -16,8 +12,18 @@ We render what *is* XML-canonical:
   • Same-trait opinion (iOpinionSame — characters with the same trait like each other)
   • The traits this one conflicts with (aiTraitOpinion with negative values)
 
-This gives readers the genuine personality matrix the game ships, rather
-than a third-party speculation table.
+"inheritance" restores the legacy sheet's "Inheritance Trait 1/2/3" view,
+but derived from the XML instead of community curation. The real mechanism
+is the EVENTCLASS_TRAIT_INHERITANCE event family in eventStory.xml
+("Like father, like son"): each event requires a non-leader parent with a
+specific trait (SubjectExtras → subject.xml TraitPrereq), triggers on a
+child/teenager in the succession line (EVENTTRIGGER_NEW_TURN_CHARACTER,
+iProb gate), and its single option grants one trait drawn from the bonus's
+aeRandomTrait list — uniformly among the candidates the child can legally
+gain (Character.doRandomTrait in the game source).
+
+Note: the "Mother's/Father's Disposition" study events are a different
+mechanic — they pass on parent *ratings* (±1 Charisma etc.), not traits.
 """
 from __future__ import annotations
 
@@ -82,6 +88,114 @@ def load_gendered_text() -> dict[str, str]:
                 out[zid] = pair.findtext("zValue") or ""
                 break
     return out
+
+
+def load_trait_kinds() -> dict[str, str]:
+    """TRAIT_X → strength | weakness | neutral, for ALL traits (unfiltered).
+
+    Inheritance children include traits outside the personality matrix
+    (Divine, Exotic, Insane, Miserable, Infamous), so the kind map must not
+    use the iAdjectiveDie filter.
+    """
+    kinds: dict[str, str] = {}
+    for e in parse("trait.xml").findall("Entry"):
+        zid = e.findtext("zType") or ""
+        if not zid:
+            continue
+        if (e.findtext("bStrength") or "0") == "1":
+            kinds[zid] = "strength"
+        elif (e.findtext("bWeakness") or "0") == "1":
+            kinds[zid] = "weakness"
+        else:
+            kinds[zid] = "neutral"
+    return kinds
+
+
+def build_inheritance(name_of, kinds: dict[str, str]) -> list[dict]:
+    """Derive parent trait → possible child traits from the
+    EVENTCLASS_TRAIT_INHERITANCE events."""
+    # subject.xml: SUBJECT_X → required trait (TraitPrereq), and age windows
+    subj_trait: dict[str, str] = {}
+    subj_age: dict[str, tuple[str, str, str]] = {}  # id → (label, min, max)
+    for e in parse("subject.xml").findall("Entry"):
+        zid = e.findtext("zType") or ""
+        if not zid:
+            continue
+        t = e.findtext("TraitPrereq") or ""
+        if t.startswith("TRAIT_"):
+            subj_trait[zid] = t
+        mn, mx = e.findtext("iMinAge"), e.findtext("iMaxAge")
+        if mn and mx:
+            label = zid.replace("SUBJECT_", "").replace("_", " ").title()
+            subj_age[zid] = (label, mn, mx)
+
+    # eventOption*.xml: option → bonuses
+    opt_bonuses: dict[str, list[str]] = {}
+    for p in sorted(XML_DIR.glob("eventOption*.xml")):
+        if p.name.startswith("text-"):
+            continue
+        for e in ET.parse(p).getroot().findall("Entry"):
+            zid = e.findtext("zType") or ""
+            if zid:
+                opt_bonuses[zid] = [v.text for v in e.findall("aeBonuses/zValue") if v.text]
+
+    # bonus*.xml: bonus → aeRandomTrait candidate list (XML order = Trait 1/2/3)
+    bonus_random: dict[str, list[str]] = {}
+    for p in sorted(XML_DIR.glob("bonus*.xml")):
+        for e in ET.parse(p).getroot().findall("Entry"):
+            zid = e.findtext("zType") or ""
+            rnd = [v.text for v in e.findall("aeRandomTrait/zValue") if v.text]
+            if zid and rnd:
+                bonus_random[zid] = rnd
+
+    def trait_ref(tid: str) -> dict:
+        return {
+            "id": tid,
+            "kind": kinds.get(tid, "neutral"),
+            "name": name_of(tid),
+            "slug": tid.replace("TRAIT_", "").lower(),
+        }
+
+    rows: list[dict] = []
+    for p in sorted(XML_DIR.glob("eventStory*.xml")):
+        if p.name.startswith("text-"):
+            continue
+        for e in ET.parse(p).getroot().findall("Entry"):
+            if (e.findtext("Class") or "") != "EVENTCLASS_TRAIT_INHERITANCE":
+                continue
+            zid = e.findtext("zType") or ""
+            # Parent trait: the SubjectExtras entry that is a trait-prereq subject
+            parent_traits = []
+            child_age = ""
+            for pair in e.findall("SubjectExtras/Pair"):
+                s = pair.findtext("Second") or ""
+                if s in subj_trait:
+                    parent_traits.append(subj_trait[s])
+                elif s in subj_age:
+                    label, mn, mx = subj_age[s]
+                    child_age = f"{label} ({mn}–{mx})"
+            if len(parent_traits) != 1:
+                print(f"  ! {zid}: expected 1 parent trait, got {parent_traits} — skipped")
+                continue
+            # Child candidates: the single option's bonus aeRandomTrait list
+            children: list[str] = []
+            for opt in e.findall("aeOptions/zValue"):
+                for b in opt_bonuses.get(opt.text or "", []):
+                    children.extend(bonus_random.get(b, []))
+            if not children:
+                print(f"  ! {zid}: no aeRandomTrait outcome — skipped")
+                continue
+            rows.append({
+                "childAge": child_age,
+                "children": [trait_ref(t) for t in children],
+                "eventId": zid,
+                "parent": trait_ref(parent_traits[0]),
+                "prob": int(e.findtext("iProb") or "0"),
+            })
+
+    kind_order = {"strength": 0, "weakness": 1, "neutral": 2}
+    rows.sort(key=lambda r: (kind_order.get(r["parent"]["kind"], 3), r["parent"]["name"]))
+    return rows
 
 
 def main() -> int:
@@ -171,11 +285,15 @@ def main() -> int:
     # Sort: strengths first, then weaknesses; alphabetical within each
     traits.sort(key=lambda t: (0 if t["kind"] == "strength" else 1, t["name"]))
 
+    inheritance = build_inheritance(name_of, load_trait_kinds())
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(traits, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+    payload = {"inheritance": inheritance, "traits": traits}
+    OUT.write_text(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     s_count = sum(1 for t in traits if t["kind"] == "strength")
     w_count = sum(1 for t in traits if t["kind"] == "weakness")
-    print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(traits)} traits ({s_count} strengths, {w_count} weaknesses)")
+    print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(traits)} traits ({s_count} strengths, "
+          f"{w_count} weaknesses), {len(inheritance)} inheritance events")
     return 0
 
 
