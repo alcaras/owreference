@@ -2,7 +2,7 @@
 import '../styles/theme.css';
 import '../styles/nation-tokens.css';
 import patch from '../../data/patch.json';
-import { NAV } from '../data/nav';
+import { TABS, SECTIONS } from '../data/tabs';
 
 interface Props {
   title: string;
@@ -32,9 +32,16 @@ const ogImageUrl = ogImage
   ? new URL(base + ogImage, siteOrigin).href
   : new URL(base + 'img/crests/rome.png', siteOrigin).href;  // sensible fallback crest
 
-// The curated nav set lives in src/data/nav.ts — shared single source of
-// truth so the home-page catalog can't drift from the header nav.
-const nav = NAV;
+// Header nav and the home-page catalog share ONE source of truth: every
+// tabs.ts entry with status 'built', grouped by section. The header renders
+// sections as dropdowns so all pages stay reachable without a link soup.
+const navSections = SECTIONS
+  .map(section => ({
+    section,
+    items: TABS.filter(t => t.section === section && t.status === 'built'),
+  }))
+  .filter(s => s.items.length > 0);
+const activeSection = navSections.find(s => s.items.some(t => t.slug === active))?.section;
 
 const syncedDate = new Date(patch.syncedAt);
 const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -83,14 +90,45 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
             <span class="hdr__title">Reference</span>
           </span>
         </a>
-        <nav class="hdr__nav">
-          {nav.map(n => (
-            <a
-              href={`${base}${n.href}`}
-              class={`hdr__navlink ${(active === n.label.toLowerCase() || active === n.href) ? 'is-active' : ''}`}
-            >{n.label}</a>
+        <nav class="hdr__nav" aria-label="Site sections">
+          {navSections.map(({ section, items }) => (
+            <details class="hdr__menu" data-section={section}>
+              <summary class={`hdr__navlink ${activeSection === section ? 'is-active' : ''}`}>
+                {section}<span class="hdr__caret" aria-hidden="true">▾</span>
+              </summary>
+              <div class="hdr__panel">
+                {items.map(t => (
+                  <a
+                    href={`${base}${t.slug}`}
+                    class={`hdr__panellink ${active === t.slug ? 'is-active' : ''}`}
+                  >
+                    <span class="hdr__panelicon" aria-hidden="true">{t.icon}</span>
+                    {t.label}
+                  </a>
+                ))}
+              </div>
+            </details>
           ))}
         </nav>
+        <script is:inline>
+          // Only one header menu open at a time; close on outside click / Esc.
+          document.addEventListener('click', (e) => {
+            const open = document.querySelectorAll('details.hdr__menu[open]');
+            for (const d of open) {
+              if (!d.contains(e.target)) d.removeAttribute('open');
+            }
+            const hit = e.target.closest?.('details.hdr__menu');
+            if (hit) {
+              for (const d of open) if (d !== hit) d.removeAttribute('open');
+            }
+          });
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              document.querySelectorAll('details.hdr__menu[open]')
+                .forEach(d => d.removeAttribute('open'));
+            }
+          });
+        </script>
         <span class="hdr__spacer" aria-hidden="true"></span>
         <label class="hdr__search">
           <span class="hdr__search-ico" aria-hidden="true">⌕</span>
