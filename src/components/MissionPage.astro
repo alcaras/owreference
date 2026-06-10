@@ -32,6 +32,9 @@ const eventGroups = mission.eventGroups || [];
 <Base title={mission.name} active={active} pageMark={pageMark} pageStats={[
   { label: 'turns', value: instant ? 'instant' : turnsLabel },
   { label: 'outcomes', value: mission.outcomes.length },
+  ...(eventGroups.length > 0
+    ? [{ label: 'event stories', value: eventGroups.reduce((n, g) => n + g.events.length, 0) }]
+    : []),
 ]}>
   <section class="mission-overview">
     {mission.description && (
@@ -73,6 +76,12 @@ const eventGroups = mission.eventGroups || [];
           <strong>{c.value} {c.label}</strong>
         </span>
       ))}
+      {eventGroups.length > 0 && (
+        <a class="chip chip--neutral" href="#events" title="Jump to the event stories this mission can fire">
+          <span class="chip__label">Events</span>
+          <strong>{eventGroups.reduce((n, g) => n + g.events.length, 0)} stories ↓</strong>
+        </a>
+      )}
     </div>
 
     {(mission.variantNotes || []).length > 0 && (
@@ -234,7 +243,7 @@ const eventGroups = mission.eventGroups || [];
   )}
 
   {eventGroups.length > 0 && (
-    <section class="events">
+    <section class="events" id="events">
       <h2 class="outcomes__title">Events</h2>
       <p class="evt-caveat">⚠ <b>Story weights are not in-game odds.</b> Each story is gated by character/empire
       conditions (some hidden), so real frequency is filtered in ways the XML can't predict. The weight is the raw
