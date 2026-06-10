@@ -2,10 +2,26 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import units from '../data/units.json';
+import { attackDamage, damageTone } from '../lib/combat';
 
 const base = import.meta.env.BASE_URL;
 
 type Unit = typeof units[number];
+
+// ── Full damage matrix (the spreadsheet's heatmap): row attacks column ──
+// Same baseline as the legacy sheet: full HP, open terrain, no promotions /
+// terrain / flanking; both sides' anti-trait modifiers applied.
+const matrixUnits = (units as Unit[])
+  .filter(u => u.isCombat && !u.isWater && u.primaryLabel !== 'Disciple')
+  .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name));
+
+const damageRows = matrixUnits.map(att => ({
+  att,
+  cells: matrixUnits.map(def => {
+    const d = attackDamage(att, def);
+    return { def, d, tone: damageTone(d) };
+  }),
+}));
 
 const combatUnits = (units as Unit[]).filter(u => u.isCombat);
 const nonCombat = (units as Unit[]).filter(u => !u.isCombat);
@@ -50,6 +66,54 @@ function yieldClass(y: string): string {
     { label: 'all units',    value: units.length },
   ]}
 >
+  <p class="lede">
+    <b>Row units attack column units and deal the damage in the cell</b> — the
+    game's own formula (<code>6 × ATK / DEF</code>, rounded in the stronger
+    unit's favor) with both sides' anti-trait modifiers. Baseline conditions:
+    full HP, open terrain, no promotions, terrain, flanking, or general
+    bonuses. <a href={`${base}combat-damage`}>How the formula works →</a>
+  </p>
+
+  <div class="dmx-wrap">
+    <table class="dmx">
+      <thead>
+        <tr>
+          <th class="dmx__corner">
+            <span class="dmx__corner-small">Defender →</span>
+            <span class="dmx__corner-big">Attacker ↓</span>
+          </th>
+          {matrixUnits.map(def => (
+            <th class="dmx__col" scope="col">
+              <a href={`#${def.slug}`} title={`${def.name} — STR ${def.strength / 10}`}>
+                <img class="dmx__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt={def.name} loading="lazy" />
+              </a>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {damageRows.map(({ att, cells }) => (
+          <tr>
+            <th class="dmx__row" scope="row">
+              <a href={`#${att.slug}`} class="dmx__rowlink">
+                <img class="dmx__icon" src={`${base}img/icons/units/${att.iconSlug}.png`} alt="" loading="lazy" />
+                <span class="dmx__rowname">{att.name}</span>
+                <span class="dmx__rowstr">{att.strength / 10}</span>
+              </a>
+            </th>
+            {cells.map(({ def, d, tone }) => (
+              <td
+                class="dmx__cell"
+                style={`background:${tone}`}
+                title={`${att.name} → ${def.name}: ${d} damage`}
+              >{d}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
   <div id="unit-grid">
     {orderedGroups.map(([cls, arr]) => (
       <section class="unit-class" data-class={cls}>
@@ -187,6 +251,86 @@ function yieldClass(y: string): string {
 </Base>
 
 <style>
+  .lede {
+    color: var(--text-dim);
+    max-width: 70ch;
+    margin: 0 0 1rem;
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+  .lede code {
+    background: var(--bg-elev);
+    padding: 0.05rem 0.35rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+  .lede a { color: var(--accent); }
+
+  /* ── Damage heatmap matrix ── */
+  .dmx-wrap {
+    overflow: auto;
+    max-height: 80vh;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    margin: 0 0 1.6rem;
+  }
+  .dmx { border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+  .dmx__corner {
+    position: sticky; top: 0; left: 0; z-index: 3;
+    background: var(--bg-elev);
+    padding: 0.3rem 0.5rem;
+    border-bottom: 1px solid var(--border-strong);
+    border-right: 1px solid var(--border-strong);
+    text-align: right;
+    min-width: 11rem;
+  }
+  .dmx__corner-small, .dmx__corner-big {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+  }
+  .dmx__col {
+    position: sticky; top: 0; z-index: 2;
+    background: var(--bg-elev);
+    border-bottom: 1px solid var(--border-strong);
+    padding: 0.25rem 0.15rem;
+  }
+  .dmx__row {
+    position: sticky; left: 0; z-index: 1;
+    background: var(--bg-elev);
+    border-right: 1px solid var(--border-strong);
+    padding: 0;
+    text-align: left;
+    font-weight: 500;
+  }
+  .dmx__rowlink {
+    display: flex; align-items: center; gap: 0.35rem;
+    padding: 0.16rem 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .dmx__rowlink:hover { color: var(--text); text-decoration: none; }
+  .dmx__rowname { flex: 1; }
+  .dmx__rowstr {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-faint);
+  }
+  .dmx__icon { width: 1.15rem; height: 1.15rem; object-fit: contain; }
+  .dmx__cell {
+    min-width: 1.7rem;
+    text-align: center;
+    padding: 0.14rem 0.2rem;
+    font-size: 0.7rem;
+    color: var(--text);
+    cursor: default;
+  }
+  .dmx__cell:hover { outline: 1px solid var(--gold); outline-offset: -1px; }
+
   .unit-class { margin: 1.4rem 0; }
   .unit-class__title {
     display: flex;

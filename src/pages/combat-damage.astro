@@ -1,7 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
+import { rawDamage, damageTone } from '../lib/combat';
 
 const base = import.meta.env.BASE_URL;
+
+// ATK × DEF damage lookup (display strengths; internal values are ×10).
+const STR_AXIS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+const lookup = STR_AXIS.map(a => ({
+  a,
+  cells: STR_AXIS.map(d => {
+    const dmg = rawDamage(a * 10, d * 10);
+    return { d, dmg, tone: damageTone(dmg) };
+  }),
+}));
 ---
 
 <Base
@@ -13,124 +24,108 @@ const base = import.meta.env.BASE_URL;
   ]}
 >
   <p class="lede">
-    Old World resolves a combat by comparing each side's effective strength,
-    then dealing damage proportional to the ratio. The expressions below are
-    the standard formulation used by the legacy reference spreadsheet, with
-    every constant cross-checked against the game's <code>globalsInt.xml</code>.
-    Where modifiers compound, the order matters — they apply multiplicatively
-    in the order listed.
+    How an attack's damage is computed, straight from the game code
+    (<code>InfoHelpers.getAttackDamage</code>, <code>Unit.attackUnitStrength</code> /
+    <code>defendUnitStrength</code>) with every constant from
+    <code>globalsInt.xml</code>. The full per-unit results are on
+    <a href={`${base}unit-damage`}>Unit Damage &amp; Counters</a>.
   </p>
 
   <section class="cd-section">
-    <h2 class="cd-h">The core idea</h2>
-    <p>
-      Each unit has a base <strong>Strength</strong> (e.g., Hoplite 5,
-      Horseman 5, Catapult 4) and <strong>HP</strong> (typically 20). The
-      attacker and defender each compute an <em>effective strength</em> for
-      this specific clash, and damage is dealt in proportion to that ratio.
-      Both sides take damage; the attacker just takes less when winning the
-      ratio.
-    </p>
-
+    <h2 class="cd-h">The formula</h2>
     <div class="cd-formula">
       <div class="cd-line">
-        <span class="cd-eq">DamageToDefender = HP_attacker × ( StrAtt / StrDef ) / 2</span>
-      </div>
-      <div class="cd-line">
-        <span class="cd-eq">DamageToAttacker = HP_defender × ( StrDef / StrAtt ) / 2</span>
+        <span class="cd-eq">Damage = 6 × ATK / DEF&nbsp;&nbsp;— rounded in the stronger unit's favor, minimum 1</span>
       </div>
       <p class="cd-note">
-        With <code>StrAtt</code> and <code>StrDef</code> the effective strengths
-        after modifiers, and <code>HP</code> the unit's max HP.
+        <code>ATK</code> = attacker's strength after all modifiers;
+        <code>DEF</code> = defender's. When ATK &gt; DEF the result rounds
+        <em>up</em>; otherwise it rounds down. An even fight deals exactly
+        <b>6</b> — three attacks to kill a 20 HP unit. The in-game UI shows
+        strength to one decimal, but the unrounded value is what's used.
+      </p>
+    </div>
+
+    <div class="cd-table cd-table--lookup">
+      <table>
+        <thead>
+          <tr>
+            <th class="cd-corner"><span>DEF →</span><span>ATK ↓</span></th>
+            {STR_AXIS.map(d => <th>{d}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {lookup.map(row => (
+            <tr>
+              <th>{row.a}</th>
+              {row.cells.map(c => (
+                <td style={`background:${c.tone}`} title={`ATK ${row.a} vs DEF ${c.d}: ${c.dmg} damage`}>{c.dmg}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="cd-note">
+        Effective strengths land between these integers all the time — a
+        Hoplite attacking a Horseman in melee is ATK 9 (6 × 1.5 anti-mounted)
+        vs DEF 6 → <b>9 damage</b>.
       </p>
     </div>
   </section>
 
   <section class="cd-section">
     <h2 class="cd-h">Effective strength</h2>
-    <p>
-      Effective strength stacks every modifier that applies to <em>this</em>
-      attack — terrain, fortification, promotions, anti-trait bonuses,
-      flanking, and remaining HP penalty.
-    </p>
-
     <div class="cd-formula">
       <div class="cd-line">
-        <span class="cd-eq">
-          StrEff = BaseStr × (1 + Σ Modifiers) × (HP_current / HP_max)
-        </span>
+        <span class="cd-eq">Strength = Base × (100 + Σ modifiers) / 100</span>
       </div>
     </div>
-
-    <h3 class="cd-h3">Common modifiers</h3>
+    <p>
+      Modifiers are additive percentages, gathered separately for the
+      attacking and defending side (all values from the game's XML / source):
+    </p>
     <ul class="cd-list">
-      <li><strong>Promotions:</strong> Combat I/II/III give +5 / +10 / +15% strength. Strike I/II/III give +10/+15/+20% attack only. Guard I/II/III give +10/+15/+20% defense only.</li>
-      <li><strong>Anti-trait:</strong> Spearman has <em>Anti-Mounted II</em> = +50% strength vs Mounted in melee. Axeman has <em>Anti-Polearm</em> = +25% strength vs Polearm.</li>
-      <li><strong>Hill:</strong> +25% defense when fighting from a Hill (unless attacker has <em>Highlander</em>).</li>
-      <li><strong>Vegetation:</strong> +25% defense in Trees or Jungle (negated by <em>Ranger</em>).</li>
-      <li><strong>Fortify:</strong> +25% defense when fortified for 1+ turn, capped at +50%.</li>
-      <li><strong>Flanking:</strong> +10% attack per additional friendly unit adjacent to the defender (caps at 3 flankers = +30%).</li>
-      <li><strong>Damaged units:</strong> a unit at half HP fights at half its current strength — the (HP_current / HP_max) factor at the end of the formula.</li>
+      <li><strong>Anti-trait bonuses</strong> — the unit's own effects vs the opponent's traits: e.g. Pikeman +100% vs Mounted (melee), Crossbowman +50% vs Melee, Ballista +100% <em>attacking</em> Infantry. These are the counters on the <a href={`${base}unit-counters`}>Unit Counters</a> page.</li>
+      <li><strong>Promotions &amp; general ratings</strong> — each promotion's strength/attack/defense percentages (see <a href={`${base}promotions`}>Promotions</a>); a general adds rating-driven bonuses.</li>
+      <li><strong>Terrain &amp; position</strong> — melee attacking across a river −50%; land↔water attacks −50%; per-unit urban/vegetation attack &amp; defense modifiers; fighting in own family territory +10%.</li>
+      <li><strong>State</strong> — siege that moved this turn (unlimbered) defends at −25%; attacking from hiding +10%; some units gain bonuses vs damaged or general-led targets.</li>
     </ul>
+    <p class="cd-note">
+      Current HP does <em>not</em> scale strength — a 1 HP Pikeman hits as
+      hard as a fresh one (some attackers carry an explicit vs-damaged bonus
+      instead).
+    </p>
   </section>
 
   <section class="cd-section">
     <h2 class="cd-h">Worked example: Hoplite attacks Horseman</h2>
-    <p>
-      Both sides at full HP. Hoplite is Polearm with <em>Anti-Mounted II</em>
-      = +50% vs Mounted. Horseman is on open terrain with no other modifiers.
-    </p>
     <div class="cd-table">
       <table>
         <tbody>
-          <tr><td>Hoplite base strength</td><td>50 (display: 5)</td></tr>
-          <tr><td>+ Anti-Mounted II</td><td>×1.50</td></tr>
-          <tr><td>Hoplite effective strength</td><td><strong>75</strong></td></tr>
-          <tr><td>Horseman base strength</td><td>50 (display: 5)</td></tr>
-          <tr><td>(no defensive modifiers)</td><td>×1.00</td></tr>
-          <tr><td>Horseman effective strength</td><td><strong>50</strong></td></tr>
+          <tr><td>Hoplite base strength</td><td>6</td></tr>
+          <tr><td>+ Anti-Mounted II (melee, vs Mounted)</td><td>+50%</td></tr>
+          <tr><td>Hoplite effective attack</td><td><strong>9</strong></td></tr>
+          <tr><td>Horseman defense (no modifiers)</td><td><strong>6</strong></td></tr>
+          <tr><td>Damage: 6 × 9 / 6, rounded up</td><td><strong>9 HP</strong></td></tr>
         </tbody>
       </table>
     </div>
-    <div class="cd-formula">
-      <div class="cd-line">
-        <span class="cd-eq">DamageToHorseman = 20 × (75 / 50) / 2 = <strong>15 HP</strong></span>
-      </div>
-      <div class="cd-line">
-        <span class="cd-eq">DamageToHoplite  = 20 × (50 / 75) / 2 ≈ <strong>6.7 HP</strong></span>
-      </div>
-    </div>
     <p class="cd-note">
-      So the Horseman drops to 5 HP (close to rout) while the Hoplite ends
-      around 13 HP. A second clash kills the Horseman before he can land
-      meaningful damage — which is why "spear beats horse" is such a hard rule.
+      The Horseman drops from 20 to 11 HP. Reversed, the Horseman attacking
+      the Hoplite is 6 vs 9 (the anti-mounted bonus also defends in melee):
+      6 × 6 / 9 = <b>4 damage</b> — which is why "spear beats horse" is such
+      a hard rule.
     </p>
   </section>
 
   <section class="cd-section">
-    <h2 class="cd-h">Worked example: Archer (ranged) at full range</h2>
-    <p>
-      Ranged units fight without taking return damage, but their <em>effective
-      strength</em> drops at maximum range. The formula is the same; only the
-      attacker side fires.
-    </p>
-    <div class="cd-table">
-      <table>
-        <tbody>
-          <tr><td>Archer base strength</td><td>40</td></tr>
-          <tr><td>Max range fire (no melee return)</td><td>×1.00</td></tr>
-          <tr><td>Target: Spearman strength</td><td>50</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="cd-formula">
-      <div class="cd-line">
-        <span class="cd-eq">DamageToSpearman = 20 × (40 / 50) / 2 = <strong>8 HP</strong></span>
-      </div>
-      <div class="cd-line">
-        <span class="cd-eq">DamageToArcher = <strong>0</strong> (out of melee range)</span>
-      </div>
-    </div>
+    <h2 class="cd-h">Striking back</h2>
+    <ul class="cd-list">
+      <li><strong>Ranged attacks</strong> draw no return damage at all.</li>
+      <li><strong>Melee defenders</strong> deal a flat <b>1</b> counter damage per attack (not proportional) — plus 1 more against routed attackers.</li>
+      <li><strong>Tactician generals</strong> upgrade that to a full counterattack: 100% of the unit's own attack damage.</li>
+      <li><strong>Cities</strong> defend at <code>8 + 0.5 × citizens</code> (<code>CITY_STRENGTH_BASE/PER</code>) and units capture at 50% HP.</li>
+    </ul>
   </section>
 
   <section class="cd-section">
@@ -287,6 +282,19 @@ const base = import.meta.env.BASE_URL;
       margin: 0.5rem 0 0.9rem;
       overflow-x: auto;
     }
+    .cd-table--lookup table { width: auto; border-collapse: separate; border-spacing: 0; }
+    .cd-table--lookup th, .cd-table--lookup td {
+      text-align: center;
+      padding: 0.22rem 0.5rem;
+      border-bottom: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .cd-table--lookup thead th { border-bottom: 1px solid var(--border-strong); }
+    .cd-table--lookup tbody th { border-right: 1px solid var(--border-strong); color: var(--text-dim); }
+    .cd-table--lookup td { color: var(--text); font-size: 0.78rem; cursor: default; }
+    .cd-table--lookup td:hover { outline: 1px solid var(--gold); outline-offset: -1px; }
+    .cd-corner { text-align: right !important; }
+    .cd-corner span { display: block; font-size: 0.58rem; }
     .cd-table table {
       width: 100%;
       border-collapse: collapse;

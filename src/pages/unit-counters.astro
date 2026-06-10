@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import units from '../data/units.json';
+import { counterBonus, attackDamage } from '../lib/combat';
 
 const base = import.meta.env.BASE_URL;
 
@@ -52,34 +53,8 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 }));
 
 // ── Per-unit counter list (the spreadsheet's "If you're facing…" view) ──
-// Damage is the game's own InfoHelpers.getAttackDamage with BASE_DAMAGE=6
-// (globalsInt.xml) and BOTH sides' anti-trait modifiers applied:
-//   eff = strength × (1 + Σ applicable counter bonuses)
-//   damage = 6 × effAtt / effDef   (round up when effAtt > effDef, min 1)
-// 'melee vs' bonuses apply only in melee: for the attacker when it is a
-// melee unit; for the defender when the attacker is.
-const BASE_DAMAGE = 6;
-
-function counterBonus(u: Unit, otherTraits: string[], attacking: boolean, attackerIsMelee: boolean): number {
-  let b = 0;
-  for (const c of u.counters) {
-    if (!otherTraits.includes(c.target)) continue;
-    if (c.kind === 'vs') b += c.value;
-    else if (c.kind === 'melee vs' && (attacking ? u.isMelee : attackerIsMelee)) b += c.value;
-    else if (c.kind === 'attack vs' && attacking) b += c.value;
-  }
-  return b;
-}
-
-function attackDamage(att: Unit, def: Unit): number {
-  const effA = Math.floor(att.strength * (100 + counterBonus(att, def.traits, true, att.isMelee)) / 100);
-  const effD = Math.floor(def.strength * (100 + counterBonus(def, att.traits, false, att.isMelee)) / 100);
-  if (effA <= 0 || effD <= 0) return 0;
-  let d = BASE_DAMAGE * effA;
-  if (effA > effD) d += effD - 1;
-  return Math.max(1, Math.floor(d / effD));
-}
-
+// Damage math lives in src/lib/combat.ts — the game's own
+// InfoHelpers.getAttackDamage with both sides' anti-trait modifiers.
 const landCombat = (units as Unit[]).filter(u => u.isCombat && !u.isWater && u.primaryLabel !== 'Disciple');
 
 interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null }
