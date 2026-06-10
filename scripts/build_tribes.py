@@ -88,29 +88,39 @@ def _icon_from(zicon: str | None, unit_id: str) -> str:
 def build_rosters(text_unit: dict, text_effect: dict) -> dict[str, list[dict]]:
     """{ TRIBE_X: [ {id,name,icon,strength,branch,special,promoId,promoName}, ... ] }.
 
-    A unit belongs to tribe X iff unit.xml lists X under
-    azBarbarianPortraitName/Pair/zIndex. Game-data quirk: the Hunnic
-    Cavalry pair (and its art) is tagged TRIBE_SCYTHIANS even though the
-    unit is the Huns' signature line — re-home it to TRIBE_HUNS (mirrors
-    the YEUZHI-typo class of upstream quirks; we paper over, never fix
-    the user's Steam install)."""
+    A unit belongs to tribe X iff it appears in an aeTribeUpgradeUnit
+    chain keyed by X — either carrying the pair itself or being a pair's
+    upgrade target. That field is what the game's own tribal-upgrade code
+    consumes (Unit.cs maeTribeUpgradeUnit). Do NOT use
+    azBarbarianPortraitName: that's an art table — Huns reuse Scythian
+    Marauder art so the portrait pairs omit TRIBE_HUNS entirely, which
+    silently dropped the Huns' whole melee line."""
     unit_root = ET.parse(XML_DIR / "unit.xml").getroot()
 
-    # Pass 1: collect every tribe-tagged unit with its raw attrs.
+    # Pass 0: tribe membership from the upgrade chains — a pair
+    # (tribe → target) marks BOTH this unit and the target as that
+    # tribe's (chain terminals like Warlord 2 carry no pairs of their own).
+    membership: dict[str, set[str]] = {}
+    for entry in unit_root.findall("Entry"):
+        zt = entry.findtext("zType") or ""
+        for p in entry.findall("aeTribeUpgradeUnit/Pair"):
+            tribe = p.findtext("zIndex") or ""
+            target = p.findtext("zValue") or ""
+            if not tribe.startswith("TRIBE_"):
+                continue
+            membership.setdefault(zt, set()).add(tribe)
+            if target:
+                membership.setdefault(target, set()).add(tribe)
+
+    # Pass 1: collect every tribe-member unit with its raw attrs.
     raw: list[dict] = []
     for entry in unit_root.findall("Entry"):
         zt = entry.findtext("zType") or ""
         if not zt:
             continue
-        tribes = {
-            p.findtext("zIndex")
-            for p in entry.findall("azBarbarianPortraitName/Pair")
-            if (p.findtext("zIndex") or "").startswith("TRIBE_")
-        }
+        tribes = membership.get(zt, set())
         if not tribes:
             continue
-        if "HUNNIC_CAVALRY" in zt:
-            tribes = {"TRIBE_HUNS"}
         strength = int(entry.findtext("iStrength") or "0") // 10
         utr = _unit_traits(entry)
         branch = "Ranged" if "RANGED" in utr else "Melee"
