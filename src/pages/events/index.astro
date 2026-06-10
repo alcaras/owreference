@@ -1,0 +1,230 @@
+---
+// Story Events browser — index of every narrative event in the game's XML,
+// grouped by the game's own taxonomy: EVENTCLASS_* pools (eventClass.xml),
+// EVENTTRIGGER_* moments (eventTrigger.xml), and two special buckets for
+// class-less/trigger-less stories. The four event families that already have
+// dedicated pages (ruins, expeditions, harvest, study) are linked, not
+// duplicated. Search fetches a lightweight index (events/search-index.json)
+// lazily on first keystroke — static-site friendly.
+import Base from '../../layouts/Base.astro';
+import catalog from '../../data/story-events/index.json';
+
+const base = import.meta.env.BASE_URL;
+const meta = catalog._meta;
+const cats = catalog.categories as any[];
+
+const classCats = cats.filter(c => c.kind === 'class');
+const triggerCats = cats.filter(c => c.kind === 'trigger');
+const specialCats = cats.filter(c => c.kind === 'special');
+
+const DEDICATED = [
+  { href: 'ruin-events', mark: '🏚️', label: 'Ruin Events', count: meta.excludedCovered['ruin-events'],
+    blurb: 'Exploring a Ruins tile (incl. chain follow-ups)' },
+  { href: 'expedition-events', mark: '🧭', label: 'Expedition Events', count: meta.excludedCovered['expedition-events'],
+    blurb: 'The "send a character exploring distant lands" chains' },
+  { href: 'harvest-events', mark: '🌾', label: 'Harvest Events', count: meta.excludedCovered['harvest-events'],
+    blurb: 'Harvesting a resource, grouped by resource' },
+  { href: 'study-events', mark: '🎓', label: 'Study Events', count: meta.excludedCovered['study-events'],
+    blurb: 'Royal education — also as the per-course Tutor Events view' },
+];
+
+function catHref(c: any): string {
+  return `${base}events/${c.parts[0].slug}`;
+}
+function schedHint(c: any): string | null {
+  const s = c.schedule;
+  if (!s) return null;
+  const bits: string[] = [];
+  if (s.levelProb) bits.push(`${s.levelProb}%/turn`);
+  if (s.playerProb) bits.push(`${s.playerProb}%/turn`);
+  if (s.characterProb) bits.push(`${s.characterProb}%/char`);
+  if (s.minTurns) bits.push(`turn ${s.minTurns}+`);
+  if (s.minRepeat) bits.push(`every ${s.minRepeat}+`);
+  return bits.length ? bits.join(' · ') : null;
+}
+---
+
+<Base title="Story Events" active="events" pageMark="📜" pageStats={[
+  { label: 'events', value: meta.included },
+  { label: 'categories', value: cats.length },
+  { label: 'on dedicated pages', value: meta.excludedCovered.total },
+]}>
+  <p class="lede">
+    Every narrative event story in the game's XML ({meta.totalStories} across the base game and
+    DLC), browsable by the game's own taxonomy: the <strong>event class</strong> pools that roll
+    each turn (eventClass.xml) and the <strong>triggers</strong> that fire the rest
+    (eventTrigger.xml). Each category page shows the full card — flavor text, gating conditions,
+    every option with requirements, raw XML payloads, and chain links.
+    {meta.excludedCovered.total} stories already covered by the dedicated pages below are linked
+    there instead of duplicated here.
+  </p>
+
+  <div class="ev-search">
+    <input type="search" id="ev-q" class="ev-search__input"
+           placeholder="Search all story events by name or text…" autocomplete="off"
+           aria-label="Search story events" />
+    <p class="ev-search__note" id="ev-q-note" hidden></p>
+    <ol class="ev-search__results" id="ev-q-results" hidden></ol>
+  </div>
+
+  <h2 class="sec">Dedicated pages</h2>
+  <div class="grid">
+    {DEDICATED.map(d => (
+      <a class="card card--dedicated" href={`${base}${d.href}`}>
+        <span class="card__mark">{d.mark}</span>
+        <span class="card__body">
+          <span class="card__label">{d.label}</span>
+          <span class="card__blurb">{d.blurb}</span>
+        </span>
+        <span class="card__count">{d.count}</span>
+      </a>
+    ))}
+  </div>
+
+  <h2 class="sec">Event classes <small>pools that roll each turn — {classCats.length} classes</small></h2>
+  <div class="grid">
+    {classCats.map(c => (
+      <a class="card" href={catHref(c)}>
+        <span class="card__body">
+          <span class="card__label">{c.label}</span>
+          {schedHint(c) && <span class="card__blurb card__blurb--mono">{schedHint(c)}</span>}
+        </span>
+        <span class="card__count">{c.count}</span>
+      </a>
+    ))}
+  </div>
+
+  <h2 class="sec">Triggered events <small>fire on a game moment — {triggerCats.length} triggers</small></h2>
+  <div class="grid grid--dense">
+    {triggerCats.map(c => (
+      <a class="card" href={catHref(c)}>
+        <span class="card__body">
+          <span class="card__label">{c.label}</span>
+          {c.parts.length > 1 && <span class="card__blurb">{c.parts.length} pages</span>}
+        </span>
+        <span class="card__count">{c.count}</span>
+      </a>
+    ))}
+  </div>
+
+  <h2 class="sec">Special</h2>
+  <div class="grid">
+    {specialCats.map(c => (
+      <a class="card" href={catHref(c)}>
+        <span class="card__body">
+          <span class="card__label">{c.label}</span>
+          <span class="card__blurb">{c.blurb}</span>
+        </span>
+        <span class="card__count">{c.count}</span>
+      </a>
+    ))}
+  </div>
+
+  <script is:inline define:vars={{ base }}>
+    (function () {
+      const input = document.getElementById('ev-q');
+      const note = document.getElementById('ev-q-note');
+      const list = document.getElementById('ev-q-results');
+      let index = null, loading = null;
+
+      function loadIndex() {
+        if (!loading) {
+          loading = fetch(base + 'events/search-index.json')
+            .then(r => r.json())
+            .then(d => { index = d; })
+            .catch(() => { note.hidden = false; note.textContent = 'Search index failed to load.'; });
+        }
+        return loading;
+      }
+
+      function esc(s) {
+        return s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+      }
+
+      function render(q) {
+        const needle = q.trim().toLowerCase();
+        if (needle.length < 2) { note.hidden = true; list.hidden = true; list.innerHTML = ''; return; }
+        if (!index) { note.hidden = false; note.textContent = 'Loading search index…'; return; }
+        const hits = [];
+        for (const e of index) {
+          const inName = e.n.toLowerCase().includes(needle);
+          const inText = !inName && e.t && e.t.toLowerCase().includes(needle);
+          if (inName || inText) {
+            hits.push({ e, rank: inName ? 0 : 1 });
+            if (hits.length >= 400) break;
+          }
+        }
+        hits.sort((a, b) => a.rank - b.rank);
+        const top = hits.slice(0, 50);
+        note.hidden = false;
+        note.textContent = hits.length === 0
+          ? 'No events match “' + q + '”.'
+          : (hits.length >= 400 ? '400+' : hits.length) + ' match' + (hits.length === 1 ? '' : 'es') +
+            (hits.length > top.length ? ' — showing first ' + top.length : '') + '.';
+        list.hidden = top.length === 0;
+        list.innerHTML = top.map(({ e }) =>
+          '<li><a href="' + base + 'events/' + e.s + '#' + encodeURIComponent(e.i) + '">' +
+          '<b>' + esc(e.n) + '</b> <span class="ev-search__cat">' + esc(e.g) + '</span>' +
+          (e.t ? '<span class="ev-search__snippet">' + esc(e.t) + '…</span>' : '') +
+          '</a></li>').join('');
+      }
+
+      input.addEventListener('input', () => {
+        const q = input.value;
+        loadIndex().then(() => render(input.value));
+        render(q);
+      });
+    })();
+  </script>
+
+  <style>
+    .lede { color: var(--text-dim); font-size: 0.92rem; line-height: 1.55; max-width: 84ch; margin: 0 0 1.1rem; }
+
+    .ev-search { margin: 0 0 1.4rem; max-width: 64ch; }
+    .ev-search__input {
+      width: 100%; box-sizing: border-box;
+      background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+      color: var(--text); padding: 0.6rem 0.9rem; font-size: 0.92rem; font-family: var(--font-body);
+    }
+    .ev-search__input:focus { outline: none; border-color: var(--accent); }
+    .ev-search__note { font-size: 0.8rem; color: var(--text-faint); margin: 0.4rem 0 0; font-style: italic; }
+    .ev-search__results {
+      list-style: none; margin: 0.5rem 0 0; padding: 0;
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      background: var(--bg-elev); max-height: 24rem; overflow-y: auto;
+    }
+    .ev-search__results li + li { border-top: 1px solid var(--border); }
+    .ev-search__results a { display: block; padding: 0.45rem 0.7rem; text-decoration: none; color: var(--text); font-size: 0.85rem; }
+    .ev-search__results a:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+    .ev-search__results b { font-family: var(--font-display); font-weight: 600; }
+    .ev-search__cat {
+      font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 5px;
+      padding: 0.02rem 0.36rem; margin-left: 0.45rem; vertical-align: middle;
+    }
+    .ev-search__snippet { display: block; color: var(--text-faint); font-size: 0.76rem; font-style: italic; margin-top: 0.15rem; }
+
+    .sec { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 1.6rem 0 0.6rem; }
+    .sec small { font-family: var(--font-body); font-size: 0.78rem; color: var(--text-faint); font-weight: 400; margin-left: 0.5rem; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.45rem; }
+    .grid--dense { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+    .card {
+      display: flex; align-items: center; gap: 0.55rem;
+      border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-elev);
+      padding: 0.5rem 0.7rem; text-decoration: none; color: var(--text);
+    }
+    .card:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--bg-elev)); }
+    .card--dedicated { border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+    .card__mark { font-size: 1.1rem; }
+    .card__body { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+    .card__label { font-family: var(--font-display); font-weight: 600; font-size: 0.88rem; }
+    .card__blurb { font-size: 0.72rem; color: var(--text-faint); line-height: 1.35; }
+    .card__blurb--mono { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.02em; }
+    .card__count {
+      margin-left: auto; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600;
+      color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+      border-radius: 5px; padding: 0.08rem 0.42rem; flex-shrink: 0;
+    }
+  </style>
+</Base>

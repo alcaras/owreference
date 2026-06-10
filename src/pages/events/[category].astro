@@ -1,62 +1,107 @@
 ---
-// Renders ONE exploration-event group (Ruins or Expeditions) from
-// src/data/events.json. The combined view was split into two tabs; both share
-// this component. Pass the group `sectionKey` plus page chrome; the lede is a
-// default slot so each page supplies its own intro copy.
-import Base from '../layouts/Base.astro';
-import LinkedText from '../components/LinkedText.astro';
-import RewardChip from '../components/RewardChip.astro';
-import ScaleHelp from '../components/ScaleHelp.astro';
-import OptionRaw from '../components/OptionRaw.astro';
-import { classifyYield } from '../lib/entities';
-import sections from '../data/events.json';
+// One category of the Story Events browser (a class, a trigger, or a special
+// bucket), rendered from src/data/story-events/parts/<slug>.json. Card layout
+// mirrors EventGroupPage.astro (ruin/expedition events) so the whole event
+// family looks the same; this is a separate page only because the data source
+// and chrome (part navigation, category metadata) differ.
+import Base from '../../layouts/Base.astro';
+import LinkedText from '../../components/LinkedText.astro';
+import RewardChip from '../../components/RewardChip.astro';
+import ScaleHelp from '../../components/ScaleHelp.astro';
+import OptionRaw from '../../components/OptionRaw.astro';
+import { classifyYield } from '../../lib/entities';
 
-interface Props {
-  sectionKey: string;
-  title: string;
-  active: string;
-  pageMark: string;
+export async function getStaticPaths() {
+  const idx = (await import('../../data/story-events/index.json')).default;
+  const mods = import.meta.glob('../../data/story-events/parts/*.json', { eager: true });
+  const paths: any[] = [];
+  for (const cat of idx.categories) {
+    for (const part of cat.parts) {
+      const mod: any = mods[`../../data/story-events/parts/${part.slug}.json`];
+      if (!mod) continue;
+      paths.push({
+        params: { category: part.slug },
+        props: { cat, part, events: mod.default.events },
+      });
+    }
+  }
+  return paths;
 }
-const { sectionKey, title, active, pageMark } = Astro.props as Props;
 
-const sec = sections.find(s => s.key === sectionKey)!;
-type EventStory = (typeof sec)['events'][number];
+const { cat, part, events } = Astro.props as any;
+const base = import.meta.env.BASE_URL;
+
+const KIND_LABEL: Record<string, string> = {
+  class: 'Event class', trigger: 'Trigger', special: 'Special',
+};
 
 function pct(p: number): string {
   return (p * 100).toFixed(0) + '%';
 }
-
 function rewardYield(r: any): string | null {
   return (r.yield || classifyYield(r.text || '') || null) as string | null;
 }
-function cardYield(ev: EventStory): string {
-  for (const g of ev.guaranteed) { const y = rewardYield(g); if (y) return y.toLowerCase(); }
-  for (const o of ev.options)
-    for (const oc of o.outcomes)
-      for (const r of oc.rewards) { const y = rewardYield(r); if (y) return y.toLowerCase(); }
+function cardYield(ev: any): string {
+  for (const g of ev.guaranteed || []) { const y = rewardYield(g); if (y) return y.toLowerCase(); }
+  for (const o of ev.options || [])
+    for (const oc of o.outcomes || [])
+      for (const r of oc.rewards || []) { const y = rewardYield(r); if (y) return y.toLowerCase(); }
   return 'misc';
 }
-
-function searchBlob(ev: EventStory): string {
+function searchBlob(ev: any): string {
   return [
-    ev.name, ev.text, ev.trigger, ev.dlc, ...ev.conditions, ...ev.guaranteed.map((g: any) => g.text),
-    ...ev.options.flatMap(o => [
-      o.text, ...o.requirements.map((r: any) => r.label),
-      ...o.outcomes.flatMap(oc => oc.rewards.map((r: any) => r.text)),
-      ...((o as any).leadsTo || []).map((t: any) => t.name),
+    ev.name, ev.text, ev.trigger, ev.triggerData, ev.dlc, ev.pack, ev.author,
+    ...(ev.subjects || []), ...(ev.conditions || []),
+    ...(ev.guaranteed || []).map((g: any) => g.text),
+    ...(ev.options || []).flatMap((o: any) => [
+      o.text, ...(o.requirements || []).map((r: any) => r.label),
+      ...(o.outcomes || []).flatMap((oc: any) => (oc.rewards || []).map((r: any) => r.text)),
+      ...(o.leadsTo || []).map((t: any) => t.name),
     ]),
-    ...((ev as any).followsFrom || []).map((f: any) => f.name),
+    ...(ev.followsFrom || []).map((f: any) => f.name),
   ].filter(Boolean).join(' ').toLowerCase();
 }
+function evHref(t: any): string {
+  return t.ext ? `${base}${t.ext}#${t.anchor || t.id}` : `${base}events/${t.cat}#${t.id}`;
+}
 
-const followups = sec.events.filter(e => e.isFollowup).length;
+const sched = cat.schedule || null;
+const schedBits: string[] = [];
+if (sched) {
+  if (sched.levelProb) schedBits.push(`${sched.levelProb}% chance per turn (scaled by the Event Level game option)`);
+  if (sched.playerProb) schedBits.push(`${sched.playerProb}% chance per turn`);
+  if (sched.characterProb) schedBits.push(`${sched.characterProb}% chance per character per turn`);
+  if (sched.minTurns) schedBits.push(`not before turn ${sched.minTurns}`);
+  if (sched.minRepeat) schedBits.push(`at most one event of this class every ${sched.minRepeat} turns`);
+}
+
+const followups = events.filter((e: any) => e.isFollowup).length;
+const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `${cat.label} Events`;
 ---
 
-<Base title={title} active={active} pageMark={pageMark} pageStats={[
-  { label: 'events', value: sec.events.length },
+<Base title={title} active="events" pageMark="📜" pageStats={[
+  { label: 'events', value: events.length },
+  ...(cat.parts.length > 1 ? [{ label: 'in category', value: cat.count }] : []),
   ...(followups ? [{ label: 'follow-ups', value: followups }] : []),
 ]}>
-  <p class="lede"><slot /></p>
+  <p class="lede">
+    <a href={`${base}events`}>← All story events</a>
+    <span class="lede__kind">{KIND_LABEL[cat.kind]}</span>
+    {cat.kind === 'trigger' && <>Stories that fire on the <strong>{cat.label}</strong> trigger.</>}
+    {cat.kind === 'class' && <>Stories drawn from the <strong>{cat.label}</strong> event pool.</>}
+    {cat.blurb && <LinkedText text={cat.blurb} />}
+    {schedBits.length > 0 && <> Scheduling ({'eventClass.xml'}): {schedBits.join(' · ')}.</>}
+  </p>
+
+  {cat.parts.length > 1 && (
+    <nav class="part-nav" aria-label="Pages in this category">
+      {cat.parts.map((p: any) => (
+        p.slug === part.slug
+          ? <span class="part-nav__item is-current">{p.label} <small>({p.count})</small></span>
+          : <a class="part-nav__item" href={`${base}events/${p.slug}`}>{p.label} <small>({p.count})</small></a>
+      ))}
+    </nav>
+  )}
 
   <ScaleHelp />
 
@@ -76,67 +121,69 @@ const followups = sec.events.filter(e => e.isFollowup).length;
   from raw weights. Treat the weight as the XML knob, not a probability.</p>
 
   <div class="evt-list evtmode" data-mode="raw" id="evtmode">
-    {sec.events.map(ev => (
+    {events.map((ev: any) => (
       <details class={`evt yield-${cardYield(ev)}`} id={ev.id} data-search={searchBlob(ev)}>
         <summary class="evt__summary">
           <span class="evt__name">{ev.name}</span>
           <span class="evt__meta">
-            <span class="chip--trigger">{ev.trigger}</span>
-            {ev.dlc && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
-            {(ev as any).followsFrom && (ev as any).followsFrom.length > 0
+            {ev.trigger && <span class="chip--trigger">{ev.trigger}{ev.triggerData ? ` · ${ev.triggerData}` : ''}</span>}
+            {ev.pack && <span class="chip--dlc" title="Ships with this DLC">{ev.pack}</span>}
+            {ev.dlc && ev.dlc !== ev.pack && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
+            {ev.followsFrom && ev.followsFrom.length > 0
               ? <span class="chip--chain" title="Fires as a follow-up in a chain">⛓ follow-up</span>
               : (ev.weight != null && <span class="evt__share" title="Raw iWeight — NOT a probability (see caveat above)">weight {ev.weight}</span>)}
           </span>
         </summary>
         <div class="evt__body">
-          {(ev as any).followsFrom && (ev as any).followsFrom.length > 0 && (
+          {ev.followsFrom && ev.followsFrom.length > 0 && (
             <p class="evt__chain evt__chain--from">
               ⛓ Follows from:{' '}
-              {(ev as any).followsFrom.map((f: any, i: number) => (
-                <>{i > 0 ? ', ' : ''}<a href={`#${f.id}`}>{f.name}</a></>
+              {ev.followsFrom.map((f: any, i: number) => (
+                <>{i > 0 ? ', ' : ''}<a href={evHref(f)}>{f.name}</a></>
               ))}
             </p>
           )}
           {ev.text && <p class="evt__flavor"><LinkedText text={ev.text} /></p>}
 
-          {(Object.keys(ev.timing).length > 0 || ev.prob || ev.conditions.length > 0) && (
+          {(ev.timing || ev.prob || ev.conditions || ev.subjects) && (
             <div class="evt__tags">
               {ev.prob && <span class="chip--time" title="Chance this story is added to the pool on an eligible turn">{ev.prob}% to appear</span>}
-              {ev.timing.repeat && <span class="chip--time">{ev.timing.repeat}</span>}
-              {ev.timing.minTurns && <span class="chip--time">Turn {ev.timing.minTurns}+</span>}
-              {ev.timing.maxTurns && <span class="chip--time">Before turn {ev.timing.maxTurns}</span>}
-              {ev.timing.minLeader && <span class="chip--time">Leader {ev.timing.minLeader}+</span>}
-              {ev.timing.law && <span class="chip--time">Law: {ev.timing.law}</span>}
-              {ev.timing.minOpponentLevel && <span class="chip--time">{ev.timing.minOpponentLevel}+</span>}
-              {ev.conditions.map(c => <span class="chip--cond">{c}</span>)}
+              {ev.timing?.repeat && <span class="chip--time">{ev.timing.repeat}</span>}
+              {ev.timing?.minTurns && <span class="chip--time">Turn {ev.timing.minTurns}+</span>}
+              {ev.timing?.maxTurns && <span class="chip--time">Before turn {ev.timing.maxTurns}</span>}
+              {ev.timing?.minLeader && <span class="chip--time">Leader {ev.timing.minLeader}+</span>}
+              {ev.timing?.law && <span class="chip--time">Law: {ev.timing.law}</span>}
+              {ev.timing?.minOpponentLevel && <span class="chip--time">{ev.timing.minOpponentLevel}+</span>}
+              {(ev.subjects || []).map((s: string) => <span class="chip--subj" title="Subject the story needs (aeSubjects)">{s}</span>)}
+              {(ev.conditions || []).map((c: string) => <span class="chip--cond">{c}</span>)}
             </div>
           )}
 
-          {ev.guaranteed.length > 0 && (
+          {ev.guaranteed && ev.guaranteed.length > 0 && (
             <div class="evt__guaranteed">
               <span class="evt__label">Always</span>
               {ev.guaranteed.map((g: any) => <RewardChip reward={g} />)}
             </div>
           )}
 
-          {ev.options.length > 0 && (
+          {ev.options && ev.options.length > 0 && (
             <ul class="evt__opts">
               {ev.options.map((o: any) => (
                 <li class="opt">
                   <div class="opt__text">
                     <span class="opt__bullet">▸</span>
                     <LinkedText text={o.text || 'Resolve'} />
-                    {o.requirements.map((r: any) => (
+                    {(o.requirements || []).map((r: any) => (
                       <span class="chip--req ev-human has-tip" data-tip-title="Requirement"
                             data-tip={(r.tip || []).join('\n')} tabindex="0">{r.label}</span>
                     ))}
                   </div>
                   <div class="opt__outcomes ev-human">
-                    {o.outcomes.map((oc: any) => (
+                    {(o.outcomes || []).map((oc: any) => (
                       <div class="oc">
                         {oc.probability < 1 && <span class="oc__prob">{pct(oc.probability)}</span>}
                         <div class="oc__rewards">
-                          {oc.rewards.map((r: any) => <RewardChip reward={r} />)}
+                          {(oc.rewards || []).map((r: any) => <RewardChip reward={r} />)}
                         </div>
                       </div>
                     ))}
@@ -146,7 +193,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
                     <div class="opt__leads">
                       ↳ may trigger:{' '}
                       {o.leadsTo.map((t: any, i: number) => (
-                        <>{i > 0 ? ', ' : ''}<a href={`#${t.id}`}>{t.name}</a></>
+                        <>{i > 0 ? ', ' : ''}<a href={evHref(t)}>{t.name}</a></>
                       ))}
                     </div>
                   )}
@@ -155,10 +202,15 @@ const followups = sec.events.filter(e => e.isFollowup).length;
             </ul>
           )}
 
-          {ev.url && (
-            <a class="evt__url" href={ev.url.startsWith('http') ? ev.url : `https://${ev.url}`} target="_blank" rel="noopener noreferrer">
-              Background reading ↗
-            </a>
+          {(ev.author || ev.url) && (
+            <p class="evt__foot">
+              {ev.author && <span class="evt__author">✎ {ev.author}</span>}
+              {ev.url && (
+                <a class="evt__url" href={ev.url.startsWith('http') ? ev.url : `https://${ev.url}`} target="_blank" rel="noopener noreferrer">
+                  Background reading ↗
+                </a>
+              )}
+            </p>
           )}
         </div>
       </details>
@@ -188,6 +240,16 @@ const followups = sec.events.filter(e => e.isFollowup).length;
         }
       }
       search.addEventListener('input', apply);
+
+      // Deep links (#EVENTSTORY_…) land on a <details> card — open it.
+      function openHash() {
+        const id = decodeURIComponent(location.hash.slice(1));
+        if (!id) return;
+        const el = document.getElementById(id);
+        if (el && el.tagName === 'DETAILS') { el.open = true; el.scrollIntoView(); }
+      }
+      window.addEventListener('hashchange', openHash);
+      openHash();
     })();
   </script>
 
@@ -227,6 +289,21 @@ const followups = sec.events.filter(e => e.isFollowup).length;
 
     .lede { color: var(--text-dim); font-size: 0.92rem; line-height: 1.55; max-width: 80ch; margin: 0 0 0.9rem; }
     .lede a { color: var(--accent); }
+    .lede__kind {
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.04em;
+      color: var(--text-faint); border: 1px solid var(--border); border-radius: 5px;
+      padding: 0.06rem 0.42rem; margin: 0 0.45rem;
+    }
+
+    .part-nav { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0 0 0.9rem; }
+    .part-nav__item {
+      font-family: var(--font-display); font-size: 0.8rem; color: var(--text-dim);
+      border: 1px solid var(--border-strong); border-radius: 7px; padding: 0.25rem 0.65rem;
+      text-decoration: none;
+    }
+    .part-nav__item small { color: var(--text-faint); }
+    .part-nav__item:hover { color: var(--text); border-color: var(--accent); }
+    .part-nav__item.is-current { background: color-mix(in srgb, var(--accent) 28%, var(--bg-elev) 72%); color: var(--text); }
 
     .evt-filter { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
     .evt-filter__search {
@@ -273,6 +350,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
       padding: 0.06rem 0.44rem; border-radius: 5px;
     }
     .chip--cond { background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; }
+    .chip--subj { background: color-mix(in srgb, #4a7ba6 18%, var(--bg-elev)); color: var(--text-dim); border: 1px solid color-mix(in srgb, #4a7ba6 45%, transparent); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; }
     .chip--time { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; font-family: var(--font-mono); letter-spacing: 0.02em; }
     .chip--req { background: color-mix(in srgb, #6b5ea6 24%, var(--bg-elev)); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 45%, transparent); padding: 0.04rem 0.4rem; font-size: 0.66rem; margin-left: 0.4rem; border-radius: 5px; }
     .chip--req.has-tip { cursor: help; }
@@ -297,7 +375,9 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     .oc__rewards { display: flex; gap: 0.25rem; flex-wrap: wrap; }
     .oc__rewards .chip, .evt__guaranteed .chip { font-size: 0.72rem; padding: 0.08rem 0.45rem; }
 
-    .evt__url { display: inline-block; margin-top: 0.5rem; font-size: 0.76rem; color: var(--accent); font-family: var(--font-mono); }
+    .evt__foot { display: flex; align-items: center; gap: 0.9rem; margin: 0.5rem 0 0; }
+    .evt__author { font-size: 0.74rem; color: var(--text-faint); font-style: italic; }
+    .evt__url { display: inline-block; font-size: 0.76rem; color: var(--accent); font-family: var(--font-mono); }
 
     /* Chains */
     .chip--chain {

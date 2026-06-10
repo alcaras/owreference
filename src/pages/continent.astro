@@ -1,0 +1,234 @@
+---
+import Base from '../layouts/Base.astro';
+import data from '../data/continent-maps.json';
+
+const base = import.meta.env.BASE_URL;
+
+// The game ships no dedicated art for these resources — resource.xml's
+// zIconName redirects them to shared sprites (Marble→stone, Ore→iron).
+const ICON_ALIAS: Record<string, string> = { marble: 'stone', ore: 'iron' };
+
+type Cell = typeof data.cells[number];
+
+// Group cells by size for the comparison tables.
+const sizes = [
+  { key: 'smallest', label: 'Duel', tiles: '~2,025 tiles' },
+  { key: 'tiny', label: 'Tiny', tiles: '~3,364 tiles' },
+];
+const bySize = (sz: string) => data.cells.filter(c => c.size === sz);
+
+const fmt = (s: { mean: number; sd: number; min: number; max: number }) =>
+  `${s.mean.toFixed(1)} ± ${s.sd.toFixed(1)}`;
+const rng = (s: { min: number; max: number }) => `${s.min}–${s.max}`;
+---
+
+<Base
+  title="Continent"
+  active="continent"
+  pageMark="🗺️"
+  description="Empirical analysis of the Continent map script in Old World: city-site counts, ocean coverage and resource distribution across map size, point-symmetry and aspect ratio — measured over hundreds of generated maps."
+  pageStats={[
+    { label: 'maps analyzed', value: data.totalMaps },
+    { label: 'seeds / cell', value: data.seedsPerCell },
+    { label: 'parameter cells', value: data.cells.length },
+  ]}
+>
+  <p class="lede">
+    Generated maps aren't fixed — every seed differs. These numbers come
+    from running the game's own <b>Continent</b> script
+    {data.seedsPerCell} times per parameter combination
+    ({data.totalMaps} maps total, 2 players, mirror on) and measuring the
+    output. Bands are mean ± standard deviation; ranges are min–max
+    across {data.seedsPerCell} seeds.
+  </p>
+
+  {sizes.map(sz => (
+    <section class="cset">
+      <header class="cset__head">
+        <h2 class="cset__title">{sz.label}</h2>
+        <span class="cset__sub">{sz.tiles}</span>
+      </header>
+      <table class="ctbl">
+        <thead>
+          <tr>
+            <th>Point sym.</th>
+            <th>Aspect</th>
+            <th>Dimensions</th>
+            <th>City sites</th>
+            <th>Range</th>
+            <th>Ocean %</th>
+            <th>Resources / map</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bySize(sz.key).map(c => (
+            <tr>
+              <td>{c.pointSymmetry ? 'on' : '—'}</td>
+              <td class="cap">{c.aspect}</td>
+              <td class="mono">{c.dims}</td>
+              <td><b>{fmt(c.citySites)}</b></td>
+              <td class="dim">{rng(c.citySites)}</td>
+              <td>{c.oceanPct.mean.toFixed(1)}%</td>
+              <td class="dim">{c.resourceTotal.mean.toFixed(0)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  ))}
+
+  <section class="cset">
+    <header class="cset__head">
+      <h2 class="cset__title">What they look like</h2>
+      <span class="cset__sub">one representative seed per cell</span>
+    </header>
+    {sizes.map(sz => (
+      <div class="renders">
+        {bySize(sz.key).map(c => (
+          <figure class="render">
+            <img
+              src={`${base}img/maps/continent/${c.render}`}
+              alt={`Continent ${sz.label} ${c.aspect}${c.pointSymmetry ? ' point-symmetric' : ''}`}
+              loading="lazy"
+            />
+            <figcaption>
+              <span class="render__sz">{sz.label}</span>
+              <span class="cap">{c.aspect}</span>
+              {c.pointSymmetry && <span class="render__sym">pt-sym</span>}
+              <span class="render__dim mono">{c.dims}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    ))}
+    <p class="note">
+      Gold pips = city sites · red pips = tribe sites. Terrain coloured
+      like the in-game minimap.
+    </p>
+  </section>
+
+  <section class="cset">
+    <header class="cset__head">
+      <h2 class="cset__title">Resources</h2>
+      <span class="cset__sub">mean count per map · top 10</span>
+    </header>
+    <ul class="reslist">
+      {data.overallTopResources.map(r => (
+        <li class="res">
+          <img
+            class="res__ic"
+            src={`${base}img/icons/resources/${ICON_ALIAS[r.slug] ?? r.slug}.png`}
+            alt={r.key.replace('RESOURCE_', '').toLowerCase()}
+            onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'res__ic res__ic--miss'}))"
+          />
+          <span class="res__name">{r.key.replace('RESOURCE_', '').toLowerCase()}</span>
+          <span class="res__n mono">{r.perMap}</span>
+        </li>
+      ))}
+    </ul>
+    <p class="note">
+      Resource <em>types</em> and counts barely move with dimensions or
+      point-symmetry (≈±7%); ocean coverage drifts only ~3 pts with
+      aspect. The real lever Continent gives you is <b>city-site count</b>
+      — which roughly doubles from Duel to Tiny, peaks on ultrawide at
+      Duel size and on wide at Tiny.
+    </p>
+  </section>
+
+  <footer class="prov">
+    Source: owmapgen <span class="mono">{data.owmapgenSha}</span> ·
+    sweep <span class="mono">{data.sweepId}</span> ·
+    {data.totalMaps} maps · capital-to-capital distance metric coming once
+    start-tile export lands.
+  </footer>
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 1rem; line-height: 1.55; color: var(--text-soft);
+    max-width: 68ch; margin: 0.5rem 0 1.5rem;
+  }
+  .cset { margin-bottom: 2.25rem; }
+  .cset__head {
+    display: flex; align-items: baseline; gap: 0.7rem;
+    padding-bottom: 0.35rem; margin-bottom: 0.7rem;
+    border-bottom: 1px solid var(--gold-deep);
+  }
+  .cset__title {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 1.5rem; color: var(--text);
+  }
+  .cset__sub {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 0.9rem; color: var(--text-faint);
+  }
+
+  .ctbl { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  .ctbl thead th {
+    font-family: var(--font-ui); font-size: 0.58rem;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--text-dim); font-weight: 500; text-align: left;
+    padding: 0.3rem 0.7rem; border-bottom: 1px solid var(--border);
+  }
+  .ctbl td {
+    padding: 0.4rem 0.7rem; border-bottom: 1px solid var(--border-faint);
+    color: var(--text);
+  }
+  .ctbl tbody tr:hover td { background: oklch(0.30 0.04 80 / 0.28); }
+  .mono { font-family: var(--font-mono); font-size: 0.82em; }
+  .cap { text-transform: capitalize; }
+  .dim { color: var(--text-faint); }
+
+  .renders {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0.9rem; margin-bottom: 1rem;
+  }
+  .render {
+    margin: 0; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;
+  }
+  .render img {
+    width: 100%; height: auto; image-rendering: pixelated;
+    border-radius: 2px; display: block;
+  }
+  .render figcaption {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 0.35rem; font-size: 0.74rem; color: var(--text-soft);
+  }
+  .render__sz { font-family: var(--font-display); font-weight: 600; color: var(--text); }
+  .render__sym {
+    font-family: var(--font-ui); font-size: 0.56rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--gold-soft);
+  }
+  .render__dim { color: var(--text-faint); margin-left: auto; }
+
+  .reslist {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.4rem 0.8rem;
+  }
+  .res { display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; }
+  .res__ic {
+    width: 22px; height: 22px; object-fit: contain; flex-shrink: 0;
+  }
+  .res__ic--miss {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--border-strong); display: inline-block;
+  }
+  .res__name { text-transform: capitalize; color: var(--text); }
+  .res__n { margin-left: auto; color: var(--gold-soft); }
+
+  .note {
+    font-size: 0.82rem; color: var(--text-faint);
+    line-height: 1.5; margin: 0.6rem 0 0; max-width: 70ch;
+  }
+  .prov {
+    margin-top: 2rem; padding-top: 0.8rem;
+    border-top: 1px solid var(--border-faint);
+    font-size: 0.72rem; color: var(--text-faint);
+  }
+</style>

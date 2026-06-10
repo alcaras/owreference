@@ -1,0 +1,432 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import Term from '../components/Term.astro';
+import data from '../data/terrain.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+const { terrains, vegetations, heights } = data;
+
+// One search blob per row, across all three tables (keys are prefixed so
+// slugs can't collide between sections).
+const searchBlobs: Record<string, string> = {};
+for (const t of terrains) searchBlobs[`t-${t.slug}`] = JSON.stringify(t).toLowerCase();
+for (const v of vegetations) searchBlobs[`v-${v.slug}`] = JSON.stringify(v).toLowerCase();
+for (const h of heights) searchBlobs[`h-${h.slug}`] = JSON.stringify(h).toLowerCase();
+---
+
+<Base title="Terrain" active="terrain" pageMark="⛰️" pageStats={[
+  { label: 'terrains', value: terrains.length },
+  { label: 'vegetations', value: vegetations.length },
+  { label: 'heights', value: heights.length },
+]}>
+  <div id="terrain-grid">
+
+    <!-- ── Terrain ─────────────────────────────────────────────── -->
+    <section class="tsec" id="terrains">
+      <h2 class="tsec__title">Terrain</h2>
+      <p class="tsec__note">Every tile combines a terrain, a height, and (sometimes) vegetation. Movement costs add across the three.</p>
+      <div class="grid">
+        <div class="grid__scroll">
+          <table class="ntbl">
+            <thead>
+              <tr>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Terrain</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Move</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Properties</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Default Height</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Resources</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Improvements</span></div></th>
+              </tr>
+            </thead>
+            <tbody>
+              {terrains.map(t => (
+                <tr data-row={`t-${t.slug}`}>
+                  <th class="rowlabel rowlabel--item" scope="row" id={t.slug}>
+                    <div class="item__txt">
+                      <div class="item__name">{t.name}</div>
+                      <div class="item__sub">Terrain</div>
+                    </div>
+                  </th>
+
+                  <td class="cell cell--center yield-misc" data-sortval={t.moveCost}>{t.moveCost} MP</td>
+
+                  {t.properties.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {t.properties.map(p => <div class="listitem"><LinkedText text={p} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {t.defaultHeight ? (
+                    <td class="cell cell--center yield-misc">{t.defaultHeight}</td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {t.resources.length > 0 ? (
+                    <td class="cell yield-misc cell--chips">
+                      {t.resources.map(r => <Term id={r.id} />)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {t.improvements.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {t.improvements.map(i => <div class="terrain-tag"><LinkedText text={i} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Vegetation ──────────────────────────────────────────── -->
+    <section class="tsec" id="vegetations">
+      <h2 class="tsec__title">Vegetation</h2>
+      <p class="tsec__note">Cut yields go to the stockpile when a Worker removes the vegetation; build-over yields are credited when an improvement clears the tile.</p>
+      <div class="grid">
+        <div class="grid__scroll">
+          <table class="ntbl">
+            <thead>
+              <tr>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Vegetation</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Move</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Cut Yield</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Build-Over Yield</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Combat</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Lifecycle</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Resources</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Improvements</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Notes</span></div></th>
+              </tr>
+            </thead>
+            <tbody>
+              {vegetations.map(v => (
+                <tr data-row={`v-${v.slug}`}>
+                  <th class="rowlabel rowlabel--item" scope="row" id={v.slug}>
+                    <div class="item__txt">
+                      <div class="item__name">{v.name}</div>
+                      <div class="item__sub">{v.dlc || 'Vegetation'}</div>
+                    </div>
+                  </th>
+
+                  {v.moveCostExtra > 0 ? (
+                    <td class="cell cell--center yield-misc" data-sortval={v.moveCostExtra}>+{v.moveCostExtra} MP</td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {v.yieldRemove.length > 0 ? (
+                    <td class="cell cell--effects">
+                      {v.yieldRemove.map(line => {
+                        const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                        return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                      })}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {v.yieldBuild.length > 0 ? (
+                    <td class="cell cell--effects">
+                      {v.yieldBuild.map(line => {
+                        const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                        return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                      })}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {v.defense.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {v.defense.map(d => <div class="listitem"><LinkedText text={d} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {v.lifecycle.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {v.lifecycle.map(l => <div class="listitem"><LinkedText text={l} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {v.resources.length > 0 ? (
+                    <td class="cell yield-misc cell--chips">
+                      {v.resources.map(r => <Term id={r.id} />)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {v.improvements.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {v.improvements.map(i => <div class="terrain-tag"><LinkedText text={i} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {v.notes.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {v.notes.map(n => <div class="listitem"><LinkedText text={n} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Height ──────────────────────────────────────────────── -->
+    <section class="tsec" id="heights">
+      <h2 class="tsec__title">Height</h2>
+      <p class="tsec__note">Road and urban costs are paid in stockpile when building on the tile. Move is the extra cost added to the terrain's base.</p>
+      <div class="grid">
+        <div class="grid__scroll">
+          <table class="ntbl">
+            <thead>
+              <tr>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Height</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Move</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Bonuses</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Properties</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Road Cost</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Urban Cost</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Valid Terrains</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Resources</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Improvements</span></div></th>
+              </tr>
+            </thead>
+            <tbody>
+              {heights.map(h => (
+                <tr data-row={`h-${h.slug}`}>
+                  <th class="rowlabel rowlabel--item" scope="row" id={h.slug}>
+                    <div class="item__txt">
+                      <div class="item__name">{h.name}</div>
+                      <div class="item__sub">Height</div>
+                    </div>
+                  </th>
+
+                  {h.moveCostExtra > 0 ? (
+                    <td class="cell cell--center yield-misc" data-sortval={h.moveCostExtra}>+{h.moveCostExtra} MP</td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {h.bonuses.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {h.bonuses.map(b => <div class="listitem"><LinkedText text={b} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {h.properties.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {h.properties.map(p => <div class="listitem"><LinkedText text={p} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {h.roadCost.length > 0 ? (
+                    <td class="cell cell--effects">
+                      {h.roadCost.map(line => {
+                        const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                        return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                      })}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {h.urbanCost.length > 0 ? (
+                    <td class="cell cell--effects">
+                      {h.urbanCost.map(line => {
+                        const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                        return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                      })}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {h.validTerrains.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {h.validTerrains.map(t => <div class="terrain-tag">{t}</div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {h.resources.length > 0 ? (
+                    <td class="cell yield-misc cell--chips">
+                      {h.resources.map(r => <Term id={r.id} />)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {h.improvements.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {h.improvements.map(i => <div class="terrain-tag"><LinkedText text={i} /></div>)}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script type="application/json" id="terrain-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('terrain-search-blobs');
+      const grid = document.getElementById('terrain-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const key of Object.keys(blobs)) {
+          const row = grid.querySelector('tr[data-row="' + key + '"]');
+          if (!row) continue;
+          row.classList.toggle('is-hidden', !!q && !blobs[key].includes(q));
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+  <script is:inline>
+    (function () {
+      document.querySelectorAll('#terrain-grid table.ntbl').forEach(table => {
+        if (!table.tHead) return;
+        const ths = Array.from(table.tHead.rows[0].cells);
+        ths.forEach((th, ci) => {
+          th.classList.add('is-sortable');
+          th.addEventListener('click', () => {
+            const tb = table.tBodies[0];
+            const rows = Array.from(tb.rows);
+            const asc = th.getAttribute('aria-sort') !== 'ascending';
+            ths.forEach(h => h.removeAttribute('aria-sort'));
+            th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+            const val = r => {
+              const c = r.cells[ci];
+              const t = (c ? c.textContent : '').trim();
+              const n = parseFloat(t.replace(/[^0-9.\-]/g, ''));
+              return { t, n: (t && !isNaN(n)) ? n : null };
+            };
+            rows.sort((a, b) => {
+              const ka = val(a), kb = val(b);
+              let r;
+              if (ka.n !== null && kb.n !== null) r = ka.n - kb.n;
+              else if (ka.n !== null) r = -1;
+              else if (kb.n !== null) r = 1;
+              else r = ka.t.localeCompare(kb.t);
+              return asc ? r : -r;
+            });
+            rows.forEach(r => tb.appendChild(r));
+          });
+        });
+      });
+    })();
+  </script>
+</Base>
+
+<style>
+  .tsec { margin-bottom: 2rem; }
+  .tsec__title {
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding-bottom: 0.3rem;
+    margin: 0 0 0.35rem;
+  }
+  .tsec__note {
+    color: var(--text-faint);
+    font-size: 0.74rem;
+    margin: 0 0 0.6rem;
+  }
+  .nhdr--col {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    text-align: left;
+    padding: 0.45rem 0.6rem;
+    min-width: 6rem;
+  }
+  .nhdr--col .nhdr__name {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  .rowlabel--item {
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    padding: 0.45rem 0.6rem;
+    background: var(--bg-elev);
+    min-width: 8rem;
+    border-right: 1px solid var(--border);
+  }
+  .item__txt { min-width: 0; }
+  .item__name {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .item__sub {
+    font-style: italic;
+    color: var(--text-faint);
+    font-size: 0.66rem;
+    margin-top: 0.1rem;
+  }
+  .terrain-tag {
+    display: inline-block;
+    padding: 0.05rem 0.4rem;
+    margin: 0.1rem 0.2rem 0.1rem 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    background: var(--bg);
+  }
+  .listitem { font-size: 0.72rem; padding: 0.06rem 0; }
+  .cell--chips { max-width: 18rem; }
+  .cell--chips :global(.term) { margin: 0.08rem 0.25rem 0.08rem 0; }
+  .nhdr.is-sortable { cursor: pointer; user-select: none; }
+  .nhdr.is-sortable:hover { filter: brightness(1.12); }
+  .nhdr.is-sortable .nhdr__name::after { content: '⇅'; opacity: 0.35; font-size: 0.85em; margin-left: 0.3em; }
+  .nhdr[aria-sort='ascending'] .nhdr__name::after { content: '↑'; opacity: 0.9; }
+  .nhdr[aria-sort='descending'] .nhdr__name::after { content: '↓'; opacity: 0.9; }
+</style>

@@ -6,6 +6,10 @@ Reads Sprite objects from the game's `resources.assets` and friends, routes
 them to public/img/{crests,archetypes,families,tribes,portraits,...} by
 naming convention. Handles dupes by keeping the largest image per name.
 
+Also extracts the lush 2048×1024 event-popup backgrounds (Texture2D, named
+by `<zBackgroundName>` in eventStory/cityEvent/scenario XML) to
+public/img/events/<slug>.png.
+
 Output paths are stable so the site references like /img/crests/persia.png
 don't depend on which bundle the sprite came from in a given patch.
 """
@@ -21,6 +25,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 IMG = ROOT / "public" / "img"
+XML_INFOS = ROOT / "reference" / "XML" / "Infos"
 DEFAULT_INSTALL = Path.home() / "Library/Application Support/Steam/steamapps/common/Old World"
 
 # Routing table: (regex on sprite name) → (output dir, slug-from-match)
@@ -146,16 +151,128 @@ def extract(install: Path, verbose: bool = False) -> dict[str, int]:
     return counts
 
 
+_BG_RE = re.compile(r"<zBackgroundName>([^<]+)</zBackgroundName>")
+
+
+def load_background_names(xml_dir: Path) -> set[str]:
+    """Read every `<zBackgroundName>` value from XML/Infos/*.xml.
+
+    Values come from eventStory*.xml, cityEvent.xml, scenario.xml, unit.xml.
+    Some references include the `Sprites/Events/` prefix — strip it.
+    """
+    names: set[str] = set()
+    if not xml_dir.is_dir():
+        return names
+    for f in xml_dir.glob("*.xml"):
+        try:
+            text = f.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        for m in _BG_RE.finditer(text):
+            n = m.group(1).strip()
+            if not n or n.upper() == "DEFAULT":
+                continue
+            if "/" in n:
+                n = n.rsplit("/", 1)[-1]
+            names.add(n)
+    return names
+
+
+def _bg_slug(name: str) -> str:
+    """File-safe slug for a background name. Lowercase, [a-z0-9_]+, hyphens→_."""
+    return re.sub(r"[^a-z0-9_]+", "_", name.lower()).strip("_")
+
+
+def extract_event_backgrounds(install: Path, verbose: bool = False) -> int:
+    """Extract event-popup backgrounds as Texture2D → public/img/events/<slug>.png.
+
+    Match Texture2D `m_Name` (case-insensitive) against `<zBackgroundName>`
+    values harvested from the game XML. Keep the largest image per slug to
+    handle dupes between bundles or capitalization-variants.
+    """
+    wanted = load_background_names(XML_INFOS)
+    if not wanted:
+        print("→ no background names found in reference/XML/Infos — skipping")
+        return 0
+    # case-folded → canonical name
+    wanted_lc = {n.lower(): n for n in wanted}
+
+    files = asset_files(install)
+    print(f"→ event-bg pass: {len(wanted)} names, scanning {len(files)} asset files")
+
+    # slug → (area, PIL.Image)
+    best: dict[str, tuple[int, Image.Image]] = {}
+    for ap in files:
+        try:
+            env = UnityPy.load(str(ap))
+        except Exception:
+            continue
+        for obj in env.objects:
+            if obj.type.name != "Texture2D":
+                continue
+            try:
+                data = obj.read()
+            except Exception:
+                continue
+            nm = getattr(data, "m_Name", "") or ""
+            if not nm:
+                continue
+            canonical = wanted_lc.get(nm.lower())
+            if canonical is None:
+                continue
+            try:
+                img = data.image
+            except Exception:
+                continue
+            if img is None:
+                continue
+            # Many event backgrounds in the bundle are stored upside-down (Unity
+            # texture coords); the in-game UI flips them. Detect by aspect:
+            # legitimate event splashes are landscape 2:1, but we can't infer
+            # orientation from name alone, so leave the raw image. PIL's tobytes
+            # already comes top-left origin from UnityPy.
+            slug = _bg_slug(canonical)
+            area = img.size[0] * img.size[1]
+            prev = best.get(slug)
+            if prev is None or prev[0] < area:
+                best[slug] = (area, img)
+
+    out_dir = IMG / "events"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for slug, (_, img) in best.items():
+        out_path = out_dir / f"{slug}.png"
+        img.save(out_path)
+        if verbose:
+            print(f"  ✓ {out_path.relative_to(ROOT)}  ({img.size[0]}×{img.size[1]})")
+
+    missing = sorted(wanted - {n for n in wanted if _bg_slug(n) in best})
+    if missing:
+        print(f"  ! {len(missing)} background name(s) had no matching Texture2D:")
+        for m in missing:
+            print(f"      {m}")
+    return len(best)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--install", type=Path, default=DEFAULT_INSTALL)
     ap.add_argument("-v", "--verbose", action="store_true")
+    ap.add_argument(
+        "--only",
+        choices=("sprites", "events", "all"),
+        default="all",
+        help="which pass to run (default: all)",
+    )
     args = ap.parse_args()
 
-    counts = extract(args.install, verbose=args.verbose)
-    print("\n→ extracted:")
-    for k, v in sorted(counts.items()):
-        print(f"   {k:12s} {v}")
+    if args.only in ("sprites", "all"):
+        counts = extract(args.install, verbose=args.verbose)
+        print("\n→ extracted sprites:")
+        for k, v in sorted(counts.items()):
+            print(f"   {k:12s} {v}")
+    if args.only in ("events", "all"):
+        n = extract_event_backgrounds(args.install, verbose=args.verbose)
+        print(f"\n→ extracted event backgrounds: {n}")
     return 0
 
 

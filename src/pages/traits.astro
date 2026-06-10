@@ -1,0 +1,365 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import traitData from '../data/traits.json';
+import { classifyYield } from '../lib/entities';
+const base = import.meta.env.BASE_URL;
+
+type Trait = typeof traitData.strength[number];
+
+const CATEGORIES: { key: keyof typeof traitData; label: string; blurb: string }[] = [
+  { key: 'strength',   label: 'Strengths',   blurb: 'Personality strengths — rolled in childhood or granted by events.' },
+  { key: 'weakness',   label: 'Weaknesses',  blurb: 'Personality weaknesses — each replaces its opposing strengths when gained.' },
+  { key: 'archetype',  label: 'Archetypes',  blurb: 'The ten leader archetypes (full detail on the Archetypes page).' },
+  { key: 'affliction', label: 'Afflictions', blurb: 'Wounds and illnesses — with recovery odds and death risk per mortality setting.' },
+  { key: 'item',       label: 'Items',       blurb: 'Heirlooms and artifacts carried as traits, granted by events.' },
+  { key: 'status',     label: 'Statuses',    blurb: 'Roles, clergy, story traits and other statuses the game tracks as traits.' },
+];
+
+const RATINGS = ['Wisdom', 'Charisma', 'Courage', 'Discipline'] as const;
+const RATING_TONE: Record<string, string> = {
+  Wisdom:     'yield-science',
+  Charisma:   'yield-civics',
+  Courage:    'yield-training',
+  Discipline: 'yield-orders',
+};
+
+function ratingsFor(t: Trait, r: string) {
+  return t.ratings.filter(x => x.rating === r);
+}
+
+const allTraits: Trait[] = CATEGORIES.flatMap(c => traitData[c.key] as Trait[]);
+
+const searchBlobs: Record<string, string> = {};
+for (const t of allTraits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
+
+const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffects'; label: string }[] = [
+  { key: 'leaderEffects',   label: 'Leader' },
+  { key: 'governorEffects', label: 'Governor' },
+  { key: 'generalEffects',  label: 'General' },
+];
+---
+
+<Base title="Traits" active="traits" pageMark="🎭" pageStats={[
+  { label: 'traits',     value: allTraits.length },
+  { label: 'strengths',  value: traitData.strength.length },
+  { label: 'weaknesses', value: traitData.weakness.length },
+  { label: 'items',      value: traitData.item.length },
+]}>
+  <p class="traits-intro">
+    Every character trait in <code>trait.xml</code>, grouped the way the game flags
+    them. Rating columns show the trait's Wisdom / Charisma / Courage / Discipline
+    contribution (° marks a fallback value, used when the rating isn't already set).
+    Most traits are granted by events; the Acquired column lists only what the XML
+    states directly — minimum age, the childhood adjective and injury rolls, recovery
+    odds. Which child traits a parent can pass on lives on
+    <a href={`${base}trait-inheritance`}>Trait Inheritance</a>; the ten archetypes are
+    detailed on <a href={`${base}archetypes`}>Archetypes</a>.
+  </p>
+
+  <div id="traits-grid">
+    {CATEGORIES.map(cat => {
+      const list = traitData[cat.key] as Trait[];
+      return (
+        <section class="tcat" data-cat={cat.key} id={cat.key}>
+          <h2 class="tcat__title">
+            <span class="tcat__name">{cat.label}</span>
+            <span class="tcat__count">{list.length} traits</span>
+          </h2>
+          <p class="tcat__blurb">{cat.blurb}</p>
+          <div class="grid__scroll">
+            <table class="ntbl">
+              <thead>
+                <tr>
+                  <th class="rowlabel rowlabel--corner">Trait</th>
+                  {RATINGS.map(r => <th class="nhdr nhdr--family nhdr--rating">{r.slice(0, 3)}</th>)}
+                  <th class="nhdr nhdr--family">Effects</th>
+                  <th class="nhdr nhdr--family">Opinions</th>
+                  <th class="nhdr nhdr--family">Replaces / Blocks</th>
+                  <th class="nhdr nhdr--family">Modifiers &amp; Flags</th>
+                  <th class="nhdr nhdr--family">Acquired</th>
+                </tr>
+              </thead>
+              <tbody>
+                {list.map(t => {
+                  const hasEffects = t.leaderEffects.length || t.governorEffects.length || t.generalEffects.length;
+                  const hasRel = t.replaces.length || t.blocks.length || t.leadsTo.length;
+                  const hasMods = t.modifiers.length || t.flags.length;
+                  return (
+                    <tr data-trait={t.slug} id={t.slug}>
+                      <th class="rowlabel" scope="row">
+                        <span class="trait__name" title={t.description || undefined}>{t.name}</span>
+                        {t.religion && <span class="trait__sub">{t.religion}</span>}
+                        {t.dlc && <span class="trait__dlc">{t.dlc}</span>}
+                      </th>
+                      {RATINGS.map(r => {
+                        const vals = ratingsFor(t, r);
+                        return vals.length ? (
+                          <td class={`cell cell--rating ${RATING_TONE[r]}`}>
+                            {vals.map(v => (
+                              <span
+                                class={`rt ${v.value >= 0 ? 'rt--pos' : 'rt--neg'}`}
+                                title={v.fallback ? 'Fallback rating — applies when the rating is not set another way' : undefined}
+                              >{v.value > 0 ? `+${v.value}` : `−${-v.value}`}{v.fallback ? '°' : ''}</span>
+                            ))}
+                          </td>
+                        ) : (
+                          <td class="cell cell--rating is-empty"><span class="cell__dash">—</span></td>
+                        );
+                      })}
+                      <td class={`cell cell--effects ${hasEffects ? '' : 'is-empty'}`}>
+                        {hasEffects ? (
+                          <div class="fxstack">
+                            {EFFECT_GROUPS.map(g =>
+                              (t[g.key] as string[]).map(line => {
+                                const yieldKey = classifyYield(line)?.toLowerCase() || 'misc';
+                                return (
+                                  <div class={`effect yield-${yieldKey}`}>
+                                    <span class="effect__role">{g.label}</span>
+                                    <LinkedText text={line} showIcons={false} iconsForYields={true} />
+                                  </div>
+                                );
+                              })
+                            )}
+                          </div>
+                        ) : <span class="cell__dash">—</span>}
+                      </td>
+                      <td class={`cell ${t.opinions.length ? 'yield-legitimacy' : 'is-empty'}`}>
+                        {t.opinions.length ? (
+                          <ul class="modlist">
+                            {t.opinions.map(o => (
+                              <li>
+                                <span class="modlist__label">{o.label}</span>
+                                <span class={`num ${o.value >= 0 ? 'num--pos' : 'num--neg'}`}>
+                                  {o.value >= 0 ? '+' : ''}{o.value}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : <span class="cell__dash">—</span>}
+                      </td>
+                      <td class={`cell ${hasRel ? 'yield-maintenance' : 'is-empty'}`}>
+                        {hasRel ? (
+                          <div class="chiplist">
+                            {t.replaces.map(o => <span class="chip chip--neutral" title="Replaces (overwrites) this trait">⇄ {o}</span>)}
+                            {t.blocks.map(o => <span class="chip chip--neutral chip--blocked" title="Cannot coexist with this trait">⊘ {o}</span>)}
+                            {t.leadsTo.map(o => <span class="chip chip--neutral chip--leads" title="May progress to this trait">→ {o.name} {o.prob}%</span>)}
+                          </div>
+                        ) : <span class="cell__dash">—</span>}
+                      </td>
+                      <td class={`cell ${hasMods ? 'yield-misc' : 'is-empty'}`}>
+                        {hasMods ? (
+                          <div class="modwrap">
+                            {t.modifiers.length > 0 && (
+                              <ul class="modlist">
+                                {t.modifiers.map(m => (
+                                  <li>
+                                    <span class="modlist__label">{m.label}</span>
+                                    <span class={`num ${m.value >= 0 ? 'num--pos' : 'num--neg'}`}>
+                                      {m.value >= 0 ? '+' : ''}{m.value}%
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                            {t.flags.length > 0 && (
+                              <div class="chiplist">
+                                {t.flags.map(f => <span class="chip chip--neutral chip--flag">{f}</span>)}
+                              </div>
+                            )}
+                          </div>
+                        ) : <span class="cell__dash">—</span>}
+                      </td>
+                      <td class={`cell ${t.acquisition.length ? 'yield-misc' : 'is-empty'}`}>
+                        {t.acquisition.length ? (
+                          <ul class="acqlist">
+                            {t.acquisition.map(a => <li>{a}</li>)}
+                          </ul>
+                        ) : <span class="cell__dash">—</span>}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      );
+    })}
+  </div>
+
+  <script type="application/json" id="traits-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const grid = document.getElementById('traits-grid');
+      const blobNode = document.getElementById('traits-search-blobs');
+      if (!input || !grid || !blobNode) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-trait="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+        for (const sec of grid.querySelectorAll('.tcat')) {
+          const visible = sec.querySelectorAll('tbody tr:not(.is-hidden)').length;
+          sec.classList.toggle('is-hidden', visible === 0);
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .traits-intro {
+    max-width: 860px;
+    color: var(--text-dim);
+    font-size: 0.86rem;
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .traits-intro code {
+    background: var(--bg-elev);
+    padding: 0.05rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .tcat { margin: 1.6rem 0; }
+  .tcat__title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0 0 0.2rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+    padding-bottom: 0.35rem;
+    color: var(--text);
+  }
+  .tcat__count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    font-weight: 400;
+  }
+  .tcat__blurb {
+    margin: 0.25rem 0 0.6rem;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+  }
+
+  .ntbl .rowlabel { min-width: 8rem; }
+  .nhdr--rating { min-width: 2.4rem; }
+
+  .trait__name {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    display: block;
+  }
+  .trait__sub {
+    display: block;
+    font-style: italic;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+  .trait__dlc {
+    display: inline-block;
+    margin-top: 0.18rem;
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.05em;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.02rem 0.3rem;
+  }
+
+  .cell--rating {
+    text-align: center;
+    white-space: nowrap;
+  }
+  .rt {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.82rem;
+  }
+  .rt + .rt { margin-left: 0.3rem; }
+  .rt--neg { opacity: 0.85; }
+
+  .cell--effects { min-width: 16rem; }
+  .fxstack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .fxstack .effect {
+    background: var(--yield-bg, var(--bg-elev-2));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    line-height: 1.25;
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
+  }
+  .effect__role {
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+    margin-right: 0.35rem;
+  }
+
+  .chiplist { display: flex; flex-wrap: wrap; gap: 0.2rem; }
+  .chiplist .chip { padding: 0.08rem 0.4rem; font-size: 0.64rem; }
+  .chip--blocked { opacity: 0.8; }
+  .chip--leads { font-style: italic; }
+  .chip--flag { text-transform: none; font-weight: 500; }
+
+  .modwrap { display: flex; flex-direction: column; gap: 0.3rem; }
+  .modlist { list-style: none; margin: 0; padding: 0; min-width: 10rem; }
+  .modlist li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.05rem 0;
+    font-size: 0.68rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .modlist li:last-child { border-bottom: 0; }
+  .modlist__label { color: inherit; opacity: 0.85; }
+
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .num--pos, .rt--pos { color: #4caf7d; }
+  .num--neg, .rt--neg { color: #d46e6e; }
+
+  .acqlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.68rem;
+    line-height: 1.35;
+    min-width: 9rem;
+  }
+  .acqlist li + li { margin-top: 0.15rem; }
+</style>

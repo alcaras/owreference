@@ -92,6 +92,27 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
           ))}
         </nav>
         <span class="hdr__spacer" aria-hidden="true"></span>
+        <label class="hdr__search">
+          <span class="hdr__search-ico" aria-hidden="true">⌕</span>
+          <input
+            id="site-search"
+            type="search"
+            placeholder="Filter page…"
+            aria-label="Filter rows on the current page"
+            autocomplete="off"
+          />
+          <kbd>/</kbd>
+        </label>
+        <script is:inline>
+          // "/" focuses the page filter (unless already typing somewhere)
+          document.addEventListener('keydown', (e) => {
+            if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+            const t = e.target;
+            if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+            const s = document.getElementById('site-search');
+            if (s) { e.preventDefault(); s.focus(); }
+          });
+        </script>
       </div>
     </header>
 
@@ -125,7 +146,7 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
           <span class="foot__val foot__val--dim">auto-built from game files</span>
         </div>
         <div class="foot__col foot__col--right">
-          <a href={`${base}CHANGELOG.md`}>Changelog</a>
+          <a href="https://github.com/alcaras/owreference/blob/main/CHANGELOG.md">Changelog</a>
           <span class="foot__dot">·</span>
           <a href="https://github.com/alcaras/owreference">Source</a>
           <span class="foot__dot">·</span>

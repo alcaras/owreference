@@ -1,0 +1,372 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import ambitionData from '../data/ambitions.json';
+import { classifyYield } from '../lib/entities';
+
+const { globals, groups, meta, victories, victoryPointOptions } = ambitionData;
+type Goal = typeof groups[number]['goals'][number];
+
+const fmtDlc = (s: string) =>
+  s.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+
+// Tier display: 10–10 is the National capstone slot; 0–0 means the goal is
+// only ever granted by an event (no ambition-picker slot).
+function tierLabel(g: Goal): string {
+  if (g.minTier === 0 && g.maxTier === 0) return '—';
+  if (g.minTier === g.maxTier) return String(g.minTier);
+  return `${g.minTier}–${g.maxTier}`;
+}
+
+const searchBlobs: Record<string, string> = {};
+for (const grp of groups) {
+  for (const g of grp.goals) searchBlobs[g.slug] = JSON.stringify(g).toLowerCase();
+}
+
+const GROUP_GLYPH: Record<string, string> = {
+  'national': '🏆',
+  'event': '📜',
+};
+---
+
+<Base title="Ambitions" active="ambitions" pageMark="🏆" pageStats={[
+  { label: 'ambitions', value: meta.ambitionGoals },
+  { label: 'national', value: meta.nationalAmbitions },
+  { label: 'event goals', value: meta.eventGoals },
+  { label: 'victory types', value: victories.length },
+]}>
+  <p class="amb-intro">
+    Ambitions are the game's quest ladder: each new leader is offered goals
+    drawn from <code>goal.xml</code>, filtered by <strong>tier</strong> — the
+    slot it can fill, i.e. how many ambitions you have already completed plus
+    one. Complete {globals.maxAmbitions} (including one
+    <strong>National Ambition</strong>, the tier-{globals.maxAmbitions} capstone)
+    to win an Ambition victory. There is no per-goal reward field in the XML:
+    each finished ambition counts toward the {globals.maxAmbitions}, raises
+    Legitimacy through the cognomen system
+    (<code>STAT_AMBITION_ACHIEVED</code>), and can fire follow-up events. A new
+    ambition is offered no sooner than {globals.ambitionDelayTurns} turns after
+    the last was completed, and a National Ambition can arrive early once
+    you're {globals.nationalOfferThresholdPercent}% of the way there. Tier
+    logic verified against <code>PlayerGoal.cs · isGoalTierValid()</code>.
+  </p>
+
+  <section class="amb-victory" id="victories">
+    <h2 class="amb-group__title"><span class="amb-group__mark">🏁</span>Victory Types</h2>
+    <div class="grid"><div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Victory →</span>
+              <span class="rowlabel__big">Rule ↓</span>
+            </th>
+            <th class="nhdr nhdr--family">VP target</th>
+            <th class="nhdr nhdr--family">How it's won</th>
+            <th class="nhdr nhdr--family">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {victories.map(v => (
+            <tr>
+              <th class="rowlabel" scope="row">{v.name}</th>
+              <td class={`cell ${v.percentVP ? 'yield-money' : 'is-empty'}`}>
+                {v.percentVP
+                  ? <span class="amb__num">{v.percentVP}% of map target</span>
+                  : <span class="cell__dash">—</span>}
+              </td>
+              <td class="cell yield-misc">
+                <div class="cell__body"><LinkedText text={v.help} showIcons={false} /></div>
+              </td>
+              <td class={`cell ${(v.opponentMaxPointPercent || v.minTurns || v.mpDefaultDisabled || !v.toggleable) ? 'yield-misc' : 'is-empty'}`}>
+                {v.opponentMaxPointPercent ? <div class="amb__note">Also requires {v.opponentMaxPointPercent}% of every rival's points</div> : null}
+                {v.minTurns ? <div class="amb__note">Decided on turn {v.minTurns}</div> : null}
+                {v.mpDefaultDisabled ? <div class="amb__note">Off by default in multiplayer</div> : null}
+                {!v.toggleable ? <div class="amb__note">Always on</div> : null}
+                {!(v.opponentMaxPointPercent || v.minTurns || v.mpDefaultDisabled || !v.toggleable) ? <span class="cell__dash">—</span> : null}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div></div>
+    <p class="amb-vpnote">
+      The Victory Point target is computed per map — every city site, buildable
+      VP improvement and project on the map feeds it
+      (<code>Game.cs&nbsp;·&nbsp;getVPToWin()</code>), scaled down by team count —
+      then shifted by the game-setup Victory Point option:
+      {victoryPointOptions.map((o, i) => (
+        <span class="amb-vpopt">{o.name} {o.modifier >= 0 ? `+${o.modifier}` : o.modifier}%{i < victoryPointOptions.length - 1 ? ' · ' : ''}</span>
+      ))}.
+    </p>
+  </section>
+
+  <nav class="amb-toc">
+    {groups.map(grp => (
+      <a class="chip chip--neutral" href={`#group-${grp.key}`}>{grp.label}</a>
+    ))}
+  </nav>
+
+  <div class="amb-groups" id="amb-groups">
+    {groups.map(grp => (
+      <section class="amb-group" id={`group-${grp.key}`}>
+        <header class="amb-group__hdr">
+          <h2 class="amb-group__title">
+            <span class="amb-group__mark">{GROUP_GLYPH[grp.key] || '🎯'}</span>
+            {grp.label}
+          </h2>
+          <span class="amb-group__count">{grp.goals.length}</span>
+        </header>
+        {grp.blurb ? <p class="amb-group__blurb">{grp.blurb}</p> : null}
+
+        <div class="grid"><div class="grid__scroll">
+          <table class="ntbl">
+            <thead>
+              <tr>
+                <th class="rowlabel rowlabel--corner">
+                  <span class="rowlabel__small">Ambition →</span>
+                  <span class="rowlabel__big">Field ↓</span>
+                </th>
+                <th class="nhdr nhdr--family">Tier</th>
+                <th class="nhdr nhdr--family amb-col-req">Requirements</th>
+                <th class="nhdr nhdr--family">Available</th>
+                <th class="nhdr nhdr--family">Offered to</th>
+                <th class="nhdr nhdr--family">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {grp.goals.map((g: Goal) => (
+                <tr data-goal={g.slug}>
+                  <th class="rowlabel" scope="row" id={g.slug}>
+                    <span class="amb__name"><LinkedText text={g.name} showIcons={false} /></span>
+                    {g.helpText ? <span class="amb__help">{g.helpText}</span> : null}
+                  </th>
+                  <td class={`cell ${tierLabel(g) === '—' ? 'is-empty' : 'yield-misc'}`}>
+                    {tierLabel(g) === '—'
+                      ? <span class="cell__dash">—</span>
+                      : <span class="amb__num">{tierLabel(g)}</span>}
+                    {g.national ? <div class="amb__flag">National</div> : null}
+                  </td>
+                  <td class={`cell ${g.requirements.length ? 'yield-misc' : 'is-empty'} cell--reqs`}>
+                    {g.requirements.length ? (
+                      <ul class="amb-reqs">
+                        {g.requirements.map(text => {
+                          const yk = classifyYield(text)?.toLowerCase() || 'misc';
+                          return (
+                            <li class={`effect yield-${yk}`}>
+                              <LinkedText text={text} showIcons={false} />
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : <span class="cell__dash">—</span>}
+                  </td>
+                  <td class={`cell ${(g.techPrereq || g.techObsolete || g.nationPrereq) ? 'yield-science' : 'is-empty'}`}>
+                    {g.techPrereq ? <div class="amb__note">after <LinkedText text={g.techPrereq.name} showIcons={false} /></div> : null}
+                    {g.techObsolete ? <div class="amb__note">until <LinkedText text={g.techObsolete.name} showIcons={false} /></div> : null}
+                    {g.nationPrereq ? <div class="amb__note"><LinkedText text={g.nationPrereq.name} showIcons={false} /> only</div> : null}
+                    {!(g.techPrereq || g.techObsolete || g.nationPrereq) ? <span class="cell__dash">—</span> : null}
+                  </td>
+                  <td class={`cell ${(g.familyClasses.length || g.religions.length || g.dlc || g.notDlc) ? 'yield-misc' : 'is-empty'}`}>
+                    {g.familyClasses.length ? (
+                      <div class="amb__note">{g.familyClasses.map(f => f.name).join(', ')} families</div>
+                    ) : null}
+                    {g.religions.length ? (
+                      <div class="amb__note"><LinkedText text={g.religions.map(r => r.name).join(', ')} showIcons={false} /></div>
+                    ) : null}
+                    {g.dlc ? <div class="amb__dlc">{fmtDlc(g.dlc)}</div> : null}
+                    {g.notDlc ? <div class="amb__dlc">not with {fmtDlc(g.notDlc)}</div> : null}
+                    {!(g.familyClasses.length || g.religions.length || g.dlc || g.notDlc) ? <span class="cell__dash">—</span> : null}
+                  </td>
+                  <td class={`cell ${(g.notes.length || g.weight !== 1000) ? 'yield-misc' : 'is-empty'}`}>
+                    {g.notes.map(n => <div class="amb__note"><LinkedText text={n} showIcons={false} /></div>)}
+                    {g.weight !== 1000 ? <div class="amb__weight">offer weight {g.weight.toLocaleString()}</div> : null}
+                    {!(g.notes.length || g.weight !== 1000) ? <span class="cell__dash">—</span> : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div></div>
+      </section>
+    ))}
+  </div>
+
+  <script type="application/json" id="amb-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('amb-search-blobs');
+      const grid = document.getElementById('amb-groups');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-goal="' + slug + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+        // Hide whole groups whose every row is filtered out.
+        for (const section of grid.querySelectorAll('.amb-group')) {
+          const any = section.querySelector('tbody tr:not(.is-hidden)');
+          section.classList.toggle('is-hidden', !any);
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .amb-intro {
+    max-width: 880px;
+    color: var(--text-dim);
+    font-size: 0.86rem;
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .amb-intro code, .amb-vpnote code {
+    background: var(--bg-elev);
+    padding: 0.05rem 0.4rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .amb-victory { margin-bottom: 1.4rem; }
+  .amb-vpnote {
+    max-width: 880px;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    margin: 0.6rem 0 0;
+  }
+  .amb-vpopt { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text); }
+
+  .amb-toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0 0 1.2rem;
+  }
+
+  .amb-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+  .amb-group.is-hidden { display: none; }
+  .amb-group__hdr {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin-bottom: 0.5rem;
+  }
+  .amb-group__title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+  }
+  .amb-group__mark { color: var(--accent); font-size: 1.05em; }
+  .amb-group__count {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+  }
+  .amb-group__blurb {
+    max-width: 820px;
+    color: var(--text-faint);
+    font-size: 0.76rem;
+    margin: -0.2rem 0 0.5rem;
+    line-height: 1.5;
+  }
+
+  .amb__name {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .amb__help {
+    display: block;
+    font-size: 0.64rem;
+    font-weight: 400;
+    color: var(--text-faint);
+    font-style: italic;
+    margin-top: 0.15rem;
+  }
+  .amb__num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .amb__flag {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-top: 0.15rem;
+  }
+  .amb__note { font-size: 0.7rem; line-height: 1.35; }
+  .amb__note + .amb__note { margin-top: 0.15rem; }
+  .amb__dlc, .amb__weight {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-faint);
+    font-style: italic;
+    margin-top: 0.15rem;
+  }
+
+  .amb-reqs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .amb-reqs .effect {
+    padding: 0.22rem 0.45rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.72rem;
+    line-height: 1.3;
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.32));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
+  }
+  .amb-reqs .effect a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  }
+  .cell--reqs { min-width: 20rem; }
+  .amb-group .ntbl .amb-col-req { min-width: 20rem; }
+
+  /* These per-group tables are short — the sticky thead inherited from the
+     nations layout floats over its own rows as the page scrolls. Pin nothing,
+     same fix as cognomens.astro. */
+  .amb-group .ntbl .nhdr,
+  .amb-group .ntbl .rowlabel--corner,
+  .amb-victory .ntbl .nhdr,
+  .amb-victory .ntbl .rowlabel--corner {
+    position: static;
+    top: auto;
+  }
+
+  tr.is-hidden { display: none; }
+</style>

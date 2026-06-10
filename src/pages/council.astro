@@ -1,0 +1,423 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import council from '../data/council.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+const { seats, courtiers, meta } = council;
+
+// Same rating→tone mapping the Archetypes page uses
+const RATING_TONE: Record<string, string> = {
+  Wisdom:     'yield-science',
+  Charisma:   'yield-civics',
+  Courage:    'yield-training',
+  Discipline: 'yield-orders',
+};
+
+// Archetype chip icons live at public/img/icons/traits/{slug}.png
+const ARCHETYPE_ICONS = new Set([
+  'builder', 'commander', 'diplomat', 'hero', 'judge',
+  'orator', 'schemer', 'scholar', 'tactician', 'zealot',
+]);
+const archetypeIcon = (name: string) => {
+  const slug = name.toLowerCase();
+  return ARCHETYPE_ICONS.has(slug) ? `${base}img/icons/traits/${slug}.png` : null;
+};
+
+const searchBlobs: Record<string, string> = {};
+for (const s of seats) searchBlobs[`seat-${s.slug}`] = JSON.stringify(s).toLowerCase();
+for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c).toLowerCase();
+---
+
+<Base title="Council & Courtiers" active="council" pageMark="🏛️" pageStats={[
+  { label: 'council seats', value: seats.length },
+  { label: 'courtier types', value: courtiers.length },
+]}>
+  <div class="grid__searchnote" id="grid-searchnote" hidden></div>
+
+  <div class="grid" id="council-grid">
+    <p class="caption">Council Seats</p>
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          {seats.map(s => <col data-col={`seat-${s.slug}`} />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Seat →</span>
+              <span class="rowlabel__big">Field ↓</span>
+            </th>
+            {seats.map(s => (
+              <th class="nhdr nhdr--family" data-col={`seat-${s.slug}`} id={s.slug}>
+                <div class="nhdr__inner">
+                  <span class="nhdr__name">{s.name}</span>
+                  {s.dlc && <span class="hdr__dlc">{s.dlc}</span>}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="rowlabel" scope="row">Unlocked by</th>
+            {seats.map(s => (
+              <td class={`cell ${s.techPrereq ? 'yield-science' : (s.dlc ? 'yield-misc' : 'is-empty')}`} data-col={`seat-${s.slug}`}>
+                {s.techPrereq
+                  ? <LinkedText text={s.techPrereq} />
+                  : (s.dlc ? <LinkedText text={`${s.dlc} event chain`} /> : <span class="cell__dash">—</span>)}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Eligible characters</th>
+            {seats.map(s => (
+              <td class={`cell ${s.traitPrereqs.length ? 'yield-misc' : 'is-empty'}`} data-col={`seat-${s.slug}`}>
+                {s.traitPrereqs.length ? (
+                  <div class="chiplist">
+                    {s.traitPrereqs.map(t => (
+                      <span class="chip chip--neutral">
+                        {archetypeIcon(t) && <img class="chip__icon" src={archetypeIcon(t)} alt="" loading="lazy" />}
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Rating yields ×△</th>
+            {seats.map(s => (
+              <td class={`cell ${s.ratingYields.length ? 'cell--effects' : 'is-empty'}`} data-col={`seat-${s.slug}`}>
+                {s.ratingYields.length ? s.ratingYields.map(ry => (
+                  <div class={`effect ${RATING_TONE[ry.rating] || 'yield-misc'}`}>
+                    <span class="rating-label">{ry.rating}</span>
+                    <span class="effect__out">
+                      <LinkedText text={`+${ry.base} ${ry.yield}${ry.scope === 'per city' ? '/City' : ''}`} showIcons={false} iconsForYields={true} />
+                      <span class="tri-mark" title="Scales with the triangle of the rating: ×R·(R+1)/2">×△</span>
+                    </span>
+                  </div>
+                )) : <span class="cell__dash">—</span>}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Rating opinions ×△</th>
+            {seats.map(s => (
+              <td class={`cell ${s.ratingOpinions.length ? 'cell--effects' : 'is-empty'}`} data-col={`seat-${s.slug}`}>
+                {s.ratingOpinions.length ? s.ratingOpinions.map(ro => (
+                  <div class={`effect ${RATING_TONE[ro.rating] || 'yield-misc'}`}>
+                    <span class="rating-label">{ro.rating}</span>
+                    <span class="effect__out">
+                      +{ro.base} {ro.target} Opinion
+                      <span class="tri-mark" title="Scales with the triangle of the rating, rounded to the nearest 5">×△</span>
+                    </span>
+                  </div>
+                )) : <span class="cell__dash">—</span>}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Other effects</th>
+            {seats.map(s => (
+              <td class={`cell ${s.otherEffects.length ? 'cell--effects' : 'is-empty'}`} data-col={`seat-${s.slug}`}>
+                {s.otherEffects.length ? s.otherEffects.map(text => {
+                  const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                  return (
+                    <div class={`effect yield-${yieldKey}`}>
+                      <LinkedText text={text} showIcons={false} iconsForYields={true} />
+                    </div>
+                  );
+                }) : <span class="cell__dash">—</span>}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Assignment opinion</th>
+            {seats.map(s => (
+              <td class={`cell ${s.assignOpinion ? 'yield-legitimacy' : 'is-empty'}`} data-col={`seat-${s.slug}`}>
+                {s.assignOpinion ? <span class="opinion__val opinion--pos">+{s.assignOpinion}</span> : <span class="cell__dash">—</span>}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">XP per turn</th>
+            {seats.map(s => (
+              <td class={`cell ${s.xpPerTurn ? 'yield-misc' : 'is-empty'}`} data-col={`seat-${s.slug}`}>
+                {s.xpPerTurn ? <span class="opinion__val opinion--pos">+{s.xpPerTurn}</span> : <span class="cell__dash">—</span>}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="caption">Courtiers</p>
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <colgroup>
+          <col class="ntbl__rowlabel-col" />
+          {courtiers.map(c => <col data-col={`courtier-${c.slug}`} />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">
+              <span class="rowlabel__small">Courtier →</span>
+              <span class="rowlabel__big">Field ↓</span>
+            </th>
+            {courtiers.map(c => (
+              <th class="nhdr nhdr--family" data-col={`courtier-${c.slug}`} id={c.slug}>
+                <div class="nhdr__inner">
+                  <span class="nhdr__name">{c.name}</span>
+                  <span class="hdr__dlc">“{c.nickname}”</span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="rowlabel" scope="row">Specialty rating</th>
+            {courtiers.map(c => (
+              <td class="cell cell--effects" data-col={`courtier-${c.slug}`}>
+                {c.ratings.map(r => (
+                  <div class={`effect ${RATING_TONE[r.rating] || 'yield-misc'}`}>
+                    <span class="rating-label">{r.rating}</span>
+                    <span class="opinion__val opinion--pos">{r.min}–{r.max}</span>
+                  </div>
+                ))}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Archetype roll</th>
+            {courtiers.map(c => (
+              <td class="cell yield-misc" data-col={`courtier-${c.slug}`}>
+                {c.archetypeDie.map(d => (
+                  <div class="law-row">
+                    <span class="law-row__name">
+                      {archetypeIcon(d.trait) && <img class="chip__icon" src={archetypeIcon(d.trait)} alt="" loading="lazy" />}
+                      {d.trait}
+                    </span>
+                    <span class="die-pct">{d.pct}%</span>
+                  </div>
+                ))}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Adjective roll</th>
+            {courtiers.map(c => (
+              <td class="cell yield-misc" data-col={`courtier-${c.slug}`}>
+                <ul class="modlist">
+                  {c.adjectiveDie.map(d => (
+                    <li>{d.trait} <span class="die-pct">{d.pct}%</span></li>
+                  ))}
+                </ul>
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">How acquired</th>
+            {courtiers.map(c => (
+              <td class={`cell ${c.acquisition.length ? 'yield-misc' : 'is-empty'}`} data-col={`courtier-${c.slug}`}>
+                {c.acquisition.length ? (
+                  <ul class="modlist">
+                    {c.acquisition.map(a => <li><LinkedText text={a} showIcons={false} /></li>)}
+                  </ul>
+                ) : <span class="cell__dash">—</span>}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="caption">Court Income per Rating Point ×△</p>
+    <div class="grid__scroll">
+      <table class="ntbl ntbl--narrow">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner"><span class="rowlabel__big">Rating</span></th>
+            <th class="nhdr nhdr--family">Yield</th>
+            <th class="nhdr nhdr--family">Leader / Court</th>
+            <th class="nhdr nhdr--family">Courtier ({100 + meta.courtierYieldModifier}%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {meta.courtRates.map(r => (
+            <tr>
+              <th class="rowlabel" scope="row">{r.rating}</th>
+              <td class={`cell ${RATING_TONE[r.rating] || 'yield-misc'}`}><LinkedText text={r.yield} /></td>
+              <td class={`cell ${RATING_TONE[r.rating] || 'yield-misc'}`}><span class="opinion__val opinion--pos">+{r.full}</span></td>
+              <td class={`cell ${RATING_TONE[r.rating] || 'yield-misc'}`}><span class="opinion__val opinion--pos">+{r.courtier}</span></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="legends">
+    <div class="legend">
+      <span class="legend__label">×△ Triangular scaling</span>
+      Council yields and opinions multiply their base by tri(R) = R·(R+1)/2 of the seated character's rating —
+      rating 1/2/3/4/5 → ×1/×3/×6/×10/×15. Flat "per point" readings understate high ratings.
+    </div>
+    <div class="legend">
+      <span class="legend__label">Court income offsets</span>
+      Court income (table above) applies each yield's triangle offset
+      ({meta.courtRates.map(r => `${r.yield} ${r.triangleOffset >= 0 ? '+' : ''}${r.triangleOffset}`).join(', ')}):
+      multiplier is tri(R + offset) − offset, so Science ramps later and Money earlier.
+    </div>
+    {meta.notes.map(n => (
+      <div class="legend"><span class="legend__label">Note</span><LinkedText text={n} showIcons={false} /></div>
+    ))}
+    <div class="legend">
+      <span class="legend__label">Random courtiers</span>
+      {meta.randomSources.join(' · ')} — courtiers join at age {meta.courtierAge}.
+    </div>
+    <div class="legend">
+      <span class="legend__label">See also</span>
+      <a href={`${base}jobs`}>Jobs</a> for council seats alongside General/Governor/Agent/Explorer slots,
+      and <a href={`${base}archetypes`}>Archetypes</a> for what each eligible archetype does.
+    </div>
+  </div>
+
+  <script type="application/json" id="council-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('council-search-blobs');
+      const grid = document.getElementById('council-grid');
+      const note = document.getElementById('grid-searchnote');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      const keys = Object.keys(blobs);
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        let hidden = 0;
+        for (const key of keys) {
+          const match = !q || blobs[key].includes(q);
+          if (!match) hidden++;
+          for (const el of grid.querySelectorAll('[data-col="' + key + '"]')) {
+            el.classList.toggle('is-hidden', !match);
+          }
+        }
+        if (note) {
+          if (q && hidden > 0) {
+            note.hidden = false;
+            note.textContent = 'Showing ' + (keys.length - hidden) + ' of ' + keys.length + ' columns matching "' + input.value + '"';
+          } else {
+            note.hidden = true;
+            note.textContent = '';
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .caption { margin-bottom: 0.4rem; }
+  .caption:not(:first-child) { margin-top: 1.4rem; }
+
+  .hdr__dlc {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    font-style: italic;
+  }
+
+  .chiplist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+  .chiplist .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+  }
+  .chip__icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    object-fit: contain;
+    vertical-align: -0.15em;
+    margin-right: 0.2rem;
+  }
+
+  .cell--effects .effect {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .cell--effects .rating-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+  }
+  .effect__out { text-align: right; }
+  .tri-mark {
+    margin-left: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--gold-soft, var(--text-faint));
+    cursor: help;
+  }
+
+  .law-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.05rem 0;
+    font-size: 0.7rem;
+  }
+  .law-row__name { flex: 1; }
+
+  .die-pct {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.66rem;
+    color: var(--text-faint);
+  }
+
+  .modlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .modlist li {
+    font-size: 0.66rem;
+    color: var(--text);
+    padding: 0.05rem 0;
+    border-bottom: 1px dashed var(--border);
+    display: flex;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+  .modlist li:last-child { border-bottom: 0; }
+
+  .opinion__val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .opinion--pos { color: #4caf7d; }
+
+  .ntbl--narrow .nhdr { min-width: 7rem; }
+</style>

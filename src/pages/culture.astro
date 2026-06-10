@@ -1,0 +1,420 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import culture from '../data/culture.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+const levels = culture.cultureLevels;
+const devLevels = culture.developmentLevels;
+const G = culture.globals;
+
+const totalWonders = levels.reduce((n, l) => n + l.gates.wonders.length, 0);
+const totalBuildings = levels.reduce((n, l) => n + l.gates.buildings.length, 0);
+const totalUnits = levels.reduce((n, l) => n + l.gates.units.length, 0);
+---
+
+<Base
+  title="Culture & Development"
+  active="culture"
+  pageMark="🎭"
+  description="Old World's four city culture levels — Weak, Developing, Strong and Legendary — with the culture thresholds, victory points, governor XP, citizen consumption, capture and assimilation modifiers, and everything each level unlocks: wonders, urban buildings, culture-tier units and city projects. Plus the Development game-setup levels from development.xml."
+  pageStats={[
+    { label: 'culture levels', value: levels.length },
+    { label: 'gated wonders', value: totalWonders },
+    { label: 'gated buildings', value: totalBuildings },
+    { label: 'gated units', value: totalUnits },
+  ]}
+>
+  <p class="lede">
+    Every city has a <b>culture level</b>: Weak → Developing → Strong →
+    Legendary. Culture accumulates per city from buildings, specialists,
+    projects and events; when it reaches the level's threshold the city
+    advances (and fires a culture event). Higher culture is worth more
+    <LinkedText text="Victory Points" />, unlocks better wonders, buildings,
+    units and projects — but each <LinkedText text="Citizen" /> consumes more
+    to sustain the lifestyle.
+  </p>
+
+  <section class="cl-section">
+    <h2 class="cl-h2">The four culture levels</h2>
+    <table class="cl-table">
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th class="cl-num">Culture to advance</th>
+          <th class="cl-num">VP per city</th>
+          <th class="cl-num">Governor XP/turn</th>
+          <th>Citizen consumption</th>
+          <th>Level-up project</th>
+        </tr>
+      </thead>
+      <tbody>
+        {levels.map(l => (
+          <tr>
+            <td class="cl-level">
+              <img class="cl-level__icon" src={`${base}img/icons/culture/${l.slug}.png`} alt="" onerror="this.style.display='none'" />
+              <b>{l.name}</b>
+            </td>
+            <td class="cl-num"><b>{l.threshold.toLocaleString('en-US')}</b></td>
+            <td class="cl-num">{l.vp}</td>
+            <td class="cl-num">{l.governorXp}</td>
+            <td>
+              <div class="cl-effects">
+                {l.consumption.map(text => {
+                  const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                  return (
+                    <span class={`cl-effect yield-${yieldKey}`}>
+                      <LinkedText text={text} showIcons={false} iconsForYields={true} />
+                    </span>
+                  );
+                })}
+              </div>
+            </td>
+            <td class="cl-proj">{l.defaultProject ? l.defaultProject.name : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="cl-fineprint">
+      <b>Culture to advance</b> is <code>iThreshold</code> — the culture a city
+      must accumulate to leave that level (100 to go Weak → Developing, … 5,000
+      to advance past Legendary). Beyond Legendary each further <i>culture
+      step</i> costs 5,000 × (steps + 1) and is worth <b>+1 VP</b> apiece
+      (<code>countCultureStepVPs</code>). <b>Governor XP/turn</b> is the XP a
+      governor earns each turn from the city's culture level
+      (<code>culture().miXP</code>). The <b>level-up project</b> (Council
+      I–IV) is the city's default/shortfall project at that level.
+    </p>
+  </section>
+
+  <section class="cl-section">
+    <h2 class="cl-h2">What each level unlocks</h2>
+    <p>
+      Culture prereqs across the rest of the XML, grouped by the level that
+      gates them. Tiered city projects (Council, Festival, Decree, Inquiry,
+      Hunt, Olympiad, Convoy) require the city to be at <b>exactly</b> that
+      level; Treasury / Forum / Archive tiers require <b>at least</b> that
+      level.
+    </p>
+    <div class="cl-cards">
+      {levels.map(l => (
+        <article class="cl-card">
+          <h3 class="cl-card__name">
+            <img class="cl-level__icon" src={`${base}img/icons/culture/${l.slug}.png`} alt="" onerror="this.style.display='none'" />
+            {l.name}
+          </h3>
+
+          {l.gates.wonders.length > 0 && (
+            <div class="cl-gate">
+              <div class="cl-gate__label">Wonders</div>
+              <ul class="cl-gate__list">
+                {l.gates.wonders.map(w => (
+                  <li><LinkedText text={w.name} /></li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {l.gates.buildings.length > 0 && (
+            <div class="cl-gate">
+              <div class="cl-gate__label">Urban buildings</div>
+              <ul class="cl-gate__list">
+                {l.gates.buildings.map(b => (
+                  <li>
+                    <LinkedText text={b.name} />
+                    {b.class && b.class !== b.name && <span class="cl-dim"> · {b.class}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {l.gates.units.length > 0 && (
+            <div class="cl-gate">
+              <div class="cl-gate__label">Units</div>
+              <ul class="cl-gate__list">
+                {l.gates.units.map(u => (
+                  <li>
+                    <LinkedText text={u.name} />
+                    {u.obsoleteAt && <span class="cl-dim"> · until {u.obsoleteAt}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {l.gates.projectsExact.length > 0 && (
+            <div class="cl-gate">
+              <div class="cl-gate__label">Projects (exactly this level)</div>
+              <div class="cl-gate__chips">
+                {l.gates.projectsExact.map(p => (
+                  <span class="cl-chip">{p.name}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {l.gates.projectsMin.length > 0 && (
+            <div class="cl-gate">
+              <div class="cl-gate__label">Projects (this level or higher)</div>
+              <div class="cl-gate__chips">
+                {l.gates.projectsMin.map(p => (
+                  <span class="cl-chip">{p.name}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+    <p class="cl-fineprint">
+      Culture-tier units come in pairs: the Developing-tier version (Battering
+      Ram, Hoplite, Hastatus…) goes <b>obsolete at Strong</b>, replaced by its
+      Strong-tier upgrade (Siege Tower, Phalangite, Legionary…). Buildings and
+      wonders also need their tech and other prereqs — only the culture gate is
+      shown here.
+    </p>
+  </section>
+
+  <section class="cl-section">
+    <h2 class="cl-h2">Capture & assimilation</h2>
+    <table class="cl-table cl-table--narrow">
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th class="cl-num">Extra capture turns</th>
+          <th class="cl-num">Extra assimilate turns</th>
+          <th class="cl-num">Assimilation per turn</th>
+        </tr>
+      </thead>
+      <tbody>
+        {levels.map(l => (
+          <tr>
+            <td class="cl-level">
+              <img class="cl-level__icon" src={`${base}img/icons/culture/${l.slug}.png`} alt="" onerror="this.style.display='none'" />
+              <b>{l.name}</b>
+            </td>
+            <td class="cl-num">+{l.extraCaptureTurns}</td>
+            <td class="cl-num">+{l.extraAssimilateTurns}</td>
+            <td class="cl-num">−{Math.abs(l.assimilationRate)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="cl-fineprint">
+      A captured foreign city starts at <b>{G.baseAssimilateTurns} base
+      assimilate turns</b> plus the <i>founder's</i> culture bonus, and yields
+      are modified by <b>{G.assimilateYieldModifier}%</b> until assimilated;
+      the countdown ticks by the city's <i>current</i> culture level each turn
+      — higher culture assimilates faster (<code>City.cs</code>,
+      <code>doPlayerTurn</code>). Extra capture turns stack on the base
+      {G.baseCaptureTurns} — full formula on the
+      <a href={`${base}city-capture-mechanics`}>City Capture Mechanics</a> page.
+    </p>
+  </section>
+
+  <section class="cl-section">
+    <h2 class="cl-h2">Development — what development.xml actually is</h2>
+    <p>
+      Despite the name, <code>development.xml</code> has nothing to do with
+      city development. It defines the <b>Development</b> game-setup option
+      (advanced start): how developed <i>existing</i> (AI) nations are when
+      the game begins — average cities, capital population and free techs —
+      plus how many turns the AI holds off building wonders and founding
+      religions.
+    </p>
+    <table class="cl-table">
+      <thead>
+        <tr>
+          <th>Setting</th>
+          <th class="cl-num">Avg cities</th>
+          <th class="cl-num">Capital pop</th>
+          <th class="cl-num">Free techs</th>
+          <th class="cl-num">AI no-Wonder turns</th>
+          <th class="cl-num">AI no-Religion turns</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {devLevels.map(d => (
+          <tr>
+            <td class="cl-level"><b>{d.name}</b></td>
+            <td class="cl-num">{d.avgCities || '—'}</td>
+            <td class="cl-num">{d.capitalPopulation || '—'}</td>
+            <td class="cl-num">{d.techs || '—'}</td>
+            <td class="cl-num">{d.noWonderTurns || '—'}</td>
+            <td class="cl-num">{d.noReligionTurns || '—'}</td>
+            <td class="cl-help">{d.help}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+
+  <p class="cl-source">
+    Source: <code>culture.xml</code> (thresholds, VP, XP, capture/assimilate
+    modifiers, EffectCity, Council projects), <code>effectCity.xml</code>
+    (per-Pop consumption), <code>improvement.xml</code> / <code>unit.xml</code>
+    / <code>project.xml</code> (<code>CulturePrereq</code>,
+    <code>CultureObsolete</code>, <code>RequiresCulture</code>,
+    <code>MinimumCulture</code>), <code>development.xml</code>,
+    <code>globalsInt.xml</code>; semantics from <code>City.cs</code>
+    (<code>growCulture</code>, <code>canDoProject</code>),
+    <code>Player.cs</code> (<code>countVP</code>) and
+    <code>Character.cs</code> (governor XP).
+  </p>
+</Base>
+
+<style>
+  .lede {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    max-width: 72ch;
+    margin: 0.4rem 0 1.5rem;
+  }
+  .lede b { color: var(--text); }
+
+  .cl-section { margin-top: 2rem; }
+  .cl-h2 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.5rem;
+    color: var(--text);
+  }
+  .cl-section p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 78ch;
+    margin: 0.3rem 0;
+  }
+  .cl-section p b { color: var(--text); }
+
+  .cl-table {
+    width: 100%;
+    max-width: 100ch;
+    border-collapse: collapse;
+    margin: 0.6rem 0;
+    font-size: 0.8rem;
+  }
+  .cl-table--narrow { max-width: 64ch; }
+  .cl-table thead th {
+    text-align: left;
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .cl-table tbody td {
+    padding: 0.45rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text-dim);
+  }
+  .cl-table tbody tr:hover { background: var(--bg-elev); }
+  .cl-num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+  .cl-num b { color: var(--text); font-weight: 600; }
+  .cl-level { white-space: nowrap; }
+  .cl-level b { color: var(--text); font-family: var(--font-display); letter-spacing: 0.03em; }
+  .cl-level__icon { width: 1.1em; height: 1.1em; object-fit: contain; vertical-align: -0.18em; margin-right: 0.35rem; }
+  .cl-proj { white-space: nowrap; }
+  .cl-help { font-size: 0.75rem; color: var(--text-faint); }
+
+  /* Consumption mini-tiles — colored by the yield they touch */
+  .cl-effects { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .cl-effect {
+    display: inline-block;
+    padding: 0.1rem 0.45rem 0.1rem 0.4rem;
+    font-size: 0.74rem;
+    border-left: 3px solid var(--yield-bg, var(--border-strong));
+    background: color-mix(in srgb, var(--yield-bg, var(--border-strong)) 14%, transparent);
+    border-radius: 0 3px 3px 0;
+    color: var(--text-soft);
+    white-space: nowrap;
+  }
+
+  /* Per-level unlock cards */
+  .cl-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.8rem;
+    margin: 0.8rem 0;
+    max-width: 1500px;
+  }
+  .cl-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.8rem 0.9rem;
+  }
+  .cl-card__name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin: 0 0 0.6rem;
+  }
+  .cl-gate { margin-top: 0.6rem; }
+  .cl-gate__label {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin-bottom: 0.25rem;
+  }
+  .cl-gate__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text-soft);
+  }
+  .cl-gate__list li { padding: 0.06rem 0; }
+  .cl-dim { color: var(--text-faint); font-size: 0.85em; }
+  .cl-gate__chips { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+  .cl-chip {
+    display: inline-block;
+    padding: 0.08rem 0.45rem;
+    font-size: 0.7rem;
+    color: var(--text-soft);
+    background: color-mix(in srgb, var(--border-strong) 35%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .cl-fineprint {
+    color: var(--text-faint) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.5;
+    font-style: italic;
+    max-width: 80ch;
+  }
+  .cl-fineprint b { color: var(--text-dim); }
+  .cl-fineprint a { color: var(--accent); }
+
+  .cl-source {
+    margin-top: 2.2rem;
+    color: var(--text-faint);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    max-width: 90ch;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.78em;
+    background: var(--bg-elev);
+    padding: 0 0.25rem;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+</style>

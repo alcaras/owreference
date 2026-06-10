@@ -62,6 +62,12 @@ export const TABS: Tab[] = [
     ],
   },
 
+  {
+    slug: 'tribes', icon: '🏕️', label: 'Tribes', section: 'Civilizations',
+    status: 'built', sourceSheet: '',
+    summary: 'Barbarian tribes — levels, units, sites, diplomacy',
+  },
+
   // ── Characters ─────────────────────────────────────────────────
   {
     slug: 'jobs', icon: '💼', label: 'Jobs', section: 'Characters',
@@ -70,10 +76,20 @@ export const TABS: Tab[] = [
     willContain: ['Each job slot, requirements, and ability output formula'],
   },
   {
+    slug: 'council', icon: '🏛️', label: 'Council & Courtiers', section: 'Characters',
+    status: 'built', sourceSheet: '',
+    summary: 'Council seats (triangular rating yields) and the four courtier types',
+  },
+  {
     slug: 'opinion', icon: '❤️', label: 'Opinion', section: 'Characters',
     status: 'built', sourceSheet: '❤️ Opinion',
     summary: 'How character opinion is calculated',
     willContain: ['Opinion modifier table (gifts, marriage, war, etc.)'],
+  },
+  {
+    slug: 'traits', icon: '🎭', label: 'Traits', section: 'Characters',
+    status: 'built', sourceSheet: '',
+    summary: 'Full trait catalog — ratings, effects, opinions, restrictions',
   },
   {
     slug: 'trait-inheritance', icon: '🧬', label: 'Trait Inheritance', section: 'Characters',
@@ -131,6 +147,16 @@ export const TABS: Tab[] = [
     willContain: ['Wonder grid: tech req, civic req, cost, build bonus, ongoing bonus'],
   },
   {
+    slug: 'projects', icon: '🏗️', label: 'Projects', section: 'Empire',
+    status: 'built', sourceSheet: '',
+    summary: 'City projects — cost, prerequisites, and effects',
+  },
+  {
+    slug: 'ambitions', icon: '🏆', label: 'Ambitions', section: 'Empire',
+    status: 'built', sourceSheet: '',
+    summary: 'All 400+ ambition goals by tier and class, plus victory types',
+  },
+  {
     slug: 'laws', icon: '⚖️', label: 'Laws', section: 'Empire',
     status: 'built', sourceSheet: '⚖️ Laws',
     summary: 'Law pairs and their effects',
@@ -161,6 +187,11 @@ export const TABS: Tab[] = [
     status: 'built', sourceSheet: '👨‍🌾 Specialists',
     summary: 'Rural specialists, art, yields, and slots',
     willContain: ['Each rural specialist class, yields, and which improvements it slots into'],
+  },
+  {
+    slug: 'culture', icon: '🎭', label: 'Culture & Development', section: 'Empire',
+    status: 'built', sourceSheet: '',
+    summary: 'City culture levels — thresholds, VP, consumption, and unlocks',
   },
   {
     slug: 'hurrying', icon: '⏩', label: 'Hurrying Production', section: 'Empire',
@@ -225,7 +256,64 @@ export const TABS: Tab[] = [
     ],
   },
 
+  // ── World ─────────────────────────────────────────────────────
+  {
+    slug: 'terrain', icon: '⛰️', label: 'Terrain', section: 'World',
+    status: 'built', sourceSheet: '',
+    summary: 'Terrain, vegetation, height — movement, chop yields, valid builds',
+  },
+  {
+    slug: 'resources', icon: '💎', label: 'Resources', section: 'World',
+    status: 'built', sourceSheet: '',
+    summary: 'Map resources — yields, harvests, luxuries, and spawn rules',
+  },
+  {
+    slug: 'map-scripts', icon: '🗺️', label: 'Map Scripts', section: 'World',
+    status: 'built', sourceSheet: '',
+    summary: 'Map generation scripts and their option chips',
+  },
+  {
+    slug: 'continent', icon: '🌍', label: 'Continent', section: 'World',
+    status: 'built', sourceSheet: '',
+    summary: 'Continent map-script sweep — spawns, mirroring, resources',
+  },
+
   // ── Mechanics ─────────────────────────────────────────────────
+  {
+    slug: 'events', icon: '📜', label: 'Story Events', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'Every narrative event — browsable by class, trigger, and chain',
+  },
+  {
+    slug: 'diplomacy', icon: '🕊️', label: 'Diplomacy', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'States, war score, truces, alliances, tribute',
+  },
+  {
+    slug: 'occurrences', icon: '🌋', label: 'Occurrences', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'Calamities, world transformations, and era/crisis occurrences',
+  },
+  {
+    slug: 'subjects', icon: '🤝', label: 'Subjects', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'Event-system casting roles — 2,062 subject templates and their filters',
+  },
+  {
+    slug: 'concepts', icon: '📖', label: 'Concepts', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'Game-mechanics glossary — every in-game encyclopedia entry, auto-linked',
+  },
+  {
+    slug: 'difficulty', icon: '🎚️', label: 'Difficulty & Advantages', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'What each difficulty preset changes — prosperity, AI bonuses, tribes',
+  },
+  {
+    slug: 'missions', icon: '🎯', label: 'Missions', section: 'Mechanics',
+    status: 'built', sourceSheet: '',
+    summary: 'Character missions — costs, requirements, outcomes',
+  },
   {
     slug: 'ruin-events', icon: '🏚️', label: 'Ruin Events', section: 'Mechanics',
     status: 'built', sourceSheet: '',
@@ -305,6 +393,7 @@ export const SECTIONS = [
   'Empire',
   'Technology',
   'Military',
+  'World',
   'Mechanics',
   'Character Skills',
 ] as const;

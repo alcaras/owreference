@@ -1,28 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
-import { TABS } from '../data/tabs';
-import { NAV } from '../data/nav';
+import { TABS, SECTIONS } from '../data/tabs';
 
 const base = import.meta.env.BASE_URL;
 
-// The catalog is driven by the curated NAV set ONLY — never link a page
-// that isn't ready/surfaced, even if tabs.ts marks it 'built'. tabs.ts
-// supplies the display metadata (icon, section, summary) per slug.
-const tabBySlug = Object.fromEntries(TABS.map(t => [t.slug, t]));
+// The home catalog is the COMPLETE directory: every tab whose status is
+// 'built' in tabs.ts, grouped by section. The header nav (nav.ts) stays a
+// short curated subset; this page is where everything is findable.
 type Card = { slug: string; label: string; icon: string; summary: string };
 
 const sectionOrder: string[] = [];
 const bySection: Record<string, Card[]> = {};
-for (const n of NAV) {
-  const meta = tabBySlug[n.href];
-  const section = meta?.section ?? 'More';
-  if (!bySection[section]) { bySection[section] = []; sectionOrder.push(section); }
-  bySection[section].push({
-    slug: n.href,
-    label: n.label,
-    icon: meta?.icon ?? '•',
-    summary: meta?.summary ?? '',
-  });
+for (const section of SECTIONS) {
+  for (const t of TABS.filter(t => t.section === section && t.status === 'built')) {
+    if (!bySection[section]) { bySection[section] = []; sectionOrder.push(section); }
+    bySection[section].push({
+      slug: t.slug,
+      label: t.label,
+      icon: t.icon,
+      summary: t.summary,
+    });
+  }
 }
 ---
 

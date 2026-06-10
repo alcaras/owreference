@@ -1,0 +1,255 @@
+---
+// Concepts — the in-game encyclopedia of mechanics, as a glossary.
+// Data: src/data/concepts.json (scripts/build_concepts.py ← concept.xml).
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import data from '../data/concepts.json';
+import { entities } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+const concepts = data.concepts;
+
+// If a concept shares its name with an entity that already has its own page
+// (e.g. Legitimacy → yields/legitimacy), link out to it instead of competing.
+const entityByName = new Map<string, (typeof entities)[number]>();
+for (const e of entities) {
+  const k = e.name.toLowerCase();
+  if (!entityByName.has(k)) entityByName.set(k, e);
+}
+
+// Group alphabetically by first letter.
+const groups = new Map<string, typeof concepts>();
+for (const c of concepts) {
+  const letter = (c.name[0] || '#').toUpperCase();
+  if (!groups.has(letter)) groups.set(letter, []);
+  groups.get(letter)!.push(c);
+}
+const letters = [...groups.keys()].sort();
+
+const dlcCount = concepts.filter(c => c.dlc).length;
+---
+
+<Base
+  title="Concepts"
+  active="concepts"
+  pageMark="📖"
+  pageStats={[
+    { label: 'concepts', value: concepts.length },
+    { label: 'letters', value: letters.length },
+    { label: 'dlc-tagged', value: dlcCount },
+  ]}
+>
+  <div class="glossary" id="glossary">
+    <nav class="glossary__rail" aria-label="Jump to letter">
+      <input
+        id="concept-filter"
+        class="glossary__filter"
+        type="search"
+        placeholder="Filter concepts…"
+        aria-label="Filter concepts"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="glossary__letters">
+        {letters.map(l => (
+          <a class="glossary__letter" href={`#letter-${l}`} data-letter={l}>{l}</a>
+        ))}
+      </div>
+    </nav>
+
+    {letters.map(letter => (
+      <section class="glossary__group" id={`letter-${letter}`} data-letter={letter}>
+        <h2 class="glossary__group-label">{letter}</h2>
+        <div class="glossary__entries">
+          {groups.get(letter)!.map(c => {
+            const ext = entityByName.get(c.name.toLowerCase());
+            return (
+              <article class="concept" id={c.slug} data-concept>
+                <h3 class="concept__name">
+                  <a class="concept__anchor" href={`#${c.slug}`}>{c.name}</a>
+                  {c.dlc && <span class="chip chip--neutral concept__dlc">{c.dlc}</span>}
+                  {ext && ext.page && (
+                    <a class="concept__ext" href={`${base}${ext.page}`}>full page →</a>
+                  )}
+                </h3>
+                {c.help.map(p =>
+                  p.startsWith('• ') ? (
+                    <p class="concept__para concept__para--bullet">
+                      <LinkedText text={p.slice(2)} showIcons={false} />
+                    </p>
+                  ) : (
+                    <p class="concept__para">
+                      <LinkedText text={p} showIcons={false} />
+                    </p>
+                  )
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+
+    <p class="glossary__empty" id="glossary-empty" hidden>No concepts match.</p>
+  </div>
+
+  <script is:inline>
+    // Filter glossary entries by name/text. Works from the in-page filter and
+    // the site header search alike (mirrors laws.astro's pattern).
+    (function () {
+      const local = document.getElementById('concept-filter');
+      const site = document.getElementById('site-search');
+      const root = document.getElementById('glossary');
+      const empty = document.getElementById('glossary-empty');
+      if (!root) return;
+      const articles = Array.from(root.querySelectorAll('[data-concept]'));
+      const blobs = articles.map(a => (a.textContent || '').toLowerCase());
+
+      function apply(q) {
+        q = (q || '').trim().toLowerCase();
+        let any = false;
+        articles.forEach((a, i) => {
+          const show = !q || blobs[i].includes(q);
+          a.hidden = !show;
+          if (show) any = true;
+        });
+        for (const section of root.querySelectorAll('.glossary__group')) {
+          const visible = section.querySelector('[data-concept]:not([hidden])');
+          section.hidden = !visible;
+          const letter = section.getAttribute('data-letter');
+          const link = root.querySelector('.glossary__letter[data-letter="' + letter + '"]');
+          if (link) link.classList.toggle('is-dimmed', !visible);
+        }
+        if (empty) empty.hidden = any;
+      }
+
+      if (local) local.addEventListener('input', () => apply(local.value));
+      if (site) site.addEventListener('input', () => {
+        if (local) local.value = site.value;
+        apply(site.value);
+      });
+    })();
+  </script>
+</Base>
+
+<style>
+  .glossary {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+  }
+
+  /* Sticky letter rail + filter */
+  .glossary__rail {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0;
+    margin-bottom: 0.6rem;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+  .glossary__filter {
+    flex: 0 1 14rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.8rem;
+    outline: none;
+  }
+  .glossary__filter:focus { border-color: var(--accent); }
+  .glossary__filter::placeholder { color: var(--text-faint); }
+  .glossary__letters { display: flex; flex-wrap: wrap; gap: 0.1rem; }
+  .glossary__letter {
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 0.1rem 0.34rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.12s, background 0.12s, opacity 0.12s;
+  }
+  .glossary__letter:hover { color: var(--accent); background: var(--bg-elev-2); }
+  .glossary__letter.is-dimmed { opacity: 0.25; pointer-events: none; }
+
+  .glossary__group { margin-bottom: 1.2rem; }
+  .glossary__group-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--accent);
+    margin: 0 0 0.4rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+  }
+  .glossary__entries { display: flex; flex-direction: column; gap: 0.55rem; }
+
+  .concept {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.8rem 0.65rem;
+    scroll-margin-top: 4rem; /* clear the sticky rail when jumping to anchors */
+  }
+  .concept:target { border-color: var(--accent); }
+  .concept__name {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    margin: 0 0 0.3rem;
+  }
+  .concept__anchor { color: var(--text); text-decoration: none; }
+  .concept__anchor:hover { color: var(--accent); }
+  .concept__dlc { font-size: 0.62rem; }
+  .concept__ext {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--accent-2);
+    text-decoration: none;
+  }
+  .concept__ext:hover { text-decoration: underline; }
+
+  .concept__para {
+    margin: 0 0 0.35rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+  .concept__para:last-child { margin-bottom: 0; }
+  .concept__para--bullet {
+    margin-left: 1rem;
+    position: relative;
+  }
+  .concept__para--bullet::before {
+    content: '•';
+    position: absolute;
+    left: -0.8rem;
+    color: var(--accent);
+  }
+  .concept__para :global(a) {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  .concept__para :global(a:hover) { color: var(--accent); }
+
+  .glossary__empty {
+    color: var(--text-faint);
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+  }
+</style>

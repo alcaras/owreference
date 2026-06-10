@@ -1,0 +1,268 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import Term from '../components/Term.astro';
+import resources from '../data/resources.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+const cols = [
+  { key: 'name',     label: 'Resource' },
+  { key: 'category', label: 'Category' },
+  { key: 'tile',     label: 'Tile Yield' },
+  { key: 'worked',   label: 'Worked By' },
+  { key: 'harvest',  label: 'Harvest' },
+  { key: 'spawn',    label: 'Spawns On' },
+  { key: 'effects',  label: 'Effects' },
+];
+
+const luxuries = resources.filter(r => r.category === 'Luxury').length;
+const strategic = resources.filter(r => r.category === 'Strategic').length;
+
+const searchBlobs: Record<string, string> = {};
+for (const r of resources) {
+  searchBlobs[r.slug] = JSON.stringify(r).toLowerCase();
+}
+---
+
+<Base title="Resources" active="resources" pageMark="💎" pageStats={[
+  { label: 'resources', value: resources.length },
+  { label: 'luxuries', value: luxuries },
+  { label: 'strategic', value: strategic },
+]}>
+  <div class="grid" id="res-grid">
+    <div class="grid__scroll">
+      <table class="ntbl">
+        <thead>
+          <tr>
+            {cols.map(c => (
+              <th class="nhdr nhdr--col" data-col={c.key}>
+                <div class="nhdr__inner"><span class="nhdr__name">{c.label}</span></div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {resources.map(r => (
+            <tr data-row={r.slug}>
+              <th class="rowlabel rowlabel--item" scope="row" id={r.slug}>
+                <div class="item__head">
+                  {r.icon ? (
+                    <img class="item__art" src={`${base}${r.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />
+                  ) : (
+                    <span class="item__art item__art--ph" aria-hidden="true"></span>
+                  )}
+                  <div class="item__txt">
+                    <div class="item__name">{r.name}</div>
+                    {r.dlc && <div class="item__sub">{r.dlc}</div>}
+                  </div>
+                </div>
+              </th>
+
+              <td class="cell yield-misc">
+                <div class={`cat-tag cat-tag--${r.category.toLowerCase()}`}>{r.category}</div>
+                {r.category === 'Luxury' && !r.spawns && (
+                  <div class="cat-note">events &amp; trade</div>
+                )}
+              </td>
+
+              {(r.tileYield.length > 0 || r.reveal.length > 0) ? (
+                <td class="cell cell--effects">
+                  {r.tileYield.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                  })}
+                  {r.reveal.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={`${line} on reveal`} iconsForYields={true} /></div>;
+                  })}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {r.workedBy ? (
+                <td class="cell cell--effects">
+                  <div class="worked-by">
+                    <Term id={r.workedBy.improvementId} />
+                  </div>
+                  {r.workedBy.yields.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                  })}
+                  {r.workedBy.replacesBase && (
+                    <div class="cat-note">replaces base yield</div>
+                  )}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {r.harvest.length > 0 ? (
+                <td class="cell cell--effects">
+                  {r.harvest.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                  })}
+                  {r.harvestNote && <div class="cat-note">{r.harvestNote}</div>}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {r.spawns ? (
+                <td class="cell yield-misc">
+                  {r.spawnTerrain.map(t => <span class="terrain-tag">{t}</span>)}
+                  {r.spawnHeight.map(t => <span class="terrain-tag terrain-tag--h">{t}</span>)}
+                  {r.spawnVegetation.map(t => <span class="terrain-tag terrain-tag--v">{t}</span>)}
+                  {r.spawnNotes.map(n => <div class="cat-note">{n}</div>)}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+
+              {r.effects.length > 0 ? (
+                <td class="cell cell--effects">
+                  {r.effects.map(line => {
+                    const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                    return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                  })}
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="application/json" id="res-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('res-search-blobs');
+      const grid = document.getElementById('res-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const row = grid.querySelector('tr[data-row="' + slug + '"]');
+          if (!row) continue;
+          row.classList.toggle('is-hidden', !!q && !blobs[slug].includes(q));
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+  <script is:inline>
+    (function () {
+      const table = document.querySelector('#res-grid table.ntbl');
+      if (!table || !table.tHead) return;
+      const ths = Array.from(table.tHead.rows[0].cells);
+      ths.forEach((th, ci) => {
+        th.classList.add('is-sortable');
+        th.addEventListener('click', () => {
+          const tb = table.tBodies[0];
+          const rows = Array.from(tb.rows).filter(r => !r.classList.contains('srow'));
+          const asc = th.getAttribute('aria-sort') !== 'ascending';
+          ths.forEach(h => h.removeAttribute('aria-sort'));
+          th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+          const val = r => {
+            const c = r.cells[ci];
+            const t = (c ? c.textContent : '').trim();
+            const n = parseFloat(t.replace(/[^0-9.\-]/g, ''));
+            return { t, n: (t && !isNaN(n)) ? n : null };
+          };
+          rows.sort((a, b) => {
+            const ka = val(a), kb = val(b);
+            let r;
+            if (ka.n !== null && kb.n !== null) r = ka.n - kb.n;
+            else if (ka.n !== null) r = -1;
+            else if (kb.n !== null) r = 1;
+            else r = ka.t.localeCompare(kb.t);
+            return asc ? r : -r;
+          });
+          rows.forEach(r => tb.appendChild(r));
+        });
+      });
+    })();
+  </script>
+</Base>
+
+<style>
+  .nhdr--col {
+    background: var(--bg-elev-2);
+    color: var(--text);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    text-align: left;
+    padding: 0.45rem 0.6rem;
+    min-width: 8rem;
+  }
+  .nhdr--col .nhdr__name {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  .rowlabel--item {
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    padding: 0.45rem 0.6rem;
+    background: var(--bg-elev);
+    min-width: 10rem;
+    border-right: 1px solid var(--border);
+  }
+  .item__head { display: flex; align-items: center; gap: 0.5rem; }
+  .item__art { width: 30px; height: 30px; object-fit: contain; flex: none; }
+  .item__art--ph { display: inline-block; border-radius: 4px; background: var(--bg-elev-2); }
+  .item__txt { min-width: 0; }
+  .item__name {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .item__sub {
+    font-style: italic;
+    color: var(--text-faint);
+    font-size: 0.66rem;
+    margin-top: 0.1rem;
+  }
+  .cat-tag {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+  }
+  .cat-note {
+    font-style: italic;
+    color: var(--text-faint);
+    font-size: 0.64rem;
+    margin-top: 0.15rem;
+  }
+  .worked-by { font-size: 0.76rem; margin-bottom: 0.15rem; }
+  .terrain-tag {
+    display: inline-block;
+    padding: 0.05rem 0.4rem;
+    margin: 0.1rem 0.2rem 0.1rem 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    background: var(--bg);
+  }
+  .terrain-tag--h { border-style: dashed; }
+  .terrain-tag--v { border-style: dotted; }
+  .nhdr.is-sortable { cursor: pointer; user-select: none; }
+  .nhdr.is-sortable:hover { filter: brightness(1.12); }
+  .nhdr.is-sortable .nhdr__name::after { content: '⇅'; opacity: 0.35; font-size: 0.85em; margin-left: 0.3em; }
+  .nhdr[aria-sort='ascending'] .nhdr__name::after { content: '↑'; opacity: 0.9; }
+  .nhdr[aria-sort='descending'] .nhdr__name::after { content: '↓'; opacity: 0.9; }
+</style>

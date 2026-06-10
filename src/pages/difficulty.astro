@@ -1,0 +1,370 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import data from '../data/difficulty.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+const {
+  modes, prosperity, advantages, developments, opponentLevels,
+  tribeLevels, calamityLevels, aiProsperityName,
+} = data as any;
+
+const prospById: Record<string, any> = Object.fromEntries(prosperity.map((p: any) => [p.id, p]));
+const advById: Record<string, any> = Object.fromEntries(advantages.map((a: any) => [a.id, a]));
+
+// Which named difficulties use each AI-handicap step (for the ladder cards).
+const advUsedBy: Record<string, string[]> = {};
+for (const m of modes) {
+  (advUsedBy[m.advantage] ||= []).push(m.name);
+}
+
+const yieldKeyOf = (text: string) => classifyYield(text)?.toLowerCase() || 'misc';
+const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
+---
+
+<Base
+  title="Difficulty & Advantages"
+  active="difficulty"
+  pageMark="🎚️"
+  description="What each Old World difficulty (The New through The Great) actually changes: your Prosperity (starting stockpile, base yields, discontent), AI development, AI aggression, tribal strength, calamities, and the AI handicap ladder — all read straight from difficultyMode.xml, difficulty.xml, and advantage.xml."
+  pageStats={[
+    { label: 'difficulties', value: modes.length },
+    { label: 'prosperity levels', value: prosperity.length },
+    { label: 'AI handicap steps', value: advantages.length },
+  ]}
+>
+  <section class="diff-intro">
+    <p>
+      A named difficulty is a <b>preset bundle of six dials</b>: your <b>Prosperity</b>
+      (stockpile, base yields, discontent), <b>AI Development</b>, <b>AI Aggression</b>,
+      <b>Tribal Level</b>, <b>AI Handicap</b>, and <b>Calamities</b>. All six can also be set
+      individually in advanced setup. AI nations always run at Prosperity
+      <b>{aiProsperityName}</b> (the Strong baseline) no matter which difficulty you pick —
+      what changes for them is their head start and handicap.
+    </p>
+  </section>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl dtbl">
+        <colgroup>
+          <col class="dtbl__label-col" />
+          {modes.map(() => <col />)}
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner"><span class="nhdr__name">Setting</span></th>
+            {modes.map((m: any) => (
+              <th class="nhdr nhdr--col">
+                <span class="nhdr__name">{m.name}</span>
+                <span class="nhdr__effect">
+                  {m.isDefaultSP ? 'default (SP)' : m.isDefaultMP ? 'default (MP)' : m.easy ? 'easy' : ' '}
+                </span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="grp"><th colspan={modes.length + 1}>Your start — Prosperity</th></tr>
+          <tr>
+            <th class="rowlabel" scope="row">Prosperity</th>
+            {modes.map((m: any) => (
+              <td class="cell"><b class="lvl">{prospById[m.prosperity].name}</b></td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Starting stockpile</th>
+            {modes.map((m: any) => (
+              <td class="cell">
+                <div class="stocks">
+                  {prospById[m.prosperity].stockpile.map((s: any) => (
+                    <span class={`stock yield-${s.yield}`} title={s.label}>
+                      <img class="stock__ico" src={yieldIcon(s.yield)} alt={s.label} onerror="this.style.display='none'" />
+                      {s.value}
+                    </span>
+                  ))}
+                </div>
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Extra starting units</th>
+            {modes.map((m: any) => {
+              const units = prospById[m.prosperity].extraUnits;
+              return units.length ? (
+                <td class="cell"><LinkedText text={units.join(', ')} showIcons={false} /></td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              );
+            })}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Base player yields</th>
+            {modes.map((m: any) => (
+              <td class="cell">
+                <ul class="fx">
+                  {prospById[m.prosperity].effects.map((text: string) => (
+                    <li class={`effect yield-${yieldKeyOf(text)}`}>
+                      <LinkedText text={text} showIcons={false} iconsForYields={true} />
+                    </li>
+                  ))}
+                </ul>
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Family rebellions</th>
+            {modes.map((m: any) => {
+              const lines = prospById[m.prosperity].rebelProbs;
+              return lines.length ? (
+                <td class="cell">
+                  <ul class="mini">{lines.map((t: string) => <li><LinkedText text={t} showIcons={false} /></li>)}</ul>
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              );
+            })}
+          </tr>
+
+          <tr class="grp"><th colspan={modes.length + 1}>The world</th></tr>
+          <tr>
+            <th class="rowlabel" scope="row">Empty city sites nearby</th>
+            {modes.map((m: any) => (
+              <td class="cell">
+                <b class="lvl">{m.emptySites}</b>
+                <span class="sub">({prospById[m.prosperity].emptyNearbySitePercent}% of nearby sites)</span>
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Distant raids on your cities</th>
+            {modes.map((m: any) => {
+              const p = prospById[m.prosperity];
+              return p.raidProbCity ? (
+                <td class="cell">{p.raidProbCity}% chance · up to {p.raidNumCity} extra units</td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              );
+            })}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">Calamities</th>
+            {modes.map((m: any) => {
+              const c = calamityLevels[m.calamities];
+              return <td class="cell" title={c?.help || ''}><b class="lvl">{c?.name || '—'}</b></td>;
+            })}
+          </tr>
+
+          <tr class="grp"><th colspan={modes.length + 1}>AI nations</th></tr>
+          <tr>
+            <th class="rowlabel" scope="row">AI handicap</th>
+            {modes.map((m: any) => {
+              const a = advById[m.advantage];
+              return a && a.effects.length ? (
+                <td class="cell"><a class="lvl lvl--link" href={`#adv-${a.slug}`}>{a.name}</a></td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              );
+            })}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">AI development</th>
+            {modes.map((m: any) => {
+              const d = developments[m.development];
+              return d.details.length ? (
+                <td class="cell">
+                  <b class="lvl">{d.name}</b>
+                  <ul class="mini">{d.details.map((t: string) => <li><LinkedText text={t} showIcons={false} /></li>)}</ul>
+                </td>
+              ) : (
+                <td class="cell is-empty"><span class="cell__dash">—</span></td>
+              );
+            })}
+          </tr>
+          <tr>
+            <th class="rowlabel" scope="row">AI aggression</th>
+            {modes.map((m: any) => {
+              const o = opponentLevels[m.opponentLevel];
+              return (
+                <td class="cell">
+                  <b class="lvl">{o.name}</b>
+                  <ul class="mini">{o.details.map((t: string) => <li><LinkedText text={t} showIcons={false} /></li>)}</ul>
+                </td>
+              );
+            })}
+          </tr>
+
+          <tr class="grp"><th colspan={modes.length + 1}>Tribes</th></tr>
+          <tr>
+            <th class="rowlabel" scope="row">Tribal level</th>
+            {modes.map((m: any) => {
+              const t = tribeLevels[m.tribeLevel];
+              return (
+                <td class="cell">
+                  <b class="lvl">{t.name}</b>
+                  <ul class="mini">{t.details.map((x: string) => <li><LinkedText text={x} showIcons={false} /></li>)}</ul>
+                </td>
+              );
+            })}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <section class="adv" id="advantages">
+    <h2 class="adv__title">AI Handicap ladder</h2>
+    <p class="adv__lede">
+      The <b>AI Handicap</b> (advantage) is the per-AI-player thumb on the scale: penalties
+      weaken AI nations on easy difficulties, advantages strengthen them on hard ones. Custom
+      games can pick any step — including <b>{advById['ADVANTAGE_HIGH'].name}</b> and
+      <b>{advById['ADVANTAGE_VERY_HIGH'].name}</b>, which no preset uses.
+    </p>
+    <div class="adv__row">
+      {advantages.map((a: any) => (
+        <article class="advcard" id={`adv-${a.slug}`}>
+          <h3 class="advcard__name">{a.name}</h3>
+          {advUsedBy[a.id]?.length ? (
+            <div class="advcard__used">used by {advUsedBy[a.id].join(', ')}</div>
+          ) : (
+            <div class="advcard__used advcard__used--none">no preset — custom setup only</div>
+          )}
+          {a.effects.length === 0 ? (
+            <div class="advcard__empty"><span class="cell__dash">—</span></div>
+          ) : (
+            <ul class="fx">
+              {a.effects.map((text: string) => (
+                <li class={`effect yield-${yieldKeyOf(text)}`}>
+                  <LinkedText text={text} showIcons={false} iconsForYields={true} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="descs" id="descriptions">
+    <h2 class="adv__title">In the game's words</h2>
+    <div class="descs__row">
+      {modes.map((m: any) => (
+        <article class="desccard">
+          <h3 class="desccard__name">{m.name}</h3>
+          <p class="desccard__text"><LinkedText text={m.description} showIcons={false} /></p>
+        </article>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .diff-intro { max-width: 62rem; margin: 0 0 1.1rem; color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
+  .diff-intro p { margin: 0; }
+  .diff-intro b { color: var(--text); }
+
+  .dtbl__label-col { width: 11rem; }
+  .dtbl col:not(.dtbl__label-col) { width: 11.5rem; }
+
+  .nhdr--col {
+    background: var(--bg-elev-2); color: var(--text);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    border-bottom: 2px solid var(--border-strong);
+    padding: 0.45rem 0.6rem; vertical-align: bottom;
+  }
+  .nhdr__name { font-family: var(--font-display); font-size: 0.88rem; letter-spacing: 0.02em; display: block; white-space: nowrap; }
+  .nhdr__effect { font-size: 0.64rem; color: var(--text-faint); font-family: var(--font-mono); display: block; margin-top: 1px; }
+
+  .grp th {
+    text-align: left;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    background: var(--bg-elev);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding: 0.45rem 0.6rem 0.3rem;
+  }
+
+  .dtbl .cell { padding: 0.4rem 0.6rem; font-size: 0.78rem; }
+  .lvl { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; color: var(--text); display: inline-block; }
+  .lvl--link { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); text-underline-offset: 2px; }
+  .lvl--link:hover { color: var(--accent); }
+  .sub { display: block; font-size: 0.66rem; color: var(--text-faint); font-family: var(--font-mono); margin-top: 1px; }
+
+  .stocks { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+  .stock {
+    display: inline-flex; align-items: center; gap: 0.22rem;
+    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 0.7rem; font-weight: 600; color: var(--text);
+    background: color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 28%, var(--bg-elev) 72%);
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 40%, transparent);
+    border-radius: 999px;
+    padding: 0.06rem 0.42rem 0.06rem 0.28rem;
+  }
+  .stock__ico { width: 0.95em; height: 0.95em; object-fit: contain; }
+
+  .fx { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+  .fx .effect {
+    padding: 0.22rem 0.45rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.72rem;
+    line-height: 1.3;
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.32));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
+  }
+  .fx .effect a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
+
+  .mini { list-style: none; margin: 0.2rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.12rem; }
+  .mini li { font-size: 0.7rem; line-height: 1.3; color: var(--text-dim); }
+  .mini li::before { content: '·'; color: var(--text-faint); margin-right: 0.3rem; }
+
+  /* ── AI Handicap ladder ── */
+  .adv { margin-top: 1.6rem; }
+  .adv__title {
+    font-family: var(--font-display); font-weight: 600; font-size: 1.05rem;
+    letter-spacing: 0.04em; color: var(--accent);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding-bottom: 0.3rem; margin: 0 0 0.6rem;
+  }
+  .adv__lede { max-width: 62rem; color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin: 0 0 0.8rem; }
+  .adv__lede b { color: var(--text); }
+  .adv__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.6rem;
+  }
+  .advcard {
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.55rem 0.5rem;
+    display: flex; flex-direction: column; gap: 0.35rem;
+  }
+  .advcard:target { border-color: var(--accent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent); }
+  .advcard__name { font-family: var(--font-display); font-weight: 600; font-size: 0.92rem; letter-spacing: 0.02em; color: var(--text); margin: 0; }
+  .advcard__used { font-size: 0.64rem; color: var(--text-dim); font-family: var(--font-mono); letter-spacing: 0.02em; margin-top: -0.2rem; }
+  .advcard__used--none { color: var(--text-faint); font-style: italic; }
+  .advcard__empty { color: var(--text-faint); font-size: 0.72rem; padding: 0.3rem 0; }
+
+  /* ── Mode descriptions ── */
+  .descs { margin-top: 1.6rem; }
+  .descs__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 0.6rem;
+  }
+  .desccard {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.6rem;
+  }
+  .desccard__name { font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--text); margin: 0 0 0.25rem; }
+  .desccard__text { font-size: 0.76rem; line-height: 1.45; color: var(--text-dim); margin: 0; }
+</style>

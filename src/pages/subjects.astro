@@ -1,0 +1,310 @@
+---
+// Subjects — the event system's casting layer (subject.xml).
+//
+// Despite the name these are NOT vassal states: a Subject is a template
+// the game uses to cast a role in an event story / mission / occurrence
+// ("an adult heir", "a rival at war with us", "a river tile we own").
+// Each is a class (Character, Player, City, …) plus prerequisite
+// filters. Vassalage itself is event content (EVENTSTORY_VASSALAGE_*,
+// Vassalize Tribe mission) that *consumes* these subjects.
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import data from '../data/subjects.json';
+
+type Req = { text: string; tip?: string };
+type Subject = {
+  id: string; class: string; label: string | null; name: string;
+  comment: string | null; reqs: Req[];
+  hidden: boolean; disabled: boolean; dlc: string | null; uses: number;
+};
+
+const classes = data.classes as { id: string; name: string; count: number }[];
+const subjects = data.subjects as Subject[];
+
+// Most-used first inside each class — the workhorse roles float to the top.
+function ofClass(cid: string): Subject[] {
+  return subjects
+    .filter(s => s.class === cid)
+    .sort((a, b) => b.uses - a.uses || a.id.localeCompare(b.id));
+}
+
+const totalRefs = subjects.reduce((n, s) => n + s.uses, 0);
+const labeled = subjects.filter(s => s.label).length;
+
+const slug = (cid: string) =>
+  cid.replace('SUBJECTCLASS_', '').toLowerCase();
+
+// Searchable haystack per row (lowercased once at build time).
+const hay = (s: Subject) =>
+  [s.id, s.name, s.comment ?? '', s.dlc ?? '', ...s.reqs.map(r => r.text)]
+    .join(' ')
+    .toLowerCase();
+
+const fmt = (n: number) => n.toLocaleString('en-US');
+---
+
+<Base
+  title="Subjects"
+  active="subjects"
+  pageMark="🤝"
+  pageStats={[
+    { value: fmt(subjects.length), label: 'subjects' },
+    { value: classes.length, label: 'classes' },
+    { value: fmt(totalRefs), label: 'event references' },
+  ]}
+  description="Every Subject template in Old World's event system — the casting roles that bind event stories, missions and occurrences to characters, players, cities, tiles and more, with each role's prerequisite filters humanized from the game's XML."
+>
+  <p class="lede">
+    A <em>Subject</em> is how the event system casts its roles: every event
+    story, mission and occurrence fills slots like “an adult heir”, “a rival
+    at war with us” or “a river tile we own” from this catalog of
+    {fmt(subjects.length)} templates. Each subject is a class plus a stack of
+    prerequisite filters, shown here exactly as the XML defines them — the
+    {fmt(labeled)} that surface in-game prereq text use the game’s own wording.
+    (Not to be confused with vassal states — vassalage is event content that
+    <em>uses</em> these subjects.)
+  </p>
+
+  <div class="subj-controls">
+    <input
+      id="subj-filter"
+      class="subj-filter"
+      type="search"
+      placeholder="Filter subjects… (id, text, requirement)"
+      aria-label="Filter subjects"
+      autocomplete="off"
+    />
+    <nav class="subj-jumps" aria-label="Subject classes">
+      {classes.map(c => (
+        <a class="chip" href={`#${slug(c.id)}`}>{c.name} <b>{c.count}</b></a>
+      ))}
+    </nav>
+  </div>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl subj-tbl">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">Subject</th>
+            <th class="nhdr subj-col-reqs"><div class="nhdr__inner"><span class="nhdr__name">Requirements</span></div></th>
+            <th class="nhdr subj-col-uses"><div class="nhdr__inner"><span class="nhdr__name">Uses</span></div></th>
+          </tr>
+        </thead>
+        {classes.map(c => (
+          <tbody data-class={slug(c.id)}>
+            <tr class="srow">
+              <th class="srow__th" colspan="3" id={slug(c.id)}>
+                {c.name} <span class="srow__count">{c.count}</span>
+              </th>
+            </tr>
+            {ofClass(c.id).map(s => (
+              <tr data-q={hay(s)}>
+                <th class="rowlabel subj-name" scope="row">
+                  <span class="subj-name__main">
+                    {s.name}
+                    {s.label && <span class="subj-badge subj-badge--game" title="In-game prereq wording (from the game's text files)">game text</span>}
+                    {s.dlc && <span class="subj-badge subj-badge--dlc" title={`Only referenced by ${s.dlc} content`}>{s.dlc}</span>}
+                    {s.hidden && <span class="subj-badge" title="Hidden when the game lists prereqs">hidden</span>}
+                    {s.disabled && <span class="subj-badge" title="Never valid — disabled in data">disabled</span>}
+                  </span>
+                  <span class="subj-name__id">{s.id}</span>
+                </th>
+                <td class="cell subj-reqs">
+                  {s.comment && (
+                    <div class="subj-comment"><LinkedText text={s.comment} showIcons={false} /></div>
+                  )}
+                  {s.reqs.length > 0 ? (
+                    <div class="subj-chips">
+                      {s.reqs.map(r => (
+                        <span class="subj-chip" title={r.tip}>
+                          <LinkedText text={r.text} showIcons={false} />
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    !s.comment && <span class="cell__dash">no filters — any {c.name.toLowerCase()}</span>
+                  )}
+                </td>
+                <td class="cell subj-uses">
+                  {s.uses > 0 ? fmt(s.uses) : <span class="cell__dash">—</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        ))}
+      </table>
+    </div>
+  </div>
+
+  <p class="subj-foot">
+    Sources: <code>subject.xml</code> (templates + designer comments),
+    <code>subjectClass.xml</code> (the 15 classes),
+    <code>subjectRelation.xml</code> (named relation predicates referenced
+    via “Relation to us / leader”), with labels from
+    <code>text-subject*.xml</code>. “Uses” counts references across
+    <code>eventStory*</code>, <code>eventOption*</code>, <code>mission</code>,
+    <code>goal</code>, <code>occurrence</code> and <code>globalsType</code>.
+    A DLC tag means the subject is referenced only by that pack’s content.
+  </p>
+</Base>
+
+<script is:inline>
+  // Plain text filter over data-q haystacks; hides class sections whose
+  // rows are all filtered out (the .srow header row stays with its tbody).
+  (function () {
+    const input = document.getElementById('subj-filter');
+    if (!input) return;
+    const bodies = Array.from(document.querySelectorAll('tbody[data-class]'));
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      for (const tb of bodies) {
+        let any = false;
+        for (const tr of tb.querySelectorAll('tr[data-q]')) {
+          const show = !q || tr.dataset.q.includes(q);
+          tr.style.display = show ? '' : 'none';
+          if (show) any = true;
+        }
+        tb.style.display = any ? '' : 'none';
+      }
+    });
+  })();
+</script>
+
+<style>
+  .lede {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-soft);
+    max-width: 72ch;
+    margin: 0.5rem 0 1.25rem 0;
+  }
+
+  .subj-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0 0 1rem 0;
+  }
+  .subj-filter {
+    width: min(34rem, 100%);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.7rem;
+  }
+  .subj-filter:focus {
+    outline: none;
+    border-color: var(--gold-deep);
+  }
+  .subj-jumps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .subj-jumps .chip b {
+    color: var(--gold-soft);
+    font-weight: 600;
+    margin-left: 0.15rem;
+  }
+
+  .srow__count {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    margin-left: 0.4rem;
+  }
+
+  /* Subject name cell: display name on top, mono id beneath. */
+  .subj-name { min-width: 16rem; max-width: 22rem; }
+  .subj-name__main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+  .subj-name__id {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--text-faint);
+    margin-top: 0.15rem;
+    word-break: break-all;
+  }
+
+  .subj-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.05rem 0.3rem;
+    white-space: nowrap;
+  }
+  .subj-badge--game {
+    color: var(--gold-soft);
+    border-color: var(--gold-deep);
+  }
+  .subj-badge--dlc {
+    color: var(--text-soft);
+    border-color: var(--border);
+    font-style: italic;
+  }
+
+  .subj-reqs { padding: 0.4rem 0.6rem; }
+  .subj-comment {
+    font-style: italic;
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    margin-bottom: 0.25rem;
+    max-width: 56ch;
+  }
+  .subj-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .subj-chip {
+    display: inline-block;
+    font-size: 0.76rem;
+    line-height: 1.3;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-faint, var(--border));
+    border-radius: 5px;
+    padding: 0.12rem 0.45rem;
+  }
+  .subj-chip[title] { cursor: help; }
+
+  .subj-uses {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    white-space: nowrap;
+  }
+  .subj-col-uses { width: 4.5rem; }
+
+  .subj-foot {
+    margin-top: 1.25rem;
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    max-width: 80ch;
+    line-height: 1.5;
+  }
+  .subj-foot code {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-soft);
+  }
+</style>

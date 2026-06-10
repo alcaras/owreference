@@ -1,0 +1,546 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import data from '../data/occurrences.json';
+import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+const cls = data.calamityClass as any;
+const families = data.calamityFamilies as any[];
+const transformations = data.transformations as any[];
+const eras = data.eras as any[];
+const totals = data.totals as any;
+
+// Facet sections rendered per occurrence, in display order.
+const FACETS: { key: string; label: string }[] = [
+  { key: 'trigger', label: 'Trigger' },
+  { key: 'effects', label: 'Effects' },
+  { key: 'impact', label: 'Tile impact' },
+  { key: 'terrainChanges', label: 'Terrain changes' },
+  { key: 'traits', label: 'Characters' },
+  { key: 'ending', label: 'How it ends' },
+];
+
+// Merge a transformation's variants into one terrain-change table:
+// rows = "From → To", one chance column per variant.
+function mergeTerrain(variants: any[]) {
+  const rows: { from: string; to: string; chances: (string | null)[] }[] = [];
+  const idx = new Map<string, number>();
+  variants.forEach((v, vi) => {
+    for (const tc of v.terrainChangesRaw as any[]) {
+      const key = `${tc.from}→${tc.to}`;
+      let ri = idx.get(key);
+      if (ri === undefined) {
+        ri = rows.length;
+        idx.set(key, ri);
+        rows.push({ from: tc.from, to: tc.to, chances: variants.map(() => null) });
+      }
+      rows[ri].chances[vi] = tc.chance;
+    }
+  });
+  return rows;
+}
+
+// Per-variant trigger/ending notes for transformations (delay turns etc.).
+function variantNotes(v: any): string {
+  return [...v.trigger, ...v.ending].join(' · ');
+}
+
+function fmtModPct(v: number): string {
+  return v === 0 ? '—' : (v > 0 ? '+' : '') + v + '%';
+}
+
+// Search blobs: one per card (family / transformation / era).
+const searchBlobs: Record<string, string> = {};
+for (const f of families) {
+  searchBlobs[f.slug] = JSON.stringify(f).toLowerCase();
+}
+for (const t of transformations) {
+  searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
+}
+for (const o of eras) {
+  searchBlobs[o.slug] = JSON.stringify(o).toLowerCase();
+}
+---
+
+<Base
+  title="Occurrences"
+  active="occurrences"
+  pageMark="🌋"
+  pageStats={[
+    { label: 'occurrences', value: totals.occurrences },
+    { label: 'calamities', value: totals.calamities },
+    { label: 'transformations', value: totals.transformations },
+    { label: 'eras & crises', value: totals.eras },
+  ]}
+  description={`All ${totals.occurrences} Occurrences in Old World — the Wrath of Gods Calamities (plague, drought, flood, hurricane, eruption…), world transformations, and the era and crisis occurrences from Behind the Throne and Empires of the Indus. Triggers, per-turn tile impact, terrain changes, character traits, and how each one ends, derived from occurrence.xml.`}
+>
+  <div class="occ" id="occ-grid">
+    <p class="occ__intro">
+      Occurrences are persistent world events that stay on the map for several turns. The headline
+      set — the <strong>Calamities</strong> — ships with the <strong>Wrath of Gods</strong> DLC and
+      strikes on its own clock; the era and crisis occurrences below are started by events. Every
+      number here is read straight from <code>occurrence.xml</code>.
+    </p>
+
+    {cls && (
+      <section class="occ__section" id="frequency">
+        <h2 class="occ__hdr">
+          <span class="occ__hdr-name">Calamity Frequency</span>
+          <span class="occ__dlc" title="Requires the Wrath of Gods DLC">{cls.dlcLabel}</span>
+        </h2>
+        <p class="occ__note">
+          Chosen at game setup. At least <b>{cls.minRepeatPlayer}</b> turns pass between Calamities
+          for each player{cls.balanceDistribution && ', and the game balances both the calamity types and the players affected'}.
+          A pending Calamity expires if it can't strike within <b>{cls.maxPendingTurns}</b> turns.
+        </p>
+        <div class="occ__tablewrap">
+          <table class="ntbl occ__levels">
+            <thead>
+              <tr>
+                <th class="rowlabel">Setting</th>
+                <th>Earliest turn</th>
+                <th>Frequency</th>
+                <th>AI grace period</th>
+                <th>AI skip chance</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cls.levels.map((lv: any) => (
+                <tr class={lv.isDefault ? 'is-default' : ''}>
+                  <td class="rowlabel">
+                    {lv.name}
+                    {lv.isDefault && <span class="occ__default-tag">default</span>}
+                  </td>
+                  {lv.noOccurrences ? (
+                    <td colspan="4" class="occ__off">Calamities disabled</td>
+                  ) : (
+                    <>
+                      <td>{fmtModPct(lv.minTurnsModifier)}</td>
+                      <td>{lv.repeatTurnsModifier === 0 ? '—' : `${fmtModPct(lv.repeatTurnsModifier)} between strikes`}</td>
+                      <td>{lv.aiMinTurns ? `no AI strikes before turn ${lv.aiMinTurns}` : '—'}</td>
+                      <td>{lv.aiSkipChance ? `${lv.aiSkipChance}%` : '—'}</td>
+                    </>
+                  )}
+                  <td class="occ__levelhelp">{lv.help || ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+
+    <section class="occ__section" id="calamities">
+      <h2 class="occ__hdr">
+        <span class="occ__hdr-name">Calamities</span>
+        <span class="occ__dlc" title="Requires the Wrath of Gods DLC">Wrath of Gods</span>
+      </h2>
+      <div class="occ__cards">
+        {families.map((fam) => {
+          const variants = [fam.full, fam.mitigated].filter(Boolean);
+          return (
+            <article class={`occard ${variants.length > 1 ? 'occard--paired' : ''}`} id={fam.slug} data-card={fam.slug}>
+              <header class="occard__hdr">
+                <h3 class="occard__name">{fam.name}</h3>
+                {fam.full?.flags.map((f: string) => (
+                  <span class="occard__flag" title={f}>{f.split(' — ')[0]}</span>
+                ))}
+              </header>
+              <div class={`occard__cols occard__cols--n${variants.length}`}>
+                {variants.map((o: any) => (
+                  <div class="occvar">
+                    {variants.length > 1 && (
+                      <h4 class={`occvar__title ${o.variant === 'Mitigated' ? 'occvar__title--mit' : ''}`}>
+                        {o.variant === 'Mitigated' ? 'Mitigated' : 'Full strike'}
+                      </h4>
+                    )}
+                    {o.variant === 'Mitigated' && (
+                      <p class="occvar__mitnote">Strikes in place of the full calamity when it is mitigated — no independent trigger.</p>
+                    )}
+                    {FACETS.map((facet) => {
+                      const lines: string[] = o[facet.key] || [];
+                      if (!lines.length) return null;
+                      return (
+                        <div class="occfacet">
+                          <span class="occfacet__label">{facet.label}</span>
+                          {facet.key === 'effects' ? (
+                            <ul class="occfacet__effects">
+                              {lines.map((text) => {
+                                const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                                return (
+                                  <li class={`effect yield-${yieldKey}`}>
+                                    <LinkedText text={text} showIcons={false} iconsForYields={true} />
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          ) : (
+                            <ul class="occfacet__lines">
+                              {lines.map((text) => (
+                                <li><LinkedText text={text} showIcons={false} /></li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="occ__section" id="transformations">
+      <h2 class="occ__hdr">
+        <span class="occ__hdr-name">World Transformations</span>
+        <span class="occ__dlc" title="Requires the Wrath of Gods DLC">Wrath of Gods</span>
+      </h2>
+      <p class="occ__note">
+        Slow-burn occurrences used by scenarios and map scripts — they reshape terrain every turn
+        rather than striking once. Variants differ only in pace.
+      </p>
+      <div class="occ__cards occ__cards--wide">
+        {transformations.map((t) => {
+          const merged = mergeTerrain(t.variants);
+          const multi = t.variants.length > 1;
+          return (
+            <article class="occard" id={t.slug} data-card={t.slug}>
+              <header class="occard__hdr">
+                <h3 class="occard__name">{t.name}</h3>
+                {t.variants[0].flags.map((f: string) => (
+                  <span class="occard__flag" title={f}>{f.split(' — ')[0]}</span>
+                ))}
+              </header>
+              {t.variants[0].helpText && (
+                <p class="occard__help"><LinkedText text={t.variants[0].helpText} showIcons={false} /></p>
+              )}
+              {multi && (
+                <ul class="occfacet__lines occard__variantnotes">
+                  {t.variants.map((v: any) => {
+                    const note = variantNotes(v);
+                    return note ? <li><b>{v.variant || t.name}:</b> {note}</li> : null;
+                  })}
+                </ul>
+              )}
+              {!multi && (t.variants[0].trigger.length > 0 || t.variants[0].ending.length > 0) && (
+                <ul class="occfacet__lines occard__variantnotes">
+                  {[...t.variants[0].trigger, ...t.variants[0].ending].map((text: string) => (
+                    <li><LinkedText text={text} showIcons={false} /></li>
+                  ))}
+                </ul>
+              )}
+              <div class="occ__tablewrap">
+                <table class="ntbl occ__terrain">
+                  <thead>
+                    <tr>
+                      <th class="rowlabel">Terrain change</th>
+                      {multi
+                        ? t.variants.map((v: any) => <th>{v.variant}</th>)
+                        : <th>Chance / turn</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {merged.map((row) => (
+                      <tr>
+                        <td class="rowlabel occ__terrain-row">{row.from} → {row.to}</td>
+                        {row.chances.map((c) => (
+                          <td class={c ? '' : 'is-empty'}>{c ? c : <span class="cell__dash">—</span>}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="occ__section" id="eras">
+      <h2 class="occ__hdr">
+        <span class="occ__hdr-name">Eras &amp; Crises</span>
+      </h2>
+      <p class="occ__note">
+        Event-driven occurrences — started and usually ended by story events rather than the
+        calamity clock.
+      </p>
+      <div class="occ__cards occ__cards--eras">
+        {eras.map((o) => (
+          <article class="occard" id={o.slug} data-card={o.slug}>
+            <header class="occard__hdr">
+              <h3 class="occard__name">{o.name}</h3>
+              <span class={`occ__dlc ${o.dlcLabel === 'Base game' ? 'occ__dlc--base' : ''}`}>{o.dlcLabel}</span>
+            </header>
+            {o.flags.length > 0 && (
+              <div class="occard__flags">
+                {o.flags.map((f: string) => <span class="occard__flag" title={f}>{f.split(' — ')[0]}</span>)}
+              </div>
+            )}
+            {o.helpText && <p class="occard__help"><LinkedText text={o.helpText} showIcons={false} /></p>}
+            {FACETS.map((facet) => {
+              const lines: string[] = o[facet.key] || [];
+              if (!lines.length) return null;
+              return (
+                <div class="occfacet">
+                  <span class="occfacet__label">{facet.label}</span>
+                  {facet.key === 'effects' ? (
+                    <ul class="occfacet__effects">
+                      {lines.map((text) => {
+                        const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
+                        return (
+                          <li class={`effect yield-${yieldKey}`}>
+                            <LinkedText text={text} showIcons={false} iconsForYields={true} />
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <ul class="occfacet__lines">
+                      {lines.map((text) => (
+                        <li><LinkedText text={text} showIcons={false} /></li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })}
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <div class="legends">
+    <div class="legend">
+      <span class="legend__label">Sections</span>
+      <a class="chip chip--neutral" href="#frequency">Frequency</a>
+      <a class="chip chip--neutral" href="#calamities">Calamities</a>
+      <a class="chip chip--neutral" href="#transformations">Transformations</a>
+      <a class="chip chip--neutral" href="#eras">Eras &amp; Crises</a>
+    </div>
+  </div>
+
+  <script type="application/json" id="occ-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    // Highlights matching cards, dims the rest. Mirrors laws.astro.
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('occ-search-blobs');
+      const grid = document.getElementById('occ-grid');
+      if (!input || !blobNode || !grid) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of grid.querySelectorAll('[data-card="' + slug + '"]')) {
+            el.classList.toggle('is-dimmed', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .occ { display: flex; flex-direction: column; gap: 1.6rem; max-width: 1700px; margin: 0 auto; padding: 0 1rem; }
+  .occ__intro {
+    max-width: 62rem;
+    color: var(--text-soft);
+    font-size: 0.86rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .occ__intro code { font-family: var(--font-mono); font-size: 0.78em; color: var(--accent-2); }
+
+  .occ__section { display: flex; flex-direction: column; gap: 0.6rem; }
+  .occ__hdr {
+    display: flex; align-items: baseline; gap: 0.6rem;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding-bottom: 0.3rem;
+    margin: 0;
+  }
+  .occ__hdr-name { color: var(--accent); }
+  .occ__dlc {
+    display: inline-flex; align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.05em;
+    color: #d98a8a;
+    background: color-mix(in srgb, #a83838 18%, transparent);
+    border: 1px solid color-mix(in srgb, #a83838 45%, transparent);
+    border-radius: 999px;
+    padding: 0.08rem 0.5rem;
+    white-space: nowrap;
+  }
+  .occ__dlc--base {
+    color: var(--text-dim);
+    background: var(--bg-elev-2);
+    border-color: var(--border);
+  }
+  .occ__note {
+    max-width: 62rem;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .occ__note b { color: var(--text); }
+
+  .occ__tablewrap { overflow-x: auto; }
+  .occ__levels { min-width: 48rem; }
+  .occ__levels th, .occ__levels td { font-size: 0.76rem; padding: 0.35rem 0.55rem; }
+  .occ__levels .is-default { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+  .occ__default-tag {
+    margin-left: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  .occ__off { color: var(--text-faint); font-style: italic; }
+  .occ__levelhelp { color: var(--text-dim); }
+
+  /* Cards */
+  .occ__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+    gap: 0.8rem;
+    align-items: start;
+  }
+  .occ__cards--wide { grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr)); }
+  .occ__cards--eras { grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); }
+  .occard--paired { grid-column: span 2; }
+  @media (max-width: 64rem) {
+    .occard--paired { grid-column: span 1; }
+  }
+
+  .occard {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.7rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    transition: opacity 0.15s, filter 0.15s;
+  }
+  .occard.is-dimmed { opacity: 0.25; filter: saturate(0.4); }
+  .occard__hdr { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
+  .occard__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin: 0;
+    flex: 0 1 auto;
+  }
+  .occard__flags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+  .occard__flag {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    background: var(--bg-elev-3);
+    border-radius: 999px;
+    padding: 0.08rem 0.45rem;
+    white-space: nowrap;
+  }
+  .occard__help {
+    color: var(--text-soft);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .occard__variantnotes { margin: 0; }
+
+  .occard__cols { display: grid; gap: 0.6rem; }
+  .occard__cols--n2 { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 44rem) {
+    .occard__cols--n2 { grid-template-columns: 1fr; }
+  }
+  .occvar {
+    display: flex; flex-direction: column; gap: 0.4rem;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.55rem;
+  }
+  .occvar__title {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    color: var(--accent-2);
+    margin: 0;
+    font-weight: 600;
+  }
+  .occvar__title--mit { color: var(--text-dim); }
+  .occvar__mitnote {
+    color: var(--text-faint);
+    font-size: 0.68rem;
+    font-style: italic;
+    line-height: 1.4;
+    margin: -0.2rem 0 0;
+  }
+
+  .occfacet { display: flex; flex-direction: column; gap: 0.2rem; }
+  .occfacet__label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+  }
+  .occfacet__lines {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 0.14rem;
+    font-size: 0.74rem;
+    line-height: 1.4;
+    color: var(--text-soft);
+  }
+  .occfacet__lines li::before { content: '· '; color: var(--text-faint); }
+  .occfacet__lines b { color: var(--text); }
+  .occfacet__effects {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 0.2rem;
+  }
+  .occfacet__effects .effect {
+    padding: 0.25rem 0.45rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.74rem;
+    line-height: 1.3;
+    background: var(--yield-bg, var(--bg-elev));
+    color: var(--yield-fg, var(--text));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.32));
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
+  }
+  .occfacet__effects .effect a,
+  .occfacet__lines a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  }
+
+  .chip--neutral { background: var(--bg-elev-2); color: var(--text-dim); border: 1px solid var(--border); padding: 0.05rem 0.4rem; font-size: 0.68rem; }
+
+  .occ__terrain { min-width: 0; width: 100%; }
+  .occ__terrain th, .occ__terrain td { font-size: 0.74rem; padding: 0.28rem 0.5rem; }
+  .occ__terrain-row { white-space: nowrap; }
+</style>

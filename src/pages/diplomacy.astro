@@ -1,0 +1,472 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import diplomacy from '../data/diplomacy.json';
+
+const base = import.meta.env.BASE_URL;
+
+const { states, warStates, warScore, actionGroups, constants, counts } = diplomacy;
+
+// Opinion side-effect rows per state — label + how to read the number.
+// Semantics from PlayerOpinion.cs / PlayerAI.cs (see build_diplomacy.py).
+function stateOpinionRows(s: (typeof states)[number]) {
+  const rows: { label: string; value: number; hint: string }[] = [];
+  if (s.opinion) rows.push({
+    label: 'Their opinion of you', value: s.opinion,
+    hint: 'Applied while you are in this state with them.',
+  });
+  if (s.opinionEnemy) rows.push({
+    label: 'Enemy-of-their-enemy', value: s.opinionEnemy,
+    hint: 'Your opinion of a third party, per power you share this state with that is hostile to them.',
+  });
+  if (s.opinionEthnicity) rows.push({
+    label: 'Kin characters', value: s.opinionEthnicity,
+    hint: "Opinion of your characters who share that nation's ethnicity (scaled by their ancestry).",
+  });
+  if (s.opinionReligion) rows.push({
+    label: 'Co-religionists', value: s.opinionReligion,
+    hint: "Opinion of that nation's religion toward you.",
+  });
+  if (s.warModifier) rows.push({
+    label: 'AI war chance', value: s.warModifier,
+    hint: 'Percent modifier on the AI deciding to declare war on you.',
+  });
+  return rows;
+}
+
+const fmt = (n: number) => (n > 0 ? `+${n}` : `${n}`);
+
+// In-page search blobs (one per action row), mirrors laws.astro.
+const searchBlobs: Record<string, string> = {};
+for (const g of actionGroups) {
+  for (const a of g.actions) {
+    searchBlobs[a.slug] = JSON.stringify({ group: g.label, action: a }).toLowerCase();
+  }
+}
+---
+
+<Base
+  title="Diplomacy"
+  active="diplomacy"
+  pageMark="🕊️"
+  description="Old World's diplomacy, XML-canonical: the four diplomatic states and their opinion effects, war score and war states, and every state-changing action — truces, peace, alliances, tribute and third-party wars — with costs and requirements."
+  pageStats={[
+    { label: 'states', value: counts.states },
+    { label: 'war states', value: counts.warStates },
+    { label: 'actions', value: counts.actions },
+    { label: 'internal variants', value: counts.variants },
+  ]}
+>
+  <div class="dip">
+
+    <!-- ── Diplomatic states ─────────────────────────────────────── -->
+    <section class="dip__sec" id="states">
+      <h2 class="dip__h">Diplomatic States</h2>
+      <p class="dip__intro">
+        Relations with every Nation and Tribe sit in exactly one of these states.
+        War ↔ Truce ↔ Peace move one step at a time via the actions below;
+        Team is fixed at game start.
+      </p>
+      <div class="states">
+        {states.map(s => (
+          <article class="state" id={`state-${s.slug}`} style={`--state-color:${s.color ?? 'var(--text-dim)'}`}>
+            <h3 class="state__name">{s.name}</h3>
+            <p class="state__help"><LinkedText text={s.help} showIcons={false} /></p>
+            {s.helpTribe && (
+              <p class="state__help state__help--tribe">
+                <span class="state__helplbl">vs Tribes:</span>{' '}
+                <LinkedText text={s.helpTribe} showIcons={false} />
+              </p>
+            )}
+            {stateOpinionRows(s).length > 0 && (
+              <ul class="state__fx">
+                {stateOpinionRows(s).map(r => (
+                  <li class="state__fxrow" title={r.hint}>
+                    <span class={`state__fxval ${r.value > 0 ? 'is-pos' : 'is-neg'}`}>{fmt(r.value)}{r.label === 'AI war chance' ? '%' : ''}</span>
+                    <span class="state__fxlbl">{r.label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── War score & war states ────────────────────────────────── -->
+    <section class="dip__sec" id="war-score">
+      <h2 class="dip__h">War Score &amp; War States</h2>
+      <p class="dip__intro"><LinkedText text={warScore.note} showIcons={false} /></p>
+
+      <div class="warwrap">
+        <div class="warcol">
+          <h3 class="dip__sub">War states <span class="dip__subnote">(by score difference)</span></h3>
+          <table class="dtbl">
+            <thead>
+              <tr>
+                <th>State</th>
+                <th>Score diff</th>
+                <th title="Modifier on the chance a tribe offers or accepts a truce (Tribe.getTrucePercent)">Truce chance</th>
+                <th title="Scales the Money the AI offers or demands in war diplomacy (PlayerAI.getDiplomacyMoney)">AI money in deals</th>
+              </tr>
+            </thead>
+            <tbody>
+              {warStates.map(w => (
+                <tr>
+                  <td class="dtbl__name">{w.name}</td>
+                  <td class="dtbl__mono">{w.range}</td>
+                  <td class="dtbl__mono">{w.truceModifier ? `${fmt(w.truceModifier)}%` : '—'}</td>
+                  <td class="dtbl__mono">{w.diplomacyMoneyPercent}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="warcol">
+          <h3 class="dip__sub">War score events <span class="dip__subnote">(from game source)</span></h3>
+          <table class="dtbl">
+            <thead>
+              <tr><th>vs Nations</th><th class="dtbl__num">Score</th></tr>
+            </thead>
+            <tbody>
+              {warScore.nations.map(e => (
+                <tr>
+                  <td><LinkedText text={e.event} showIcons={false} /></td>
+                  <td class={`dtbl__mono dtbl__num ${e.delta > 0 ? 'is-pos' : 'is-neg'}`}>{fmt(e.delta)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tbody>
+              <tr class="dtbl__subhead"><th>vs Tribes <span class="dip__subnote">(doubled scale, your point of view)</span></th><th class="dtbl__num">Score</th></tr>
+              {warScore.tribes.map(e => (
+                <tr>
+                  <td><LinkedText text={e.event} showIcons={false} /></td>
+                  <td class={`dtbl__mono dtbl__num ${e.delta > 0 ? 'is-pos' : 'is-neg'}`}>{fmt(e.delta)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Actions ───────────────────────────────────────────────── -->
+    <section class="dip__sec" id="actions">
+      <h2 class="dip__h">Diplomacy Actions</h2>
+      <p class="dip__intro">
+        Costs are paid from your stockpile; “opinion-scaled” costs are modified
+        by the performing character’s opinion of you
+        (−50% at Friendly, up to +100% at Furious).
+      </p>
+
+      {actionGroups.map(group => (
+        <div class="agroup" id={`group-${group.id}`}>
+          <header class="agroup__head">
+            <h3 class="agroup__title">{group.label}</h3>
+            <p class="agroup__blurb"><LinkedText text={group.blurb} showIcons={false} /></p>
+          </header>
+          <table class="dtbl dtbl--actions">
+            <thead>
+              <tr>
+                <th class="dtbl__c-name">Action</th>
+                <th>Result</th>
+                <th>Performed by</th>
+                <th>Cost</th>
+                <th>Time</th>
+                <th class="dtbl__c-req">Requirements</th>
+              </tr>
+            </thead>
+            <tbody>
+              {group.actions.map(a => (
+                <>
+                  <tr class="arow" data-action={a.slug} id={a.slug}>
+                    <td class="dtbl__c-name">
+                      <span class="aname">{a.name}</span>
+                      {a.target && <span class="atarget">→ {a.target}</span>}
+                      <span class="asum"><LinkedText text={a.summary} showIcons={false} /></span>
+                      {a.effects.map(fx => <span class="afx">{fx}</span>)}
+                    </td>
+                    <td>
+                      {a.resultState
+                        ? <span class={`chip chip--state chip--state-${a.resultState.toLowerCase()}`}>{a.resultState}</span>
+                        : <span class="cell__dash">—</span>}
+                    </td>
+                    <td>
+                      {a.performer
+                        ? <span class="aperf">{a.performer}</span>
+                        : <span class="cell__dash">—</span>}
+                    </td>
+                    <td>
+                      {a.costs.length === 0 && a.costsOpinion.length === 0 ? (
+                        <span class="cell__dash">—</span>
+                      ) : (
+                        <span class="acost">
+                          {a.costs.map(c => (
+                            <span class="ycost" title={`${c.value} ${c.label}`}>
+                              <b>{c.value}</b>
+                              <img class="ycost__ic" src={`${base}img/icons/yields/${c.yield}.png`} alt={c.label} onerror="this.replaceWith(document.createTextNode(' ' + this.alt))" />
+                            </span>
+                          ))}
+                          {a.costsOpinion.map(c => (
+                            <span class="ycost ycost--op" title={`${c.value} ${c.label} — opinion-scaled`}>
+                              <b>{c.value}</b>
+                              <img class="ycost__ic" src={`${base}img/icons/yields/${c.yield}.png`} alt={c.label} onerror="this.replaceWith(document.createTextNode(' ' + this.alt))" />
+                              <i>±</i>
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      {a.turns
+                        ? <span class="dtbl__mono">{a.turns}t</span>
+                        : <span class="dtbl__mono dtbl__dim">instant</span>}
+                      {a.blocksDiplomacy && (
+                        <span class="ablock" title="Diplomacy with the target is disabled while the mission runs">🔒</span>
+                      )}
+                    </td>
+                    <td class="dtbl__c-req">
+                      {a.requirements.length === 0 && a.blocked.length === 0 ? (
+                        <span class="cell__dash">—</span>
+                      ) : (
+                        <ul class="areqs">
+                          {a.requirements.map(r => <li><LinkedText text={r} showIcons={false} /></li>)}
+                          {a.blocked.map(b => <li class="areqs__blk">Blocked: <LinkedText text={b} showIcons={false} /></li>)}
+                        </ul>
+                      )}
+                    </td>
+                  </tr>
+                  {a.options.map(o => (
+                    <tr class="arow arow--opt" data-action={a.slug}>
+                      <td class="dtbl__c-name">
+                        <span class="aname aname--opt">↳ {o.name}</span>
+                        <span class="asum"><LinkedText text={o.summary} showIcons={false} /></span>
+                        {o.effects.map(fx => <span class="afx">{fx}</span>)}
+                      </td>
+                      <td>
+                        {o.resultState
+                          ? <span class={`chip chip--state chip--state-${o.resultState.toLowerCase()}`}>{o.resultState}</span>
+                          : <span class="cell__dash">—</span>}
+                      </td>
+                      <td>
+                        {o.performer
+                          ? <span class="aperf">{o.performer}</span>
+                          : <span class="cell__dash">—</span>}
+                      </td>
+                      <td>
+                        <span class="acost">
+                          {o.costs.map(c => (
+                            <span class="ycost" title={`${c.value} ${c.label}`}>
+                              <b>{c.value}</b>
+                              <img class="ycost__ic" src={`${base}img/icons/yields/${c.yield}.png`} alt={c.label} onerror="this.replaceWith(document.createTextNode(' ' + this.alt))" />
+                            </span>
+                          ))}
+                          {o.costsOpinion.map(c => (
+                            <span class="ycost ycost--op" title={`${c.value} ${c.label} — opinion-scaled`}>
+                              <b>{c.value}</b>
+                              <img class="ycost__ic" src={`${base}img/icons/yields/${c.yield}.png`} alt={c.label} onerror="this.replaceWith(document.createTextNode(' ' + this.alt))" />
+                              <i>±</i>
+                            </span>
+                          ))}
+                        </span>
+                      </td>
+                      <td>
+                        {o.turns
+                          ? <span class="dtbl__mono">{o.turns}t</span>
+                          : <span class="dtbl__mono dtbl__dim">instant</span>}
+                      </td>
+                      <td class="dtbl__c-req">
+                        {o.requirements.length === 0 ? (
+                          <span class="cell__dash">—</span>
+                        ) : (
+                          <ul class="areqs">
+                            {o.requirements.map(r => <li><LinkedText text={r} showIcons={false} /></li>)}
+                          </ul>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </section>
+
+    <!-- ── Constants ─────────────────────────────────────────────── -->
+    <section class="dip__sec" id="constants">
+      <h2 class="dip__h">Treaty &amp; Tribute Constants</h2>
+      <table class="dtbl dtbl--consts">
+        <thead>
+          <tr><th>Constant</th><th class="dtbl__num">Value</th><th>What it does</th></tr>
+        </thead>
+        <tbody>
+          {constants.map(c => (
+            <tr>
+              <td class="dtbl__name">{c.label}</td>
+              <td class="dtbl__mono dtbl__num">{c.value}</td>
+              <td class="dtbl__note"><LinkedText text={c.note} showIcons={false} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script type="application/json" id="dip-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script is:inline>
+    // Dims non-matching action rows on header search. Mirrors laws.astro.
+    (function () {
+      const input = document.getElementById('site-search');
+      const blobNode = document.getElementById('dip-search-blobs');
+      if (!input || !blobNode) return;
+      let blobs;
+      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const slug of Object.keys(blobs)) {
+          const match = !q || blobs[slug].includes(q);
+          for (const el of document.querySelectorAll('[data-action="' + slug + '"]')) {
+            el.classList.toggle('is-dimmed', !match);
+          }
+        }
+      }
+      input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+</Base>
+
+<style>
+  .dip { display: flex; flex-direction: column; gap: 1.8rem; max-width: 1500px; margin: 0 auto; padding: 0 1rem; }
+  .dip__sec { display: flex; flex-direction: column; gap: 0.6rem; }
+  .dip__h {
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding-bottom: 0.3rem;
+    margin: 0;
+  }
+  .dip__sub {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--text);
+    margin: 0 0 0.35rem;
+  }
+  .dip__subnote {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+    font-weight: 400;
+  }
+  .dip__intro { color: var(--text-dim); font-size: 0.8rem; line-height: 1.45; margin: 0; max-width: 70rem; }
+  .dip__intro :global(a) { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
+
+  /* ── State cards ── */
+  .states { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0.7rem; }
+  .state {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--state-color);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.7rem 0.65rem;
+    display: flex; flex-direction: column; gap: 0.45rem;
+  }
+  .state__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.02rem;
+    color: var(--state-color);
+    margin: 0;
+  }
+  .state__help { font-size: 0.74rem; line-height: 1.4; color: var(--text-dim); margin: 0; }
+  .state__help :global(a) { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
+  .state__help--tribe { border-top: 1px dashed var(--border); padding-top: 0.4rem; }
+  .state__helplbl { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint); letter-spacing: 0.05em; }
+  .state__fx { list-style: none; margin: auto 0 0; padding: 0.4rem 0 0; border-top: 1px dashed var(--border); display: flex; flex-direction: column; gap: 0.2rem; }
+  .state__fxrow { display: flex; align-items: baseline; gap: 0.45rem; font-size: 0.72rem; cursor: help; }
+  .state__fxval { font-family: var(--font-mono); font-weight: 700; min-width: 2.6rem; text-align: right; }
+  .state__fxlbl { color: var(--text-dim); }
+
+  .is-pos { color: #7fc97f; }
+  .is-neg { color: #e07b7b; }
+
+  /* ── Tables ── */
+  .warwrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr)); gap: 1rem; align-items: start; }
+  .dtbl { width: 100%; border-collapse: collapse; font-size: 0.76rem; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .dtbl th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+    padding: 0.4rem 0.55rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elev-2);
+  }
+  .dtbl td { padding: 0.42rem 0.55rem; border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent); vertical-align: top; }
+  .dtbl__subhead th { border-top: 1px solid var(--border); }
+  .dtbl tbody tr:last-child td { border-bottom: 0; }
+  .dtbl__name { font-family: var(--font-display); font-weight: 600; color: var(--text); white-space: nowrap; }
+  .dtbl__mono { font-family: var(--font-mono); font-size: 0.72rem; }
+  .dtbl__num { text-align: right; }
+  .dtbl__dim { color: var(--text-faint); }
+  .dtbl__note { color: var(--text-dim); line-height: 1.4; }
+
+  /* ── Action groups ── */
+  .agroup { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.5rem; }
+  .agroup__head { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; }
+  .agroup__title { font-family: var(--font-display); font-weight: 600; font-size: 0.98rem; color: var(--text); margin: 0; }
+  .agroup__blurb { font-size: 0.72rem; color: var(--text-faint); margin: 0; }
+
+  .arow { transition: opacity 0.15s, filter 0.15s; }
+  .arow.is-dimmed { opacity: 0.25; filter: saturate(0.4); }
+  .arow--opt td { background: color-mix(in srgb, var(--bg-elev-2) 55%, transparent); }
+  .dtbl__c-name { min-width: 15rem; }
+  .dtbl__c-req { min-width: 16rem; }
+  .aname { display: block; font-family: var(--font-display); font-weight: 600; font-size: 0.84rem; color: var(--text); }
+  .aname--opt { padding-left: 0.6rem; font-size: 0.78rem; }
+  .atarget { display: block; font-size: 0.66rem; color: var(--text-faint); font-style: italic; }
+  .asum { display: block; font-size: 0.7rem; color: var(--text-dim); line-height: 1.35; margin-top: 0.15rem; max-width: 26rem; }
+  .asum :global(a) { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
+  .afx { display: block; font-size: 0.64rem; color: #9bb8d4; margin-top: 0.12rem; }
+  .aperf { font-size: 0.72rem; color: var(--text-dim); }
+  .ablock { margin-left: 0.3rem; cursor: help; font-size: 0.7rem; }
+
+  .acost { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+  .ycost {
+    display: inline-flex; align-items: center; gap: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    background: var(--bg-elev-3);
+    border-radius: 999px;
+    padding: 0.08rem 0.4rem;
+    white-space: nowrap;
+  }
+  .ycost b { color: var(--text); font-weight: 700; }
+  .ycost__ic { width: 0.85rem; height: 0.85rem; object-fit: contain; }
+  .ycost--op { border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent); }
+  .ycost--op i { font-style: normal; color: var(--text-faint); font-size: 0.6rem; }
+
+  .areqs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+  .areqs li { font-size: 0.68rem; color: var(--text-dim); line-height: 1.35; padding-left: 0.7rem; position: relative; }
+  .areqs li::before { content: '·'; position: absolute; left: 0.15rem; color: var(--text-faint); }
+  .areqs li :global(a) { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
+  .areqs__blk { color: #c98a8a !important; }
+
+  /* Result-state chips, colored by the in-game relationship colors */
+  .chip--state { font-size: 0.66rem; }
+  .chip--state-war { color: #ff8d00; border-color: color-mix(in srgb, #ff8d00 50%, transparent); }
+  .chip--state-truce { color: #ffffff; border-color: color-mix(in srgb, #ffffff 35%, transparent); }
+  .chip--state-peace { color: #00e2ff; border-color: color-mix(in srgb, #00e2ff 50%, transparent); }
+
+  .dtbl--consts .dtbl__name { white-space: normal; }
+</style>
