@@ -9,30 +9,34 @@ const base = import.meta.env.BASE_URL;
 
 type Event = typeof events[number];
 
-// Group events by the resource that triggers them. Resource-less events are
-// generic harvests that can fire on any tile — they go in a trailing bucket.
-const GENERAL = '·General Harvest';
-const groups = new Map<string, { name: string; icon: string; events: Event[] }>();
+// Group events by the resource that triggers them. Two trailing buckets:
+// resource-less harvests fire on ANY resource; vegetation-cut events fire
+// on chopping trees/jungle/scrub, not on harvesting at all.
+const ANY = '·Any Resource';
+const VEG = '·Clearing Vegetation';
+const groups = new Map<string, { name: string; icon: string; glyph?: string; events: Event[] }>();
 for (const ev of events) {
-  const key = ev.resource || GENERAL;
+  const key = ev.resource || ((ev as any).trigger === 'vegetation' ? VEG : ANY);
   if (!groups.has(key)) {
     groups.set(key, {
-      name: ev.resource || 'General Harvest',
+      name: ev.resource || (key === VEG ? 'Clearing Vegetation' : 'Any Resource'),
       icon: ev.resource ? ev.resourceIcon : '',
+      glyph: key === VEG ? '🌲' : key === ANY ? '🌾' : undefined,
       events: [],
     });
   }
   groups.get(key)!.events.push(ev);
 }
-// Alphabetical by resource, with the General bucket forced last.
+// Alphabetical by resource, with the two generic buckets forced last.
+const TAIL_ORDER: Record<string, number> = { [ANY]: 1, [VEG]: 2 };
 const sections = [...groups.entries()]
   .sort(([a], [b]) => {
-    if (a === GENERAL) return 1;
-    if (b === GENERAL) return -1;
+    const ta = TAIL_ORDER[a] || 0, tb = TAIL_ORDER[b] || 0;
+    if (ta !== tb) return ta - tb;
     return a.localeCompare(b);
   })
   .map(([key, g]) => ({
-    slug: key === GENERAL ? 'general' : key.toLowerCase().replace(/ /g, '-'),
+    slug: key === ANY ? 'any-resource' : key === VEG ? 'clearing-vegetation' : key.toLowerCase().replace(/ /g, '-'),
     ...g,
     events: [...g.events].sort((x, y) => x.title.localeCompare(y.title)),
   }));
@@ -78,7 +82,7 @@ const resourceCount = sections.filter(s => s.icon).length;
         <header class="he-sec__hdr">
           {s.icon
             ? <img class="he-sec__icon" src={`${base}img/icons/resources/${s.icon}.png`} alt="" onerror="this.style.display='none'" />
-            : <span class="he-sec__icon he-sec__icon--glyph">🌾</span>}
+            : <span class="he-sec__icon he-sec__icon--glyph">{s.glyph || '🌾'}</span>}
           <h2 class="he-sec__name">{s.name}</h2>
           <span class="he-sec__n">{s.events.length} event{s.events.length === 1 ? '' : 's'}</span>
         </header>

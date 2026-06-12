@@ -383,6 +383,12 @@ def main() -> int:
 
         once_per_game = (entry.findtext("iRepeatTurns") or "") == "-1"
 
+        # Four "harvest" events actually fire on clearing vegetation
+        # (EVENTTRIGGER_VEGETATION_CUT — chopping trees/jungle/scrub), not on
+        # harvesting a resource. The page buckets them separately.
+        trigger = entry.findtext("Trigger") or ""
+        trigger_kind = "vegetation" if trigger == "EVENTTRIGGER_VEGETATION_CUT" else "harvest"
+
         author = entry.findtext("zAuthor") or ""
         bg = entry.findtext("zBackgroundName") or ""
 
@@ -426,6 +432,7 @@ def main() -> int:
             "resource": resource,
             "resourceIcon": resource_icon,
             "oncePerGame": once_per_game,
+            "trigger": trigger_kind,
             "author": author,
             "background": bg,
             "options": option_objs,
