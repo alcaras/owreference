@@ -122,9 +122,19 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
     """Both option syntaxes → [{text, requirements, outcomes}]."""
     out: list[dict] = []
 
-    def link_of(opt: ET.Element):
-        link = opt.findtext("EventLinkAdd")
-        return link if link and link != "NONE" else None
+    def link_of(opt: ET.Element) -> list[str]:
+        """Every event link this option adds: EventLinkAdd plus each
+        EventLinkSubjectsAdd pair (e.g. Cult of Flame's Smash adds
+        EVENTLINK_CLEARED_CAMP only via the subjects form)."""
+        links: set[str] = set()
+        la = opt.findtext("EventLinkAdd")
+        if la and la != "NONE":
+            links.add(la)
+        for pr in opt.findall("EventLinkSubjectsAdd/Pair"):
+            z = pr.findtext("zIndex")
+            if z and z != "NONE":
+                links.add(z)
+        return sorted(links)
 
     # Old syntax: list of eventOption references.
     for oz in s.findall("aeOptions/zValue"):
@@ -135,7 +145,7 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
             "text": m.clean_text(text.get(opt.findtext("Text") or "", "")),
             "requirements": m.option_requirements(opt),
             "outcomes": m.option_outcomes(opt, eopt_idx, bonus_idx, text),
-            "linkAdd": link_of(opt),
+            "linkAdds": link_of(opt),
             "raw": m.option_raw(opt, eopt_idx, bonus_idx),
         })
 
@@ -148,7 +158,7 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
             "text": m.clean_text(text.get(opt.findtext("Text") or "", "")),
             "requirements": m.option_requirements(opt),
             "outcomes": [{"probability": 1.0, "weight": None, "rewards": rewards, "label": None}],
-            "linkAdd": link_of(opt),
+            "linkAdds": link_of(opt),
             "raw": m.option_raw(opt, eopt_idx, bonus_idx),
         })
 
@@ -280,11 +290,15 @@ def main() -> int:
     add_sources: dict[str, list[dict]] = {}
     for e in all_events:
         for opt in e["options"]:
-            la = opt.get("linkAdd")
-            if la:
-                opt["leadsTo"] = [t for t in prereq_targets.get(la, []) if t["id"] != e["id"]]
-                if opt["leadsTo"]:
+            lts: list[dict] = []
+            for la in opt.get("linkAdds") or []:
+                for t in prereq_targets.get(la, []):
+                    if t["id"] != e["id"] and all(x["id"] != t["id"] for x in lts):
+                        lts.append(t)
+                if any(t["id"] != e["id"] for t in prereq_targets.get(la, [])):
                     add_sources.setdefault(la, []).append({"id": e["id"], "name": e["name"]})
+            if lts:
+                opt["leadsTo"] = lts
     for e in all_events:
         lp = e.get("linkPrereq")
         e["followsFrom"] = [src for src in add_sources.get(lp, []) if src["id"] != e["id"]] if lp else []

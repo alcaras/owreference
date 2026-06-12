@@ -157,20 +157,29 @@ def excluded_sets(story_idx: dict[str, ET.Element], eopt_idx: dict) -> dict[str,
 
     # Ruins + transitive chain closure, copied from build_events.py main() so
     # the excluded set matches the ruin-events page exactly.
+    def _opt_links(opt: ET.Element | None) -> set[str]:
+        """EventLinkAdd plus EventLinkSubjectsAdd pairs on an option."""
+        links: set[str] = set()
+        if opt is None:
+            return links
+        la = opt.findtext("EventLinkAdd")
+        if la and la != "NONE":
+            links.add(la)
+        for pr in opt.findall("EventLinkSubjectsAdd/Pair"):
+            z = pr.findtext("zIndex")
+            if z and z != "NONE":
+                links.add(z)
+        return links
+
     def story_link_adds(s: ET.Element) -> set[str]:
         links: set[str] = set()
         la = s.findtext("EventLinkAdd")
         if la and la != "NONE":
             links.add(la)
         for oz in s.findall("aeOptions/zValue"):
-            opt = eopt_idx.get(oz.text or "")
-            la = opt.findtext("EventLinkAdd") if opt is not None else None
-            if la and la != "NONE":
-                links.add(la)
+            links |= _opt_links(eopt_idx.get(oz.text or ""))
         for opt in s.findall("EventOptions/EventOption"):
-            la = opt.findtext("EventLinkAdd")
-            if la and la != "NONE":
-                links.add(la)
+            links |= _opt_links(opt)
         return links
 
     by_prereq: dict[str, list[ET.Element]] = {}
@@ -376,19 +385,28 @@ def main() -> int:
             prereq_targets.setdefault(lp, []).append(z)
 
     add_sources: dict[str, list[str]] = {}
+    def _xml_opt_links(opt):
+        links = set()
+        if opt is None:
+            return links
+        la = opt.findtext("EventLinkAdd")
+        if la and la != "NONE":
+            links.add(la)
+        for pr in opt.findall("EventLinkSubjectsAdd/Pair"):
+            zx = pr.findtext("zIndex")
+            if zx and zx != "NONE":
+                links.add(zx)
+        return links
     for z, s in story_idx.items():
         la = s.findtext("EventLinkAdd")
         if la and la != "NONE":
             add_sources.setdefault(la, []).append(z)
         for oz in s.findall("aeOptions/zValue"):
-            opt = eopt_idx.get(oz.text or "")
-            la = opt.findtext("EventLinkAdd") if opt is not None else None
-            if la and la != "NONE":
-                add_sources.setdefault(la, []).append(z)
+            for l in _xml_opt_links(eopt_idx.get(oz.text or "")):
+                add_sources.setdefault(l, []).append(z)
         for opt in s.findall("EventOptions/EventOption"):
-            la = opt.findtext("EventLinkAdd")
-            if la and la != "NONE":
-                add_sources.setdefault(la, []).append(z)
+            for l in _xml_opt_links(opt):
+                add_sources.setdefault(l, []).append(z)
 
     def refs(zids: list[str], skip: str) -> list[dict]:
         out = []
@@ -403,11 +421,13 @@ def main() -> int:
 
     for z, ev in events_by_id.items():
         for opt in ev["options"]:
-            la = opt.get("linkAdd")
-            if la:
-                lt = refs(prereq_targets.get(la, []), skip=z)
-                if lt:
-                    opt["leadsTo"] = lt
+            lts: list[dict] = []
+            for la in opt.get("linkAdds") or []:
+                for t in refs(prereq_targets.get(la, []), skip=z):
+                    if all(x["id"] != t["id"] for x in lts):
+                        lts.append(t)
+            if lts:
+                opt["leadsTo"] = lts
         lp = ev.get("linkPrereq")
         if lp:
             ff = refs(add_sources.get(lp, []), skip=z)
@@ -443,8 +463,8 @@ def main() -> int:
     # fallbacks (e.g. a missing probability means a guaranteed outcome).
     for ev in events_by_id.values():
         for opt in ev["options"]:
-            if not opt.get("linkAdd"):
-                opt.pop("linkAdd", None)
+            if not opt.get("linkAdds"):
+                opt.pop("linkAdds", None)
             for oc in opt.get("outcomes", []):
                 if oc.get("label") is None:
                     oc.pop("label", None)
