@@ -57,6 +57,7 @@ function searchBlob(ev: any): string {
       o.text, ...(o.requirements || []).map((r: any) => r.label),
       ...(o.outcomes || []).flatMap((oc: any) => (oc.rewards || []).map((r: any) => r.text)),
       ...(o.leadsTo || []).map((t: any) => t.name),
+      ...(o.canLeadTo || []).map((t: any) => t.name),
     ]),
     ...(ev.followsFrom || []).map((f: any) => f.name),
   ].filter(Boolean).join(' ').toLowerCase();
@@ -191,6 +192,15 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
                     <div class="opt__leads">
                       ↳ may trigger:{' '}
                       {o.leadsTo.map((t: any, i: number) => (
+                        <>{i > 0 ? ', ' : ''}<a href={evHref(t)}>{t.name}</a></>
+                      ))}
+                    </div>
+                  )}
+                  {o.canLeadTo && o.canLeadTo.length > 0 && (
+                    <div class="opt__leads opt__leads--maybe"
+                         title="This choice grants a memory these stories require — it makes them eligible, it does not guarantee they fire.">
+                      ◇ may enable:{' '}
+                      {o.canLeadTo.map((t: any, i: number) => (
                         <>{i > 0 ? ', ' : ''}<a href={evHref(t)}>{t.name}</a></>
                       ))}
                     </div>
@@ -392,5 +402,8 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
     .opt__leads {
       margin-top: 0.3rem; padding-left: 1rem; font-size: 0.78rem; color: var(--text-dim);
     }
+    /* Memory-eligibility hints, not guaranteed chains — dimmer than leadsTo. */
+    .opt__leads--maybe { color: var(--text-faint); cursor: help; }
+    .opt__leads--maybe a { color: color-mix(in srgb, var(--accent) 70%, var(--text-faint)); }
   </style>
 </Base>

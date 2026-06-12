@@ -328,40 +328,179 @@ def bonus_index() -> dict:
     return index_many(*BONUS_FILES)
 
 
-# Memory token → (opinion delta, duration turns). A "memory" is the lasting
-# opinion shift a subject keeps after an event; entries either carry iOpinion
-# directly or point at a MemoryLevel (memoryLevel.xml: iValue + iTurns,
-# missing iTurns = permanent). Lazily loaded + cached.
+# ── Memories ────────────────────────────────────────────────────────────────
+# A "memory" (memory-{tribe,player,character,family,religion,eoti}.xml) is the
+# lasting opinion shift a subject keeps after an event option. Per InfoMemory
+# in the game source (InfoBase.cs ~4167): if MemoryLevel is set, BOTH value
+# and turns come from memoryLevel.xml (iValue = opinion, iTurns = decay);
+# otherwise the entry's own iValue/iTurns apply. turns 0/absent = permanent.
+MEMORY_FILES = ("memory-character.xml", "memory-player.xml", "memory-family.xml",
+                "memory-tribe.xml", "memory-religion.xml", "memory-eoti.xml")
+# eoti's MEMORY_* labels live in text-eoti.xml, not a text-memory-* file.
+MEMORY_TEXT_FILES = ("text-memory.xml", "text-memory-btt.xml", "text-memory-sap.xml",
+                     "text-memory-wog.xml", "text-memory-hittite.xml", "text-eoti.xml")
+# Same story/option sets every event builder reads (base + DLC packs).
+STORY_FILES = ("eventStory.xml", "eventStory-sap.xml", "eventStory-btt.xml",
+               "eventStory-eoti.xml", "eventStory-wd.xml", "eventStory-wog.xml")
+OPTION_FILES = ("eventOption.xml", "eventOption-sap.xml", "eventOption-btt.xml",
+                "eventOption-eoti.xml", "eventOption-wd.xml", "eventOption-wog.xml")
+
 _MEMORY_INFO: dict | None = None
 
 
-def _memory_opinion(token: str) -> tuple[int | None, int | None]:
+def memory_info() -> dict[str, dict]:
+    """Memory token → {label, opinion, turns}. Lazily loaded + cached."""
     global _MEMORY_INFO
-    if _MEMORY_INFO is None:
-        levels: dict = {}
-        lp = XML_DIR / "memoryLevel.xml"
-        if lp.exists():
-            for e in ET.parse(lp).getroot().findall("Entry"):
-                zt = e.findtext("zType")
-                if zt:
-                    levels[zt] = (int(e.findtext("iValue") or "0") or None,
-                                  int(e.findtext("iTurns") or "0") or None)
-        _MEMORY_INFO = {}
-        for fn in ("memory-character.xml", "memory-player.xml", "memory-family.xml",
-                   "memory-tribe.xml", "memory-religion.xml", "memory-eoti.xml"):
-            p = XML_DIR / fn
-            if not p.exists():
+    if _MEMORY_INFO is not None:
+        return _MEMORY_INFO
+    mtext = load_text(*MEMORY_TEXT_FILES)
+    levels: dict[str, tuple[int, int]] = {}
+    lp = XML_DIR / "memoryLevel.xml"
+    if lp.exists():
+        for e in ET.parse(lp).getroot().findall("Entry"):
+            zt = e.findtext("zType")
+            if zt:
+                levels[zt] = (int(e.findtext("iValue") or "0"),
+                              int(e.findtext("iTurns") or "0"))
+    _MEMORY_INFO = {}
+    for fn in MEMORY_FILES:
+        p = XML_DIR / fn
+        if not p.exists():
+            continue
+        for e in ET.parse(p).getroot().findall("Entry"):
+            zt = e.findtext("zType")
+            if not zt:
                 continue
-            for e in ET.parse(p).getroot().findall("Entry"):
-                zt = e.findtext("zType")
-                if not zt:
-                    continue
-                op = e.findtext("iOpinion")
-                if op and op.strip():
-                    _MEMORY_INFO[zt] = (int(op), None)
-                else:
-                    _MEMORY_INFO[zt] = levels.get(e.findtext("MemoryLevel") or "", (None, None))
-    return _MEMORY_INFO.get(token, (None, None))
+            lvl = e.findtext("MemoryLevel") or ""
+            if lvl and lvl in levels:
+                op, turns = levels[lvl]
+            else:
+                op = int(e.findtext("iValue") or "0")
+                turns = int(e.findtext("iTurns") or "0")
+            label = clean_text(mtext.get(e.findtext("Text") or "", ""))
+            if not label:
+                label = re.sub(r"^MEMORY[A-Z]*_", "", zt).replace("_", " ").title()
+            _MEMORY_INFO[zt] = {"label": label, "opinion": op or None, "turns": turns or None}
+    return _MEMORY_INFO
+
+
+# Memory token → the event stories it gates. A memory only matters beyond its
+# opinion value when a subject.xml entry keys off it (MemoryPrereq = subject
+# must hold it; MemoryInvalid = subject must NOT hold it) AND some event casts
+# or requires that subject. Events cast subjects through both schemas — the
+# old aeSubjects/zValue + SubjectExtras/SubjectAny pairs, and the new nested
+# Subjects/Subject with Type + Extra — and their options can additionally
+# require subjects (LeaderSubject/PlayerSubject/aeSubjectReqs/…). Negated
+# tests (SubjectNotExtras, NotExtra, *NotAny) flip the polarity: a negated
+# MemoryPrereq subject means the memory BLOCKS the event, a negated
+# MemoryInvalid subject means it enables it.
+_MEMORY_CHAIN: dict | None = None
+
+
+def memory_chain() -> dict[str, dict[str, list[str]]]:
+    """Memory token → {"enables": [story ids], "blocks": [story ids]}."""
+    global _MEMORY_CHAIN
+    if _MEMORY_CHAIN is not None:
+        return _MEMORY_CHAIN
+    prereq_of: dict[str, str] = {}   # subject token → memory it requires
+    invalid_of: dict[str, str] = {}  # subject token → memory it forbids
+    sp = XML_DIR / "subject.xml"
+    if sp.exists():
+        for e in ET.parse(sp).getroot().findall("Entry"):
+            z = e.findtext("zType")
+            if not z:
+                continue
+            mp = e.findtext("MemoryPrereq")
+            if mp and mp != "NONE":
+                prereq_of[z] = mp
+            mi = e.findtext("MemoryInvalid")
+            if mi and mi != "NONE":
+                invalid_of[z] = mi
+
+    chain: dict[str, dict[str, list[str]]] = {}
+
+    def add(mem: str, key: str, zid: str) -> None:
+        d = chain.setdefault(mem, {"enables": [], "blocks": []})
+        if zid not in d[key]:
+            d[key].append(zid)
+
+    eopt_idx = index_many(*OPTION_FILES)
+    POS_REQ_TAGS = ("LeaderSubject", "LeaderSubjectAny", "PlayerSubject",
+                    "IndexSubject", "IndexSubjectAny", "aeSubjectReqs", "SubjectReqs")
+    NEG_REQ_TAGS = ("LeaderSubjectNotAny", "PlayerSubjectNotAny", "IndexSubjectNotAny")
+
+    def opt_reqs(opt: ET.Element, tags: tuple[str, ...]) -> list[str]:
+        toks: list[str] = []
+        for tag in tags:
+            toks += [v.text for v in opt.findall(f"{tag}/zValue") if v.text]
+            single = (opt.findtext(tag) or "").strip()
+            if single and single != "NONE":
+                toks.append(single)
+        return toks
+
+    for zid, s in index_many(*STORY_FILES).items():
+        pos: list[str] = [z.text for z in s.findall("aeSubjects/zValue") if z.text]
+        neg: list[str] = []
+        for tag in ("SubjectExtras", "SubjectAny"):
+            pos += [p.findtext("Second") for p in s.findall(f"{tag}/Pair") if p.findtext("Second")]
+        neg += [p.findtext("Second") for p in s.findall("SubjectNotExtras/Pair") if p.findtext("Second")]
+        for sub in s.findall("Subjects/Subject"):
+            t = sub.findtext("Type")
+            if t:
+                pos.append(t)
+            pos += [x.text for x in sub.findall("Extra") if x.text]
+            neg += [x.text for x in sub.findall("NotExtra") if x.text]
+        # Option-level subject requirements gate individual choices the same way.
+        opts = [eopt_idx[oz.text] for oz in s.findall("aeOptions/zValue")
+                if oz.text and oz.text in eopt_idx]
+        opts += s.findall("EventOptions/EventOption")
+        for opt in opts:
+            pos += opt_reqs(opt, POS_REQ_TAGS)
+            neg += opt_reqs(opt, NEG_REQ_TAGS)
+        for tok in pos:
+            if tok in prereq_of:
+                add(prereq_of[tok], "enables", zid)
+            if tok in invalid_of:
+                add(invalid_of[tok], "blocks", zid)
+        for tok in neg:
+            if tok in prereq_of:
+                add(prereq_of[tok], "blocks", zid)
+            if tok in invalid_of:
+                add(invalid_of[tok], "enables", zid)
+    _MEMORY_CHAIN = chain
+    return chain
+
+
+def memory_rewards(b: ET.Element) -> list[dict]:
+    """Reward rows for a bonus's memory grants. Each carries the memory token
+    (so builders can wire 'may enable' follow-up links) and, when nothing in
+    the data keys off the memory, an honest note — the in-game '[Could lead to
+    future Events]' hint shows for ANY memory grant, consumed or not."""
+    out: list[dict] = []
+    for tag, who in (("Memory", ""), ("MemoryLeader", " (leader of you)"),
+                     ("MemoryAllFamilies", " (all families)"),
+                     ("MemoryAllPlayers", " (all rivals)")):
+        mem = b.findtext(tag)
+        if not mem or mem == "NONE":
+            continue
+        info = memory_info().get(mem)
+        label = info["label"] if info else re.sub(r"^MEMORY[A-Z]*_", "", mem).replace("_", " ").title()
+        op = info["opinion"] if info else None
+        turns = info["turns"] if info else None
+        if op and turns:
+            detail = f" ({'+' if op >= 0 else ''}{op} opinion for {turns} turns)"
+        elif op:
+            detail = f" ({'+' if op >= 0 else ''}{op} opinion, permanent)"
+        elif turns:
+            detail = f" ({turns} turns)"
+        else:
+            detail = ""
+        r: dict = {"text": f"Remembered{who}: {label}{detail}", "memory": mem}
+        ch = memory_chain().get(mem)
+        if not ch or not (ch["enables"] or ch["blocks"]):
+            r["note"] = "no event currently keys off this"
+        out.append(r)
+    return out
 
 
 def _named(text: dict, token: str, prefix: str) -> str:
@@ -545,18 +684,9 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
     if amb:
         out.append(_txt(f"Progress ambition: {_tok(amb, 'GOAL_')}"))
 
-    # Opinion memories — the lasting opinion shift a subject keeps.
-    for tag, who in (("Memory", ""), ("MemoryLeader", " (leader of you)"),
-                     ("MemoryAllFamilies", " (all families)"),
-                     ("MemoryAllPlayers", " (all rivals)")):
-        mem = b.findtext(tag)
-        if mem and mem != "NONE":
-            op, turns = _memory_opinion(mem)
-            if op:
-                dur = f" for {turns} turns" if turns else ""
-                out.append(_txt(f"{'+' if op >= 0 else ''}{op} opinion{who}{dur}"))
-            else:
-                out.append(_txt(f"Opinion memory{who}"))
+    # Opinion memories — the lasting opinion shift a subject keeps (and the
+    # hook future events may key off; see memory_rewards).
+    out += memory_rewards(b)
 
     fl = b.findtext("FreeLaw")
     if fl and fl != "NONE":
@@ -930,13 +1060,15 @@ def main() -> int:
                     for r in humanize_bonus(bonus_id, bonus_idx, text):
                         if r["text"] in top_texts:
                             continue
-                        outcome["rewards"].append({"label": r["text"], "value": None, "scope": "Special"})
+                        lbl = r["text"] + (f" ({r['note']})" if r.get("note") else "")
+                        outcome["rewards"].append({"label": lbl, "value": None, "scope": "Special"})
 
                 # Bonuses applied to a mission SUBJECT (slot-indexed list) —
                 # e.g. the imprisoned character's family resents you.
                 for bz in result.findall("SubjectBonuses/zValue"):
                     for r in humanize_bonus(bz.text or "", bonus_idx, text):
-                        outcome["rewards"].append({"label": r["text"], "value": None, "scope": "Special"})
+                        lbl = r["text"] + (f" ({r['note']})" if r.get("note") else "")
+                        outcome["rewards"].append({"label": lbl, "value": None, "scope": "Special"})
 
             outcomes.append(outcome)
 

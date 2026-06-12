@@ -18,12 +18,21 @@ interface Props {
   pageMark: string;
 }
 const { sectionKey, title, active, pageMark } = Astro.props as Props;
+const base = import.meta.env.BASE_URL;
 
 const sec = sections.find(s => s.key === sectionKey)!;
 type EventStory = (typeof sec)['events'][number];
 
 function pct(p: number): string {
   return (p * 100).toFixed(0) + '%';
+}
+
+// canLeadTo targets may live on another page (story-events category, harvest,
+// study, the other exploration tab); leadsTo links stay same-page anchors.
+function evHref(t: any): string {
+  if (t.ext) return `${base}${t.ext}#${t.anchor || t.id}`;
+  if (t.cat) return `${base}events/${t.cat}#${t.id}`;
+  return `#${t.id}`;
 }
 
 function rewardYield(r: any): string | null {
@@ -44,6 +53,7 @@ function searchBlob(ev: EventStory): string {
       o.text, ...o.requirements.map((r: any) => r.label),
       ...o.outcomes.flatMap(oc => oc.rewards.map((r: any) => r.text)),
       ...((o as any).leadsTo || []).map((t: any) => t.name),
+      ...((o as any).canLeadTo || []).map((t: any) => t.name),
     ]),
     ...((ev as any).followsFrom || []).map((f: any) => f.name),
   ].filter(Boolean).join(' ').toLowerCase();
@@ -145,6 +155,15 @@ const followups = sec.events.filter(e => e.isFollowup).length;
                       ↳ may trigger:{' '}
                       {o.leadsTo.map((t: any, i: number) => (
                         <>{i > 0 ? ', ' : ''}<a href={`#${t.id}`}>{t.name}</a></>
+                      ))}
+                    </div>
+                  )}
+                  {o.canLeadTo && o.canLeadTo.length > 0 && (
+                    <div class="opt__leads opt__leads--maybe"
+                         title="This choice grants a memory these stories require — it makes them eligible, it does not guarantee they fire.">
+                      ◇ may enable:{' '}
+                      {o.canLeadTo.map((t: any, i: number) => (
+                        <>{i > 0 ? ', ' : ''}<a href={evHref(t)}>{t.name}</a></>
                       ))}
                     </div>
                   )}
@@ -312,5 +331,8 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     .opt__leads {
       margin-top: 0.3rem; padding-left: 1rem; font-size: 0.78rem; color: var(--text-dim);
     }
+    /* Memory-eligibility hints, not guaranteed chains — dimmer than leadsTo. */
+    .opt__leads--maybe { color: var(--text-faint); cursor: help; }
+    .opt__leads--maybe a { color: color-mix(in srgb, var(--accent) 70%, var(--text-faint)); }
   </style>
 </Base>

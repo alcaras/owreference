@@ -26,7 +26,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
-from build_missions import pairs, _trim, _tok, _fallback_label, _yld, _txt, _trait_tip  # noqa: E402
+from build_missions import (pairs, _trim, _tok, _fallback_label, _yld, _txt,  # noqa: E402
+                            _trait_tip, memory_rewards)
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -299,6 +300,9 @@ def humanize_bonus(bonus_id: str, idx: dict, text: dict, _seen: set | None = Non
     amb = b.findtext("Ambition")
     if amb:
         out.append(_txt(f"Progress ambition: {_tok(amb, 'GOAL_')}"))
+
+    # Opinion memories (shared renderer — carries the token + orphan note).
+    out += memory_rewards(b)
 
     # Nested bonuses (containers like *_OPTION_*_CITY group several payloads).
     for bz in b.findall("aeBonuses/zValue"):

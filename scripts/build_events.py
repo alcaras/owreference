@@ -289,6 +289,63 @@ def main() -> int:
         lp = e.get("linkPrereq")
         e["followsFrom"] = [src for src in add_sources.get(lp, []) if src["id"] != e["id"]] if lp else []
 
+    # ── Potential follow-ups via memories (canLeadTo) ───────────────────────
+    # An option that grants a memory makes its holder eligible for any story
+    # whose cast subjects require it (subject.xml MemoryPrereq) — an
+    # eligibility hint, NOT a guaranteed chain like leadsTo. MemoryInvalid
+    # consumers are blockers, deliberately not listed.
+    # Locating targets: the two groups here anchor by id; harvest/study pages
+    # use their builders' anchor schemes; everything else lives in a
+    # story-events category part. Part slugs come from the generated
+    # search.json — `make data` runs build_events before build_story_events,
+    # so this read can be one build stale; it self-corrects next run
+    # (category part slugs only move when the game's taxonomy shifts).
+    CAN_LEAD_CAP = 6
+    chain = m.memory_chain()
+    search_path = ROOT / "src" / "data" / "story-events" / "search.json"
+    part_of: dict[str, str] = {}
+    if search_path.exists():
+        for row in json.loads(search_path.read_text()):
+            part_of[row["i"]] = row["s"]
+
+    def can_location(zid: str) -> dict | None:
+        if zid in ruin_ids:
+            return {"ext": "ruin-events", "anchor": zid}
+        if zid in exp_ids:
+            return {"ext": "expedition-events", "anchor": zid}
+        s = story_idx.get(zid)
+        cls = (s.findtext("Class") or "") if s is not None else ""
+        if cls == "EVENTCLASS_HARVESTING":
+            return {"ext": "harvest-events",
+                    "anchor": zid.replace("EVENTSTORY_HARVEST_", "").replace("EVENTSTORY_", "").lower()}
+        if cls == "EVENTCLASS_STUDY":
+            return {"ext": "study-events", "anchor": zid.replace("EVENTSTORY_STUDY_", "").lower()}
+        if zid in part_of:
+            return {"cat": part_of[zid]}
+        return None
+
+    for e in all_events:
+        for opt in e["options"]:
+            toks: list[str] = []
+            for oc in opt.get("outcomes", []):
+                for r in oc.get("rewards", []):
+                    mem = r.get("memory")
+                    if mem and mem not in toks:
+                        toks.append(mem)
+            ids: list[str] = []
+            for t in toks:
+                ids += chain.get(t, {}).get("enables", [])
+            targets = []
+            for zid in sorted(set(ids)):
+                if zid == e["id"]:
+                    continue
+                loc = can_location(zid)
+                if loc is None or story_idx.get(zid) is None:
+                    continue
+                targets.append({"id": zid, "name": story_name(story_idx[zid]), **loc})
+            if targets:
+                opt["canLeadTo"] = targets[:CAN_LEAD_CAP]
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(sections, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"✓ wrote {OUT.relative_to(ROOT)}")

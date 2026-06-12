@@ -63,6 +63,13 @@
             "text": "Adopt the child as my own."
           },
           {
+            "canLeadTo": [
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_TRIBAL_INVASION_CHOSEN_CHILD",
+                "name": "The Child's Revenge"
+              }
+            ],
             "linkAdd": null,
             "outcomes": [
               {
@@ -73,10 +80,12 @@
                     "text": "+2 Legitimacy"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYCHARACTER_REJECTED_CHILD",
+                    "text": "Remembered: Rejected Child"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYCHARACTER_REJECTED_CHILD_RECENTLY",
+                    "text": "Remembered: Rejected Child Recently (17 turns)"
                   }
                 ],
                 "weight": null
@@ -1400,7 +1409,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 40 turns"
+                    "memory": "MEMORYRELIGION_SHARED_BREAD",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Shared food with travelers (+20 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -1438,7 +1449,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-80 opinion for 20 turns"
+                    "memory": "MEMORYRELIGION_ATTACKED_OUR_COMMUNITY",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Attacked our community (-80 opinion for 20 turns)"
                   },
                   {
                     "base": 160,
@@ -1830,10 +1843,14 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+40 opinion for 80 turns"
+                    "memory": "MEMORYCHARACTER_GIFTED_PRICELESS_ARTIFACTS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Gifted priceless artifacts (+40 opinion for 80 turns)"
                   },
                   {
-                    "text": "+40 opinion for 20 turns"
+                    "memory": "MEMORYFAMILY_GIFTED_PRICELESS_ARTIFACTS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Gifted priceless artifacts (+40 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -1891,7 +1908,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+80 opinion for 40 turns"
+                    "memory": "MEMORYRELIGION_RUINS_RESTORED_TEMPLE",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Restored ancient temple ruins (+80 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -2161,7 +2180,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 20 turns"
+                    "memory": "MEMORYFAMILY_RUINS_GIFT_OF_VALUABLES",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Gave us ancient treasures (+20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -2250,7 +2271,9 @@
                     "text": "+60 XP to the character"
                   },
                   {
-                    "text": "+80 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_RUINS_RESTORED_CITY",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Restored our ancient capital (+80 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -3223,7 +3246,8 @@
                     "text": "Progress ambition: Oracle"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYPLAYER_RECENT_AMBITION",
+                    "text": "Remembered: Recent Ambition (7 turns)"
                   },
                   {
                     "text": "Gain a Court Scholar"
@@ -4747,7 +4771,9 @@
                     "text": "+1 Discipline"
                   },
                   {
-                    "text": "+20 opinion for 20 turns"
+                    "memory": "MEMORYTRIBE_AVOIDED_RUINS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Avoided ancient ruins (+20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -4797,7 +4823,9 @@
                     "yield": "science"
                   },
                   {
-                    "text": "-40 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_DESECRATED_RUINS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Desecrated ancient ruins (-40 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -6925,7 +6953,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 20 turns"
+                    "memory": "MEMORYRELIGION_SHOWED_ARTIFACTS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Showed artifacts of interest to our faith (+20 opinion for 20 turns)"
                   },
                   {
                     "text": "+1 Charisma"
@@ -7310,6 +7340,28 @@
         "name": "Rival Expedition",
         "options": [
           {
+            "canLeadTo": [
+              {
+                "cat": "on-player-peace-offer",
+                "id": "EVENTSTORY_PLAYER_PEACE_HOSTAGE",
+                "name": "Hostage Return"
+              },
+              {
+                "cat": "on-player-truce-offer",
+                "id": "EVENTSTORY_PLAYER_TRUCE_HOSTAGE",
+                "name": "Time for a Truce"
+              },
+              {
+                "cat": "on-player-war-declare",
+                "id": "EVENTSTORY_PLAYER_WAR_DECLARE_HOLD_HOSTAGE",
+                "name": "The Sword of Damocles"
+              },
+              {
+                "cat": "on-player-war-offer",
+                "id": "EVENTSTORY_PLAYER_WAR_HOSTAGE",
+                "name": "Return Our Hostage"
+              }
+            ],
             "linkAdd": null,
             "outcomes": [
               {
@@ -7317,7 +7369,8 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYPLAYER_HOLD_HOSTAGE",
+                    "text": "Remembered: Held a noble hostage (+20 opinion for 40 turns)"
                   },
                   {
                     "base": 240,
@@ -7369,7 +7422,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 20 turns"
+                    "memory": "MEMORYPLAYER_RECOGNIZED_CLAIM",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Did not contradict expeditions claims of ownership (+20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -7974,10 +8029,14 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 40 turns"
+                    "memory": "MEMORYPLAYER_SKIRMISH_HELPED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought with us in a skirmish (+20 opinion for 40 turns)"
                   },
                   {
-                    "text": "-20 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_SKIRMISH_FOUGHT",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought against us in a skirmish (-20 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -8015,10 +8074,14 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-20 opinion for 40 turns"
+                    "memory": "MEMORYPLAYER_SKIRMISH_FOUGHT",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought against us in a skirmish (-20 opinion for 40 turns)"
                   },
                   {
-                    "text": "+20 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_SKIRMISH_HELPED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought with us in a skirmish (+20 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -8056,10 +8119,14 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-20 opinion for 20 turns"
+                    "memory": "MEMORYPLAYER_SKIRMISH_IGNORED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Refused to help us in a skirmish (-20 opinion for 20 turns)"
                   },
                   {
-                    "text": "-20 opinion for 20 turns"
+                    "memory": "MEMORYTRIBE_SKIRMISH_IGNORED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Refused to help us in a skirmish (-20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -8097,10 +8164,14 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-20 opinion for 40 turns"
+                    "memory": "MEMORYPLAYER_SKIRMISH_FOUGHT",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought against us in a skirmish (-20 opinion for 40 turns)"
                   },
                   {
-                    "text": "-20 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_SKIRMISH_FOUGHT",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought against us in a skirmish (-20 opinion for 40 turns)"
                   },
                   {
                     "base": 160,
@@ -11753,7 +11824,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-80 opinion for 20 turns"
+                    "memory": "MEMORYCHARACTER_STOPPED_MY_EXPLORING",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Stopped me exploring (-80 opinion for 20 turns)"
                   },
                   {
                     "text": "Gain trait: Returning",
@@ -11822,7 +11895,9 @@
                     "text": "Converts to the target religion"
                   },
                   {
-                    "text": "+40 opinion for 40 turns"
+                    "memory": "MEMORYRELIGION_SUPPORTED_FAITH",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Gave support (+40 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -12025,7 +12100,9 @@
                     "yield": "iron"
                   },
                   {
-                    "text": "-20 opinion for 20 turns"
+                    "memory": "MEMORYFAMILY_SACRIFICED_RELATIVE",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Sacrificed a relative at sea (-20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -13563,7 +13640,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 40 turns"
+                    "memory": "MEMORYRELIGION_PRAYER",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Offered a prayer (+20 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -14402,7 +14481,8 @@
                     "tipTitle": "Exploring — trait"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYPLAYER_OFFER",
+                    "text": "Remembered: Player Offer (5 turns)"
                   }
                 ],
                 "weight": null
@@ -14442,6 +14522,23 @@
             "text": "Instruct [character] to stay as an ambassador to [rival]."
           },
           {
+            "canLeadTo": [
+              {
+                "cat": "scripted",
+                "id": "EVENTSTORY_BROUGHT_NEAR_BY_GREED",
+                "name": "Brought Near by Greed"
+              },
+              {
+                "cat": "scripted",
+                "id": "EVENTSTORY_SINK_OF_THE_WORLDS_GOLD",
+                "name": "Sink of the World's Gold"
+              },
+              {
+                "cat": "on-city-culture",
+                "id": "EVENTSTORY_THE_CITY_HOARD",
+                "name": "The [city] Hoard"
+              }
+            ],
             "linkAdd": null,
             "outcomes": [
               {
@@ -14456,7 +14553,8 @@
                     "tipTitle": "Returning — trait"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYPLAYER_TRADE_DEAL",
+                    "text": "Remembered: New Trade Deal (+40 opinion for 20 turns)"
                   }
                 ],
                 "weight": null

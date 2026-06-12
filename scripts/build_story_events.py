@@ -414,6 +414,30 @@ def main() -> int:
             if ff:
                 ev["followsFrom"] = ff
 
+    # ── Potential follow-ups via memories (canLeadTo) ───────────────────────
+    # An option that grants a memory makes its holder eligible for any story
+    # whose cast subjects require that memory (subject.xml MemoryPrereq) — an
+    # eligibility hint, NOT a guaranteed chain like leadsTo. MemoryInvalid
+    # consumers are blockers, deliberately not listed. Capped to keep cards
+    # honest about being a sample, deduped via refs().
+    CAN_LEAD_CAP = 6
+    chain = m.memory_chain()
+    for z, ev in events_by_id.items():
+        for opt in ev["options"]:
+            toks: list[str] = []
+            for oc in opt.get("outcomes", []):
+                for r in oc.get("rewards", []):
+                    mem = r.get("memory")
+                    if mem and mem not in toks:
+                        toks.append(mem)
+            ids: list[str] = []
+            for t in toks:
+                ids += chain.get(t, {}).get("enables", [])
+            if ids:
+                cl = refs(ids, skip=z)[:CAN_LEAD_CAP]
+                if cl:
+                    opt["canLeadTo"] = cl
+
     # Compact: across ~5k events the always-emitted null fields from the shared
     # option helpers add real megabytes. Drop them; the page renders with safe
     # fallbacks (e.g. a missing probability means a guaranteed outcome).
