@@ -86,8 +86,10 @@ const resourceCount = sections.filter(s => s.icon).length;
         <div class="he-grid">
           {s.events.map(ev => (
             <article class="ev-card" data-row={ev.slug} id={ev.slug}>
-              <h3 class="ev-card__title">{ev.title}</h3>
-              {ev.body && <p class="ev-card__body"><LinkedText text={ev.body} /></p>}
+              <h3 class="ev-card__title">
+                {ev.title}
+                {ev.oncePerGame && <span class="ev-card__once" title="iRepeatTurns = −1 — this event can only fire once per game">once per game</span>}
+              </h3>
               {ev.options && ev.options.length > 0 && (
                 <ol class="ev-options">
                   {ev.options.map(opt => (
@@ -242,6 +244,18 @@ const resourceCount = sections.filter(s => s.icon).length;
     flex-direction: column;
     gap: 0.55rem;
   }
+  .ev-card__once {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    padding: 0.08rem 0.35rem;
+    margin-left: 0.5rem;
+    vertical-align: 0.15em;
+    white-space: nowrap;
+  }
   .ev-card__title {
     font-family: var(--font-display);
     font-size: 1rem;
@@ -250,14 +264,6 @@ const resourceCount = sections.filter(s => s.icon).length;
     letter-spacing: 0.02em;
     font-weight: 600;
   }
-  .ev-card__body {
-    color: var(--text-dim);
-    font-size: 0.82rem;
-    line-height: 1.5;
-    margin: 0;
-    font-style: italic;
-  }
-
   .ev-options {
     list-style: none;
     padding: 0;

@@ -287,7 +287,6 @@ const eventGroups = mission.eventGroups || [];
                 </span>
               </summary>
               <div class="evt__body">
-                {ev.text && <p class="evt__flavor"><LinkedText text={ev.text} /></p>}
                 {ev.guaranteed.length > 0 && (
                   <div class="evt__guaranteed">
                     <span class="evt__label">Always</span>
@@ -662,7 +661,6 @@ const eventGroups = mission.eventGroups || [];
   .chip--req.has-tip { cursor: help; }
 
   .evt__body { padding: 0 0.9rem 0.7rem 1.6rem; }
-  .evt__flavor { color: var(--text-dim); font-size: 0.82rem; line-height: 1.45; margin: 0 0 0.6rem; font-style: italic; max-width: 75ch; }
   .evt__guaranteed { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
   .evt__label, .oc__prob { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
 

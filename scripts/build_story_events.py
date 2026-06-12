@@ -231,15 +231,15 @@ def build_event(s: ET.Element, pack: str | None, eopt_idx: dict,
 
     subjects = [m.subject_label(z.text) for z in s.findall("aeSubjects/zValue") if z.text]
 
+    # NOTE: the story's narrative body (<Text>) is deliberately NOT emitted —
+    # the reference shows title + choices only; the prose stays an in-game
+    # discovery (owner's call, 2026-06).
     ev: dict = {
         "id": zt,
         "name": m.clean_text(text.get(s.findtext("Name") or "", m._tok(zt, "EVENTSTORY_"))),
         "weight": int(s.findtext("iWeight") or "0"),
         "options": bev.options(s, eopt_idx, bonus_idx, text),
     }
-    body = m.clean_text(text.get(s.findtext("Text") or "", ""))
-    if body:
-        ev["text"] = body
     if trig:
         ev["trigger"] = m._tok(trig, "EVENTTRIGGER_")
     td = trigger_data_label((s.findtext("TriggerData") or "").strip(), text)
@@ -474,11 +474,10 @@ def main() -> int:
     for cat in cat_defs:
         for chunk in cat["_chunks"]:
             for e in chunk:
+                # Titles only — story body prose is not shipped (see build_event),
+                # so the search index carries no text snippet either.
                 entry = {"i": e["id"], "n": e["name"], "s": part_of[e["id"]],
                          "g": cat["label"]}
-                snippet = (e.get("text") or "")[:140]
-                if snippet:
-                    entry["t"] = snippet
                 search.append(entry)
     search.sort(key=lambda r: (r["n"], r["i"]))
     search_payload = dump(search)

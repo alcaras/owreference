@@ -743,10 +743,11 @@ def build_events(event_result_id: str, story_idx: dict, eopt_idx: dict,
                 "raw": option_raw(opt, eopt_idx, bonus_idx),
             })
 
+        # NOTE: no "text" field — story narrative bodies stay an in-game
+        # discovery; the cards render title + choices only.
         out.append({
             "id": zt,
             "name": clean_text(text.get(s.findtext("Name") or "", _tok(zt, "EVENTSTORY_"))),
-            "text": clean_text(text.get(s.findtext("Text") or "", "")),
             "weight": weight,
             "share": weight / total_weight,
             "prob": int(s.findtext("iProb") or "0") or None,

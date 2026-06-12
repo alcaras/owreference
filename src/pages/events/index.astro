@@ -53,15 +53,16 @@ function schedHint(c: any): string | null {
     Every narrative event story in the game's XML ({meta.totalStories} across the base game and
     DLC), browsable by the game's own taxonomy: the <strong>event class</strong> pools that roll
     each turn (eventClass.xml) and the <strong>triggers</strong> that fire the rest
-    (eventTrigger.xml). Each category page shows the full card — flavor text, gating conditions,
-    every option with requirements, raw XML payloads, and chain links.
+    (eventTrigger.xml). Each category page shows the full card — gating conditions,
+    every option with requirements, raw XML payloads, and chain links. The story prose itself
+    is left for you to discover in game.
     {meta.excludedCovered.total} stories already covered by the dedicated pages below are linked
     there instead of duplicated here.
   </p>
 
   <div class="ev-search">
     <input type="search" id="ev-q" class="ev-search__input"
-           placeholder="Search all story events by name or text…" autocomplete="off"
+           placeholder="Search all story events by name…" autocomplete="off"
            aria-label="Search story events" />
     <p class="ev-search__note" id="ev-q-note" hidden></p>
     <ol class="ev-search__results" id="ev-q-results" hidden></ol>
@@ -147,14 +148,11 @@ function schedHint(c: any): string | null {
         if (!index) { note.hidden = false; note.textContent = 'Loading search index…'; return; }
         const hits = [];
         for (const e of index) {
-          const inName = e.n.toLowerCase().includes(needle);
-          const inText = !inName && e.t && e.t.toLowerCase().includes(needle);
-          if (inName || inText) {
-            hits.push({ e, rank: inName ? 0 : 1 });
+          if (e.n.toLowerCase().includes(needle)) {
+            hits.push({ e });
             if (hits.length >= 400) break;
           }
         }
-        hits.sort((a, b) => a.rank - b.rank);
         const top = hits.slice(0, 50);
         note.hidden = false;
         note.textContent = hits.length === 0
@@ -165,7 +163,6 @@ function schedHint(c: any): string | null {
         list.innerHTML = top.map(({ e }) =>
           '<li><a href="' + base + 'events/' + e.s + '#' + encodeURIComponent(e.i) + '">' +
           '<b>' + esc(e.n) + '</b> <span class="ev-search__cat">' + esc(e.g) + '</span>' +
-          (e.t ? '<span class="ev-search__snippet">' + esc(e.t) + '…</span>' : '') +
           '</a></li>').join('');
       }
 
@@ -202,7 +199,6 @@ function schedHint(c: any): string | null {
       border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 5px;
       padding: 0.02rem 0.36rem; margin-left: 0.45rem; vertical-align: middle;
     }
-    .ev-search__snippet { display: block; color: var(--text-faint); font-size: 0.76rem; font-style: italic; margin-top: 0.15rem; }
 
     .sec { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 1.6rem 0 0.6rem; }
     .sec small { font-family: var(--font-body); font-size: 0.78rem; color: var(--text-faint); font-weight: 400; margin-left: 0.5rem; }

@@ -168,10 +168,11 @@ def build_event(s: ET.Element, group_weight: int, eopt_idx: dict,
 
     url = (s.findtext("zEventURL") or "").strip() or None
     prob = s.findtext("iProb")
+    # NOTE: no "text" field — story narrative bodies stay an in-game discovery;
+    # the reference renders title + choices only.
     return {
         "id": zt,
         "name": m.clean_text(text.get(s.findtext("Name") or "", m._tok(zt, "EVENTSTORY_"))),
-        "text": m.clean_text(text.get(s.findtext("Text") or "", "")),
         "weight": weight,
         # Follow-ups fire deterministically via a chain link, not from the
         # weighted pool, so they have no meaningful share.

@@ -50,7 +50,7 @@ function cardYield(ev: any): string {
 }
 function searchBlob(ev: any): string {
   return [
-    ev.name, ev.text, ev.trigger, ev.triggerData, ev.dlc, ev.pack, ev.author,
+    ev.name, ev.trigger, ev.triggerData, ev.dlc, ev.pack, ev.author,
     ...(ev.subjects || []), ...(ev.conditions || []),
     ...(ev.guaranteed || []).map((g: any) => g.text),
     ...(ev.options || []).flatMap((o: any) => [
@@ -143,8 +143,6 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
               ))}
             </p>
           )}
-          {ev.text && <p class="evt__flavor"><LinkedText text={ev.text} /></p>}
-
           {(ev.timing || ev.prob || ev.conditions || ev.subjects) && (
             <div class="evt__tags">
               {ev.prob && <span class="chip--time" title="Chance this story is added to the pool on an eligible turn">{ev.prob}% to appear</span>}
@@ -356,7 +354,6 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
     .chip--req.has-tip { cursor: help; }
 
     .evt__body { padding: 0 0.9rem 0.7rem 1.6rem; }
-    .evt__flavor { color: var(--text-dim); font-size: 0.82rem; line-height: 1.45; margin: 0 0 0.6rem; font-style: italic; max-width: 75ch; }
     .evt__tags { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
     .evt__guaranteed { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
     .evt__label, .oc__prob { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }

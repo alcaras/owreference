@@ -6,7 +6,7 @@ Build src/data/harvest_events.json from eventStory*.xml + eventOption*.xml
 A "Harvest Event" is any EventStory with Class=EVENTCLASS_HARVESTING. It fires
 when a Worker finishes gathering a tile Resource. For each we capture:
 
-  - title / narrative body
+  - title (narrative body is deliberately NOT shipped — in-game discovery)
   - the resource that triggered it (SUBJECT_RESOURCE_*) + its icon slug
   - each player option's text and the *humanized* reward (real yield numbers,
     not the raw BONUS_* token) so the page can colour chips like the Missions tab.
@@ -121,6 +121,22 @@ def index_bonuses() -> dict[str, ET.Element]:
             if zt:
                 out.setdefault(zt, entry)
     return out
+
+
+_SUBJECT_RESOURCE_CACHE: dict[str, str] | None = None
+
+
+def subject_resource(token: str) -> str:
+    """SUBJECT_TILE_SILK → RESOURCE_SILK via subject.xml's <Resource> field."""
+    global _SUBJECT_RESOURCE_CACHE
+    if _SUBJECT_RESOURCE_CACHE is None:
+        _SUBJECT_RESOURCE_CACHE = {}
+        for e in parse_xml("subject.xml").findall("Entry"):
+            z = e.findtext("zType") or ""
+            res = e.findtext("Resource") or ""
+            if z and res:
+                _SUBJECT_RESOURCE_CACHE[z] = res
+    return _SUBJECT_RESOURCE_CACHE.get(token, "")
 
 
 def resource_icon_map() -> dict[str, dict[str, str]]:
@@ -337,20 +353,35 @@ def main() -> int:
     items: list[dict] = []
     for zt, entry in stories:
         title = nice_title(zt, texts.get(entry.findtext("Name") or "", ""))
-        body = clean_event_text(texts.get(entry.findtext("Text") or "", ""))
+        # NOTE: the narrative body (<Text>) is deliberately not emitted — the
+        # reference shows title + choices only; prose stays an in-game discovery.
 
-        # Trigger resource: SUBJECT_RESOURCE_<X> (skip the bare SUBJECT_RESOURCE).
+        # Trigger resource. Two subject schemas exist:
+        #   legacy: <aeSubjects><zValue>SUBJECT_RESOURCE_<X></zValue>
+        #   nested: <Subjects><Subject><Type>SUBJECT_TILE_SILK</Type> — the
+        #     subject's resource lives on its subject.xml entry (<Resource>).
+        # Cocoon Couture (EotI) uses the nested form and was landing in
+        # "General Harvest" before both were scanned.
         resource = ""
         resource_icon = ""
-        for sv in entry.findall("aeSubjects/zValue"):
-            t = sv.text or ""
+        subject_tokens = [sv.text or "" for sv in entry.findall("aeSubjects/zValue")]
+        subject_tokens += [st.text or "" for st in entry.findall("Subjects/Subject/Type")]
+        for t in subject_tokens:
+            suffix = ""
             if t.startswith("SUBJECT_RESOURCE_"):
                 suffix = t.replace("SUBJECT_RESOURCE_", "")
+            else:
+                sub_res = subject_resource(t)
+                if sub_res:
+                    suffix = sub_res.replace("RESOURCE_", "")
+            if suffix:
                 meta = res_map.get(suffix, {"name": suffix.replace("_", " ").title(),
                                             "icon": suffix.lower()})
                 resource = meta["name"]
                 resource_icon = meta["icon"]
                 break
+
+        once_per_game = (entry.findtext("iRepeatTurns") or "") == "-1"
 
         author = entry.findtext("zAuthor") or ""
         bg = entry.findtext("zBackgroundName") or ""
@@ -392,9 +423,9 @@ def main() -> int:
             "id": zt,
             "slug": zt.replace("EVENTSTORY_HARVEST_", "").replace("EVENTSTORY_", "").lower(),
             "title": title,
-            "body": body,
             "resource": resource,
             "resourceIcon": resource_icon,
+            "oncePerGame": once_per_game,
             "author": author,
             "background": bg,
             "options": option_objs,
