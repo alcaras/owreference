@@ -167,6 +167,13 @@ const followups = sec.events.filter(e => e.isFollowup).length;
                       ))}
                     </div>
                   )}
+                  {!(o.canLeadTo && o.canLeadTo.length > 0) &&
+                    (o.outcomes || []).some((oc: any) => (oc.rewards || []).some((r: any) => r.note)) && (
+                    <div class="opt__leads opt__leads--dead"
+                         title="The game shows '[Could lead to future Events]' for any memory grant, but no event in the current data requires this memory.">
+                      ◇ grants a memory no event currently keys off
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -333,6 +340,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     }
     /* Memory-eligibility hints, not guaranteed chains — dimmer than leadsTo. */
     .opt__leads--maybe { color: var(--text-faint); cursor: help; }
+    .opt__leads--dead { color: var(--text-faint); opacity: 0.75; font-style: italic; cursor: help; }
     .opt__leads--maybe a { color: color-mix(in srgb, var(--accent) 70%, var(--text-faint)); }
   </style>
 </Base>
