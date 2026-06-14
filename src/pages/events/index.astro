@@ -69,6 +69,15 @@ function schedHint(c: any): string | null {
     <ol class="ev-search__results" id="ev-q-results" hidden></ol>
   </div>
 
+  <a class="ev-chainscta" href={`${base}events/chains`}>
+    <span class="ev-chainscta__ico">⛓</span>
+    <span class="ev-chainscta__body">
+      <span class="ev-chainscta__t">Event Chains</span>
+      <span class="ev-chainscta__d">Events that link into one another — see every chain as a flow diagram, with branches and follow-ups drawn out.</span>
+    </span>
+    <span class="ev-chainscta__go">browse →</span>
+  </a>
+
   <h2 class="sec">Dedicated pages</h2>
   <div class="grid">
     {DEDICATED.map(d => (
@@ -200,6 +209,19 @@ function schedHint(c: any): string | null {
       border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 5px;
       padding: 0.02rem 0.36rem; margin-left: 0.45rem; vertical-align: middle;
     }
+
+    .ev-chainscta {
+      display: flex; align-items: center; gap: 0.7rem; margin: 0 0 0.4rem;
+      padding: 0.7rem 0.9rem; text-decoration: none; color: var(--text);
+      border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--border));
+      border-radius: var(--radius-lg); background: color-mix(in srgb, var(--accent) 7%, var(--bg-elev));
+    }
+    .ev-chainscta:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev)); }
+    .ev-chainscta__ico { font-size: 1.3rem; }
+    .ev-chainscta__body { display: flex; flex-direction: column; gap: 0.12rem; min-width: 0; }
+    .ev-chainscta__t { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+    .ev-chainscta__d { font-size: 0.78rem; color: var(--text-faint); line-height: 1.4; }
+    .ev-chainscta__go { margin-left: auto; flex-shrink: 0; color: var(--accent); font-family: var(--font-mono); font-size: 0.74rem; }
 
     .sec { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 1.6rem 0 0.6rem; }
     .sec small { font-family: var(--font-body); font-size: 0.78rem; color: var(--text-faint); font-weight: 400; margin-left: 0.5rem; }

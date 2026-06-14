@@ -290,6 +290,11 @@ export const TABS: Tab[] = [
     summary: 'Every narrative event — browsable by class, trigger, and chain',
   },
   {
+    slug: 'events/chains', icon: '⛓', label: 'Event Chains', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Multi-event chains as flow diagrams — branches, merges, follow-ups',
+  },
+  {
     slug: 'diplomacy', icon: '🕊️', label: 'Diplomacy', section: 'Empire',
     status: 'built', sourceSheet: '',
     summary: 'States, war score, truces, alliances, tribute',

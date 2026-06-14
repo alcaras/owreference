@@ -1,0 +1,115 @@
+---
+// Browse every event chain (connected component of the EventLink graph), sorted
+// largest-first. Each row links to the chain's flow-diagram page. A client filter
+// matches on the chain title and on any member event's title, so searching
+// "hindustan" or "ant" finds the Ant's Gold chain.
+import Base from '../../../layouts/Base.astro';
+import data from '../../../data/event-chains.json';
+
+const base = import.meta.env.BASE_URL;
+const meta = data._meta;
+const chains = data.chains as any[];
+
+// Lightweight per-chain search blob: title + every member event title (deduped).
+function blob(c: any): string {
+  const names = new Set<string>([c.title]);
+  for (const n of c.nodes) names.add(n.title);
+  return [...names].join(' ').toLowerCase();
+}
+function shape(c: any): string {
+  if (c.branches === 0 && c.width === 1) return 'linear';
+  if (c.branches > 0) return `${c.branches} branch point${c.branches === 1 ? '' : 's'}`;
+  return 'parallel';
+}
+---
+
+<Base title="Event Chains" active="events" pageMark="⛓" pageStats={[
+  { label: 'chains', value: meta.chains },
+  { label: 'events linked', value: meta.eventsInChains },
+  { label: 'with branches', value: meta.multiBranch },
+]}>
+  <p class="crumb"><a href={`${base}events`}>← Story Events</a></p>
+
+  <p class="lede">
+    Many events don't stand alone — a choice in one makes another eligible, forming a <strong>chain</strong>.
+    These are every chain in the game's EventLink graph ({meta.chains} of them, {meta.eventsInChains} events),
+    each rendered as a top-down flow diagram with branches and merges drawn out. Structurally identical
+    per-rival/per-nation variants are collapsed into one node with a count, so the big template chains stay
+    legible. Largest first.
+  </p>
+
+  <div class="ev-search">
+    <input type="search" id="ch-q" class="ev-search__input"
+           placeholder="Filter chains by name or any event in them…" autocomplete="off"
+           aria-label="Filter chains" />
+    <p class="ev-search__note" id="ch-note" hidden></p>
+  </div>
+
+  <ol class="chlist" id="chlist">
+    {chains.map(c => (
+      <li class="chrow" data-blob={blob(c)}>
+        <a class="chrow__a" href={`${base}events/chains/${c.slug}`}>
+          <span class="chrow__title">{c.title}</span>
+          <span class="chrow__stats">
+            <span class="chrow__n">{c.size} event{c.size === 1 ? '' : 's'}</span>
+            <span class="chrow__shape">{shape(c)}</span>
+            {c.layers > 1 && <span class="chrow__shape">{c.layers} steps</span>}
+            {c.dlc.length > 0 && <span class="chrow__dlc">{c.dlc.join(', ')}</span>}
+          </span>
+        </a>
+      </li>
+    ))}
+  </ol>
+
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('ch-q');
+      const note = document.getElementById('ch-note');
+      const rows = Array.from(document.querySelectorAll('.chrow'));
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        let shown = 0;
+        for (const r of rows) {
+          const ok = !q || (r.dataset.blob || '').includes(q);
+          r.hidden = !ok;
+          if (ok) shown++;
+        }
+        note.hidden = !q;
+        if (q) note.textContent = shown + ' chain' + (shown === 1 ? '' : 's') + ' match “' + input.value + '”.';
+      }
+      input.addEventListener('input', apply);
+    })();
+  </script>
+
+  <style>
+    .crumb { margin: 0 0 0.8rem; font-size: 0.82rem; }
+    .crumb a { color: var(--text-dim); text-decoration: none; }
+    .crumb a:hover { color: var(--accent); }
+    .lede { color: var(--text-dim); font-size: 0.9rem; line-height: 1.55; max-width: 82ch; margin: 0 0 1.1rem; }
+
+    .ev-search { margin: 0 0 1.2rem; max-width: 64ch; }
+    .ev-search__input {
+      width: 100%; box-sizing: border-box;
+      background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+      color: var(--text); padding: 0.6rem 0.9rem; font-size: 0.92rem; font-family: var(--font-body);
+    }
+    .ev-search__input:focus { outline: none; border-color: var(--accent); }
+    .ev-search__note { font-size: 0.8rem; color: var(--text-faint); margin: 0.4rem 0 0; font-style: italic; }
+
+    .chlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+    .chrow__a {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+      border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-elev);
+      padding: 0.55rem 0.8rem; text-decoration: none; color: var(--text);
+    }
+    .chrow__a:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--bg-elev)); }
+    .chrow__title { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+    .chrow__stats { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+    .chrow__n {
+      font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev)); border-radius: 5px; padding: 0.06rem 0.4rem;
+    }
+    .chrow__shape { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-faint); }
+    .chrow__dlc { font-family: var(--font-mono); font-size: 0.66rem; color: #d4a24e; }
+  </style>
+</Base>

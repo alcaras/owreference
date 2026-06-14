@@ -10,6 +10,8 @@ import RewardChip from '../../components/RewardChip.astro';
 import ScaleHelp from '../../components/ScaleHelp.astro';
 import OptionRaw from '../../components/OptionRaw.astro';
 import { classifyYield } from '../../lib/entities';
+import chainData from '../../data/event-chains.json';
+const chainIndex = chainData.index as Record<string, any>;
 
 export async function getStaticPaths() {
   const idx = (await import('../../data/story-events/index.json')).default;
@@ -136,6 +138,14 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
           </span>
         </summary>
         <div class="evt__body">
+          {chainIndex[ev.id] && (
+            <a class="evt__chainmap" href={`${base}events/chains/${chainIndex[ev.id].slug}#${ev.id}`}>
+              <span class="evt__chainmap__ico">⛓</span>
+              <span>Part of the <b>{chainIndex[ev.id].title}</b> chain — {chainIndex[ev.id].size} events
+                {chainIndex[ev.id].branches > 0 ? `, ${chainIndex[ev.id].branches} branch point${chainIndex[ev.id].branches === 1 ? '' : 's'}` : ''}</span>
+              <span class="evt__chainmap__go">view map →</span>
+            </a>
+          )}
           {ev.followsFrom && ev.followsFrom.length > 0 && (
             <p class="evt__chain evt__chain--from">
               ⛓ Follows from:{' '}
@@ -406,6 +416,16 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
       background: color-mix(in srgb, var(--accent) 6%, transparent);
     }
     .evt__chain a, .opt__leads a { color: var(--accent); }
+    .evt__chainmap {
+      display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.6rem;
+      padding: 0.4rem 0.6rem; text-decoration: none; font-size: 0.8rem; color: var(--text-dim);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+      border-radius: var(--radius-lg); background: color-mix(in srgb, var(--accent) 7%, transparent);
+    }
+    .evt__chainmap:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+    .evt__chainmap b { color: var(--text); font-family: var(--font-display); }
+    .evt__chainmap__ico { font-size: 0.95rem; }
+    .evt__chainmap__go { margin-left: auto; flex-shrink: 0; color: var(--accent); font-family: var(--font-mono); font-size: 0.72rem; }
     .opt__leads {
       margin-top: 0.3rem; padding-left: 1rem; font-size: 0.78rem; color: var(--text-dim);
     }

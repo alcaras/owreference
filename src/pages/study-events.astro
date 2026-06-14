@@ -2,7 +2,11 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import events from '../data/study_events.json';
+import chainData from '../data/event-chains.json';
 import { classifyYield } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+const chainIndex = chainData.index as Record<string, any>;
 
 type Event = typeof events[number];
 
@@ -48,6 +52,9 @@ const authors = Array.from(new Set(events.map(e => e.author).filter(Boolean))).s
               <td class="cell yield-misc">
                 <span class="se__title">{e.title}</span>
                 {e.author && <span class="se__author">by {e.author}</span>}
+                {chainIndex[e.id] && (
+                  <a class="se__chain" href={`${base}events/chains/${chainIndex[e.id].slug}#${e.id}`}>⛓ chain map →</a>
+                )}
               </td>
               <td class={`cell ${e.prereqs.length ? 'yield-misc' : 'is-empty'}`}>
                 {e.prereqs.length ? (
@@ -147,6 +154,12 @@ const authors = Array.from(new Set(events.map(e => e.author).filter(Boolean))).s
     font-style: italic;
     color: var(--text-faint);
   }
+  .se__chain {
+    display: block; margin-top: 0.15rem; font-size: 0.66rem; text-decoration: none;
+    color: var(--accent); border-bottom: 1px dotted color-mix(in srgb, var(--accent) 45%, transparent);
+    width: fit-content;
+  }
+  .se__chain:hover { border-bottom-style: solid; }
 
   .chiplist {
     display: flex;

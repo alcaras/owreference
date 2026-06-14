@@ -1,0 +1,139 @@
+---
+// One event chain, rendered as a layered flow diagram (ChainDiagram) plus a
+// step-by-step textual breakdown (the accessible, offline companion to the SVG:
+// each event, where it renders, what it follows from, and which choice leads on).
+// Arriving via /events/chains/<slug>#<EVENTSTORY_ID> highlights that node.
+import Base from '../../../layouts/Base.astro';
+import ChainDiagram from '../../../components/ChainDiagram.astro';
+
+const base = import.meta.env.BASE_URL;
+
+export async function getStaticPaths() {
+  const d = (await import('../../../data/event-chains.json')).default;
+  return d.chains.map((c: any) => ({ params: { slug: c.slug }, props: { chain: c } }));
+}
+const { chain } = Astro.props as { chain: any };
+
+const byKey: Record<string, any> = {};
+for (const n of chain.nodes) byKey[n.key] = n;
+
+// Per-node transitions for the breakdown.
+const incoming: Record<string, any[]> = {};
+const outgoing: Record<string, any[]> = {};
+for (const e of chain.edges) {
+  (outgoing[e.fr] ||= []).push(e);
+  (incoming[e.to] ||= []).push(e);
+}
+const ordered = [...chain.nodes].sort((a, b) => a.layer - b.layer || a.col - b.col);
+
+// event id → node key, for the deep-link highlight script.
+const idToKey: Record<string, string> = {};
+for (const n of chain.nodes) for (const id of n.ids) idToKey[id] = n.key;
+---
+
+<Base title={chain.title} active="events" pageMark="⛓" pageStats={[
+  { label: 'events', value: chain.size },
+  { label: 'steps', value: chain.layers },
+  ...(chain.branches ? [{ label: 'branch points', value: chain.branches }] : []),
+]}>
+  <p class="crumb"><a href={`${base}events/chains`}>← All event chains</a></p>
+
+  <p class="lede">
+    The <strong>{chain.title}</strong> chain — {chain.size} event{chain.size === 1 ? '' : 's'} linked by
+    the game's EventLink graph, where a choice in one event makes the next eligible. Boxes are events
+    (click to open the card); arrows are transitions (hover for the choice that triggers them). Structurally
+    identical variants — the same event per rival/nation — are collapsed into one box with an
+    <span class="x">×N</span> count.
+    {chain.dlc.length > 0 && <> Content: {chain.dlc.join(', ')}.</>}
+  </p>
+
+  <ChainDiagram chain={chain} />
+
+  <h2 class="sec">Step by step</h2>
+  <ol class="steps">
+    {ordered.map((n: any) => (
+      <li class="step" id={`node-${n.key}`} data-key={n.key}>
+        <div class="step__hd">
+          <span class="step__layer">L{n.layer}</span>
+          {n.href
+            ? <a class="step__name" href={`${base}${n.href}`}>{n.title}</a>
+            : <span class="step__name">{n.title}</span>}
+          {n.count > 1 && <span class="step__count" title={n.ids.join('\n')}>×{n.count} variants</span>}
+          {n.root && <span class="step__tag step__tag--root">start</span>}
+          {n.group && <span class="step__tag">{n.group}</span>}
+          {n.dlc && <span class="step__tag step__tag--dlc">{n.dlc}</span>}
+        </div>
+        {(incoming[n.key] || []).length > 0 && (
+          <div class="step__trans step__trans--in">
+            ⛓ follows{' '}
+            {(incoming[n.key] || []).map((e: any, i: number) => (
+              <>{i > 0 ? ', ' : ''}<a href={`#node-${e.fr}`}>{byKey[e.fr].title}</a>
+              {e.labels.length > 0 && <span class="step__via"> ({e.labels.join(' / ')})</span>}</>
+            ))}
+          </div>
+        )}
+        {(outgoing[n.key] || []).map((e: any) => (
+          <div class="step__trans">
+            ↳ {e.labels.length > 0 ? <span class="step__opt">“{e.labels.join('” / “')}”</span> : 'may trigger'}
+            {' → '}<a href={`#node-${e.to}`}>{byKey[e.to].title}</a>
+          </div>
+        ))}
+      </li>
+    ))}
+  </ol>
+
+  <script is:inline define:vars={{ idToKey }}>
+    (function () {
+      function highlight() {
+        const id = decodeURIComponent(location.hash.slice(1));
+        const key = idToKey[id] || (id.startsWith('node-') ? id.slice(5) : null);
+        if (!key) return;
+        document.querySelectorAll('.is-current').forEach(el => el.classList.remove('is-current'));
+        const g = document.querySelector('[data-key="' + (window.CSS ? CSS.escape(key) : key) + '"]');
+        if (g) {
+          g.classList.add('is-current');
+          g.scrollIntoView({ block: 'center', inline: 'center' });
+        }
+      }
+      window.addEventListener('hashchange', highlight);
+      highlight();
+    })();
+  </script>
+
+  <style>
+    .crumb { margin: 0 0 0.8rem; font-size: 0.82rem; }
+    .crumb a { color: var(--text-dim); text-decoration: none; }
+    .crumb a:hover { color: var(--accent); }
+    .lede { color: var(--text-dim); font-size: 0.9rem; line-height: 1.55; max-width: 80ch; margin: 0 0 1.1rem; }
+    .lede .x, .lede .x { font-family: var(--font-mono); color: var(--accent); font-size: 0.82em; }
+
+    .sec { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 1.6rem 0 0.7rem; }
+
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+    .step {
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      background: var(--bg-elev); padding: 0.5rem 0.7rem; scroll-margin-top: 5rem;
+    }
+    .step.is-current { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--bg-elev)); }
+    .step__hd { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .step__layer {
+      font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint);
+      border: 1px solid var(--border); border-radius: 5px; padding: 0.02rem 0.32rem;
+    }
+    .step__name { font-family: var(--font-display); font-weight: 600; font-size: 0.92rem; color: var(--text); text-decoration: none; }
+    a.step__name:hover { color: var(--accent); }
+    .step__count { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent); }
+    .step__tag {
+      font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint);
+      border: 1px solid var(--border); border-radius: 5px; padding: 0.02rem 0.36rem;
+    }
+    .step__tag--root { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+    .step__tag--dlc { color: #d4a24e; }
+    .step__trans { font-size: 0.8rem; color: var(--text-dim); margin: 0.32rem 0 0; padding-left: 0.4rem; }
+    .step__trans--in { color: var(--text-faint); }
+    .step__trans a { color: var(--text); text-decoration: none; border-bottom: 1px dotted var(--border-strong); }
+    .step__trans a:hover { color: var(--accent); border-color: var(--accent); }
+    .step__opt { color: var(--text); font-style: italic; }
+    .step__via { color: var(--text-faint); font-style: italic; }
+  </style>
+</Base>

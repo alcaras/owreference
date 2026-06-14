@@ -1,0 +1,124 @@
+---
+// Renders one event chain (from src/data/event-chains.json) as a layered,
+// top-down flow diagram in static SVG. Layout (layer, col, width) is precomputed
+// by build_event_chains.py — this component only maps grid coordinates to pixels
+// and draws boxes + connectors. Branches read as one box fanning to several
+// below; merges (the Ant's Gold "diamond") as several arrows into one box; a
+// template fan collapses to a single box with an "×N" count badge.
+//
+// Props:
+//   chain       — a chain object {nodes, edges, width, layers, ...}
+//   currentKey? — node key to highlight (the event you came from)
+interface Props { chain: any; currentKey?: string | null; }
+const { chain, currentKey = null } = Astro.props as Props;
+const base = import.meta.env.BASE_URL;
+
+const NODE_W = 184, NODE_H = 50, COL_GAP = 26, ROW_GAP = 66, PAD = 16;
+const cellW = NODE_W + COL_GAP, cellH = NODE_H + ROW_GAP;
+const totalW = chain.width * cellW - COL_GAP + PAD * 2;
+const totalH = chain.layers * cellH - ROW_GAP + PAD * 2;
+
+const nx = (col: number) => PAD + col * cellW;
+const ny = (layer: number) => PAD + layer * cellH;
+
+const byKey: Record<string, any> = {};
+for (const n of chain.nodes) byKey[n.key] = n;
+
+function trunc(s: string, max: number): string {
+  return s.length > max ? s.slice(0, max - 1).trimEnd() + '…' : s;
+}
+
+// Edge path: cubic bezier from source bottom-center to target top-center. For
+// upward/same-layer back-edges (rare cycles) bow out to the right so it's visible.
+function edgePath(e: any): string {
+  const a = byKey[e.fr], b = byKey[e.to];
+  const x1 = nx(a.col) + NODE_W / 2, y1 = ny(a.layer) + NODE_H;
+  const x2 = nx(b.col) + NODE_W / 2, y2 = ny(b.layer);
+  if (b.layer <= a.layer) {
+    const bow = Math.max(60, Math.abs(x2 - x1) * 0.4);
+    return `M ${x1} ${y1 - NODE_H / 2} C ${x1 + bow} ${y1} ${x2 + bow} ${y2} ${x2} ${y2 + NODE_H / 2}`;
+  }
+  const my = (y1 + y2) / 2;
+  return `M ${x1} ${y1} C ${x1} ${my} ${x2} ${my} ${x2} ${y2}`;
+}
+function edgeTip(e: any): string {
+  const a = byKey[e.fr], b = byKey[e.to];
+  const head = `${a.title} → ${b.title}`;
+  return e.labels.length ? head + '\n• ' + e.labels.join('\n• ') : head;
+}
+---
+
+<div class="chain-dia">
+  <svg viewBox={`0 0 ${totalW} ${totalH}`} width={totalW} height={totalH}
+       role="img" aria-label={`Chain map for ${chain.title}`}>
+    <defs>
+      <marker id="ch-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" opacity="0.75" />
+      </marker>
+    </defs>
+
+    {chain.edges.map((e: any) => (
+      <path class="ch-edge" d={edgePath(e)} marker-end="url(#ch-arrow)">
+        <title>{edgeTip(e)}</title>
+      </path>
+    ))}
+
+    {chain.nodes.map((n: any) => {
+      const x = nx(n.col), y = ny(n.layer);
+      const cur = currentKey && n.key === currentKey;
+      const cls = ['ch-node', n.root ? 'is-root' : '', cur ? 'is-current' : ''].filter(Boolean).join(' ');
+      const label = trunc(n.title, 23);
+      const inner = (
+        <g class={cls} data-key={n.key} data-ids={n.ids.join(',')}>
+          <rect x={x} y={y} width={NODE_W} height={NODE_H} rx="9" />
+          <text class="ch-node__t" x={x + 12} y={y + (n.group ? 21 : 29)}>{label}</text>
+          {n.group && <text class="ch-node__g" x={x + 12} y={y + 37}>{trunc(n.group, 26)}</text>}
+          {n.count > 1 && (
+            <g class="ch-badge">
+              <rect x={x + NODE_W - 38} y={y + 8} width="30" height="17" rx="8.5" />
+              <text x={x + NODE_W - 23} y={y + 20}>×{n.count}</text>
+            </g>
+          )}
+          <title>{n.title}{n.count > 1 ? ` — ${n.count} variants` : ''}{n.dlc ? ` · ${n.dlc}` : ''}</title>
+        </g>
+      );
+      return n.href
+        ? <a href={`${base}${n.href}`}>{inner}</a>
+        : inner;
+    })}
+  </svg>
+</div>
+
+<style>
+  .chain-dia {
+    overflow-x: auto; padding-bottom: 0.4rem;
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--accent) 9%, transparent) 1px, transparent 0)
+      0 0 / 22px 22px,
+      var(--bg-elev);
+  }
+  .chain-dia svg { display: block; margin: 0 auto; }
+
+  .ch-edge { fill: none; stroke: color-mix(in srgb, var(--accent) 45%, transparent); stroke-width: 1.6; }
+  .ch-edge:hover { stroke: var(--accent); stroke-width: 2.4; }
+
+  .ch-node rect {
+    fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.4;
+    transition: stroke .12s, fill .12s;
+  }
+  a:hover .ch-node rect { stroke: var(--accent); fill: color-mix(in srgb, var(--accent) 8%, var(--bg)); }
+  .ch-node.is-root rect { stroke: color-mix(in srgb, var(--accent) 60%, var(--border-strong)); }
+  .ch-node.is-current rect {
+    fill: color-mix(in srgb, var(--accent) 16%, var(--bg));
+    stroke: var(--accent); stroke-width: 2.2;
+  }
+  .ch-node__t { fill: var(--text); font-family: var(--font-display); font-weight: 600; font-size: 13px; }
+  .ch-node__g { fill: var(--text-faint); font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .02em; }
+  .ch-node.is-root .ch-node__t { fill: var(--accent); }
+
+  .ch-badge rect { fill: color-mix(in srgb, var(--accent) 20%, var(--bg)); stroke: color-mix(in srgb, var(--accent) 45%, transparent); stroke-width: 1; }
+  .ch-badge text { fill: var(--accent); font-family: var(--font-mono); font-size: 10px; font-weight: 600; text-anchor: middle; }
+
+  svg a { cursor: pointer; text-decoration: none; }
+</style>

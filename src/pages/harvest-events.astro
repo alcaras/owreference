@@ -4,6 +4,8 @@ import LinkedText from '../components/LinkedText.astro';
 import RewardChip from '../components/RewardChip.astro';
 import ScaleHelp from '../components/ScaleHelp.astro';
 import events from '../data/harvest_events.json';
+import chainData from '../data/event-chains.json';
+const chainIndex = chainData.index as Record<string, any>;
 
 const base = import.meta.env.BASE_URL;
 
@@ -94,6 +96,11 @@ const resourceCount = sections.filter(s => s.icon).length;
                 {ev.title}
                 {ev.oncePerGame && <span class="ev-card__once" title="iRepeatTurns = −1 — this event can only fire once per game">once per game</span>}
               </h3>
+              {chainIndex[ev.id] && (
+                <a class="ev-card__chain" href={`${base}events/chains/${chainIndex[ev.id].slug}#${ev.id}`}>
+                  ⛓ part of the {chainIndex[ev.id].title} chain — view map →
+                </a>
+              )}
               {ev.options && ev.options.length > 0 && (
                 <ol class="ev-options">
                   {ev.options.map(opt => (
@@ -260,6 +267,11 @@ const resourceCount = sections.filter(s => s.icon).length;
     vertical-align: 0.15em;
     white-space: nowrap;
   }
+  .ev-card__chain {
+    display: inline-block; margin: 0 0 0.4rem; font-size: 0.72rem; text-decoration: none;
+    color: var(--accent); border-bottom: 1px dotted color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  .ev-card__chain:hover { border-bottom-style: solid; }
   .ev-card__title {
     font-family: var(--font-display);
     font-size: 1rem;
