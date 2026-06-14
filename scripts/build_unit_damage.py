@@ -99,17 +99,36 @@ def effect_label(eff_id: str, gendered: str | None, text: dict[str, str]) -> str
     return token_title(eff_id, "EFFECTUNIT_")
 
 
+# Metadata + pure stat-extra fields. An EffectUnit whose ONLY payload is one of
+# these isn't a player-facing "special ability" — it's a stat contribution the
+# game folds straight into vision/move (HelpText.Unit.cs lists it under those
+# stat lines, not as an ability). EFFECTUNIT_EXTRA_VISION is exactly this: its
+# sole field is iVisionExtra, already shown in the vision column, so listing a
+# "High Vision" ability chip would double-count it.
+ABILITY_META_FIELDS = {
+    "zType", "Name", "GenderedName", "zIconName",
+    "iVisionExtra", "iMovementExtra", "iRevealExtra",
+}
+
+
+def is_ability_effect(e: ET.Element | None) -> bool:
+    if e is None:
+        return True  # unknown effect — keep it rather than silently drop
+    return any(c.tag not in ABILITY_META_FIELDS for c in e)
+
+
 def collect_abilities(effect_ids: list[str], eu_idx: dict[str, ET.Element],
                       text: dict[str, str]) -> list[dict]:
-    """Every aeEffectUnit a unit carries, as a named ability (Disarm, Rout,
-    Testudo, …). These are the signature unique-unit specials — distinct from
-    the numeric `counters` (stat modifiers) collect_counter_lines pulls. Both
-    are derived from the same EffectUnits; abilities keeps the human label so
-    the catalog pages can show what a unit actually *does*, not just its
-    damage math."""
+    """A unit's aeEffectUnit entries that are genuine named abilities (Disarm,
+    Rout, Testudo, …) — the signature specials. Pure stat-extra effects (e.g.
+    EXTRA_VISION → just +1 vision) are excluded; their value already shows in
+    the stat columns. Numeric combat modifiers ride along in each ability's
+    `detail` (see caller) so abilities and counters never render as two rows."""
     out: list[dict] = []
     for eid in effect_ids:
         e = eu_idx.get(eid)
+        if not is_ability_effect(e):
+            continue
         gendered = e.findtext("GenderedName") if e is not None else None
         icon_tok = (e.findtext("zIconName") if e is not None else None) or eid
         out.append({
