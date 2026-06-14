@@ -1,8 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import LinkedText from '../components/LinkedText.astro';
 import allUnits from '../data/units.json';
-import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
 
@@ -27,11 +25,6 @@ function unitClass(u: any): { key: string; label: string; icon: string } {
     label: u.primaryLabel || 'Other',
     icon: (u.primaryTrait || '').replace('UNITTRAIT_', '').toLowerCase(),
   };
-}
-
-function fmtCounter(c: any): string {
-  const v = (c.value > 0 ? '+' : '') + c.value + '%';
-  return c.kind === 'attack' ? `${v} ${c.target}` : `${v} ${c.kind} ${c.target}`;
 }
 
 const HIDE_TRAITS = new Set([
@@ -99,11 +92,6 @@ const lineTraits = (chain: any[]) => [...new Set(chain.flatMap(u => secondaryTra
 function lineAbilities(chain: any[]) {
   const seen = new Set<string>(); const out: any[] = [];
   for (const u of chain) for (const a of u.abilities) if (!seen.has(a.label)) { seen.add(a.label); out.push(a); }
-  return out;
-}
-function lineCounters(chain: any[]) {
-  const seen = new Set<string>(); const out: any[] = [];
-  for (const u of chain) for (const c of u.counters) { const t = fmtCounter(c); if (!seen.has(t)) { seen.add(t); out.push(c); } }
   return out;
 }
 
@@ -211,7 +199,6 @@ const FACETS: Facet[] = [
             const cls = unitClass(bu);
             const sec = lineTraits(chain);
             const ab = lineAbilities(chain);
-            const counters = lineCounters(chain);
             const costs = foldYields(chain, 'costs');
             const upkeep = foldYields(chain, 'consumption');
             const eras = collapse(chain.map(u => u.era));
@@ -314,29 +301,24 @@ const FACETS: Facet[] = [
                   </td>
                 )}
 
-                {/* Traits, abilities + counters (union across the line) */}
-                {counters.length === 0 && sec.length === 0 && ab.length === 0 ? (
+                {/* Traits & abilities (union across the line). One chip per
+                    EffectUnit — its numeric modifier rides in the tooltip, so
+                    "Splash I" and "+25% Splash" no longer show as two rows. */}
+                {sec.length === 0 && ab.length === 0 ? (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
                 ) : (
                   <td class="cell cell--effects">
-                    {counters.map((c: any) => {
-                      const text = fmtCounter(c);
-                      const yk = classifyYield(text)?.toLowerCase() || 'misc';
-                      return <div class={`effect yield-${yk}`}><LinkedText text={text} showIcons={false} /></div>;
-                    })}
-                    {(ab.length > 0 || sec.length > 0) && (
-                      <div class="uname__meta">
-                        {ab.map((a: any) => (
-                          <span class="chip chip--ability" title="Special ability">
-                            {a.icon && (
-                              <img class="chip__icon" src={`${base}img/icons/${a.icon}.png`} alt="" onerror="this.style.display='none'" />
-                            )}
-                            {a.label}
-                          </span>
-                        ))}
-                        {sec.map((t: string) => <span class="chip chip--neutral" title="Unit trait">{t}</span>)}
-                      </div>
-                    )}
+                    <div class="uname__meta">
+                      {ab.map((a: any) => (
+                        <span class="chip chip--ability" title={a.detail || 'Special ability'}>
+                          {a.icon && (
+                            <img class="chip__icon" src={`${base}img/icons/${a.icon}.png`} alt="" onerror="this.style.display='none'" />
+                          )}
+                          {a.label}
+                        </span>
+                      ))}
+                      {sec.map((t: string) => <span class="chip chip--neutral" title="Unit trait">{t}</span>)}
+                    </div>
                   </td>
                 )}
               </tr>

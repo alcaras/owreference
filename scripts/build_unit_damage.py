@@ -120,6 +120,35 @@ def collect_abilities(effect_ids: list[str], eu_idx: dict[str, ET.Element],
     return out
 
 
+def fmt_counter(c: dict) -> str:
+    """Mirror the page's fmtCounter — used to fold a counter's numbers into its
+    own ability chip (e.g. Splash I → '+25% Splash') instead of rendering the
+    ability and the counter as two separate, duplicate-looking entries."""
+    v = ("+" if c["value"] > 0 else "") + str(c["value"]) + "%"
+    return f"{v} {c['target']}" if c["kind"] == "attack" else f"{v} {c['kind']} {c['target']}"
+
+
+def unit_effect_ids(entry: ET.Element, trait_effect: dict[str, str]) -> list[str]:
+    """Every EffectUnit a freshly-built unit carries: its own aeEffectUnit plus
+    one per UnitTrait (Unit.cs:5288-5296). Needed for stat aggregation —
+    vision/move modifiers (SIEGE −1, ELEPHANT −1, MOUNTED +1) live on traits."""
+    ids = [t.text for t in entry.findall("aeEffectUnit/zValue") if t.text]
+    for t in entry.findall("aeUnitTrait/zValue"):
+        ef = trait_effect.get(t.text or "")
+        if ef:
+            ids.append(ef)
+    return ids
+
+
+def effect_stat_extra(effect_ids: list[str], eu_idx: dict[str, ET.Element], field: str) -> int:
+    total = 0
+    for eid in effect_ids:
+        e = eu_idx.get(eid)
+        if e is not None:
+            total += int(e.findtext(field) or "0")
+    return total
+
+
 # Culture-tier gating for unique units (they have no TechPrereq — a nation
 # unlocks them at a Culture level instead). Steppe Rider has no CulturePrereq
 # and no building gate: a true turn-one unique, surfaced as "Initial". The
@@ -238,6 +267,20 @@ def main() -> int:
             imp_name[iz] = text.get(ie.findtext("Name") or "", token_title(iz, "IMPROVEMENT_"))
             imp_culture[iz] = ie.findtext("CulturePrereq") or ""
 
+    # Each UnitTrait contributes one EffectUnit to the units that carry it
+    # (Unit.cs:5293-5296) — this is where SIEGE's −1 vision, ELEPHANT's −1 and
+    # MOUNTED's +1 actually come from. Needed for accurate vision/movement.
+    trait_effect: dict[str, str] = {}
+    for te in parse("unitTrait.xml").findall("Entry"):
+        tz = te.findtext("zType") or ""
+        ef = te.findtext("EffectUnit") or ""
+        if tz and ef:
+            trait_effect[tz] = ef
+    extra_vis = 0  # Globals.EXTRA_VISIBILITY, added to every unit's vision
+    for ge in parse("globalsInt.xml").findall("Entry"):
+        if (ge.findtext("zType") or "") == "EXTRA_VISIBILITY":
+            extra_vis = int(ge.findtext("iValue") or "0")
+
     units: list[dict] = []
     for entry in parse("unit.xml").findall("Entry"):
         zt = entry.findtext("zType") or ""
@@ -280,9 +323,26 @@ def main() -> int:
         upgrade_to = [t.text for t in entry.findall("aeUpgradeUnit/zValue") if t.text]
         obsolete_tech = [t.text for t in entry.findall("aeObsoleteTech/zValue") if t.text]
 
-        # XML-derived counter modifiers + named special abilities
+        # XML-derived counter modifiers + named special abilities. A counter
+        # and an ability are two views of the SAME EffectUnit (SPLASH1 → both
+        # "+25% Splash" and "Splash I"), so fold each counter into its own
+        # ability's `detail` rather than letting pages render both and look
+        # doubled.
         counters = collect_counter_lines(effect_ids, eu_idx)
         abilities = collect_abilities(effect_ids, eu_idx, text)
+        detail_by_src: dict[str, list[str]] = {}
+        for c in counters:
+            detail_by_src.setdefault(c["source"], []).append(fmt_counter(c))
+        for a in abilities:
+            a["detail"] = ", ".join(detail_by_src.get(a["id"], []))
+
+        # Effective vision / movement: base + every EffectUnit's extra (own +
+        # trait-derived). SIEGE −1 vision is why a Battering Ram sees 3, not 4.
+        all_effect_ids = unit_effect_ids(entry, trait_effect)
+        eff_vision = (int(entry.findtext("iVision") or "0") + extra_vis
+                      + effect_stat_extra(all_effect_ids, eu_idx, "iVisionExtra"))
+        eff_movement = (int(entry.findtext("iMovement") or "0")
+                        + effect_stat_extra(all_effect_ids, eu_idx, "iMovementExtra"))
 
         imp_prereq = entry.findtext("ImprovementPrereq") or ""
         imp_obsolete = entry.findtext("ImprovementObsolete") or ""
@@ -339,8 +399,8 @@ def main() -> int:
             "traitIds": traits,
             "strength":  int(entry.findtext("iStrength")  or "0"),
             "hp":        int(entry.findtext("iHPMax")     or "0"),
-            "movement":  int(entry.findtext("iMovement")  or "0"),
-            "vision":    int(entry.findtext("iVision")    or "0"),
+            "movement":  eff_movement,
+            "vision":    eff_vision,
             "rangeMin":  int(entry.findtext("iRangeMin")  or "0"),
             "rangeMax":  int(entry.findtext("iRangeMax")  or "0"),
             "fatigue":   int(entry.findtext("iFatigue")   or "0"),
