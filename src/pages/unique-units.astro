@@ -45,29 +45,84 @@ const secondaryTraits = (u: any) =>
     .map(t => t.replace('UNITTRAIT_', '').replace(/_/g, ' ').toLowerCase()
       .replace(/\b\w/g, c => c.toUpperCase()));
 
+// "Unlock" mixes Culture tiers (most uniques) with building gates: a unit
+// with no CulturePrereq but an ImprovementPrereq (Aksum's D'mt Warrior) reads
+// as "Stronghold", not "From start".
+const CULTURE_TIERS = new Set(['Weak', 'Developing', 'Strong', 'Legendary']);
+const tierLabel = (t: string) => t === 'Initial' ? 'From start' : CULTURE_TIERS.has(t) ? `${t} Culture` : t;
+const tierIcon = (t: string): string | undefined => CULTURE_TIERS.has(t) ? eraIcon(t) : undefined;
+
+// ── Fold each base unit with its upgrade chain into one "nation line" ──
+// Unique units come in base→upgrade pairs (Developing→Strong, e.g. D'mt
+// Warrior → Shotelai); only Yuezhi's Steppe Rider stands alone. We render one
+// row per line, folding differing base/upgrade values with slash notation
+// (150/200 iron) and showing shared values once (2 Move, Melee Infantry Disarm).
+const byId = new Map((units as any[]).map(u => [u.id, u]));
+const upgradeTargets = new Set<string>();
+for (const u of units) for (const t of (u.upgradeTo as string[])) if (byId.has(t)) upgradeTargets.add(t);
+
+type Line = { key: string; chain: any[]; base: any };
+const lines: Line[] = [];
+for (const u of units) {
+  if (upgradeTargets.has(u.id)) continue;             // start only from base units
+  const chain = [u];
+  let cur = u;
+  for (let guard = 0; guard < 4; guard++) {
+    const nxt = (cur.upgradeTo as string[]).map(t => byId.get(t)).find(Boolean);
+    if (!nxt) break;
+    chain.push(nxt); cur = nxt;
+  }
+  lines.push({ key: u.slug, chain, base: u });
+}
+lines.sort((a, b) =>
+  a.base.nationLabel.localeCompare(b.base.nationLabel) || a.base.eraOrder - b.base.eraOrder);
+
+// Collapse consecutive equal values, then slash-join: [60,80]→"60 / 80", [2,2]→"2".
+const collapse = (vals: any[]) => {
+  const out: any[] = [];
+  for (const v of vals) if (!out.length || out[out.length - 1] !== v) out.push(v);
+  return out;
+};
+const foldNums = (vals: (number | string)[], sep = ' / ') => collapse(vals).join(sep);
+
+// Fold a yield list (resource costs / per-turn upkeep) across the chain: union
+// the yield keys (base order first), then slash-fold each key's values.
+function foldYields(chain: any[], field: 'costs' | 'consumption') {
+  const keys: string[] = [];
+  for (const u of chain) for (const c of u[field]) if (!keys.includes(c.yield)) keys.push(c.yield);
+  return keys.map(k => ({
+    yield: k,
+    text: foldNums(chain.map(u => { const c = u[field].find((x: any) => x.yield === k); return c ? c.value : 0; }), '/'),
+  }));
+}
+const lineTraits = (chain: any[]) => [...new Set(chain.flatMap(u => secondaryTraits(u)))];
+function lineAbilities(chain: any[]) {
+  const seen = new Set<string>(); const out: any[] = [];
+  for (const u of chain) for (const a of u.abilities) if (!seen.has(a.label)) { seen.add(a.label); out.push(a); }
+  return out;
+}
+function lineCounters(chain: any[]) {
+  const seen = new Set<string>(); const out: any[] = [];
+  for (const u of chain) for (const c of u.counters) { const t = fmtCounter(c); if (!seen.has(t)) { seen.add(t); out.push(c); } }
+  return out;
+}
+
 const searchBlobs: Record<string, string> = {};
-for (const u of units) searchBlobs[u.slug] = JSON.stringify(u).toLowerCase();
+for (const l of lines) searchBlobs[l.key] = JSON.stringify(l.chain).toLowerCase();
 
-const dlcCount = units.filter(u => u.source !== 'Base game').length;
-
-// ── Faceted-filter option lists ──
-const NATIONS = [...new Set(units.map(u => u.nationLabel))].sort();
-const TIER_ORDER = ['Initial', 'Developing', 'Strong', 'Legendary'];
-const presentTiers = TIER_ORDER.filter(t => units.some(u => u.era === t));
+// ── Faceted-filter option lists (over nation lines, not raw units) ──
+const NATIONS = [...new Set(lines.map(l => l.base.nationLabel))].sort();
 const CLASS_ORDER = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege', 'Ship'];
-const presentClasses = CLASS_ORDER.filter(c => units.some(u => unitClass(u).label === c));
+const presentClasses = CLASS_ORDER.filter(c => lines.some(l => unitClass(l.base).label === c));
 
-const cnt = (pred: (u: any) => boolean) => units.filter(pred).length;
+const cnt = (pred: (l: Line) => boolean) => lines.filter(pred).length;
 type Facet = { key: string; title: string; opts: { val: string; label: string; icon?: string; count: number }[] };
 const FACETS: Facet[] = [
   { key: 'nation', title: 'Nation', opts: NATIONS.map(n => ({
-      val: n, label: n, icon: crest(n), count: cnt(u => u.nationLabel === n) })) },
-  { key: 'tier', title: 'Culture tier', opts: presentTiers.map(t => ({
-      val: t, label: t === 'Initial' ? 'From start' : `${t} Culture`,
-      icon: t === 'Initial' ? undefined : eraIcon(t), count: cnt(u => u.era === t) })) },
+      val: n, label: n, icon: crest(n), count: cnt(l => l.base.nationLabel === n) })) },
   { key: 'class', title: 'Class', opts: presentClasses.map(c => ({
-      val: c, label: c, icon: traitIcon(unitClass(units.find(u => unitClass(u).label === c)).icon),
-      count: cnt(u => unitClass(u).label === c) })) },
+      val: c, label: c, icon: traitIcon(unitClass(lines.find(l => unitClass(l.base).label === c)!.base).icon),
+      count: cnt(l => unitClass(l.base).label === c) })) },
 ];
 ---
 
@@ -75,7 +130,7 @@ const FACETS: Facet[] = [
   title="Unique Units"
   active="unique-units"
   pageMark="⭐"
-  description={`The ${units.length} nation-unique units of Old World, across ${NATIONS.length} civilizations. Each is unlocked at a Culture tier (Developing or Strong) rather than a tech, and only that nation can build it. Rows show owning nation, Culture tier, class, Strength, Movement, Range, cost, upkeep and combat counters — all derived from the game's unit.xml.`}
+  description={`The ${units.length} nation-unique units of Old World — across ${NATIONS.length} civilizations — paired into ${lines.length} base→upgrade lines (e.g. D'mt Warrior → Shotelai). Each unlocks at a Culture tier (Developing or Strong) or a city building (Stronghold / Citadel) rather than a tech, and only that nation can build it. Differing base/upgrade values are folded with a slash (150/200 iron); shared ones shown once. Columns cover unlock, class, Strength, Move, Range, resource cost, upkeep and special abilities (Disarm, Testudo, Rout…) — all derived from the game's unit.xml.`}
 >
   <div class="page-meta">
     <h1 class="page-title">Unique Units</h1>
@@ -88,7 +143,7 @@ const FACETS: Facet[] = [
         aria-expanded="false"
         aria-controls="unit-picker"
       >
-        <b id="unit-visible-count">{units.length}</b> of <b>{units.length}</b> visible <span class="stat__chev">▾</span>
+        <b id="unit-visible-count">{lines.length}</b> of <b>{lines.length}</b> visible <span class="stat__chev">▾</span>
       </button>
     </div>
   </div>
@@ -137,32 +192,49 @@ const FACETS: Facet[] = [
         </colgroup>
         <thead>
           <tr>
-            <th class="rowlabel rowlabel--corner"><span class="nhdr__name">Unit</span></th>
+            <th class="rowlabel rowlabel--corner" title="Base → upgrade unit line"><span class="nhdr__name">Unit line</span></th>
             <th class="nhdr nhdr--col"><span class="nhdr__name">Nation</span></th>
-            <th class="nhdr nhdr--col"><span class="nhdr__name">Tier</span></th>
+            <th class="nhdr nhdr--col" title="Culture tier or building that unlocks each unit"><span class="nhdr__name">Unlock</span></th>
             <th class="nhdr nhdr--col"><span class="nhdr__name">Class</span></th>
-            <th class="nhdr nhdr--col nhdr--num" title="Strength"><span class="nhdr__name">Str</span></th>
-            <th class="nhdr nhdr--col nhdr--num" title="Movement"><span class="nhdr__name">Move</span></th>
+            <th class="nhdr nhdr--col nhdr--num" title="Strength (base / upgrade)"><span class="nhdr__name">Str</span></th>
+            <th class="nhdr nhdr--col nhdr--num" title="Movement · Sight"><span class="nhdr__name">Move·Sight</span></th>
             <th class="nhdr nhdr--col nhdr--num" title="Attack range (melee shows —)"><span class="nhdr__name">Range</span></th>
-            <th class="nhdr nhdr--col nhdr--num" title="Training cost to build"><span class="nhdr__name">Cost</span></th>
-            <th class="nhdr nhdr--col"><span class="nhdr__name">Upkeep</span></th>
-            <th class="nhdr nhdr--col"><span class="nhdr__name">Counters & Abilities</span></th>
+            <th class="nhdr nhdr--col" title="Resource cost to build (base / upgrade)"><span class="nhdr__name">Cost</span></th>
+            <th class="nhdr nhdr--col" title="Per-turn upkeep (base / upgrade)"><span class="nhdr__name">Upkeep</span></th>
+            <th class="nhdr nhdr--col"><span class="nhdr__name">Traits & Abilities</span></th>
           </tr>
         </thead>
         <tbody>
-          {units.map(u => {
-            const cls = unitClass(u);
-            const sec = secondaryTraits(u);
+          {lines.map(l => {
+            const chain = l.chain;
+            const bu = l.base;
+            const cls = unitClass(bu);
+            const sec = lineTraits(chain);
+            const ab = lineAbilities(chain);
+            const counters = lineCounters(chain);
+            const costs = foldYields(chain, 'costs');
+            const upkeep = foldYields(chain, 'consumption');
+            const eras = collapse(chain.map(u => u.era));
+            const unlockTitle = eras.map((e: string) => e === 'Initial' ? 'from start' : tierLabel(e)).join(' → ');
+            const strFold = foldNums(chain.map(u => u.strength / 10));
+            const moveFold = foldNums(chain.map(u => u.movement));
+            const sightFold = foldNums(chain.map(u => u.vision));
+            const ranged = chain.some(u => u.rangeMax > 0);
+            const rangeFold = foldNums(chain.map(u => u.rangeMax || 0));
             return (
-              <tr data-unit={u.slug} data-nation={u.nationLabel} data-tier={u.era} data-class={cls.label} id={u.slug}>
-                <th class="rowlabel rowlabel--unit" scope="row" data-sortval={u.name}>
+              <tr data-line={l.key} data-nation={bu.nationLabel} data-class={cls.label} id={l.key}>
+                <th class="rowlabel rowlabel--unit" scope="row" data-sortval={bu.name}>
                   <div class="uname">
-                    <img class="uname__art" src={unitArt(u.iconSlug)} alt="" loading="lazy" onerror="this.style.display='none'" />
+                    <div class="uname__arts">
+                      {chain.map((u: any) => (
+                        <img class="uname__art uname__art--sm" src={unitArt(u.iconSlug)} alt="" loading="lazy" title={u.name} onerror="this.style.display='none'" />
+                      ))}
+                    </div>
                     <div class="uname__text">
-                      <span class="uname__name">{u.name}</span>
-                      {u.source !== 'Base game' && (
+                      <span class="uname__name">{chain.map((u: any) => u.name).join(' → ')}</span>
+                      {bu.source !== 'Base game' && (
                         <div class="uname__meta">
-                          <span class="chip chip--dlc" title={`${u.source} DLC`}>DLC</span>
+                          <span class="chip chip--dlc" title={`${bu.source} DLC`}>DLC</span>
                         </div>
                       )}
                     </div>
@@ -170,20 +242,20 @@ const FACETS: Facet[] = [
                 </th>
 
                 {/* Owning nation — crest + name, links to the nation page */}
-                <td class="cell cell--nation" data-sortval={u.nationLabel}>
-                  <a class="nat-tag" href={`${base}nations/${u.nationLabel.toLowerCase()}`} title={u.nationLabel}>
-                    <img class="nat-tag__crest" src={crest(u.nationLabel)} alt="" onerror="this.style.display='none'" />
-                    <span class="nat-tag__txt">{u.nationLabel}</span>
+                <td class="cell cell--nation" data-sortval={bu.nationLabel}>
+                  <a class="nat-tag" href={`${base}nations/${bu.nationLabel.toLowerCase()}`} title={bu.nationLabel}>
+                    <img class="nat-tag__crest" src={crest(bu.nationLabel)} alt="" onerror="this.style.display='none'" />
+                    <span class="nat-tag__txt">{bu.nationLabel}</span>
                   </a>
                 </td>
 
-                {/* Culture tier */}
-                <td class="cell cell--tier" data-sortval={u.eraOrder}>
-                  <span class="era-tag" title={u.era === 'Initial' ? 'Available from start' : `${u.era} Culture`}>
-                    {u.era !== 'Initial' && (
-                      <img class="era-tag__ico" src={eraIcon(u.era)} alt="" onerror="this.style.display='none'" />
+                {/* Unlock — folded Culture tier / building gate per step */}
+                <td class="cell cell--tier" data-sortval={bu.eraOrder}>
+                  <span class="era-tag" title={unlockTitle}>
+                    {tierIcon(eras[0]) && (
+                      <img class="era-tag__ico" src={tierIcon(eras[0])} alt="" onerror="this.style.display='none'" />
                     )}
-                    <span class="era-tag__txt">{u.era === 'Initial' ? 'From start' : u.era}</span>
+                    <span class="era-tag__txt">{eras.map((e: string) => e === 'Initial' ? 'From start' : e).join(' → ')}</span>
                   </span>
                 </td>
 
@@ -195,65 +267,73 @@ const FACETS: Facet[] = [
                   </span>
                 </td>
 
-                {/* Strength (stored 10×) */}
-                <td class="cell cell--num" data-sortval={u.strength}>
-                  <span class="numval numval--str">{u.strength / 10}</span>
+                {/* Strength (base / upgrade) */}
+                <td class="cell cell--num" data-sortval={bu.strength}>
+                  <span class="numval numval--str">{strFold}</span>
                 </td>
 
-                {/* Movement */}
-                <td class="cell cell--num" data-sortval={u.movement}>
-                  <span class="numval">{u.movement}</span>
+                {/* Movement · Sight */}
+                <td class="cell cell--num" data-sortval={bu.movement}>
+                  <span class="numval" title={`${moveFold} Move · ${sightFold} Sight`}>{moveFold}<span class="numval__dim"> · {sightFold}</span></span>
                 </td>
 
                 {/* Range */}
-                {u.rangeMax > 0 ? (
-                  <td class="cell cell--num" data-sortval={u.rangeMax}>
-                    <span class="numval">{u.rangeMax}</span>
+                {ranged ? (
+                  <td class="cell cell--num" data-sortval={bu.rangeMax}>
+                    <span class="numval">{rangeFold}</span>
                   </td>
                 ) : (
                   <td class="cell cell--num is-empty" data-sortval={0}><span class="cell__dash">—</span></td>
                 )}
 
-                {/* Training cost */}
-                {u.production > 0 ? (
-                  <td class={`cell cell--num yield-${u.trainingYield || 'misc'}`} data-sortval={u.production}>
-                    <span class="numval">
-                      {u.trainingYield && (
-                        <img class="numval__ico" src={yieldIcon(u.trainingYield)} alt="" onerror="this.style.display='none'" />
-                      )}
-                      {u.production}
-                    </span>
-                  </td>
-                ) : (
-                  <td class="cell cell--num is-empty" data-sortval={0}><span class="cell__dash">—</span></td>
-                )}
-
-                {/* Upkeep */}
-                {u.consumption.length === 0 ? (
+                {/* Resource cost to build (base / upgrade) */}
+                {costs.length === 0 ? (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
                 ) : (
                   <td class="cell cell--chips">
-                    {u.consumption.map((c: any) => (
-                      <span class={`chip yield-${c.yield}`} title={`${c.value} ${c.yield} per turn upkeep`}>
+                    {costs.map((c: any) => (
+                      <span class={`chip yield-${c.yield}`} title={`${c.text} ${c.yield} to build`}>
                         <img class="chip__icon" src={yieldIcon(c.yield)} alt="" onerror="this.style.display='none'" />
-                        {c.value}
+                        {c.text}
                       </span>
                     ))}
                   </td>
                 )}
 
-                {/* Counters / abilities + secondary trait chips */}
-                {u.counters.length === 0 && sec.length === 0 ? (
+                {/* Upkeep (base / upgrade) */}
+                {upkeep.length === 0 ? (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                ) : (
+                  <td class="cell cell--chips">
+                    {upkeep.map((c: any) => (
+                      <span class={`chip yield-${c.yield}`} title={`${c.text} ${c.yield} per turn upkeep`}>
+                        <img class="chip__icon" src={yieldIcon(c.yield)} alt="" onerror="this.style.display='none'" />
+                        {c.text}
+                      </span>
+                    ))}
+                  </td>
+                )}
+
+                {/* Traits, abilities + counters (union across the line) */}
+                {counters.length === 0 && sec.length === 0 && ab.length === 0 ? (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
                 ) : (
                   <td class="cell cell--effects">
-                    {u.counters.map((c: any) => {
+                    {counters.map((c: any) => {
                       const text = fmtCounter(c);
                       const yk = classifyYield(text)?.toLowerCase() || 'misc';
                       return <div class={`effect yield-${yk}`}><LinkedText text={text} showIcons={false} /></div>;
                     })}
-                    {sec.length > 0 && (
+                    {(ab.length > 0 || sec.length > 0) && (
                       <div class="uname__meta">
+                        {ab.map((a: any) => (
+                          <span class="chip chip--ability" title="Special ability">
+                            {a.icon && (
+                              <img class="chip__icon" src={`${base}img/icons/${a.icon}.png`} alt="" onerror="this.style.display='none'" />
+                            )}
+                            {a.label}
+                          </span>
+                        ))}
                         {sec.map((t: string) => <span class="chip chip--neutral" title="Unit trait">{t}</span>)}
                       </div>
                     )}
@@ -268,7 +348,7 @@ const FACETS: Facet[] = [
   </div>
 
   <script type="application/json" id="unit-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
-  <script is:inline define:vars={{ FACET_ATTR_JSON: JSON.stringify({ nation: 'data-nation', tier: 'data-tier', class: 'data-class' }) }}>
+  <script is:inline define:vars={{ FACET_ATTR_JSON: JSON.stringify({ nation: 'data-nation', class: 'data-class' }) }}>
     (function () {
       const input = document.getElementById('site-search');
       const blobNode = document.getElementById('unit-search-blobs');
@@ -282,7 +362,7 @@ const FACETS: Facet[] = [
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
 
       const FACET_ATTR = JSON.parse(FACET_ATTR_JSON);
-      const rows = Array.from(grid.querySelectorAll('tr[data-unit]'));
+      const rows = Array.from(grid.querySelectorAll('tr[data-line]'));
       const cbs = Array.from(picker.querySelectorAll('.nation-picker__cb'));
       const picked = {};
       function syncPicked() {
@@ -300,7 +380,7 @@ const FACETS: Facet[] = [
         const q = ((input && input.value) || '').trim().toLowerCase();
         let visibleN = 0, hiddenBySearch = 0;
         for (const row of rows) {
-          const slug = row.getAttribute('data-unit');
+          const slug = row.getAttribute('data-line');
           const matchesSearch = !q || (blobs[slug] || '').includes(q);
           const visible = matchesSearch && rowPasses(row);
           if (visible) visibleN++;
@@ -312,7 +392,7 @@ const FACETS: Facet[] = [
           if (q && hiddenBySearch > 0) {
             note.hidden = false;
             note.textContent = 'Showing ' + (rows.length - hiddenBySearch) + ' of ' + rows.length +
-              ' unique units matching "' + (input ? input.value : '') + '"';
+              ' unique unit lines matching "' + (input ? input.value : '') + '"';
           } else { note.hidden = true; note.textContent = ''; }
         }
       }
@@ -387,13 +467,13 @@ const FACETS: Facet[] = [
 </Base>
 
 <style>
-  .utbl__name-col   { width: 14rem; }
+  .utbl__name-col   { width: 17rem; }
   .utbl__nation-col { width: 8rem; }
-  .utbl__tier-col   { width: 7rem; }
+  .utbl__tier-col   { width: 9rem; }
   .utbl__class-col  { width: 7rem; }
-  .utbl__stat-col   { width: 4rem; }
-  .utbl__cost-col   { width: 5rem; }
-  .utbl__mat-col    { width: 6.5rem; }
+  .utbl__stat-col   { width: 4.5rem; }
+  .utbl__cost-col   { width: 7rem; }
+  .utbl__mat-col    { width: 7rem; }
   .utbl__abil-col   { width: auto; }
 
   .nhdr--col {
@@ -419,6 +499,10 @@ const FACETS: Facet[] = [
   .rowlabel--unit { padding: 0.4rem 0.6rem; text-align: left; background: var(--bg-elev); }
   .uname { display: flex; gap: 0.5rem; align-items: center; }
   .uname__art { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; border-radius: 6px; background: rgba(0,0,0,0.25); }
+  .uname__arts { display: flex; flex-shrink: 0; }
+  .uname__arts .uname__art--sm { width: 34px; height: 34px; }
+  .uname__arts .uname__art--sm + .uname__art--sm { margin-left: -10px; box-shadow: -2px 0 4px rgba(0,0,0,0.4); }
+  .numval__dim { color: var(--text-faint); font-weight: 500; }
   .uname__text { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
   .uname__name { font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--text); letter-spacing: 0.02em; }
   .uname__meta { display: flex; gap: 0.25rem; flex-wrap: wrap; align-items: center; margin-top: 0.15rem; }
@@ -448,6 +532,7 @@ const FACETS: Facet[] = [
   .chip__icon { width: 13px; height: 13px; object-fit: contain; vertical-align: -2px; margin-right: 2px; }
   .chip--dlc { background: var(--bg-elev-2); color: var(--text-dim); border: 1px solid var(--border); padding: 0.05rem 0.4rem; font-size: 0.64rem; letter-spacing: 0.06em; font-family: var(--font-mono); text-transform: uppercase; }
   .chip--neutral { background: var(--bg-elev-2); color: var(--text-dim); border: 1px solid var(--border); padding: 0.05rem 0.4rem; font-size: 0.68rem; }
+  .chip--ability { background: color-mix(in srgb, var(--accent) 14%, var(--bg-elev-2)); color: var(--text); border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border)); padding: 0.05rem 0.4rem; font-size: 0.68rem; font-weight: 600; }
 
   .nation-picker--facets { max-height: 70vh; overflow-y: auto; min-width: 15rem; }
   .facet + .facet { margin-top: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.5rem; }

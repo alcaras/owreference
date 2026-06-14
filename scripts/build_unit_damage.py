@@ -69,9 +69,62 @@ TRAIT_LABEL_OVERRIDES = {
 }
 
 
+# Effect-icon art lives in two extracted folders; an EffectUnit's zIconName may
+# point at either (Disarm's icon is a UnitTrait sprite, most are EffectUnit
+# sprites). Resolve to whichever file actually exists.
+EFFECT_ICON_DIRS = ["effects", "unit_traits"]
+
+
+def effect_icon_path(icon_token: str) -> str | None:
+    slug = (icon_token or "").replace("EFFECTUNIT_", "").replace("UNITTRAIT_", "") \
+        .replace("CONCEPT_", "").lower()
+    if not slug:
+        return None
+    for d in EFFECT_ICON_DIRS:
+        if (ROOT / "public" / "img" / "icons" / d / f"{slug}.png").exists():
+            return f"{d}/{slug}"
+    return None
+
+
+def effect_label(eff_id: str, gendered: str | None, text: dict[str, str]) -> str:
+    """Resolve an EffectUnit's display name. The game keys these a few ways
+    (TEXT_EFFECTUNIT_*, the GenderedName, or a CONCEPT alias); take the first
+    that resolves, else humanize the zType."""
+    for cand in (eff_id,
+                 eff_id.replace("EFFECTUNIT_", "TEXT_EFFECTUNIT_"),
+                 gendered,
+                 (gendered or "").replace("GENDERED_", "")):
+        if cand and cand in text:
+            return text[cand]
+    return token_title(eff_id, "EFFECTUNIT_")
+
+
+def collect_abilities(effect_ids: list[str], eu_idx: dict[str, ET.Element],
+                      text: dict[str, str]) -> list[dict]:
+    """Every aeEffectUnit a unit carries, as a named ability (Disarm, Rout,
+    Testudo, …). These are the signature unique-unit specials — distinct from
+    the numeric `counters` (stat modifiers) collect_counter_lines pulls. Both
+    are derived from the same EffectUnits; abilities keeps the human label so
+    the catalog pages can show what a unit actually *does*, not just its
+    damage math."""
+    out: list[dict] = []
+    for eid in effect_ids:
+        e = eu_idx.get(eid)
+        gendered = e.findtext("GenderedName") if e is not None else None
+        icon_tok = (e.findtext("zIconName") if e is not None else None) or eid
+        out.append({
+            "id": eid,
+            "label": effect_label(eid, gendered, text),
+            "icon": effect_icon_path(icon_tok),
+        })
+    return out
+
+
 # Culture-tier gating for unique units (they have no TechPrereq — a nation
-# unlocks them at a Culture level instead). DMT Warrior / Steppe Rider have no
-# CulturePrereq: a nation's starting unique, surfaced as "Initial".
+# unlocks them at a Culture level instead). Steppe Rider has no CulturePrereq
+# and no building gate: a true turn-one unique, surfaced as "Initial". The
+# D'mt Warrior also has no CulturePrereq but DOES need a Stronghold, so it is
+# gated by improvement instead (handled below) — not "from start".
 ERA_BY_CULTURE = {
     "":                   {"order": 1, "label": "Initial"},
     "CULTURE_WEAK":       {"order": 1, "label": "Weak"},
@@ -173,6 +226,15 @@ def main() -> int:
     text = indexes.get("__text__", {})
     eu_idx = indexes.get("effectUnit.xml", {})
 
+    # Improvement display names, for units gated behind a city building
+    # (ImprovementPrereq) or obsoleted by one (ImprovementObsolete):
+    # GARRISON_2 → Stronghold, GARRISON_3 → Citadel.
+    imp_name: dict[str, str] = {}
+    for ie in parse("improvement.xml").findall("Entry"):
+        iz = ie.findtext("zType") or ""
+        if iz:
+            imp_name[iz] = text.get(ie.findtext("Name") or "", token_title(iz, "IMPROVEMENT_"))
+
     units: list[dict] = []
     for entry in parse("unit.xml").findall("Entry"):
         zt = entry.findtext("zType") or ""
@@ -215,8 +277,12 @@ def main() -> int:
         upgrade_to = [t.text for t in entry.findall("aeUpgradeUnit/zValue") if t.text]
         obsolete_tech = [t.text for t in entry.findall("aeObsoleteTech/zValue") if t.text]
 
-        # XML-derived counter modifiers
+        # XML-derived counter modifiers + named special abilities
         counters = collect_counter_lines(effect_ids, eu_idx)
+        abilities = collect_abilities(effect_ids, eu_idx, text)
+
+        imp_prereq = entry.findtext("ImprovementPrereq") or ""
+        imp_obsolete = entry.findtext("ImprovementObsolete") or ""
 
         # Classification axis used by the Units / Unique Units pages:
         #   unique  → has a NationPrereq (nation-only build; wins even if the
@@ -233,8 +299,17 @@ def main() -> int:
             category = "normal"
 
         # Unique units gate on Culture tier, not tech (TechPrereq is empty).
+        # Exception: a unit with no CulturePrereq but an ImprovementPrereq is
+        # gated by that building, not "from start" — label it by the building
+        # (e.g. the D'mt Warrior needs a Stronghold). Order it next to the
+        # Developing/Strong base tiers that share the same Garrison level.
         culture = entry.findtext("CulturePrereq") or ""
-        era = ERA_BY_CULTURE.get(culture, {"order": 0, "label": token_title(culture, "CULTURE_")})
+        if nation_prereq and not culture and imp_prereq:
+            order = 3 if imp_prereq.endswith("GARRISON_3") else 2
+            era = {"order": order,
+                   "label": imp_name.get(imp_prereq, token_title(imp_prereq, "IMPROVEMENT_"))}
+        else:
+            era = ERA_BY_CULTURE.get(culture, {"order": 0, "label": token_title(culture, "CULTURE_")})
         dlc = entry.findtext("GameContentRequired") or ""
 
         units.append({
@@ -248,6 +323,10 @@ def main() -> int:
             "era": era["label"] if nation_prereq else "",
             "eraOrder": era["order"] if nation_prereq else 0,
             "nationLabel": token_title(nation_prereq, "NATION_"),
+            "improvementPrereq": imp_prereq,
+            "improvementPrereqLabel": imp_name.get(imp_prereq, "") if imp_prereq else "",
+            "improvementObsolete": imp_obsolete,
+            "improvementObsoleteLabel": imp_name.get(imp_obsolete, "") if imp_obsolete else "",
             "techLabel": token_title(entry.findtext("TechPrereq") or "", "TECH_"),
             "source": SOURCE_LABEL.get(dlc, token_title(dlc) if dlc else "Base game"),
             "iconSlug": (entry.findtext("zIconName") or zt).replace("UNIT_", "").lower(),
@@ -276,6 +355,7 @@ def main() -> int:
             "obsoleteTech": obsolete_tech,
             "effectUnits": effect_ids,
             "counters": counters,
+            "abilities": abilities,
             "gameContent": entry.findtext("GameContentRequired") or "",
         })
 
