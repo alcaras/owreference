@@ -226,14 +226,17 @@ def main() -> int:
     text = indexes.get("__text__", {})
     eu_idx = indexes.get("effectUnit.xml", {})
 
-    # Improvement display names, for units gated behind a city building
-    # (ImprovementPrereq) or obsoleted by one (ImprovementObsolete):
-    # GARRISON_2 → Stronghold, GARRISON_3 → Citadel.
+    # Improvement display names + Culture gate, for units gated behind a city
+    # building (ImprovementPrereq) or obsoleted by one (ImprovementObsolete):
+    # GARRISON_2 → Stronghold (needs Developing), GARRISON_3 → Citadel (needs
+    # Strong). The Culture gate lets a building-gated unit inherit its tier.
     imp_name: dict[str, str] = {}
+    imp_culture: dict[str, str] = {}
     for ie in parse("improvement.xml").findall("Entry"):
         iz = ie.findtext("zType") or ""
         if iz:
             imp_name[iz] = text.get(ie.findtext("Name") or "", token_title(iz, "IMPROVEMENT_"))
+            imp_culture[iz] = ie.findtext("CulturePrereq") or ""
 
     units: list[dict] = []
     for entry in parse("unit.xml").findall("Entry"):
@@ -299,17 +302,15 @@ def main() -> int:
             category = "normal"
 
         # Unique units gate on Culture tier, not tech (TechPrereq is empty).
-        # Exception: a unit with no CulturePrereq but an ImprovementPrereq is
-        # gated by that building, not "from start" — label it by the building
-        # (e.g. the D'mt Warrior needs a Stronghold). Order it next to the
-        # Developing/Strong base tiers that share the same Garrison level.
+        # A unit with no CulturePrereq but an ImprovementPrereq inherits the
+        # building's own Culture gate (a Stronghold needs Developing, a Citadel
+        # needs Strong) — so Aksum's D'mt Warrior reads "Developing", in step
+        # with the other base uniques, rather than "from start". Only Steppe
+        # Rider (no culture and no building) stays "Initial".
         culture = entry.findtext("CulturePrereq") or ""
         if nation_prereq and not culture and imp_prereq:
-            order = 3 if imp_prereq.endswith("GARRISON_3") else 2
-            era = {"order": order,
-                   "label": imp_name.get(imp_prereq, token_title(imp_prereq, "IMPROVEMENT_"))}
-        else:
-            era = ERA_BY_CULTURE.get(culture, {"order": 0, "label": token_title(culture, "CULTURE_")})
+            culture = imp_culture.get(imp_prereq, culture)
+        era = ERA_BY_CULTURE.get(culture, {"order": 0, "label": token_title(culture, "CULTURE_")})
         dlc = entry.findtext("GameContentRequired") or ""
 
         units.append({
