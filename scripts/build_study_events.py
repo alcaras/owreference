@@ -21,6 +21,9 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_missions import clean_text  # noqa: E402  shared game-text cleaner
+
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "study_events.json"
@@ -213,7 +216,7 @@ def main() -> int:
             continue
 
         title_key = entry.findtext("Name") or ""
-        title = text.get(title_key, zid.replace("EVENTSTORY_", "").replace("_", " ").title())
+        title = clean_text(text.get(title_key, zid.replace("EVENTSTORY_", "").replace("_", " ").title()))
 
         # Subject extras = prerequisites about the event subjects (e.g. SUBJECT_TEENAGER)
         prereqs: list[str] = []

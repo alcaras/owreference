@@ -57,13 +57,14 @@ function schedHint(c: any): string | null {
     every option with requirements, raw XML payloads, and chain links. The story prose itself
     is left for you to discover in game.
     {meta.excludedCovered.total} stories already covered by the dedicated pages below are linked
-    there instead of duplicated here.
+    there instead of duplicated here — but the search box above spans <em>every</em> event on the
+    site, including those dedicated pages, and jumps you straight to the card.
   </p>
 
   <div class="ev-search">
     <input type="search" id="ev-q" class="ev-search__input"
-           placeholder="Search all story events by name…" autocomplete="off"
-           aria-label="Search story events" />
+           placeholder="Search every event by name — incl. expedition, ruin, harvest & study…" autocomplete="off"
+           aria-label="Search every event" />
     <p class="ev-search__note" id="ev-q-note" hidden></p>
     <ol class="ev-search__results" id="ev-q-results" hidden></ol>
   </div>
@@ -161,7 +162,7 @@ function schedHint(c: any): string | null {
             (hits.length > top.length ? ' — showing first ' + top.length : '') + '.';
         list.hidden = top.length === 0;
         list.innerHTML = top.map(({ e }) =>
-          '<li><a href="' + base + 'events/' + e.s + '#' + encodeURIComponent(e.i) + '">' +
+          '<li><a href="' + base + e.h + '">' +
           '<b>' + esc(e.n) + '</b> <span class="ev-search__cat">' + esc(e.g) + '</span>' +
           '</a></li>').join('');
       }

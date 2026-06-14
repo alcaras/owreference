@@ -27,8 +27,9 @@ function pct(p: number): string {
   return (p * 100).toFixed(0) + '%';
 }
 
-// canLeadTo targets may live on another page (story-events category, harvest,
-// study, the other exploration tab); leadsTo links stay same-page anchors.
+// Chain targets (leadsTo / followsFrom / canLeadTo) may live on another page
+// (story-events category, harvest, study, the other exploration tab) or on this
+// one. {ext}=dedicated page, {cat}=story-events category part, else same-page id.
 function evHref(t: any): string {
   if (t.ext) return `${base}${t.ext}#${t.anchor || t.id}`;
   if (t.cat) return `${base}events/${t.cat}#${t.id}`;
@@ -103,7 +104,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
             <p class="evt__chain evt__chain--from">
               ⛓ Follows from:{' '}
               {(ev as any).followsFrom.map((f: any, i: number) => (
-                <>{i > 0 ? ', ' : ''}<a href={`#${f.id}`}>{f.name}</a></>
+                <>{i > 0 ? ', ' : ''}<a href={evHref(f)}>{f.name}</a></>
               ))}
             </p>
           )}
@@ -154,7 +155,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
                     <div class="opt__leads">
                       ↳ may trigger:{' '}
                       {o.leadsTo.map((t: any, i: number) => (
-                        <>{i > 0 ? ', ' : ''}<a href={`#${t.id}`}>{t.name}</a></>
+                        <>{i > 0 ? ', ' : ''}<a href={evHref(t)}>{t.name}</a></>
                       ))}
                     </div>
                   )}
@@ -212,6 +213,17 @@ const followups = sec.events.filter(e => e.isFollowup).length;
         }
       }
       search.addEventListener('input', apply);
+
+      // Deep links (#EVENTSTORY_…) land on a <details> card — open it so the
+      // follow-up/lead-to link actually reveals the target event.
+      function openHash() {
+        const id = decodeURIComponent(location.hash.slice(1));
+        if (!id) return;
+        const el = document.getElementById(id);
+        if (el && el.tagName === 'DETAILS') { el.open = true; el.scrollIntoView(); }
+      }
+      window.addEventListener('hashchange', openHash);
+      openHash();
     })();
   </script>
 

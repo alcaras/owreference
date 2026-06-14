@@ -282,40 +282,13 @@ def main() -> int:
               "via an event link."),
     ]
 
-    # ── Wire up chains ──────────────────────────────────────────────────────
-    # Forward: a choice with linkAdd L "may trigger" each story whose prereq is L.
-    # Backward: a follow-up (linkPrereq L) "follows from" each event whose choice
-    # adds L. Self-links are dropped.
-    all_events = [e for sec in sections for e in sec["events"]]
-    add_sources: dict[str, list[dict]] = {}
-    for e in all_events:
-        for opt in e["options"]:
-            lts: list[dict] = []
-            for la in opt.get("linkAdds") or []:
-                for t in prereq_targets.get(la, []):
-                    if t["id"] != e["id"] and all(x["id"] != t["id"] for x in lts):
-                        lts.append(t)
-                if any(t["id"] != e["id"] for t in prereq_targets.get(la, [])):
-                    add_sources.setdefault(la, []).append({"id": e["id"], "name": e["name"]})
-            if lts:
-                opt["leadsTo"] = lts
-    for e in all_events:
-        lp = e.get("linkPrereq")
-        e["followsFrom"] = [src for src in add_sources.get(lp, []) if src["id"] != e["id"]] if lp else []
-
-    # ── Potential follow-ups via memories (canLeadTo) ───────────────────────
-    # An option that grants a memory makes its holder eligible for any story
-    # whose cast subjects require it (subject.xml MemoryPrereq) — an
-    # eligibility hint, NOT a guaranteed chain like leadsTo. MemoryInvalid
-    # consumers are blockers, deliberately not listed.
-    # Locating targets: the two groups here anchor by id; harvest/study pages
-    # use their builders' anchor schemes; everything else lives in a
-    # story-events category part. Part slugs come from the generated
-    # search.json — `make data` runs build_events before build_story_events,
-    # so this read can be one build stale; it self-corrects next run
-    # (category part slugs only move when the game's taxonomy shifts).
-    CAN_LEAD_CAP = 6
-    chain = m.memory_chain()
+    # ── Locate any story by id ──────────────────────────────────────────────
+    # A chain link (leadsTo / followsFrom / canLeadTo) can point at a story that
+    # renders on ANY of the five event pages, not just this one. Resolve each to
+    # {ext, anchor} (a dedicated page) or {cat} (a story-events category part) so
+    # the page builds a real cross-page href instead of a dead same-page anchor.
+    # Part slugs come from the generated story-events/search.json — `make data`
+    # runs build_story_events before build_events, so this read is fresh.
     search_path = ROOT / "src" / "data" / "story-events" / "search.json"
     part_of: dict[str, str] = {}
     if search_path.exists():
@@ -337,6 +310,45 @@ def main() -> int:
         if zid in part_of:
             return {"cat": part_of[zid]}
         return None
+
+    def located(ref: dict) -> dict:
+        """Tag a {id, name} chain ref with its page location (if resolvable)."""
+        loc = can_location(ref["id"])
+        return {**ref, **loc} if loc else dict(ref)
+
+    # ── Wire up chains ──────────────────────────────────────────────────────
+    # Forward: a choice with linkAdd L "may trigger" each story whose prereq is L.
+    # Backward: a follow-up (linkPrereq L) "follows from" each event whose choice
+    # adds L. Self-links are dropped. Every ref carries its page location so the
+    # link resolves even when the target lives on a different page.
+    all_events = [e for sec in sections for e in sec["events"]]
+    add_sources: dict[str, list[dict]] = {}
+    for e in all_events:
+        for opt in e["options"]:
+            lts: list[dict] = []
+            for la in opt.get("linkAdds") or []:
+                for t in prereq_targets.get(la, []):
+                    if t["id"] != e["id"] and all(x["id"] != t["id"] for x in lts):
+                        lts.append(located(t))
+                if any(t["id"] != e["id"] for t in prereq_targets.get(la, [])):
+                    add_sources.setdefault(la, []).append({"id": e["id"], "name": e["name"]})
+            if lts:
+                opt["leadsTo"] = lts
+    for e in all_events:
+        lp = e.get("linkPrereq")
+        ff: list[dict] = []
+        for src in (add_sources.get(lp, []) if lp else []):
+            if src["id"] != e["id"] and all(x["id"] != src["id"] for x in ff):
+                ff.append(located(src))
+        e["followsFrom"] = ff
+
+    # ── Potential follow-ups via memories (canLeadTo) ───────────────────────
+    # An option that grants a memory makes its holder eligible for any story
+    # whose cast subjects require it (subject.xml MemoryPrereq) — an
+    # eligibility hint, NOT a guaranteed chain like leadsTo. MemoryInvalid
+    # consumers are blockers, deliberately not listed.
+    CAN_LEAD_CAP = 6
+    chain = m.memory_chain()
 
     for e in all_events:
         for opt in e["options"]:

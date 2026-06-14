@@ -65,9 +65,26 @@ def _repl_token(m: "re.Match") -> str:
     return ""                                            # grammar helpers (S, p.is_sub.S, random_R…) → drop
 
 
+# Game-text conditionals: <p.is_sub.S2=COND>branchA<p=COND2>branchB<else>def<end>
+# render one branch based on runtime subject state. For a static title/summary we
+# keep the FIRST branch (e.g. "Blessing", "Displeasure"→"Blessing"). Any residual
+# control tag (a stray <end>/<else>/gendered <G0:..>) is then dropped.
+_COND_RE = re.compile(r"<p[^>]*>(.*?)(?:<(?:p[^>]*|else)>.*?)*<end>", re.S)
+
+
+def _resolve_conditionals(s: str) -> str:
+    for _ in range(4):                       # a title may hold a couple in series
+        new = _COND_RE.sub(lambda m: m.group(1), s)
+        if new == s:
+            break
+        s = new
+    return re.sub(r"<[^>]+>", "", s)         # drop any leftover game-text tags
+
+
 def clean_text(s: str) -> str:
     if not s:
         return s
+    s = _resolve_conditionals(s)            # <p.is_sub…>A<else>B<end> → A
     s = _strip_link_templates(s)            # {lowercase:link(TOKEN,N)} → Token Words
     s = _LINK_BARE_RE.sub(_link_bare, s)    # bare link(TOKEN)
     for _ in range(6):                      # resolve nested {…{…}…}
