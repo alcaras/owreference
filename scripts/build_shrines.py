@@ -159,10 +159,17 @@ def main() -> int:
         # Unit-trait XP grants (e.g., Bellona → +10 XP to Infantry).
         # XP is raw, NOT a /10 yield rate — HelpText.Improvement.cs renders
         # aiUnitTraitXP unscaled (matches the in-game tooltip).
+        #
+        # A non-zero aiUnitTraitXP also makes the shrine a *spawn point* for
+        # promotable units of that trait: InfoHelpers.getUnitSpawnImprovements
+        # (City.cs:8721) adds any improvement where maiUnitTraitXP[trait] > 0
+        # to a unit's spawn-tile list. So the WAR shrine isn't just an XP
+        # ground — Infantry can be trained directly onto its tile.
         for pair in entry.findall("aiUnitTraitXP/Pair"):
             trait = (pair.findtext("zIndex") or "").replace("UNITTRAIT_", "").title()
             v = int(pair.findtext("iValue") or "0")
             effects.append(f"{fmt_decimal(v)} {trait} XP")
+            effects.append(f"Spawn point for {trait} units")
 
         # EffectCity attached to the shrine (extra per-city yield).
         ec_id = entry.findtext("EffectCity") or ""
