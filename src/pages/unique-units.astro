@@ -225,7 +225,11 @@ const FACETS: Facet[] = [
                       ))}
                     </div>
                     <div class="uname__text">
-                      <span class="uname__name">{chain.map((u: any) => u.name).join(' → ')}</span>
+                      <span class="uname__name">
+                        {chain.map((u: any, i: number) => (
+                          <span class="uname__line">{u.name}{i < chain.length - 1 ? ' →' : ''}</span>
+                        ))}
+                      </span>
                       {bu.source !== 'Base game' && (
                         <div class="uname__meta">
                           <span class="chip chip--dlc" title={`${bu.source} DLC`}>DLC</span>
@@ -493,7 +497,8 @@ const FACETS: Facet[] = [
   .uname__arts .uname__art--sm + .uname__art--sm { margin-left: -10px; box-shadow: -2px 0 4px rgba(0,0,0,0.4); }
   .numval__dim { color: var(--text-faint); font-weight: 500; }
   .uname__text { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
-  .uname__name { font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--text); letter-spacing: 0.02em; }
+  .uname__name { display: flex; flex-direction: column; font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--text); letter-spacing: 0.02em; line-height: 1.25; }
+  .uname__line { display: block; }
   .uname__meta { display: flex; gap: 0.25rem; flex-wrap: wrap; align-items: center; margin-top: 0.15rem; }
 
   .cell--nation { background: var(--bg-elev); background-image: none; }
