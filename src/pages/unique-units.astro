@@ -27,10 +27,17 @@ function unitClass(u: any): { key: string; label: string; icon: string } {
   };
 }
 
+// Traits we never surface as chips: the combat classes (already shown in the
+// Class column) plus the mount sub-type traits (HORSE/CAMEL/ELEPHANT/CHARIOT).
+// Those last are internal combat categorisation — the game uses them for
+// counter math, not as player-facing labels — and they're redundant with the
+// Class column and the unit's own name. Genuine special abilities come from
+// EffectUnits (the `abilities` list), not from these traits.
 const HIDE_TRAITS = new Set([
   'UNITTRAIT_PROMOTABLE', 'UNITTRAIT_MELEE', 'UNITTRAIT_INFANTRY', 'UNITTRAIT_POLEARM',
   'UNITTRAIT_MOUNTED', 'UNITTRAIT_RANGED', 'UNITTRAIT_SIEGE', 'UNITTRAIT_SHIP',
   'UNITTRAIT_TRIBAL', 'UNITTRAIT_DISCIPLE', 'UNITTRAIT_WORKER',
+  'UNITTRAIT_HORSE', 'UNITTRAIT_CAMEL', 'UNITTRAIT_ELEPHANT', 'UNITTRAIT_CHARIOT',
 ]);
 const secondaryTraits = (u: any) =>
   (u.traitIds as string[])
