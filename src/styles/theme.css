@@ -701,11 +701,15 @@ h1, h2, h3 {
   font-size: 0.78rem;
   user-select: none;
   position: relative;
-  /* In-game nation color shows as a 3px left-edge swatch on each row */
+  /* In-game nation color shows as a 3px left-edge swatch + a faded gradient
+     wash (mirrors the nation cells on the tables). Falls back to transparent
+     for non-nation facet rows (Class/Tier), which carry no --nation-* vars. */
   box-shadow: inset 3px 0 0 var(--nation-bg, var(--border));
+  background-image: linear-gradient(90deg, color-mix(in srgb, var(--nation-ingame, transparent) 28%, transparent), transparent 72%);
   padding-left: 0.6rem;
 }
-.nation-picker__row:hover { background: var(--bg-elev-2); }
+.nation-picker__row:hover { background-color: var(--bg-elev-2); }
+.nation-picker__row:has(input:not(:checked)) { background-image: none; }
 .nation-picker__cb { margin: 0; accent-color: var(--gold); }
 .nation-picker__crest { width: 18px; height: 18px; object-fit: contain; opacity: 0.95; }
 .nation-picker__name {
