@@ -40,6 +40,7 @@ data:
 	@python3 scripts/build_technologies.py
 	@python3 scripts/build_promotions.py
 	@python3 scripts/build_unit_damage.py
+	@python3 scripts/build_abilities.py
 	@python3 scripts/build_stat_scaling.py
 	@python3 scripts/build_jobs.py
 	@python3 scripts/build_council.py

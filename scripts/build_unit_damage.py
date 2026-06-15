@@ -117,13 +117,112 @@ def is_ability_effect(e: ET.Element | None) -> bool:
     return any(c.tag not in ABILITY_META_FIELDS for c in e)
 
 
+def _sgn(v: int) -> str:
+    return f"+{v}" if v > 0 else str(v)
+
+
+def describe_effect(e: ET.Element | None, eu_idx: dict[str, ET.Element],
+                    text: dict[str, str]) -> list[str]:
+    """Human, grounded description lines for one EffectUnit — a focused port of
+    HelpText.buildEffectUnitHelp (HelpText.Unit.cs) covering the fields that
+    actually appear on unit abilities. Names + attack-pattern help come from the
+    game's own TEXT_* strings so phrasing matches the in-game tooltip."""
+    if e is None:
+        return []
+
+    def nm(tok: str | None) -> str:
+        tok = tok or ""
+        return text.get("TEXT_" + tok, tok.split("_", 1)[-1].replace("_", " ").title())
+
+    def pairs(tag: str) -> list[tuple[str, int]]:
+        return [(p.findtext("zIndex") or "", int(p.findtext("iValue") or "0"))
+                for p in e.findall(f"{tag}/Pair")]
+
+    lines: list[str] = []
+
+    # Flat strength / attack / defense (mostly on inflicted effects like Disarmed)
+    for tag, label in (("iStrengthModifier", "Strength"),
+                       ("iAttackModifier", "Attack"),
+                       ("iDefenseModifier", "Defense")):
+        v = int(e.findtext(tag) or "0")
+        if v:
+            lines.append(f"{_sgn(v)}% {label}")
+
+    v = int(e.findtext("iUrbanAttackModifier") or "0")
+    if v:
+        lines.append(f"{_sgn(v)}% Strength attacking into Urban tiles (Cities)")
+    v = int(e.findtext("iAdjacentSameModifier") or "0")
+    if v:
+        lines.append(f"{_sgn(v)}% Strength next to another unit of the same type")
+    v = int(e.findtext("iAdjacentSameAttackModifier") or "0")
+    if v:
+        lines.append(f"{_sgn(v)}% Attack next to another unit of the same type")
+
+    for tag, phrase in (("aiUnitTraitModifier", "{v}% Strength vs {t}"),
+                        ("aiUnitTraitModifierMelee", "{v}% Strength in melee vs {t}"),
+                        ("aiUnitTraitModifierAttack", "{v}% Attack vs {t}"),
+                        ("aiUnitTraitModifierDefense", "{v}% Defense vs {t}")):
+        for tok, val in pairs(tag):
+            lines.append(phrase.format(v=_sgn(val), t=nm(tok)))
+
+    for tok, val in pairs("aiImprovementToModifier"):
+        lines.append(f"{_sgn(val)}% Strength attacking units on a {nm(tok)}")
+
+    # Attack patterns (Splash/Pierce/Cleave/Circle): pull the game's own help line
+    pct = dict(pairs("aiAttackPercent"))
+    for tok, _ in pairs("aiAttackValue"):
+        help_txt = text.get("TEXT_" + tok + "_HELP", "")
+        extra = f" ({_sgn(pct[tok])}% damage)" if pct.get(tok) else ""
+        lines.append((help_txt or f"{nm(tok)} attack pattern") + extra)
+
+    if (e.findtext("bRout") or "0") == "1":
+        lines.append("Can force the defender to Retreat (Rout) on a strong hit")
+    if (e.findtext("bPush") or "0") == "1":
+        lines.append("Pushes the defender back one tile (Panic)")
+
+    def turns(n: str | None) -> str:
+        return f"{n} turn" + ("" if n == "1" else "s")
+
+    aae = e.find("AttackApplyEffectUnitTurns")
+    if aae is not None:
+        tgt = eu_idx.get(aae.findtext("First") or "")
+        sub = describe_effect(tgt, eu_idx, text)
+        suffix = f" ({'; '.join(sub)})" if sub else ""
+        lines.append(f"Attacks inflict {nm(aae.findtext('First'))} for "
+                     f"{turns(aae.findtext('Second'))}{suffix}")
+
+    sae = e.find("SelfApplyEffectUnitTurns")
+    if sae is not None:
+        cost = e.find("SelfApplyEffectUnitYieldCost")
+        cost_s = ""
+        if cost is not None and cost.find("Pair") is not None:
+            cp = cost.find("Pair")
+            cost_s = f" (costs {cp.findtext('Second')} {nm(cp.findtext('First'))})"
+        lines.append(f"On attack, gains {nm(sae.findtext('First'))} for "
+                     f"{turns(sae.findtext('Second'))}{cost_s}")
+
+    uf = e.find("UnitTraitFormation")
+    if uf is not None:
+        per = int(uf.findtext("Second") or "0")
+        turns = int(uf.findtext("Third") or "0")
+        lines.append(f"Formation: +{per}% Defense vs {nm(uf.findtext('First'))} per turn "
+                     f"held in place, up to +{per * turns}% after {turns} turns")
+
+    ignore = ([nm(x.text) for x in e.findall("aeIgnoreHeightCost/zValue")]
+              + [nm(x.text) for x in e.findall("aeIgnoreVegetationCost/zValue")])
+    if ignore:
+        lines.append("Ignores the extra movement cost of " + ", ".join(ignore))
+
+    return lines
+
+
 def collect_abilities(effect_ids: list[str], eu_idx: dict[str, ET.Element],
                       text: dict[str, str]) -> list[dict]:
     """A unit's aeEffectUnit entries that are genuine named abilities (Disarm,
     Rout, Testudo, …) — the signature specials. Pure stat-extra effects (e.g.
     EXTRA_VISION → just +1 vision) are excluded; their value already shows in
-    the stat columns. Numeric combat modifiers ride along in each ability's
-    `detail` (see caller) so abilities and counters never render as two rows."""
+    the stat columns. Each ability carries grounded `lines` (for the tooltip)
+    and a `slug` (for its detail page)."""
     out: list[dict] = []
     for eid in effect_ids:
         e = eu_idx.get(eid)
@@ -133,18 +232,12 @@ def collect_abilities(effect_ids: list[str], eu_idx: dict[str, ET.Element],
         icon_tok = (e.findtext("zIconName") if e is not None else None) or eid
         out.append({
             "id": eid,
+            "slug": eid.replace("EFFECTUNIT_", "").lower(),
             "label": effect_label(eid, gendered, text),
             "icon": effect_icon_path(icon_tok),
+            "lines": describe_effect(e, eu_idx, text),
         })
     return out
-
-
-def fmt_counter(c: dict) -> str:
-    """Mirror the page's fmtCounter — used to fold a counter's numbers into its
-    own ability chip (e.g. Splash I → '+25% Splash') instead of rendering the
-    ability and the counter as two separate, duplicate-looking entries."""
-    v = ("+" if c["value"] > 0 else "") + str(c["value"]) + "%"
-    return f"{v} {c['target']}" if c["kind"] == "attack" else f"{v} {c['kind']} {c['target']}"
 
 
 def unit_effect_ids(entry: ET.Element, trait_effect: dict[str, str]) -> list[str]:
@@ -342,18 +435,11 @@ def main() -> int:
         upgrade_to = [t.text for t in entry.findall("aeUpgradeUnit/zValue") if t.text]
         obsolete_tech = [t.text for t in entry.findall("aeObsoleteTech/zValue") if t.text]
 
-        # XML-derived counter modifiers + named special abilities. A counter
-        # and an ability are two views of the SAME EffectUnit (SPLASH1 → both
-        # "+25% Splash" and "Splash I"), so fold each counter into its own
-        # ability's `detail` rather than letting pages render both and look
-        # doubled.
+        # XML-derived counter modifiers (kept for other pages' damage math) +
+        # named special abilities. Each ability carries its own grounded
+        # description `lines`, so abilities and counters never render doubled.
         counters = collect_counter_lines(effect_ids, eu_idx)
         abilities = collect_abilities(effect_ids, eu_idx, text)
-        detail_by_src: dict[str, list[str]] = {}
-        for c in counters:
-            detail_by_src.setdefault(c["source"], []).append(fmt_counter(c))
-        for a in abilities:
-            a["detail"] = ", ".join(detail_by_src.get(a["id"], []))
 
         # Effective vision / movement: base + every EffectUnit's extra (own +
         # trait-derived). SIEGE −1 vision is why a Battering Ram sees 3, not 4.

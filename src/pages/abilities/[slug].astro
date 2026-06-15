@@ -1,0 +1,118 @@
+---
+import Base from '../../layouts/Base.astro';
+import abilitiesData from '../../data/abilities.json';
+
+const base = import.meta.env.BASE_URL;
+
+export function getStaticPaths() {
+  const { abilities } = abilitiesData as any;
+  return abilities.map((a: any) => ({ params: { slug: a.slug }, props: { ability: a } }));
+}
+
+const { ability } = Astro.props as { ability: any };
+
+const abilityIcon = (icon: string | null) => icon ? `${base}img/icons/${icon}.png` : null;
+const unitArt = (slug: string) => `${base}img/icons/units/${slug}.png`;
+const crest = (nation: string) => `${base}img/crests/${nation.toLowerCase()}.png`;
+
+const uniqueUnits = ability.units.filter((u: any) => u.category === 'unique');
+const otherUnits = ability.units.filter((u: any) => u.category !== 'unique');
+const groups = [
+  { title: 'Unique units', units: uniqueUnits, href: `${base}unique-units` },
+  { title: 'Other units', units: otherUnits, href: `${base}units` },
+].filter(g => g.units.length);
+---
+
+<Base
+  title={ability.label}
+  active="unique-units"
+  pageMark="✦"
+  pageStats={[
+    { label: 'ability', value: ability.label },
+    { label: 'units', value: ability.units.length },
+  ]}
+>
+  <a class="crumb" href={`${base}unique-units`}>← Unique Units</a>
+
+  <div class="abil-hero">
+    {abilityIcon(ability.icon) && (
+      <img class="abil-hero__icon" src={abilityIcon(ability.icon)} alt="" onerror="this.style.display='none'" />
+    )}
+    <div>
+      <h1 class="abil-hero__name">{ability.label}</h1>
+      <p class="abil-hero__sub">Unit special ability</p>
+    </div>
+  </div>
+
+  <section class="abil-sec">
+    <h2 class="abil-sec__h">What it does</h2>
+    {ability.lines.length === 0 ? (
+      <p class="abil-empty">A passive trait with no separate combat modifier — see the units that carry it below.</p>
+    ) : (
+      <ul class="abil-effects">
+        {ability.lines.map((l: string) => <li class="abil-effect">{l}</li>)}
+      </ul>
+    )}
+    <p class="abil-src">Derived from the game's <code>effectUnit.xml</code> ({ability.id}).</p>
+  </section>
+
+  {groups.map(g => (
+    <section class="abil-sec">
+      <h2 class="abil-sec__h">{g.title} <span class="abil-sec__count">{g.units.length}</span></h2>
+      <ul class="abil-units">
+        {g.units.map((u: any) => (
+          <li>
+            <a class="abil-unit" href={g.href}>
+              <img class="abil-unit__art" src={unitArt(u.iconSlug)} alt="" loading="lazy" onerror="this.style.display='none'" />
+              <span class="abil-unit__name">{u.name}</span>
+              {u.nationLabel && (
+                <span class="abil-unit__nation">
+                  <img class="abil-unit__crest" src={crest(u.nationLabel)} alt="" onerror="this.style.display='none'" />
+                  {u.nationLabel}
+                </span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</Base>
+
+<style>
+  .crumb { display: inline-block; color: var(--text-dim); text-decoration: none; font-size: 0.82rem; margin-bottom: 1rem; }
+  .crumb:hover { color: var(--accent); }
+
+  .abil-hero { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-radius: 10px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, var(--bg-elev)), var(--bg-elev));
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border)); }
+  .abil-hero__icon { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
+  .abil-hero__name { font-family: var(--font-display); font-size: 1.6rem; margin: 0; color: var(--text); }
+  .abil-hero__sub { margin: 0.15rem 0 0; color: var(--text-faint); font-size: 0.8rem; letter-spacing: 0.04em; }
+
+  .abil-sec { margin-top: 1.6rem; }
+  .abil-sec__h { font-family: var(--font-display); font-size: 0.95rem; color: var(--text); margin: 0 0 0.6rem;
+    display: flex; align-items: center; gap: 0.5rem; }
+  .abil-sec__count { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint);
+    border: 1px solid var(--border); border-radius: 999px; padding: 0.05rem 0.5rem; }
+
+  .abil-effects { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+  .abil-effect { padding: 0.55rem 0.85rem; background: var(--bg-elev); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 6px; color: var(--text); }
+  .abil-empty { color: var(--text-faint); margin: 0; }
+  .abil-src { margin: 0.8rem 0 0; color: var(--text-faint); font-size: 0.75rem; }
+  .abil-src code { font-family: var(--font-mono); color: var(--text-dim); }
+
+  .abil-units { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+  .abil-unit { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.7rem;
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); text-decoration: none; transition: border-color 0.15s; }
+  .abil-unit:hover { border-color: var(--accent); }
+  .abil-unit__art { width: 34px; height: 34px; object-fit: contain; border-radius: 5px; background: rgba(0,0,0,0.25); flex-shrink: 0; }
+  .abil-unit__name { font-weight: 600; font-size: 0.88rem; }
+  .abil-unit__nation { margin-left: auto; display: inline-flex; align-items: center; gap: 0.3rem;
+    color: var(--text-dim); font-size: 0.78rem; }
+  .abil-unit__crest { width: 16px; height: 16px; object-fit: contain; }
+</style>
