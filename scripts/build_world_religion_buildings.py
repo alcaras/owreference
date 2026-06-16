@@ -75,6 +75,19 @@ def render_costs(entry: ET.Element) -> list[str]:
     return out
 
 
+def render_consumption(entry: ET.Element) -> list[str]:
+    """Per-turn upkeep (aiYieldConsumption is a RATE → /10). The game shows it
+    as 'Consumption: {yield}/turn' (TEXT_HELPTEXT_IMPROVEMENT_HELP_CONSUMPTION_YIELDS,
+    scaled by YIELDS_MULTIPLIER). Value is negative in XML; show the drain."""
+    out: list[str] = []
+    for pair in entry.findall("aiYieldConsumption/Pair"):
+        y = yield_name(pair.findtext("zIndex"))
+        v = abs(int(pair.findtext("iValue") or "0")) / 10
+        vs = f"{v:g}" if v != int(v) else f"{int(v)}"
+        out.append(f"{vs} {y}/turn")
+    return out
+
+
 # NOTE: iLegitimacy used to be rendered here as a local extra; it now comes
 # from the registry backstop inside render_effect_city — a local copy would
 # duplicate the line.
@@ -103,6 +116,18 @@ def main() -> int:
         rel = entry.findtext("ReligionPrereq") or ""
         if cls in {c[0] for c in CLASSES} and rel:
             imp_by_key[(cls, rel)] = entry
+
+    # Class → its own EffectCity. The game's getImprovementEffectCityList
+    # (HelpText.Improvement.cs) unions the improvement's EffectCity with the
+    # *class's* EffectCity — that's where the Cathedral's +40% Culture and the
+    # Holy Site's +20% Culture live (EFFECTCITY_IMPROVEMENTCLASS_*), not on the
+    # per-religion improvement. Without this they vanish from the page.
+    class_effect_city: dict[str, str] = {}
+    for entry in parse("improvementClass.xml").findall("Entry"):
+        zt = entry.findtext("zType") or ""
+        ec = entry.findtext("EffectCity") or ""
+        if zt and ec:
+            class_effect_city[zt] = ec
 
     wr = world_religions(XML_DIR)
 
@@ -133,12 +158,20 @@ def main() -> int:
 
             outputs = render_outputs(entry)
             costs = render_costs(entry)
+            consumption = render_consumption(entry)
 
-            # Effects from referenced EffectCity (Cathedrals) or
-            # EffectPlayer (Holy Sites).
+            # Effects from referenced EffectCity (per-improvement, e.g.
+            # Cathedral Legitimacy) plus the improvementClass EffectCity (the
+            # +40% Culture on Cathedrals, +20% on Holy Sites) — the game unions
+            # both. Dedupe by id in case a class points at the same effect.
             effects: list[str] = []
-            ec_id = entry.findtext("EffectCity") or ""
-            if ec_id:
+            ec_ids = [entry.findtext("EffectCity") or "",
+                      class_effect_city.get(cls_id, "")]
+            seen_ec: set[str] = set()
+            for ec_id in ec_ids:
+                if not ec_id or ec_id in seen_ec:
+                    continue
+                seen_ec.add(ec_id)
                 ec = indexes.get("effectCity.xml", {}).get(ec_id)
                 if ec is not None:
                     effects.extend(render_effect_city(ec, per_city=True, indexes=indexes))
@@ -160,6 +193,7 @@ def main() -> int:
                 "religion": rid.replace("RELIGION_", "").lower(),
                 "outputs": outputs,
                 "costs": costs,
+                "consumption": consumption,
                 "effects": effects,
                 "specialist": specialist_label,
                 "culturePrereq": culture_label,

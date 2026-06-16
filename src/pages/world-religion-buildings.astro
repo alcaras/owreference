@@ -114,6 +114,9 @@ function cellYield(cell: any): string {
                       {cell.costs.map(c => (
                         <span class="bld__cost"><LinkedText text={c} showIcons={false} iconsForYields={true} /></span>
                       ))}
+                      {(cell.consumption ?? []).map(c => (
+                        <span class="bld__consume" title="Per-turn consumption">−<LinkedText text={c} showIcons={false} iconsForYields={true} /></span>
+                      ))}
                       {cell.culturePrereq && (
                         <span class="bld__culture">{cell.culturePrereq} culture</span>
                       )}
@@ -190,4 +193,5 @@ function cellYield(cell: any): string {
     opacity: 0.85;
   }
   .bld__culture { font-style: italic; }
+  .bld__consume { opacity: 0.75; }
 </style>
