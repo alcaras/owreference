@@ -88,6 +88,9 @@ def opt_links(o: ET.Element | None) -> set[str]:
 def main() -> int:
     story = load_entries(STORY_FILES)
     opt = load_entries(OPT_FILES)
+    bonus = load_entries(("bonus.xml", "bonus-event.xml"))
+    subj = load_entries(("subject.xml",))
+    trait = load_entries(("trait.xml",))
     otext = m.load_text(*OPT_TEXT)
     ttext = m.load_text(*TITLE_TEXT)
 
@@ -143,6 +146,72 @@ def main() -> int:
                 for dst in by_prereq.get(L, []):
                     if dst != z:
                         edges.append((z, dst, lbl))
+
+    # ── Trait-token edges: the game also chains events through a granted trait,
+    # not just EventLink. An option grants TRAIT_X (via a bonus's aeAddTraits);
+    # later events gate on it through a subject whose only constraint is a
+    # TraitPrereq (e.g. The Monkey's Paw → SUBJECT_MONKEY_PAW_OWNER follow-ups).
+    # We only treat a trait as a chain token when it's granted by exactly ONE
+    # event — that single event is then the unique entry point, exactly like an
+    # EventLinkAdd. This excludes ambient personality traits (Imprisoned, Cruel,
+    # …) that dozens of unrelated events grant, which would merge everything into
+    # one blob. `_ARCHETYPE` traits (a single setup event grants them but they
+    # gate 75+ personality events) are excluded for the same reason.
+    subj_trait = {z: e.findtext("TraitPrereq") for z, e in subj.items()
+                  if (e.findtext("TraitPrereq") or "NONE") != "NONE"}
+
+    def bonus_traits(bz: str | None) -> set[str]:
+        b = bonus.get(bz or "")
+        if b is None:
+            return set()
+        return {v.text for v in b.findall("aeAddTraits/zValue") if v.text and v.text != "NONE"}
+
+    def grant_traits(el: ET.Element | None) -> set[str]:
+        """Traits an option/story grants directly or via its bonuses."""
+        if el is None:
+            return set()
+        s = {v.text for v in el.findall("aeAddTraits/zValue") if v.text and v.text != "NONE"}
+        for bz in el.findall("aeBonuses/zValue"):
+            s |= bonus_traits(bz.text)
+        return s
+
+    # trait → set of stories that gate on it (subject TraitPrereq)
+    trait_required: dict[str, set[str]] = defaultdict(set)
+    for z, s in story.items():
+        subs = [p.findtext("Second") for p in s.findall("SubjectExtras/Pair")]
+        subs += [v.text for v in s.findall("aeSubjects/zValue")]
+        for sub in subs:
+            tp = subj_trait.get(sub or "")
+            if tp:
+                trait_required[tp].add(z)
+
+    # trait → granting (story, option-label); collect to find single-grant tokens
+    trait_grants: dict[str, list[tuple[str, str | None]]] = defaultdict(list)
+    for z, s in story.items():
+        recs: list[tuple[ET.Element | None, str | None]] = []
+        for oz in s.findall("aeOptions/zValue"):
+            o = opt.get(oz.text or "")
+            lbl = m.clean_text(otext.get(o.findtext("Text") or "", "")) if o is not None else ""
+            recs.append((o, lbl or None))
+        for o in s.findall("EventOptions/EventOption"):
+            recs.append((o, m.clean_text(otext.get(o.findtext("Text") or "", "")) or None))
+        recs.append((s, None))  # story-level bonuses (no option label)
+        for el, lbl in recs:
+            for t in grant_traits(el):
+                trait_grants[t].append((z, lbl))
+
+    for t, grants in trait_grants.items():
+        if t.endswith("_ARCHETYPE"):
+            continue
+        srcs = {z for z, _ in grants}
+        if len(srcs) != 1:           # not a unique entry point → not a chain token
+            continue
+        if not trait_required.get(t):
+            continue
+        for z, lbl in grants:
+            for dst in trait_required[t]:
+                if dst != z:
+                    edges.append((z, dst, lbl))
 
     out_adj: dict[str, set[str]] = defaultdict(set)
     in_adj: dict[str, set[str]] = defaultdict(set)
