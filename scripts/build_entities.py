@@ -91,7 +91,10 @@ YIELD_ALIASES: dict[str, list[str]] = {
     # ("Mint Coin", "Mint Coinage") and would mis-iconize as the Money glyph.
     "money":        ["Money"],
     "growth":       ["Growth", "Settler", "Settlers"],
-    "food":         ["Food", "Harvest", "Farms", "Farm", "Pastures", "Pasture"],
+    # "Harvest" excluded — it's a mechanic word (e.g. "+50% Harvest"), not a
+    # Food synonym; aliasing it iconized the word as the Food glyph. Farm/Pasture
+    # are improvement entities (see IMPROVEMENT aliases below), not yields.
+    "food":         ["Food"],
     "wood":         ["Wood", "Lumber", "Chop", "Chopping", "Forests", "Forest"],
     "stone":        ["Stone", "Quarry", "Quarries"],
     "iron":         ["Iron", "Mines", "Mine"],
