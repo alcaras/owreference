@@ -434,6 +434,86 @@ def main() -> int:
             if ff:
                 ev["followsFrom"] = ff
 
+    # ── Chains via a granted trait (not EventLink) ───────────────────────────
+    # Some chains hand off through a trait rather than an EventLink: an option
+    # grants TRAIT_X (its bonus's aeAddTraits), and a later story casts a subject
+    # whose only gate is that trait (subject.xml TraitPrereq) — e.g. God's Consort
+    # → Cult of / Influence of God's Consort. Mirror build_event_chains.py: treat
+    # a trait as a chain token only when exactly ONE story grants it (a unique
+    # entry point, like an EventLinkAdd) and skip _ARCHETYPE traits (one setup
+    # event grants them, but they gate dozens of unrelated personality events).
+    subj_idx = m.index_many("subject.xml")
+    subj_trait = {z: e.findtext("TraitPrereq") for z, e in subj_idx.items()
+                  if (e.findtext("TraitPrereq") or "NONE") != "NONE"}
+
+    def granted_traits(el: ET.Element | None) -> set[str]:
+        """Traits an option/story grants directly (aeAddTraits) or via a bonus."""
+        if el is None:
+            return set()
+        ts = {v.text for v in el.findall("aeAddTraits/zValue") if v.text and v.text != "NONE"}
+        for bz in el.findall("aeBonuses/zValue"):
+            b = bonus_idx.get(bz.text or "")
+            if b is not None:
+                ts |= {v.text for v in b.findall("aeAddTraits/zValue")
+                       if v.text and v.text != "NONE"}
+        return ts
+
+    def story_opts(s: ET.Element) -> list[ET.Element]:
+        """Option elements in the SAME order/length as bev.options() emits:
+        resolvable aeOptions refs first, then inline EventOptions."""
+        opts: list[ET.Element] = []
+        for oz in s.findall("aeOptions/zValue"):
+            o = eopt_idx.get(oz.text or "")
+            if o is not None:
+                opts.append(o)
+        opts += list(s.findall("EventOptions/EventOption"))
+        return opts
+
+    trait_required: dict[str, set[str]] = {}  # trait → stories gating on it
+    for z, s in story_idx.items():
+        subs = [p.findtext("Second") for p in s.findall("SubjectExtras/Pair")]
+        subs += [v.text for v in s.findall("aeSubjects/zValue")]
+        for sub in subs:
+            tp = subj_trait.get(sub or "")
+            if tp:
+                trait_required.setdefault(tp, set()).add(z)
+
+    trait_src: dict[str, set[str]] = {}             # trait → granting stories
+    grant_at_opt: dict[str, list[tuple[str, int]]] = {}  # trait → [(story, opt index)]
+    for z, s in story_idx.items():
+        for t in granted_traits(s):                 # story-level (guaranteed) grant
+            trait_src.setdefault(t, set()).add(z)
+        for i, o in enumerate(story_opts(s)):
+            for t in granted_traits(o):
+                trait_src.setdefault(t, set()).add(z)
+                grant_at_opt.setdefault(t, []).append((z, i))
+
+    for t, srcs in trait_src.items():
+        dsts = trait_required.get(t)
+        if t.endswith("_ARCHETYPE") or len(srcs) != 1 or not dsts:
+            continue
+        src_story = next(iter(srcs))
+        for z, i in grant_at_opt.get(t, []):        # leadsTo on the granting option
+            ev = events_by_id.get(z)
+            if ev is None or i >= len(ev["options"]):
+                continue
+            lts = ev["options"][i].get("leadsTo") or []
+            for ref in refs(sorted(dsts), skip=z):
+                if all(x["id"] != ref["id"] for x in lts):
+                    lts.append(ref)
+            if lts:
+                ev["options"][i]["leadsTo"] = lts
+        for d in dsts:                              # followsFrom on the gated story
+            ev = events_by_id.get(d)
+            if ev is None:
+                continue
+            ff = ev.get("followsFrom") or []
+            for ref in refs([src_story], skip=d):
+                if all(x["id"] != ref["id"] for x in ff):
+                    ff.append(ref)
+            if ff:
+                ev["followsFrom"] = ff
+
     # ── Potential follow-ups via memories (canLeadTo) ───────────────────────
     # An option that grants a memory makes its holder eligible for any story
     # whose cast subjects require that memory (subject.xml MemoryPrereq) — an
