@@ -19,7 +19,7 @@ const matrixNations = [...nations]
 const matrixRows: {
   type: string; label: string; primaryYield: string;
   outputs: string[]; effects: string[];
-  byNation: Record<string, any>; count: number;
+  byNation: Record<string, any>; count: number; isDynasty: boolean;
 }[] = [];
 for (const g of groups) {
   const bySig = new Map<string, any[]>();
@@ -35,9 +35,33 @@ for (const g of groups) {
       type: g.type, label: g.label, primaryYield: g.primaryYield,
       outputs: list[0].outputs, effects: list[0].effects,
       byNation, count: list.length,
+      // Dynasty-locked variants (e.g. Greece's Serapis under the Ptolemy
+      // dynasty) aren't standard MP fare — drop them to the bottom.
+      isDynasty: list.every(s => !!s.dynastyPrereq),
     });
   }
 }
+// Stable sort: dynasty-only rows sink to the bottom, everything else keeps
+// its group order.
+matrixRows.sort((a, b) => (a.isDynasty ? 1 : 0) - (b.isDynasty ? 1 : 0));
+
+// ── Type reference key (the spreadsheet's "what each type gives" legend) ──
+// One card per shrine type, summarising its signature yields + adjacency,
+// drawn from the standard (non-dynasty) shrines of that type.
+const typeRef = groups.map(g => {
+  const std = g.shrines.filter(s => !s.dynastyPrereq);
+  const src = std.length ? std : g.shrines;
+  const outputs: string[] = [];
+  const effects: string[] = [];
+  for (const s of src) {
+    for (const o of s.outputs) if (!outputs.includes(o)) outputs.push(o);
+    for (const e of s.effects) if (!effects.includes(e)) effects.push(e);
+  }
+  return {
+    type: g.type, label: g.label, primaryYield: g.primaryYield,
+    outputs, effects, count: g.shrines.length,
+  };
+});
 
 // Mirrors `SHRINE_GLYPH` in nations.astro — keeps the type headlines visually
 // linked across pages.
@@ -47,13 +71,6 @@ const SHRINE_GLYPH: Record<string, string> = {
   HEARTH: '◔', HEALING: '✚', HUNTING: '⌬', UNDERWORLD: '⚱',
 };
 
-// Pre-compute a search blob per shrine for the header-search filter.
-const searchBlobs: Record<string, string> = {};
-for (const g of groups) {
-  for (const s of g.shrines) {
-    searchBlobs[s.id] = JSON.stringify(s).toLowerCase();
-  }
-}
 ---
 
 <Base
@@ -108,12 +125,13 @@ for (const g of groups) {
         </thead>
         <tbody>
           {matrixRows.map(row => (
-            <tr>
+            <tr class={row.isDynasty ? 'sm-row sm-row--dynasty' : 'sm-row'}>
               <th class={`rowlabel sm-type yield-${row.primaryYield}`} scope="row">
                 <a class="sm-type__link" href={`#type-${row.type.toLowerCase()}`}>
                   <img class="sm-type__icon" src={`${base}img/icons/shrines/${row.type.toLowerCase()}.png`} alt="" />
                   {row.label}
                 </a>
+                {row.isDynasty && <span class="sm-type__dyn">dynasty only</span>}
               </th>
               <td class={`cell yield-${row.primaryYield} sm-fx`}>
                 {[...row.outputs, ...row.effects].map(e => (
@@ -141,94 +159,54 @@ for (const g of groups) {
     </div>
   </div>
 
-  <div id="shrines-grid">
-    {groups.map(g => (
-      <section class="stype" id={`type-${g.type.toLowerCase()}`}>
-        <h2 class={`stype__title yield-${g.primaryYield}`}>
-          <img class="stype__icon" src={`${base}img/icons/shrines/${g.type.toLowerCase()}.png`} alt="" />
-          {g.label}
-          <span class="stype__count">{g.shrines.length} shrines</span>
-        </h2>
-        <div class="shrine-grid">
-          {g.shrines.map(s => (
-            <article
-              class={`shrine-card yield-${g.primaryYield}`}
-              id={s.slug}
-              data-shrine={s.id}
-            >
-              <img
-                class="shrine-card__art"
-                src={`${base}img/icons/shrines/${s.type.toLowerCase()}.png`}
-                alt={`${s.typeLabel} shrine`}
-                loading="lazy"
-              />
-              <header class="shrine-card__head">
-                <span class={`shrine__type shrine__type--${s.type.toLowerCase()}`}>
-                  {s.typeLabel}
-                </span>
-                <span class="shrine-card__deity">{s.deity}</span>
-              </header>
+  <h2 class="tref-head">Shrine type reference</h2>
+  <p class="tref-sub">
+    What every shrine of each type yields and the adjacencies it rewards.
+    All shrines cost <b>40 <LinkedText text="Stone" /></b>, take an
+    <b>Acolyte</b> specialist, and are unlimited under <LinkedText text="Polytheism" />.
+  </p>
 
-              <div class="shrine-card__nation">
-                <a href={`${base}nations#${s.nation.slug}`} class={`nation-tag n-${s.nation.slug}`}>
-                  <img src={`${base}img/crests/${s.nation.slug}.png`} class="nation-tag__crest" alt="" />
-                  <span class="nation-tag__name">{s.nation.name}</span>
-                </a>
-              </div>
-
-              {s.outputs.length > 0 && (
-                <ul class="shrine-card__outputs">
-                  {s.outputs.map(o => (
-                    <li><LinkedText text={o} showIcons={false} iconsForYields={true} /></li>
-                  ))}
-                </ul>
-              )}
-
-              {s.effects.length > 0 && (
-                <ul class="shrine-card__effects">
-                  {s.effects.map(e => (
-                    <li><LinkedText text={e} showIcons={false} iconsForYields={true} /></li>
-                  ))}
-                </ul>
-              )}
-
-              <footer class="shrine-card__foot">
-                {s.costs.map(c => (
-                  <span class="shrine-card__cost"><LinkedText text={c} showIcons={false} iconsForYields={true} /></span>
-                ))}
-                {s.specialist && (
-                  <span class="shrine-card__spec">→ {s.specialist}</span>
-                )}
-              </footer>
-            </article>
+  <div id="shrines-grid" class="tref-grid">
+    {typeRef.map(t => (
+      <article
+        class={`tref yield-${t.primaryYield}`}
+        id={`type-${t.type.toLowerCase()}`}
+        data-type={t.type.toLowerCase()}
+      >
+        <img
+          class="tref__art"
+          src={`${base}img/icons/shrines/${t.type.toLowerCase()}.png`}
+          alt={`${t.label} shrine`}
+          loading="lazy"
+        />
+        <div class="tref__name">
+          <span class="tref__type">{t.label}</span>
+          <span class="tref__count">{t.count} shrines</span>
+        </div>
+        <div class="tref__fx">
+          {t.outputs.map(o => (
+            <div class="tref__out"><LinkedText text={o} showIcons={false} iconsForYields={true} /></div>
+          ))}
+          {t.effects.map(e => (
+            <div class="tref__eff"><LinkedText text={e} showIcons={false} iconsForYields={true} /></div>
           ))}
         </div>
-      </section>
+      </article>
     ))}
   </div>
 
-  <script type="application/json" id="shrine-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
-    // Hide shrine cards that don't match the global search input.
+    // Filter the type-reference cards by the global search input.
     (function () {
       const input = document.getElementById('site-search');
-      const blobNode = document.getElementById('shrine-search-blobs');
       const grid = document.getElementById('shrines-grid');
-      if (!input || !blobNode || !grid) return;
-      let blobs;
-      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      if (!input || !grid) return;
+      const cards = Array.from(grid.querySelectorAll('.tref'));
       function apply() {
         const q = (input.value || '').trim().toLowerCase();
-        for (const id of Object.keys(blobs)) {
-          const match = !q || blobs[id].includes(q);
-          for (const el of grid.querySelectorAll('[data-shrine="' + id + '"]')) {
-            el.classList.toggle('is-hidden', !match);
-          }
-        }
-        // Hide section headers when all their shrines are hidden.
-        for (const sec of grid.querySelectorAll('.stype')) {
-          const visible = sec.querySelectorAll('.shrine-card:not(.is-hidden)').length;
-          sec.classList.toggle('is-hidden', visible === 0);
+        for (const card of cards) {
+          const match = !q || (card.textContent || '').toLowerCase().includes(q);
+          card.classList.toggle('is-hidden', !match);
         }
       }
       input.addEventListener('input', apply);
@@ -290,116 +268,91 @@ for (const g of groups) {
     font-size: 0.7em;
   }
 
-  .stype {
-    margin-top: 1.6rem;
-    scroll-margin-top: 4rem;
+  .sm-type__dyn {
+    display: block;
+    margin-top: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
   }
-  .stype__title {
+  .sm-row--dynasty .rowlabel,
+  .sm-row--dynasty .cell {
+    border-top: 2px solid color-mix(in srgb, var(--gold) 35%, transparent);
+  }
+  .sm-row--dynasty { opacity: 0.92; }
+
+  /* ── Type reference grid (signature yields per shrine type) ── */
+  .tref-head {
     font-family: var(--font-display);
-    font-size: 1rem;
-    letter-spacing: 0.05em;
-    margin: 0 0 0.6rem;
-    padding: 0.35rem 0.7rem;
-    border-radius: 4px;
-    background: var(--yield-bg, var(--bg-elev));
-    color: var(--yield-fg, var(--text));
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.22));
-    display: flex;
-    align-items: baseline;
+    font-size: 1.05rem;
+    margin: 1.8rem 0 0.2rem;
+  }
+  .tref-sub {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    max-width: 70ch;
+    margin: 0 0 0.9rem;
+  }
+  .tref-sub b { color: var(--text); }
+
+  .tref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
     gap: 0.5rem;
   }
-  .stype__icon {
-    width: 2.2em;
-    height: 1.5em;
-    object-fit: cover;
-    border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    vertical-align: -0.25em;
-  }
-  .stype__count {
-    margin-left: auto;
-    font-size: 0.7rem;
-    opacity: 0.7;
-    font-family: var(--font-ui);
-    font-weight: 400;
-    letter-spacing: 0;
-  }
-
-  .shrine-grid {
+  .tref {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 0.45rem;
-  }
-  .shrine-card {
+    grid-template-columns: 58px minmax(5.5rem, auto) 1fr;
+    align-items: stretch;
     background: var(--yield-bg, var(--bg-elev));
     color: var(--yield-fg, var(--text));
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.32));
+    background-image: linear-gradient(100deg, rgba(0,0,0,0.34), rgba(0,0,0,0.10) 38%, rgba(255,255,255,0.04));
     border: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
     border-radius: 6px;
-    padding: 0;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    scroll-margin-top: 4rem;
   }
-  .shrine-card > :not(.shrine-card__art) { padding-left: 0.65rem; padding-right: 0.65rem; }
-  .shrine-card > :first-child { padding-top: 0; }
-  .shrine-card > :last-child { padding-bottom: 0.55rem; }
-  .shrine-card__art {
-    width: 100%;
-    height: 110px;
+  .tref__art {
+    width: 58px;
+    height: 100%;
+    min-height: 64px;
     object-fit: cover;
     object-position: center 30%;
     display: block;
-    border-bottom: 1px solid color-mix(in srgb, var(--yield-bg, #000) 60%, #000 40%);
+    border-right: 1px solid color-mix(in srgb, var(--yield-bg, #000) 55%, #000 45%);
   }
-  .shrine-card__head {
+  .tref__name {
     display: flex;
     flex-direction: column;
-    margin-top: 0.45rem;
-    margin-bottom: 0.1rem;
-  }
-  .shrine-card__deity {
-    font-style: italic;
-    font-size: 0.72rem;
-    opacity: 0.78;
-    margin-top: 0.05rem;
-  }
-  .shrine-card__nation { margin-bottom: 0.1rem; }
-  .nation-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.1rem 0.45rem 0.1rem 0.25rem;
-    background: rgba(0,0,0,0.25);
-    color: inherit;
-    border-radius: 999px;
-    text-decoration: none;
-    font-size: 0.66rem;
-  }
-  .nation-tag__crest { width: 12px; height: 12px; object-fit: contain; }
-  .nation-tag:hover { text-decoration: none; filter: brightness(1.15); }
-
-  .shrine-card__outputs,
-  .shrine-card__effects {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
+    justify-content: center;
     gap: 0.1rem;
-    font-size: 0.74rem;
-    line-height: 1.3;
+    padding: 0.4rem 0.55rem;
+    border-right: 1px solid color-mix(in srgb, currentColor 14%, transparent);
   }
-  .shrine-card__effects { font-size: 0.7rem; opacity: 0.92; }
-  .shrine-card__foot {
+  .tref__type {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.92rem;
+    line-height: 1.1;
+  }
+  .tref__count {
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.03em;
+    opacity: 0.65;
+  }
+  .tref__fx {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.2rem 0.5rem;
-    margin-top: auto;
-    padding-top: 0.25rem;
-    border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
-    font-size: 0.62rem;
-    opacity: 0.82;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.12rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.76rem;
+    line-height: 1.32;
   }
-  .shrine-card__spec { font-style: italic; }
+  .tref__out { font-weight: 600; }
+  .tref__eff { opacity: 0.9; font-size: 0.72rem; }
 </style>
