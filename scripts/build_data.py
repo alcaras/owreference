@@ -285,6 +285,40 @@ def match_yaml_shrines(yaml_shrines: list[str], xml_shrines: list[dict]) -> list
     return pairs
 
 
+def _family_yield_boost(effectcity_entry: ET.Element, indexes: dict | None):
+    """For an improvement EffectCity that fans out to per-family-class sub-
+    effects (Aksum's Stele), return (pct, [{classId, class, classKey, yields}]).
+
+    The Stele's real payload is conditional: a seated family of class X gives a
+    `pct`% modifier to a class-specific yield (Champions→Training, Patrons→
+    Civics, Clerics→Science, Traders→Money …). `pct` is uniform across classes
+    within one tier (10 / 25 / 50 across the three Stele levels)."""
+    ec_index = (indexes or {}).get("effectCity.xml", {})
+    classes: list[dict] = []
+    pct = 0
+    for pair in effectcity_entry.findall("aeEffectCityEffectCity/Pair"):
+        zi = pair.findtext("zIndex") or ""
+        if not zi.startswith("EFFECTCITY_FAMILYCLASS_"):
+            continue
+        cls = zi[len("EFFECTCITY_FAMILYCLASS_"):]
+        sub = ec_index.get(pair.findtext("zValue") or "")
+        if sub is None:
+            continue
+        yields: list[str] = []
+        for ym in sub.findall("aiYieldModifier/Pair"):
+            yk = ym.findtext("zIndex") or ""
+            v = int(ym.findtext("iValue") or "0")
+            if yk.startswith("YIELD_"):
+                yields.append(yk[6:].lower())
+                pct = v
+        if yields:
+            classes.append({
+                "classId": cls, "class": cls.title(),
+                "classKey": cls.lower(), "yields": yields,
+            })
+    return pct, classes
+
+
 def load_unique_improvements(indexes: dict | None = None) -> dict[str, list[dict]]:
     """Return {nation_id: [improvement_group, ...]} for nation-unique buildable
     improvements that AREN'T shrines (those have their own section). Today this
@@ -336,12 +370,20 @@ def load_unique_improvements(indexes: dict | None = None) -> dict[str, list[dict
         culture = _CULTURE_LABEL.get(entry.findtext("CulturePrereq") or "", "")
         build_turns = int(entry.findtext("iBuildTurns") or "0")
 
+        # Conditional per-family-class yield boost (Stele): pct scales by tier,
+        # the class→yield mapping is constant.
+        fam_pct, fam_classes = 0, []
+        ec = (indexes or {}).get("effectCity.xml", {}).get(entry.findtext("EffectCity") or "")
+        if ec is not None:
+            fam_pct, fam_classes = _family_yield_boost(ec, indexes)
+
         nat_groups = groups.setdefault(nation, {})
         g = nat_groups.setdefault(base, {"_levels": []})
         g["_levels"].append({
             "level": level_no, "label": name, "icon": icon,
             "outputs": outputs, "effects": effects,
             "cost": cost, "buildTurns": build_turns, "culture": culture,
+            "familyBoostPct": fam_pct, "_familyClasses": fam_classes,
         })
 
     out: dict[str, list[dict]] = {}
@@ -350,12 +392,23 @@ def load_unique_improvements(indexes: dict | None = None) -> dict[str, list[dict
         for g in nat_groups.values():
             levels = sorted(g.pop("_levels"), key=lambda x: x["level"])
             base_label = levels[0]["label"]  # lowest tier names the group
-            glist.append({
+            # Lift the (constant) family→yield mapping to the group; keep the
+            # per-tier pct on each level. Drop the temp mapping off the levels.
+            fam_classes = next((lv["_familyClasses"] for lv in levels if lv["_familyClasses"]), [])
+            for lv in levels:
+                lv.pop("_familyClasses", None)
+            group = {
                 "name": base_label,
                 "slug": base_label.lower().replace(" ", "-"),
                 "icon": levels[-1]["icon"],  # richest tier as the group glyph
                 "levels": levels,
-            })
+            }
+            if fam_classes:
+                group["familyBoost"] = {
+                    "pcts": [lv["familyBoostPct"] for lv in levels],
+                    "classes": fam_classes,
+                }
+            glist.append(group)
         glist.sort(key=lambda x: x["name"])
         out[nation] = glist
     return out
