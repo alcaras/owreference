@@ -285,6 +285,82 @@ def match_yaml_shrines(yaml_shrines: list[str], xml_shrines: list[dict]) -> list
     return pairs
 
 
+def load_unique_improvements(indexes: dict | None = None) -> dict[str, list[dict]]:
+    """Return {nation_id: [improvement_group, ...]} for nation-unique buildable
+    improvements that AREN'T shrines (those have their own section). Today this
+    is Aksum's Stele (3 culture-gated levels) and Kush's Pyramids. Leveled
+    improvements (Stele I/II/III) fold into one group with a `levels` list so
+    the page can show the scaling; single improvements get one level.
+
+    Effects reuse the same XML walks as shrines (`_shrine_effect_lines`), minus
+    the noisy per-family-class application lines the engine emits for opinion
+    grants."""
+    imp_index = (indexes or {}).get("improvement.xml", {})
+    text_improvement = load_text("text-improvement.xml")
+    groups: dict[str, dict[str, dict]] = {}  # nation -> baseName -> group
+    for zt, entry in imp_index.items():
+        nation = entry.findtext("NationPrereq") or ""
+        if not nation.startswith("NATION_"):
+            continue
+        cls = entry.findtext("Class") or ""
+        if "SHRINE" in cls or entry.findtext("bBuild") != "1":
+            continue
+
+        full = text_improvement.get(entry.findtext("Name") or "", zt)
+        name = first_form(full)
+        # Group leveled improvements by their zType base — the display names
+        # differ per tier (Stele / Grand Stele / Legendary Stele), so we can't
+        # group on the name. IMPROVEMENT_AKSUM_STELE_2 → base IMPROVEMENT_AKSUM_STELE.
+        zm = re.search(r"_(\d+)$", zt)
+        level_no = int(zm.group(1)) if zm else 0
+        base = re.sub(r"_\d+$", "", zt)
+
+        outputs: list[str] = []
+        for pair in entry.findall("aiYieldOutput/Pair"):
+            yk = pair.findtext("zIndex") or ""
+            if yk.startswith("YIELD_"):
+                v = int(pair.findtext("iValue") or "0") / 10
+                outputs.append(f"{fmt_decimal(v)} {yield_name(yk)}")
+        effects = [l for l in _shrine_effect_lines(entry, indexes)
+                   if not l.startswith("Familyclass")]
+
+        cost_parts = []
+        for pair in entry.findall("aiYieldCost/Pair"):
+            yk = pair.findtext("zIndex") or ""
+            if yk.startswith("YIELD_"):
+                cost_parts.append(f"{pair.findtext('iValue')} {yield_name(yk)}")
+        cost = ", ".join(cost_parts)
+
+        icon_name = (entry.findtext("zIconName") or zt)
+        icon = f"img/icons/improvements/{icon_name.replace('IMPROVEMENT_', '').lower()}.png"
+        culture = _CULTURE_LABEL.get(entry.findtext("CulturePrereq") or "", "")
+        build_turns = int(entry.findtext("iBuildTurns") or "0")
+
+        nat_groups = groups.setdefault(nation, {})
+        g = nat_groups.setdefault(base, {"_levels": []})
+        g["_levels"].append({
+            "level": level_no, "label": name, "icon": icon,
+            "outputs": outputs, "effects": effects,
+            "cost": cost, "buildTurns": build_turns, "culture": culture,
+        })
+
+    out: dict[str, list[dict]] = {}
+    for nation, nat_groups in groups.items():
+        glist = []
+        for g in nat_groups.values():
+            levels = sorted(g.pop("_levels"), key=lambda x: x["level"])
+            base_label = levels[0]["label"]  # lowest tier names the group
+            glist.append({
+                "name": base_label,
+                "slug": base_label.lower().replace(" ", "-"),
+                "icon": levels[-1]["icon"],  # richest tier as the group glyph
+                "levels": levels,
+            })
+        glist.sort(key=lambda x: x["name"])
+        out[nation] = glist
+    return out
+
+
 _ROMAN = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"}
 
 def _format_id_name(zt: str, prefix: str) -> str:
@@ -983,6 +1059,7 @@ def load_nations() -> list[dict]:
     colors = load_colors()
     xml_indexes = load_xml_indexes(XML_DIR)
     shrines_by_nation = load_shrines(xml_indexes)
+    unique_improvements = load_unique_improvements(xml_indexes)
     characters = load_characters(xml_indexes)
     portrait_map = load_portrait_map()
     unit_traits = load_unit_traits()
@@ -1163,6 +1240,7 @@ def load_nations() -> list[dict]:
             "families": fams,
             "shrineXml": nation_shrines,
             "shrines": shrine_pairs,
+            "uniqueImprovements": unique_improvements.get(zt, []),
             "uniqueUnit": unique_units.get(zt, {}),
             "leader": royal_courts.get(zt, {}),
             "effectsXml": effects_xml,

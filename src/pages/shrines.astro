@@ -8,6 +8,13 @@ const base = import.meta.env.BASE_URL;
 
 const { groups } = data;
 
+// War, Fire and Hunting are the "military" shrines — colour them all red
+// (training) regardless of their literal signature yield (Fire→iron, Hunting→
+// food), so the tier reads as a thematic group.
+const SHRINE_COLOR_OVERRIDE: Record<string, string> = { FIRE: 'training', HUNTING: 'training' };
+const shrineColor = (type: string, primaryYield: string) =>
+  SHRINE_COLOR_OVERRIDE[type] || primaryYield;
+
 // ── Type × nation matrix (the spreadsheet's signature view) ──
 // One row per (type, effect signature): a type whose shrines differ in
 // output splits into separate rows — e.g. the two Wisdom variants
@@ -46,22 +53,43 @@ for (const g of groups) {
 matrixRows.sort((a, b) => (a.isDynasty ? 1 : 0) - (b.isDynasty ? 1 : 0));
 
 // ── Type reference key (the spreadsheet's "what each type gives" legend) ──
-// One card per shrine type, summarising its signature yields + adjacency,
-// drawn from the standard (non-dynasty) shrines of that type.
-const typeRef = groups.map(g => {
-  const std = g.shrines.filter(s => !s.dynastyPrereq);
+// One card per *signature* of each type, drawn from the standard (non-dynasty)
+// shrines. Most types collapse to a single card; a type whose shrines genuinely
+// differ (Wisdom — adjacent Odeon vs adjacent Courthouse) splits into one card
+// per variant, distinguished by its adjacency target.
+type RefCard = {
+  type: string; label: string; primaryYield: string; colorYield: string;
+  outputs: string[]; effects: string[]; count: number;
+  variant: string; anchorId: string;
+};
+const typeRef: RefCard[] = [];
+for (const g of groups) {
+  const std = g.shrines.filter((s: any) => !s.dynastyPrereq);
   const src = std.length ? std : g.shrines;
-  const outputs: string[] = [];
-  const effects: string[] = [];
+  // Distinct signatures, preserving first-seen order.
+  const bySig = new Map<string, any[]>();
   for (const s of src) {
-    for (const o of s.outputs) if (!outputs.includes(o)) outputs.push(o);
-    for (const e of s.effects) if (!effects.includes(e)) effects.push(e);
+    const sig = [...s.outputs, ...s.effects].join('|');
+    if (!bySig.has(sig)) bySig.set(sig, []);
+    bySig.get(sig)!.push(s);
   }
-  return {
-    type: g.type, label: g.label, primaryYield: g.primaryYield,
-    outputs, effects, count: g.shrines.length,
-  };
-});
+  const sigLists = [...bySig.values()];
+  const multi = sigLists.length > 1;
+  const lc = g.type.toLowerCase();
+  sigLists.forEach((list, i) => {
+    const s = list[0];
+    // Variant tag = the differing adjacency target (Odeon / Courthouse).
+    const m = [...s.outputs, ...s.effects].join(' ').match(/adjacent (\w+)/);
+    const variant = multi ? (m ? m[1] : `${i + 1}`) : '';
+    typeRef.push({
+      type: g.type, label: g.label, primaryYield: g.primaryYield,
+      colorYield: shrineColor(g.type, g.primaryYield),
+      outputs: s.outputs, effects: s.effects, count: list.length,
+      variant,
+      anchorId: i === 0 ? `type-${lc}` : `type-${lc}-${(variant || i).toString().toLowerCase()}`,
+    });
+  });
+}
 
 // Mirrors `SHRINE_GLYPH` in nations.astro — keeps the type headlines visually
 // linked across pages.
@@ -93,7 +121,7 @@ const SHRINE_GLYPH: Record<string, string> = {
   <div class="legend legend--types">
     <span class="legend__label">Shrine types</span>
     {groups.map(g => (
-      <a class={`chip yield-${g.primaryYield}`} href={`#type-${g.type.toLowerCase()}`}>
+      <a class={`chip yield-${shrineColor(g.type, g.primaryYield)}`} href={`#type-${g.type.toLowerCase()}`}>
         <img class="chip__icon" src={`${base}img/icons/shrines/${g.type.toLowerCase()}.png`} alt="" />
         {g.label}
         <span class="chip__count">{g.shrines.length}</span>
@@ -126,14 +154,14 @@ const SHRINE_GLYPH: Record<string, string> = {
         <tbody>
           {matrixRows.map(row => (
             <tr class={row.isDynasty ? 'sm-row sm-row--dynasty' : 'sm-row'}>
-              <th class={`rowlabel sm-type yield-${row.primaryYield}`} scope="row">
+              <th class={`rowlabel sm-type yield-${shrineColor(row.type, row.primaryYield)}`} scope="row">
                 <a class="sm-type__link" href={`#type-${row.type.toLowerCase()}`}>
                   <img class="sm-type__icon" src={`${base}img/icons/shrines/${row.type.toLowerCase()}.png`} alt="" />
                   {row.label}
                 </a>
                 {row.isDynasty && <span class="sm-type__dyn">dynasty only</span>}
               </th>
-              <td class={`cell yield-${row.primaryYield} sm-fx`}>
+              <td class={`cell yield-${shrineColor(row.type, row.primaryYield)} sm-fx`}>
                 {[...row.outputs, ...row.effects].map(e => (
                   <div class="sm-fx__line"><LinkedText text={e} showIcons={false} iconsForYields={true} /></div>
                 ))}
@@ -169,8 +197,8 @@ const SHRINE_GLYPH: Record<string, string> = {
   <div id="shrines-grid" class="tref-grid">
     {typeRef.map(t => (
       <article
-        class={`tref yield-${t.primaryYield}`}
-        id={`type-${t.type.toLowerCase()}`}
+        class={`tref yield-${t.colorYield}`}
+        id={t.anchorId}
         data-type={t.type.toLowerCase()}
       >
         <img
@@ -180,7 +208,7 @@ const SHRINE_GLYPH: Record<string, string> = {
           loading="lazy"
         />
         <div class="tref__name">
-          <span class="tref__type">{t.label}</span>
+          <span class="tref__type">{t.label}{t.variant && <span class="tref__variant">{t.variant}</span>}</span>
           <span class="tref__count">{t.count} shrines</span>
         </div>
         <div class="tref__fx">
@@ -337,6 +365,15 @@ const SHRINE_GLYPH: Record<string, string> = {
     font-weight: 600;
     font-size: 0.92rem;
     line-height: 1.1;
+  }
+  .tref__variant {
+    display: block;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.62rem;
+    font-style: italic;
+    color: var(--text-faint);
+    margin-top: 0.05rem;
   }
   .tref__count {
     font-family: var(--font-mono);

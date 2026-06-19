@@ -3,7 +3,12 @@ import Base from '../../layouts/Base.astro';
 import LinkedText from '../../components/LinkedText.astro';
 import nations from '../../data/nations.json';
 import familyClasses from '../../data/families.json';
+import allUnits from '../../data/units.json';
+import allProjects from '../../data/projects.json';
 import { classifyYield } from '../../lib/entities';
+import { existsSync } from 'node:fs';
+
+const base = import.meta.env.BASE_URL;
 
 // classKey (slug) → "Commander ×10 · Hero ×5" from the class's archetype die
 const tendenciesByClass: Record<string, string> = {};
@@ -16,18 +21,19 @@ for (const fc of familyClasses as any[]) {
   if (parts.length) tendenciesByClass[fc.slug] = parts.join(' · ');
 }
 
-const base = import.meta.env.BASE_URL;
-
 export function getStaticPaths() {
   return nations.map(n => ({ params: { slug: n.slug }, props: { n } }));
 }
 
 const { n } = Astro.props;
 
+// Colour key per shrine type. War/Fire/Hunting are the "military" shrines and
+// all read red (training), matching the Shrines page tier — even though Fire's
+// and Hunting's literal signature yields are iron/food.
 const SHRINE_TYPE_YIELD: Record<string, string> = {
   WAR: 'training', KINGSHIP: 'civics', WISDOM: 'science', SUN: 'orders',
   WATER: 'money', LOVE: 'growth', UNDERWORLD: 'culture', HEARTH: 'culture',
-  FIRE: 'iron', HEALING: 'growth', HUNTING: 'food',
+  FIRE: 'training', HEALING: 'growth', HUNTING: 'training',
 };
 
 function bonusSource(): string[] {
@@ -37,7 +43,6 @@ function bonusSource(): string[] {
 }
 const bonuses = bonusSource();
 const shrines = (n as any).shrines || [];
-const uniqueUnit = (n as any).uniqueUnit || {};
 const families = (n as any).families || [];
 const dynasties = (n as any).dynastyDetails || [];
 const startingTech: string[] = (n as any).startingTech || [];
@@ -45,14 +50,119 @@ const startingLaw: string[] = (n as any).startingLaw || [];
 const cityNames: string[] = (n as any).cityNames || [];
 const startUnits = (n as any).startUnits || [];
 const cityUnits = (n as any).cityUnits || [];
-const firstBuild = (n as any).firstBuild;
 const titles = (n as any).titles || {};
+const uniqueImprovements = (n as any).uniqueImprovements || [];
+
+// ── Unique units: full stat cards (joined from units.json by NationPrereq) ──
+const traitIcon = (key: string) => `${base}img/icons/unit_traits/${key}.png`;
+const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
+const eraIcon = (era: string) => `${base}img/icons/culture/${era.toLowerCase()}.png`;
+// Some unique units ship no portrait art (Hittite chariots, Kush archers …) —
+// gate on the file so check_links stays clean and the card just drops the image.
+const unitArt = (slug: string): string | null =>
+  existsSync(`public/img/icons/units/${slug}.png`) ? `${base}img/icons/units/${slug}.png` : null;
+
+// Same hidden-trait set as unique-units.astro: combat classes (shown elsewhere)
+// + mount sub-types (internal counter math, not player-facing labels).
+const HIDE_TRAITS = new Set([
+  'UNITTRAIT_PROMOTABLE', 'UNITTRAIT_MELEE', 'UNITTRAIT_INFANTRY', 'UNITTRAIT_POLEARM',
+  'UNITTRAIT_MOUNTED', 'UNITTRAIT_RANGED', 'UNITTRAIT_SIEGE', 'UNITTRAIT_SHIP',
+  'UNITTRAIT_TRIBAL', 'UNITTRAIT_DISCIPLE', 'UNITTRAIT_WORKER',
+  'UNITTRAIT_HORSE', 'UNITTRAIT_CAMEL', 'UNITTRAIT_ELEPHANT', 'UNITTRAIT_CHARIOT',
+]);
+const secondaryTraits = (u: any): string[] =>
+  (u.traitIds as string[])
+    .filter(t => t !== u.primaryTrait && !HIDE_TRAITS.has(t))
+    .map(t => t.replace('UNITTRAIT_', '').replace(/_/g, ' ').toLowerCase()
+      .replace(/\b\w/g, c => c.toUpperCase()));
+
+const CULTURE_TIERS = new Set(['Weak', 'Developing', 'Strong', 'Legendary']);
+const tierLabel = (t: string) => t === 'Initial' ? 'From start' : CULTURE_TIERS.has(t) ? `${t} Culture` : t;
+const tierIcon = (t: string): string | undefined => CULTURE_TIERS.has(t) ? eraIcon(t) : undefined;
+// Unlock for a unit: Culture tier, or a building gate (Aksum's D'mt Warrior
+// has no culture prereq but needs a Stronghold).
+function unitUnlock(u: any): { label: string; icon?: string } {
+  const c = (u.culturePrereq || '').replace('CULTURE_', '');
+  const tier = c ? c[0] + c.slice(1).toLowerCase() : '';
+  if (tier && CULTURE_TIERS.has(tier)) return { label: tierLabel(tier), icon: tierIcon(tier) };
+  if (u.improvementPrereqLabel) return { label: u.improvementPrereqLabel };
+  return { label: 'From start' };
+}
+
+// Build base→upgrade lines for this nation's unique units (e.g. D'mt Warrior →
+// Shotelai), folding differing values with a slash, same as unique-units.astro.
+const myUnits = (allUnits as any[]).filter(u => u.nationPrereq === (n as any).id);
+const byId = new Map(myUnits.map(u => [u.id, u]));
+const upgradeTargets = new Set<string>();
+for (const u of myUnits) for (const t of (u.upgradeTo as string[])) if (byId.has(t)) upgradeTargets.add(t);
+type ULine = { chain: any[]; base: any };
+const unitLines: ULine[] = [];
+for (const u of myUnits) {
+  if (upgradeTargets.has(u.id)) continue;
+  const chain = [u]; let cur = u;
+  for (let g = 0; g < 4; g++) {
+    const nxt = (cur.upgradeTo as string[]).map(t => byId.get(t)).find(Boolean);
+    if (!nxt) break;
+    chain.push(nxt); cur = nxt;
+  }
+  unitLines.push({ chain, base: u });
+}
+unitLines.sort((a, b) => a.base.eraOrder - b.base.eraOrder || a.base.name.localeCompare(b.base.name));
+
+const collapse = (vals: any[]) => {
+  const out: any[] = [];
+  for (const v of vals) if (!out.length || out[out.length - 1] !== v) out.push(v);
+  return out;
+};
+const foldNums = (vals: (number | string)[], sep = ' / ') => collapse(vals).join(sep);
+function foldYields(chain: any[], field: 'costs' | 'consumption') {
+  const keys: string[] = [];
+  for (const u of chain) for (const c of u[field]) if (!keys.includes(c.yield)) keys.push(c.yield);
+  return keys.map(k => ({
+    yield: k,
+    text: foldNums(chain.map(u => { const c = u[field].find((x: any) => x.yield === k); return c ? c.value : 0; }), '/'),
+  }));
+}
+const lineTraits = (chain: any[]) => [...new Set(chain.flatMap(u => secondaryTraits(u)))];
+function lineAbilities(chain: any[]) {
+  const seen = new Set<string>(); const out: any[] = [];
+  for (const u of chain) for (const a of u.abilities) if (!seen.has(a.label)) { seen.add(a.label); out.push(a); }
+  return out;
+}
+
+// ── Unique projects: leveling chains gated to this nation (Aksum's Mint Coin) ──
+const ROMAN: Record<string, number> = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6 };
+function projNation(src: string): string | null {
+  const m = /\(([^)]+)\)/.exec(src || '');
+  return m ? m[1] : null;
+}
+const projGroups = new Map<string, { name: string; icon: string; levels: any[] }>();
+for (const p of allProjects as any[]) {
+  if (p.eventOnly) continue;
+  if (projNation(p.source) !== (n as any).name) continue;
+  const m = /^(.*?)\s+([IVX]+)$/.exec(p.name);
+  const baseName = m ? m[1] : p.name;
+  const lvl = m ? (ROMAN[m[2]] || 0) : 0;
+  const culture = (p.prereqs || []).map((x: any) => x.label).find((l: string) => /Culture$/.test(l)) || '';
+  const g = projGroups.get(baseName) || { name: baseName, icon: p.icon, levels: [] };
+  g.levels.push({
+    label: p.name, level: lvl, culture,
+    effects: p.effects || [],
+    cost: (p.cost || []).map((c: any) => ({ yield: c.yield, value: c.value })),
+  });
+  projGroups.set(baseName, g);
+}
+const uniqueProjects = [...projGroups.values()].map(g => ({
+  ...g, levels: g.levels.sort((a, b) => a.level - b.level),
+}));
+
+const hasKit = uniqueImprovements.length > 0 || uniqueProjects.length > 0;
 ---
 
 <Base
   title={n.name}
   active="nations"
-  description={`Old World reference: ${n.name} — bonuses, shrines, unique units, families, dynasties, starting techs, and royal lineup, pulled XML-canonical from the game's files.`}
+  description={`Old World reference: ${n.name} — its kit at a glance: bonuses, unique units (full stats), unique improvements & projects, shrines, families and starting techs, plus dynasties and royal lineup — all XML-canonical from the game's files.`}
 >
   <a class="back-link" href={`${base}nations`}>← All nations</a>
 
@@ -81,6 +191,212 @@ const titles = (n as any).titles || {};
             </li>
           );
         })}
+      </ul>
+    </section>
+
+    {hasKit && (
+      <section class="np-sec np-sec--kit">
+        <h2 class="np-sec__title">Unique Improvements &amp; Projects</h2>
+        <div class="kit-grid">
+          {uniqueProjects.map((g: any) => (
+            <article class="kit yield-money">
+              <header class="kit__head">
+                <img class="kit__icon" src={`${base}${g.icon}`} alt="" onerror="this.style.display='none'" />
+                <span class="kit__name">{g.name}</span>
+                <span class="kit__kind">Project</span>
+              </header>
+              <div class="kit__levels">
+                {g.levels.map((lv: any) => (
+                  <div class="kit-lv">
+                    <span class="kit-lv__gate">{(lv.culture || 'Start').replace(/ Culture$/, '')}</span>
+                    <span class="kit-lv__fx">
+                      {lv.effects.map((e: string) => (
+                        <span class="kit-lv__line"><LinkedText text={e} showIcons={false} iconsForYields={true} /></span>
+                      ))}
+                    </span>
+                    <span class="kit-lv__cost">
+                      {lv.cost.map((c: any) => (
+                        <span class="kit-cost"><img src={yieldIcon(c.yield)} alt="" onerror="this.style.display='none'" />{c.value}</span>
+                      ))}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))}
+          {uniqueImprovements.map((g: any) => (
+            <article class="kit yield-civics">
+              <header class="kit__head">
+                <img class="kit__icon" src={`${base}${g.icon}`} alt="" onerror="this.style.display='none'" />
+                <span class="kit__name">{g.name}</span>
+                <span class="kit__kind">Improvement</span>
+              </header>
+              <div class="kit__levels">
+                {g.levels.map((lv: any) => (
+                  <div class="kit-lv">
+                    <span class="kit-lv__gate">{(lv.culture || 'Start')}</span>
+                    <span class="kit-lv__fx">
+                      {[...lv.outputs, ...lv.effects].map((e: string) => (
+                        <span class="kit-lv__line"><LinkedText text={e} showIcons={false} iconsForYields={true} /></span>
+                      ))}
+                    </span>
+                    <span class="kit-lv__cost">
+                      <span class="kit-cost"><LinkedText text={lv.cost} showIcons={false} iconsForYields={true} /></span>
+                      <span class="kit-lv__turns">{lv.buildTurns}t</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="np-sec np-sec--uu">
+      <h2 class="np-sec__title">Unique Units <span class="np-count">{unitLines.length}</span></h2>
+      <div class="uu-grid">
+        {unitLines.map(({ chain, base: bu }) => {
+          const unlock = unitUnlock(bu);
+          const traits = lineTraits(chain);
+          const abilities = lineAbilities(chain);
+          const costs = foldYields(chain, 'costs');
+          const upkeep = foldYields(chain, 'consumption');
+          const prod = foldNums(chain.map(u => u.production), '/');
+          const str = foldNums(chain.map(u => u.strength / 10), '/');
+          const hp = foldNums(chain.map(u => u.hp), '/');
+          const move = foldNums(chain.map(u => u.movement), '/');
+          const vis = foldNums(chain.map(u => u.vision), '/');
+          const range = bu.rangeMax > 0 ? foldNums(chain.map(u => `${u.rangeMin}-${u.rangeMax}`), '/') : '';
+          return (
+            <article class="uu">
+              <div class="uu__top">
+                {unitArt(bu.slug)
+                  ? <img class="uu__art" src={unitArt(bu.slug)} alt="" loading="lazy" />
+                  : <div class="uu__art uu__art--none" aria-hidden="true">{bu.primaryLabel?.[0] || '⚔'}</div>}
+                <div class="uu__id">
+                  <div class="uu__names">
+                    {chain.map((u, i) => (
+                      <>
+                        {i > 0 && <span class="uu__arrow">→</span>}
+                        <a class="uu__name" href={`${base}unique-units`}>{u.name}</a>
+                      </>
+                    ))}
+                  </div>
+                  <div class="uu__class">
+                    <img src={traitIcon((bu.primaryTrait || '').replace('UNITTRAIT_', '').toLowerCase())} alt="" onerror="this.style.display='none'" />
+                    {bu.primaryLabel}
+                    {traits.map(t => <span class="uu__trait">{t}</span>)}
+                  </div>
+                  <div class="uu__unlock">
+                    {unlock.icon && <img src={unlock.icon} alt="" onerror="this.style.display='none'" />}
+                    {unlock.label}
+                  </div>
+                </div>
+              </div>
+
+              <div class="uu__stats">
+                <span class="uu-stat" title="Strength"><b>STR</b>{str}</span>
+                <span class="uu-stat" title="Hit points"><b>HP</b>{hp}</span>
+                <span class="uu-stat" title="Movement"><b>MOVE</b>{move}</span>
+                <span class="uu-stat" title="Vision (tiles)"><b>SIGHT</b>{vis}</span>
+                {range && <span class="uu-stat" title="Attack range"><b>RANGE</b>{range}</span>}
+              </div>
+
+              <dl class="uu__econ">
+                <dt>Cost</dt>
+                <dd>
+                  <span class="uu-y"><img src={yieldIcon('training')} alt="" />{prod}</span>
+                  {costs.map((c: any) => (
+                    <span class="uu-y"><img src={yieldIcon(c.yield)} alt="" onerror="this.style.display='none'" />{c.text}</span>
+                  ))}
+                </dd>
+                {upkeep.length > 0 && (
+                  <>
+                    <dt>Upkeep</dt>
+                    <dd>
+                      {upkeep.map((c: any) => (
+                        <span class="uu-y uu-y--neg"><img src={yieldIcon(c.yield)} alt="" onerror="this.style.display='none'" />−{c.text}</span>
+                      ))}
+                    </dd>
+                  </>
+                )}
+              </dl>
+
+              {abilities.length > 0 && (
+                <ul class="uu__abils">
+                  {abilities.map((a: any) => (
+                    <li class="uu-abil">
+                      <span class="uu-abil__name">
+                        {a.icon && <img src={`${base}img/icons/${a.icon}.png`} alt="" onerror="this.style.display='none'" />}
+                        {a.label}
+                      </span>
+                      {a.lines && a.lines.length > 0 && (
+                        <span class="uu-abil__fx">{a.lines.join(' · ')}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="np-sec np-sec--shrines">
+      <h2 class="np-sec__title">Shrines</h2>
+      <div class="np-shrines">
+        {shrines.filter((s: any) => s.shrine).map((sh: any) => {
+          const type = sh.shrine?.type || '';
+          const yk = SHRINE_TYPE_YIELD[type] || 'misc';
+          const iconUrl = type ? `${base}img/icons/shrines/${type.toLowerCase()}.png` : '';
+          return (
+            <article class={`np-shrine yield-${yk}`}>
+              {iconUrl && <img class="np-shrine__art" src={iconUrl} alt="" />}
+              <div class="np-shrine__body">
+                <header>
+                  <span class="np-shrine__type">{sh.shrine?.typeLabel}</span>
+                  <span class="np-shrine__deity">{sh.shrine?.name}</span>
+                </header>
+                <p class="np-shrine__effect">
+                  <LinkedText text={sh.effect || ''} showIcons={false} iconsForYields={true} />
+                </p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="np-sec np-sec--families">
+      <h2 class="np-sec__title">Families <span class="np-count">choose up to 3</span></h2>
+      <ul class="np-families">
+        {families.map((f: any) => (
+          <li class="np-fam" style={f.ingameColor ? `--fam-stripe: ${f.ingameColor}` : undefined}>
+            {f.classKey && <img class="np-fam__icon" src={`${base}img/archetypes/${f.classKey}.png`} alt="" />}
+            <span class="np-fam__class">{f.class}</span>
+            <span class="np-fam__name">{f.name}</span>
+            {tendenciesByClass[f.classKey] && (
+              <a class="np-fam__arch" href={`${base}archetype-tendencies`} title="Archetype die weights for this family class">
+                {tendenciesByClass[f.classKey]}
+              </a>
+            )}
+            {f.supremacy && (
+              <span class="np-fam__sup">
+                <span class="np-fam__sup-name">{f.supremacy.name}</span>
+                {f.supremacy.effects.map((e: string) => {
+                  const yk = classifyYield(e)?.toLowerCase() || 'misc';
+                  return (
+                    <span class={`np-item np-item--sup yield-${yk}`}>
+                      <LinkedText text={e} showIcons={false} iconsForYields={true} />
+                    </span>
+                  );
+                })}
+              </span>
+            )}
+          </li>
+        ))}
       </ul>
     </section>
 
@@ -126,94 +442,10 @@ const titles = (n as any).titles || {};
       </dl>
     </section>
 
-    <section class="np-sec np-sec--uu">
-      <h2 class="np-sec__title">Unique Unit</h2>
-      <dl class="np-dl">
-        {uniqueUnit.unitsResolved && uniqueUnit.unitsResolved.length > 0 ? (
-          <>
-            <dt>Names</dt>
-            <dd class="np-units">
-              {uniqueUnit.unitsResolved.map((u: any, i: number) => (
-                <>
-                  {i > 0 && <span class="np-unit__sep">/</span>}
-                  <span class="np-unit">
-                    {u.trait && (
-                      <img class="np-unit__glyph" src={`${base}img/icons/unit_traits/${u.trait}.png`} alt="" onerror="this.style.display='none'" />
-                    )}
-                    {u.name}
-                  </span>
-                </>
-              ))}
-            </dd>
-          </>
-        ) : uniqueUnit.names && (
-          <><dt>Names</dt><dd><LinkedText text={uniqueUnit.names} showIcons={false} iconsForYields={true} /></dd></>
-        )}
-        {uniqueUnit.traits && <><dt>Traits</dt><dd>{uniqueUnit.traits}</dd></>}
-        {uniqueUnit.cost && <><dt>Cost</dt><dd><LinkedText text={uniqueUnit.cost} showIcons={false} iconsForYields={true} /></dd></>}
-        {uniqueUnit.upkeep && <><dt>Upkeep</dt><dd><LinkedText text={uniqueUnit.upkeep} showIcons={false} iconsForYields={true} /></dd></>}
-        {uniqueUnit.moveSight && <><dt>Move/Sight</dt><dd>{uniqueUnit.moveSight}</dd></>}
-      </dl>
-    </section>
-
-    <section class="np-sec np-sec--shrines">
-      <h2 class="np-sec__title">Shrines</h2>
-      <div class="np-shrines">
-        {shrines.filter((s: any) => s.shrine).map((sh: any) => {
-          const type = sh.shrine?.type || '';
-          const yk = SHRINE_TYPE_YIELD[type] || 'misc';
-          const iconUrl = type ? `${base}img/icons/shrines/${type.toLowerCase()}.png` : '';
-          return (
-            <article class={`np-shrine yield-${yk}`}>
-              {iconUrl && <img class="np-shrine__art" src={iconUrl} alt="" />}
-              <div class="np-shrine__body">
-                <header>
-                  <span class="np-shrine__type">{sh.shrine?.typeLabel}</span>
-                  <span class="np-shrine__deity">{sh.shrine?.name}</span>
-                </header>
-                <p class="np-shrine__effect">
-                  <LinkedText text={sh.effect || ''} showIcons={false} iconsForYields={true} />
-                </p>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-
-    <section class="np-sec np-sec--families">
-      <h2 class="np-sec__title">Families</h2>
-      <ul class="np-families">
-        {families.map((f: any) => (
-          <li class="np-fam" style={f.ingameColor ? `--fam-stripe: ${f.ingameColor}` : undefined}>
-            {f.classKey && <img class="np-fam__icon" src={`${base}img/archetypes/${f.classKey}.png`} alt="" />}
-            <span class="np-fam__class">{f.class}</span>
-            <span class="np-fam__name">{f.name}</span>
-            {tendenciesByClass[f.classKey] && (
-              <a class="np-fam__arch" href={`${base}archetype-tendencies`} title="Archetype die weights for this family class">
-                {tendenciesByClass[f.classKey]}
-              </a>
-            )}
-            {f.supremacy && (
-              <span class="np-fam__sup">
-                <span class="np-fam__sup-name">{f.supremacy.name}</span>
-                {f.supremacy.effects.map((e: string) => {
-                  const yk = classifyYield(e)?.toLowerCase() || 'misc';
-                  return (
-                    <span class={`np-item np-item--sup yield-${yk}`}>
-                      <LinkedText text={e} showIcons={false} iconsForYields={true} />
-                    </span>
-                  );
-                })}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </section>
+    <hr class="np-divider" />
 
     <section class="np-sec np-sec--dynasties">
-      <h2 class="np-sec__title">Dynasties</h2>
+      <h2 class="np-sec__title">Dynasties &amp; Leaders</h2>
       {dynasties.length === 0 ? (
         <p class="np-empty">No dynasty data for this nation.</p>
       ) : (
@@ -356,11 +588,21 @@ const titles = (n as any).titles || {};
   @media (min-width: 1200px) {
     .np-grid { grid-template-columns: 1fr 1fr 1fr; }
   }
-  /* Some sections need more width — they span the full grid */
+  /* Wide sections span the full grid */
+  .np-sec--kit,
+  .np-sec--uu,
   .np-sec--dynasties,
   .np-sec--shrines,
   .np-sec--families,
+  .np-sec--start,
   .np-sec--cities { grid-column: 1 / -1; }
+
+  .np-divider {
+    grid-column: 1 / -1;
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 0.6rem 0 0.2rem;
+  }
 
   .np-sec { margin: 0; min-width: 0; }
   .np-sec__title {
@@ -393,6 +635,151 @@ const titles = (n as any).titles || {};
     border-radius: 0 4px 4px 0;
     font-size: 0.9rem;
   }
+
+  /* ── Unique improvements & projects ── */
+  .kit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.6rem;
+  }
+  .kit {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--yield-bg, var(--gold-deep));
+    border-radius: 0 6px 6px 0;
+    overflow: hidden;
+  }
+  .kit__head {
+    display: flex; align-items: center; gap: 0.55rem;
+    padding: 0.5rem 0.7rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.18));
+    border-bottom: 1px solid var(--border);
+  }
+  .kit__icon { width: 30px; height: 30px; object-fit: contain; flex: none; }
+  .kit__name { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; color: var(--text); }
+  .kit__kind {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 0.56rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-faint);
+  }
+  .kit__levels { display: flex; flex-direction: column; }
+  .kit-lv {
+    display: grid;
+    grid-template-columns: 5.6rem 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.78rem;
+  }
+  .kit-lv + .kit-lv { border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent); }
+  .kit-lv__gate {
+    font-family: var(--font-ui); font-weight: 600;
+    font-size: 0.6rem; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--gold-soft);
+    align-self: start; padding-top: 0.12rem;
+  }
+  .kit-lv__fx { display: flex; flex-direction: column; gap: 0.05rem; color: var(--text-soft); }
+  .kit-lv__cost {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    justify-self: end;
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .kit-cost { display: inline-flex; align-items: center; gap: 0.15rem; }
+  .kit-cost img { width: 0.9em; height: 0.9em; object-fit: contain; }
+  .kit-lv__turns { opacity: 0.7; }
+
+  /* ── Unique unit cards ── */
+  .uu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 0.7rem;
+  }
+  .uu {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.7rem 0.8rem 0.75rem;
+    display: flex; flex-direction: column; gap: 0.55rem;
+  }
+  .uu__top { display: flex; gap: 0.7rem; align-items: flex-start; }
+  .uu__art {
+    width: 54px; height: 54px; object-fit: contain;
+    flex: none;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+  }
+  .uu__art--none {
+    display: grid; place-items: center;
+    background: var(--bg-elev-2); border-radius: 6px;
+    font-family: var(--font-display); font-size: 1.5rem; font-weight: 600;
+    color: var(--text-faint); filter: none;
+  }
+  .uu__id { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 0.18rem; }
+  .uu__names { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem; }
+  .uu__name {
+    font-family: var(--font-display); font-weight: 600; font-size: 1.08rem;
+    color: var(--text); text-decoration: none;
+  }
+  .uu__name:hover { color: var(--gold); }
+  .uu__arrow { color: var(--text-faint); font-size: 0.8rem; }
+  .uu__class {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem;
+    font-family: var(--font-ui); font-size: 0.74rem; color: var(--text-dim);
+  }
+  .uu__class img { width: 1em; height: 1em; object-fit: contain; opacity: 0.85; }
+  .uu__trait {
+    font-size: 0.62rem; padding: 0.05rem 0.4rem;
+    background: var(--bg-elev-2); border-radius: 999px; color: var(--text-soft);
+  }
+  .uu__unlock {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-family: var(--font-ui); font-size: 0.72rem; color: var(--gold-soft);
+  }
+  .uu__unlock img { width: 1.05em; height: 1.05em; object-fit: contain; }
+
+  .uu__stats {
+    display: flex; flex-wrap: wrap; gap: 0.3rem;
+    padding: 0.35rem 0.4rem;
+    background: rgba(0,0,0,0.22);
+    border-radius: 5px;
+  }
+  .uu-stat {
+    display: inline-flex; align-items: baseline; gap: 0.3rem;
+    font-family: var(--font-mono); font-size: 0.86rem; color: var(--text);
+    padding: 0 0.4rem;
+  }
+  .uu-stat + .uu-stat { border-left: 1px solid var(--border); }
+  .uu-stat b {
+    font-family: var(--font-ui); font-weight: 600;
+    font-size: 0.54rem; letter-spacing: 0.08em;
+    color: var(--text-dim); text-transform: uppercase;
+  }
+
+  .uu__econ {
+    display: grid; grid-template-columns: max-content 1fr;
+    gap: 0.1rem 0.7rem; margin: 0;
+    font-size: 0.78rem;
+  }
+  .uu__econ dt {
+    font-family: var(--font-ui); font-size: 0.58rem;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--text-dim); padding-top: 0.18rem;
+  }
+  .uu__econ dd { margin: 0; display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .uu-y { display: inline-flex; align-items: center; gap: 0.2rem; font-family: var(--font-mono); color: var(--text-soft); }
+  .uu-y img { width: 0.95em; height: 0.95em; object-fit: contain; }
+  .uu-y--neg { color: var(--text-dim); }
+
+  .uu__abils { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+  .uu-abil { font-size: 0.74rem; line-height: 1.35; }
+  .uu-abil__name {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    font-family: var(--font-display); font-weight: 600; color: var(--gold-soft);
+  }
+  .uu-abil__name img { width: 1em; height: 1em; object-fit: contain; }
+  .uu-abil__fx { color: var(--text-dim); }
+  .uu-abil__fx::before { content: " — "; color: var(--text-faint); }
 
   .np-shrines {
     display: grid;
@@ -456,8 +843,6 @@ const titles = (n as any).titles || {};
     font-family: var(--font-display);
     font-size: 0.92rem;
   }
-  .np-unit__icon { width: 1.3em; height: 1.3em; object-fit: contain; opacity: 0.95; }
-  /* In-game white-silhouette glyph (UNITTRAIT_* sprite) — small and tight */
   .np-unit__glyph {
     width: 1.1em; height: 1.1em;
     object-fit: contain;
@@ -465,7 +850,6 @@ const titles = (n as any).titles || {};
     filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45));
   }
   .np-unit__n { font-family: var(--font-mono); font-size: 0.78em; color: var(--text-dim); }
-  .np-unit__sep { color: var(--text-faint); margin: 0 0.15rem; }
 
   .np-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
   .np-chip {
@@ -489,8 +873,6 @@ const titles = (n as any).titles || {};
     border-radius: 0 4px 4px 0;
     flex-wrap: wrap;
   }
-  /* Coalition supremacy payload (Tamil): name + effect chips inside the
-     family pill, on their own line. */
   .np-fam__sup {
     flex-basis: 100%;
     display: flex;
