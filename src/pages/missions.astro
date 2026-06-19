@@ -95,6 +95,14 @@ for (const m of catalog) {
       <input type="checkbox" id="show-internal" />
       <span>Show internal / AI variants ({totalInternal})</span>
     </label>
+    <div class="mcostfilter" id="m-costfilter">
+      <span class="mcf__label">Filter by cost</span>
+      {[['civics','Civics'],['training','Training'],['money','Money'],['orders','Orders']].map(([y, lbl]) => (
+        <button type="button" class="mcf" data-yield={y}>
+          <img class="mcf__ic" src={`${base}img/icons/yields/${y}.png`} alt="" onerror="this.remove()" />{lbl}
+        </button>
+      ))}
+    </div>
     <span class="mtoolbar__note" id="m-searchnote" hidden></span>
   </div>
 
@@ -124,6 +132,7 @@ for (const m of catalog) {
                 class={`mrow ${m.internal ? 'mrow--internal' : ''}`}
                 data-mission={m.id}
                 data-internal={m.internal ? '1' : '0'}
+                data-cost={[...new Set([...m.cost, ...m.opinionCost].map(c => c.yield))].join(' ')}
               >
                 <td class="mtbl__c-name">
                   {detailHref[m.id] ? (
@@ -228,19 +237,25 @@ for (const m of catalog) {
       const input = document.getElementById('site-search');
       const showInternal = document.getElementById('show-internal');
       const note = document.getElementById('m-searchnote');
+      const costFilter = document.getElementById('m-costfilter');
       if (!root || !blobNode) return;
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
 
+      const costBtns = costFilter ? [...costFilter.querySelectorAll('.mcf')] : [];
+
       function apply() {
         const q = ((input && input.value) || '').trim().toLowerCase();
         const wantInternal = !!(showInternal && showInternal.checked);
+        const wantCosts = costBtns.filter(b => b.classList.contains('is-on')).map(b => b.getAttribute('data-yield'));
         let shown = 0;
         for (const row of root.querySelectorAll('.mrow')) {
           const id = row.getAttribute('data-mission');
           const isInternal = row.getAttribute('data-internal') === '1';
+          const costs = (row.getAttribute('data-cost') || '').split(' ');
           const matchesQ = !q || (blobs[id] || '').includes(q);
-          const visible = matchesQ && (wantInternal || !isInternal);
+          const matchesCost = !wantCosts.length || wantCosts.some(y => costs.indexOf(y) !== -1);
+          const visible = matchesQ && matchesCost && (wantInternal || !isInternal);
           row.classList.toggle('is-hidden', !visible);
           if (visible) shown++;
         }
@@ -248,15 +263,19 @@ for (const m of catalog) {
           sec.classList.toggle('is-hidden', !sec.querySelector('.mrow:not(.is-hidden)'));
         }
         if (note) {
-          if (q) {
+          if (q || wantCosts.length) {
             note.hidden = false;
-            note.textContent = shown + ' mission' + (shown === 1 ? '' : 's') + ' match "' + (input ? input.value : '') + '"';
+            const bits = [];
+            if (q) bits.push('"' + (input ? input.value : '') + '"');
+            if (wantCosts.length) bits.push('cost: ' + wantCosts.join(' / '));
+            note.textContent = shown + ' mission' + (shown === 1 ? '' : 's') + ' · ' + bits.join(' · ');
           } else { note.hidden = true; }
         }
       }
 
       if (input) input.addEventListener('input', apply);
       if (showInternal) showInternal.addEventListener('change', apply);
+      for (const b of costBtns) b.addEventListener('click', () => { b.classList.toggle('is-on'); apply(); });
       apply();
     })();
   </script>
@@ -277,6 +296,26 @@ for (const m of catalog) {
     font-family: var(--font-ui);
     font-size: 0.7rem; letter-spacing: 0.06em; color: var(--gold-soft);
   }
+
+  .mcostfilter {
+    display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0.35rem;
+  }
+  .mcf__label {
+    font-family: var(--font-ui);
+    font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-dim); margin-right: 0.1rem;
+  }
+  .mcf {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-family: var(--font-ui); font-size: 0.74rem;
+    color: var(--text-soft); cursor: pointer; user-select: none;
+    background: var(--surface, transparent); border: 1px solid var(--border);
+    border-radius: 999px; padding: 0.18rem 0.55rem 0.18rem 0.4rem;
+    transition: border-color 0.12s, color 0.12s, background 0.12s;
+  }
+  .mcf:hover { border-color: var(--gold-deep); }
+  .mcf.is-on { border-color: var(--gold); color: var(--text); background: oklch(0.30 0.04 80 / 0.28); }
+  .mcf__ic { width: 0.95rem; height: 0.95rem; object-fit: contain; }
 
   .mcat { margin-bottom: 2.25rem; }
   .mcat.is-hidden { display: none; }
