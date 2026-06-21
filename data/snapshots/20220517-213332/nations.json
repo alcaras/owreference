@@ -530,6 +530,151 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [
+      {
+        "familyBoost": {
+          "classes": [
+            {
+              "class": "Champions",
+              "classId": "CHAMPIONS",
+              "classKey": "champions",
+              "yields": [
+                "training"
+              ]
+            },
+            {
+              "class": "Patrons",
+              "classId": "PATRONS",
+              "classKey": "patrons",
+              "yields": [
+                "civics"
+              ]
+            },
+            {
+              "class": "Clerics",
+              "classId": "CLERICS",
+              "classKey": "clerics",
+              "yields": [
+                "science"
+              ]
+            },
+            {
+              "class": "Traders",
+              "classId": "TRADERS",
+              "classKey": "traders",
+              "yields": [
+                "money"
+              ]
+            },
+            {
+              "class": "Landowners",
+              "classId": "LANDOWNERS",
+              "classKey": "landowners",
+              "yields": [
+                "growth"
+              ]
+            },
+            {
+              "class": "Statesmen",
+              "classId": "STATESMEN",
+              "classKey": "statesmen",
+              "yields": [
+                "happiness"
+              ]
+            },
+            {
+              "class": "Sages",
+              "classId": "SAGES",
+              "classKey": "sages",
+              "yields": [
+                "culture"
+              ]
+            },
+            {
+              "class": "Artisans",
+              "classId": "ARTISANS",
+              "classKey": "artisans",
+              "yields": [
+                "stone",
+                "iron"
+              ]
+            },
+            {
+              "class": "Riders",
+              "classId": "RIDERS",
+              "classKey": "riders",
+              "yields": [
+                "orders"
+              ]
+            },
+            {
+              "class": "Hunters",
+              "classId": "HUNTERS",
+              "classKey": "hunters",
+              "yields": [
+                "food",
+                "wood"
+              ]
+            }
+          ],
+          "pcts": [
+            10,
+            25,
+            50
+          ]
+        },
+        "icon": "img/icons/improvements/greater_stele.png",
+        "levels": [
+          {
+            "buildTurns": 3,
+            "cost": "100 Stone",
+            "culture": "Developing",
+            "effects": [
+              "+10 Family Opinion"
+            ],
+            "familyBoostPct": 10,
+            "icon": "img/icons/improvements/minor_stele.png",
+            "label": "Stele",
+            "level": 1,
+            "outputs": [
+              "+1 Civics"
+            ]
+          },
+          {
+            "buildTurns": 4,
+            "cost": "200 Stone",
+            "culture": "Strong",
+            "effects": [
+              "+20 Family Opinion"
+            ],
+            "familyBoostPct": 25,
+            "icon": "img/icons/improvements/stele.png",
+            "label": "Grand Stele",
+            "level": 2,
+            "outputs": [
+              "+2 Civics"
+            ]
+          },
+          {
+            "buildTurns": 5,
+            "cost": "400 Stone",
+            "culture": "Legendary",
+            "effects": [
+              "+40 Family Opinion"
+            ],
+            "familyBoostPct": 50,
+            "icon": "img/icons/improvements/greater_stele.png",
+            "label": "Legendary Stele",
+            "level": 3,
+            "outputs": [
+              "+4 Civics"
+            ]
+          }
+        ],
+        "name": "Stele",
+        "slug": "stele"
+      }
+    ],
     "uniqueUnit": {
       "cost": "150/200 Iron",
       "moveSight": "2 Move, 4 Vision",
@@ -1071,6 +1216,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "100 Wood, 50/100 Iron",
       "moveSight": "1 Move, 3 Vision",
@@ -1638,6 +1784,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "150/200 Wood",
       "moveSight": "2 Move, 3 Range, 4 Vision",
@@ -1750,8 +1897,8 @@
           {
             "archetype": false,
             "effects": [
-              "+10% Unit Trait Modifier / Siege",
-              "+10% Unit Trait Modifier / Ship",
+              "+10% Strength vs Siege units",
+              "+10% Strength vs Ship units",
               "+20 Opinion (same trait)",
               "+1 Wisdom"
             ],
@@ -2183,6 +2330,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "100 Food, 50/100 Wood",
       "moveSight": "2 Move, 4 Vision",
@@ -2535,7 +2683,7 @@
             "archetype": false,
             "effects": [
               "[Capital] Provides: Horse",
-              "[Capital] Trait Effect Unit: Chariot → Saddleborn",
+              "[Capital] Chariot units gain Saddleborn",
               "Start: Techs: Spoked Wheel"
             ],
             "icon": null,
@@ -2833,6 +2981,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "100 Food, 50/100 Wood",
       "moveSight": "4 Move, 2 Range, 6 Vision",
@@ -3443,6 +3592,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "50/100 Wood, 100 Iron",
       "moveSight": "2 Move, 4 Vision",
@@ -3705,7 +3855,7 @@
           {
             "archetype": false,
             "effects": [
-              "+10% Unit Trait Modifier / Tribal",
+              "+10% Strength vs Tribal units",
               "+20 Opinion (same trait)",
               "+1 Discipline"
             ],
@@ -3996,6 +4146,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "100 Food, 50/100 Wood",
       "moveSight": "3 Move, 5 Vision",
@@ -4565,6 +4716,29 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [
+      {
+        "icon": "img/icons/improvements/kush_pyramid.png",
+        "levels": [
+          {
+            "buildTurns": 4,
+            "cost": "60 Stone",
+            "culture": "Initial",
+            "effects": [
+              "+1 Civics/adjacent Shrine",
+              "+4 Legitimacy"
+            ],
+            "familyBoostPct": 0,
+            "icon": "img/icons/improvements/kush_pyramid.png",
+            "label": "Kushite Pyramids",
+            "level": 0,
+            "outputs": []
+          }
+        ],
+        "name": "Kushite Pyramids",
+        "slug": "kushite-pyramids"
+      }
+    ],
     "uniqueUnit": {
       "cost": "150/200 Wood",
       "moveSight": "2 Move, 3 Range, 4 Vision",
@@ -5098,6 +5272,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "100 Food, 50/100 Iron",
       "moveSight": "2 Move, 4 Vision",
@@ -5630,6 +5805,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "50/100 Food, 100 Iron",
       "moveSight": "3 Move, 1 Range, 5 Vision",
@@ -5935,7 +6111,7 @@
           {
             "archetype": false,
             "effects": [
-              "Culture Bonus: Refined"
+              "+2 Legitimacy, per Culture level"
             ],
             "icon": null,
             "id": "TRAIT_REFINED",
@@ -6268,6 +6444,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "150/200 Iron",
       "moveSight": "2 Move, 4 Vision",
@@ -6798,6 +6975,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "100 Food, 50/100 Wood",
       "moveSight": "2 Move, 1 Range, 4 Vision",
@@ -7316,6 +7494,7 @@
       "regent": "",
       "successor": ""
     },
+    "uniqueImprovements": [],
     "uniqueUnit": {
       "cost": "100 Food, 50/100 Iron",
       "moveSight": "3 Move, 5 Vision",

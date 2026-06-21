@@ -16,7 +16,7 @@
         "name": "Chosen Child",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -63,7 +63,14 @@
             "text": "Adopt the child as my own."
           },
           {
-            "linkAdd": null,
+            "canLeadTo": [
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_TRIBAL_INVASION_CHOSEN_CHILD",
+                "name": "The Child's Revenge"
+              }
+            ],
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -73,10 +80,12 @@
                     "text": "+2 Legitimacy"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYCHARACTER_REJECTED_CHILD",
+                    "text": "Remembered: Rejected Child"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYCHARACTER_REJECTED_CHILD_RECENTLY",
+                    "text": "Remembered: Rejected Child Recently (17 turns)"
                   }
                 ],
                 "weight": null
@@ -123,7 +132,7 @@
         "name": "New Humans",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -163,7 +172,7 @@
             "text": "Destroy all evidence of these creatures."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -212,7 +221,7 @@
             "text": "Send scholars and scientists to investigate."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -262,7 +271,7 @@
         "name": "Raised Fields",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -295,7 +304,7 @@
             "text": "Plow the fields for whatever is left."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -345,7 +354,7 @@
         "name": "Strange Medicine",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -390,7 +399,7 @@
             "text": "That quicksilver is very shiny."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Ruins Strange Medicine Option Herbs",
@@ -584,7 +593,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Ruins Strange Medicine Option Herbs",
@@ -778,7 +787,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Ruins Strange Medicine Option Herbs",
@@ -972,7 +981,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1032,7 +1041,7 @@
         "name": "The World on a Wall",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Ruins On The Wall Ambition Explore",
@@ -1110,7 +1119,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1158,7 +1167,7 @@
         "name": "Called by the Gods",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1199,7 +1208,7 @@
             "text": "Study the art of divination and communing with the gods."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1260,7 +1269,7 @@
         "name": "The Gods of [rival]",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1294,7 +1303,7 @@
             "text": "Teach us your ways so we can divine the will of the gods!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1346,7 +1355,7 @@
         "name": "Community",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1393,14 +1402,16 @@
             "text": "Invite the [religion] to share their ways."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 40 turns"
+                    "memory": "MEMORYRELIGION_SHARED_BREAD",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Shared food with travelers (+20 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -1431,14 +1442,16 @@
             "text": "Use the community as a base to explore the area before moving on."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-80 opinion for 20 turns"
+                    "memory": "MEMORYRELIGION_ATTACKED_OUR_COMMUNITY",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Attacked our community (-80 opinion for 20 turns)"
                   },
                   {
                     "base": 160,
@@ -1498,7 +1511,7 @@
         "name": "Where an Oar has No Name",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1524,7 +1537,7 @@
             "text": "Invite him to return to [city], it is close enough that the gods will understand."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1554,7 +1567,7 @@
             "text": "Ask to learn more of this 'oar' and its uses."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1607,7 +1620,7 @@
         "name": "Ancient Supplies",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1640,7 +1653,7 @@
             "text": "Equip your [unit] with the ancient shields, leather pulled taut across a wooden frame."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1673,7 +1686,7 @@
             "text": "Take the saddles, incredibly lightweight and pliable to avoid tiring the horse."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1706,7 +1719,7 @@
             "text": "The longbows have an immense pull weight, able to fire across great distances."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1760,7 +1773,7 @@
         "name": "Beads and Figurines",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1790,7 +1803,7 @@
             "text": "Scientists will forge the future."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1823,17 +1836,21 @@
             "text": "Scholars will illuminate the past."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+40 opinion for 80 turns"
+                    "memory": "MEMORYCHARACTER_GIFTED_PRICELESS_ARTIFACTS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Gifted priceless artifacts (+40 opinion for 80 turns)"
                   },
                   {
-                    "text": "+40 opinion for 20 turns"
+                    "memory": "MEMORYFAMILY_GIFTED_PRICELESS_ARTIFACTS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Gifted priceless artifacts (+40 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -1884,14 +1901,16 @@
         "name": "Early Disciples",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+80 opinion for 40 turns"
+                    "memory": "MEMORYRELIGION_RUINS_RESTORED_TEMPLE",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Restored ancient temple ruins (+80 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -1914,7 +1933,7 @@
             "text": "Return the temple to its former glory."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -1953,7 +1972,7 @@
             "text": "Use the rubble for needed supplies."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2008,7 +2027,7 @@
         "name": "Fruit Trees",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2042,7 +2061,7 @@
             "text": "Take the fruit home."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2076,7 +2095,7 @@
             "text": "Chop down the trees."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Ruins Fruit Trees Culture Ambition",
@@ -2154,14 +2173,16 @@
         "name": "Grave Circle",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 20 turns"
+                    "memory": "MEMORYFAMILY_RUINS_GIFT_OF_VALUABLES",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Gave us ancient treasures (+20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -2184,7 +2205,7 @@
             "text": "Make a gift of treasure to the [family]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2240,7 +2261,7 @@
         "name": "In the Clouds",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2250,7 +2271,9 @@
                     "text": "+60 XP to the character"
                   },
                   {
-                    "text": "+80 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_RUINS_RESTORED_CITY",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Restored our ancient capital (+80 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -2281,7 +2304,7 @@
             "text": "Restore the ancient [tribe] site."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2345,7 +2368,7 @@
         "name": "Interference",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Interference Option 0 Vengeful",
@@ -2445,7 +2468,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Interference Option 1 Vengeful",
@@ -2561,7 +2584,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2617,7 +2640,7 @@
         "name": "Sunken Tombs",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2661,7 +2684,7 @@
             "text": "Mount an undersea expedition."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2722,7 +2745,7 @@
         "name": "The Floating City",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2752,7 +2775,7 @@
             "text": "Claim the boats for research."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2806,7 +2829,7 @@
         "name": "The Watchers",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2847,11 +2870,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_RUINS_WRATH_OF_THE_WATCHERS",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_RUINS_WRATH_OF_THE_WATCHERS",
                 "name": "Wrath of the Watchers"
               }
             ],
-            "linkAdd": "EVENTLINK_RUINS_THE_WATCHERS",
+            "linkAdds": [
+              "EVENTLINK_RUINS_THE_WATCHERS"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -2913,7 +2940,7 @@
         "name": "Hidden Jewels",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -2947,7 +2974,7 @@
             "text": "Keep the jewels but continue exploring."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3022,7 +3049,7 @@
         "name": "Ruin Rising Scholarship",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3072,7 +3099,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3126,7 +3153,7 @@
         "name": "Ruin Rising Scholarship Delayed",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3176,7 +3203,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3213,7 +3240,7 @@
         "name": "The Diviner",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3223,7 +3250,8 @@
                     "text": "Progress ambition: Oracle"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYPLAYER_RECENT_AMBITION",
+                    "text": "Remembered: Recent Ambition (7 turns)"
                   },
                   {
                     "text": "Gain a Court Scholar"
@@ -3258,7 +3286,7 @@
             "text": "Such an offer cannot be ignored."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3292,7 +3320,7 @@
             "text": "Order scribes to collect her predictions."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3347,7 +3375,7 @@
         "name": "Treasure Hunting",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3381,7 +3409,7 @@
             "text": "I think I can make it!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3430,7 +3458,7 @@
             "text": "It is not worth the risk, see what else can be gathered."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3484,7 +3512,7 @@
         "name": "Weary Marauders",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Ruins Weary Marauders Labor New",
@@ -3531,7 +3559,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3567,7 +3595,7 @@
             "text": "We could use help against the [tribe]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3629,7 +3657,7 @@
         "name": "Burly Smith",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3659,7 +3687,7 @@
             "text": "Learn her trade."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3731,7 +3759,7 @@
         "name": "Elderly Couple",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3772,11 +3800,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_RUINS_ELDERLY_COUPLE_WITCH",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_RUINS_ELDERLY_COUPLE_WITCH",
                 "name": "Mad Priestess"
               }
             ],
-            "linkAdd": "EVENTLINK_RUINS_ELDERLY_COUPLE_ABDUCTED",
+            "linkAdds": [
+              "EVENTLINK_RUINS_ELDERLY_COUPLE_ABDUCTED"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -3835,7 +3867,7 @@
         "name": "Frightened Families",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3870,7 +3902,7 @@
             "text": "Join us, and we will protect you."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3896,7 +3928,7 @@
             "text": "Send our fighters to face the raiders."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3955,7 +3987,7 @@
         "name": "Geoglyphs",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -3986,7 +4018,7 @@
             "text": "Create a national historic monument."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4044,7 +4076,7 @@
         "name": "Gold Workers",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4078,7 +4110,7 @@
             "text": "Increase the treasury."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4112,7 +4144,7 @@
             "text": "Send it to our troops."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4164,7 +4196,7 @@
         "name": "Good Fences",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4201,7 +4233,7 @@
             "text": "Sounds like a fair trade."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4240,7 +4272,7 @@
             "text": "We can offer some in exchange for meat."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4290,7 +4322,7 @@
         "name": "Haunted Quarry",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4326,7 +4358,7 @@
             "text": "Examine the quarry to figure out how it was made."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4365,7 +4397,7 @@
             "text": "Haul back as much stone as we can."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4426,7 +4458,7 @@
         "name": "Heaven and Earth",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4461,7 +4493,7 @@
             "text": "My mind is open..."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4516,7 +4548,7 @@
         "name": "Tribal Hunters",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4564,7 +4596,7 @@
             "text": "Kill them and take their supplies."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4614,7 +4646,7 @@
         "name": "Wise Man",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4648,7 +4680,7 @@
             "text": "Heed his advice on war."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4685,7 +4717,7 @@
             "text": "Heed his advice on trade."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4737,7 +4769,7 @@
         "name": "Ancient Barbarians",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4747,7 +4779,9 @@
                     "text": "+1 Discipline"
                   },
                   {
-                    "text": "+20 opinion for 20 turns"
+                    "memory": "MEMORYTRIBE_AVOIDED_RUINS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Avoided ancient ruins (+20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -4778,7 +4812,7 @@
             "text": "I do not want to offend the [tribe]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4797,7 +4831,9 @@
                     "yield": "science"
                   },
                   {
-                    "text": "-40 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_DESECRATED_RUINS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Desecrated ancient ruins (-40 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -4848,7 +4884,7 @@
         "name": "Ancient Site",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4882,7 +4918,7 @@
             "text": "Raze the city. We could use the Stone."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4912,7 +4948,7 @@
             "text": "Preserve the site and learn its history."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -4975,7 +5011,7 @@
         "name": "Buried Treasure",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5020,7 +5056,7 @@
             "text": "Let's spend what we need to in order to get this mine operational again."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5071,7 +5107,7 @@
         "name": "Carved Wall",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5080,8 +5116,8 @@
                   {
                     "text": "Gain trait: Steadfast",
                     "tip": [
-                      "As leader: +10% Unit Trait Modifier / Tribal",
-                      "As general: +25% Unit Trait Modifier / Tribal",
+                      "As leader: +10% Strength vs Tribal units",
+                      "As general: +25% Strength vs Tribal units",
                       "+1 Discipline",
                       "+20 opinion with same-trait characters"
                     ],
@@ -5120,7 +5156,7 @@
             "text": "Advise? I command! Bring the wall to [city]!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5170,7 +5206,7 @@
         "name": "City of Clay",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5222,7 +5258,7 @@
             "text": "We must pray that such a fate never befalls us."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5261,7 +5297,7 @@
             "text": "The land can change. Let us use it to prepare whilst we can."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5322,7 +5358,7 @@
         "name": "Comet Sighted",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5356,7 +5392,7 @@
             "text": "It's an omen!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5393,7 +5429,7 @@
             "text": "A fascinating observation!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5448,7 +5484,7 @@
         "name": "Cursed Land",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5485,7 +5521,7 @@
             "text": "Fill the pit with rocks!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5548,7 +5584,7 @@
         "name": "Despoiled Ruins",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5582,7 +5618,7 @@
             "text": "Stone for construction."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5616,7 +5652,7 @@
             "text": "Iron for our troops."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5672,15 +5708,21 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_RUINS_EMERALD_MINES_CAVE_IN",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_RUINS_EMERALD_MINES_CAVE_IN",
                 "name": "Cave In!"
               },
               {
+                "anchor": "EVENTSTORY_RUINS_EMERALD_MINE_REBUILT",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_RUINS_EMERALD_MINE_REBUILT",
                 "name": "Emerald Mine Rebuilt"
               }
             ],
-            "linkAdd": "EVENTLINK_EMERALD_MINES_START",
+            "linkAdds": [
+              "EVENTLINK_EMERALD_MINES_START"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -5716,7 +5758,7 @@
             "text": "We must reopen the mines."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5766,7 +5808,7 @@
         "name": "Giant Statue",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5803,7 +5845,7 @@
             "text": "I shall have the statue repaired in my own image."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5857,7 +5899,7 @@
         "name": "Gold, like Mud",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5915,7 +5957,7 @@
             "text": "Give [character] what he needs."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -5954,7 +5996,7 @@
             "text": "Ask [character] to teach you how to extract such metals closer to home."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6008,7 +6050,7 @@
         "name": "Great Migration",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6042,7 +6084,7 @@
             "text": "Commission scouts and send them in every direction."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6096,7 +6138,7 @@
         "name": "Homeless Children",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6140,7 +6182,7 @@
             "text": "[rival] cannot become a home for charity."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6175,7 +6217,7 @@
             "text": "We will shelter them."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6225,7 +6267,7 @@
         "name": "Hungry Lorekeepers",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6262,7 +6304,7 @@
             "text": "We will feed them and learn their skills."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6312,7 +6354,7 @@
         "name": "Made to Measure",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6353,7 +6395,7 @@
             "text": "I will expect higher standards from now on."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6383,7 +6425,7 @@
             "text": "Copy them, the best we can."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6448,7 +6490,7 @@
         "name": "Monuments of Law",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6485,7 +6527,7 @@
             "text": "Send sages to learn what they can."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6541,7 +6583,7 @@
         "name": "Necropolis",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6574,7 +6616,7 @@
             "text": "Allow the survivors to join us."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6625,7 +6667,7 @@
         "name": "Painted Walls and Stone-Carved Halls",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6655,7 +6697,7 @@
             "text": "So, this is the Buddha we have heard about."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6685,7 +6727,7 @@
             "text": "How enchanting! Have artists recreate the paintings around the palace."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6735,7 +6777,7 @@
         "name": "Prophecy",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6766,7 +6808,7 @@
             "text": "It is a sign that I have been chosen."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6797,7 +6839,7 @@
             "text": "Perhaps it is a distant ancestor."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6827,7 +6869,7 @@
             "text": "It is a coincidence, nothing more."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6888,7 +6930,7 @@
         "name": "Religious Carvings",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6918,14 +6960,16 @@
             "text": "It must have come from a precursor of [religion] in the region."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 20 turns"
+                    "memory": "MEMORYRELIGION_SHOWED_ARTIFACTS",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Showed artifacts of interest to our faith (+20 opinion for 20 turns)"
                   },
                   {
                     "text": "+1 Charisma"
@@ -6959,7 +7003,7 @@
             "text": "Hand the site over to [religion] leaders and see what they make of it."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -6998,7 +7042,7 @@
             "text": "Move the art to [city] and establish [religion] shrine there."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7061,7 +7105,7 @@
         "name": "Research at Rest",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7091,7 +7135,7 @@
             "text": "Very intriguing indeed."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7128,7 +7172,7 @@
             "text": "Invite the explorer to court so that we might further examine these new ideas."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7189,7 +7233,7 @@
         "name": "Ritual Performance",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7219,7 +7263,7 @@
             "text": "Expand our cities, but beware of gluttony."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7249,7 +7293,7 @@
             "text": "Hold such performances ourselves."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7310,14 +7354,37 @@
         "name": "Rival Expedition",
         "options": [
           {
-            "linkAdd": null,
+            "canLeadTo": [
+              {
+                "cat": "on-player-peace-offer",
+                "id": "EVENTSTORY_PLAYER_PEACE_HOSTAGE",
+                "name": "Hostage Return"
+              },
+              {
+                "cat": "on-player-truce-offer",
+                "id": "EVENTSTORY_PLAYER_TRUCE_HOSTAGE",
+                "name": "Time for a Truce"
+              },
+              {
+                "cat": "on-player-war-declare",
+                "id": "EVENTSTORY_PLAYER_WAR_DECLARE_HOLD_HOSTAGE",
+                "name": "The Sword of Damocles"
+              },
+              {
+                "cat": "on-player-war-offer",
+                "id": "EVENTSTORY_PLAYER_WAR_HOSTAGE",
+                "name": "Return Our Hostage"
+              }
+            ],
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYPLAYER_HOLD_HOSTAGE",
+                    "text": "Remembered: Held a noble hostage (+20 opinion for 40 turns)"
                   },
                   {
                     "base": 240,
@@ -7362,14 +7429,16 @@
             "text": "Capture the young noble, and seize the trove."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 20 turns"
+                    "memory": "MEMORYPLAYER_RECOGNIZED_CLAIM",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Did not contradict expeditions claims of ownership (+20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -7400,7 +7469,7 @@
             "text": "Offer apologies and promises of friendship."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7462,7 +7531,7 @@
         "name": "Ruined Ambitions",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7489,7 +7558,7 @@
             "text": "The [family] ask that you [ambition]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7516,7 +7585,7 @@
             "text": "The [family] want you to [ambition]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7543,7 +7612,7 @@
             "text": "The [family] family suggest that you [ambition]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7593,7 +7662,7 @@
         "name": "Sacred Tomb",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7628,7 +7697,7 @@
             "text": "Leave the tomb undisturbed."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7658,7 +7727,7 @@
             "text": "There will be no [title] but me. Destroy it!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7712,7 +7781,7 @@
         "name": "Seashore Find",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7746,7 +7815,7 @@
             "text": "This is a significant scientific discovery."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7776,7 +7845,7 @@
             "text": "Our vivid fabrics will impress the world."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7832,7 +7901,7 @@
         "name": "Shields Under the Stars",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7869,7 +7938,7 @@
             "text": "Offer [character] the chance to fight for a warrior-queen."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7896,7 +7965,7 @@
             "text": "Raise a shrine to the Amazons in [city]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -7967,17 +8036,21 @@
         "name": "Skirmish in the Ruins",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 40 turns"
+                    "memory": "MEMORYPLAYER_SKIRMISH_HELPED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought with us in a skirmish (+20 opinion for 40 turns)"
                   },
                   {
-                    "text": "-20 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_SKIRMISH_FOUGHT",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought against us in a skirmish (-20 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -8008,17 +8081,21 @@
             "text": "Charge in to help the [rival] warriors."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-20 opinion for 40 turns"
+                    "memory": "MEMORYPLAYER_SKIRMISH_FOUGHT",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought against us in a skirmish (-20 opinion for 40 turns)"
                   },
                   {
-                    "text": "+20 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_SKIRMISH_HELPED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought with us in a skirmish (+20 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -8049,17 +8126,21 @@
             "text": "Rush to the aid of the [tribe]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-20 opinion for 20 turns"
+                    "memory": "MEMORYPLAYER_SKIRMISH_IGNORED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Refused to help us in a skirmish (-20 opinion for 20 turns)"
                   },
                   {
-                    "text": "-20 opinion for 20 turns"
+                    "memory": "MEMORYTRIBE_SKIRMISH_IGNORED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Refused to help us in a skirmish (-20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -8090,17 +8171,21 @@
             "text": "This is not our fight."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-20 opinion for 40 turns"
+                    "memory": "MEMORYPLAYER_SKIRMISH_FOUGHT",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought against us in a skirmish (-20 opinion for 40 turns)"
                   },
                   {
-                    "text": "-20 opinion for 40 turns"
+                    "memory": "MEMORYTRIBE_SKIRMISH_FOUGHT",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Fought against us in a skirmish (-20 opinion for 40 turns)"
                   },
                   {
                     "base": 160,
@@ -8168,7 +8253,7 @@
         "name": "Skittish Bandits",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8198,7 +8283,7 @@
             "text": "Agree to take him in and add him to your Court."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8243,7 +8328,7 @@
             "text": "We don't need another merchant on the Court, but fund his trade mission so that we might profit from it."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8321,7 +8406,7 @@
         "name": "Star Charts",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8358,7 +8443,7 @@
             "text": "Our scouts could use the direction."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8412,11 +8497,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_STRANGE_SCROLL_ONE",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_STRANGE_SCROLL_ONE",
                 "name": "Strange Scroll: Translation"
               }
             ],
-            "linkAdd": "EVENTLINK_STRANGE_SCROLL_ONE",
+            "linkAdds": [
+              "EVENTLINK_STRANGE_SCROLL_ONE"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -8442,7 +8531,7 @@
             "text": "Study the scroll to learn its secrets."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8472,7 +8561,7 @@
             "text": "Find someone to decipher the text."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8522,7 +8611,7 @@
         "name": "Survivors",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Ruins Survivors Invite New",
@@ -8570,7 +8659,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8627,7 +8716,7 @@
         "name": "The Jungle Depths",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8665,7 +8754,7 @@
             "text": "The trees can give us a tactical advantage."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8691,7 +8780,7 @@
             "text": "Train specialists skilled in cutting through vegetation."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8759,7 +8848,7 @@
         "name": "The King's Roads",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8795,7 +8884,7 @@
             "text": "Break down the roads for stone."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8847,23 +8936,33 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_RIDDLE_OF_THE_SPHINX",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_RIDDLE_OF_THE_SPHINX",
                 "name": "The Riddle of the Sphinx"
               },
               {
+                "anchor": "EVENTSTORY_RIDDLE_OF_THE_SPHINX_2",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_RIDDLE_OF_THE_SPHINX_2",
                 "name": "The Riddle of the Sphinx"
               },
               {
+                "anchor": "EVENTSTORY_RIDDLE_OF_THE_SPHINX_3",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_RIDDLE_OF_THE_SPHINX_3",
                 "name": "The Riddle of the Sphinx"
               },
               {
+                "anchor": "EVENTSTORY_RIDDLE_OF_THE_SPHINX_4",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_RIDDLE_OF_THE_SPHINX_4",
                 "name": "The Riddle of the Sphinx"
               }
             ],
-            "linkAdd": "EVENTLINK_RIDDLE_OF_THE_GATE",
+            "linkAdds": [
+              "EVENTLINK_RIDDLE_OF_THE_GATE"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -8880,7 +8979,7 @@
             "text": "What's the riddle?"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8935,7 +9034,7 @@
         "name": "The Seal of a Bull",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -8970,7 +9069,7 @@
             "text": "I will adopt such a seal for myself."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9000,7 +9099,7 @@
             "text": "Encourage the city artists to adapt this practice."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9053,7 +9152,7 @@
         "name": "Three Days of Solace",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9070,7 +9169,7 @@
             "text": "Swell!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9138,7 +9237,7 @@
         "name": "Tip to Tail",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9171,7 +9270,7 @@
             "text": "There can be no forest without tigers, and no tigers without a forest."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9202,10 +9301,10 @@
               "gates": []
             },
             "requirements": [],
-            "text": "Return and do what you must. I <i>will</i> have these hides."
+            "text": "Return and do what you must. I will have these hides."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9260,7 +9359,7 @@
         "name": "Unfamiliar Art",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9295,7 +9394,7 @@
             "text": "It should inspire us -- display it in [city]!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9349,7 +9448,7 @@
         "name": "Veteran Soldier",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9379,7 +9478,7 @@
             "text": "Learn her military techniques."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9431,7 +9530,7 @@
         "name": "Vulgar Speech",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9462,7 +9561,7 @@
             "text": "Display the graffiti in our palace yard."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9496,7 +9595,7 @@
             "text": "Study the writing and try to replicate it."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9540,6 +9639,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RUINS_EMERALD_MINES",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RUINS_EMERALD_MINES",
             "name": "Emerald Mines"
           }
@@ -9551,7 +9652,7 @@
         "name": "Cave In!",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9597,6 +9698,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RUINS_EMERALD_MINES",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RUINS_EMERALD_MINES",
             "name": "Emerald Mines"
           }
@@ -9608,7 +9711,7 @@
         "name": "Emerald Mine Rebuilt",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9660,6 +9763,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RUINS_ELDERLY_COUPLE",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RUINS_ELDERLY_COUPLE",
             "name": "Elderly Couple"
           }
@@ -9671,7 +9776,7 @@
         "name": "Mad Priestess",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9713,7 +9818,7 @@
             "text": "Sacrifice whatever is necessary to appease the fears of the people and to please the gods!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9757,6 +9862,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_STRANGE_SCROLL_ONE",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_STRANGE_SCROLL_ONE",
             "name": "Strange Scroll: Translation"
           }
@@ -9768,7 +9875,7 @@
         "name": "Strange Scroll: Revelation",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9812,6 +9919,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_STRANGE_SCROLL_ONE",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_STRANGE_SCROLL_ONE",
             "name": "Strange Scroll: Translation"
           }
@@ -9823,7 +9932,7 @@
         "name": "Strange Scroll: Revelation",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9867,6 +9976,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RUINS_STRANGE_SCROLL",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RUINS_STRANGE_SCROLL",
             "name": "Strange Scroll"
           }
@@ -9884,15 +9995,21 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_STRANGE_SCROLL_TWO_INSANE",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_STRANGE_SCROLL_TWO_INSANE",
                 "name": "Strange Scroll: Revelation"
               },
               {
+                "anchor": "EVENTSTORY_STRANGE_SCROLL_TWO_WISDOM",
+                "ext": "ruin-events",
                 "id": "EVENTSTORY_STRANGE_SCROLL_TWO_WISDOM",
                 "name": "Strange Scroll: Revelation"
               }
             ],
-            "linkAdd": "EVENTLINK_STRANGE_SCROLL_TWO",
+            "linkAdds": [
+              "EVENTLINK_STRANGE_SCROLL_TWO"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -9909,7 +10026,7 @@
             "text": "Continue your studies."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -9955,6 +10072,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RIDDLE_OF_THE_GATE",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RIDDLE_OF_THE_GATE",
             "name": "The Riddle of the Gate"
           }
@@ -9966,7 +10085,7 @@
         "name": "The Riddle of the Sphinx",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10003,7 +10122,7 @@
             "text": "A man who crawls on four as a baby, walks on two as an adult, and uses a stick in old age."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10054,6 +10173,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RIDDLE_OF_THE_GATE",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RIDDLE_OF_THE_GATE",
             "name": "The Riddle of the Gate"
           }
@@ -10065,7 +10186,7 @@
         "name": "The Riddle of the Sphinx",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10102,7 +10223,7 @@
             "text": "Day gives birth to night just as night gives birth to day."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10155,6 +10276,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RIDDLE_OF_THE_GATE",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RIDDLE_OF_THE_GATE",
             "name": "The Riddle of the Gate"
           }
@@ -10166,7 +10289,7 @@
         "name": "The Riddle of the Sphinx",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10196,7 +10319,7 @@
             "text": "My own face in the mirror cannot speak."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10245,6 +10368,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RIDDLE_OF_THE_GATE",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RIDDLE_OF_THE_GATE",
             "name": "The Riddle of the Gate"
           }
@@ -10256,7 +10381,7 @@
         "name": "The Riddle of the Sphinx",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10286,7 +10411,7 @@
             "text": "Only smoke gives me tears when I am not sad."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10330,6 +10455,8 @@
         "dlc": null,
         "followsFrom": [
           {
+            "anchor": "EVENTSTORY_RUINS_THE_WATCHERS",
+            "ext": "ruin-events",
             "id": "EVENTSTORY_RUINS_THE_WATCHERS",
             "name": "The Watchers"
           }
@@ -10341,7 +10468,7 @@
         "name": "Wrath of the Watchers",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10384,7 +10511,7 @@
             "text": "Do not acknowledge any such curse."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10418,7 +10545,7 @@
             "text": "Make an offering to the gods, as penance."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10493,7 +10620,7 @@
         "name": "Hybris",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10528,7 +10655,7 @@
             "text": "We will take the risk, bring [character] to court."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10565,7 +10692,7 @@
             "text": "Have the scholar serve as a for."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10638,7 +10765,7 @@
         "name": "Mani in the East",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10668,7 +10795,7 @@
             "text": "Bid him to continue exploring."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10727,7 +10854,7 @@
         "name": "The First Disciple",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10784,7 +10911,7 @@
             "text": "Have him return, to hear the words of this disciple."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10838,7 +10965,7 @@
         "name": "Forest Druids",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -10903,11 +11030,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_DRUIDS_OF_THE_FOREST_FOLLOWUP",
+                "ext": "expedition-events",
                 "id": "EVENTSTORY_DRUIDS_OF_THE_FOREST_FOLLOWUP",
                 "name": "Druidic Divinations"
               }
             ],
-            "linkAdd": "EVENTLINK_DRUID_FOREST",
+            "linkAdds": [
+              "EVENTLINK_DRUID_FOREST"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -10971,11 +11102,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_DRUIDS_OF_THE_FOREST_FOLLOWUP",
+                "ext": "expedition-events",
                 "id": "EVENTSTORY_DRUIDS_OF_THE_FOREST_FOLLOWUP",
                 "name": "Druidic Divinations"
               }
             ],
-            "linkAdd": "EVENTLINK_DRUID_FOREST",
+            "linkAdds": [
+              "EVENTLINK_DRUID_FOREST"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -11060,7 +11195,7 @@
         "name": "Land of The Midnight Sun",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -11119,11 +11254,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_THE_LAND_OF_THE_MIDNIGHT_SUN_FOLLOWUP",
+                "ext": "expedition-events",
                 "id": "EVENTSTORY_THE_LAND_OF_THE_MIDNIGHT_SUN_FOLLOWUP",
                 "name": "Trappers from the Arctic Wastes"
               }
             ],
-            "linkAdd": "EVENTLINK_MIDNIGHT_SUN",
+            "linkAdds": [
+              "EVENTLINK_MIDNIGHT_SUN"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -11179,11 +11318,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_THE_LAND_OF_THE_MIDNIGHT_SUN_FOLLOWUP",
+                "ext": "expedition-events",
                 "id": "EVENTSTORY_THE_LAND_OF_THE_MIDNIGHT_SUN_FOLLOWUP",
                 "name": "Trappers from the Arctic Wastes"
               }
             ],
-            "linkAdd": "EVENTLINK_MIDNIGHT_SUN",
+            "linkAdds": [
+              "EVENTLINK_MIDNIGHT_SUN"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -11251,7 +11394,7 @@
         "name": "Monsters of the Deep",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -11318,11 +11461,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_MONSTERS_OF_THE_DEEP_FOLLOWUP",
+                "ext": "expedition-events",
                 "id": "EVENTSTORY_MONSTERS_OF_THE_DEEP_FOLLOWUP",
                 "name": "Fishermen of the Western Sea"
               }
             ],
-            "linkAdd": "EVENTLINK_MONSTERS_DEEP",
+            "linkAdds": [
+              "EVENTLINK_MONSTERS_DEEP"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -11389,11 +11536,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_MONSTERS_OF_THE_DEEP_FOLLOWUP",
+                "ext": "expedition-events",
                 "id": "EVENTSTORY_MONSTERS_OF_THE_DEEP_FOLLOWUP",
                 "name": "Fishermen of the Western Sea"
               }
             ],
-            "linkAdd": "EVENTLINK_MONSTERS_DEEP",
+            "linkAdds": [
+              "EVENTLINK_MONSTERS_DEEP"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -11483,7 +11634,7 @@
         "name": "The Ant's Gold",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -11534,11 +11685,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_THE_LAND_OF_ANT_GOLD_FOLLOWUP",
+                "ext": "expedition-events",
                 "id": "EVENTSTORY_THE_LAND_OF_ANT_GOLD_FOLLOWUP",
                 "name": "Prince of Hindustan"
               }
             ],
-            "linkAdd": "EVENTLINK_ANT_GOLD",
+            "linkAdds": [
+              "EVENTLINK_ANT_GOLD"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -11586,11 +11741,15 @@
           {
             "leadsTo": [
               {
+                "anchor": "EVENTSTORY_THE_LAND_OF_ANT_GOLD_FOLLOWUP",
+                "ext": "expedition-events",
                 "id": "EVENTSTORY_THE_LAND_OF_ANT_GOLD_FOLLOWUP",
                 "name": "Prince of Hindustan"
               }
             ],
-            "linkAdd": "EVENTLINK_ANT_GOLD",
+            "linkAdds": [
+              "EVENTLINK_ANT_GOLD"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -11659,7 +11818,16 @@
         "name": "A Dream in the Forest",
         "options": [
           {
-            "linkAdd": null,
+            "leadsTo": [
+              {
+                "cat": "on-lose-trait",
+                "id": "EVENTSTORY_EXPLORATION_ROOTS",
+                "name": "Taking Root"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_A_SEED"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -11693,7 +11861,7 @@
             "text": "Follow the feeling home."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -11746,14 +11914,16 @@
         "name": "Converted on the Road",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "-80 opinion for 20 turns"
+                    "memory": "MEMORYCHARACTER_STOPPED_MY_EXPLORING",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Stopped me exploring (-80 opinion for 20 turns)"
                   },
                   {
                     "text": "Gain trait: Returning",
@@ -11802,7 +11972,7 @@
             "text": "Recall [character] and stop any thought of [religion]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -11822,7 +11992,9 @@
                     "text": "Converts to the target religion"
                   },
                   {
-                    "text": "+40 opinion for 40 turns"
+                    "memory": "MEMORYRELIGION_SUPPORTED_FAITH",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Gave support (+40 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -11863,7 +12035,7 @@
             "text": "Invite [character] back to spread these intriguing ideas."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -11916,7 +12088,7 @@
         "name": "Creatures of the Coast",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -11952,7 +12124,7 @@
             "text": "Save the settlers and laborers."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -11961,8 +12133,8 @@
                   {
                     "text": "Gain trait: Engineer",
                     "tip": [
-                      "As leader: +10% Unit Trait Modifier / Siege",
-                      "As leader: +10% Unit Trait Modifier / Ship",
+                      "As leader: +10% Strength vs Siege units",
+                      "As leader: +10% Strength vs Ship units",
                       "As general: Can build Roads",
                       "+1 Wisdom",
                       "+20 opinion with same-trait characters"
@@ -12003,7 +12175,7 @@
             "text": "Bring us the valuable metals."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -12025,7 +12197,9 @@
                     "yield": "iron"
                   },
                   {
-                    "text": "-20 opinion for 20 turns"
+                    "memory": "MEMORYFAMILY_SACRIFICED_RELATIVE",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Sacrificed a relative at sea (-20 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -12089,7 +12263,7 @@
         "name": "Exploration Ends?",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Exploring Ends Money",
@@ -12192,8 +12366,8 @@
                   {
                     "text": "Gain trait: Brave",
                     "tip": [
-                      "As leader: +5% Unit Trait Modifier / Melee",
-                      "As general: +10% Unit Trait Modifier / Melee",
+                      "As leader: +5% Strength vs Melee units",
+                      "As general: +10% Strength vs Melee units",
                       "+1 Courage",
                       "+20 opinion with same-trait characters"
                     ],
@@ -12364,7 +12538,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Exploring Ends Money",
@@ -12467,8 +12641,8 @@
                   {
                     "text": "Gain trait: Brave",
                     "tip": [
-                      "As leader: +5% Unit Trait Modifier / Melee",
-                      "As general: +10% Unit Trait Modifier / Melee",
+                      "As leader: +5% Strength vs Melee units",
+                      "As general: +10% Strength vs Melee units",
                       "+1 Courage",
                       "+20 opinion with same-trait characters"
                     ],
@@ -12639,7 +12813,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -12694,7 +12868,7 @@
         "name": "Exploration Ends?",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Exploring Ends Money",
@@ -12797,8 +12971,8 @@
                   {
                     "text": "Gain trait: Brave",
                     "tip": [
-                      "As leader: +5% Unit Trait Modifier / Melee",
-                      "As general: +10% Unit Trait Modifier / Melee",
+                      "As leader: +5% Strength vs Melee units",
+                      "As general: +10% Strength vs Melee units",
                       "+1 Courage",
                       "+20 opinion with same-trait characters"
                     ],
@@ -12969,7 +13143,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Exploring Ends Money",
@@ -13072,8 +13246,8 @@
                   {
                     "text": "Gain trait: Brave",
                     "tip": [
-                      "As leader: +5% Unit Trait Modifier / Melee",
-                      "As general: +10% Unit Trait Modifier / Melee",
+                      "As leader: +5% Strength vs Melee units",
+                      "As general: +10% Strength vs Melee units",
                       "+1 Courage",
                       "+20 opinion with same-trait characters"
                     ],
@@ -13244,7 +13418,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13296,7 +13470,7 @@
         "name": "Eyes of Green",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13348,7 +13522,7 @@
             "text": "Send your finest workers to bring [character] and the statue back to [rival]"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13379,7 +13553,7 @@
             "text": "Encourage [character] to stay and study the statue for longer."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13458,7 +13632,7 @@
         "name": "From the Dead",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13501,7 +13675,7 @@
             "text": "Well, he has no further use for it."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13556,14 +13730,16 @@
         "name": "Praying for a Safe Return",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "+20 opinion for 40 turns"
+                    "memory": "MEMORYRELIGION_PRAYER",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Offered a prayer (+20 opinion for 40 turns)"
                   }
                 ],
                 "weight": null
@@ -13586,7 +13762,7 @@
             "text": "“May bring [character] home safely.”"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13640,7 +13816,7 @@
         "name": "The Land of Hairy Men",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13689,7 +13865,7 @@
             "text": "Order [character] home immediately."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13737,7 +13913,7 @@
             "text": "Allow [character] to continue exploring."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13806,7 +13982,7 @@
         "name": "Towering Stones",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -13840,7 +14016,7 @@
             "text": "Pry forth a stone, as a keepsake."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": "Exploration Cornerstone Study Polis",
@@ -13972,7 +14148,7 @@
             "text": ""
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14022,7 +14198,7 @@
         "name": "Training with the Enemy",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14056,7 +14232,7 @@
             "text": "This is too dangerous. [character] should return at once."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14109,7 +14285,7 @@
             "text": "May he fare well in the battles ahead."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14183,7 +14359,7 @@
         "name": "Under Attack",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14221,7 +14397,7 @@
             "text": "Help the soldiers make plans, and offer knowledge of the nearby terrain."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14278,7 +14454,36 @@
         "name": "[character] Travels",
         "options": [
           {
-            "linkAdd": null,
+            "leadsTo": [
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_CITY_EXPLORATION_RESUPPLY",
+                "name": "The Streets of [city]"
+              },
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_CITY_EXPLORATION_RANSOM",
+                "name": "Ransom"
+              },
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_CITY_EXPLORATION_AMBITION",
+                "name": "[city] Within Reach"
+              },
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_CITY_EXPLORATION_GIFT",
+                "name": "A Gift"
+              },
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_CITY_EXPLORATION_GIFT_HEIR",
+                "name": "A Gift"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_CITY_EXPLORATION"
+            ],
             "outcomes": [
               {
                 "label": null,
@@ -14295,7 +14500,7 @@
             "text": "Enter [city]."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14334,7 +14539,7 @@
             "text": "Travel further, keeping to wilderness routes."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14388,7 +14593,7 @@
         "name": "First Voyage",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14402,7 +14607,8 @@
                     "tipTitle": "Exploring — trait"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYPLAYER_OFFER",
+                    "text": "Remembered: Player Offer (5 turns)"
                   }
                 ],
                 "weight": null
@@ -14442,7 +14648,24 @@
             "text": "Instruct [character] to stay as an ambassador to [rival]."
           },
           {
-            "linkAdd": null,
+            "canLeadTo": [
+              {
+                "cat": "scripted",
+                "id": "EVENTSTORY_BROUGHT_NEAR_BY_GREED",
+                "name": "Brought Near by Greed"
+              },
+              {
+                "cat": "scripted",
+                "id": "EVENTSTORY_SINK_OF_THE_WORLDS_GOLD",
+                "name": "Sink of the World's Gold"
+              },
+              {
+                "cat": "on-city-culture",
+                "id": "EVENTSTORY_THE_CITY_HOARD",
+                "name": "The [city] Hoard"
+              }
+            ],
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14456,7 +14679,8 @@
                     "tipTitle": "Returning — trait"
                   },
                   {
-                    "text": "Opinion memory"
+                    "memory": "MEMORYPLAYER_TRADE_DEAL",
+                    "text": "Remembered: New Trade Deal (+40 opinion for 20 turns)"
                   }
                 ],
                 "weight": null
@@ -14488,7 +14712,7 @@
             "text": "Use this opportunity to open new routes of trade."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14565,7 +14789,7 @@
         "name": "Silence",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14618,10 +14842,8 @@
         "dlc": null,
         "followsFrom": [
           {
-            "id": "EVENTSTORY_DRUIDS_OF_THE_FOREST",
-            "name": "Forest Druids"
-          },
-          {
+            "anchor": "EVENTSTORY_DRUIDS_OF_THE_FOREST",
+            "ext": "expedition-events",
             "id": "EVENTSTORY_DRUIDS_OF_THE_FOREST",
             "name": "Forest Druids"
           }
@@ -14633,7 +14855,7 @@
         "name": "Druidic Divinations",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14687,7 +14909,7 @@
             "text": "When ready, return to us with what you have learned."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14765,10 +14987,8 @@
         "dlc": null,
         "followsFrom": [
           {
-            "id": "EVENTSTORY_MONSTERS_OF_THE_DEEP",
-            "name": "Monsters of the Deep"
-          },
-          {
+            "anchor": "EVENTSTORY_MONSTERS_OF_THE_DEEP",
+            "ext": "expedition-events",
             "id": "EVENTSTORY_MONSTERS_OF_THE_DEEP",
             "name": "Monsters of the Deep"
           }
@@ -14780,7 +15000,7 @@
         "name": "Fishermen of the Western Sea",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14829,7 +15049,7 @@
             "text": "Come home, and bring that Fisher with you."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14878,7 +15098,7 @@
             "text": "Keep exploring until you find something of real value!"
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -14949,10 +15169,8 @@
         "dlc": null,
         "followsFrom": [
           {
-            "id": "EVENTSTORY_THE_LAND_OF_ANT_GOLD",
-            "name": "The Ant's Gold"
-          },
-          {
+            "anchor": "EVENTSTORY_THE_LAND_OF_ANT_GOLD",
+            "ext": "expedition-events",
             "id": "EVENTSTORY_THE_LAND_OF_ANT_GOLD",
             "name": "The Ant's Gold"
           }
@@ -14964,7 +15182,7 @@
         "name": "Prince of Hindustan",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -15021,7 +15239,7 @@
             "text": "Yes, [character], stay in India awhile. When you feel ready, return to us with what you have learned."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -15088,10 +15306,8 @@
         "dlc": null,
         "followsFrom": [
           {
-            "id": "EVENTSTORY_THE_LAND_OF_THE_MIDNIGHT_SUN",
-            "name": "Land of The Midnight Sun"
-          },
-          {
+            "anchor": "EVENTSTORY_THE_LAND_OF_THE_MIDNIGHT_SUN",
+            "ext": "expedition-events",
             "id": "EVENTSTORY_THE_LAND_OF_THE_MIDNIGHT_SUN",
             "name": "Land of The Midnight Sun"
           }
@@ -15103,7 +15319,7 @@
         "name": "Trappers from the Arctic Wastes",
         "options": [
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
@@ -15163,7 +15379,7 @@
             "text": "Come home."
           },
           {
-            "linkAdd": null,
+            "linkAdds": [],
             "outcomes": [
               {
                 "label": null,
