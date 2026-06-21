@@ -423,8 +423,10 @@ const boostScale = (g: any) =>
       <ul class="np-families">
         {families.map((f: any) => (
           <li class="np-fam" style={f.ingameColor ? `--fam-stripe: ${f.ingameColor}` : undefined}>
-            {f.classKey && <img class="np-fam__icon" src={`${base}img/archetypes/${f.classKey}.png`} alt="" />}
-            <span class="np-fam__class">{f.class}</span>
+            <a class="np-fam__link" href={`${base}families/${f.classKey}`} title={`${f.class} family class`}>
+              {f.classKey && <img class="np-fam__icon" src={`${base}img/archetypes/${f.classKey}.png`} alt="" />}
+              <span class="np-fam__class">{f.class}</span>
+            </a>
             <span class="np-fam__name">{f.name}</span>
             {tendenciesByClass[f.classKey] && (
               <a class="np-fam__arch" href={`${base}archetype-tendencies`} title="Archetype die weights for this family class">
@@ -1015,6 +1017,9 @@ const boostScale = (g: any) =>
     text-decoration: none;
   }
   .np-fam__arch:hover { color: var(--gold); text-decoration: none; }
+  .np-fam__link { display: inline-flex; align-items: baseline; gap: 0.4rem; text-decoration: none; }
+  .np-fam__link:hover { text-decoration: none; }
+  .np-fam__link:hover .np-fam__class { color: var(--gold); }
   .np-fam__icon { width: 1.1em; height: 1.1em; object-fit: contain; align-self: center; opacity: 0.85; }
   .np-fam__class { font-family: var(--font-display); font-weight: 600; font-size: 0.96rem; color: var(--text); }
   .np-fam__name { font-family: var(--font-display); font-style: italic; font-size: 0.78rem; color: var(--text-faint); }
