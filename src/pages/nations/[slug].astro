@@ -177,7 +177,21 @@ const boostScale = (g: any) =>
   active="nations"
   description={`Old World reference: ${n.name} — its kit at a glance: bonuses, unique units (full stats), unique improvements & projects, shrines, families and starting techs, plus dynasties and royal lineup — all XML-canonical from the game's files.`}
 >
-  <a class="back-link" href={`${base}nations`}>← All nations</a>
+  <nav class="sibnav" aria-label="Other nations">
+    <a class="sibnav__all" href={`${base}nations`}>All nations</a>
+    <ul class="sibnav__list">
+      {nations.map(x => (
+        <li>
+          <a class={`sibnav__item ${x.slug === n.slug ? 'is-current' : ''}`}
+             href={`${base}nations/${x.slug}`}
+             aria-current={x.slug === n.slug ? 'page' : undefined}>
+            <img src={`${base}img/crests/${x.slug}.png`} alt="" />
+            <span>{x.name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
 
   <header class="nat-head" style={`--nation-bg: ${n.color.bg}; --nation-fg: ${n.color.fg};`}>
     <img class="nat-head__crest" src={`${base}img/crests/${n.slug}.png`} alt="" />
@@ -557,17 +571,49 @@ const boostScale = (g: any) =>
 </Base>
 
 <style>
-  .back-link {
-    display: inline-block;
+  .sibnav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem 0.7rem;
+    flex-wrap: wrap;
+    margin: 0 0 1.2rem;
+  }
+  .sibnav__all {
     font-family: var(--font-ui);
-    font-size: 0.7rem;
+    font-size: 0.62rem;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.18em;
     color: var(--gold-soft);
-    margin: 0 0 1rem;
+    text-decoration: none;
+    white-space: nowrap;
+    padding-right: 0.6rem;
+    border-right: 1px solid var(--border);
+  }
+  .sibnav__all:hover { color: var(--gold); text-decoration: none; }
+  .sibnav__list {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-wrap: wrap; gap: 0.3rem;
+  }
+  .sibnav__item {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.18rem 0.55rem 0.18rem 0.4rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: var(--font-ui);
+    font-size: 0.74rem;
+    color: var(--text-dim);
     text-decoration: none;
   }
-  .back-link:hover { color: var(--gold); text-decoration: none; }
+  .sibnav__item img { width: 1.05em; height: 1.05em; object-fit: contain; opacity: 0.85; }
+  .sibnav__item:hover { color: var(--text); border-color: var(--gold-deep); text-decoration: none; }
+  .sibnav__item.is-current {
+    background: var(--bg-elev-2);
+    border-color: var(--gold);
+    color: var(--text);
+    font-weight: 600;
+  }
+  .sibnav__item.is-current img { opacity: 1; }
 
   .nat-head {
     display: grid;
