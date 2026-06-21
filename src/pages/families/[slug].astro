@@ -113,7 +113,7 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
         <>
           {(f.foundBonus || []).length > 0 && (
             <>
-              <div class="np-sublabel">On founding the family</div>
+              <div class="np-sublabel">On founding each city</div>
               <ul class="np-list">
                 {(f.foundBonus || []).map(b => {
                   const yk = classifyYield(b)?.toLowerCase() || 'misc';

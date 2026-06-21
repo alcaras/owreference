@@ -157,8 +157,9 @@ def main() -> int:
         if sfb is not None:
             seat_found = render_bonus(sfb, indexes)
 
-        # Found bonus (granted when the family itself is first founded — distinct
-        # from the seat bonus above; only Sages currently has one: Archive I).
+        # Found bonus — granted each time a city of this family is founded
+        # (Player.cs:16083 doBonus per city; game labels it "On City Founded").
+        # Distinct from the seat-found bonus above. Only Sages has one: Archive I.
         found_bonus: list[str] = []
         fb_id = e.findtext("FoundBonus")
         fb = indexes.get("bonus.xml", {}).get(fb_id or "")
