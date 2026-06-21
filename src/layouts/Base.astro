@@ -45,6 +45,11 @@ const activeSection = navSections.find(s => s.items.some(t => t.slug === active)
 
 const syncedDate = new Date(patch.syncedAt);
 const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+const buildLabel = (patch as any).buildId || patch.version;
+const updatedAt = (patch as any).updatedAt;
+const updatedLabel = updatedAt
+  ? new Date(updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  : null;
 ---
 <!doctype html>
 <html lang="en">
@@ -202,12 +207,16 @@ const syncedLabel = syncedDate.toLocaleDateString('en-US', { year: 'numeric', mo
 
       <footer class="foot">
         <div class="foot__col">
-          <span class="foot__label">Patch</span>
-          <span class="foot__val">{patch.version}</span>
+          <span class="foot__label">Build</span>
+          <span class="foot__val">{buildLabel}</span>
+          {updatedLabel && (
+            <>
+              <span class="foot__dot">·</span>
+              <span class="foot__val foot__val--dim">game updated {updatedLabel}</span>
+            </>
+          )}
           <span class="foot__dot">·</span>
           <span class="foot__val foot__val--dim">synced {syncedLabel}</span>
-          <span class="foot__dot">·</span>
-          <span class="foot__val foot__val--dim">auto-built from game files</span>
         </div>
         <div class="foot__col foot__col--right">
           <a href="https://github.com/alcaras/owreference/blob/main/CHANGELOG.md">Changelog</a>

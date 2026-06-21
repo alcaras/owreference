@@ -24,12 +24,24 @@ rsync -a --delete \
   --exclude '*' \
   "$REF_SRC/" "$REF_DST/"
 
-# Capture build metadata
-APP_INFO="$INSTALL/OldWorld.app/Contents/Resources/Data/app.info"
-VERSION="unknown"
-if [[ -f "$APP_INFO" ]]; then
-  # app.info typically contains "CompanyName\nProductName" on first lines —
-  # the real build version is exposed via UnityPlayer; for now we hash app dir mtime.
+# Capture build metadata. The OldWorld.app bundle mtime is frozen at the
+# original 2022 signing date and never tracks content patches, so read the real
+# build from Steam's app manifest instead: `buildid` (monotonic per patch) and
+# `LastUpdated` (epoch seconds of the last content update).
+MANIFEST="$(cd "$INSTALL/../.." 2>/dev/null && pwd)/appmanifest_597180.acf"
+BUILD_ID=""
+UPDATED_AT=""
+if [[ -f "$MANIFEST" ]]; then
+  BUILD_ID=$(grep -o '"buildid"[[:space:]]*"[0-9]*"' "$MANIFEST" | grep -o '[0-9]*' | tail -1 || true)
+  LAST_UPDATED=$(grep -o '"LastUpdated"[[:space:]]*"[0-9]*"' "$MANIFEST" | grep -o '[0-9]*' | tail -1 || true)
+  if [[ -n "${LAST_UPDATED:-}" ]]; then
+    UPDATED_AT=$(date -u -r "$LAST_UPDATED" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || true)
+  fi
+fi
+# Version = Steam build id when available; fall back to the app-bundle mtime hash.
+if [[ -n "$BUILD_ID" ]]; then
+  VERSION="$BUILD_ID"
+else
   VERSION=$(stat -f '%Sm' -t '%Y%m%d-%H%M%S' "$INSTALL/OldWorld.app" 2>/dev/null || date +%Y%m%d-%H%M%S)
 fi
 
@@ -37,8 +49,10 @@ mkdir -p "$(dirname "$PATCH_JSON")"
 cat > "$PATCH_JSON" <<EOF
 {
   "version": "$VERSION",
+  "buildId": "$BUILD_ID",
+  "updatedAt": "$UPDATED_AT",
   "syncedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "installPath": "$INSTALL"
 }
 EOF
-echo "✓ synced, build tag: $VERSION"
+echo "✓ synced, Steam build: ${BUILD_ID:-$VERSION} (game updated ${UPDATED_AT:-unknown})"
