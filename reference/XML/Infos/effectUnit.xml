@@ -983,6 +983,10 @@
 				<zIndex>VEGETATION_TREES</zIndex>
 				<iValue>10</iValue>
 			</Pair>
+			<Pair>
+				<zIndex>VEGETATION_JUNGLE</zIndex>
+				<iValue>10</iValue>
+			</Pair>
 		</aiVegetationFromModifier>
 	</Entry>
 	<Entry>
@@ -1261,9 +1265,7 @@
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_TACTICIAN_LEADER</GenderedName>
 		<zIconName>EFFECTUNIT_TACTICIAN_LEADER</zIconName>
 		<bSkipIcon>1</bSkipIcon>
-		<aeEffectUnitUnlock>
-			<zValue>EFFECTUNIT_STUN</zValue>
-		</aeEffectUnitUnlock>
+		<bStun>1</bStun>
 	</Entry>
 	<Entry>
 		<zType>EFFECTUNIT_ZEALOT</zType>
@@ -2113,20 +2115,13 @@
 		</aiOccurrenceFromModifier>
 	</Entry>
 	<Entry>
-		<zType>EFFECTUNIT_STUN</zType>
-		<GenderedName>GENDERED_TEXT_CONCEPT_STUN</GenderedName>
-		<zIconName>EFFECTUNIT_TACTICIAN_LEADER</zIconName>
-		<bSkipIcon>1</bSkipIcon>
-		<bStun>1</bStun>
-	</Entry>
-	<Entry>
 		<zType>EFFECTUNIT_LEADER_GENERAL</zType>
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_LEADER_GENERAL</GenderedName>
 		<zIconName>EFFECTUNIT_ALEXANDER</zIconName>
 		<iMovementExtra>1</iMovementExtra>
 		<aeEffectUnitImmune>
 			<zValue>EFFECTUNIT_PANIC</zValue>
-			<zValue>EFFECTUNIT_STUN</zValue>
+			<zValue>EFFECTUNIT_TACTICIAN_LEADER</zValue>
 			<zValue>EFFECTUNIT_DISARMED</zValue>
 			<zValue>EFFECTUNIT_GRAPPLER</zValue>
 		</aeEffectUnitImmune>
@@ -2138,7 +2133,7 @@
 		<iMovementExtra>1</iMovementExtra>
 		<aeEffectUnitImmune>
 			<zValue>EFFECTUNIT_PANIC</zValue>
-			<zValue>EFFECTUNIT_STUN</zValue>
+			<zValue>EFFECTUNIT_TACTICIAN_LEADER</zValue>
 			<zValue>EFFECTUNIT_DISARMED</zValue>
 			<zValue>EFFECTUNIT_GRAPPLER</zValue>
 		</aeEffectUnitImmune>
@@ -2176,7 +2171,7 @@
 		<bEndRout>1</bEndRout>
 		<aiMeleeToClearTerrainTargetModifier>
 			<Pair>
-				<zIndex>TERRAIN_TARGET_OPEN</zIndex>
+				<zIndex>TERRAIN_TARGET_BARE</zIndex>
 				<iValue>50</iValue>
 			</Pair>
 		</aiMeleeToClearTerrainTargetModifier>

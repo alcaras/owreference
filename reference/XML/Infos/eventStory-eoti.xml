@@ -1167,7 +1167,8 @@
 		<TriggerData>IMPROVEMENT_STUPA</TriggerData>
 	    <iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
-	    <iWeight>1</iWeight>
+		<iLookAtSubject>0</iLookAtSubject>
+		<iWeight>1</iWeight>
 	    <iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
 	<Entry>
@@ -1203,6 +1204,7 @@
 		<TriggerData>IMPROVEMENT_THE_MAHAVIHARA</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -1239,6 +1241,7 @@
 		<TriggerData>IMPROVEMENT_MONUMENTAL_BUDDHAS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -1275,6 +1278,7 @@
 		<TriggerData>IMPROVEMENT_HILL_FORT</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -5273,6 +5277,14 @@
 						<First>familyHead</First>
 						<Second>BONUS_SEIZE_THRONE_S2</Second>
 					</Pair>
+					<Pair>
+						<First>familyHead</First>
+						<Second>BONUS_MAKE_ROYAL</Second>
+					</Pair>
+					<Pair>
+						<First>familyHead</First>
+						<Second>BONUS_XP_CHARACTER_HUGE</Second>
+					</Pair>
 	            </SubjectBonuses>
 	        </EventOption>
 	        <EventOption>
@@ -5280,9 +5292,68 @@
 	            <SubjectBonuses>
 	                <Pair>
 	                    <First>familySeat</First>
+	                    <Second>BONUS_REBEL_UNITS_1</Second>
+	                </Pair>
+	            </SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_WEAK</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+	        </EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_UPSTART_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_2</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_DEVELOPING</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_UPSTART_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
 	                    <Second>BONUS_REBEL_UNITS_3</Second>
 	                </Pair>
 	            </SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_STRONG</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_UPSTART_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_4</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_LEGENDARY</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
 	        </EventOption>
 	        <EventOption>
 	            <Text>TEXT_EVENTOPTION_COALITION_UPSTART_2</Text>
@@ -5364,9 +5435,68 @@
 				<SubjectBonuses>
 					<Pair>
 						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_1</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_WEAK</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_LEADER_SAME_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_2</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_DEVELOPING</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_LEADER_SAME_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
 						<Second>BONUS_REBEL_UNITS_3</Second>
 					</Pair>
 				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_STRONG</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_LEADER_SAME_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_4</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_LEGENDARY</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
 			</EventOption>
 		</EventOptions>
 		<Class>EVENTCLASS_FAMILY_SUPREMACY</Class>
@@ -5443,9 +5573,68 @@
 				<SubjectBonuses>
 					<Pair>
 						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_1</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_WEAK</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_UPSTART_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_2</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_DEVELOPING</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_UPSTART_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
 						<Second>BONUS_REBEL_UNITS_3</Second>
 					</Pair>
 				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_STRONG</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_UPSTART_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_4</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_LEGENDARY</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
 			</EventOption>
 			<EventOption>
 				<Text>TEXT_EVENTOPTION_COALITION_UPSTART_2</Text>
@@ -5689,9 +5878,68 @@
 				<SubjectBonuses>
 					<Pair>
 						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_1</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_WEAK</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_FAMILY_RISING_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_2</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_DEVELOPING</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_FAMILY_RISING_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
 						<Second>BONUS_REBEL_UNITS_3</Second>
 					</Pair>
 				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_STRONG</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
+			</EventOption>
+			<EventOption>
+				<Text>TEXT_EVENTOPTION_COALITION_FAMILY_RISING_1</Text>
+				<SubjectBonuses>
+					<Pair>
+						<First>familySeat</First>
+						<Second>BONUS_REBEL_UNITS_4</Second>
+					</Pair>
+				</SubjectBonuses>
+				<IndexSubject>
+					<Pair>
+						<First>4</First>
+						<Second>SUBJECT_CITY_CULTURE_LEGENDARY</Second>
+					</Pair>
+				</IndexSubject>
+				<bHidePrereqs>1</bHidePrereqs>
+				<bHideInvalid>1</bHideInvalid>
 			</EventOption>
 		</EventOptions>
 		<Class>EVENTCLASS_FAMILY_SUPREMACY</Class>
@@ -5704,6 +5952,7 @@
 		<iWeight>1</iWeight>
 		<iProb>100</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
+        <bIgnoreOptions>1</bIgnoreOptions>
 		<bNoEventsValid>1</bNoEventsValid>
 	</Entry>
 	<!-- VASSALIZE TRIBE RESULTS -->
@@ -7704,7 +7953,8 @@
 		<TriggerSubjects>2</TriggerSubjects>
 	    <iImageSubject>0</iImageSubject>
 	    <iImageExtra>1</iImageExtra>
-	    <iWeight>4</iWeight>
+		<iLookAtSubject>2</iLookAtSubject>
+		<iWeight>4</iWeight>
 	    <iProb>100</iProb>
 	    <iRepeatTurns>-1</iRepeatTurns>
 	    <bSinglePlayer>1</bSinglePlayer>
@@ -9257,7 +9507,8 @@
 	    <Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 	    <iTriggerSubject>0</iTriggerSubject>
 	    <iImageSubject>-1</iImageSubject>
-	    <iWeight>1</iWeight>
+		<iLookAtSubject>0</iLookAtSubject>
+		<iWeight>1</iWeight>
 	    <iProb>100</iProb>
 	    <iRepeatTurns>-1</iRepeatTurns>
 	    <aeGameOptionInvalid>
@@ -9327,6 +9578,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>100</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>

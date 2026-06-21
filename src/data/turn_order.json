@@ -2,20 +2,38 @@
  "_meta": {
   "source": "reference/Source/Base/Game/GameCore",
   "note": "Step order mirrors source order exactly — do not sort.",
-  "unlabeled": []
+  "unlabeled": [
+   "player:checkNewCitySites (Player.cs:16921)",
+   "player:doAttackTargets (Player.cs:16920)",
+   "player_process:changeMoney (Player.cs:16588)",
+   "player_process:changeYieldStockpileWhole (Player.cs:16589)",
+   "tile:clearImprovement (Tile.cs:10927)",
+   "tile:resetImprovementUnitTurns (Tile.cs:10999)",
+   "tile:setCitySite (Tile.cs:10970)",
+   "tile:setTradeOutpostTime (Tile.cs:10954)",
+   "tile:setTradeOutpostTime (Tile.cs:10976)",
+   "unit:act (Unit.cs:5671)",
+   "unit:act (Unit.cs:5710)",
+   "unit:act (Unit.cs:5724)",
+   "unit:convert (Unit.cs:5885)",
+   "unit:incrementLeaderStat (Unit.cs:5672)",
+   "unit:setFormationTurns (Unit.cs:5718)",
+   "unit:setFortifyTurns (Unit.cs:5704)",
+   "unit:wake (Unit.cs:5820)"
+  ]
  },
  "bands": [
   {
    "key": "game",
    "title": "Turn rollover (start of round)",
    "fn": "Game.doTurn",
-   "entry": "Game.cs:12738",
+   "entry": "Game.cs:12745",
    "steps": [
     {
      "call": "halveRecentHumanAttacks",
      "recv": null,
      "file": "Game.cs",
-     "line": 12740,
+     "line": 12747,
      "loop": null,
      "cond": null,
      "title": "Combat heat decays",
@@ -27,7 +45,7 @@
      "call": "doOccurrences",
      "recv": null,
      "file": "Game.cs",
-     "line": 12742,
+     "line": 12749,
      "loop": null,
      "cond": null,
      "title": "New Occurrences may start",
@@ -39,7 +57,7 @@
      "call": "adjustYieldPrice",
      "recv": null,
      "file": "Game.cs",
-     "line": 12749,
+     "line": 12756,
      "loop": "per point of demand",
      "cond": null,
      "title": "Market prices drift",
@@ -51,7 +69,7 @@
      "call": "doTurn",
      "recv": "pLoopTile",
      "file": "Game.cs",
-     "line": 12762,
+     "line": 12769,
      "loop": "for each tile on the map",
      "cond": null,
      "title": "Every tile updates",
@@ -62,7 +80,7 @@
        "call": "changeImprovementPillageTurns",
        "recv": null,
        "file": "Tile.cs",
-       "line": 10915,
+       "line": 10923,
        "loop": null,
        "cond": "improvement is pillaged",
        "title": "Pillage timer ticks",
@@ -71,127 +89,187 @@
        "id": "g4.1"
       },
       {
+       "call": "clearImprovement",
+       "recv": null,
+       "file": "Tile.cs",
+       "line": 10927,
+       "loop": null,
+       "cond": "if getImprovementPillageTurns() == 0",
+       "title": "Clear improvement",
+       "desc": "",
+       "group": "misc",
+       "id": "g4.2"
+      },
+      {
        "call": "changeImprovementBuildTurnsLeft",
        "recv": null,
        "file": "Tile.cs",
-       "line": 10932,
+       "line": 10940,
        "loop": null,
        "cond": "progress was made, no worker",
        "title": "Abandoned construction regresses",
        "desc": "An unfinished improvement with no worker on it loses one turn of progress (back up to its original cost).",
        "group": "world",
-       "id": "g4.2"
+       "id": "g4.3"
+      },
+      {
+       "call": "setTradeOutpostTime",
+       "recv": "pLoopPlayer",
+       "file": "Tile.cs",
+       "line": 10954,
+       "loop": "loop",
+       "cond": "if pLoopPlayer.getTradeOutpostTime(getID()) > 0 && !isHostileTri…",
+       "title": "Set trade outpost time",
+       "desc": "",
+       "group": "misc",
+       "id": "g4.4"
+      },
+      {
+       "call": "setCitySite",
+       "recv": null,
+       "file": "Tile.cs",
+       "line": 10970,
+       "loop": null,
+       "cond": "an outpost timer expired here",
+       "title": "Set city site",
+       "desc": "",
+       "group": "misc",
+       "id": "g4.5"
       },
       {
        "call": "foundCity",
        "recv": "pFoundPlayer",
        "file": "Tile.cs",
-       "line": 10963,
+       "line": 10971,
        "loop": null,
        "cond": "an outpost timer expired here",
        "title": "Trade outpost founds a city",
        "desc": "On an active city site, a player whose trade-outpost timer just expired founds a free city there.",
        "group": "world",
-       "id": "g4.3"
+       "id": "g4.6"
+      },
+      {
+       "call": "setTradeOutpostTime",
+       "recv": "pLoopPlayer",
+       "file": "Tile.cs",
+       "line": 10976,
+       "loop": "loop",
+       "cond": "if pLoopPlayer.getTradeOutpostTime(getID()) > 0",
+       "title": "Set trade outpost time",
+       "desc": "",
+       "group": "misc",
+       "id": "g4.7"
       },
       {
        "call": "doTribeTurn",
        "recv": null,
        "file": "Tile.cs",
-       "line": 10974,
+       "line": 10982,
        "loop": null,
        "cond": null,
        "title": "Tribal camps act",
        "desc": "A camp may launch a raid at a nearby city (raid-prob roll, blockable by the tribe-raid event), or — for non-diplomacy tribes — convert to a neighboring tribe.",
        "group": "tribes",
-       "id": "g4.4"
+       "id": "g4.8"
       },
       {
        "call": "incrementImprovementDevelopTurns",
        "recv": null,
        "file": "Tile.cs",
-       "line": 10978,
+       "line": 10986,
        "loop": null,
        "cond": "improvement can develop",
        "title": "Improvements develop",
        "desc": "Improvements that upgrade over time tick their develop counter.",
        "group": "world",
-       "id": "g4.5"
+       "id": "g4.9"
       },
       {
        "call": "changeImprovementUnitTurns",
        "recv": null,
        "file": "Tile.cs",
-       "line": 10987,
+       "line": 10995,
        "loop": null,
        "cond": "spawning not paused",
        "title": "Unit-spawning improvements tick",
        "desc": "Improvements that periodically produce units count down.",
        "group": "world",
-       "id": "g4.6"
+       "id": "g4.10"
+      },
+      {
+       "call": "resetImprovementUnitTurns",
+       "recv": null,
+       "file": "Tile.cs",
+       "line": 10999,
+       "loop": null,
+       "cond": "timer reached zero",
+       "title": "Reset improvement unit turns",
+       "desc": "",
+       "group": "misc",
+       "id": "g4.11"
       },
       {
        "call": "addImprovementUnit",
        "recv": null,
        "file": "Tile.cs",
-       "line": 10992,
+       "line": 11000,
        "loop": null,
        "cond": "timer reached zero",
        "title": "Improvement spawns its unit",
        "desc": "When the spawn timer hits zero it resets and the improvement's unit appears.",
        "group": "world",
-       "id": "g4.7"
+       "id": "g4.12"
       },
       {
        "call": "clearHarvestTurn",
        "recv": null,
        "file": "Tile.cs",
-       "line": 11008,
+       "line": 11016,
        "loop": null,
        "cond": "the roll hits (odds improve over time)",
        "title": "Harvested resources regrow",
        "desc": "A harvested resource rolls to come back; odds improve every turn after the first two.",
        "group": "world",
-       "id": "g4.8"
+       "id": "g4.13"
       },
       {
        "call": "setVegetation",
        "recv": null,
        "file": "Tile.cs",
-       "line": 11034,
+       "line": 11042,
        "loop": null,
        "cond": "the roll hits",
        "title": "Vegetation grows",
-       "desc": "Regrowing vegetation rolls to advance a stage (faster the longer it has been regrowing; city regrowth modifiers apply).",
+       "desc": "Regrowing vegetation rolls to advance a stage; city regrowth modifiers apply.",
        "group": "world",
-       "id": "g4.9"
+       "id": "g4.14"
       },
       {
        "call": "setVegetation",
        "recv": null,
        "file": "Tile.cs",
-       "line": 11056,
+       "line": 11064,
        "loop": "for each direction",
        "cond": "the roll hits",
-       "title": "Vegetation spreads",
-       "desc": "An empty tile can catch vegetation from an adjacent tile via that vegetation's spread roll.",
+       "title": "Vegetation grows",
+       "desc": "Regrowing vegetation rolls to advance a stage; city regrowth modifiers apply.",
        "group": "world",
-       "id": "g4.10"
+       "id": "g4.15"
       },
       {
        "call": "decayRecentAttacks",
        "recv": null,
        "file": "Tile.cs",
-       "line": 11067,
+       "line": 11075,
        "loop": null,
        "cond": "no damaged city/settlement here",
        "title": "Tile combat memory fades",
        "desc": "Recent-attack heat on the tile decays (paused while a damaged city or settlement sits on it).",
        "group": "world",
-       "id": "g4.11"
+       "id": "g4.16"
       }
      ],
-     "childEntry": "Tile.cs:10905",
+     "childEntry": "Tile.cs:10913",
      "childFn": "Tile.doTurn",
      "id": "g4"
     },
@@ -199,7 +277,7 @@
      "call": "doBorderFill",
      "recv": null,
      "file": "Game.cs",
-     "line": 12766,
+     "line": 12773,
      "loop": null,
      "cond": null,
      "title": "Borders fill in",
@@ -211,7 +289,7 @@
      "call": "doTurn",
      "recv": "tribe(eLoopTribe)",
      "file": "Game.cs",
-     "line": 12772,
+     "line": 12779,
      "loop": "for each tribe",
      "cond": "tribe is alive",
      "title": "Every tile updates",
@@ -263,7 +341,7 @@
      "call": "doTradeTurn",
      "recv": "player(eLoopPlayer)",
      "file": "Game.cs",
-     "line": 12778,
+     "line": 12785,
      "loop": "for each player",
      "cond": null,
      "title": "Trade deals expire",
@@ -275,7 +353,7 @@
      "call": "doTributeTurn",
      "recv": "player(eLoopPlayer)",
      "file": "Game.cs",
-     "line": 12779,
+     "line": 12786,
      "loop": "for each player",
      "cond": null,
      "title": "Tribute deals expire",
@@ -287,7 +365,7 @@
      "call": "doWarScores",
      "recv": null,
      "file": "Game.cs",
-     "line": 12782,
+     "line": 12789,
      "loop": null,
      "cond": null,
      "title": "War scores decay",
@@ -299,7 +377,7 @@
      "call": "doReligionSpread",
      "recv": null,
      "file": "Game.cs",
-     "line": 12784,
+     "line": 12791,
      "loop": null,
      "cond": null,
      "title": "Religions spread",
@@ -311,7 +389,7 @@
      "call": "doReligionHead",
      "recv": null,
      "file": "Game.cs",
-     "line": 12785,
+     "line": 12792,
      "loop": null,
      "cond": null,
      "title": "Religion heads update",
@@ -323,7 +401,7 @@
      "call": "doReligionFound",
      "recv": null,
      "file": "Game.cs",
-     "line": 12786,
+     "line": 12793,
      "loop": null,
      "cond": null,
      "title": "New religions may be founded",
@@ -335,7 +413,7 @@
      "call": "updateCharacterOpinionAll",
      "recv": null,
      "file": "Game.cs",
-     "line": 12788,
+     "line": 12795,
      "loop": null,
      "cond": null,
      "title": "Character opinions refresh",
@@ -347,7 +425,7 @@
      "call": "updateReligionOpinionAll",
      "recv": null,
      "file": "Game.cs",
-     "line": 12789,
+     "line": 12796,
      "loop": null,
      "cond": null,
      "title": "Religion opinions refresh",
@@ -359,7 +437,7 @@
      "call": "updateFamilyOpinionAll",
      "recv": null,
      "file": "Game.cs",
-     "line": 12790,
+     "line": 12797,
      "loop": null,
      "cond": null,
      "title": "Family opinions refresh",
@@ -373,13 +451,13 @@
    "key": "player",
    "title": "Each player's turn",
    "fn": "Player.doTurn",
-   "entry": "Player.cs:16866",
+   "entry": "Player.cs:16887",
    "steps": [
     {
      "call": "updateHistoryRates",
      "recv": null,
      "file": "Player.cs",
-     "line": 16872,
+     "line": 16893,
      "loop": null,
      "cond": "player alive",
      "title": "Graphs record turn rates",
@@ -391,20 +469,20 @@
      "call": "doRebelProb",
      "recv": "game().city(iCityID)",
      "file": "Player.cs",
-     "line": 16518,
+     "line": 16539,
      "loop": "for each city",
      "cond": null,
      "title": "Cities roll for rebels",
      "desc": "Each city (after the early-game grace period) rolls its rebel probability and may spawn a rebel unit.",
      "group": "cities",
-     "via": "processTurn (Player.cs:16505)",
+     "via": "processTurn (Player.cs:16526)",
      "id": "p2"
     },
     {
      "call": "doPlayerTurn",
      "recv": "pLoopTile",
      "file": "Player.cs",
-     "line": 16527,
+     "line": 16548,
      "loop": "for each owned tile",
      "cond": null,
      "title": "Owned tiles grant unit XP",
@@ -415,7 +493,7 @@
        "call": "increaseXP",
        "recv": "pLoopUnit",
        "file": "Tile.cs",
-       "line": 11466,
+       "line": 11483,
        "loop": "for each unit",
        "cond": "XP positive",
        "title": "Improvement XP awarded",
@@ -424,94 +502,146 @@
        "id": "p3.1"
       }
      ],
-     "childEntry": "Tile.cs:11447",
+     "childEntry": "Tile.cs:11464",
      "childFn": "Tile.doPlayerTurn",
-     "via": "processTurn (Player.cs:16505)",
+     "via": "processTurn (Player.cs:16526)",
      "id": "p3"
     },
     {
      "call": "incrementLeaderStat",
      "recv": null,
      "file": "Player.cs",
-     "line": 16533,
+     "line": 16554,
      "loop": null,
      "cond": "nation founded, leader alive",
      "title": "Reign counters tick",
      "desc": "The leader's Years Reigned stat increments (plus Years as Regent for regents).",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
+     "via": "processTurn (Player.cs:16526)",
      "id": "p4"
+    },
+    {
+     "call": "incrementLeaderStat",
+     "recv": null,
+     "file": "Player.cs",
+     "line": 16557,
+     "loop": null,
+     "cond": "if leader().isRegent()",
+     "title": "Reign counters tick",
+     "desc": "The leader's Years Reigned stat increments (plus Years as Regent for regents).",
+     "group": "characters",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p5"
     },
     {
      "call": "sellYield",
      "recv": null,
      "file": "Player.cs",
-     "line": 16561,
+     "line": 16582,
      "loop": null,
      "cond": "Orders over the cap",
      "title": "Orders above the cap are sold",
      "desc": "Any Orders past your maximum are automatically sold for money.",
      "group": "economy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p5"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p6"
+    },
+    {
+     "call": "changeMoney",
+     "recv": null,
+     "file": "Player.cs",
+     "line": 16588,
+     "loop": null,
+     "cond": "otherwise",
+     "title": "Change money",
+     "desc": "",
+     "group": "misc",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p7"
+    },
+    {
+     "call": "changeYieldStockpileWhole",
+     "recv": null,
+     "file": "Player.cs",
+     "line": 16589,
+     "loop": null,
+     "cond": "otherwise",
+     "title": "Change yield stockpile whole",
+     "desc": "",
+     "group": "misc",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p8"
+    },
+    {
+     "call": "setYieldStockpile",
+     "recv": null,
+     "file": "Player.cs",
+     "line": 16606,
+     "loop": null,
+     "cond": "otherwise",
+     "title": "Negative stockpiles clamp to zero",
+     "desc": "Any yield stockpile still below zero after debts is set to 0.",
+     "group": "economy",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p9"
     },
     {
      "call": "doProjectSpread",
      "recv": null,
      "file": "Player.cs",
-     "line": 16589,
+     "line": 16610,
      "loop": null,
      "cond": null,
      "title": "Spreading projects propagate",
      "desc": "Projects with a spread chance roll to copy themselves from a city that has them to another of your cities.",
      "group": "cities",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p6"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p10"
     },
     {
      "call": "doLuxuryTurn",
      "recv": null,
      "file": "Player.cs",
-     "line": 16591,
+     "line": 16612,
      "loop": null,
      "cond": null,
      "title": "Luxury assignments verified",
      "desc": "Each luxury resource's city and family assignments are re-checked; over-assigned luxuries are pulled back.",
      "group": "economy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p7"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p11"
     },
     {
      "call": "doMemoryTurn",
      "recv": null,
      "file": "Player.cs",
-     "line": 16593,
+     "line": 16614,
      "loop": null,
      "cond": null,
      "title": "Opinion memories fade",
      "desc": "Expired memories (timed opinion modifiers from past actions) are removed.",
      "group": "diplomacy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p8"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p12"
     },
     {
      "call": "doFamilyControl",
      "recv": null,
      "file": "Player.cs",
-     "line": 16595,
+     "line": 16616,
      "loop": null,
      "cond": null,
      "title": "Family supremacy check",
      "desc": "If another family has overtaken the dominant one, the family-supremacy event fires.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p9"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p13"
     },
     {
      "call": "doTribeTurn",
      "recv": "game().city(iCityID)",
      "file": "Player.cs",
-     "line": 16610,
+     "line": 16631,
      "loop": "for each city",
      "cond": "skipped on the player's very first turn",
      "title": "Captured tribal cities flip",
@@ -528,7 +658,7 @@
        "title": "Capture counter ticks",
        "desc": "+1 while a unit is occupying the city; the city flips at its capture threshold (see City Capture Mechanics).",
        "group": "cities",
-       "id": "p10.1"
+       "id": "p14.1"
       },
       {
        "call": "changeDamage",
@@ -540,7 +670,7 @@
        "title": "Tribal city heals",
        "desc": "An un-besieged tribal city heals a percentage of max HP.",
        "group": "tribes",
-       "id": "p10.2"
+       "id": "p14.2"
       },
       {
        "call": "doTribeImprovements",
@@ -552,7 +682,7 @@
        "title": "Camp may add an improvement",
        "desc": "Diplomacy-capable tribes roll to add a random improvement to the city.",
        "group": "tribes",
-       "id": "p10.3"
+       "id": "p14.3"
       },
       {
        "call": "doTribeUnits",
@@ -564,58 +694,58 @@
        "title": "Camp may train a unit",
        "desc": "The tribal city rolls to produce a tribal unit nearby.",
        "group": "tribes",
-       "id": "p10.4"
+       "id": "p14.4"
       }
      ],
      "childEntry": "City.cs:8112",
      "childFn": "City.doTribeTurn",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p10"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p14"
     },
     {
      "call": "incrementGoalYieldsProduced",
      "recv": null,
      "file": "Player.cs",
-     "line": 16622,
+     "line": 16643,
      "loop": "for each yield",
      "cond": "output positive",
      "title": "City output tallies toward goals",
      "desc": "Each city's positive yield output is added to the yields-produced counters that ambitions and quests track.",
      "group": "goals",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p11"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p15"
     },
     {
      "call": "doShortfall",
      "recv": null,
      "file": "Player.cs",
-     "line": 16627,
+     "line": 16648,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Shortfall projects forced",
      "desc": "While a shortfall yield would go negative, the best-suited city is forced onto its culture's shortfall project.",
      "group": "economy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p12"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p16"
     },
     {
      "call": "autoChooseResearch",
      "recv": null,
      "file": "Player.cs",
-     "line": 16629,
+     "line": 16650,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Empty research slot auto-filled",
      "desc": "If nothing is being researched, the AI's best tech is slotted temporarily so incoming Science isn't wasted.",
      "group": "tech",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p13"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p17"
     },
     {
      "call": "doPlayerTurn",
      "recv": "game().city(iCityID)",
      "file": "Player.cs",
-     "line": 16641,
+     "line": 16662,
      "loop": "for each city",
      "cond": "skipped on the player's very first turn",
      "title": "Owned tiles grant unit XP",
@@ -632,7 +762,7 @@
        "title": "City heals",
        "desc": "A damaged city heals a percentage of its max HP.",
        "group": "cities",
-       "id": "p14.1"
+       "id": "p18.1"
       },
       {
        "call": "changeAssimilateTurns",
@@ -644,7 +774,7 @@
        "title": "Assimilation progresses",
        "desc": "A city still assimilating ticks down at its culture's assimilation rate.",
        "group": "cities",
-       "id": "p14.2"
+       "id": "p18.2"
       },
       {
        "call": "doDistantRaidTurn",
@@ -656,7 +786,7 @@
        "title": "Distant raid roll",
        "desc": "From the raid start turn, the city rolls difficulty-based odds to spawn a raider party on a distant valid tile aimed at it.",
        "group": "cities",
-       "id": "p14.3"
+       "id": "p18.3"
       },
       {
        "call": "pushBuildProjectFirst",
@@ -668,7 +798,7 @@
        "title": "Default project fills an empty queue",
        "desc": "A city building nothing is given its culture's default project so production is never wasted.",
        "group": "cities",
-       "id": "p14.4"
+       "id": "p18.4"
       },
       {
        "call": "changeYieldProgress",
@@ -680,7 +810,7 @@
        "title": "City yields accrue",
        "desc": "Local yields add to their progress bars; global yields are handed up to the player to bank after all cities run.",
        "group": "cities",
-       "id": "p14.5"
+       "id": "p18.5"
       },
       {
        "call": "changeCurrentBuildProgress",
@@ -692,7 +822,7 @@
        "title": "Production applies to the build",
        "desc": "This turn's production (plus stored overflow) goes into the current build.",
        "group": "cities",
-       "id": "p14.6"
+       "id": "p18.6"
       },
       {
        "call": "finishBuild",
@@ -704,7 +834,7 @@
        "title": "Build completes",
        "desc": "If the current build's cost is now met, it finishes — the unit spawns / building, project or specialist takes effect immediately.",
        "group": "cities",
-       "id": "p14.7"
+       "id": "p18.7"
       },
       {
        "call": "decayBuildQueue",
@@ -716,7 +846,7 @@
        "title": "Queued progress decays",
        "desc": "Partial progress on builds sitting in the queue (not currently first) decays by a percentage.",
        "group": "cities",
-       "id": "p14.8"
+       "id": "p18.8"
       },
       {
        "call": "verifyBuildProjects",
@@ -728,123 +858,149 @@
        "title": "Invalid builds pruned",
        "desc": "Queued projects, specialists and units that are no longer legal are removed.",
        "group": "cities",
-       "id": "p14.9"
+       "id": "p18.9"
       }
      ],
      "childEntry": "City.cs:8217",
      "childFn": "City.doPlayerTurn",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p14"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p18"
     },
     {
      "call": "processYield",
      "recv": null,
      "file": "Player.cs",
-     "line": 16646,
+     "line": 16667,
      "loop": "for each yield",
      "cond": "skipped on the player's very first turn",
      "title": "Global yields bank",
      "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
      "group": "tech",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p15"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p19"
     },
     {
      "call": "processYield",
      "recv": null,
      "file": "Player.cs",
-     "line": 16654,
+     "line": 16675,
      "loop": null,
      "cond": "over the cap",
-     "title": "Training above the cap → Orders",
-     "desc": "Excess Training converts into Orders at the TRAINING_PER_ORDER rate.",
-     "group": "economy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p16"
+     "title": "Global yields bank",
+     "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+     "group": "tech",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p20"
     },
     {
      "call": "processYield",
      "recv": null,
      "file": "Player.cs",
-     "line": 16674,
+     "line": 16677,
      "loop": null,
      "cond": "over the cap",
-     "title": "Civics above the cap → Science",
-     "desc": "Excess Civics converts into Science at the CIVICS_PER_SCIENCE rate.",
-     "group": "economy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p17"
+     "title": "Global yields bank",
+     "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+     "group": "tech",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p21"
+    },
+    {
+     "call": "processYield",
+     "recv": null,
+     "file": "Player.cs",
+     "line": 16695,
+     "loop": null,
+     "cond": "over the cap",
+     "title": "Global yields bank",
+     "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+     "group": "tech",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p22"
+    },
+    {
+     "call": "processYield",
+     "recv": null,
+     "file": "Player.cs",
+     "line": 16697,
+     "loop": null,
+     "cond": "over the cap",
+     "title": "Global yields bank",
+     "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+     "group": "tech",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p23"
     },
     {
      "call": "doResearch",
      "recv": null,
      "file": "Player.cs",
-     "line": 16690,
+     "line": 16711,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Research progresses / tech completes",
      "desc": "The Science stockpile flushes into the current tech; when progress reaches the cost, the tech is acquired on the spot.",
      "group": "tech",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p18"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p24"
     },
     {
      "call": "clearTechResearching",
      "recv": null,
      "file": "Player.cs",
-     "line": 16694,
+     "line": 16715,
      "loop": null,
      "cond": "research was auto-picked",
      "title": "Auto-picked tech un-selected",
      "desc": "If research was auto-slotted two steps ago, the choice is cleared again so a human can pick freely.",
      "group": "tech",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p19"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p25"
     },
     {
      "call": "doDebts",
      "recv": null,
      "file": "Player.cs",
-     "line": 16697,
+     "line": 16718,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Debts force auto-sales",
      "desc": "While money is negative, goods are sold automatically; if still short, money resets to zero.",
      "group": "economy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p20"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p26"
     },
     {
      "call": "setYieldStockpile",
      "recv": null,
      "file": "Player.cs",
-     "line": 16703,
+     "line": 16724,
      "loop": "for each yield",
      "cond": "a stockpile is below zero",
      "title": "Negative stockpiles clamp to zero",
      "desc": "Any yield stockpile still below zero after debts is set to 0.",
      "group": "economy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p21"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p27"
     },
     {
      "call": "doBounceUnits",
      "recv": null,
      "file": "Player.cs",
-     "line": 16708,
+     "line": 16729,
      "loop": null,
      "cond": null,
      "title": "Stranded units bounce",
      "desc": "Units standing where they can no longer be (e.g. lost territory) are pushed to a valid tile — or killed if there is none.",
      "group": "units",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p22"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p28"
     },
     {
      "call": "doTurn",
      "recv": "game().unit(getUnits()[i])",
      "file": "Player.cs",
-     "line": 16712,
+     "line": 16733,
      "loop": "for each unit (reverse order)",
      "cond": null,
      "title": "Units process",
@@ -855,304 +1011,400 @@
        "call": "setPass",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5586,
+       "line": 5561,
        "loop": null,
        "cond": "unit passed",
        "title": "Pass order clears",
        "desc": "A unit told to pass last turn becomes active again.",
        "group": "units",
-       "id": "p23.1"
+       "id": "p29.1"
       },
       {
        "call": "setSleep",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5595,
+       "line": 5570,
        "loop": null,
        "cond": "a hostile unit is adjacent",
        "title": "Sleepers wake near hostiles",
        "desc": "A sleeping (non-hidden) unit wakes if a hostile unit is adjacent.",
        "group": "units",
-       "id": "p23.2"
+       "id": "p29.2"
       },
       {
        "call": "setSentry",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5612,
+       "line": 5587,
        "loop": "for each tile in range",
        "cond": "a hostile unit is in range",
        "title": "Sentry breaks on contact",
        "desc": "A unit on sentry wakes if a hostile unit enters sentry range.",
        "group": "units",
-       "id": "p23.3"
+       "id": "p29.3"
       },
       {
        "call": "setMarch",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5621,
+       "line": 5596,
        "loop": null,
        "cond": "unit is marching",
        "title": "March order clears",
        "desc": "March status resets at turn start.",
        "group": "units",
-       "id": "p23.4"
+       "id": "p29.4"
       },
       {
        "call": "checkEffectUnitTurns",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5629,
+       "line": 5604,
        "loop": null,
        "cond": null,
        "title": "Timed unit effects tick",
        "desc": "Temporary unit effects count down and expire (possibly chaining into a follow-up effect).",
        "group": "units",
-       "id": "p23.5"
+       "id": "p29.5"
       },
       {
        "call": "applyEffectUnitTurns",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5645,
+       "line": 5620,
        "loop": "for each territory effect",
        "cond": "effect not already on the unit",
        "title": "Territory effects may apply",
        "desc": "City-territory effects roll their chance to put a timed effect on the unit standing there.",
        "group": "units",
-       "id": "p23.6"
+       "id": "p29.6"
       },
       {
        "call": "changeImprovementBuildTurnsLeft",
        "recv": "pTile",
        "file": "Unit.cs",
-       "line": 5694,
+       "line": 5669,
        "loop": null,
        "cond": "unit is working its tile",
        "title": "Workers advance construction",
        "desc": "A unit improving its tile progresses the build one turn (consuming its action); completion is announced.",
        "group": "units",
-       "id": "p23.7"
+       "id": "p29.7"
+      },
+      {
+       "call": "act",
+       "recv": null,
+       "file": "Unit.cs",
+       "line": 5671,
+       "loop": null,
+       "cond": "unit is working its tile",
+       "title": "Act",
+       "desc": "",
+       "group": "misc",
+       "id": "p29.8"
+      },
+      {
+       "call": "incrementLeaderStat",
+       "recv": "player()",
+       "file": "Unit.cs",
+       "line": 5672,
+       "loop": null,
+       "cond": "unit is working its tile",
+       "title": "Increment leader stat",
+       "desc": "",
+       "group": "misc",
+       "id": "p29.9"
+      },
+      {
+       "call": "setFortifyTurns",
+       "recv": null,
+       "file": "Unit.cs",
+       "line": 5704,
+       "loop": null,
+       "cond": "if pTile.hasCity()",
+       "title": "Set fortify turns",
+       "desc": "",
+       "group": "misc",
+       "id": "p29.10"
       },
       {
        "call": "changeFortifyTurns",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5733,
+       "line": 5708,
        "loop": null,
        "cond": "not yet at maximum",
        "title": "Fortification deepens",
        "desc": "A fortifying unit outside a city gains a fortify turn (reset to 0 inside cities).",
        "group": "units",
-       "id": "p23.8"
+       "id": "p29.11"
+      },
+      {
+       "call": "act",
+       "recv": null,
+       "file": "Unit.cs",
+       "line": 5710,
+       "loop": null,
+       "cond": "not yet at maximum",
+       "title": "Act",
+       "desc": "",
+       "group": "misc",
+       "id": "p29.12"
+      },
+      {
+       "call": "setFormationTurns",
+       "recv": null,
+       "file": "Unit.cs",
+       "line": 5718,
+       "loop": null,
+       "cond": "if pTile.hasCity()",
+       "title": "Set formation turns",
+       "desc": "",
+       "group": "misc",
+       "id": "p29.13"
       },
       {
        "call": "changeFormationTurns",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5747,
+       "line": 5722,
        "loop": null,
        "cond": "not yet at maximum",
        "title": "Formation deepens",
        "desc": "A unit holding formation outside a city gains a formation turn (reset to 0 inside cities).",
        "group": "units",
-       "id": "p23.9"
+       "id": "p29.14"
+      },
+      {
+       "call": "act",
+       "recv": null,
+       "file": "Unit.cs",
+       "line": 5724,
+       "loop": null,
+       "cond": "not yet at maximum",
+       "title": "Act",
+       "desc": "",
+       "group": "misc",
+       "id": "p29.15"
       },
       {
        "call": "setTempHiddenTurns",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5765,
+       "line": 5740,
        "loop": null,
        "cond": "unit is temporarily hidden",
        "title": "Hidden countdown",
        "desc": "Temporarily hidden units tick toward being revealed.",
        "group": "units",
-       "id": "p23.10"
+       "id": "p29.16"
       },
       {
        "call": "harvestResource",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5784,
+       "line": 5759,
        "loop": null,
        "cond": "harvest possible here",
        "title": "Auto-harvest fires",
        "desc": "A unit set to auto-harvest collects the resource it is standing on if it can.",
        "group": "units",
-       "id": "p23.11"
+       "id": "p29.17"
       },
       {
        "call": "increaseXP",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5792,
+       "line": 5767,
        "loop": null,
        "cond": "unit is promotable",
-       "title": "General grants XP",
-       "desc": "A promotable unit led by a general gains XP from the general's ratings.",
+       "title": "XP from leaders and effects",
+       "desc": "Generals and explorers grant their rating XP; player effects add per-turn (and idle) XP.",
        "group": "units",
-       "id": "p23.12"
+       "id": "p29.18"
       },
       {
        "call": "increaseXP",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5800,
+       "line": 5775,
        "loop": null,
        "cond": "unit is promotable",
-       "title": "Explorer grants XP",
-       "desc": "A promotable unit led by an explorer gains XP from the explorer's ratings.",
+       "title": "XP from leaders and effects",
+       "desc": "Generals and explorers grant their rating XP; player effects add per-turn (and idle) XP.",
        "group": "units",
-       "id": "p23.13"
+       "id": "p29.19"
       },
       {
        "call": "changeDamageText",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5838,
+       "line": 5813,
        "loop": null,
        "cond": "was damaged (or is taking damage)",
-       "title": "Healing applies",
-       "desc": "Effect heal/damage plus idle healing (only if the unit took no action and can heal on this tile); a fully-healed sleeper wakes.",
+       "title": "Healing and attrition apply",
+       "desc": "Effect-based heal/damage plus idle healing (if the unit did nothing and can heal here); then terrain and height attrition.",
        "group": "units",
-       "id": "p23.14"
+       "id": "p29.20"
+      },
+      {
+       "call": "wake",
+       "recv": null,
+       "file": "Unit.cs",
+       "line": 5820,
+       "loop": null,
+       "cond": "unit is sleeping",
+       "title": "Wake",
+       "desc": "",
+       "group": "misc",
+       "id": "p29.21"
       },
       {
        "call": "heal",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5855,
+       "line": 5830,
        "loop": null,
        "cond": "still damaged beyond idle healing",
        "title": "Auto-heal action",
        "desc": "A unit on auto-heal spends its turn healing while still damaged (cleared once it cannot).",
        "group": "units",
-       "id": "p23.15"
+       "id": "p29.22"
       },
       {
        "call": "changeDamageText",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5865,
+       "line": 5840,
        "loop": null,
        "cond": null,
-       "title": "Terrain attrition",
-       "desc": "Damaging terrain and heights hurt the unit standing there.",
+       "title": "Healing and attrition apply",
+       "desc": "Effect-based heal/damage plus idle healing (if the unit did nothing and can heal here); then terrain and height attrition.",
        "group": "units",
-       "id": "p23.16"
+       "id": "p29.23"
       },
       {
        "call": "increaseXP",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5894,
+       "line": 5869,
        "loop": null,
        "cond": "unit is promotable",
-       "title": "Player-effect XP",
-       "desc": "Per-turn XP (plus idle XP) from player-wide effects applies to promotable units.",
+       "title": "XP from leaders and effects",
+       "desc": "Generals and explorers grant their rating XP; player effects add per-turn (and idle) XP.",
        "group": "units",
-       "id": "p23.17"
+       "id": "p29.24"
       },
       {
        "call": "doCaravanMission",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5903,
+       "line": 5878,
        "loop": null,
        "cond": null,
        "title": "Caravans advance",
        "desc": "A caravan with a mission target moves toward that capital and completes its mission on arrival. (May remove the unit.)",
        "group": "units",
-       "id": "p23.18"
+       "id": "p29.25"
       },
       {
        "call": "stopRaid",
        "recv": null,
        "file": "Unit.cs",
-       "line": 5909,
+       "line": 5884,
        "loop": "for each team",
        "cond": "raid target team eliminated",
        "title": "Raids on dead teams end",
        "desc": "Raiders whose target team has been eliminated stop raiding and convert to barbarians.",
        "group": "units",
-       "id": "p23.19"
+       "id": "p29.26"
+      },
+      {
+       "call": "convert",
+       "recv": null,
+       "file": "Unit.cs",
+       "line": 5885,
+       "loop": "for each team",
+       "cond": "raid target team eliminated",
+       "title": "Convert",
+       "desc": "",
+       "group": "misc",
+       "id": "p29.27"
       }
      ],
-     "childEntry": "Unit.cs:5576",
+     "childEntry": "Unit.cs:5551",
      "childFn": "Unit.doTurn",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p23"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p29"
     },
     {
      "call": "makeDead",
      "recv": "pLoopCharacter",
      "file": "Player.cs",
-     "line": 16727,
+     "line": 16748,
      "loop": "for each living character",
      "cond": "Doomed and the death roll hits",
      "title": "Doomed characters may die",
      "desc": "Each character with the Doomed trait rolls the death chance and can die now.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p24"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p30"
     },
     {
      "call": "doTraitProbDelay",
      "recv": "pLoopCharacter",
      "file": "Player.cs",
-     "line": 16731,
+     "line": 16752,
      "loop": "for each living character",
      "cond": "otherwise",
      "title": "Delayed trait probabilities resolve",
      "desc": "Traits queued by events with a delayed probability roll now.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p25"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p31"
     },
     {
      "call": "doRandomTraitDelay",
      "recv": "pLoopCharacter",
      "file": "Player.cs",
-     "line": 16732,
+     "line": 16753,
      "loop": "for each living character",
      "cond": "otherwise",
      "title": "Delayed random traits resolve",
      "desc": "Random traits queued with a delay are assigned now.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p26"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p32"
     },
     {
      "call": "doRandomCharacterRelationshipDelay",
      "recv": "pLoopCharacter",
      "file": "Player.cs",
-     "line": 16733,
+     "line": 16754,
      "loop": "for each living character",
      "cond": "otherwise",
      "title": "Delayed relationships resolve",
      "desc": "Pending random character relationships (rivalries, friendships) are assigned now.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p27"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p33"
     },
     {
      "call": "doTurn",
      "recv": "pLoopCharacter",
      "file": "Player.cs",
-     "line": 16757,
+     "line": 16778,
      "loop": "for each living character",
      "cond": "otherwise",
-     "title": "Non-leader characters take their turns",
-     "desc": "Every living character except the leader runs the per-character sequence below.",
-     "group": "characters",
+     "title": "Units process",
+     "desc": "Each of your units takes its upkeep turn (wake checks, timers, work, healing, XP) — the per-unit sequence below.",
+     "group": "units",
      "children": [
       {
        "call": "doTurnYear",
        "recv": null,
        "file": "Character.cs",
-       "line": 7451,
+       "line": 7447,
        "loop": null,
        "cond": "on the character's year turn",
        "title": "Yearly tick (the character's \"birthday\")",
@@ -1163,150 +1415,150 @@
          "call": "addTrait",
          "recv": null,
          "file": "Character.cs",
-         "line": 8317,
+         "line": 8313,
          "loop": null,
          "cond": "leader, not yet Doomed",
-         "title": "Death roll → leaders gain Doomed",
-         "desc": "If a death trait fires for a leader, they gain Doomed instead of dying instantly — a one-year warning.",
+         "title": "Death roll → Doomed for leaders",
+         "desc": "If a death trait fires, a leader gains Doomed instead of dying instantly (a one-year warning); anyone else dies now.",
          "group": "characters",
-         "id": "p28.1.1"
+         "id": "p34.1.1"
         },
         {
          "call": "makeDead",
          "recv": null,
          "file": "Character.cs",
-         "line": 8326,
+         "line": 8322,
          "loop": null,
          "cond": "otherwise",
          "title": "Death roll resolves",
-         "desc": "For anyone else (or an already-Doomed leader), a fired death trait kills the character now.",
+         "desc": "A non-leader (or already-Doomed) character whose death trait fired dies here.",
          "group": "characters",
-         "id": "p28.1.2"
+         "id": "p34.1.2"
         },
         {
          "call": "addTrait",
          "recv": null,
          "file": "Character.cs",
-         "line": 8336,
+         "line": 8332,
          "loop": null,
          "cond": "a general at retirement age",
-         "title": "Old generals retire",
-         "desc": "A general at retirement age (who is not the leader) gains the Retired General trait and leaves the unit.",
+         "title": "Death roll → Doomed for leaders",
+         "desc": "If a death trait fires, a leader gains Doomed instead of dying instantly (a one-year warning); anyone else dies now.",
          "group": "characters",
-         "id": "p28.1.3"
+         "id": "p34.1.3"
         },
         {
          "call": "makeInfertile",
          "recv": null,
          "file": "Character.cs",
-         "line": 8346,
+         "line": 8342,
          "loop": null,
          "cond": "past fertile age / failed the roll",
          "title": "Infertility check",
          "desc": "Past maximum fertile age (hard cutoff with margin, or per-year odds), the character becomes infertile.",
          "group": "characters",
-         "id": "p28.1.4"
+         "id": "p34.1.4"
         },
         {
          "call": "checkLifeEvent",
          "recv": null,
          "file": "Character.cs",
-         "line": 8349,
+         "line": 8345,
          "loop": null,
          "cond": null,
          "title": "One life event",
          "desc": "At most one fires, in priority order: new-year character event, trait gain, trait loss, archetype, first strength/weakness, birth, adult trait, rating change, marriage offer, religion, (AI) adoption.",
          "group": "characters",
-         "id": "p28.1.5"
+         "id": "p34.1.5"
         },
         {
          "call": "assignNickname",
          "recv": null,
          "file": "Character.cs",
-         "line": 8353,
+         "line": 8349,
          "loop": null,
          "cond": "small random chance",
          "title": "Nickname roll",
          "desc": "A small chance the character picks up a nickname.",
          "group": "characters",
-         "id": "p28.1.6"
+         "id": "p34.1.6"
         },
         {
          "call": "doEventTrigger",
          "recv": "player()",
          "file": "Character.cs",
-         "line": 8367,
+         "line": 8363,
          "loop": "for each event class",
          "cond": "probability roll hits",
-         "title": "Character event-class rolls",
-         "desc": "Each event class with a per-character probability may fire an event starring this character.",
+         "title": "Character event rolls",
+         "desc": "Event classes with a per-character probability may fire, then the new-turn character event trigger runs.",
          "group": "events",
-         "id": "p28.1.7"
+         "id": "p34.1.7"
         },
         {
          "call": "doEventTrigger",
          "recv": "player()",
          "file": "Character.cs",
-         "line": 8372,
+         "line": 8368,
          "loop": null,
          "cond": "events enabled",
-         "title": "New-turn character event",
-         "desc": "The generic new-turn character event trigger runs for this character.",
+         "title": "Character event rolls",
+         "desc": "Event classes with a per-character probability may fire, then the new-turn character event trigger runs.",
          "group": "events",
-         "id": "p28.1.8"
+         "id": "p34.1.8"
         },
         {
          "call": "changeRating",
          "recv": null,
          "file": "Character.cs",
-         "line": 8382,
+         "line": 8378,
          "loop": null,
          "cond": "coin flip",
          "title": "AI ratings drift",
          "desc": "When events are off (AI autoplay), young successors gain random rating points instead of tutored growth.",
          "group": "characters",
-         "id": "p28.1.9"
+         "id": "p34.1.9"
         }
        ],
-       "childEntry": "Character.cs:8306",
+       "childEntry": "Character.cs:8302",
        "childFn": "Character.doTurnYear",
-       "id": "p28.1"
+       "id": "p34.1"
       },
       {
        "call": "removeTrait",
        "recv": null,
        "file": "Character.cs",
-       "line": 7485,
+       "line": 7481,
        "loop": "for each trait",
        "cond": "turn limit reached",
        "title": "Expiring traits removed",
        "desc": "Traits with a turn limit (or marked remove-always) fall off; a lose-trait event may fire instead of the plain notice.",
        "group": "characters",
-       "id": "p28.2"
+       "id": "p34.2"
       },
       {
        "call": "doOccurrenceTrait",
        "recv": null,
        "file": "Character.cs",
-       "line": 7504,
+       "line": 7500,
        "loop": null,
        "cond": null,
        "title": "Occurrence traits roll",
        "desc": "Active Occurrences can inflict traits on the character, and strip them when the Occurrence ends.",
        "group": "characters",
-       "id": "p28.3"
+       "id": "p34.3"
       },
       {
        "call": "increaseXP",
        "recv": null,
        "file": "Character.cs",
-       "line": 7522,
+       "line": 7518,
        "loop": null,
        "cond": null,
        "title": "Character XP accrues",
        "desc": "XP per turn from traits, a council seat, and city governorship.",
        "group": "characters",
-       "id": "p28.4"
+       "id": "p34.4"
       },
       {
        "call": "doEventTrigger",
@@ -1318,30 +1570,30 @@
        "group": "characters",
        "recv": null,
        "file": "Character.cs",
-       "id": "p28.5"
+       "id": "p34.5"
       }
      ],
-     "childEntry": "Character.cs:7447",
+     "childEntry": "Character.cs:7443",
      "childFn": "Character.doTurn",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p28"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p34"
     },
     {
      "call": "doTurn",
      "recv": "pLeader",
      "file": "Player.cs",
-     "line": 16775,
+     "line": 16796,
      "loop": null,
      "cond": "the leader, after everyone else",
-     "title": "The leader goes last",
-     "desc": "The leader's character turn runs after everyone else \"so that other characters don't have life events that would invalidate the leader's events\" (source comment).",
-     "group": "characters",
+     "title": "Units process",
+     "desc": "Each of your units takes its upkeep turn (wake checks, timers, work, healing, XP) — the per-unit sequence below.",
+     "group": "units",
      "children": [
       {
        "call": "doTurnYear",
        "recv": null,
        "file": "Character.cs",
-       "line": 7451,
+       "line": 7447,
        "loop": null,
        "cond": "on the character's year turn",
        "title": "Yearly tick (the character's \"birthday\")",
@@ -1352,150 +1604,150 @@
          "call": "addTrait",
          "recv": null,
          "file": "Character.cs",
-         "line": 8317,
+         "line": 8313,
          "loop": null,
          "cond": "leader, not yet Doomed",
-         "title": "Death roll → leaders gain Doomed",
-         "desc": "If a death trait fires for a leader, they gain Doomed instead of dying instantly — a one-year warning.",
+         "title": "Death roll → Doomed for leaders",
+         "desc": "If a death trait fires, a leader gains Doomed instead of dying instantly (a one-year warning); anyone else dies now.",
          "group": "characters",
-         "id": "p29.1.1"
+         "id": "p35.1.1"
         },
         {
          "call": "makeDead",
          "recv": null,
          "file": "Character.cs",
-         "line": 8326,
+         "line": 8322,
          "loop": null,
          "cond": "otherwise",
          "title": "Death roll resolves",
-         "desc": "For anyone else (or an already-Doomed leader), a fired death trait kills the character now.",
+         "desc": "A non-leader (or already-Doomed) character whose death trait fired dies here.",
          "group": "characters",
-         "id": "p29.1.2"
+         "id": "p35.1.2"
         },
         {
          "call": "addTrait",
          "recv": null,
          "file": "Character.cs",
-         "line": 8336,
+         "line": 8332,
          "loop": null,
          "cond": "a general at retirement age",
-         "title": "Old generals retire",
-         "desc": "A general at retirement age (who is not the leader) gains the Retired General trait and leaves the unit.",
+         "title": "Death roll → Doomed for leaders",
+         "desc": "If a death trait fires, a leader gains Doomed instead of dying instantly (a one-year warning); anyone else dies now.",
          "group": "characters",
-         "id": "p29.1.3"
+         "id": "p35.1.3"
         },
         {
          "call": "makeInfertile",
          "recv": null,
          "file": "Character.cs",
-         "line": 8346,
+         "line": 8342,
          "loop": null,
          "cond": "past fertile age / failed the roll",
          "title": "Infertility check",
          "desc": "Past maximum fertile age (hard cutoff with margin, or per-year odds), the character becomes infertile.",
          "group": "characters",
-         "id": "p29.1.4"
+         "id": "p35.1.4"
         },
         {
          "call": "checkLifeEvent",
          "recv": null,
          "file": "Character.cs",
-         "line": 8349,
+         "line": 8345,
          "loop": null,
          "cond": null,
          "title": "One life event",
          "desc": "At most one fires, in priority order: new-year character event, trait gain, trait loss, archetype, first strength/weakness, birth, adult trait, rating change, marriage offer, religion, (AI) adoption.",
          "group": "characters",
-         "id": "p29.1.5"
+         "id": "p35.1.5"
         },
         {
          "call": "assignNickname",
          "recv": null,
          "file": "Character.cs",
-         "line": 8353,
+         "line": 8349,
          "loop": null,
          "cond": "small random chance",
          "title": "Nickname roll",
          "desc": "A small chance the character picks up a nickname.",
          "group": "characters",
-         "id": "p29.1.6"
+         "id": "p35.1.6"
         },
         {
          "call": "doEventTrigger",
          "recv": "player()",
          "file": "Character.cs",
-         "line": 8367,
+         "line": 8363,
          "loop": "for each event class",
          "cond": "probability roll hits",
-         "title": "Character event-class rolls",
-         "desc": "Each event class with a per-character probability may fire an event starring this character.",
+         "title": "Character event rolls",
+         "desc": "Event classes with a per-character probability may fire, then the new-turn character event trigger runs.",
          "group": "events",
-         "id": "p29.1.7"
+         "id": "p35.1.7"
         },
         {
          "call": "doEventTrigger",
          "recv": "player()",
          "file": "Character.cs",
-         "line": 8372,
+         "line": 8368,
          "loop": null,
          "cond": "events enabled",
-         "title": "New-turn character event",
-         "desc": "The generic new-turn character event trigger runs for this character.",
+         "title": "Character event rolls",
+         "desc": "Event classes with a per-character probability may fire, then the new-turn character event trigger runs.",
          "group": "events",
-         "id": "p29.1.8"
+         "id": "p35.1.8"
         },
         {
          "call": "changeRating",
          "recv": null,
          "file": "Character.cs",
-         "line": 8382,
+         "line": 8378,
          "loop": null,
          "cond": "coin flip",
          "title": "AI ratings drift",
          "desc": "When events are off (AI autoplay), young successors gain random rating points instead of tutored growth.",
          "group": "characters",
-         "id": "p29.1.9"
+         "id": "p35.1.9"
         }
        ],
-       "childEntry": "Character.cs:8306",
+       "childEntry": "Character.cs:8302",
        "childFn": "Character.doTurnYear",
-       "id": "p29.1"
+       "id": "p35.1"
       },
       {
        "call": "removeTrait",
        "recv": null,
        "file": "Character.cs",
-       "line": 7485,
+       "line": 7481,
        "loop": "for each trait",
        "cond": "turn limit reached",
        "title": "Expiring traits removed",
        "desc": "Traits with a turn limit (or marked remove-always) fall off; a lose-trait event may fire instead of the plain notice.",
        "group": "characters",
-       "id": "p29.2"
+       "id": "p35.2"
       },
       {
        "call": "doOccurrenceTrait",
        "recv": null,
        "file": "Character.cs",
-       "line": 7504,
+       "line": 7500,
        "loop": null,
        "cond": null,
        "title": "Occurrence traits roll",
        "desc": "Active Occurrences can inflict traits on the character, and strip them when the Occurrence ends.",
        "group": "characters",
-       "id": "p29.3"
+       "id": "p35.3"
       },
       {
        "call": "increaseXP",
        "recv": null,
        "file": "Character.cs",
-       "line": 7522,
+       "line": 7518,
        "loop": null,
        "cond": null,
        "title": "Character XP accrues",
        "desc": "XP per turn from traits, a council seat, and city governorship.",
        "group": "characters",
-       "id": "p29.4"
+       "id": "p35.4"
       },
       {
        "call": "doEventTrigger",
@@ -1507,332 +1759,344 @@
        "group": "characters",
        "recv": null,
        "file": "Character.cs",
-       "id": "p29.5"
+       "id": "p35.5"
       }
      ],
-     "childEntry": "Character.cs:7447",
+     "childEntry": "Character.cs:7443",
      "childFn": "Character.doTurn",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p29"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p35"
     },
     {
      "call": "addFamilyCharacters",
      "recv": null,
      "file": "Player.cs",
-     "line": 16779,
+     "line": 16800,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Families replenish",
      "desc": "Families short on adults or children (relative to the cities they hold) spawn new characters.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p30"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p36"
     },
     {
      "call": "doRetirements",
      "recv": null,
      "file": "Player.cs",
-     "line": 16781,
+     "line": 16802,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Old royals retire",
      "desc": "If the royal roster exceeds roughly year/25 + 5, the character furthest down the succession retires; the leader, heirs and family heads are always un-retired.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p31"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p37"
     },
     {
      "call": "updateFamilyHead",
      "recv": null,
      "file": "Player.cs",
-     "line": 16785,
+     "line": 16806,
      "loop": "for each family",
      "cond": "skipped on the player's very first turn",
      "title": "Family heads update",
      "desc": "Each family re-evaluates who leads it.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p32"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p38"
     },
     {
      "call": "doFamilyReligion",
      "recv": null,
      "file": "Player.cs",
-     "line": 16788,
+     "line": 16809,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Families may adopt religions",
      "desc": "From turn 10, each family (staggered, every 4 turns) adopts whichever religion is most common among its members.",
      "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p33"
-    },
-    {
-     "call": "doFamilyTurnsNoLeader",
-     "recv": null,
-     "file": "Player.cs",
-     "line": 16790,
-     "loop": null,
-     "cond": "skipped on the player's very first turn",
-     "title": "Family neglect counters tick",
-     "desc": "Every family the current leader does not belong to increments its turns-without-a-leader counter.",
-     "group": "characters",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p34"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p39"
     },
     {
      "call": "doTribeDiplomacy",
      "recv": null,
      "file": "Player.cs",
-     "line": 16795,
+     "line": 16816,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Tribes run diplomacy at you",
      "desc": "Each tribe evaluates its per-player diplomacy (offers, demands, attitude shifts).",
      "group": "diplomacy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p35"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p40"
     },
     {
      "call": "doPlayerDiplomacy",
      "recv": null,
      "file": "Player.cs",
-     "line": 16797,
+     "line": 16818,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "AI player diplomacy",
      "desc": "AI players (only) evaluate diplomacy toward every other player — humans are considered first.",
      "group": "diplomacy",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p36"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p41"
     },
     {
      "call": "doEventTriggers",
      "recv": null,
      "file": "Player.cs",
-     "line": 16799,
+     "line": 16820,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Story event rolls",
      "desc": "Event-class probability rolls fire first, then up to the per-turn cap of new-turn events, then event-level bonus rolls.",
      "group": "events",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p37"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p42"
     },
     {
      "call": "updateTileEventTimers",
      "recv": null,
      "file": "Player.cs",
-     "line": 16801,
+     "line": 16822,
      "loop": null,
      "cond": "skipped on the player's very first turn",
      "title": "Tile event timers tick",
      "desc": "Per-tile event timers count down and expire.",
      "group": "events",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p38"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p43"
     },
     {
      "call": "doBonus",
      "recv": null,
      "file": "Player.cs",
-     "line": 16809,
+     "line": 16830,
      "loop": null,
      "cond": "random roll hit; below the ambition cap",
      "title": "AI free-ambition roll",
      "desc": "AIs that simulate ambitions occasionally bank a finished-ambition credit to keep pace with humans.",
      "group": "goals",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p39"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p44"
+    },
+    {
+     "call": "incrementLeaderStat",
+     "recv": null,
+     "file": "Player.cs",
+     "line": 16832,
+     "loop": null,
+     "cond": "random roll hit; below the ambition cap",
+     "title": "Reign counters tick",
+     "desc": "The leader's Years Reigned stat increments (plus Years as Regent for regents).",
+     "group": "characters",
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p45"
     },
     {
      "call": "doMissionTurn",
      "recv": null,
      "file": "Player.cs",
-     "line": 16817,
+     "line": 16838,
      "loop": null,
      "cond": null,
      "title": "Missions complete",
      "desc": "Missions whose duration has elapsed resolve — deliberately after character turns, so mid-event state changes (e.g. a suitor marrying) invalidate cleanly.",
      "group": "court",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p40"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p46"
     },
     {
      "call": "doAllOccurrenceEffects",
      "recv": "game()",
      "file": "Player.cs",
-     "line": 16819,
+     "line": 16840,
      "loop": null,
      "cond": null,
      "title": "Occurrence effects apply",
      "desc": "All active Occurrences apply their per-player effects and tile changes to you.",
      "group": "events",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p41"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p47"
     },
     {
      "call": "updateEventLinks",
      "recv": null,
      "file": "Player.cs",
-     "line": 16823,
+     "line": 16844,
      "loop": null,
      "cond": null,
      "title": "Event links expire",
      "desc": "Event-chain links past their turn limit (or marked immediate) are removed.",
      "group": "events",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p42"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p48"
     },
     {
      "call": "updateGoals",
      "recv": null,
      "file": "Player.cs",
-     "line": 16825,
+     "line": 16846,
      "loop": null,
      "cond": null,
      "title": "Goals re-evaluate",
      "desc": "All ambition and quest progress is recomputed against the new game state.",
      "group": "goals",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p43"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p49"
     },
     {
      "call": "removeQuest",
      "recv": null,
      "file": "Player.cs",
-     "line": 16834,
+     "line": 16855,
      "loop": "for each goal (reverse)",
      "cond": "no turns left",
      "title": "Quests time out",
      "desc": "Unfinished quests with zero turns left are removed.",
      "group": "goals",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p44"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p50"
     },
     {
      "call": "removeAmbition",
      "recv": null,
      "file": "Player.cs",
-     "line": 16846,
+     "line": 16867,
      "loop": "for each goal (reverse)",
      "cond": "no turns left",
      "title": "Ambitions time out",
      "desc": "Unfinished ambitions with zero turns left are removed (failed).",
      "group": "goals",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p45"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p51"
     },
     {
      "call": "updateDecisions",
      "recv": null,
      "file": "Player.cs",
-     "line": 16851,
+     "line": 16872,
      "loop": null,
      "cond": null,
      "title": "Stale decisions pruned",
      "desc": "Pending decisions that are no longer valid are removed.",
      "group": "events",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p46"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p52"
     },
     {
      "call": "updatePings",
      "recv": null,
      "file": "Player.cs",
-     "line": 16853,
+     "line": 16874,
      "loop": null,
      "cond": null,
      "title": "Map pings expire",
      "desc": "Old map pins and reminders are cleared or re-announced.",
      "group": "bookkeeping",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p47"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p53"
     },
     {
      "call": "doAmbitions",
      "recv": null,
      "file": "Player.cs",
-     "line": 16855,
+     "line": 16876,
      "loop": null,
      "cond": null,
      "title": "New ambition may be offered",
      "desc": "If you have a free ambition slot and nothing pending, threshold-goal offers fire first, then a standard ambition offer can roll.",
      "group": "goals",
-     "via": "processTurn (Player.cs:16505)",
-     "id": "p48"
-    },
-    {
-     "call": "doDecisions",
-     "recv": "AI",
-     "file": "Player.cs",
-     "line": 16878,
-     "loop": null,
-     "cond": "player alive",
-     "title": "Leftover decisions auto-resolve",
-     "desc": "Decisions still pending from your previous turn are resolved by the AI before you regain control.",
-     "group": "events",
-     "id": "p49"
+     "via": "processTurn (Player.cs:16526)",
+     "id": "p54"
     },
     {
      "call": "doAutomatedCityBuilds",
      "recv": "AI",
      "file": "Player.cs",
-     "line": 16880,
+     "line": 16901,
      "loop": null,
      "cond": "player alive",
      "title": "Automated cities pick builds",
      "desc": "Cities set to auto-manage choose what to produce.",
      "group": "cities",
-     "id": "p50"
+     "id": "p55"
     },
     {
      "call": "doUnitMoveQueue",
      "recv": null,
      "file": "Player.cs",
-     "line": 16882,
+     "line": 16903,
      "loop": null,
      "cond": "player alive",
      "title": "Queued unit orders execute",
      "desc": "Units with queued move-to / build-road orders carry them out (cancelled if the path is gone).",
      "group": "units",
-     "id": "p51"
+     "id": "p56"
     },
     {
      "call": "updateHistoryTotals",
      "recv": null,
      "file": "Player.cs",
-     "line": 16884,
+     "line": 16905,
      "loop": null,
      "cond": "player alive",
      "title": "Graphs record totals",
      "desc": "Cumulative yield totals are logged for the graphs.",
      "group": "bookkeeping",
-     "id": "p52"
+     "id": "p57"
     },
     {
      "call": "doVictory",
      "recv": "game()",
      "file": "Player.cs",
-     "line": 16889,
+     "line": 16910,
      "loop": null,
      "cond": null,
      "title": "Victory check",
      "desc": "Victory conditions, defeats and game-over states are evaluated.",
      "group": "bookkeeping",
-     "id": "p53"
+     "id": "p58"
     },
     {
      "call": "doEnemyPlayers",
      "recv": "AI",
      "file": "Player.cs",
-     "line": 16898,
+     "line": 16919,
      "loop": null,
      "cond": "human-controlled",
      "title": "AI advisor caches refresh",
-     "desc": "For human players: enemy lists, attack-target suggestions and new-city-site hints update for the UI.",
+     "desc": "For human players: enemy lists, attack-target suggestions and new-city-site hints are recomputed for the UI.",
      "group": "bookkeeping",
-     "id": "p54"
+     "id": "p59"
+    },
+    {
+     "call": "doAttackTargets",
+     "recv": "AI",
+     "file": "Player.cs",
+     "line": 16920,
+     "loop": null,
+     "cond": "human-controlled",
+     "title": "Attack targets",
+     "desc": "",
+     "group": "misc",
+     "id": "p60"
+    },
+    {
+     "call": "checkNewCitySites",
+     "recv": "AI",
+     "file": "Player.cs",
+     "line": 16921,
+     "loop": null,
+     "cond": "human-controlled",
+     "title": "New city sites",
+     "desc": "",
+     "group": "misc",
+     "id": "p61"
     }
    ]
   }

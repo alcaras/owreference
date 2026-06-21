@@ -371,6 +371,13 @@ export const TABS: Tab[] = [
     summary: 'Per-rating yield/combat scaling by role, Non-competitive vs Competitive',
     willContain: ['All 4 stats, rating −3..+15, Leader/Governor/Agent/General, both modes'],
   },
+
+  // ── Meta ─────────────────────────────────────────────────────
+  {
+    slug: 'patch-notes', icon: '🛠', label: 'Patch notes', section: 'Meta',
+    status: 'built', sourceSheet: '',
+    summary: "Mohawk's official build notes per release, plus the XML changes we detected",
+  },
 ];
 
 export const SECTIONS = [
@@ -385,4 +392,5 @@ export const SECTIONS = [
   'Events',
   'World',
   'Concepts',
+  'Meta',
 ] as const;

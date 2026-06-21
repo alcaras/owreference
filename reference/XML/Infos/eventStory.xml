@@ -56,6 +56,7 @@
 		<iPriority comment="Priority over other valid events.&#xA;An Event will always be picked over another Event with a lower priority value.&#xA;If multiple events are tied, iWeight and iProb are used to randomly break the tie.&#xA;(1 is the default)"/>
 		<iWeight comment="Weight used when randomly picking events to trigger.&#xA;An Event with a weight of 2 is twice as likely to get picked as an Event with a weight of 1.&#xA;Note: This should NOT be set over 20.&#xA;(0 is the default value of the field, which turns off the event.)"/>
 		<iProb comment="Probability of this Event being added to the possible Event pool (on&#xA;the current turn only) if it meets the other prereqs.&#xA;Values are from 1-100 (0 is ignored).&#xA;For example, if this is set to 75, there is only a 75% chance&#xA;that the Event will be added to the Event pool.&#xA;(Use this in conjunction with iWeight to lower probabilities.)"/>
+		<iGameProb comment="Probability of this event being in the game's event pool. Like iProb but one roll for the entire game."/>
 		<iRepeatTurns comment="The minimum number of turns between when an Event&#xA;triggers and when it is allowed to trigger again.&#xA;If -1, the Event can only trigger once per game."/>
 		<iRepeatTurnsAll comment="The minimum number of turns between when an Event&#xA;triggers (for all players) and when it is allowed to trigger again.&#xA;If -1, the Event can only trigger once per game (for all players)."/>
 		<bEndGame comment="This event materializes Victory or Loss for the Player."/>
@@ -137,6 +138,7 @@
 		<iPriority/>
 		<iWeight/>
 		<iProb/>
+		<iGameProb/>
 		<iRepeatTurns/>
 		<bEndGame/>
 		<bHidePrereqs/>
@@ -4684,6 +4686,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMinTurns>50</iMinTurns>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -4721,6 +4724,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
@@ -4754,6 +4758,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
@@ -30041,6 +30046,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>2</iTriggerSubject>
+		<iLookAtSubject>2</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>60</iRepeatTurns>
 	</Entry>
@@ -52565,6 +52571,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>2</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>2</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<aeEventStoryRepeatTurns>
@@ -66528,6 +66535,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<LawPrereq>LAW_ORTHODOXY</LawPrereq>
 		<iWeight>10</iWeight>
 		<iRepeatTurns>60</iRepeatTurns>
@@ -69240,6 +69248,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>2</iTriggerSubject>
+		<iLookAtSubject>2</iLookAtSubject>
 		<iMinTurns>20</iMinTurns>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -70113,16 +70122,16 @@
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
-				<First>0</First>
-				<Second>SUBJECT_PLAYER_5_UNITS_LOST</Second>
-			</Pair>
-			<Pair>
 				<First>1</First>
 				<Second>SUBJECT_GENERAL</Second>
 			</Pair>
 			<Pair>
 				<First>1</First>
 				<Second>SUBJECT_COMPASSIONATE</Second>
+			</Pair>
+			<Pair>
+				<First>3</First>
+				<Second>SUBJECT_LEADER_US_5_UNITS_LOST</Second>
 			</Pair>
 		</SubjectExtras>
 		<SubjectRelations>
@@ -71879,6 +71888,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -73143,6 +73153,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -91906,6 +91917,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMaxTurns>25</iMaxTurns>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -91924,6 +91936,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<EventLinkPrereq>EVENTLINK_HAPPINESS_IMMIGRANTS_YES</EventLinkPrereq>
 		<iMaxTurns>50</iMaxTurns>
 		<iWeight>12</iWeight>
@@ -91950,6 +91963,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>20</iRepeatTurns>
@@ -91970,6 +91984,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -91990,6 +92005,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>20</iRepeatTurns>
 	</Entry>
@@ -92007,6 +92023,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>20</iRepeatTurns>
@@ -92027,6 +92044,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>20</iRepeatTurns>
@@ -92048,6 +92066,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>20</iRepeatTurns>
@@ -92069,6 +92088,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>20</iRepeatTurns>
 	</Entry>
@@ -92088,6 +92108,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMinTurns>35</iMinTurns>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -92111,6 +92132,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMinTurns>35</iMinTurns>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -92154,6 +92176,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -92181,6 +92204,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>80</iRepeatTurns>
 	</Entry>
@@ -92206,6 +92230,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>80</iRepeatTurns>
 	</Entry>
@@ -92230,6 +92255,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>80</iRepeatTurns>
@@ -92268,6 +92294,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>80</iRepeatTurns>
@@ -92296,6 +92323,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>80</iRepeatTurns>
@@ -92321,6 +92349,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>80</iRepeatTurns>
@@ -92340,6 +92369,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>40</iRepeatTurns>
@@ -92383,6 +92413,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>3</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
@@ -92422,6 +92453,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -92468,6 +92500,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
@@ -92510,6 +92543,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93164,6 +93198,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>75</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -93185,6 +93220,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>75</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -93216,6 +93252,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93253,6 +93290,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<LawPrereq>LAW_SLAVERY</LawPrereq>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -93287,6 +93325,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93307,6 +93346,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -93337,6 +93377,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -93369,6 +93410,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>3</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93397,6 +93439,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>3</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93426,6 +93469,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93453,6 +93497,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>6</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93479,6 +93524,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<aeLawInvalid>
@@ -93511,6 +93557,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>8</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<aeLawInvalid>
@@ -93540,6 +93587,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -93580,6 +93628,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -93661,6 +93710,7 @@
 		<TriggerData>IMPROVEMENT_GREAT_ZIGGURAT</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93755,6 +93805,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_THEATER_3</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -93791,6 +93842,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -93822,6 +93874,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>6</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
@@ -94946,6 +94999,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -95895,6 +95949,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>6</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
@@ -96447,6 +96502,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<LawPrereq>LAW_PHILOSOPHY</LawPrereq>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
@@ -96473,6 +96529,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>6</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
@@ -101652,6 +101709,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_GARRISON_2</TriggerData>
 		<iTriggerSubject>2</iTriggerSubject>
+		<iLookAtSubject>2</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -102829,6 +102887,7 @@
 		<TriggerData>IMPROVEMENT_TEMPLE_ZOROASTRIANISM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -102858,6 +102917,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_CATHEDRAL_ZOROASTRIANISM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -104373,6 +104433,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
 		<iImageExtra>3</iImageExtra>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>80</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -108191,6 +108252,7 @@
 		<TriggerData>IMPROVEMENT_HOLY_SITE_ZOROASTRIANISM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -108214,6 +108276,7 @@
 		<TriggerData>IMPROVEMENT_HOLY_SITE_JUDAISM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -108237,6 +108300,7 @@
 		<TriggerData>IMPROVEMENT_HOLY_SITE_CHRISTIANITY</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -108260,6 +108324,7 @@
 		<TriggerData>IMPROVEMENT_HOLY_SITE_MANICHAEISM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -108611,6 +108676,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>1</iTriggerSubject>
 		<iImageSubject>3</iImageSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
@@ -108714,6 +108780,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>1</iTriggerSubject>
 		<iImageSubject>3</iImageSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
@@ -109072,6 +109139,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>1</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<aeLawInvalid>
@@ -109340,6 +109408,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>3</iTriggerSubject>
+		<iLookAtSubject>3</iLookAtSubject>
 		<iWeight>12</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<aeLawInvalid>
@@ -113283,6 +113352,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>3</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>10</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -113324,6 +113394,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>3</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>10</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -113365,6 +113436,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>3</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>10</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -113405,6 +113477,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>3</iTriggerSubject>
+		<iLookAtSubject>3</iLookAtSubject>
 		<iWeight>10</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -121748,6 +121821,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>1</iTriggerSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>6</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -121789,6 +121863,7 @@
 		<TriggerData>IMPROVEMENT_PYRAMIDS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -121814,6 +121889,7 @@
 		<TriggerData>IMPROVEMENT_GREAT_ZIGGURAT</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -121839,6 +121915,7 @@
 		<TriggerData>IMPROVEMENT_ORACLE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -121864,6 +121941,7 @@
 		<TriggerData>IMPROVEMENT_HANGING_GARDENS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -121889,6 +121967,7 @@
 		<TriggerData>IMPROVEMENT_NECROPOLIS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -121914,6 +121993,7 @@
 		<TriggerData>IMPROVEMENT_ISHTAR_GATE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -121939,6 +122019,7 @@
 		<TriggerData>IMPROVEMENT_LIGHTHOUSE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -121964,6 +122045,7 @@
 		<TriggerData>IMPROVEMENT_APADANA</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -121989,6 +122071,7 @@
 		<TriggerData>IMPROVEMENT_MAUSOLEUM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122014,6 +122097,7 @@
 		<TriggerData>IMPROVEMENT_ACROPOLIS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122039,6 +122123,7 @@
 		<TriggerData>IMPROVEMENT_COLOSSUS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122064,6 +122149,7 @@
 		<TriggerData>IMPROVEMENT_MUSAEUM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122089,6 +122175,7 @@
 		<TriggerData>IMPROVEMENT_CIRCUS_MAXIMUS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122114,6 +122201,7 @@
 		<TriggerData>IMPROVEMENT_PANTHEON</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122139,6 +122227,7 @@
 		<TriggerData>IMPROVEMENT_HAGIA_SOPHIA</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122164,6 +122253,7 @@
 		<TriggerData>IMPROVEMENT_VIA_RECTA_SOUK</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>2</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122190,6 +122280,7 @@
 		<TriggerData>IMPROVEMENT_COLOSSUS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122213,6 +122304,7 @@
 		<TriggerData>IMPROVEMENT_LIGHTHOUSE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122237,6 +122329,7 @@
 		<TriggerData>IMPROVEMENT_HANGING_GARDENS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122261,6 +122354,7 @@
 		<TriggerData>IMPROVEMENT_ORACLE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122285,6 +122379,7 @@
 		<TriggerData>IMPROVEMENT_ORACLE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122315,6 +122410,7 @@
 		<TriggerData>IMPROVEMENT_PYRAMIDS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122345,6 +122441,7 @@
 		<TriggerData>IMPROVEMENT_ISHTAR_GATE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122371,6 +122468,7 @@
 		<TriggerData>IMPROVEMENT_ACROPOLIS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -122424,6 +122522,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_QUARRY</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>1</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -122487,6 +122586,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_MINE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>1</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -122508,6 +122608,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_PASTURE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -122545,6 +122646,7 @@
 		<TriggerData>IMPROVEMENT_CAMP</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageExtra>3</iImageExtra>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>15</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -122613,6 +122715,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_HAMLET</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>5</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -122709,6 +122812,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_QUARRY</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<LawPrereq>LAW_SLAVERY</LawPrereq>
 		<iWeight>1</iWeight>
 		<iProb>5</iProb>
@@ -122739,6 +122843,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_QUARRY</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<LawPrereq>LAW_FREEDOM</LawPrereq>
 		<iWeight>1</iWeight>
 		<iProb>5</iProb>
@@ -122769,6 +122874,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_QUARRY</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<LawPrereq>LAW_EXPLORATION</LawPrereq>
 		<iWeight>1</iWeight>
 		<iProb>5</iProb>
@@ -122799,6 +122905,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_QUARRY</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<LawPrereq>LAW_EPICS</LawPrereq>
 		<iWeight>1</iWeight>
 		<iProb>5</iProb>
@@ -124031,6 +124138,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -124249,6 +124357,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMaxTurns>80</iMaxTurns>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -124299,6 +124408,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_APADANA</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>0</iRepeatTurns>
@@ -124323,6 +124433,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_BATHS_3</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
@@ -124356,6 +124467,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
 		<iImageExtra>3</iImageExtra>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
 	</Entry>
@@ -124379,6 +124491,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_PANTHEON</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
 	</Entry>
@@ -124400,6 +124513,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_CIRCUS_MAXIMUS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
 	</Entry>
@@ -124436,6 +124550,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_HAGIA_SOPHIA</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
 	</Entry>
@@ -124459,6 +124574,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_MUSAEUM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>0</iRepeatTurns>
 	</Entry>
@@ -124480,6 +124596,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_THEATER_3</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>40</iRepeatTurns>
@@ -124551,6 +124668,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>80</iRepeatTurns>
 	</Entry>
@@ -124578,6 +124696,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMinTurns>20</iMinTurns>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
@@ -124633,6 +124752,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMinLeader>2</iMinLeader>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
@@ -124691,6 +124811,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMinLeader>2</iMinLeader>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
@@ -124727,6 +124848,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMinLeader>3</iMinLeader>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
@@ -124802,6 +124924,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
@@ -124852,6 +124975,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iMinLeader>2</iMinLeader>
 		<iWeight>8</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -124905,6 +125029,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -124925,6 +125050,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>100</iProb>
 		<iRepeatTurns>76</iRepeatTurns>
@@ -125794,6 +125920,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -127259,6 +127386,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>3</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
+		<iLookAtSubject>3</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
@@ -134640,7 +134768,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
-		<iLookAtSubject>1</iLookAtSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>12</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -134926,6 +135054,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
 		<iImageExtra>2</iImageExtra>
+		<iLookAtSubject>0</iLookAtSubject>
 		<LawPrereq>LAW_FREEDOM</LawPrereq>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -135461,6 +135590,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_PYRAMIDS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135495,6 +135625,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_GREAT_ZIGGURAT</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135529,6 +135660,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_ORACLE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135563,6 +135695,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_HANGING_GARDENS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135597,6 +135730,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_NECROPOLIS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135631,6 +135765,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_ISHTAR_GATE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135665,6 +135800,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_LIGHTHOUSE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135699,6 +135835,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_APADANA</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135733,6 +135870,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_MAUSOLEUM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135767,6 +135905,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_ACROPOLIS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135801,6 +135940,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_COLOSSUS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135835,6 +135975,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_MUSAEUM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135869,6 +136010,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_CIRCUS_MAXIMUS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135903,6 +136045,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_PANTHEON</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135937,6 +136080,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_HAGIA_SOPHIA</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -135971,6 +136115,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_VIA_RECTA_SOUK</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -136577,6 +136722,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_MINE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bNoCharacters>1</bNoCharacters>
@@ -138003,6 +138149,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>80</iRepeatTurns>
 	</Entry>
@@ -138030,6 +138177,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>80</iRepeatTurns>
 	</Entry>
@@ -138050,6 +138198,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>5</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -138080,6 +138229,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -138149,6 +138299,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -138192,6 +138343,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -138226,6 +138378,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>12</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -138271,6 +138424,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -138317,6 +138471,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>12</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -138361,6 +138516,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_FORT</TriggerData>
 		<iTriggerSubject>8</iTriggerSubject>
+		<iLookAtSubject>8</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>10</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -139618,6 +139774,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>20</iPriority>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -140047,6 +140204,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_BARRACKS</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>10</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -140068,6 +140226,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_HAMLET</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iPriority>10</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -144212,6 +144371,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
@@ -144257,6 +144417,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>3</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
@@ -145137,6 +145298,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_LIBRARY_1</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -145192,6 +145354,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
@@ -145563,6 +145726,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_GROVE</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -145607,6 +145771,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>6</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -146772,6 +146937,7 @@
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_FARM</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>50</iProb>
 		<iRepeatTurns>35</iRepeatTurns>
@@ -150572,6 +150738,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>1</iTriggerSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>3</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -150724,6 +150891,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>4</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -151741,6 +151909,7 @@
 		<Trigger>EVENTTRIGGER_CITY_CULTURE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
 		<iWeight>10</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>

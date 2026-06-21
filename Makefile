@@ -72,6 +72,7 @@ data:
 
 changelog:
 	@python3 scripts/changelog.py
+	@python3 scripts/build_patchnotes.py   # Mohawk-grounded patch page, distils the fresh diff
 
 dev:
 	@npx astro dev

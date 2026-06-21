@@ -31,16 +31,25 @@ const gameBand = bands.find(b => b.key === 'game')!;
 const playerBand = bands.find(b => b.key === 'player')!;
 
 // Find a step (recursively) so the Q&A box can cite real step numbers that
-// survive regeneration.
+// survive regeneration. The `line` is a PREFERENCE, not a hard match: source
+// line numbers shift every patch, so prefer an exact-line hit but fall back to
+// the nearest call-name match rather than failing the build. (Only a call that
+// vanished entirely returns null — which is a real signal worth failing on.)
 function findStep(steps: Step[], call: string, line?: number): Step | null {
-  for (const s of steps) {
-    if (s.call === call && (line === undefined || s.line === line)) return s;
-    if (s.children) {
-      const hit = findStep(s.children, call, line);
-      if (hit) return hit;
+  const matches: Step[] = [];
+  (function walk(list: Step[]) {
+    for (const s of list) {
+      if (s.call === call) matches.push(s);
+      if (s.children) walk(s.children);
     }
-  }
-  return null;
+  })(steps);
+  if (matches.length === 0) return null;
+  if (line === undefined) return matches[0];
+  return (
+    matches.find(s => s.line === line) ??
+    matches.reduce((a, b) =>
+      Math.abs((b.line ?? 1e9) - line) < Math.abs((a.line ?? 1e9) - line) ? b : a)
+  );
 }
 function ref(band: 'g' | 'p', call: string, line?: number) {
   const b = band === 'g' ? gameBand : playerBand;
