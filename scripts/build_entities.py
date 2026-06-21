@@ -83,7 +83,9 @@ YIELD_ALIASES: dict[str, list[str]] = {
     # "Pillage", "XP" are unit mechanics, not yields, so they no longer drag
     # a cell into yield-training.
     "orders":       ["Order", "Orders"],
-    "training":     ["Training", "Train"],
+    # "Train" excluded — it's the verb (e.g. "train Specialist more quickly"),
+    # not the Training yield; aliasing it iconized prose verbs as the glyph.
+    "training":     ["Training"],
     "civics":       ["Civics", "Civic", "Civ"],
     "culture":      ["Culture", "Cult"],
     "science":      ["Science", "Sci"],
