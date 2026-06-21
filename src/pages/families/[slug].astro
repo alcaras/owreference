@@ -1,0 +1,495 @@
+---
+import Base from '../../layouts/Base.astro';
+import LinkedText from '../../components/LinkedText.astro';
+import families from '../../data/families.json';
+import nations from '../../data/nations.json';
+import { classifyYield } from '../../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+export function getStaticPaths() {
+  return families.map(f => ({ params: { slug: f.slug }, props: { f } }));
+}
+
+const { f } = Astro.props as { f: typeof families[number] };
+
+// Family classes have no single in-game color (see families.astro). Derive a
+// signature-yield accent from the kit: first effect that classifies, across the
+// City + Seat bonuses. Stays inside the in-game yield palette — no invented hue.
+function signatureYield(): string {
+  for (const t of [...(f.cityBonus || []), ...(f.seatBonus || [])]) {
+    const k = classifyYield(t)?.toLowerCase();
+    if (k) return k;
+  }
+  return 'misc';
+}
+const sig = signatureYield();
+
+// aiTraitDie weights ≥5 — the archetypes this family actually steers toward
+// (weight 1 is the baseline every archetype shares). "Commander ×10 · Hero ×5".
+const archetypes = Object.entries((f.archetypeWeights || {}) as Record<string, number>)
+  .filter(([, v]) => v >= 5)
+  .sort((a, b) => b[1] - a[1])
+  .map(([id, v]) => {
+    const slug = id.replace('TRAIT_', '').replace('_ARCHETYPE', '').toLowerCase();
+    return { name: slug.charAt(0).toUpperCase() + slug.slice(1), slug, weight: v };
+  });
+
+const opinions = (f.opinions || []) as { label: string; value: number }[];
+const likes = opinions.filter(o => o.value >= 0);
+const dislikes = opinions.filter(o => o.value < 0);
+
+// The payoff over the grid: join nations.json so each nation that fields this
+// class shows its actual NAMED family in that nation's in-game colour, plus any
+// supremacy bonus. nations.json already carries families[].name/ingameColor/...
+type Seat = {
+  slug: string; name: string; nationColorBg: string; nationColorFg: string;
+  familyName: string; ingameColor?: string; ingameFg?: string;
+  supremacy?: { name: string; effects: string[] };
+};
+const seats: Seat[] = [];
+for (const n of nations as any[]) {
+  for (const nf of (n.families || []) as any[]) {
+    if (nf.classKey !== f.slug) continue;
+    seats.push({
+      slug: n.slug, name: n.name,
+      nationColorBg: n.color?.bg, nationColorFg: n.color?.fg,
+      familyName: nf.name, ingameColor: nf.ingameColor, ingameFg: nf.ingameFg,
+      supremacy: nf.supremacy,
+    });
+  }
+}
+seats.sort((a, b) => a.name.localeCompare(b.name));
+
+const sgn = (v: number) => (v >= 0 ? `+${v}` : `${v}`);
+const yieldIcon = (k: string) => `${base}img/icons/yields/${k}.png`;
+const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
+---
+
+<Base
+  title={f.name}
+  active="families"
+  description={`Old World reference: the ${f.name} family class — its kit at a glance: city bonus, seat bonus, opinion modifiers, preferred laws, favored buildings, the character archetypes it rolls, and every nation that fields it (with its named family) — all XML-canonical.`}
+>
+  <a class="back-link" href={`${base}families`}>← All families</a>
+
+  <header class={`fam-head yield-${sig}`}>
+    <img class="fam-head__icon" src={`${base}${f.icon}`} alt="" />
+    <div class="fam-head__title">
+      <div class="fam-head__sub">Old World · Family class</div>
+      <h1 class="fam-head__name">{f.name}</h1>
+      <div class="fam-head__meta">
+        Fielded by <b>{seats.length}</b> {seats.length === 1 ? 'nation' : 'nations'}
+        {archetypes.length > 0 && <> · favours <b>{archetypes[0].name}s</b></>}
+      </div>
+    </div>
+    <div class="fam-head__rule"></div>
+  </header>
+
+  <div class="np-grid">
+    <section class="np-sec np-sec--city">
+      <h2 class="np-sec__title">City Bonus <span class="np-count">every city of this family</span></h2>
+      <ul class="np-list">
+        {(f.cityBonus || []).map(b => {
+          const yk = classifyYield(b)?.toLowerCase() || 'misc';
+          return (
+            <li class={`np-item yield-${yk}`}>
+              <LinkedText text={b} showIcons={false} iconsForYields={true} />
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+
+    <section class="np-sec np-sec--seat">
+      <h2 class="np-sec__title">Seat <span class="np-count">family-seat city only</span></h2>
+      {(f.seatBonus || []).length === 0 && (f.seatFounding || []).length === 0 ? (
+        <p class="np-empty">No seat bonus.</p>
+      ) : (
+        <>
+          {(f.seatBonus || []).length > 0 && (
+            <>
+              <div class="np-sublabel">While seated</div>
+              <ul class="np-list">
+                {(f.seatBonus || []).map(b => {
+                  const yk = classifyYield(b)?.toLowerCase() || 'misc';
+                  return <li class={`np-item yield-${yk}`}><LinkedText text={b} showIcons={false} iconsForYields={true} /></li>;
+                })}
+              </ul>
+            </>
+          )}
+          {(f.seatFounding || []).length > 0 && (
+            <>
+              <div class="np-sublabel">On founding the seat</div>
+              <ul class="np-list">
+                {(f.seatFounding || []).map(b => {
+                  const yk = classifyYield(b)?.toLowerCase() || 'misc';
+                  return <li class={`np-item yield-${yk}`}><LinkedText text={b} showIcons={false} iconsForYields={true} /></li>;
+                })}
+              </ul>
+            </>
+          )}
+        </>
+      )}
+    </section>
+
+    {opinions.length > 0 && (
+      <section class="np-sec np-sec--opinion">
+        <h2 class="np-sec__title">Opinion</h2>
+        <div class="op-cols">
+          <div class="op-col">
+            <div class="op-col__hd op-col__hd--pos">Raises opinion</div>
+            {likes.length === 0 ? <p class="np-empty">—</p> : (
+              <ul class="op-list">
+                {likes.map(o => (
+                  <li class="op-row op-row--pos">
+                    <span class="op-row__label">{o.label}</span>
+                    <span class="op-row__val">{sgn(o.value)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div class="op-col">
+            <div class="op-col__hd op-col__hd--neg">Lowers opinion</div>
+            {dislikes.length === 0 ? <p class="np-empty">—</p> : (
+              <ul class="op-list">
+                {dislikes.map(o => (
+                  <li class="op-row op-row--neg">
+                    <span class="op-row__label">{o.label}</span>
+                    <span class="op-row__val">{sgn(o.value)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="np-sec np-sec--prefs">
+      <h2 class="np-sec__title">Preferences</h2>
+      <dl class="np-dl">
+        {(f.preferredLaws || []).length > 0 && (
+          <>
+            <dt>Preferred Laws</dt>
+            <dd>
+              <ul class="pref-chips">
+                {(f.preferredLaws || []).map((l: any) => (
+                  <li class="pref-chip"><LinkedText text={l.label} showIcons={false} /><span class="pref-chip__w">{sgn(l.value)}</span></li>
+                ))}
+              </ul>
+            </dd>
+          </>
+        )}
+        {(f.favored || []).length > 0 && (
+          <>
+            <dt>Favored Buildings</dt>
+            <dd>
+              <ul class="pref-chips">
+                {(f.favored || []).map((b: any) => (
+                  <li class="pref-chip"><LinkedText text={b.label} showIcons={false} /><span class="pref-chip__w">{sgn(b.value)}</span></li>
+                ))}
+              </ul>
+            </dd>
+          </>
+        )}
+        {(f.luxuries || []).length > 0 && (
+          <>
+            <dt>Luxuries</dt>
+            <dd>
+              <ul class="pref-chips">
+                {(f.luxuries || []).map((lx: any) => (
+                  <li class="pref-chip pref-chip--lux">
+                    <img class="pref-chip__icon" src={luxIcon(lx.resource)} alt="" onerror="this.style.display='none'" />
+                    {lx.label}
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </>
+        )}
+      </dl>
+    </section>
+
+    {archetypes.length > 0 && (
+      <section class="np-sec np-sec--chars">
+        <h2 class="np-sec__title">Characters <span class="np-count">archetype die weights</span></h2>
+        <ul class="arc-chips">
+          {archetypes.map(a => (
+            <li class={`arc-chip ${a.weight >= 10 ? 'arc-chip--major' : ''}`}>
+              <a href={`${base}archetypes#${a.slug}`}>
+                {a.name}<span class="arc-chip__w">×{a.weight}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section class="np-sec np-sec--nations">
+      <h2 class="np-sec__title">Nations &amp; their families <span class="np-count">{seats.length}</span></h2>
+      <ul class="fam-nations">
+        {seats.map(s => (
+          <li class="fam-nation" style={s.ingameColor ? `--fam-stripe: ${s.ingameColor}` : undefined}>
+            <a class="fam-nation__crest" href={`${base}nations/${s.slug}`}
+               style={`--nation-bg: ${s.nationColorBg}; --nation-fg: ${s.nationColorFg};`}>
+              <img src={`${base}img/crests/${s.slug}.png`} alt="" />
+            </a>
+            <div class="fam-nation__body">
+              <a class="fam-nation__nat" href={`${base}nations/${s.slug}`}>{s.name}</a>
+              <span class="fam-nation__name"
+                    style={s.ingameColor ? `color: ${s.ingameColor}` : undefined}>{s.familyName}</span>
+              {s.supremacy && (
+                <span class="fam-nation__sup">
+                  <span class="fam-nation__sup-name">{s.supremacy.name}</span>
+                  {s.supremacy.effects.map(e => {
+                    const yk = classifyYield(e)?.toLowerCase() || 'misc';
+                    return (
+                      <span class={`np-item np-item--sup yield-${yk}`}>
+                        <LinkedText text={e} showIcons={false} iconsForYields={true} />
+                      </span>
+                    );
+                  })}
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--gold-soft);
+    margin: 0 0 1rem;
+    text-decoration: none;
+  }
+  .back-link:hover { color: var(--gold); text-decoration: none; }
+
+  .fam-head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 1.1rem;
+    padding-bottom: 0.8rem;
+    margin-bottom: 1.4rem;
+  }
+  .fam-head__icon {
+    width: 64px; height: 64px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+  }
+  .fam-head__title { display: flex; flex-direction: column; gap: 0.1rem; }
+  .fam-head__sub {
+    font-family: var(--font-ui);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--gold-soft);
+    font-weight: 500;
+  }
+  .fam-head__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 2.4rem;
+    line-height: 1.05;
+    color: var(--text);
+    letter-spacing: 0.005em;
+  }
+  .fam-head__meta {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 0.2rem;
+  }
+  .fam-head__meta b { color: var(--text-soft); font-weight: 600; }
+  .fam-head__rule {
+    grid-column: 1 / -1;
+    height: 3px;
+    background: var(--yield-bg, var(--gold-deep));
+    opacity: 0.85;
+  }
+
+  .np-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.4rem;
+  }
+  @media (min-width: 1100px) {
+    .np-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  .np-sec--nations,
+  .np-sec--chars { grid-column: 1 / -1; }
+
+  .np-sec { margin: 0; min-width: 0; }
+  .np-sec__title {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    border-bottom: 1px solid var(--gold-deep);
+    padding-bottom: 0.3rem;
+    margin: 0 0 0.7rem;
+    display: flex; align-items: baseline; gap: 0.5rem;
+  }
+  .np-count {
+    font-family: var(--font-mono);
+    font-size: 0.7em;
+    color: var(--text-faint);
+    letter-spacing: 0;
+    text-transform: none;
+    margin-left: auto;
+  }
+  .np-empty { color: var(--text-faint); font-style: italic; margin: 0; }
+  .np-sublabel {
+    font-family: var(--font-ui);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+    margin: 0.1rem 0 0.35rem;
+  }
+  .np-sublabel + .np-list { margin-bottom: 0.6rem; }
+
+  .np-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+  .np-item {
+    padding: 0.35rem 0.7rem 0.35rem 0.85rem;
+    background: var(--bg-elev);
+    border-left: 3px solid var(--yield-bg, var(--border-strong));
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+  }
+
+  /* Opinion — two columns, likes vs dislikes */
+  .op-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+  .op-col__hd {
+    font-family: var(--font-ui);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.35rem;
+  }
+  .op-col__hd--pos { color: #4caf7d; }
+  .op-col__hd--neg { color: #d46e6e; }
+  .op-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+  .op-row {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem;
+    padding: 0.18rem 0.5rem;
+    background: var(--bg-elev);
+    border-radius: 3px;
+    font-size: 0.78rem;
+  }
+  .op-row__label { color: var(--text-soft); }
+  .op-row__val { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .op-row--pos .op-row__val { color: #4caf7d; }
+  .op-row--neg .op-row__val { color: #d46e6e; }
+
+  /* Preferences */
+  .np-dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 1rem; margin: 0; }
+  .np-dl dt {
+    font-family: var(--font-ui);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+    padding-top: 0.3rem;
+  }
+  .np-dl dd { margin: 0; }
+  .pref-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .pref-chip {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+  .pref-chip__w { font-family: var(--font-mono); font-size: 0.7em; color: var(--text-faint); }
+  .pref-chip__icon { width: 1em; height: 1em; object-fit: contain; }
+
+  /* Characters */
+  .arc-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .arc-chip a {
+    display: inline-flex; align-items: baseline; gap: 0.3rem;
+    padding: 0.25rem 0.7rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-size: 0.86rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .arc-chip a:hover { border-color: var(--gold-deep); color: var(--gold); }
+  .arc-chip__w { font-family: var(--font-mono); font-size: 0.78em; color: var(--text-dim); }
+  .arc-chip--major a { border-color: var(--gold-deep); }
+  .arc-chip--major .arc-chip__w { color: var(--gold); }
+
+  /* Nations & their named families */
+  .fam-nations {
+    list-style: none; padding: 0; margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.5rem;
+  }
+  .fam-nation {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem;
+    align-items: start;
+    padding: 0.5rem 0.7rem 0.55rem 0.6rem;
+    background: var(--bg-elev);
+    box-shadow: inset 3px 0 0 var(--fam-stripe, var(--border));
+    border-radius: 0 5px 5px 0;
+  }
+  .fam-nation__crest {
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    background: var(--nation-bg, var(--bg-elev-2));
+    border-radius: 5px;
+    flex: none;
+  }
+  .fam-nation__crest img { width: 28px; height: 28px; object-fit: contain; }
+  .fam-nation__body { min-width: 0; display: flex; flex-direction: column; gap: 0.05rem; }
+  .fam-nation__nat {
+    font-family: var(--font-ui);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+  .fam-nation__nat:hover { color: var(--gold); }
+  .fam-nation__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .fam-nation__sup {
+    display: flex; flex-direction: column; gap: 0.2rem;
+    margin-top: 0.3rem;
+  }
+  .fam-nation__sup-name { font-style: italic; font-size: 0.74rem; color: var(--text-dim); }
+  .np-item--sup { font-size: 0.76rem; padding: 0.15rem 0.5rem 0.15rem 0.6rem; }
+
+  @media (max-width: 700px) {
+    .np-grid { grid-template-columns: 1fr; }
+    .fam-head__name { font-size: 1.8rem; }
+    .fam-head__icon { width: 48px; height: 48px; }
+    .op-cols { grid-template-columns: 1fr; }
+  }
+</style>

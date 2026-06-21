@@ -116,10 +116,10 @@ for (const f of families) {
             </th>
             {families.map(f => (
               <th class={`nhdr nhdr--family`} data-family={f.slug} title={f.id} id={f.slug}>
-                <div class="nhdr__inner">
+                <a class="nhdr__link" href={`${base}families/${f.slug}`}>
                   <img class="nhdr__crest" src={`${base}${f.icon}`} alt="" />
                   <span class="nhdr__name">{f.name}</span>
-                </div>
+                </a>
               </th>
             ))}
           </tr>
