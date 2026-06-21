@@ -16,9 +16,41 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
-    load_xml_indexes, render_effect_city, render_bonus, _lookup_name,
-    fmt_decimal, _strip_link_templates,
+    load_xml_indexes, render_effect_city, render_effect_unit, render_bonus,
+    _lookup_name, fmt_decimal, _strip_link_templates,
 )
+
+
+def granted_traits(ec: ET.Element | None, indexes: dict) -> list[dict]:
+    """Unit traits a family's cities confer on units trained there.
+
+    Pulls aeFreeEffectUnit (all units, e.g. Champions → Steadfast) and
+    aeTraitEffectUnit (a unit-trait gated grant, e.g. Hunters: Ranged →
+    Sentinel), resolving each EffectUnit to its humanized effect lines so the
+    detail page can explain what the trait actually does.
+    """
+    if ec is None:
+        return []
+    eu_idx = indexes.get("effectUnit.xml", {})
+    out: list[dict] = []
+
+    def add(eu_id: str, applies_to: str) -> None:
+        eu = eu_idx.get(eu_id)
+        if eu is None:
+            return
+        out.append({
+            "name": eu_id.replace("EFFECTUNIT_", "").replace("_", " ").title(),
+            "appliesTo": applies_to,
+            "effects": render_effect_unit(eu),
+        })
+
+    for z in ec.findall("aeFreeEffectUnit/zValue"):
+        if z.text:
+            add(z.text, "All units")
+    for pair in ec.findall("aeTraitEffectUnit/Pair"):
+        trait = (pair.findtext("zIndex") or "").replace("UNITTRAIT_", "").replace("_", " ").title()
+        add(pair.findtext("zValue") or "", f"{trait} units")
+    return out
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -264,6 +296,7 @@ def main() -> int:
             "archetypeWeights": archetype_weights,
             "advice": advice,
             "cityBonus": city_bonus,
+            "grantedTraits": granted_traits(ec, indexes),
             "seatBonus": seat_bonus,
             "seatFounding": seat_found,
             "foundBonus": found_bonus,

@@ -105,6 +105,27 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
       </ul>
     </section>
 
+    {(f.grantedTraits || []).length > 0 && (
+      <section class="np-sec np-sec--traits">
+        <h2 class="np-sec__title">Unit traits <span class="np-count">granted to units trained here</span></h2>
+        <ul class="trait-list">
+          {(f.grantedTraits || []).map((t: any) => (
+            <li class="trait">
+              <div class="trait__hd">
+                <span class="trait__name">{t.name}</span>
+                <span class="trait__applies">{t.appliesTo}</span>
+              </div>
+              <ul class="trait__fx">
+                {(t.effects || []).map((fx: string) => (
+                  <li><LinkedText text={fx} showIcons={false} iconsForYields={true} /></li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
     <section class="np-sec np-sec--seat">
       <h2 class="np-sec__title">Seat <span class="np-count">family-seat city only</span></h2>
       {(f.seatBonus || []).length === 0 && (f.seatFounding || []).length === 0 && (f.foundBonus || []).length === 0 ? (
@@ -408,6 +429,26 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
     border-radius: 0 4px 4px 0;
     font-size: 0.9rem;
   }
+
+  /* Unit traits granted to units trained in this family's cities */
+  .trait-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .trait {
+    padding: 0.45rem 0.7rem 0.5rem;
+    background: var(--bg-elev);
+    border-left: 3px solid var(--gold-deep);
+    border-radius: 0 4px 4px 0;
+  }
+  .trait__hd { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+  .trait__name {
+    font-family: var(--font-display); font-weight: 600; font-size: 1rem; color: var(--text);
+  }
+  .trait__applies {
+    font-family: var(--font-ui); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-soft);
+    border: 1px solid var(--gold-deep); border-radius: 3px; padding: 0 0.3em;
+  }
+  .trait__fx { list-style: none; margin: 0.25rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+  .trait__fx li { font-size: 0.82rem; color: var(--text-soft); }
 
   /* Opinion — two columns, likes vs dislikes */
   .op-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }

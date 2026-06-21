@@ -287,6 +287,10 @@ HANDLED_FIELDS: dict[str, set[str]] = {
         "iStrengthModifier", "iSpecialistCostModifier",
         # Structural / traversal fields, not effect lines of their own.
         "EffectCityUnlock",
+        # Nested-bonus field rendered via render_bonus (Patrons seat etc.).
+        "CultureBonus",
+        # Family unit-trait grants, phrased "X units gain Y".
+        "aeTraitEffectUnit",
     },
     "effectPlayer": {
         # SCALAR_LABELS tags
@@ -313,7 +317,7 @@ HANDLED_FIELDS: dict[str, set[str]] = {
     },
     "effectUnit": {
         "iPillageYieldModifier", "iFatigueExtra", "aiMilitaryKillYield",
-        "iHomeModifier",
+        "iHomeModifier", "aiUnitTraitModifier", "iFlankingAttackModifier",
     },
     "bonus": {
         "aiYieldStockpile", "aiGlobalYields", "aiYields", "aiYieldRate",
@@ -539,6 +543,28 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | 
         if (e.findtext(tag) or "") == "1":
             out.append(label)
 
+    # Family unit-trait grants: new units of a trait start with an effectUnit
+    # (Hunters: "Ranged units gain Sentinel"). Game phrasing: "New X Units
+    # start with Y" — keep it tight for the family cells.
+    for pair in e.findall("aeTraitEffectUnit/Pair"):
+        trait = (pair.findtext("zIndex") or "").replace("UNITTRAIT_", "").replace("_", " ").title()
+        eff = (pair.findtext("zValue") or "").replace("EFFECTUNIT_", "").replace("_", " ").title()
+        if trait and eff:
+            out.append(f"{trait} units gain {eff}")
+
+    # Bonus granted each time the city gains a Culture level (effectCity
+    # CultureBonus → a Bonus; City.cs fires doBonus(pCity: this) on the
+    # level-up path). The bonus lands on THIS city, so its empire-wide
+    # "in every City" phrasing (render_bonus assumes a player-wide grant)
+    # is wrong here — strip it. The Patrons seat reads "+2 Happiness Levels,
+    # per Culture level" (applied to the seat, where the effect is active).
+    cb = e.findtext("CultureBonus")
+    if cb and indexes is not None:
+        cb_entry = indexes.get("bonus.xml", {}).get(cb)
+        if cb_entry is not None:
+            for line in render_bonus(cb_entry, indexes):
+                out.append(f"{line.replace(' in every City', '')}, per Culture level")
+
     out.extend(_extra(e, "effectCity", indexes))
     return out
 
@@ -573,6 +599,15 @@ def render_effect_unit(e: ET.Element) -> list[str]:
     hm = e.findtext("iHomeModifier")
     if hm and hm != "0":
         out.append(f"{fmt_decimal(int(hm))}% Strength in own territory")
+    # Combat strength vs units carrying a trait (Steadfast: +25% vs Tribal)
+    for pair in e.findall("aiUnitTraitModifier/Pair"):
+        trait = (pair.findtext("zIndex") or "").replace("UNITTRAIT_", "").replace("_", " ").title()
+        v = int(pair.findtext("iValue") or "0")
+        out.append(f"{fmt_decimal(v)}% Strength vs {trait} units")
+    # Flanking attack bonus (Saddleborn: +25% when flanking)
+    fa = e.findtext("iFlankingAttackModifier")
+    if fa and fa != "0":
+        out.append(f"{fmt_decimal(int(fa))}% Flanking Attack")
     out.extend(_extra(e, "effectUnit", None))
     return out
 
