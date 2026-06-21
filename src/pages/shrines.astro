@@ -172,7 +172,7 @@ const SHRINE_GLYPH: Record<string, string> = {
                   return <td class="cell is-empty" data-nation={n.slug}><span class="cell__dash">—</span></td>;
                 }
                 return (
-                  <td class={`cell sm-deity yield-${shrineColor(row.type, row.primaryYield)}`} data-nation={n.slug}>
+                  <td class="cell sm-deity" data-nation={n.slug}>
                     <a href={`#${s.slug}`} class="sm-deity__link" style={`--nation-accent: ${n.color?.bg || 'var(--gold)'}`}>
                       {s.deity}
                       {s.dynastyPrereq && <span class="sm-deity__req">{s.dynastyPrereq} dynasty</span>}
@@ -283,19 +283,16 @@ const SHRINE_GLYPH: Record<string, string> = {
   .grid { margin: 0 0 1.6rem; }
   .ntbl--shrinematrix .rowlabel { min-width: 7.5rem; }
 
-  /* Colour each row by its shrine-type yield, like the reference cards below.
-     The .cell/.rowlabel defaults are transparent / --bg, so paint the fill
-     explicitly (with a black scrim for text contrast). Light tokens carry a
-     dark --yield-fg; dark tokens fall through to near-white. */
-  .ntbl--shrinematrix .sm-type,
-  .ntbl--shrinematrix .sm-fx,
-  .ntbl--shrinematrix .sm-deity {
+  /* Colour the type sidebar (left column) by shrine-type yield — the data
+     cells keep the per-nation accent, so type lives on the rail and nation in
+     the grid. .rowlabel defaults to --bg, so paint the fill explicitly (black
+     scrim for contrast; light tokens carry a dark --yield-fg). */
+  .ntbl--shrinematrix .sm-type {
     background: var(--yield-bg, var(--bg-elev));
-    background-image: linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.32));
+    background-image: linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28));
     color: var(--yield-fg, var(--text));
   }
-  .ntbl--shrinematrix .sm-type__link,
-  .ntbl--shrinematrix .sm-deity__link { color: var(--yield-fg, var(--text)); }
+  .ntbl--shrinematrix .sm-type__link { color: var(--yield-fg, var(--text)); }
 
   /* Crosshair hover — tint the hovered row + nation column. Inset box-shadow
      overlays whatever yield/nation background a cell already carries. */
