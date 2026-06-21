@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, render_bonus, _lookup_name,
-    fmt_decimal,
+    fmt_decimal, _strip_link_templates,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -31,6 +31,7 @@ OPINION_LABELS: dict[str, str] = {
     "iSmallestMilitaryOpinion":    "Smallest Military",
     "iMostCitiesOpinion":          "Most Cities",
     "iFewestCitiesOpinion":        "Fewest Cities",
+    "iSpecialistsOpinion":         "Most Specialists",
     "iLeaderNotAdultOpinion":      "Leader under 18 yo",
     "iLeaderUnmarriedOpinion":     "Unmarried Leader",
     "iLeaderForeignSpouseOpinion": "Foreign Spouse",
@@ -39,6 +40,7 @@ OPINION_LABELS: dict[str, str] = {
     "iNoCouncilOpinion":           "Not on Council",
     "iNoReligionOpinion":          "City w/o Religion",
     "iHolyCityOpinion":            "Holy Cities",
+    "iWonderOpinion":              "Each Wonder",
     "iConnectedOpinion":           "Connected Cities",
     "iCityDamagedOpinion":         "Damaged Cities",
     "iCityDefendedOpinion":        "Defended Cities",
@@ -92,6 +94,7 @@ def main() -> int:
     text_infos = load_text("text-infos.xml")
     text_nation = load_text("text-nation.xml")
     text_law = load_text("text-law.xml")
+    text_impclass = load_text("text-improvementClass.xml")
     indexes = load_xml_indexes(XML_DIR)
     nations_by_class = families_by_nation_class()
 
@@ -147,12 +150,41 @@ def main() -> int:
                 nice = _lookup_name(indexes, indexes.get("effectCity.xml", {}).get(unlock).findtext("Name") or "") if unlock in indexes.get("effectCity.xml", {}) else ""
                 seat_bonus.append(f"Unlocks {nice or unlock.replace('EFFECTCITY_', '').replace('_', ' ').title()}")
 
-        # Seat Founding bonus
+        # Seat Founding bonus (granted when the seat city is founded)
         seat_found: list[str] = []
         sfb_id = e.findtext("SeatFoundBonus")
         sfb = indexes.get("bonus.xml", {}).get(sfb_id or "")
         if sfb is not None:
             seat_found = render_bonus(sfb, indexes)
+
+        # Found bonus (granted when the family itself is first founded — distinct
+        # from the seat bonus above; only Sages currently has one: Archive I).
+        found_bonus: list[str] = []
+        fb_id = e.findtext("FoundBonus")
+        fb = indexes.get("bonus.xml", {}).get(fb_id or "")
+        if fb is not None:
+            found_bonus = render_bonus(fb, indexes)
+
+        # Advice / flavour blurb (the game's own family-class summary text).
+        advice = ""
+        adv_key = e.findtext("AdviceFound") or ""
+        if adv_key and adv_key in text_infos:
+            advice = _strip_link_templates(text_infos[adv_key]).strip()
+
+        # Luxury affinities — specific luxuries that grant this family's cities an
+        # extra effect when connected (aeLuxuryEffectCity, e.g. Sages: Lavender &
+        # Salt → +1 Culture, +1 Happiness).
+        luxury_bonuses: list[dict] = []
+        for pair in e.findall("aeLuxuryEffectCity/Pair"):
+            res = (pair.findtext("zIndex") or "").replace("RESOURCE_", "")
+            eff_id = pair.findtext("zValue") or ""
+            eff = indexes.get("effectCity.xml", {}).get(eff_id)
+            effects = render_effect_city(eff, per_city=False, indexes=indexes) if eff is not None else []
+            luxury_bonuses.append({
+                "resource": res.lower(),
+                "label": res.replace("_", " ").title(),
+                "effects": effects,
+            })
 
         # Opinion modifiers (scalar fields with known labels)
         opinions: list[dict] = []
@@ -172,7 +204,9 @@ def main() -> int:
                 "value": iv,
             })
 
-        # Favored buildings/improvements
+        # Favored buildings — specific improvements (aiImprovementOpinion) plus
+        # whole improvement *classes* (aiImprovementClassOpinion, e.g. Clerics
+        # like the Cathedral class). The game renders both in family help text.
         favored: list[dict] = []
         for pair in e.findall("aiImprovementOpinion/Pair"):
             imp = (pair.findtext("zIndex") or "").replace("IMPROVEMENT_", "")
@@ -181,6 +215,14 @@ def main() -> int:
                 "label": imp.replace("_", " ").title(),
                 "value": iv,
             })
+        for pair in e.findall("aiImprovementClassOpinion/Pair"):
+            cls = pair.findtext("zIndex") or ""
+            iv = int(pair.findtext("iValue") or "0")
+            label = text_impclass.get(
+                (indexes.get("improvementClass.xml", {}).get(cls) or ET.Element("x")).findtext("Name") or "",
+                cls.replace("IMPROVEMENTCLASS_", "").replace("_", " ").title(),
+            )
+            favored.append({"label": label, "value": iv, "isClass": True})
 
         # Preferred laws (positive opinion when adopted)
         laws: list[dict] = []
@@ -219,11 +261,14 @@ def main() -> int:
             "widget": e.findtext("zUnitWidget") or "",
             "icon": f"img/archetypes/{slug}.png",
             "archetypeWeights": archetype_weights,
+            "advice": advice,
             "cityBonus": city_bonus,
             "seatBonus": seat_bonus,
             "seatFounding": seat_found,
+            "foundBonus": found_bonus,
             "opinions": opinions,
             "luxuries": luxuries,
+            "luxuryBonuses": luxury_bonuses,
             "favored": favored,
             "preferredLaws": laws,
             "nations": nations,

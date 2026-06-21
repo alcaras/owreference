@@ -86,6 +86,10 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
     <div class="fam-head__rule"></div>
   </header>
 
+  {f.advice && (
+    <p class="fam-advice"><LinkedText text={f.advice} showIcons={false} iconsForYields={true} /></p>
+  )}
+
   <div class="np-grid">
     <section class="np-sec np-sec--city">
       <h2 class="np-sec__title">City Bonus <span class="np-count">every city of this family</span></h2>
@@ -103,10 +107,21 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
 
     <section class="np-sec np-sec--seat">
       <h2 class="np-sec__title">Seat <span class="np-count">family-seat city only</span></h2>
-      {(f.seatBonus || []).length === 0 && (f.seatFounding || []).length === 0 ? (
+      {(f.seatBonus || []).length === 0 && (f.seatFounding || []).length === 0 && (f.foundBonus || []).length === 0 ? (
         <p class="np-empty">No seat bonus.</p>
       ) : (
         <>
+          {(f.foundBonus || []).length > 0 && (
+            <>
+              <div class="np-sublabel">On founding the family</div>
+              <ul class="np-list">
+                {(f.foundBonus || []).map(b => {
+                  const yk = classifyYield(b)?.toLowerCase() || 'misc';
+                  return <li class={`np-item yield-${yk}`}><LinkedText text={b} showIcons={false} iconsForYields={true} /></li>;
+                })}
+              </ul>
+            </>
+          )}
           {(f.seatBonus || []).length > 0 && (
             <>
               <div class="np-sublabel">While seated</div>
@@ -188,7 +203,7 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
             <dd>
               <ul class="pref-chips">
                 {(f.favored || []).map((b: any) => (
-                  <li class="pref-chip"><LinkedText text={b.label} showIcons={false} /><span class="pref-chip__w">{sgn(b.value)}</span></li>
+                  <li class="pref-chip"><LinkedText text={b.label} showIcons={false} />{b.isClass && <span class="pref-chip__tag">class</span>}<span class="pref-chip__w">{sgn(b.value)}</span></li>
                 ))}
               </ul>
             </dd>
@@ -196,13 +211,29 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
         )}
         {(f.luxuries || []).length > 0 && (
           <>
-            <dt>Luxuries</dt>
+            <dt title="Opinion penalty if the nation lacks these luxuries">Wants Luxuries</dt>
             <dd>
               <ul class="pref-chips">
                 {(f.luxuries || []).map((lx: any) => (
                   <li class="pref-chip pref-chip--lux">
                     <img class="pref-chip__icon" src={luxIcon(lx.resource)} alt="" onerror="this.style.display='none'" />
                     {lx.label}
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </>
+        )}
+        {(f.luxuryBonuses || []).length > 0 && (
+          <>
+            <dt title="These luxuries grant this family's cities an extra effect">Luxury affinity</dt>
+            <dd>
+              <ul class="pref-chips">
+                {(f.luxuryBonuses || []).map((lx: any) => (
+                  <li class="pref-chip pref-chip--lux" title={(lx.effects || []).join(' · ')}>
+                    <img class="pref-chip__icon" src={luxIcon(lx.resource)} alt="" onerror="this.style.display='none'" />
+                    {lx.label}
+                    {(lx.effects || []).length > 0 && <span class="pref-chip__w">{lx.effects.join(', ')}</span>}
                   </li>
                 ))}
               </ul>
@@ -239,7 +270,7 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
             <div class="fam-nation__body">
               <a class="fam-nation__nat" href={`${base}nations/${s.slug}`}>{s.name}</a>
               <span class="fam-nation__name"
-                    style={s.ingameColor ? `color: ${s.ingameColor}` : undefined}>{s.familyName}</span>
+                    style={s.ingameColor ? `--fam-color: ${s.ingameColor}` : undefined}>{s.familyName}</span>
               {s.supremacy && (
                 <span class="fam-nation__sup">
                   <span class="fam-nation__sup-name">{s.supremacy.name}</span>
@@ -316,6 +347,14 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
     height: 3px;
     background: var(--yield-bg, var(--gold-deep));
     opacity: 0.85;
+  }
+
+  .fam-advice {
+    margin: -0.6rem 0 1.3rem;
+    max-width: 70ch;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-soft);
   }
 
   .np-grid {
@@ -417,6 +456,13 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
     color: var(--text);
   }
   .pref-chip__w { font-family: var(--font-mono); font-size: 0.7em; color: var(--text-faint); }
+  .pref-chip__tag {
+    font-family: var(--font-mono); font-size: 0.6em;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--gold-soft);
+    border: 1px solid var(--gold-deep); border-radius: 3px;
+    padding: 0 0.25em;
+  }
   .pref-chip__icon { width: 1em; height: 1em; object-fit: contain; }
 
   /* Characters */
@@ -476,7 +522,10 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 1.05rem;
-    color: var(--text);
+    /* In-game family hue, lightened toward the body text so even the dark
+       blues/browns clear the readability floor on the near-black bg. The raw
+       colour still shows in the left stripe. */
+    color: color-mix(in srgb, var(--fam-color, var(--text)) 50%, var(--text));
     line-height: 1.1;
   }
   .fam-nation__sup {

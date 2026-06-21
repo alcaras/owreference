@@ -34,7 +34,8 @@ const rows: Row[] = [
 
   { kind: 'section', label: 'Seat' },
   { kind: 'effects', label: 'Seat Bonus', field: f => f.seatBonus },
-  { kind: 'effects', label: 'Founding', field: f => f.seatFounding },
+  { kind: 'effects', label: 'Seat Founding', field: f => f.seatFounding },
+  { kind: 'effects', label: 'Family Founding', field: f => (f as any).foundBonus },
 
   { kind: 'section', label: 'Opinion' },
   { kind: 'opinions', label: 'Opinion modifiers', field: f => f.opinions },

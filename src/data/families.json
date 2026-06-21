@@ -1,5 +1,6 @@
 [
   {
+    "advice": "Champions excel at military matters. Their Cities have strong defense and train military Units quickly. Any Unit trained at a Champions City will be Steadfast. The first City founded by a Champions Family, their Family Seat, will be granted a Militia.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 1,
       "TRAIT_COMMANDER_ARCHETYPE": 10,
@@ -23,6 +24,7 @@
         "value": 10
       }
     ],
+    "foundBonus": [],
     "icon": "img/archetypes/champions.png",
     "id": "FAMILYCLASS_CHAMPIONS",
     "luxuries": [
@@ -35,6 +37,24 @@
         "label": "Dye",
         "resource": "dye",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Wine",
+        "resource": "wine"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Dye",
+        "resource": "dye"
       }
     ],
     "name": "Champions",
@@ -97,6 +117,7 @@
     "widget": "SHIELD"
   },
   {
+    "advice": "Hunters are a military and Growth-focused Family. Their Ranged Units fight best in your Nation's Territory, and all Camp have double output in Hunters Territory. This makes Hunters very effective near resources like Game, Fur, Elephant and Camel.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 1,
       "TRAIT_COMMANDER_ARCHETYPE": 1,
@@ -120,6 +141,7 @@
         "value": 5
       }
     ],
+    "foundBonus": [],
     "icon": "img/archetypes/hunters.png",
     "id": "FAMILYCLASS_HUNTERS",
     "luxuries": [
@@ -132,6 +154,24 @@
         "label": "Honey",
         "resource": "honey",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Fur",
+        "resource": "fur"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Honey",
+        "resource": "honey"
       }
     ],
     "name": "Hunters",
@@ -191,6 +231,7 @@
     "widget": "ENEMY_ICON"
   },
   {
+    "advice": "Riders are a military Family with a focus on Mounted Units. For easy access to Mounted Units, Riders Cities have access to the Import Horse, Import Elephant, and Import Camel Projects, each of which can be completed once per player. Riders Cities are always Connected, which makes Riders a good choice for locations that would be harder to connect by Road.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 1,
       "TRAIT_COMMANDER_ARCHETYPE": 1,
@@ -214,6 +255,7 @@
         "value": 5
       }
     ],
+    "foundBonus": [],
     "icon": "img/archetypes/riders.png",
     "id": "FAMILYCLASS_RIDERS",
     "luxuries": [
@@ -226,6 +268,24 @@
         "label": "Fur",
         "resource": "fur",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Salt",
+        "resource": "salt"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Fur",
+        "resource": "fur"
       }
     ],
     "name": "Riders",
@@ -288,6 +348,7 @@
     "widget": "PENTAGON"
   },
   {
+    "advice": "Statesmen Cities boost your Orders and Civics yields. Their Cities produce more Civics as the Family's Opinion Family of you improves. As a result of these bonuses to Civics yields, Statesmen Cities are effective at training Specialist, which also cost them less Food.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 1,
       "TRAIT_COMMANDER_ARCHETYPE": 5,
@@ -311,6 +372,7 @@
         "value": 20
       }
     ],
+    "foundBonus": [],
     "icon": "img/archetypes/statesmen.png",
     "id": "FAMILYCLASS_STATESMEN",
     "luxuries": [
@@ -323,6 +385,24 @@
         "label": "Wine",
         "resource": "wine",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Pearl",
+        "resource": "pearl"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Wine",
+        "resource": "wine"
       }
     ],
     "name": "Statesmen",
@@ -375,6 +455,7 @@
     "widget": "GUITAR_PICK"
   },
   {
+    "advice": "Sages Cities are focused on Science and Specialist. Their Cities produce extra Civics, which helps them build Specialist more quickly, and each Specialist in turn increases the Sages City's Science yield. The Sages Family Seat acquires a random technology upon being founded, granting an additional head start on research.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 1,
       "TRAIT_COMMANDER_ARCHETYPE": 1,
@@ -397,6 +478,9 @@
         "value": 20
       }
     ],
+    "foundBonus": [
+      "Unlocks Archive I"
+    ],
     "icon": "img/archetypes/sages.png",
     "id": "FAMILYCLASS_SAGES",
     "luxuries": [
@@ -409,6 +493,24 @@
         "label": "Salt",
         "resource": "salt",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Lavender",
+        "resource": "lavender"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Salt",
+        "resource": "salt"
       }
     ],
     "name": "Sages",
@@ -436,6 +538,10 @@
     ],
     "opinions": [
       {
+        "label": "Most Specialists",
+        "value": 40
+      },
+      {
         "label": "Tribal Spouse",
         "value": -40
       }
@@ -455,6 +561,7 @@
     "widget": "OCTAGON"
   },
   {
+    "advice": "The Cities of Patrons produce extra Civics, which allows them to train Specialist more quickly. Further, each Resource Precious increases the City's Culture yield. The Patrons Family Seat also grants a free Minister. Each Patrons City starts with a Literature Luxury, which can be used to boost Culture or gain favor.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 5,
       "TRAIT_COMMANDER_ARCHETYPE": 1,
@@ -478,6 +585,7 @@
         "value": 20
       }
     ],
+    "foundBonus": [],
     "icon": "img/archetypes/patrons.png",
     "id": "FAMILYCLASS_PATRONS",
     "luxuries": [
@@ -490,6 +598,24 @@
         "label": "Incense",
         "resource": "incense",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Gem",
+        "resource": "gem"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Incense",
+        "resource": "incense"
       }
     ],
     "name": "Patrons",
@@ -531,6 +657,10 @@
         "value": 20
       },
       {
+        "label": "Each Wonder",
+        "value": 20
+      },
+      {
         "label": "Each Governor",
         "value": 10
       }
@@ -550,6 +680,7 @@
     "widget": "SQUARE"
   },
   {
+    "advice": "Artisans generate extra Culture and receive a significant bonus to Mine and Lumbermill. They are a good choice for areas with many Hill and Trees. The Artisans Family Seat is granted a free Worker, and Urban Improvement for that City are built more quickly.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 5,
       "TRAIT_COMMANDER_ARCHETYPE": 1,
@@ -575,6 +706,7 @@
         "value": 10
       }
     ],
+    "foundBonus": [],
     "icon": "img/archetypes/artisans.png",
     "id": "FAMILYCLASS_ARTISANS",
     "luxuries": [
@@ -587,6 +719,24 @@
         "label": "Gem",
         "resource": "gem",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Dye",
+        "resource": "dye"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Gem",
+        "resource": "gem"
       }
     ],
     "name": "Artisans",
@@ -644,6 +794,7 @@
     "widget": "TRIANGLE"
   },
   {
+    "advice": "Landowners excel at expanding your Territory. Their Growth bonus allows them to produce Settler and Worker more quickly, and Landowners Cities train Specialist Rural in half the time. Landowners are a good choice for Cities with many Farm.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 10,
       "TRAIT_COMMANDER_ARCHETYPE": 1,
@@ -667,6 +818,7 @@
         "value": 5
       }
     ],
+    "foundBonus": [],
     "icon": "img/archetypes/landowners.png",
     "id": "FAMILYCLASS_LANDOWNERS",
     "luxuries": [
@@ -679,6 +831,24 @@
         "label": "Olive",
         "resource": "olive",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Honey",
+        "resource": "honey"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Olive",
+        "resource": "olive"
       }
     ],
     "name": "Landowners",
@@ -740,6 +910,7 @@
     "widget": "CIRCLE"
   },
   {
+    "advice": "Clerics are primarily focused on Religion. Their Family Seat gains bonuses to training Disciple Units, and Clerics Cities gain increased yields from religious Improvement, and they are uniquely able to build Urban Improvement on Sand.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 1,
       "TRAIT_COMMANDER_ARCHETYPE": 5,
@@ -759,7 +930,14 @@
       "Urban Terrain Valid: Sand",
       "Void Tech Prereq Improvement Class: Monastery"
     ],
-    "favored": [],
+    "favored": [
+      {
+        "isClass": true,
+        "label": "Cathedral",
+        "value": 20
+      }
+    ],
+    "foundBonus": [],
     "icon": "img/archetypes/clerics.png",
     "id": "FAMILYCLASS_CLERICS",
     "luxuries": [
@@ -772,6 +950,24 @@
         "label": "Lavender",
         "resource": "lavender",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Incense",
+        "resource": "incense"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Lavender",
+        "resource": "lavender"
       }
     ],
     "name": "Clerics",
@@ -828,6 +1024,7 @@
     "widget": "HEXAGON"
   },
   {
+    "advice": "In Cities belonging to Traders, each Specialist produces Money. The Traders Family Seat is able to produce Caravan and also grants you with a Merchant as well as a Market 3, both of which boost Money considerably. Traders Worker can build several Roads per turn, which makes them especially good at extending your Trade Network.",
     "archetypeWeights": {
       "TRAIT_BUILDER_ARCHETYPE": 1,
       "TRAIT_COMMANDER_ARCHETYPE": 1,
@@ -851,6 +1048,7 @@
         "value": 20
       }
     ],
+    "foundBonus": [],
     "icon": "img/archetypes/traders.png",
     "id": "FAMILYCLASS_TRADERS",
     "luxuries": [
@@ -863,6 +1061,24 @@
         "label": "Pearl",
         "resource": "pearl",
         "value": -10
+      }
+    ],
+    "luxuryBonuses": [
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Olive",
+        "resource": "olive"
+      },
+      {
+        "effects": [
+          "+1 Culture",
+          "+1 Happiness"
+        ],
+        "label": "Pearl",
+        "resource": "pearl"
       }
     ],
     "name": "Traders",
