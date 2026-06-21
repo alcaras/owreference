@@ -240,6 +240,32 @@ const SHRINE_GLYPH: Record<string, string> = {
       input.addEventListener('input', apply);
       apply();
     })();
+
+    // Crosshair: highlight the hovered row + its nation column in the matrix.
+    (function () {
+      const table = document.querySelector('.ntbl--shrinematrix');
+      if (!table) return;
+      let curRow = null;
+      let curCells = [];
+      function clear() {
+        if (curRow) curRow.classList.remove('is-rowhl');
+        for (const c of curCells) c.classList.remove('is-colhl');
+        curRow = null; curCells = [];
+      }
+      table.addEventListener('mouseover', (e) => {
+        const cell = e.target.closest('td, th');
+        if (!cell || !table.contains(cell)) return;
+        clear();
+        const row = cell.closest('tr');
+        if (row) { row.classList.add('is-rowhl'); curRow = row; }
+        const slug = cell.getAttribute('data-nation');
+        if (slug) {
+          curCells = Array.from(table.querySelectorAll('[data-nation="' + slug + '"]'));
+          for (const c of curCells) c.classList.add('is-colhl');
+        }
+      });
+      table.addEventListener('mouseleave', clear);
+    })();
   </script>
 </Base>
 
@@ -256,6 +282,17 @@ const SHRINE_GLYPH: Record<string, string> = {
   /* ── Type × nation matrix ── */
   .grid { margin: 0 0 1.6rem; }
   .ntbl--shrinematrix .rowlabel { min-width: 7.5rem; }
+
+  /* Crosshair hover — tint the hovered row + nation column. Inset box-shadow
+     overlays whatever yield/nation background a cell already carries. */
+  .ntbl--shrinematrix tr.is-rowhl > *,
+  .ntbl--shrinematrix .is-colhl {
+    box-shadow: inset 0 0 0 9999px rgba(201, 160, 74, 0.13);
+  }
+  /* Intersection cell reads a touch hotter so the crossing point is clear. */
+  .ntbl--shrinematrix tr.is-rowhl > .is-colhl {
+    box-shadow: inset 0 0 0 9999px rgba(201, 160, 74, 0.24);
+  }
   .sm-type__link {
     display: inline-flex;
     align-items: center;
