@@ -172,7 +172,7 @@ const SHRINE_GLYPH: Record<string, string> = {
                   return <td class="cell is-empty" data-nation={n.slug}><span class="cell__dash">—</span></td>;
                 }
                 return (
-                  <td class="cell sm-deity" data-nation={n.slug}>
+                  <td class={`cell sm-deity yield-${shrineColor(row.type, row.primaryYield)}`} data-nation={n.slug}>
                     <a href={`#${s.slug}`} class="sm-deity__link" style={`--nation-accent: ${n.color?.bg || 'var(--gold)'}`}>
                       {s.deity}
                       {s.dynastyPrereq && <span class="sm-deity__req">{s.dynastyPrereq} dynasty</span>}
