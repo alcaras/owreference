@@ -283,6 +283,20 @@ const SHRINE_GLYPH: Record<string, string> = {
   .grid { margin: 0 0 1.6rem; }
   .ntbl--shrinematrix .rowlabel { min-width: 7.5rem; }
 
+  /* Colour each row by its shrine-type yield, like the reference cards below.
+     The .cell/.rowlabel defaults are transparent / --bg, so paint the fill
+     explicitly (with a black scrim for text contrast). Light tokens carry a
+     dark --yield-fg; dark tokens fall through to near-white. */
+  .ntbl--shrinematrix .sm-type,
+  .ntbl--shrinematrix .sm-fx,
+  .ntbl--shrinematrix .sm-deity {
+    background: var(--yield-bg, var(--bg-elev));
+    background-image: linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.32));
+    color: var(--yield-fg, var(--text));
+  }
+  .ntbl--shrinematrix .sm-type__link,
+  .ntbl--shrinematrix .sm-deity__link { color: var(--yield-fg, var(--text)); }
+
   /* Crosshair hover — tint the hovered row + nation column. Inset box-shadow
      overlays whatever yield/nation background a cell already carries. */
   .ntbl--shrinematrix tr.is-rowhl > *,
