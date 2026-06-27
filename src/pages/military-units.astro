@@ -7,7 +7,7 @@ import allUnits from '../data/units.json';
 // Siege and Ship. The split is `isMilitary` (the game's UNITCYCLE_MILITARY_*
 // classification); support units (Scouts, Disciples, Workers…) live on
 // /civilian-units. Both draw from the same units.json `normal` category.
-const units = (allUnits as any[]).filter(u => u.category === 'normal' && u.isMilitary);
+const units = (allUnits as any[]).filter(u => u.category === 'normal' && u.isMilitary && u.production > 0);
 ---
 
 <Base

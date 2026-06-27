@@ -7,8 +7,10 @@ import allUnits from '../data/units.json';
 // and tribal/barbarian units live on their own pages. Classification comes
 // straight from units.json's `category` field (built by build_unit_damage.py).
 // This page lists ALL of them; military-units / civilian-units split the same
-// roster by `isCombat`.
-const units = (allUnits as any[]).filter(u => u.category === 'normal');
+// roster by `isMilitary`. Non-buildable units (production 0, e.g. the Explorer —
+// granted by Hanno the Navigator's dynasty, not trained) are excluded: this is
+// the roster you can actually build.
+const units = (allUnits as any[]).filter(u => u.category === 'normal' && u.production > 0);
 ---
 
 <Base
