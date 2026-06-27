@@ -483,6 +483,13 @@ def main() -> int:
             "slug": zt.replace("UNIT_", "").lower(),
             "name": name,
             "isCombat": is_combat_unit(entry),
+            # Military vs civilian split for the page tabs. UnitCycle is the
+            # game's own classification: every fighting unit is UNITCYCLE_MILITARY_*
+            # (incl. Militia/Conscript), while support units carry their own cycle
+            # (SCOUT, DISCIPLE, WORKER, FOUND, CARAVAN). This is cleaner than
+            # isCombat, which counts Scouts/Disciples as combat because they have
+            # a Strength stat — they're civilian for roster purposes.
+            "isMilitary": (entry.findtext("UnitCycle") or "").startswith("UNITCYCLE_MILITARY"),
             "category": category,
             "isTribal": is_tribal,
             "culturePrereq": culture,

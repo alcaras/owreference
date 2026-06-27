@@ -3,17 +3,19 @@ import Base from '../layouts/Base.astro';
 import UnitsTable from '../components/UnitsTable.astro';
 import allUnits from '../data/units.json';
 
-// Non-combat units from the standard roster — Workers, Settlers, Scouts and the
-// like. The "civilian" split is `!isCombat` (combat units live on
-// /military-units); both draw from the same units.json `normal` category.
-const units = (allUnits as any[]).filter(u => u.category === 'normal' && !u.isCombat);
+// Support units from the standard roster — Workers, Settlers, Scouts, Caravans
+// and the religion Disciples. The split is `!isMilitary` (the game's
+// UNITCYCLE_MILITARY_* classification); fighting units live on /military-units.
+// Both draw from the same units.json `normal` category. Note these can still
+// carry a Strength stat (Scouts/Disciples defend) — they're civilian by role.
+const units = (allUnits as any[]).filter(u => u.category === 'normal' && !u.isMilitary);
 ---
 
 <Base
   title="Civilian Units"
   active="civilian-units"
   pageMark="⚒️"
-  description={`The ${units.length} non-combat units of Old World any nation can build — Workers, Settlers, Scouts and other civilians. Each row shows Movement, Range, training cost, material cost, upkeep, tech prerequisite and special abilities, all derived from the game's unit.xml. Combat units are listed separately.`}
+  description={`The ${units.length} civilian and support units of Old World any nation can build — Workers, Settlers, Scouts, Caravans and the religion Disciples. Each row shows Movement, Range, training cost, material cost, upkeep, tech prerequisite and special abilities, all derived from the game's unit.xml. Fighting units are listed separately.`}
 >
   <UnitsTable units={units} heading="Civilian Units" noun="civilian units" />
 </Base>
