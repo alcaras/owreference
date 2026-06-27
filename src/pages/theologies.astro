@@ -63,6 +63,19 @@ function theologyYield(eff: string[]): string {
   <div class="grid">
     <div class="grid__scroll">
       <table class="ntbl ntbl--theology" aria-label="Theologies by tier">
+        {/* Explicit widths — .ntbl is table-layout:fixed, so without a colgroup
+           the 7 columns squeeze to the container and the long Worship-building
+           text overflows into Tech. With these + the table min-width, wide cells
+           wrap and the whole table scrolls horizontally on narrow screens. */}
+        <colgroup>
+          <col style="width: 9rem" />
+          <col style="width: 5.5rem" />
+          <col style="width: 5rem" />
+          <col style="width: 12rem" />
+          <col style="width: 17rem" />
+          <col style="width: 8rem" />
+          <col style="width: 9rem" />
+        </colgroup>
         <thead>
           <tr>
             <th class="nhdr nhdr--family">Theology</th>
@@ -206,6 +219,9 @@ function theologyYield(eff: string[]): string {
   .legend--audience { margin-bottom: 0.5rem; }
 
   .grid { margin: 0 0 1.6rem; }
+  /* Keep the table wide enough that the colgroup widths hold; below this the
+     grid__scroll wrapper scrolls horizontally instead of crushing columns. */
+  .ntbl--theology { min-width: 65rem; }
   .ntbl--theology .rowlabel { min-width: 8rem; }
   .tt-name {
     font-family: var(--font-display);
@@ -217,7 +233,9 @@ function theologyYield(eff: string[]): string {
   .tt-name:hover { color: var(--gold); text-decoration: none; }
   .tt-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
   .tt-dim { color: var(--text-faint); font-size: 0.74rem; }
-  .tt-fx { font-size: 0.78rem; line-height: 1.5; white-space: nowrap; }
+  /* Wrap long effect text (e.g. Redemption's "Can hurry Projects & Specialists
+     with …") within its column rather than overflowing into the next one. */
+  .tt-fx { font-size: 0.78rem; line-height: 1.5; white-space: normal; }
   .chip__mark {
     font-family: var(--font-mono);
     font-size: 0.6rem;

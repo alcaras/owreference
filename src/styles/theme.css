@@ -385,6 +385,11 @@ h1, h2, h3 {
 }
 .ntbl col.ntbl__rowlabel-col { width: 7.5rem; }
 .ntbl col[data-nation] { width: 12.5rem; }
+/* Family matrix mirrors the nation matrix: give its columns a real width so
+   table-layout:fixed doesn't crush 10 columns to fit the viewport (which turns
+   the City-Bonus cells into an unreadable blob on mobile). With a width the
+   table scrolls horizontally in .grid__scroll instead. */
+.ntbl col[data-family] { width: 12rem; }
 .ntbl thead th { font-weight: 500; }
 .ntbl th, .ntbl td { vertical-align: top; }
 

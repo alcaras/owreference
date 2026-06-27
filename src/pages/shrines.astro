@@ -351,7 +351,11 @@ const SHRINE_GLYPH: Record<string, string> = {
     font-size: 0.55rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--text-faint);
+    /* Inherit the type rail's --yield-fg and dim it, not the fixed --text-faint
+       grey — that token is tuned for the dark base and washes out on the
+       yield-coloured rail. */
+    color: inherit;
+    opacity: 0.7;
   }
   .sm-row--dynasty .rowlabel,
   .sm-row--dynasty .cell {
@@ -420,7 +424,10 @@ const SHRINE_GLYPH: Record<string, string> = {
     font-weight: 500;
     font-size: 0.62rem;
     font-style: italic;
-    color: var(--text-faint);
+    /* Inherit the card's --yield-fg and dim it, not the fixed --text-faint grey
+       (tuned for the dark base) which washes out on the yield-coloured card. */
+    color: inherit;
+    opacity: 0.7;
     margin-top: 0.05rem;
   }
   .tref__count {
