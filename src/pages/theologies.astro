@@ -294,7 +294,11 @@ function theologyYield(eff: string[]): string {
     font-family: var(--font-mono);
     font-size: 0.6rem;
     letter-spacing: 0.05em;
-    color: var(--text-faint);
+    /* Inherit the card's (light) foreground and dim it, rather than the fixed
+       --text-faint grey — that token is tuned for the near-black site base and
+       washes out on these tinted theology cards. */
+    color: inherit;
+    opacity: 0.68;
     margin: 0.45rem 0 0.15rem;
   }
   .theology__effects {
