@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import UnitsTable from '../components/UnitsTable.astro';
+import allUnits from '../data/units.json';
+
+// Non-combat units from the standard roster — Workers, Settlers, Scouts and the
+// like. The "civilian" split is `!isCombat` (combat units live on
+// /military-units); both draw from the same units.json `normal` category.
+const units = (allUnits as any[]).filter(u => u.category === 'normal' && !u.isCombat);
+---
+
+<Base
+  title="Civilian Units"
+  active="civilian-units"
+  pageMark="⚒️"
+  description={`The ${units.length} non-combat units of Old World any nation can build — Workers, Settlers, Scouts and other civilians. Each row shows Movement, Range, training cost, material cost, upkeep, tech prerequisite and special abilities, all derived from the game's unit.xml. Combat units are listed separately.`}
+>
+  <UnitsTable units={units} heading="Civilian Units" noun="civilian units" />
+</Base>

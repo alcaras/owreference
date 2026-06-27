@@ -226,6 +226,18 @@ export const TABS: Tab[] = [
     willContain: ['Each unit: class, strength, move, range, cost, tech, counters'],
   },
   {
+    slug: 'military-units', icon: '⚔️', label: 'Military Units', section: 'Military',
+    status: 'built', sourceSheet: '🛡️ Units',
+    summary: 'Combat units only: stats, cost, upkeep, counters',
+    willContain: ['Each combat unit: class, strength, move, range, cost, tech, counters'],
+  },
+  {
+    slug: 'civilian-units', icon: '⚒️', label: 'Civilian Units', section: 'Military',
+    status: 'built', sourceSheet: '🛡️ Units',
+    summary: 'Non-combat units only: workers, settlers, scouts',
+    willContain: ['Each civilian unit: move, range, cost, tech, abilities'],
+  },
+  {
     slug: 'unique-units', icon: '⭐', label: 'Unique Units', section: 'Military',
     status: 'built', sourceSheet: '⭐ Unique Units',
     summary: 'Nation-unique units by civilization and Culture tier',

@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import UnitsTable from '../components/UnitsTable.astro';
+import allUnits from '../data/units.json';
+
+// Combat units from the standard roster — Infantry, Polearm, Mounted, Ranged,
+// Siege, Ship and Disciples. The "military" split is `isCombat` (civilians live
+// on /civilian-units); both draw from the same units.json `normal` category.
+const units = (allUnits as any[]).filter(u => u.category === 'normal' && u.isCombat);
+---
+
+<Base
+  title="Military Units"
+  active="military-units"
+  pageMark="⚔️"
+  description={`The ${units.length} combat units of Old World any nation can build — Infantry, Polearm, Mounted, Ranged, Siege and Ship classes plus religious Disciples. Each row shows Strength, Movement, Range, training cost, material cost, upkeep, tech prerequisite and combat counters, all derived from the game's unit.xml. Civilian units are listed separately.`}
+>
+  <UnitsTable units={units} heading="Military Units" noun="military units" />
+</Base>

@@ -95,6 +95,19 @@ function foldYields(chain: any[], field: 'costs' | 'consumption') {
     text: foldNums(chain.map(u => { const c = u[field].find((x: any) => x.yield === k); return c ? c.value : 0; }), '/'),
   }));
 }
+
+// Training cost — the unit's `production` value, paid in `trainingYield` (Training
+// for almost everyone; Growth for Yuezhi's Steppe Rider). This is the primary
+// build cost; `costs` only holds the extra resource costs (iron/wood/food) on top.
+// Folded across the chain (base / upgrade) and grouped by training yield.
+function foldTraining(chain: any[]) {
+  const keys: string[] = [];
+  for (const u of chain) { const k = u.trainingYield || 'training'; if (!keys.includes(k)) keys.push(k); }
+  return keys.map(k => ({
+    yield: k,
+    text: foldNums(chain.map(u => (u.trainingYield || 'training') === k ? u.production : 0), '/'),
+  }));
+}
 const lineTraits = (chain: any[]) => [...new Set(chain.flatMap(u => secondaryTraits(u)))];
 function lineAbilities(chain: any[]) {
   const seen = new Set<string>(); const out: any[] = [];
@@ -194,7 +207,7 @@ const FACETS: Facet[] = [
             <th class="nhdr nhdr--col nhdr--num" title="Strength (base / upgrade)"><span class="nhdr__name">Str</span></th>
             <th class="nhdr nhdr--col nhdr--num" title="Movement · Sight"><span class="nhdr__name">Move·Sight</span></th>
             <th class="nhdr nhdr--col nhdr--num" title="Attack range (melee shows —)"><span class="nhdr__name">Range</span></th>
-            <th class="nhdr nhdr--col" title="Resource cost to build (base / upgrade)"><span class="nhdr__name">Cost</span></th>
+            <th class="nhdr nhdr--col" title="Training + resource cost to build (base / upgrade)"><span class="nhdr__name">Cost</span></th>
             <th class="nhdr nhdr--col" title="Per-turn upkeep (base / upgrade)"><span class="nhdr__name">Upkeep</span></th>
             <th class="nhdr nhdr--col"><span class="nhdr__name">Traits & Abilities</span></th>
           </tr>
@@ -206,7 +219,7 @@ const FACETS: Facet[] = [
             const cls = unitClass(bu);
             const sec = lineTraits(chain);
             const ab = lineAbilities(chain);
-            const costs = foldYields(chain, 'costs');
+            const buildCost = [...foldTraining(chain), ...foldYields(chain, 'costs')];
             const upkeep = foldYields(chain, 'consumption');
             const eras = collapse(chain.map(u => u.era));
             const unlockTitle = eras.map((e: string) => e === 'Initial' ? 'from start' : tierLabel(e)).join(' → ');
@@ -284,12 +297,12 @@ const FACETS: Facet[] = [
                   <td class="cell cell--num is-empty" data-sortval={0}><span class="cell__dash">—</span></td>
                 )}
 
-                {/* Resource cost to build (base / upgrade) */}
-                {costs.length === 0 ? (
+                {/* Training + resource cost to build (base / upgrade) */}
+                {buildCost.length === 0 ? (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
                 ) : (
                   <td class="cell cell--chips">
-                    {costs.map((c: any) => (
+                    {buildCost.map((c: any) => (
                       <span class={`chip yield-${c.yield}`} title={`${c.text} ${c.yield} to build`}>
                         <img class="chip__icon" src={yieldIcon(c.yield)} alt="" onerror="this.style.display='none'" />
                         {c.text}
