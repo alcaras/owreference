@@ -385,11 +385,19 @@ h1, h2, h3 {
 }
 .ntbl col.ntbl__rowlabel-col { width: 7.5rem; }
 .ntbl col[data-nation] { width: 12.5rem; }
-/* Family matrix mirrors the nation matrix: give its columns a real width so
-   table-layout:fixed doesn't crush 10 columns to fit the viewport (which turns
-   the City-Bonus cells into an unreadable blob on mobile). With a width the
-   table scrolls horizontally in .grid__scroll instead. */
+/* Family / archetype matrices mirror the nation matrix: give their columns a
+   real width so table-layout:fixed doesn't crush 10+ columns to fit the
+   viewport (which collapses the text-heavy cells — family City-Bonus, archetype
+   Leader-Effects — into overlapping, unreadable text on mobile). With a width
+   the table scrolls horizontally in .grid__scroll instead. */
 .ntbl col[data-family] { width: 12rem; }
+.ntbl col[data-archetype] { width: 12rem; }
+.ntbl col[data-religion] { width: 12rem; }
+.ntbl col[data-tribe] { width: 12rem; }
+/* Counter matrix: narrower than the text matrices (cells are a % value + a short
+   source list), but still needs a width so the source names don't overflow the
+   crushed ~45px columns on mobile. */
+.ntbl col[data-target] { width: 10rem; }
 .ntbl thead th { font-weight: 500; }
 .ntbl th, .ntbl td { vertical-align: top; }
 

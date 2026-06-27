@@ -51,6 +51,16 @@ function otherPrereq(b: Building): string[] {
   return out;
 }
 
+// Per-column widths — .ntbl is table-layout:fixed, so without explicit widths
+// the 10 columns squeeze to the viewport and content overflows onto neighbours
+// on mobile. With these + the table min-width the cells wrap and the table
+// scrolls horizontally instead. (Mirrors rural-improvements.)
+const COL_W: Record<Col['key'], string> = {
+  name: '11rem', tech: '8rem', prereqs: '9rem', cost: '5rem', build: '5rem',
+  upkeep: '5rem', specialist: '8rem', effects: '13rem', terrains: '7.5rem',
+  restrict: '9rem',
+};
+
 const searchBlobs: Record<string, string> = {};
 for (const b of buildings) {
   searchBlobs[b.slug] = JSON.stringify(b).toLowerCase();
@@ -157,7 +167,10 @@ const chains: Chain[] = chainBases.map(start => {
 
   <div class="grid" id="ub-grid">
     <div class="grid__scroll">
-      <table class="ntbl">
+      <table class="ntbl ntbl--ub">
+        <colgroup>
+          {cols.map(c => <col data-col={c.key} style={`width:${COL_W[c.key]}`} />)}
+        </colgroup>
         <thead>
           <tr>
             {cols.map(c => (
@@ -354,6 +367,9 @@ const chains: Chain[] = chainBases.map(start => {
 </Base>
 
 <style>
+  /* Sum of the colgroup widths — keeps columns at their set sizes and lets
+     .grid__scroll scroll horizontally on narrow screens instead of crushing. */
+  .ntbl--ub { min-width: 80rem; }
   /* ── Building-line progression matrix ── */
   .lines { margin-bottom: 1.6rem; }
   .lines__title {

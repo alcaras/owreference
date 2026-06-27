@@ -35,6 +35,16 @@ const cols: Col[] = [
   { key: 'restrict',    label: 'Notes' },
 ];
 
+// Per-column widths — .ntbl is table-layout:fixed, so without explicit widths
+// the 11 columns squeeze to the viewport and content (e.g. the "Stonecutting"
+// tech) overflows onto the neighbouring column. With these + the table
+// min-width the cells wrap and the whole table scrolls horizontally instead.
+const COL_W: Record<Col['key'], string> = {
+  name: '11rem', tech: '8rem', cost: '5rem', build: '5rem', upkeep: '5rem',
+  output: '6rem', terrains: '7.5rem', adjacency: '9rem', terrainMods: '12rem',
+  specialist: '8rem', restrict: '10rem',
+};
+
 const searchBlobs: Record<string, string> = {};
 for (const it of improvements) {
   searchBlobs[it.slug] = JSON.stringify(it).toLowerCase();
@@ -46,7 +56,10 @@ for (const it of improvements) {
 ]}>
   <div class="grid" id="ri-grid">
     <div class="grid__scroll">
-      <table class="ntbl">
+      <table class="ntbl ntbl--ri">
+        <colgroup>
+          {cols.map(c => <col data-col={c.key} style={`width:${COL_W[c.key]}`} />)}
+        </colgroup>
         <thead>
           <tr>
             {cols.map(c => (
@@ -237,6 +250,9 @@ for (const it of improvements) {
 </Base>
 
 <style>
+  /* Sum of the colgroup widths — keeps columns at their set sizes and lets
+     .grid__scroll scroll horizontally on narrow screens instead of crushing. */
+  .ntbl--ri { min-width: 86rem; }
   .nhdr--col {
     background: var(--bg-elev-2);
     color: var(--text);
