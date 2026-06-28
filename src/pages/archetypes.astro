@@ -309,6 +309,11 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
           }
         }
         if (visibleCount) visibleCount.textContent = String(visibleN);
+        // Shrink the table's min-width floor to the visible-column count so hiding
+        // columns can't leave a phantom scroll (the floor reserving hidden cols'
+        // space) on screens narrower than the full-table floor.
+        const tbl = grid.querySelector('table.ntbl');
+        if (tbl) tbl.style.minWidth = (visibleN * 10 + 7.5) + 'rem';
         if (note) {
           if (q && hiddenBySearch > 0) {
             note.hidden = false;

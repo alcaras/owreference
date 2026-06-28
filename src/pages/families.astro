@@ -274,6 +274,10 @@ for (const f of families) {
           }
         }
         if (visibleCount) visibleCount.textContent = String(visibleN);
+        // Shrink the table's min-width floor to the visible-column count so hiding
+        // columns can't leave a phantom scroll on narrow screens.
+        const tbl = grid.querySelector('table.ntbl');
+        if (tbl) tbl.style.minWidth = (visibleN * 10 + 7.5) + 'rem';
         if (note) {
           if (q && hiddenBySearch > 0) {
             note.hidden = false;
