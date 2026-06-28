@@ -95,6 +95,34 @@ def conditions(s: ET.Element) -> list[str]:
     return [c for c in out if not (c in seen or seen.add(c))]
 
 
+# ── Competitive-mode eligibility ──────────────────────────────────────────
+# Tournament ("Competitive Mode") games turn on the Competitive Events option,
+# which removes the swingy/random stories tagged GAMEOPTION_COMPETITIVE_EVENTS
+# in aeGameOptionInvalid (~127 — tribe-alliance gifts, Neighbors, …). An event
+# is "CM eligible" iff it is NOT so tagged.
+def cm_ineligible(s: ET.Element) -> bool:
+    return any((v.text or "") == "GAMEOPTION_COMPETITIVE_EVENTS"
+               for v in s.findall("aeGameOptionInvalid/zValue"))
+
+
+# ── Class-level earliest-fire turn ────────────────────────────────────────
+# An event with no iMinTurns of its own still can't fire before its event class
+# becomes active (eventClass.xml iMinTurns — Courtier 30, Mercenary 20, …), so
+# fold that into the per-event earliest turn.
+_CLASS_MIN_TURNS: dict[str, int] | None = None
+def _class_min_turns() -> dict[str, int]:
+    global _CLASS_MIN_TURNS
+    if _CLASS_MIN_TURNS is None:
+        _CLASS_MIN_TURNS = {}
+        p = m.XML_DIR / "eventClass.xml"
+        if p.exists():
+            for e in ET.parse(p).getroot().findall("Entry"):
+                z, mt = e.findtext("zType"), (e.findtext("iMinTurns") or "").strip()
+                if z and mt and mt != "0":
+                    _CLASS_MIN_TURNS[z] = int(mt)
+    return _CLASS_MIN_TURNS
+
+
 def timing(s: ET.Element) -> dict:
     """Surface the when-can-this-fire metadata as a flat, only-present dict."""
     out: dict = {}
@@ -103,6 +131,10 @@ def timing(s: ET.Element) -> dict:
         return int(v) if v and v.strip() and v.strip() != "0" else None
     if (v := ival("iMinTurns")) is not None:
         out["minTurns"] = v
+    # Fold in the event class's own earliest-active turn (the effective floor).
+    class_min = _class_min_turns().get((s.findtext("Class") or "").strip())
+    if class_min:
+        out["minTurns"] = max(out.get("minTurns", 0), class_min)
     if (v := ival("iMaxTurns")) is not None:
         out["maxTurns"] = v
     if (v := ival("iMinLeader")) is not None:
@@ -193,6 +225,9 @@ def build_event(s: ET.Element, group_weight: int, eopt_idx: dict,
         "linkPrereq": link_prereq,
         "dlc": dlc_label(s.findtext("GameContentRequired") or ""),
         "url": url,
+        # Competitive-Mode eligibility — False only for the excluded stories
+        # (renderers treat anything !== false as eligible).
+        "cmEligible": False if cm_ineligible(s) else None,
         "timing": timing(s),
         "conditions": conditions(s),
         "guaranteed": guaranteed,

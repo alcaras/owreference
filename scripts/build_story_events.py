@@ -262,6 +262,9 @@ def build_event(s: ET.Element, pack: str | None, eopt_idx: dict,
     tim = bev.timing(s)
     if tim:
         ev["timing"] = tim
+    # Competitive-Mode eligibility: only flag the exceptions (most are eligible).
+    if bev.cm_ineligible(s):
+        ev["cmEligible"] = False
     prob = s.findtext("iProb")
     if prob and prob.strip() and prob.strip() != "0":
         ev["prob"] = int(prob)

@@ -130,6 +130,13 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
           <span class="evt__name">{ev.name}</span>
           <span class="evt__meta">
             {ev.trigger && <span class="chip--trigger">{ev.trigger}{ev.triggerData ? ` · ${ev.triggerData}` : ''}</span>}
+            <span
+              class={`chip--cm ${ev.cmEligible !== false ? 'chip--cm-yes' : 'chip--cm-no'}`}
+              title={ev.cmEligible !== false
+                ? 'Eligible in Competitive Mode'
+                : 'Excluded when Competitive Events is on (Competitive Mode tournaments)'}
+            >CM {ev.cmEligible !== false ? '✓' : '✗'}</span>
+            {ev.timing?.minTurns && <span class="chip--time chip--turn" title="Earliest turn this event can fire (its own minimum, or its event class's)">Turn {ev.timing.minTurns}+</span>}
             {ev.pack && <span class="chip--dlc" title="Ships with this DLC">{ev.pack}</span>}
             {ev.dlc && ev.dlc !== ev.pack && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
             {ev.followsFrom && ev.followsFrom.length > 0
@@ -154,11 +161,10 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
               ))}
             </p>
           )}
-          {(ev.timing || ev.prob || ev.conditions || ev.subjects) && (
+          {(ev.prob || ev.subjects?.length || ev.conditions?.length || (ev.timing && (ev.timing.repeat || ev.timing.maxTurns || ev.timing.minLeader || ev.timing.law || ev.timing.minOpponentLevel))) && (
             <div class="evt__tags">
               {ev.prob && <span class="chip--time" title="Chance this story is added to the pool on an eligible turn">{ev.prob}% to appear</span>}
               {ev.timing?.repeat && <span class="chip--time">{ev.timing.repeat}</span>}
-              {ev.timing?.minTurns && <span class="chip--time">Turn {ev.timing.minTurns}+</span>}
               {ev.timing?.maxTurns && <span class="chip--time">Before turn {ev.timing.maxTurns}</span>}
               {ev.timing?.minLeader && <span class="chip--time">Leader {ev.timing.minLeader}+</span>}
               {ev.timing?.law && <span class="chip--time">Law: {ev.timing.law}</span>}
@@ -374,6 +380,12 @@ const title = cat.parts.length > 1 ? `${cat.label} Events · ${part.label}` : `$
       border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
       padding: 0.06rem 0.44rem; border-radius: 5px;
     }
+    /* Competitive-Mode eligibility badge (green = eligible, red = excluded) */
+    .chip--cm { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.02em; padding: 0.06rem 0.42rem; border-radius: 5px; border: 1px solid transparent; }
+    .chip--cm-yes { color: #6ba368; background: color-mix(in srgb, #6ba368 14%, var(--bg-elev)); border-color: color-mix(in srgb, #6ba368 40%, transparent); }
+    .chip--cm-no  { color: #c25555; background: color-mix(in srgb, #c25555 14%, var(--bg-elev)); border-color: color-mix(in srgb, #c25555 40%, transparent); }
+    /* Earliest-fire turn marker (promoted to the summary row) */
+    .chip--turn { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev)); border-color: color-mix(in srgb, var(--accent) 38%, transparent); }
     .chip--cond { background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; }
     .chip--subj { background: color-mix(in srgb, #4a7ba6 18%, var(--bg-elev)); color: var(--text-dim); border: 1px solid color-mix(in srgb, #4a7ba6 45%, transparent); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; }
     .chip--time { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; font-family: var(--font-mono); letter-spacing: 0.02em; }
