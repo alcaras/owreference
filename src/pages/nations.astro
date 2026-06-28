@@ -225,7 +225,9 @@ for (const n of nations) {
                     >
                       <span class="fam">
                         {iconUrl && <img class="fam__icon" src={iconUrl} alt="" />}
-                        <span class="fam__class">{v.class}</span>
+                        {v.classKey
+                          ? <a class="fam__class fam__class--link" href={`${base}families/${v.classKey}`}>{v.class}</a>
+                          : <span class="fam__class">{v.class}</span>}
                         <span class="fam__name">{v.name}</span>
                       </span>
                     </td>
