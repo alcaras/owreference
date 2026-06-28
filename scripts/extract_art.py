@@ -37,6 +37,9 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^CREST_ARCHETYPE_([A-Z_]+?)(_SEAT)?$"), "archetypes"),
     (re.compile(r"^CULTURE_(WEAK|DEVELOPING|STRONG|LEGENDARY)()$"), "icons/culture"),
     (re.compile(r"^YIELD_([A-Z_]+?)()$"), "icons/yields"),
+    # Character rating glyphs (Wisdom/Charisma/Courage/Discipline) — the game
+    # shows these as icons next to the +N value on archetype / cognomen screens.
+    (re.compile(r"^RATING_([A-Z_]+?)()$"), "icons/ratings"),
     (re.compile(r"^RESOURCE_([A-Z_]+?)()$"), "icons/resources"),
     (re.compile(r"^SPECIALIST_([A-Z_]+?)()$"), "icons/specialists"),
     (re.compile(r"^TECH_([A-Z_]+?)()$"), "icons/techs"),

@@ -172,8 +172,8 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
                   return (
                     <td class="cell cell--effects" data-archetype={a.slug}>
                       {items.map(r => (
-                        <div class={`effect ${RATING_TONE[r.label] || 'yield-misc'}`}>
-                          <span class="rating-label">{r.label}</span>
+                        <div class={`effect ${RATING_TONE[r.label] || 'yield-misc'}`} title={r.label}>
+                          <img class="rating-ico" src={`${base}img/icons/ratings/${r.label.toLowerCase()}.png`} alt={r.label} onerror="this.style.display='none'" />
                           <span class={`opinion__val opinion--${r.value >= 0 ? 'pos' : 'neg'}`}>
                             {r.value >= 0 ? '+' : ''}{r.value}
                           </span>
@@ -439,6 +439,7 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
     font-size: 0.78rem;
     letter-spacing: 0.02em;
   }
+  .cell--effects .rating-ico { width: 18px; height: 18px; object-fit: contain; flex: none; }
 
   .opposite-link {
     display: block;
