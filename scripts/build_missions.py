@@ -860,6 +860,9 @@ def build_events(event_result_id: str, story_idx: dict, eopt_idx: dict,
                  bonus_idx: dict, text: dict) -> list[dict]:
     """Every event story a mission's *_EVENT result can fire, with options and
     outcomes. Stories link via Trigger=EVENTTRIGGER_MISSION_FINISHED + TriggerData."""
+    # Function-level import: build_events imports this module, so a top-level
+    # import here would be circular. By call time both modules are loaded.
+    import build_events as bev  # noqa: E402
     stories = [
         s for s in story_idx.values()
         if (s.findtext("Trigger") or "") == "EVENTTRIGGER_MISSION_FINISHED"
@@ -901,6 +904,10 @@ def build_events(event_result_id: str, story_idx: dict, eopt_idx: dict,
             "conditions": conditions,
             "guaranteed": guaranteed,
             "options": options,
+            # Earliest fire turn (own/class-folded) + Competitive-Mode
+            # eligibility — same markers as every other event surface.
+            "minTurns": bev.timing(s).get("minTurns"),
+            "cmEligible": False if bev.cm_ineligible(s) else None,
         })
 
     out.sort(key=lambda e: (-e["weight"], e["name"]))
