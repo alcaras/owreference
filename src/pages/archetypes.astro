@@ -118,7 +118,9 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
 
   <div class="grid" id="arc-grid">
     <div class="grid__scroll">
-      <table class="ntbl">
+      {/* min-width = the mobile-crush floor (≈10rem/col); above it the 10 columns
+          flex to fill the viewport, below it .grid__scroll scrolls. */}
+      <table class="ntbl" style={`min-width:${archetypes.length * 10 + 7.5}rem`}>
         <colgroup>
           <col class="ntbl__rowlabel-col" />
           {archetypes.map(a => <col data-archetype={a.slug} />)}

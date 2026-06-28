@@ -302,7 +302,10 @@ h1, h2, h3 {
    Page chrome
    ────────────────────────────────────────────────────────── */
 .main {
-  max-width: 1700px;
+  /* Generous cap so wide tables use the screen (was 1700px, which left ~300px
+     unused on a 2000px monitor and forced wide matrices to scroll internally).
+     Stays sane/centred on ultrawide. */
+  max-width: 2200px;
   margin: 0 auto;
   padding: 1.25rem 1.4rem 4rem;
 }
@@ -345,7 +348,12 @@ h1, h2, h3 {
    Nations grid scroll wrapper — minimal frame in Tufte direction
    ────────────────────────────────────────────────────────── */
 .grid { position: relative; }
+/* Solid base so the body's faint grid texture (body::before) doesn't bleed
+   through the transparent table cells and clash with the table's own gridlines.
+   On .grid__scroll (not .grid) so it never touches card layouts that reuse the
+   bare .grid class, e.g. events/index. */
 .grid__scroll {
+  background: var(--bg);
   /* Horizontal scroll for the wide table. NOTE: overflow-x:auto makes this
      a scroll container, so sticky descendants resolve against THIS box, not
      the viewport (overflow-y:clip does not change that). The in-table sticky
@@ -385,13 +393,11 @@ h1, h2, h3 {
 }
 .ntbl col.ntbl__rowlabel-col { width: 7.5rem; }
 .ntbl col[data-nation] { width: 12.5rem; }
-/* Family / archetype matrices mirror the nation matrix: give their columns a
-   real width so table-layout:fixed doesn't crush 10+ columns to fit the
-   viewport (which collapses the text-heavy cells — family City-Bonus, archetype
-   Leader-Effects — into overlapping, unreadable text on mobile). With a width
-   the table scrolls horizontally in .grid__scroll instead. */
-.ntbl col[data-family] { width: 12rem; }
-.ntbl col[data-archetype] { width: 12rem; }
+/* Family / archetype matrices (exactly 10 columns) do NOT pin a per-column
+   width — that would freeze the table at 10×12rem ≈ 2040px and force an internal
+   scrollbar even on screens wide enough to show all 10. Instead the page sets a
+   table min-width (the mobile-crush floor); above it the columns flex to fill
+   the viewport, below it .grid__scroll scrolls. See archetypes/families.astro. */
 .ntbl col[data-religion] { width: 12rem; }
 .ntbl col[data-tribe] { width: 12rem; }
 /* Counter matrix: narrower than the text matrices (cells are a % value + a short
