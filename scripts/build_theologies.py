@@ -23,8 +23,35 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, load_text, fmt_decimal,
-    world_religions,
+    condition_name, world_religions,
 )
+
+# Some theology→building effects are wired in REVERSE: the building's own
+# EffectCity is an empty marker, and a *different* effectCity grants a yield
+# while that marker is active, via aaiEffectCityYieldRate keyed by the marker.
+# Enlightenment's Cathedral works this way — EFFECTCITY_POPULATION grants
+# +1 Growth per Citizen in cities holding the Enlightenment Cathedral, so the
+# marker effect itself renders nothing. Scan holders for these back-references.
+# Per-instance nouns for the holder effects we expect to see here.
+HOLDER_NOUN = {"EFFECTCITY_POPULATION": "Citizen"}
+
+
+def reverse_effect_yields(effect_id: str, indexes: dict) -> list[str]:
+    """Yields other effectCity entries grant *while `effect_id` is active*."""
+    out: list[str] = []
+    if not effect_id:
+        return out
+    for holder in indexes.get("effectCity.xml", {}).values():
+        htype = holder.findtext("zType") or ""
+        noun = HOLDER_NOUN.get(htype, condition_name(htype))
+        for pair in holder.findall("aaiEffectCityYieldRate/Pair"):
+            if (pair.findtext("zIndex") or "") != effect_id:
+                continue
+            for sp in pair.findall("SubPair"):
+                y = (sp.findtext("zSubIndex") or "").replace("YIELD_", "").title()
+                v = int(sp.findtext("iValue") or "0") / 10
+                out.append(f"{fmt_decimal(v)} {y}/{noun}")
+    return out
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -155,11 +182,14 @@ def main() -> int:
             for pair in ic_entry.findall("aeTheologyCityEffect/Pair"):
                 if (pair.findtext("zIndex") or "") != zt:
                     continue
-                bec = indexes.get("effectCity.xml", {}).get(pair.findtext("zValue") or "")
+                bec_id = pair.findtext("zValue") or ""
+                bec = indexes.get("effectCity.xml", {}).get(bec_id)
                 if bec is not None:
-                    # Empty markers (Enlightenment's cathedral hook) render
-                    # nothing — honest omission.
                     lines.extend(render_effect_city(bec, per_city=True, indexes=indexes))
+                # The marker effectCity is often empty; the real yield is
+                # reverse-wired on another effectCity (Enlightenment Cathedral →
+                # EFFECTCITY_POPULATION grants +1 Growth/Citizen).
+                lines.extend(reverse_effect_yields(bec_id, indexes))
             if lines:
                 building_effects.append({"building": building, "effects": lines})
 
