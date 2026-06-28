@@ -26,6 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
+import build_events as bev  # noqa: E402  cm_ineligible + class-folded timing
 from build_missions import (pairs, _trim, _tok, _fallback_label, _yld, _txt,  # noqa: E402
                             _trait_tip, memory_rewards)
 
@@ -429,6 +430,9 @@ def main() -> int:
                     if (pair.findtext("Second") or "").strip()]
             option_objs.append({"id": opt_text_key, "text": opt_text, "rewards": reward_strings(toks)})
 
+        # Earliest fire turn (Harvesting class floor folds in via bev.timing)
+        # and Competitive-Mode eligibility — same markers as the other events.
+        min_turns = bev.timing(entry).get("minTurns")
         items.append({
             "id": zt,
             "slug": zt.replace("EVENTSTORY_HARVEST_", "").replace("EVENTSTORY_", "").lower(),
@@ -439,6 +443,8 @@ def main() -> int:
             "trigger": trigger_kind,
             "author": author,
             "background": bg,
+            "minTurns": min_turns,
+            "cmEligible": False if bev.cm_ineligible(entry) else None,
             "options": option_objs,
         })
 

@@ -23,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_missions import clean_text  # noqa: E402  shared game-text cleaner
+import build_events as bev  # noqa: E402  cm_ineligible + class-folded timing
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -275,6 +276,10 @@ def main() -> int:
             "prob": prob,
             "repeat": repeat,
             "author": entry.findtext("zAuthor") or "",
+            # Earliest fire turn (own iMinTurns; STUDY class has no floor) and
+            # Competitive-Mode eligibility — same markers as the other events.
+            "minTurns": bev.timing(entry).get("minTurns"),
+            "cmEligible": False if bev.cm_ineligible(entry) else None,
         })
 
     events.sort(key=lambda e: e["title"])

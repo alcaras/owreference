@@ -77,6 +77,15 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
                   <th class="rowlabel" scope="row" id={`${s.key || 'none'}-${e.slug}`}>{e.title}</th>
                   <td class="cell yield-misc">
                     <span class="se__title">{e.title}</span>
+                    <span class="se__markers">
+                      <span
+                        class={`chip--cm ${(e as any).cmEligible !== false ? 'chip--cm-yes' : 'chip--cm-no'}`}
+                        title={(e as any).cmEligible !== false
+                          ? 'Eligible in Competitive Mode'
+                          : 'Excluded when Competitive Events is on (Competitive Mode tournaments)'}
+                      >CM {(e as any).cmEligible !== false ? '✓' : '✗'}</span>
+                      {(e as any).minTurns && <span class="chip--turn" title="Earliest turn this event can fire">Turn {(e as any).minTurns}+</span>}
+                    </span>
                     {e.nation && <span class="te__nation">{e.nation} only</span>}
                     {e.author && <span class="se__author">by {e.author}</span>}
                   </td>
@@ -227,6 +236,12 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
     color: var(--text);
     display: block;
   }
+  .se__markers { display: flex; gap: 0.3rem; flex-wrap: wrap; margin: 0.2rem 0; }
+  /* Competitive-Mode eligibility (green/red) + earliest-fire turn markers */
+  .chip--cm { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.02em; padding: 0.05rem 0.4rem; border-radius: 5px; border: 1px solid transparent; }
+  .chip--cm-yes { color: #6ba368; background: color-mix(in srgb, #6ba368 14%, var(--bg-elev)); border-color: color-mix(in srgb, #6ba368 40%, transparent); }
+  .chip--cm-no  { color: #c25555; background: color-mix(in srgb, #c25555 14%, var(--bg-elev)); border-color: color-mix(in srgb, #c25555 40%, transparent); }
+  .chip--turn { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.02em; padding: 0.05rem 0.4rem; border-radius: 5px; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev)); border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent); }
   .se__author {
     display: block;
     margin-top: 0.1rem;
