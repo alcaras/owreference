@@ -559,7 +559,10 @@ h1, h2, h3 {
 .shrine {
   display: flex; flex-direction: column;
   gap: 0;
+  /* The whole shrine cell links to its type section on the Shrines page. */
+  color: inherit; text-decoration: none;
 }
+a.shrine:hover .shrine__type { text-decoration: underline; text-underline-offset: 2px; }
 .shrine__head {
   display: inline-flex;
   align-items: baseline;

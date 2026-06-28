@@ -26,13 +26,17 @@ const base = import.meta.env.BASE_URL;
 const NAV_TYPES = new Set([
   'nation', 'family', 'yield', 'tech', 'unit', 'law',
   'resource', 'improvement', 'project', 'promotion',
+  'shrine', 'wonder', 'theology', 'tribe', 'archetype', 'trait',
 ]);
 const isLinkable = e && NAV_TYPES.has(e.type) && !!e.page;
+// Append the #slug deep-link anchor unless the page IS the item's detail route
+// (e.g. nations/aksum) — then the slug is already the page, so no anchor.
+const href = e ? `${base}${e.page}${e.page.endsWith('/' + e.slug) ? '' : `#${e.slug}`}` : '';
 ---
 
 {e ? (
   isLinkable ? (
-    <a class={`term term--${e.type}`} href={`${base}${e.page}#${e.slug}`} title={e.name} data-entity-id={e.id}>
+    <a class={`term term--${e.type}`} href={href} title={e.name} data-entity-id={e.id}>
       {(showIcon || iconOnly) && e.icon && (
         <img class="term__icon" src={`${base}${e.icon}`} alt={e.name} />
       )}

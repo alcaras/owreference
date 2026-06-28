@@ -156,7 +156,7 @@ def build() -> dict:
             "type": "nation",
             "name": name,
             "aliases": [name],
-            "page": "nations",
+            "page": f"nations/{slug}",   # dedicated detail page
             "icon": icon_url(f"crests/{slug}.png"),
         })
 
@@ -173,6 +173,9 @@ def build() -> dict:
             "type": "family",
             "name": name,
             "aliases": [name],
+            # Named royal families (Achaemenid, Pandya, …) have no detail page of
+            # their own — only the 10 family CLASSES do (added below). Land on the
+            # Families overview.
             "page": "families",
             "icon": icon_url(f"families/{slug}.png"),
         })
@@ -307,7 +310,7 @@ def build() -> dict:
                 "type": "resource",
                 "name": name,
                 "aliases": [name],
-                "page": "rural-improvements",
+                "page": "resources",   # dedicated resources overview
                 "icon": icon_url(f"icons/resources/{slug}.png"),
             })
 
@@ -325,7 +328,7 @@ def build() -> dict:
                 "type": "unit",
                 "name": name,
                 "aliases": [name],
-                "page": "unit-damage",
+                "page": "units",   # roster overview (no per-unit detail page)
             })
 
     # Laws
@@ -345,6 +348,102 @@ def build() -> dict:
                 "page": "laws",
             })
 
+    # ── Richer entity types, sourced from the generated src/data JSON (which
+    # already carries the exact slugs the pages render), so links land on the
+    # right anchor. build_entities runs LAST in the data target, so these exist.
+    def load_data(name: str):
+        p = ROOT / "src" / "data" / name
+        return json.loads(p.read_text()) if p.exists() else None
+
+    # Shrines → the Shrines overview, anchored to the deity's shrine-type
+    # section (#type-war …). Aliased by deity name (specific; safe to scan).
+    shrines_data = load_data("shrines.json")
+    if shrines_data:
+        for sh in shrines_data.get("shrines", []):
+            deity = sh.get("deity") or ""
+            stype = (sh.get("type") or "").lower()
+            if not (sh.get("id") and deity and stype):
+                continue
+            entities.append({
+                "id": sh["id"],
+                "slug": f"type-{stype}",          # → shrines#type-war
+                "type": "shrine",
+                "name": deity,
+                "aliases": [deity, sh.get("fullName") or f"Shrine of {deity}"],
+                "page": "shrines",
+                "icon": icon_url(f"icons/shrines/{stype}.png"),
+            })
+
+    # Family CLASSES (Champions, Hunters, …) → their dedicated detail pages.
+    for fc in (load_data("families.json") or []):
+        if not (fc.get("id") and fc.get("slug")):
+            continue
+        entities.append({
+            "id": fc["id"], "slug": fc["slug"], "type": "family",
+            "name": fc.get("name") or fc["slug"], "aliases": [fc.get("name") or fc["slug"]],
+            "page": f"families/{fc['slug']}",
+        })
+
+    # Wonders → dedicated detail pages.
+    for w in (load_data("wonders.json") or []):
+        if not (w.get("id") and w.get("slug")):
+            continue
+        entities.append({
+            "id": w["id"], "slug": w["slug"], "type": "wonder",
+            "name": w.get("name") or w["slug"], "aliases": [w.get("name") or w["slug"]],
+            "page": f"wonders/{w['slug']}",
+        })
+
+    # Tribes → dedicated detail pages.
+    for t in (load_data("tribes.json") or []):
+        if not (t.get("id") and t.get("slug")):
+            continue
+        entities.append({
+            "id": t["id"], "slug": t["slug"], "type": "tribe",
+            "name": t.get("name") or t["slug"], "aliases": [t.get("name") or t["slug"]],
+            "page": f"tribes/{t['slug']}",
+        })
+
+    # Theologies → the Theologies overview, anchored per theology.
+    theo = load_data("theologies.json")
+    if theo:
+        for tier in theo.get("tiers", []):
+            for th in tier.get("theologies", []):
+                if not (th.get("id") and th.get("slug")):
+                    continue
+                entities.append({
+                    "id": th["id"], "slug": th["slug"], "type": "theology",
+                    "name": th.get("name") or th["slug"], "aliases": [th.get("name") or th["slug"]],
+                    "page": "theologies",
+                })
+
+    # Archetypes → the Archetypes overview, anchored per archetype. Registered
+    # before traits so the shared TRAIT_*_ARCHETYPE ids resolve here (dedup wins).
+    for a in (load_data("archetypes.json") or []):
+        if not (a.get("id") and a.get("slug")):
+            continue
+        entities.append({
+            "id": a["id"], "slug": a["slug"], "type": "archetype",
+            "name": a.get("name") or a["slug"], "aliases": [a.get("name") or a["slug"]],
+            "page": "archetypes",
+        })
+
+    # Traits → the Traits overview, anchored per trait. Registered with
+    # scan=False: there are 300+ and many are common words (Brave, Tough, …),
+    # so they only link via explicit <Term id="TRAIT_X">, never free-text scan.
+    traits_data = load_data("traits.json") or {}
+    for cat, items in traits_data.items():
+        if cat == "archetype" or not isinstance(items, list):
+            continue  # archetype category handled above
+        for t in items:
+            if not (t.get("id") and t.get("slug") and t.get("name")):
+                continue
+            entities.append({
+                "id": t["id"], "slug": t["slug"], "type": "trait",
+                "name": t["name"], "aliases": [t["name"]],
+                "page": "traits", "scan": False,
+            })
+
     # De-duplicate by id
     seen: set[str] = set()
     deduped: list[dict] = []
@@ -360,6 +459,8 @@ def build() -> dict:
     # "Heavy Cavalry" matches before "Cavalry".
     alias_pairs: list[tuple[str, str]] = []
     for e in deduped:
+        if not e.get("scan", True):
+            continue  # registered for explicit <Term> use, but never free-text scanned
         for alias in {e["name"], *e["aliases"]}:
             if alias and len(alias) >= 2:
                 alias_pairs.append((alias, e["id"]))
