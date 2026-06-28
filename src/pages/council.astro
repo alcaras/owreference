@@ -357,11 +357,11 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
     margin-right: 0.2rem;
   }
 
+  /* Left-aligned flow — don't justify the rating icon and its yield to opposite
+     edges of these wide seat columns. */
   .cell--effects .effect {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.4rem;
+    display: block;
+    line-height: 1.35;
   }
   .cell--effects .rating-label {
     font-family: var(--font-display);
@@ -369,7 +369,7 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
     font-size: 0.78rem;
     letter-spacing: 0.02em;
   }
-  .cell--effects .rating-ico { width: 18px; height: 18px; object-fit: contain; flex: none; }
+  .cell--effects .rating-ico { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; margin-right: 0.3rem; }
   .effect__out { text-align: right; }
   .tri-mark {
     margin-left: 0.25rem;
