@@ -19,10 +19,15 @@ const { id, entity: passed, label, showIcon = true, iconOnly = false } = Astro.p
 const e: Entity | undefined = passed ?? (id ? getEntity(id) : undefined);
 const base = import.meta.env.BASE_URL;
 
-// Only these entity types have surfaced pages right now. Everything else
-// renders as a non-clickable chip (no surprise navigation off Nations).
-const NAV_TYPES = new Set(['nation']);
-const isLinkable = e && NAV_TYPES.has(e.type);
+// Every registered entity type now has a built destination page, so all of
+// them link (wiki-style). `page` is the section/detail route; Term appends
+// `#slug` for deep-linking where the page has per-item anchors (and falls back
+// to the page top otherwise). Add new types here as the registry grows.
+const NAV_TYPES = new Set([
+  'nation', 'family', 'yield', 'tech', 'unit', 'law',
+  'resource', 'improvement', 'project', 'promotion',
+]);
+const isLinkable = e && NAV_TYPES.has(e.type) && !!e.page;
 ---
 
 {e ? (
