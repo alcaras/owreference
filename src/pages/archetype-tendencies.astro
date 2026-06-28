@@ -146,8 +146,9 @@ for (const n of ordered) {
                 </span>
                 <span class="arc-label__ratings">
                   {(a.ratings as { label: string; value: number }[]).map(r => (
-                    <span class={`arc-rating ${RATING_TONE[r.label] || 'yield-misc'}`}>
-                      {r.label} {r.value >= 0 ? '+' : ''}{r.value}
+                    <span class={`arc-rating ${RATING_TONE[r.label] || 'yield-misc'}`} title={r.label}>
+                      <img class="arc-rating__ico" src={`${base}img/icons/ratings/${r.label.toLowerCase()}.png`} alt={r.label} onerror="this.style.display='none'" />
+                      {r.value >= 0 ? '+' : ''}{r.value}
                     </span>
                   ))}
                 </span>
@@ -333,7 +334,9 @@ for (const n of ordered) {
     margin-top: 0.25rem;
   }
   .arc-rating {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
     padding: 0.05rem 0.35rem;
     border-radius: 3px;
     font-size: 0.62rem;
@@ -341,6 +344,7 @@ for (const n of ordered) {
     font-variant-numeric: tabular-nums;
     background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25));
   }
+  .arc-rating__ico { width: 13px; height: 13px; object-fit: contain; }
 
   /* Tendency cell: one mini-tile per family class that rolls the archetype */
   .cell--tendency {

@@ -72,7 +72,11 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
               <thead>
                 <tr>
                   <th class="rowlabel rowlabel--corner">Trait</th>
-                  {RATINGS.map(r => <th class="nhdr nhdr--family nhdr--rating">{r.slice(0, 3)}</th>)}
+                  {RATINGS.map(r => (
+                    <th class="nhdr nhdr--family nhdr--rating" title={r}>
+                      <img class="rating-hdr-ico" src={`${base}img/icons/ratings/${r.toLowerCase()}.png`} alt={r} />
+                    </th>
+                  ))}
                   <th class="nhdr nhdr--family">Effects</th>
                   <th class="nhdr nhdr--family">Opinions</th>
                   <th class="nhdr nhdr--family">Replaces / Blocks</th>
@@ -260,6 +264,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
 
   .ntbl .rowlabel { min-width: 8rem; }
   .nhdr--rating { min-width: 2.4rem; }
+  .rating-hdr-ico { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
 
   .trait__name {
     font-family: var(--font-display);

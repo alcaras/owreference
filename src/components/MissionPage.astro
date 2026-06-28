@@ -123,8 +123,8 @@ const eventGroups = mission.eventGroups || [];
               <div class="outcome-card__ratings">
                 <span class="outcome-card__ratings-label">Rating influence</span>
                 {o.ratingModifier.map(r => (
-                  <span class={`chip yield-${r.rating}`}>
-                    {r.value > 0 ? '+' : ''}{r.value} × <strong>{r.label}</strong>
+                  <span class={`chip yield-${r.rating}`} title={r.label}>
+                    {r.value > 0 ? '+' : ''}{r.value} × <img class="rating-chip-ico" src={`${base}img/icons/ratings/${r.label.toLowerCase()}.png`} alt={r.label} onerror="this.replaceWith(document.createTextNode(this.alt))" />
                   </span>
                 ))}
               </div>
@@ -590,6 +590,7 @@ const eventGroups = mission.eventGroups || [];
     margin-bottom: 0.5rem;
     align-items: center;
   }
+  .rating-chip-ico { width: 14px; height: 14px; object-fit: contain; vertical-align: -2px; }
   .outcome-card__ratings-label {
     font-family: var(--font-mono);
     font-size: 0.6rem;

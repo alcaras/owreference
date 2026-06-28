@@ -94,8 +94,8 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
             {seats.map(s => (
               <td class={`cell ${s.ratingYields.length ? 'cell--effects' : 'is-empty'}`} data-col={`seat-${s.slug}`}>
                 {s.ratingYields.length ? s.ratingYields.map(ry => (
-                  <div class={`effect ${RATING_TONE[ry.rating] || 'yield-misc'}`}>
-                    <span class="rating-label">{ry.rating}</span>
+                  <div class={`effect ${RATING_TONE[ry.rating] || 'yield-misc'}`} title={ry.rating}>
+                    <img class="rating-ico" src={`${base}img/icons/ratings/${ry.rating.toLowerCase()}.png`} alt={ry.rating} onerror="this.style.display='none'" />
                     <span class="effect__out">
                       <LinkedText text={`+${ry.base} ${ry.yield}${ry.scope === 'per city' ? '/City' : ''}`} showIcons={false} iconsForYields={true} />
                       <span class="tri-mark" title="Scales with the triangle of the rating: ×R·(R+1)/2">×△</span>
@@ -110,8 +110,8 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
             {seats.map(s => (
               <td class={`cell ${s.ratingOpinions.length ? 'cell--effects' : 'is-empty'}`} data-col={`seat-${s.slug}`}>
                 {s.ratingOpinions.length ? s.ratingOpinions.map(ro => (
-                  <div class={`effect ${RATING_TONE[ro.rating] || 'yield-misc'}`}>
-                    <span class="rating-label">{ro.rating}</span>
+                  <div class={`effect ${RATING_TONE[ro.rating] || 'yield-misc'}`} title={ro.rating}>
+                    <img class="rating-ico" src={`${base}img/icons/ratings/${ro.rating.toLowerCase()}.png`} alt={ro.rating} onerror="this.style.display='none'" />
                     <span class="effect__out">
                       +{ro.base} {ro.target} Opinion
                       <span class="tri-mark" title="Scales with the triangle of the rating, rounded to the nearest 5">×△</span>
@@ -185,8 +185,8 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
             {courtiers.map(c => (
               <td class="cell cell--effects" data-col={`courtier-${c.slug}`}>
                 {c.ratings.map(r => (
-                  <div class={`effect ${RATING_TONE[r.rating] || 'yield-misc'}`}>
-                    <span class="rating-label">{r.rating}</span>
+                  <div class={`effect ${RATING_TONE[r.rating] || 'yield-misc'}`} title={r.rating}>
+                    <img class="rating-ico" src={`${base}img/icons/ratings/${r.rating.toLowerCase()}.png`} alt={r.rating} onerror="this.style.display='none'" />
                     <span class="opinion__val opinion--pos">{r.min}–{r.max}</span>
                   </div>
                 ))}
@@ -369,6 +369,7 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
     font-size: 0.78rem;
     letter-spacing: 0.02em;
   }
+  .cell--effects .rating-ico { width: 18px; height: 18px; object-fit: contain; flex: none; }
   .effect__out { text-align: right; }
   .tri-mark {
     margin-left: 0.25rem;
