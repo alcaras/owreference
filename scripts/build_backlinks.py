@@ -98,6 +98,61 @@ def scan_nations(nations: list[dict], pat, alias_to_id, backlinks: defaultdict) 
                     })
 
 
+# Where each entity TYPE's overview page lives (with per-item #slug anchors), so
+# a backlink lands on the referring item. Differs from the entity's own `page`
+# (which may be a detail route) — backlinks want the anchored overview.
+BACKLINK_PAGE = {
+    "law": "laws", "tech": "technologies", "unit": "units", "wonder": "wonders",
+    "theology": "theologies", "shrine": "shrines", "archetype": "archetypes",
+    "family": "families", "project": "projects", "promotion": "promotions",
+    "tribe": "tribes", "resource": "resources", "improvement": "urban-improvements",
+    "trait": "traits", "nation": "nations",
+}
+TYPE_LABEL = {
+    "law": "Law", "tech": "Technology", "unit": "Unit", "wonder": "Wonder",
+    "theology": "Theology", "shrine": "Shrine", "archetype": "Archetype",
+    "family": "Family", "project": "Project", "promotion": "Promotion",
+    "tribe": "Tribe", "resource": "Resource", "improvement": "Improvement",
+}
+
+# Content data files to scan for cross-references. Any record carrying an `id`
+# that's in the registry becomes a "referrer"; aliases found anywhere in that
+# record's JSON become backlinks pointing at it. Nations get richer per-cell
+# contexts via scan_nations, so they're excluded here.
+CONTENT_FILES = [
+    "laws.json", "technologies.json", "units.json", "wonders.json",
+    "theologies.json", "shrines.json", "traits.json", "archetypes.json",
+    "families.json", "projects.json", "rural_improvements.json",
+    "urban_improvements.json", "promotions.json", "tribes.json",
+    "resources.json", "specialists.json",
+]
+
+
+def walk_and_scan(node, reg: dict, pat, alias_to_id, backlinks) -> None:
+    """Recursively find registry-id records; scan each for OTHER entity aliases
+    and record a backlink to that record's overview page."""
+    if isinstance(node, dict):
+        eid = node.get("id")
+        ref = reg.get(eid) if isinstance(eid, str) else None
+        if ref and ref["type"] in BACKLINK_PAGE:
+            text = json.dumps(node, ensure_ascii=False)
+            page = BACKLINK_PAGE[ref["type"]]
+            for tid in scan_text(text, pat, alias_to_id):
+                if tid == eid:
+                    continue  # don't backlink an item to itself
+                backlinks[tid].append({
+                    "page": page,
+                    "anchor": ref["slug"],
+                    "context": ref["name"],
+                    "text": TYPE_LABEL.get(ref["type"], ""),
+                })
+        for v in node.values():
+            walk_and_scan(v, reg, pat, alias_to_id, backlinks)
+    elif isinstance(node, list):
+        for v in node:
+            walk_and_scan(v, reg, pat, alias_to_id, backlinks)
+
+
 def main() -> int:
     entities_payload = load("entities.json")
     if not entities_payload:
@@ -110,6 +165,13 @@ def main() -> int:
     backlinks: defaultdict[str, list[dict]] = defaultdict(list)
 
     scan_nations(nations, pat, alias_to_id, backlinks)
+
+    # Comprehensive cross-reference scan across all content data files.
+    reg = {e["id"]: e for e in entities_payload["entities"]}
+    for fname in CONTENT_FILES:
+        data = load(fname)
+        if data is not None:
+            walk_and_scan(data, reg, pat, alias_to_id, backlinks)
 
     # Dedupe (same page, context, text)
     deduped: dict[str, list[dict]] = {}

@@ -201,14 +201,14 @@ for (const n of nations) {
                       data-nation={n.slug}
                       data-hl={type ? `shrine:${type.toLowerCase()}` : undefined}
                     >
-                      <a class="shrine" href={`${base}shrines#type-${type.toLowerCase()}`} title={`${typeLabel} shrine — open Shrines`}>
-                        <div class="shrine__head">
+                      <div class="shrine">
+                        <a class="shrine__head" href={`${base}shrines#type-${type.toLowerCase()}`} title={`${typeLabel} shrine — open Shrines`}>
                           {iconUrl && <img class="shrine__art" src={iconUrl} alt="" />}
                           <span class="shrine__type">{typeLabel}</span>
                           <span class="shrine__deity">{deity}</span>
-                        </div>
+                        </a>
                         <div class="shrine__effect"><LinkedText text={effect} showIcons={false} iconsForYields={true} /></div>
-                      </a>
+                      </div>
                     </td>
                   );
                 }

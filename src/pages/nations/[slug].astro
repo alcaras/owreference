@@ -405,8 +405,10 @@ const boostScale = (g: any) =>
               {iconUrl && <img class="np-shrine__art" src={iconUrl} alt="" />}
               <div class="np-shrine__body">
                 <header>
-                  <span class="np-shrine__type">{sh.shrine?.typeLabel}</span>
-                  <span class="np-shrine__deity">{sh.shrine?.name}</span>
+                  <a class="np-shrine__link" href={`${base}shrines#type-${type.toLowerCase()}`} title={`${sh.shrine?.typeLabel} shrine — open Shrines`}>
+                    <span class="np-shrine__type">{sh.shrine?.typeLabel}</span>
+                    <span class="np-shrine__deity">{sh.shrine?.name}</span>
+                  </a>
                 </header>
                 <p class="np-shrine__effect">
                   <LinkedText text={sh.effect || ''} showIcons={false} iconsForYields={true} />
@@ -926,6 +928,8 @@ const boostScale = (g: any) =>
   }
   .np-shrine__body { flex: 1; min-width: 0; }
   .np-shrine__body header { display: flex; align-items: baseline; gap: 0.4rem; }
+  .np-shrine__link { display: inline-flex; align-items: baseline; gap: 0.4rem; color: inherit; text-decoration: none; }
+  .np-shrine__link:hover .np-shrine__type { text-decoration: underline; text-underline-offset: 2px; }
   .np-shrine__type {
     font-family: var(--font-display);
     font-weight: 600;
