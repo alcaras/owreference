@@ -77,7 +77,7 @@ for (const r of inheritance) searchBlobs[`inh-${r.parent.slug}`] = JSON.stringif
                   <td class="cell yield-misc">
                     {traitSlugs.has(c.slug)
                       ? <a class={`chip chip--inherit chip--${c.kind}`} href={`#${c.slug}`}>{c.name}</a>
-                      : <span class={`chip chip--inherit chip--${c.kind}`}>{c.name}</span>}
+                      : <a class={`chip chip--inherit chip--${c.kind}`} href={`${base}traits#${c.slug}`}>{c.name}</a>}
                   </td>
                 ) : (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>

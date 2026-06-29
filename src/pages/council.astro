@@ -81,7 +81,7 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
                     {s.traitPrereqs.map(t => (
                       <span class="chip chip--neutral">
                         {archetypeIcon(t) && <img class="chip__icon" src={archetypeIcon(t)} alt="" loading="lazy" />}
-                        {t}
+                        <LinkedText text={t} showIcons={false} />
                       </span>
                     ))}
                   </div>
@@ -201,7 +201,7 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
                   <div class="law-row">
                     <span class="law-row__name">
                       {archetypeIcon(d.trait) && <img class="chip__icon" src={archetypeIcon(d.trait)} alt="" loading="lazy" />}
-                      {d.trait}
+                      <LinkedText text={d.trait} showIcons={false} />
                     </span>
                     <span class="die-pct">{d.pct}%</span>
                   </div>

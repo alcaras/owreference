@@ -113,7 +113,7 @@ function theologyYield(eff: string[]): string {
                     {(!th.buildingEffects || th.buildingEffects.length === 0) ? <span class="cell__dash">—</span> :
                       th.buildingEffects.map((be: any) => (
                         <div class="tt-fx">
-                          <span class="tt-dim">{be.building}:</span>{' '}
+                          <span class="tt-dim"><LinkedText text={be.building} showIcons={false} />:</span>{' '}
                           <LinkedText text={be.effects.join(', ')} showIcons={false} iconsForYields={true} />
                         </div>
                       ))}

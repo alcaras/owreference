@@ -163,7 +163,7 @@ for (const m of catalog) {
                       {m.roleReq.icon && (
                         <img class="mrole__ic" src={`${base}img/${m.roleReq.icon}.png`} alt="" onerror="this.remove()" />
                       )}
-                      {m.roleReq.label}
+                      <LinkedText text={m.roleReq.label} showIcons={false} />
                     </span>
                   )}
                 </td>

@@ -72,7 +72,7 @@ const totalUnits = levels.reduce((n, l) => n + l.gates.units.length, 0);
                 })}
               </div>
             </td>
-            <td class="cl-proj">{l.defaultProject ? l.defaultProject.name : '—'}</td>
+            <td class="cl-proj">{l.defaultProject ? <LinkedText text={l.defaultProject.name} showIcons={false} /> : '—'}</td>
           </tr>
         ))}
       </tbody>

@@ -325,7 +325,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
                   <td class={`cell ${j.traitPrereqs.length ? 'yield-misc' : 'is-empty'}`}>
                     {j.traitPrereqs.length ? (
                       <div class="chiplist">
-                        {j.traitPrereqs.map(t => <span class="chip chip--neutral">{t}</span>)}
+                        {j.traitPrereqs.map(t => <span class="chip chip--neutral"><LinkedText text={t} showIcons={false} /></span>)}
                       </div>
                     ) : <span class="cell__dash">—</span>}
                   </td>

@@ -183,7 +183,7 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
       <tbody>
         {spreadModifiers.map(m => (
           <tr>
-            <td>{m.name}</td>
+            <td><LinkedText text={m.name} showIcons={false} /></td>
             <td class="rc-dim">{m.tier}</td>
             <td class="rc-num">
               <b class={m.spread > 0 ? 'rc-pos' : 'rc-neg'}>

@@ -88,7 +88,7 @@ for (const t of technologies) {
                       <span class="tech__label">{cat}</span>
                       <span class="tech__cat-items">
                         {(items as string[]).map(name => (
-                          <span class="chip chip--neutral chip--mini">{name}</span>
+                          <span class="chip chip--neutral chip--mini"><LinkedText text={name} showIcons={false} /></span>
                         ))}
                       </span>
                     </div>

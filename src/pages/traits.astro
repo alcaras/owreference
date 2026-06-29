@@ -16,6 +16,13 @@ const CATEGORIES: { key: keyof typeof traitData; label: string; blurb: string }[
   { key: 'status',     label: 'Statuses',    blurb: 'Roles, clergy, story traits and other statuses the game tracks as traits.' },
 ];
 
+// Trait names referenced by Replaces/Blocks/Leads-to are scan-excluded from the
+// global linker (too many common words), so resolve them to their own row anchor
+// on this page directly.
+const traitSlugByName = new Map<string, string>();
+for (const cat of CATEGORIES) for (const t of (traitData[cat.key] as Trait[])) traitSlugByName.set(t.name, t.slug);
+const traitAnchor = (name: string) => traitSlugByName.has(name) ? `#${traitSlugByName.get(name)}` : null;
+
 const RATINGS = ['Wisdom', 'Charisma', 'Courage', 'Discipline'] as const;
 const RATING_TONE: Record<string, string> = {
   Wisdom:     'yield-science',
@@ -145,9 +152,9 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                       <td class={`cell ${hasRel ? 'yield-maintenance' : 'is-empty'}`}>
                         {hasRel ? (
                           <div class="chiplist">
-                            {t.replaces.map(o => <span class="chip chip--neutral" title="Replaces (overwrites) this trait">⇄ {o}</span>)}
-                            {t.blocks.map(o => <span class="chip chip--neutral chip--blocked" title="Cannot coexist with this trait">⊘ {o}</span>)}
-                            {t.leadsTo.map(o => <span class="chip chip--neutral chip--leads" title="May progress to this trait">→ {o.name} {o.prob}%</span>)}
+                            {t.replaces.map(o => <span class="chip chip--neutral" title="Replaces (overwrites) this trait">⇄ {traitAnchor(o) ? <a href={traitAnchor(o)}>{o}</a> : o}</span>)}
+                            {t.blocks.map(o => <span class="chip chip--neutral chip--blocked" title="Cannot coexist with this trait">⊘ {traitAnchor(o) ? <a href={traitAnchor(o)}>{o}</a> : o}</span>)}
+                            {t.leadsTo.map(o => <span class="chip chip--neutral chip--leads" title="May progress to this trait">→ {traitAnchor(o.name) ? <a href={traitAnchor(o.name)}>{o.name}</a> : o.name} {o.prob}%</span>)}
                           </div>
                         ) : <span class="cell__dash">—</span>}
                       </td>

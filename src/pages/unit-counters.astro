@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
 import units from '../data/units.json';
 import { counterBonus, attackDamage } from '../lib/combat';
 
@@ -194,7 +195,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                     <div class="counter">
                       <span class="counter__val">{v > 0 ? '+' : ''}{v}%</span>
                       {cell.sources.length > 0 && (
-                        <span class="counter__sources">{cell.sources.join(' · ')}</span>
+                        <span class="counter__sources"><LinkedText text={cell.sources.join(' · ')} showIcons={false} /></span>
                       )}
                     </div>
                   </td>

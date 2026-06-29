@@ -185,7 +185,7 @@ for (const f of families) {
                     <td class="cell cell--list yield-misc" data-family={f.slug}>
                       {items.map(it => (
                         <div class="listitem">
-                          <span>{it.label}</span>
+                          <span><LinkedText text={it.label} showIcons={false} /></span>
                           <span class={`opinion__val opinion--${it.value >= 0 ? 'pos' : 'neg'}`}>{it.value >= 0 ? '+' : ''}{it.value}</span>
                         </div>
                       ))}
