@@ -266,11 +266,11 @@ def build() -> dict:
             continue
         entities.append({
             "id": f"PROJECT_{key.upper()}",
-            "slug": key.split("_")[0],
+            "slug": key,                   # e.g. "olympics_1" — matches the projects page anchor
             "type": "project",
             "name": aliases[0],
             "aliases": aliases,
-            "page": "wonders",
+            "page": "projects",            # city projects live on the Projects page, not Wonders
             "icon": f"img/icons/projects/{filename}",
         })
 
