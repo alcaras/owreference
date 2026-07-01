@@ -94,6 +94,9 @@ for (const s of scripts) {
                 <figcaption class="ms-prev__cap">{previewCaption(s, prevs.length)} · click to enlarge</figcaption>
               </figure>
             )}
+            {prevs.length === 0 && (
+              <p class="ms-prev__none">Sample previews unavailable — the offline map generator can't build this script on the current game patch.</p>
+            )}
             {s.optionGroups.length > 0 && (
               <dl class="ms-opts">
                 {s.optionGroups.map(g => (
@@ -138,6 +141,9 @@ for (const s of scripts) {
                   </div>
                   <figcaption class="ms-prev__cap">{previewCaption(s, prevs.length)} · click to enlarge</figcaption>
                 </figure>
+              )}
+              {prevs.length === 0 && (
+                <p class="ms-prev__none">Sample previews unavailable — the offline map generator can't build this script on the current game patch.</p>
               )}
             </article>
             );
@@ -254,6 +260,12 @@ for (const s of scripts) {
   .ms-prev__cap {
     font-family: var(--font-mono); font-size: 0.62rem;
     color: var(--text-dim); margin: 0.3rem 0 0;
+  }
+  .ms-prev__none {
+    font-size: 0.74rem; line-height: 1.4; color: var(--text-dim);
+    font-style: italic; margin: 0.1rem 0 0;
+    padding: 0.4rem 0.55rem; border: 1px dashed var(--border);
+    border-radius: 3px; background: rgba(255,255,255,0.015);
   }
 
   .ms-opts {
