@@ -36,6 +36,7 @@
     ],
     "name": "The Great Stupa",
     "nation": "Any",
+    "notes": "Great for wide games where you are rich on civics and poor on stone. Combos well with Yaz and other civic-based wonders. Pillar edicts can be built anywhere, take 1 turn and cost only 10 stone, so prioritize them.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -45,9 +46,17 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "stupa",
     "sortName": "Great Stupa",
     "source": "Empires of the Indus",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Sanchi"
   },
@@ -95,6 +104,7 @@
     ],
     "name": "The Hanging Gardens",
     "nation": "Any",
+    "notes": "Can help supercharge growth early, and combos well with a high-wis Chancellor",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -104,9 +114,19 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+20% Growth"
+      ],
+      "global": [],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "hanging_gardens",
     "sortName": "Hanging Gardens",
     "source": "Base game",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Hanging_Gardens_of_Babylon"
   },
@@ -153,6 +173,7 @@
     ],
     "name": "The Jerwan Aqueduct",
     "nation": "Any",
+    "notes": "The free Farmers will added even if the Farm is built after the Wonder. Can be strong for Sages (+1 sci/farmer) or Landowners (extra gold). Look for a Volcano with lush terrain around.",
     "oneTime": [],
     "otherOutput": [
       {
@@ -173,9 +194,17 @@
         "yield": "growth"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "jerwan_aqueduct",
     "sortName": "Jerwan Aqueduct",
     "source": "Wonders & Dynasties",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Jerwan"
   },
@@ -224,6 +253,7 @@
     ],
     "name": "The Oracle",
     "nation": "Any",
+    "notes": "You won't be able to assign an agent until you get a Spymaster, but choosing from 5 tech cards is great",
     "oneTime": [
       "Holy City spawns Agents"
     ],
@@ -235,9 +265,22 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [
+        "+1 Tech Card Hand Size",
+        "On completion: Holy City spawns Agents"
+      ],
+      "localCity": [
+        "+10 Money/Religion"
+      ],
+      "tile": []
+    },
     "slug": "oracle",
     "sortName": "Oracle",
     "source": "Base game",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Pythia"
   },
@@ -280,6 +323,7 @@
     ],
     "name": "The Pyramids",
     "nation": "Any",
+    "notes": "Incredibly good, saves you so much civics over the course of the game. Prioritize in every game it's buildable. Remember it requires an Arid/Sand tile.",
     "oneTime": [],
     "otherOutput": [
       {
@@ -300,9 +344,19 @@
         "yield": "orders"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [
+        "-50% Start Law Cost"
+      ],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "pyramids",
     "sortName": "Pyramids",
     "source": "Base game",
+    "tier": "S",
+    "tierRank": 0,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Egyptian_pyramids"
   },
@@ -346,6 +400,7 @@
     ],
     "name": "The Yazilikaya",
     "nation": "Any",
+    "notes": "Combos very well with other city-based civics boosts where your state religion is: Legalism, Civics families, other civics based wonders like Colossus and Necropolis will all synergize with this wonder",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -355,9 +410,19 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "[State Religion] +20% Civics"
+      ],
+      "global": [],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "yazilikaya",
     "sortName": "Yazilikaya",
     "source": "Wonders & Dynasties",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Yaz%C4%B1l%C4%B1kaya"
   },
@@ -401,6 +466,7 @@
     ],
     "name": "The Ziggurat",
     "nation": "Any",
+    "notes": "A quiet but strong wonder. The improvement cost early can be great. There are also some nice event chains for having this wonder (e.g. +10% training in the city).",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -410,9 +476,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "-20% Improvement Cost"
+      ],
+      "global": [
+        "+20 Civics/Turn"
+      ],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "great_ziggurat",
     "sortName": "Ziggurat",
     "source": "Base game",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Ziggurat_of_Ur"
   },
@@ -456,6 +534,7 @@
     ],
     "name": "The Apadana",
     "nation": "Any",
+    "notes": "Significant money per turn thanks to the global maintenance reduction (which is additive, not multiplicative, so it's better than it seems!)",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -465,9 +544,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "-50% Maintenance"
+      ],
+      "global": [
+        "+20 Civics/Turn"
+      ],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "apadana",
     "sortName": "Apadana",
     "source": "Base game",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Apadana"
   },
@@ -515,6 +606,7 @@
     ],
     "name": "The Ishtar Gate",
     "nation": "Any",
+    "notes": "Use to snipe double victory wins or getting all your cities to be able to rush. Build after you've settled everything you want to settle. (You can \"reserve it\" by starting it, moving the worker off, and only finishing when all cities settled).",
     "oneTime": [
       "+100 Culture in every City"
     ],
@@ -526,9 +618,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "On completion: +100 Culture in every City"
+      ],
+      "global": [],
+      "localCity": [
+        "+2 Growth/Culture Level"
+      ],
+      "tile": []
+    },
     "slug": "ishtar_gate",
     "sortName": "Ishtar Gate",
     "source": "Base game",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Ishtar_Gate"
   },
@@ -571,6 +675,7 @@
     ],
     "name": "The Jebel Barkal",
     "nation": "Any",
+    "notes": "Lets you get Temples without Doctrine. Picks a random World Religion for the temple. Spread religion with disciples before you complete it for max effect. (You can \"reserve it\" by starting it, moving the worker off, and only finishing when all cities have religion).",
     "oneTime": [
       "Adds a free Temple to every City"
     ],
@@ -582,9 +687,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "On completion: Adds a free Temple to every City"
+      ],
+      "global": [],
+      "localCity": [
+        "+2 Culture/Religion"
+      ],
+      "tile": []
+    },
     "slug": "jebel_barkal",
     "sortName": "Jebel Barkal",
     "source": "Wonders & Dynasties",
+    "tier": "S",
+    "tierRank": 0,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Jebel_Barkal"
   },
@@ -633,6 +750,7 @@
     ],
     "name": "The Lighthouse",
     "nation": "Any",
+    "notes": "Prioritize this on Archipelago. Some niche uses to be able to expand borders over water, since it's usually available well before Harbor.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -642,9 +760,20 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+100% Nets",
+        "-10 Improvement Class Upgrade Turn Change / Hamlet"
+      ],
+      "global": [],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "lighthouse",
     "sortName": "Lighthouse",
     "source": "Base game",
+    "tier": "highly map dependent",
+    "tierRank": 90,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Lighthouse_of_Alexandria"
   },
@@ -688,6 +817,7 @@
     ],
     "name": "The Mahavihara",
     "nation": "Any",
+    "notes": "Awesome if you're going for a Scholariship beeline. Try to position your libraries adjacent to resources for maximum effect (you can build over a hamlet). Civics per specialist males it a lot easier to produce more specialists, creating a virtous cycle.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -697,9 +827,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+2 Science/Library"
+      ],
+      "global": [],
+      "localCity": [
+        "+1 Civics/Urban Specialist"
+      ],
+      "tile": []
+    },
     "slug": "the_mahavihara",
     "sortName": "Mahavihara",
     "source": "Empires of the Indus",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Nalanda"
   },
@@ -743,6 +885,7 @@
     ],
     "name": "The Necropolis",
     "nation": "Any",
+    "notes": "Can be strong if you are going Polytheism. That's a lot of civics. Big Culture boost in city with lots of specialists.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -752,9 +895,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+3 Civics/Pagan Religion"
+      ],
+      "global": [],
+      "localCity": [
+        "+2 Culture/Specialist"
+      ],
+      "tile": []
+    },
     "slug": "necropolis",
     "sortName": "Necropolis",
     "source": "Base game",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Valley_of_the_Kings"
   },
@@ -803,6 +958,7 @@
     ],
     "name": "The Royal Library",
     "nation": "Any",
+    "notes": "Disabled in Duels. Requires Peace with a Nation in order to get the connected Bonus. As well as explored territory with a road/river/ocean route to the nation.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -812,9 +968,20 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [
+        "+20 Civics/Turn",
+        "Connected Foreign Cities give Science"
+      ],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "royal_library",
     "sortName": "Royal Library",
     "source": "Wonders & Dynasties",
+    "tier": "disabled in duels",
+    "tierRank": 90,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Library_of_Alexandria"
   },
@@ -858,6 +1025,7 @@
     ],
     "name": "The Acropolis",
     "nation": "Any",
+    "notes": "Does require Forums to be effective.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -867,9 +1035,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+0.5 Orders/Forum"
+      ],
+      "global": [],
+      "localCity": [
+        "+2 Civics/Religion"
+      ],
+      "tile": []
+    },
     "slug": "acropolis",
     "sortName": "Acropolis",
     "source": "Base game",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Acropolis_of_Athens"
   },
@@ -912,6 +1092,7 @@
     ],
     "name": "Al Khazneh",
     "nation": "Any",
+    "notes": "Disabled in Duels.",
     "oneTime": [
       "Free Caravan every 5 turns"
     ],
@@ -923,9 +1104,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [],
+      "localCity": [
+        "Provides Luxuries: Silk, Porcelain, Exotic Fur, Ebony, Perfume"
+      ],
+      "tile": [
+        "Free Caravan every 5 turns"
+      ]
+    },
     "slug": "al_khazneh",
     "sortName": "Al Khazneh",
     "source": "Wonders & Dynasties",
+    "tier": "disabled in duels",
+    "tierRank": 90,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Al-Khazneh"
   },
@@ -974,6 +1167,7 @@
     ],
     "name": "The Colossus",
     "nation": "Any",
+    "notes": "+2 Civics in every Connected city is quite strong (and you should have everything connected); the +1 level for new units is gravy on top",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -983,9 +1177,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+2 Civics/Connected"
+      ],
+      "global": [],
+      "localCity": [
+        "+1 Level for new Units"
+      ],
+      "tile": []
+    },
     "slug": "colossus",
     "sortName": "Colossus",
     "source": "Base game",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Colossus_of_Rhodes"
   },
@@ -1033,6 +1239,7 @@
     ],
     "name": "The Cothon",
     "nation": "Any",
+    "notes": "It can be totally uselss or game defining. It's awesome for duels on Indland Sea and similar maps.",
     "oneTime": [
       "Free Trireme every 10 turns",
       "+10 XP for Ship units built here"
@@ -1045,9 +1252,22 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [],
+      "localCity": [
+        "+1 Level for new Ship units"
+      ],
+      "tile": [
+        "Free Trireme every 10 turns",
+        "+10 XP for Ship units built here"
+      ]
+    },
     "slug": "cothon",
     "sortName": "Cothon",
     "source": "Wonders & Dynasties",
+    "tier": "highly map dependent",
+    "tierRank": 90,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Cothon"
   },
@@ -1091,6 +1311,7 @@
     ],
     "name": "The Mausoleum",
     "nation": "Any",
+    "notes": "Global +%Culture can accelerate your path to a points victory, or help secure a key legendary wonder",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -1100,9 +1321,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+50% Culture"
+      ],
+      "global": [],
+      "localCity": [
+        "Units gain Guard1"
+      ],
+      "tile": []
+    },
     "slug": "mausoleum",
     "sortName": "Mausoleum",
     "source": "Base game",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Mausoleum_at_Halicarnassus"
   },
@@ -1146,6 +1379,7 @@
     ],
     "name": "The Monumental Buddhas",
     "nation": "Any",
+    "notes": "A lot better in SP than in MP. +60 opinion with all religions also means +60 opinion with all families that follow any religion. If Buddhism isn't present, it gets founded upon completion. 2 culture per religion is solid if you're going for multi-faith Tolerance playthrough.",
     "oneTime": [
       "Spreads Buddhism"
     ],
@@ -1157,9 +1391,23 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+2 Culture/Religion"
+      ],
+      "global": [
+        "+60 Opinion with all Religions"
+      ],
+      "localCity": [],
+      "tile": [
+        "Spreads Buddhism"
+      ]
+    },
     "slug": "monumental_buddhas",
     "sortName": "Monumental Buddhas",
     "source": "Empires of the Indus",
+    "tier": "B",
+    "tierRank": 2,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Buddhas_of_Bamiyan"
   },
@@ -1208,6 +1456,7 @@
     ],
     "name": "The Musaeum",
     "nation": "Any",
+    "notes": "Very strong in a science city / capital.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -1217,9 +1466,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+1 Civics/Specialist Elder"
+      ],
+      "global": [],
+      "localCity": [
+        "+50% Science"
+      ],
+      "tile": []
+    },
     "slug": "musaeum",
     "sortName": "Musaeum",
     "source": "Base game",
+    "tier": "S",
+    "tierRank": 0,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Musaeum"
   },
@@ -1263,6 +1524,7 @@
     ],
     "name": "The Chittorgarh",
     "nation": "Any",
+    "notes": "Provides 12 base training, which is roughly the same as Colosseum. +4hp per turn to all units means that it gets a lot easier to defend. Build it if you're going for a points/ambition victory and need to buy time/deter opponent from attacking you.",
     "oneTime": [
       "+2 Training to adjacent Farms"
     ],
@@ -1274,9 +1536,23 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+4 Unit Heal/Turn in Territory"
+      ],
+      "global": [],
+      "localCity": [
+        "+20 City HP"
+      ],
+      "tile": [
+        "+2 Training to adjacent Farms"
+      ]
+    },
     "slug": "hill_fort",
     "sortName": "Chittorgarh",
     "source": "Empires of the Indus",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Chittor_Fort"
   },
@@ -1325,6 +1601,7 @@
     ],
     "name": "The Circus Maximus",
     "nation": "Any",
+    "notes": "Just in case your Cataphracts were not strong enough :)",
     "oneTime": [
       "+10 XP for Mounted units built here"
     ],
@@ -1336,9 +1613,23 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "Mounted units gain Swift"
+      ],
+      "global": [
+        "+40 Training/Turn"
+      ],
+      "localCity": [],
+      "tile": [
+        "+10 XP for Mounted units built here"
+      ]
+    },
     "slug": "circus_maximus",
     "sortName": "Circus Maximus",
     "source": "Base game",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Circus_Maximus"
   },
@@ -1386,6 +1677,7 @@
     ],
     "name": "The Colosseum",
     "nation": "Any",
+    "notes": "Can be very powerful if built early, and Training/Pop can be strong if you build it in your primary military city (though getting that legendary may be a challenge)",
     "oneTime": [
       "Free Swordsman every 10 turns"
     ],
@@ -1397,9 +1689,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [],
+      "localCity": [
+        "+1 Training/Pop"
+      ],
+      "tile": [
+        "Free Swordsman every 10 turns"
+      ]
+    },
     "slug": "colosseum",
     "sortName": "Colosseum",
     "source": "Wonders & Dynasties",
+    "tier": "S",
+    "tierRank": 0,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Colosseum"
   },
@@ -1443,6 +1747,7 @@
     ],
     "name": "The Hagia Sophia",
     "nation": "Any",
+    "notes": "Two Happiness levels on completion in every city can help if you're struggling with Discontent",
     "oneTime": [
       "+2 Happiness Levels in every City"
     ],
@@ -1454,9 +1759,23 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "On completion: +2 Happiness Levels in every City"
+      ],
+      "global": [
+        "+40 Civics/Turn"
+      ],
+      "localCity": [
+        "+2 Happiness/Culture Level"
+      ],
+      "tile": []
+    },
     "slug": "hagia_sophia",
     "sortName": "Hagia Sophia",
     "source": "Base game",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Hagia_Sophia"
   },
@@ -1499,6 +1818,7 @@
     ],
     "name": "The Heliopolis",
     "nation": "Any",
+    "notes": "Very strong with Polytheism (all those shrines turn into orders!). Kush get 0.75/orders per shrine.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -1508,9 +1828,19 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "+0.5 Orders/Shrine"
+      ],
+      "global": [],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "heliopolis",
     "sortName": "Heliopolis",
     "source": "Wonders & Dynasties",
+    "tier": "S",
+    "tierRank": 0,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Heliopolis_(ancient_Egypt)"
   },
@@ -1554,6 +1884,7 @@
     ],
     "name": "The Pantheon",
     "nation": "Any",
+    "notes": "You'll need to prioritize culture in a Holy City to get this up and running. Sages seats are great for this, if you found a pagan religion with a shrine in them.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -1563,9 +1894,21 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [
+        "[State Religion] +2 Civics/Culture Level"
+      ],
+      "global": [
+        "+40 Training/Turn"
+      ],
+      "localCity": [],
+      "tile": []
+    },
     "slug": "pantheon",
     "sortName": "Pantheon",
     "source": "Base game",
+    "tier": "A",
+    "tierRank": 1,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Pantheon,_Rome"
   },
@@ -1614,6 +1957,7 @@
     ],
     "name": "The Via Recta Souk",
     "nation": "Any",
+    "notes": "Everything about this wonder is too late to matter in MP. Use it in SP with ruthless AI to guarantee 1 peaceful relationship till the very end of the game.",
     "oneTime": [],
     "otherOutput": [],
     "output": [
@@ -1623,9 +1967,20 @@
         "yield": "culture"
       }
     ],
+    "scopes": {
+      "allCities": [],
+      "global": [],
+      "localCity": [
+        "+2 Growth/Culture Level",
+        "Provides Luxuries: Salt, Gem, Fur, Citrus, Honey, Incense, Lavender, Olive, Wine, Dye, Pearl"
+      ],
+      "tile": []
+    },
     "slug": "via_recta_souk",
     "sortName": "Via Recta Souk",
     "source": "Base game",
+    "tier": "only for VP",
+    "tierRank": 90,
     "vp": 2,
     "wikipedia": "https://en.wikipedia.org/wiki/Straight_Street"
   }

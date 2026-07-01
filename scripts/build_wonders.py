@@ -26,6 +26,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_player, render_bonus,
+    render_effect_city, render_effect_player_scalars,
+    render_effect_city_state_religion, render_effect_city_capital,
     fmt_decimal, yield_name,
 )
 
@@ -35,20 +37,25 @@ def _nice_token(token: str) -> str:
     return (token.split("_", 1)[-1] if "_" in token else token).replace("_", " ").title()
 
 
-def tile_and_oneoff_lines(entry: ET.Element, indexes: dict) -> list[str]:
+def tile_and_oneoff_lines(entry: ET.Element, indexes: dict,
+                          include_bonus_cities: bool = True) -> list[str]:
     """One-time / tile / recurring effects the EffectPlayer chain misses:
     BonusCities payloads, periodic free units (iUnitTurns + aiUnitDie),
     unit-trait XP, religion spread, and adjacent-tile class yields.
-    All read from improvement.xml — no spreadsheet."""
+    All read from improvement.xml — no spreadsheet.
+
+    `include_bonus_cities` is True for the flat oneTime list; scoped_effects()
+    passes False because it routes the every-city payload to its own bucket."""
     out: list[str] = []
 
     # Bonus applied to every city on completion (Ishtar Gate, Hagia
     # Sophia, Jebel Barkal). render_bonus already phrases "in every City".
-    bc_id = (entry.findtext("BonusCities") or "").strip()
-    if bc_id:
-        bc = indexes.get("bonus.xml", {}).get(bc_id)
-        if bc is not None:
-            out.extend(render_bonus(bc, indexes))
+    if include_bonus_cities:
+        bc_id = (entry.findtext("BonusCities") or "").strip()
+        if bc_id:
+            bc = indexes.get("bonus.xml", {}).get(bc_id)
+            if bc is not None:
+                out.extend(render_bonus(bc, indexes))
 
     # Periodic free unit: iUnitTurns = period, aiUnitDie = which unit(s).
     period = entry.findtext("iUnitTurns")
@@ -83,10 +90,123 @@ def tile_and_oneoff_lines(entry: ET.Element, indexes: dict) -> list[str]:
 
     return out
 
+
+def _dedup(xs: list[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for x in xs:
+        if x not in seen:
+            seen.add(x)
+            out.append(x)
+    return out
+
+
+def scoped_effects(entry: ET.Element, indexes: dict) -> dict[str, list[str]]:
+    """Partition a wonder's humanized effects into the four scopes the legacy
+    spreadsheet distinguished, decided by WHICH XML side-channel each effect
+    comes from (the game encodes scope structurally — see CLAUDE.md):
+
+      global    — EffectPlayer scalar fields: player-wide modifiers, rates,
+                  and unlocks (e.g. Pyramids' -50% Law Cost).
+      allCities — the EffectPlayer's EffectCity / EffectCityExtra (applied to
+                  every city), StateReligionEffectCity, and the improvement's
+                  BonusCities payload (granted to every city on completion).
+      localCity — the improvement's OWN EffectCity + its one-time Bonus, which
+                  land only on the wonder's city; plus any CapitalEffectCity.
+      tile      — adjacency yields, periodic free units, unit-trait XP, and
+                  religion spread that live physically on the wonder tile. The
+                  tile's per-turn yield output is surfaced separately as chips
+                  (culturePerTurn / otherOutput), so it is not repeated here.
+
+    Union of the four buckets equals the old flat effects+oneTime set; this
+    only re-partitions it. Wonders use no nested EffectPlayer / EffectUnit
+    (verified against improvement.xml), so those channels are intentionally
+    not walked here."""
+    ecidx = indexes.get("effectCity.xml", {})
+    bidx = indexes.get("bonus.xml", {})
+    g: list[str] = []
+    ac: list[str] = []
+    lc: list[str] = []
+    tile: list[str] = []
+
+    ep_id = (entry.findtext("EffectPlayer") or "").strip()
+    ep = indexes.get("effectPlayer.xml", {}).get(ep_id) if ep_id else None
+    if ep is not None:
+        # Player-wide scalars (VP is handled separately, as a chip).
+        g.extend(ln for ln in render_effect_player_scalars(ep)
+                 if not re.match(r"\+\d+ Victory Points", ln))
+        # Every-city per-turn effects.
+        for tag in ("EffectCity", "EffectCityExtra"):
+            ec = ecidx.get((ep.findtext(tag) or "").strip())
+            if ec is not None:
+                ac.extend(render_effect_city(ec, per_city=True, indexes=indexes))
+        srec = ecidx.get((ep.findtext("StateReligionEffectCity") or "").strip())
+        if srec is not None:
+            ac.extend(render_effect_city_state_religion(srec, indexes=indexes))
+        capc = ecidx.get((ep.findtext("CapitalEffectCity") or "").strip())
+        if capc is not None:
+            lc.extend(render_effect_city_capital(capc, indexes=indexes))
+        # Player-level one-time bonuses (none in the current data, kept for safety).
+        for tag in ("StartBonus", "FoundBonus", "Bonus"):
+            b = bidx.get((ep.findtext(tag) or "").strip())
+            if b is not None:
+                for line in render_bonus(b, indexes):
+                    g.append(line if line.startswith("Unlocks ")
+                             else "On completion: " + line)
+
+    # The improvement's OWN EffectCity → the wonder's city only.
+    ec_direct = ecidx.get((entry.findtext("EffectCity") or "").strip())
+    if ec_direct is not None:
+        lc.extend(render_effect_city(ec_direct, per_city=True, indexes=indexes))
+
+    # The improvement's OWN Bonus is a player-wide grant applied at the moment
+    # of completion. The only case (Oracle → bHolyCityAgents) hands the free
+    # agent network to your Holy Cities *on completion* — it does not cover
+    # Holy Cities founded later — so it is a one-time grant, filed under
+    # `global` (matching the SS) with an "On completion:" marker.
+    b_direct = bidx.get((entry.findtext("Bonus") or "").strip())
+    if b_direct is not None:
+        for line in render_bonus(b_direct, indexes):
+            g.append(line if line.startswith("Unlocks ")
+                     else "On completion: " + line)
+
+    # BonusCities → a genuinely one-time payload granted to EVERY city on
+    # completion (Ishtar Gate culture, Hagia Sophia happiness, Jebel temple).
+    bc = bidx.get((entry.findtext("BonusCities") or "").strip())
+    if bc is not None:
+        for line in render_bonus(bc, indexes):
+            ac.append("On completion: " + line)
+
+    # Tile-bound effects (adjacency, periodic units, XP, spread) — no BonusCities.
+    tile.extend(tile_and_oneoff_lines(entry, indexes, include_bonus_cities=False))
+
+    return {
+        "global": _dedup(g),
+        "allCities": _dedup(ac),
+        "localCity": _dedup(lc),
+        "tile": _dedup(tile),
+    }
+
+
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "wonders.json"
 IMG_DIR = ROOT / "public" / "img" / "icons" / "improvements"
+# Curation layer: MP tier rating + strategy notes (the one thing XML lacks).
+ANNO = ROOT / "src" / "data" / "annotations" / "wonders.yaml"
+
+
+def load_annotations() -> dict[str, dict]:
+    """slug → {tier, notes} from the curated yaml (empty if absent)."""
+    if not ANNO.exists():
+        return {}
+    import yaml  # local import: only this build needs it
+    data = yaml.safe_load(ANNO.read_text()) or {}
+    return data.get("wonders", {}) or {}
+
+
+# Letter-tier rank for sorting/coloring; free-text caveats sort last.
+TIER_RANK = {"S": 0, "A": 1, "B": 2, "C": 3, "D": 4}
 
 # Cost columns surfaced on the page, in in-game yield order.
 COST_YIELDS = ["food", "iron", "stone", "wood", "civics"]
@@ -267,6 +387,7 @@ def main() -> int:
         "text-improvement-hittite.xml",
     )
     indexes = load_xml_indexes(XML_DIR)
+    anno = load_annotations()
 
     wonders: list[dict] = []
     for entry in parse("improvement.xml").findall("Entry"):
@@ -347,9 +468,15 @@ def main() -> int:
         wiki = "https://en.wikipedia.org/wiki/" + quote(
             wiki_title.replace(" ", "_"), safe="(),'-_")
 
+        slug = zt.replace("IMPROVEMENT_", "").lower()
+        # XML-derived scope buckets (global / all cities / local city / tile).
+        scopes = scoped_effects(entry, indexes)
+        # Curated MP tier + notes (the only non-XML content on the page).
+        a = anno.get(slug, {})
+        tier = (a.get("tier") or "").strip()
         wonders.append({
             "id": zt,
-            "slug": zt.replace("IMPROVEMENT_", "").lower(),
+            "slug": slug,
             "name": name,
             "sortName": sort_name,
             "era": era["label"],
@@ -369,6 +496,10 @@ def main() -> int:
             "vp": vp,
             "effects": effects,
             "oneTime": one_time,
+            "scopes": scopes,
+            "tier": tier,
+            "tierRank": TIER_RANK.get(tier, 90) if tier else 99,
+            "notes": (a.get("notes") or "").strip(),
             "dlc": dlc_tag,
             "dlcLabel": dlc_label,
             "nation": "Any",     # All XML wonders are universal in OW

@@ -28,6 +28,18 @@ if (w.dlc) facts.push({ label: 'Content', value: w.dlcLabel });
 
 const effectRows = (lines: string[]) =>
   lines.map(t => ({ t, yk: classifyYield(t)?.toLowerCase() || 'misc' }));
+
+// Benefit-scope groups — mirror the table (buckets from build_wonders.py).
+const SCOPES = [
+  { key: 'global',    label: 'Global',     glyph: '◈', hint: 'Applies to your whole empire' },
+  { key: 'allCities', label: 'All cities', glyph: '⁙', hint: 'Every city you control' },
+  { key: 'localCity', label: 'This city',  glyph: '⌂', hint: "Only the wonder's own city" },
+  { key: 'tile',      label: 'Tile',       glyph: '⬡', hint: 'On the wonder tile itself' },
+] as const;
+const scopeGroups = SCOPES
+  .map(s => ({ ...s, lines: ((w.scopes && w.scopes[s.key]) || []) as string[] }))
+  .filter(s => s.lines.length > 0);
+const isLetterTier = (t: string) => ['S', 'A', 'B', 'C', 'D'].includes(t);
 ---
 
 <Base
@@ -48,6 +60,12 @@ const effectRows = (lines: string[]) =>
     <div class="whead__body">
       <h1 class="whead__title">{w.name}</h1>
       <div class="whead__chips">
+        {w.tier && (
+          <span class={`chip chip--tier ${isLetterTier(w.tier) ? 'tier--' + w.tier.toLowerCase() : 'tier--note'}`}
+                title="alcaras's multiplayer tier rating">
+            {isLetterTier(w.tier) ? `${w.tier} tier` : `MP: ${w.tier}`}
+          </span>
+        )}
         <span class="chip chip--era">
           <img src={eraIcon(w.era)} alt="" class="chip__icon" onerror="this.style.display='none'" />
           {w.era} Culture
@@ -104,29 +122,37 @@ const effectRows = (lines: string[]) =>
     </section>
 
     <section class="wcard wcard--wide">
-      <h2 class="wcard__h">Ongoing Bonus</h2>
-      {w.effects.length === 0 ? <p class="muted">None.</p> : (
-        <ul class="bullets">
-          {effectRows(w.effects).map(e => (
-            <li class={`effect yield-${e.yk}`}><LinkedText text={e.t} showIcons={false} iconsForYields={true} /></li>
+      <h2 class="wcard__h">Benefits by scope</h2>
+      {scopeGroups.length === 0 ? <p class="muted">None.</p> : (
+        <div class="dscopes">
+          {scopeGroups.map(s => (
+            <div class={`dscope dscope--${s.key}`}>
+              <div class="dscope__tag" title={s.hint}>
+                <span class="dscope__glyph" aria-hidden="true">{s.glyph}</span>{s.label}
+              </div>
+              <ul class="bullets">
+                {effectRows(s.lines).map(e => (
+                  <li class={`effect yield-${e.yk}`}><LinkedText text={e.t} showIcons={false} iconsForYields={true} /></li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </section>
 
-    <section class="wcard wcard--wide">
-      <h2 class="wcard__h">One-time / Tile</h2>
-      {w.oneTime.length === 0 ? <p class="muted">None.</p> : (
-        <ul class="bullets">
-          {effectRows(w.oneTime).map(e => (
-            <li class={`effect yield-${e.yk}`}><LinkedText text={e.t} showIcons={false} iconsForYields={true} /></li>
-          ))}
-        </ul>
-      )}
-    </section>
+    {(w.notes || (w.tier && !isLetterTier(w.tier))) && (
+      <section class="wcard wcard--wide">
+        <h2 class="wcard__h">Strategy notes <span class="wcard__by">— alcaras (MP)</span></h2>
+        {w.tier && !isLetterTier(w.tier) && (
+          <p class="dnote-tier"><b>Tier:</b> {w.tier}</p>
+        )}
+        {w.notes && <p class="dnote"><LinkedText text={w.notes} showIcons={false} /></p>}
+      </section>
+    )}
   </div>
 
-  <p class="provenance">Every fact on this page is derived from the game's <code>improvement.xml</code> (and its effect/bonus chains via the humanizer). The legacy spreadsheet is not consulted. The Wikipedia link is the only external reference.</p>
+  <p class="provenance">Every <em>fact</em> on this page — cost, culture tier, requirements, VP, per-turn yields, and the scope-grouped benefits — is derived from the game's <code>improvement.xml</code> (and its effect/bonus chains via the humanizer). The MP tier rating and strategy notes are alcaras's subjective take, carried over from the legacy reference spreadsheet. The Wikipedia link is the only external reference.</p>
 </Base>
 
 <style>
@@ -172,6 +198,29 @@ const effectRows = (lines: string[]) =>
 
   .bullets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
   .bullets .effect { font-size: 0.85rem; }
+
+  /* MP tier chip (shared color scale with the table) */
+  .chip--tier { font-family: var(--font-display); font-weight: 700; color: #0e0f12; border: 1px solid rgba(0,0,0,0.35); }
+  .chip--tier.tier--s { background: linear-gradient(180deg,#ffd66e,#e0a92e); }
+  .chip--tier.tier--a { background: linear-gradient(180deg,#7fd08a,#4fae61); }
+  .chip--tier.tier--b { background: linear-gradient(180deg,#8fb8e8,#5b86c4); }
+  .chip--tier.tier--c { background: linear-gradient(180deg,#c9b48f,#a8905f); }
+  .chip--tier.tier--d { background: linear-gradient(180deg,#c98f8f,#a85f5f); }
+  .chip--tier.tier--note { background: var(--bg-elev-2); color: var(--text-dim); border-color: var(--border); }
+
+  /* Benefits by scope */
+  .dscopes { display: flex; flex-direction: column; gap: 0.6rem; }
+  .dscope { display: grid; grid-template-columns: 7rem 1fr; gap: 0.75rem; align-items: start; }
+  .dscope + .dscope { border-top: 1px solid var(--border); padding-top: 0.6rem; }
+  .dscope__tag { display: inline-flex; align-items: center; gap: 0.35rem; font-family: var(--font-display); font-size: 0.78rem; letter-spacing: 0.03em; color: var(--text-dim); cursor: help; }
+  .dscope__glyph { color: var(--accent); }
+  .dscope--allCities .dscope__glyph { color: #7fb0d8; }
+  .dscope--localCity .dscope__glyph { color: #b79bd8; }
+  .dscope--tile      .dscope__glyph { color: #86c08a; }
+
+  .wcard__by { font-family: var(--font-body); font-weight: 400; font-size: 0.72rem; color: var(--text-faint); letter-spacing: 0; }
+  .dnote, .dnote-tier { margin: 0 0 0.4rem; font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }
+  .dnote-tier b { color: var(--text); }
 
   .provenance { margin: 1.5rem 0 0; font-size: 0.76rem; color: var(--text-faint); line-height: 1.5; }
   .provenance code { font-family: var(--font-mono); color: var(--text-dim); }
