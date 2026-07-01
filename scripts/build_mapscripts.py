@@ -5,9 +5,11 @@ Build src/data/mapscripts.json — the procedurally-generated map scripts
 generation options.
 
 These are the *generated* map types, not the hand-built preset scenario
-maps. Names + descriptions come from text-map.xml (TEXT_MAP_NAME_<S> /
-TEXT_MAP_HELP_<S>). Per-script options come from mapOption.xml entries
-keyed MAP_OPTION_<S>_<GROUP>_<VALUE>, with their label/help in text-map.
+maps. Names + descriptions come from the map text files (TEXT_MAP_NAME_<S>
+/ TEXT_MAP_HELP_<S>): base scripts live in text-map.xml, Wrath of Gods
+calamity scripts in text-calamities-map.xml, and the Empires of the Indus
+scripts (Mountain Pass, Deep Jungle, Wetlands) in text-eoti.xml. Per-script
+options come from mapOption.xml entries keyed MAP_OPTION_<S>_<GROUP>_<VALUE>.
 """
 from __future__ import annotations
 
@@ -69,7 +71,7 @@ def load_text(*names: str) -> dict[str, str]:
 
 
 def main() -> int:
-    T = load_text("text-map.xml", "text-calamities-map.xml")
+    T = load_text("text-map.xml", "text-calamities-map.xml", "text-eoti.xml")
 
     # Script keys = TEXT_MAP_NAME_<S> (excluding the _HELP siblings).
     script_keys = sorted(
