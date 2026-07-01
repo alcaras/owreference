@@ -180,6 +180,18 @@ def scoped_effects(entry: ET.Element, indexes: dict) -> dict[str, list[str]]:
     # Tile-bound effects (adjacency, periodic units, XP, spread) — no BonusCities.
     tile.extend(tile_and_oneoff_lines(entry, indexes, include_bonus_cities=False))
 
+    # Luxury provision is player-wide, not city-bound: aeLuxuryResources feeds
+    # the luxuries into your empire's pool, and each can be traded to ANY city
+    # (Happiness) or sent to any Nation/Tribe/Family (Opinion) — see the game's
+    # TEXT_HELPTEXT_LINK_HELP_LUXURY. The field structurally sits on the wonder's
+    # own EffectCity (Via Recta Souk, Al-Khazneh), so render_effect_city files it
+    # under local city; reclassify it to global by reach. (Losing the wonder's
+    # city ends it, but that's true of every wonder effect, global ones included.)
+    for bucket in (lc, ac, tile):
+        for ln in [x for x in bucket if x.startswith("Provides Luxuries")]:
+            bucket.remove(ln)
+            g.append(ln)
+
     return {
         "global": _dedup(g),
         "allCities": _dedup(ac),
