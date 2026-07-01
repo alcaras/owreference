@@ -36,13 +36,6 @@ const SCOPES = [
 const hasBenefits = (w: typeof wonders[number]) =>
   SCOPES.some(s => ((w.scopes as any)[s.key] as string[]).length > 0);
 
-// ── Tier badges (curated MP grade from wonders.yaml). Letters get a graded
-// color chip; free-text caveats ("highly map dependent", …) show a neutral
-// mark with the phrase as tooltip and are repeated in the strategy notes. ──
-const LETTER_TIERS = ['S', 'A', 'B', 'C', 'D'] as const;
-const isLetterTier = (t: string) => (LETTER_TIERS as readonly string[]).includes(t);
-const tierClass = (t: string) => isLetterTier(t) ? `tier--${t.toLowerCase()}` : 'tier--note';
-
 // ── Faceted-filter option lists (deterministic order, present only) ──
 const present = <T,>(pref: readonly T[], have: Set<T>) => pref.filter(v => have.has(v));
 const SOURCES = present(
@@ -59,17 +52,9 @@ const HOLY = [
   { val: 'no',  label: 'No Holy City requirement' },
 ];
 
-// Tier filter values: present letters first (S→D), then any free-text caveats.
-const TIER_VALS = [
-  ...LETTER_TIERS.filter(t => wonders.some(w => w.tier === t)),
-  ...[...new Set(wonders.map(w => w.tier).filter(t => t && !isLetterTier(t)))].sort(),
-];
-
 type Facet = { key: string; title: string; opts: { val: string; label: string; icon?: string; count: number }[] };
 const cnt = (pred: (w: typeof wonders[number]) => boolean) => wonders.filter(pred).length;
 const FACETS: Facet[] = [
-  { key: 'tier', title: 'MP tier', opts: TIER_VALS.map(t =>
-      ({ val: t, label: isLetterTier(t) ? `${t} tier` : t, count: cnt(w => w.tier === t) })) },
   { key: 'era', title: 'Culture tier', opts: ERAS.filter(e => cnt(w => w.era === e) > 0).map(e =>
       ({ val: e, label: `${e} Culture`, icon: eraIcon(e), count: cnt(w => w.era === e) })) },
   { key: 'source', title: 'Source', opts: SOURCES.map(s =>
@@ -85,7 +70,7 @@ const FACETS: Facet[] = [
   title="Wonders"
   active="wonders"
   pageMark="🏛️"
-  description={`The ${wonders.length} World Wonders of Old World (${wonders.length - dlcCount} base game, ${dlcCount} DLC) — build cost broken out per yield (Food, Iron, Stone, Wood, Civics, sortable), Culture tier, tile location requirement, per-turn yield output, and every benefit grouped by scope (Global, All cities, This city, Tile) so it is clear what reaches your whole empire versus just the wonder's city. Effects are derived from the game's improvement.xml; the multiplayer tier rating and strategy notes are alcaras's, carried over from the legacy spreadsheet. Buildable by any nation.`}
+  description={`The ${wonders.length} World Wonders of Old World (${wonders.length - dlcCount} base game, ${dlcCount} DLC) — build cost broken out per yield (Food, Iron, Stone, Wood, Civics, sortable), Culture tier, tile location requirement, per-turn yield output, and every benefit grouped by scope (Global, All cities, This city, Tile) so it is clear what reaches your whole empire versus just the wonder's city. Every fact is derived from the game's improvement.xml, not the legacy spreadsheet. Buildable by any nation.`}
 >
   <div class="page-meta">
     <h1 class="page-title">Wonders</h1>
@@ -135,7 +120,6 @@ const FACETS: Facet[] = [
       <table class="ntbl wtbl">
         <colgroup>
           <col class="wtbl__name-col" />
-          <col class="wtbl__tier-col" />
           <col class="wtbl__era-col" />
           <col class="wtbl__build-col" />
           <col class="wtbl__cult-col" />
@@ -146,7 +130,6 @@ const FACETS: Facet[] = [
         <thead>
           <tr>
             <th class="rowlabel rowlabel--corner"><span class="nhdr__name">Wonder</span></th>
-            <th class="nhdr nhdr--col" title="alcaras's multiplayer tier rating (curated)"><span class="nhdr__name">MP&nbsp;Tier</span></th>
             <th class="nhdr nhdr--col" title="Culture level required to build"><span class="nhdr__name">Culture</span></th>
             <th class="nhdr nhdr--col nhdr--cost" title="Build time in turns"><span class="nhdr__name">Build</span></th>
             <th class="nhdr nhdr--col nhdr--cost yield-culture" title="Culture per turn from the wonder tile">
@@ -175,7 +158,6 @@ const FACETS: Facet[] = [
               data-source={w.source}
               data-loc={(w.locationTags as string[]).join('|')}
               data-holy={w.isHolyCity ? 'yes' : 'no'}
-              data-tier={w.tier || 'none'}
               id={w.slug}
             >
               <th class="rowlabel rowlabel--wonder" scope="row" data-sortval={w.sortName}>
@@ -205,20 +187,6 @@ const FACETS: Facet[] = [
                   </div>
                 </div>
               </th>
-
-              {/* MP tier rating (curated) — letter chip sorts by rank; a
-                  free-text caveat shows a neutral mark, tooltip = the phrase */}
-              {w.tier ? (
-                <td class="cell cell--tier" data-sortval={w.tierRank}>
-                  {isLetterTier(w.tier) ? (
-                    <span class={`tier ${tierClass(w.tier)}`} title="Multiplayer tier">{w.tier}</span>
-                  ) : (
-                    <span class="tier tier--note" title={w.tier}>◐</span>
-                  )}
-                </td>
-              ) : (
-                <td class="cell cell--tier is-empty" data-sortval={w.tierRank}><span class="cell__dash">—</span></td>
-              )}
 
               {/* Culture tier — icon over words, sorts by tier order */}
               <td class="cell cell--era" data-sortval={ERA_ORDER[w.era] ?? 0}>
@@ -300,17 +268,6 @@ const FACETS: Facet[] = [
                 ) : (
                   <span class="cell__dash">—</span>
                 )}
-                {(w.notes || (w.tier && !isLetterTier(w.tier))) && (
-                  <details class="wnote">
-                    <summary class="wnote__sum">Strategy notes</summary>
-                    <div class="wnote__body">
-                      {w.tier && !isLetterTier(w.tier) && (
-                        <p class="wnote__tier"><b>Tier:</b> {w.tier}</p>
-                      )}
-                      {w.notes && <p><LinkedText text={w.notes} showIcons={false} /></p>}
-                    </div>
-                  </details>
-                )}
               </td>
             </tr>
           ))}
@@ -337,7 +294,7 @@ const FACETS: Facet[] = [
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
 
       // facet key → row data-attribute. `loc` is multi-valued ('|'-joined).
-      const FACET_ATTR = { tier: 'data-tier', era: 'data-era', source: 'data-source', loc: 'data-loc', holy: 'data-holy' };
+      const FACET_ATTR = { era: 'data-era', source: 'data-source', loc: 'data-loc', holy: 'data-holy' };
       const rows = Array.from(grid.querySelectorAll('tr[data-wonder]'));
       const cbs = Array.from(picker.querySelectorAll('.nation-picker__cb'));
       // picked[facet] = Set of checked values (rebuilt from the checkboxes).
@@ -466,29 +423,12 @@ const FACETS: Facet[] = [
 <style>
   /* Column widths */
   .wtbl__name-col     { width: 18rem; }
-  .wtbl__tier-col     { width: 4rem; }
   .wtbl__era-col      { width: 7rem; }
   .wtbl__build-col    { width: 4.5rem; }
   .wtbl__cult-col     { width: 6rem; }
   .wtbl__loc-col      { width: 10rem; }
   .wtbl__cost-col     { width: 5.25rem; }
   .wtbl__benefits-col { width: auto; }
-
-  /* MP tier badge */
-  .cell--tier { text-align: center; background: var(--bg-elev); background-image: none; padding: 0.3rem 0.35rem; }
-  .cell--tier.is-empty { background: var(--bg-elev); }
-  .tier {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 1.7rem; height: 1.7rem; border-radius: 5px;
-    font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
-    color: #0e0f12; border: 1px solid rgba(0,0,0,0.35);
-  }
-  .tier--s    { background: linear-gradient(180deg,#ffd66e,#e0a92e); box-shadow: 0 0 0 1px rgba(201,160,74,0.5) inset; }
-  .tier--a    { background: linear-gradient(180deg,#7fd08a,#4fae61); }
-  .tier--b    { background: linear-gradient(180deg,#8fb8e8,#5b86c4); }
-  .tier--c    { background: linear-gradient(180deg,#c9b48f,#a8905f); }
-  .tier--d    { background: linear-gradient(180deg,#c98f8f,#a85f5f); }
-  .tier--note { background: var(--bg-elev-2); color: var(--text-dim); border-color: var(--border); font-size: 1rem; cursor: help; }
 
   /* Benefits cell — scope-grouped effect lines */
   .cell--benefits { padding: 0.4rem 0.55rem; vertical-align: top; }
@@ -506,20 +446,6 @@ const FACETS: Facet[] = [
   .scope--tile      .scope__glyph { color: #86c08a; }
   .scope__lines { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
   .scope + .scope { border-top: 1px solid var(--border); padding-top: 0.4rem; }
-
-  /* Strategy-notes disclosure (curated) */
-  .wnote { margin-top: 0.5rem; border-top: 1px dashed var(--border); padding-top: 0.35rem; }
-  .wnote__sum {
-    cursor: pointer; font-family: var(--font-display); font-size: 0.68rem;
-    letter-spacing: 0.05em; color: var(--text-faint); list-style: none; user-select: none;
-  }
-  .wnote__sum::-webkit-details-marker { display: none; }
-  .wnote__sum::before { content: '▸ '; }
-  .wnote[open] .wnote__sum::before { content: '▾ '; }
-  .wnote__sum:hover { color: var(--accent); }
-  .wnote__body { margin-top: 0.3rem; font-size: 0.78rem; color: var(--text-dim); line-height: 1.45; }
-  .wnote__body p { margin: 0 0 0.3rem; }
-  .wnote__tier b { color: var(--text); }
 
   /* Sortable header affordance (same as urban/rural improvements) */
   .nhdr--col {

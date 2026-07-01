@@ -192,21 +192,6 @@ ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "wonders.json"
 IMG_DIR = ROOT / "public" / "img" / "icons" / "improvements"
-# Curation layer: MP tier rating + strategy notes (the one thing XML lacks).
-ANNO = ROOT / "src" / "data" / "annotations" / "wonders.yaml"
-
-
-def load_annotations() -> dict[str, dict]:
-    """slug → {tier, notes} from the curated yaml (empty if absent)."""
-    if not ANNO.exists():
-        return {}
-    import yaml  # local import: only this build needs it
-    data = yaml.safe_load(ANNO.read_text()) or {}
-    return data.get("wonders", {}) or {}
-
-
-# Letter-tier rank for sorting/coloring; free-text caveats sort last.
-TIER_RANK = {"S": 0, "A": 1, "B": 2, "C": 3, "D": 4}
 
 # Cost columns surfaced on the page, in in-game yield order.
 COST_YIELDS = ["food", "iron", "stone", "wood", "civics"]
@@ -387,7 +372,6 @@ def main() -> int:
         "text-improvement-hittite.xml",
     )
     indexes = load_xml_indexes(XML_DIR)
-    anno = load_annotations()
 
     wonders: list[dict] = []
     for entry in parse("improvement.xml").findall("Entry"):
@@ -471,9 +455,6 @@ def main() -> int:
         slug = zt.replace("IMPROVEMENT_", "").lower()
         # XML-derived scope buckets (global / all cities / local city / tile).
         scopes = scoped_effects(entry, indexes)
-        # Curated MP tier + notes (the only non-XML content on the page).
-        a = anno.get(slug, {})
-        tier = (a.get("tier") or "").strip()
         wonders.append({
             "id": zt,
             "slug": slug,
@@ -497,9 +478,6 @@ def main() -> int:
             "effects": effects,
             "oneTime": one_time,
             "scopes": scopes,
-            "tier": tier,
-            "tierRank": TIER_RANK.get(tier, 90) if tier else 99,
-            "notes": (a.get("notes") or "").strip(),
             "dlc": dlc_tag,
             "dlcLabel": dlc_label,
             "nation": "Any",     # All XML wonders are universal in OW
