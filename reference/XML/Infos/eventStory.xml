@@ -43514,10 +43514,6 @@
 			<zValue>EVENTOPTION_LEADER_TWILIGHT_YEARS_OPTION_0</zValue>
 			<zValue>EVENTOPTION_LEADER_TWILIGHT_YEARS_OPTION_1</zValue>
 		</aeOptions>
-		<Trigger>EVENTTRIGGER_MISSION_FINISHED</Trigger>
-		<TriggerData>MISSIONRESULT_INFLUENCE_EVENT</TriggerData>
-		<iTriggerSubject>1</iTriggerSubject>
-		<iTriggerExtra>0</iTriggerExtra>
 		<iImageSubject>1</iImageSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -59283,7 +59279,7 @@
 			<zValue>SUBJECT_CITY_THEM</zValue>
 			<zValue>SUBJECT_PLAYER_THEM</zValue>
 			<zValue>SUBJECT_CITY_US</zValue>
-			<zValue>SUBJECT_TILE</zValue>
+			<zValue>SUBJECT_TILE_UNCLAIMED</zValue>
 		</aeSubjects>
 		<SubjectRelations>
 			<Triple>
@@ -59298,7 +59294,7 @@
 			</Triple>
 			<Triple>
 				<First>3</First>
-				<Second>SUBJECTRELATION_TILE_SAME</Second>
+				<Second>SUBJECTRELATION_MAX_DISTANCE_5</Second>
 				<Third>0</Third>
 			</Triple>
 		</SubjectRelations>
@@ -66034,7 +66030,7 @@
 		<iImageSubject>0</iImageSubject>
 		<iImageExtra>2</iImageExtra>
 		<iWeight>1</iWeight>
-		<iRepeatTurns>0</iRepeatTurns>
+		<iRepeatTurns>30</iRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_INTERCESSION_FEAST</zType>
@@ -66067,7 +66063,7 @@
 		<iImageSubject>0</iImageSubject>
 		<iImageExtra>1</iImageExtra>
 		<iWeight>1</iWeight>
-		<iRepeatTurns>0</iRepeatTurns>
+		<iRepeatTurns>30</iRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_INTERCESSION_FAMILY_UNITED</zType>
@@ -66112,7 +66108,7 @@
 		<iImageSubject>0</iImageSubject>
 		<iImageExtra>2</iImageExtra>
 		<iWeight>1</iWeight>
-		<iRepeatTurns>0</iRepeatTurns>
+		<iRepeatTurns>30</iRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_INTERCESSION_NEW_LOVE</zType>
@@ -66161,7 +66157,7 @@
 		<iImageSubject>1</iImageSubject>
 		<iImageExtra>2</iImageExtra>
 		<iWeight>2</iWeight>
-		<iRepeatTurns>0</iRepeatTurns>
+		<iRepeatTurns>30</iRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_INTERCESSION_DUEL</zType>
@@ -66270,7 +66266,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
 		<iWeight>4</iWeight>
-		<iRepeatTurns>0</iRepeatTurns>
+		<iRepeatTurns>30</iRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_INTERCESSION_LOYALTY</zType>
@@ -66359,7 +66355,7 @@
 		<iImageSubject>2</iImageSubject>
 		<iImageExtra>1</iImageExtra>
 		<iWeight>6</iWeight>
-		<iRepeatTurns>0</iRepeatTurns>
+		<iRepeatTurns>30</iRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_INTERCESSION_PARRICIDE</zType>
@@ -66406,7 +66402,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>0</iImageSubject>
 		<iWeight>1</iWeight>
-		<iRepeatTurns>0</iRepeatTurns>
+		<iRepeatTurns>30</iRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_INTERCESSION_EXILE</zType>
@@ -66442,7 +66438,7 @@
 		<iImageSubject>0</iImageSubject>
 		<iImageExtra>1</iImageExtra>
 		<iWeight>3</iWeight>
-		<iRepeatTurns>0</iRepeatTurns>
+		<iRepeatTurns>30</iRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_PTOLEMY_RECRUIT_SCHOLAR_EUCLID</zType>
@@ -77647,6 +77643,10 @@
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
+				<First>0</First>
+				<Second>SUBJECT_CURSED</Second>
+			</Pair>
+			<Pair>
 				<First>1</First>
 				<Second>SUBJECT_VENGEFUL_AGAINST_LEADER</Second>
 			</Pair>
@@ -77661,7 +77661,7 @@
 		<iTriggerSubject>1</iTriggerSubject>
 		<iTriggerExtra>0</iTriggerExtra>
 		<iImageExtra>1</iImageExtra>
-		<iWeight>1</iWeight>
+		<iWeight>12</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 	</Entry>
 	<Entry>
@@ -86776,8 +86776,8 @@
 		<iTriggerSubject>2</iTriggerSubject>
 		<iTriggerExtra>0</iTriggerExtra>
 		<iImageSubject>2</iImageSubject>
-		<iWeight>1</iWeight>
-		<iRepeatTurns>40</iRepeatTurns>
+		<iWeight>6</iWeight>
+		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
 	</Entry>
 	<Entry>
@@ -90571,8 +90571,7 @@
 		<iTriggerExtra>4</iTriggerExtra>
 		<iImageSubject>1</iImageSubject>
 		<iImageExtra>0</iImageExtra>
-		<iWeight>1</iWeight>
-		<iProb>20</iProb>
+		<iWeight>6</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
 	<Entry>
@@ -94493,6 +94492,10 @@
 			<Pair>
 				<First>1</First>
 				<Second>SUBJECT_CAPITAL_US</Second>
+			</Pair>
+			<Pair>
+				<First>2</First>
+				<Second>SUBJECT_OWES_FAVOR_TO_LEADER_HIDDEN</Second>
 			</Pair>
 		</SubjectNotExtras>
 		<SubjectRelations>
@@ -133772,7 +133775,11 @@
 		<SubjectExtras>
 			<Pair>
 				<First>0</First>
-				<Second>SUBJECT_CHARACTER_MAX_ANGRY</Second>
+				<Second>SUBJECT_CHARACTER_MAX_UPSET</Second>
+			</Pair>
+			<Pair>
+				<First>3</First>
+				<Second>SUBJECT_CURSED</Second>
 			</Pair>
 			<Pair>
 				<First>0</First>
@@ -133801,7 +133808,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iTriggerExtra>3</iTriggerExtra>
 		<iImageExtra>3</iImageExtra>
-		<iWeight>5</iWeight>
+		<iWeight>12</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
 	<Entry>
@@ -133967,7 +133974,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iTriggerExtra>2</iTriggerExtra>
 		<iImageExtra>2</iImageExtra>
-		<iWeight>1</iWeight>
+		<iWeight>6</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
 	<Entry>
@@ -134099,8 +134106,7 @@
 		<iTriggerExtra>1</iTriggerExtra>
 		<iImageSubject>2</iImageSubject>
 		<iImageExtra>0</iImageExtra>
-		<iWeight>1</iWeight>
-		<iProb>50</iProb>
+		<iWeight>12</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
 	<Entry>
@@ -134115,6 +134121,12 @@
 			<zValue>SUBJECT_LEADER_US</zValue>
 			<zValue>SUBJECT_TRIBE</zValue>
 		</aeSubjects>
+		<SubjectExtras>
+			<Pair>
+				<First>0</First>
+				<Second>SUBJECT_CHARACTER_MAX_CAUTIOUS</Second>
+			</Pair>
+		</SubjectExtras>
 		<SubjectRelations>
 			<Triple>
 				<First>2</First>
@@ -134132,8 +134144,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iTriggerExtra>1</iTriggerExtra>
 		<iImageExtra>1</iImageExtra>
-		<iWeight>1</iWeight>
-		<iProb>50</iProb>
+		<iWeight>6</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
 	<Entry>
@@ -134157,13 +134168,11 @@
 				<First>0</First>
 				<Second>SUBJECT_HEALTHY</Second>
 			</Pair>
-		</SubjectExtras>
-		<SubjectNotExtras>
 			<Pair>
 				<First>1</First>
-				<Second>SUBJECT_CHARACTER_CHARMING</Second>
+				<Second>SUBJECT_CURSED</Second>
 			</Pair>
-		</SubjectNotExtras>
+		</SubjectExtras>
 		<SubjectRelations>
 			<Triple>
 				<First>2</First>
@@ -134173,8 +134182,6 @@
 		</SubjectRelations>
 		<aeBonuses>
 			<zValue>BONUS_LEADER_PLOTTING_AGAINST</zValue>
-			<zValue/>
-			<zValue>BONUS_DISCONTENT_GAIN_SMALL</zValue>
 		</aeBonuses>
 		<aeOptions>
 			<zValue>EVENTOPTION_INFLUENCE_LOCAL_AUTHORITY_OPTION_0</zValue>
@@ -134185,7 +134192,7 @@
 		<iTriggerExtra>1</iTriggerExtra>
 		<iImageExtra>1</iImageExtra>
 		<iLookAtSubject>2</iLookAtSubject>
-		<iWeight>1</iWeight>
+		<iWeight>12</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
 	<Entry>
@@ -140435,12 +140442,14 @@
 		<zAuthor>Soren Johnson</zAuthor>
 		<aeSubjects>
 			<zValue>SUBJECT_LEADER_US</zValue>
+			<zValue>SUBJECT_SPOUSE_OF_LEADER_US</zValue>
 		</aeSubjects>
 		<aeOptions>
 			<zValue>EVENTOPTION_TUTORIAL_MARRIAGE_OKAY</zValue>
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_MARRIAGE</Trigger>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iTriggerExtra>1</iTriggerExtra>
 		<iPriority>10</iPriority>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>

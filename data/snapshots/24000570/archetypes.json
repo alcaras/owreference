@@ -1,0 +1,498 @@
+[
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_AUTARKY",
+        "label": "Autarky",
+        "value": 20
+      }
+    ],
+    "fullName": "Commander",
+    "generalEffects": [
+      "+20% Adjacent Same Modifier",
+      "+20% Strength when adjacent to same unit",
+      "+100% Flanking Attack"
+    ],
+    "governorEffects": [],
+    "icon": "img/icons/traits/commander.png",
+    "iconName": "TRAIT_COMMANDER",
+    "id": "TRAIT_COMMANDER_ARCHETYPE",
+    "leaderEffects": [
+      "Effect Unit Trait: Infantry → Commander Infantry",
+      "+10 XP/turn for All Units",
+      "+10 XP/Turn for all Units"
+    ],
+    "misc": [
+      "Unit Build Cost +25%",
+      "War Probability +50%",
+      "Truce Probability -25%",
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Commander",
+    "opposite": {
+      "id": "TRAIT_TACTICIAN_ARCHETYPE",
+      "name": "Tactician",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Courage",
+        "value": 2
+      },
+      {
+        "label": "Discipline",
+        "value": 2
+      }
+    ],
+    "slots": [
+      "General"
+    ],
+    "slug": "commander"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_EPICS",
+        "label": "Epics",
+        "value": 20
+      }
+    ],
+    "fullName": "Hero",
+    "generalEffects": [
+      "Heal in Neutral Territory",
+      "Heals in Neutral Territory",
+      "Launch Offensive",
+      "Can Launch Offensive"
+    ],
+    "governorEffects": [],
+    "icon": "img/icons/traits/hero.png",
+    "iconName": "TRAIT_HERO",
+    "id": "TRAIT_HERO_ARCHETYPE",
+    "leaderEffects": [
+      "+50 Training/Kill",
+      "Heal while Pillaging"
+    ],
+    "misc": [
+      "Unit Build Cost +25%",
+      "War Probability +50%",
+      "Truce Probability -25%",
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Hero",
+    "opposite": {
+      "id": "TRAIT_BUILDER_ARCHETYPE",
+      "name": "Builder",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Courage",
+        "value": 3
+      }
+    ],
+    "slots": [
+      "General",
+      "Agent"
+    ],
+    "slug": "hero"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_PROFESSIONAL_ARMY",
+        "label": "Professional Army",
+        "value": 20
+      }
+    ],
+    "fullName": "Tactician",
+    "generalEffects": [
+      "+100% Melee Counter Percent",
+      "Stun Target for one Turn"
+    ],
+    "governorEffects": [],
+    "icon": "img/icons/traits/tactician.png",
+    "iconName": "TRAIT_TACTICIAN",
+    "id": "TRAIT_TACTICIAN_ARCHETYPE",
+    "leaderEffects": [
+      "Effect Unit Trait: Ranged → Tactician Ranged",
+      "+2 Vision Range"
+    ],
+    "misc": [
+      "Unit Build Cost +25%",
+      "War Probability +50%",
+      "Truce Probability -25%",
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Tactician",
+    "opposite": {
+      "id": "TRAIT_COMMANDER_ARCHETYPE",
+      "name": "Commander",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Discipline",
+        "value": 2
+      },
+      {
+        "label": "Wisdom",
+        "value": 2
+      }
+    ],
+    "slots": [
+      "General"
+    ],
+    "slug": "tactician"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_HOLY_WAR",
+        "label": "Holy War",
+        "value": 20
+      }
+    ],
+    "fullName": "Zealot",
+    "generalEffects": [
+      "Last Stand",
+      "Heal on Unit killed"
+    ],
+    "governorEffects": [],
+    "icon": "img/icons/traits/zealot.png",
+    "iconName": "TRAIT_ZEALOT",
+    "id": "TRAIT_ZEALOT_ARCHETYPE",
+    "leaderEffects": [
+      "+60 Opinion Religion for Leader's Religion",
+      "+60% Opinion for Leader's Religion",
+      "State Religion: Can hurry Units with Training",
+      "+1 Fatigue Limit"
+    ],
+    "misc": [
+      "War Probability +50%",
+      "Truce Probability -25%",
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Zealot",
+    "opposite": {
+      "id": "TRAIT_SCHOLAR_ARCHETYPE",
+      "name": "Scholar",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Courage",
+        "value": 4
+      },
+      {
+        "label": "Wisdom",
+        "value": -1
+      }
+    ],
+    "slots": [
+      "General"
+    ],
+    "slug": "zealot"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_SLAVERY",
+        "label": "Slavery",
+        "value": 20
+      }
+    ],
+    "fullName": "Builder",
+    "generalEffects": [],
+    "governorEffects": [
+      "-1 turn to build Improvements"
+    ],
+    "icon": "img/icons/traits/builder.png",
+    "iconName": "TRAIT_BUILDER",
+    "id": "TRAIT_BUILDER_ARCHETYPE",
+    "leaderEffects": [
+      "Can Add Urban Tiles",
+      "Multiple Worker can build Improvements",
+      "Add Urban Tile for Stone",
+      "Multiple Workers per Construction",
+      "-50% Unit Train Modifier / Worker"
+    ],
+    "misc": [
+      "Unit Build Cost -25%",
+      "War Probability -25%",
+      "Peace Probability +50%",
+      "Truce Probability +25%",
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Builder",
+    "opposite": {
+      "id": "TRAIT_HERO_ARCHETYPE",
+      "name": "Hero",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Discipline",
+        "value": 3
+      }
+    ],
+    "slots": [
+      "Governor"
+    ],
+    "slug": "builder"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_COLONIES",
+        "label": "Colonies",
+        "value": 20
+      }
+    ],
+    "fullName": "Diplomat",
+    "generalEffects": [],
+    "governorEffects": [
+      "+40 Family Opinion"
+    ],
+    "icon": "img/icons/traits/diplomat.png",
+    "iconName": "TRAIT_DIPLOMAT",
+    "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+    "leaderEffects": [
+      "Can control Units in Alliance Player",
+      "+60 Foreign/Tribal Leader Opinions",
+      "+60% Foreign/Tribal Leader Opinion",
+      "Can Move Allied Units"
+    ],
+    "misc": [
+      "Unit Build Cost -15%",
+      "War Probability -25%",
+      "Peace Probability +50%",
+      "Truce Probability +25%",
+      "Alliance Probability +50%",
+      "Tribe Alliance Probability +50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Diplomat",
+    "opposite": {
+      "id": "TRAIT_ORATOR_ARCHETYPE",
+      "name": "Orator",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Charisma",
+        "value": 3
+      }
+    ],
+    "slots": [
+      "Governor"
+    ],
+    "slug": "diplomat"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_LEGAL_CODE",
+        "label": "Legal Code",
+        "value": 20
+      }
+    ],
+    "fullName": "Judge",
+    "generalEffects": [],
+    "governorEffects": [
+      "Can hurry Projects & Specialists with Money"
+    ],
+    "icon": "img/icons/traits/judge.png",
+    "iconName": "TRAIT_JUDGE",
+    "id": "TRAIT_JUDGE_ARCHETYPE",
+    "leaderEffects": [
+      "Can Upgrade Improvements",
+      "Can Switch Laws for +100",
+      "+100 Civics to Switch Laws"
+    ],
+    "misc": [
+      "War Probability -25%",
+      "Peace Probability +50%",
+      "Truce Probability +25%",
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Judge",
+    "opposite": {
+      "id": "TRAIT_SCHEMER_ARCHETYPE",
+      "name": "Schemer",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Charisma",
+        "value": 2
+      },
+      {
+        "label": "Discipline",
+        "value": 2
+      }
+    ],
+    "slots": [
+      "Governor"
+    ],
+    "slug": "judge"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_TYRANNY",
+        "label": "Tyranny",
+        "value": 20
+      }
+    ],
+    "fullName": "Orator",
+    "generalEffects": [],
+    "governorEffects": [
+      "+1 Happiness/Culture Level"
+    ],
+    "icon": "img/icons/traits/orator.png",
+    "iconName": "TRAIT_ORATOR",
+    "id": "TRAIT_ORATOR_ARCHETYPE",
+    "leaderEffects": [
+      "+40 Opinion with all Religions",
+      "Recruit Tribal Mercenary with Legitimacy",
+      "+40% All Religion Opinion",
+      "Recruit Tribal Mercs",
+      "+1 Orders/Opinionfamily Friendly"
+    ],
+    "misc": [
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Orator",
+    "opposite": {
+      "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+      "name": "Diplomat",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Charisma",
+        "value": 4
+      },
+      {
+        "label": "Discipline",
+        "value": -1
+      }
+    ],
+    "slots": [
+      "Governor"
+    ],
+    "slug": "orator"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_ENGINEERING",
+        "label": "Engineering",
+        "value": 20
+      }
+    ],
+    "fullName": "Scholar",
+    "generalEffects": [],
+    "governorEffects": [],
+    "icon": "img/icons/traits/scholar.png",
+    "iconName": "TRAIT_SCHOLAR",
+    "id": "TRAIT_SCHOLAR_ARCHETYPE",
+    "leaderEffects": [
+      "Can Redraw Techs",
+      "Redraw Techs",
+      "+2 Science/Archive"
+    ],
+    "misc": [
+      "Unit Build Cost -15%",
+      "War Probability -25%",
+      "Peace Probability +50%",
+      "Truce Probability +25%",
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Scholar",
+    "opposite": {
+      "id": "TRAIT_ZEALOT_ARCHETYPE",
+      "name": "Zealot",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Wisdom",
+        "value": 3
+      }
+    ],
+    "slots": [
+      "Governor"
+    ],
+    "slug": "scholar"
+  },
+  {
+    "favoredLaws": [
+      {
+        "id": "LAW_ELITES",
+        "label": "Elites",
+        "value": 20
+      },
+      {
+        "id": "LAW_COIN_DEBASEMENT",
+        "label": "Coin Debasement",
+        "value": 20
+      }
+    ],
+    "fullName": "Schemer",
+    "generalEffects": [],
+    "governorEffects": [],
+    "icon": "img/icons/traits/schemer.png",
+    "iconName": "TRAIT_SCHEMER",
+    "id": "TRAIT_SCHEMER_ARCHETYPE",
+    "leaderEffects": [
+      "+1 Orders per War",
+      "Invisible Unit: Scout",
+      "Use Legitimacy to buy Orders",
+      "Spend Legitimacy for Orders",
+      "+1.0 Orders/Year per War",
+      "Scouts are Invisible"
+    ],
+    "misc": [
+      "Alliance Probability -50%",
+      "Tribe Alliance Probability -50%",
+      "Opinion to Same +60%"
+    ],
+    "name": "Schemer",
+    "opposite": {
+      "id": "TRAIT_JUDGE_ARCHETYPE",
+      "name": "Judge",
+      "value": -60
+    },
+    "ratings": [
+      {
+        "label": "Wisdom",
+        "value": 4
+      },
+      {
+        "label": "Courage",
+        "value": -1
+      }
+    ],
+    "slots": [
+      "Agent"
+    ],
+    "slug": "schemer"
+  }
+]

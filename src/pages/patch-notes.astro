@@ -6,7 +6,7 @@ import patchnotes from '../data/patchnotes.json';
 const base = import.meta.env.BASE_URL;
 
 const fmtDate = (d: string) =>
-  d ? new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+  d ? new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }) : '';
 
 const SECTION_ICON: Record<string, string> = {
   Design: '🎯', Balance: '⚖️', Programming: '⚙️', AI: '🤖', UI: '🖥',

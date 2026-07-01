@@ -223,6 +223,19 @@
 		<ko>{0_player}에 link(DIPLOMACY_PEACE) 협정용 공물 요구</ko>
 	</Entry>
 	<Entry>
+		<zType>TEXT_MISSION_PLAYER_MARRIAGE_CHARACTER</zType>
+		<en-US>Foreign Marriage for {0_characterSubject}</en-US>
+		<es>Concertar matrimonio extranjero para {0_characterSubject}</es>
+		<de>Ausländische Heirat für {0_characterSubject}</de>
+		<fr>Mariage étranger pour {0_characterSubject}</fr>
+		<ja>{0_characterSubject}に外国との縁組を行わせる</ja>
+		<zh-TW>{0_characterSubject}的異國聯姻</zh-TW>
+		<ru>Зарубежный брак для {0,1_characterSubject}</ru>
+		<zh-CN>{0_characterSubject}的异国联姻</zh-CN>
+		<pt-BR>Casamento com estrangeiro para {0_characterSubject}</pt-BR>
+		<ko>{0_characterSubject}(을)를 위한 국외 결혼</ko>
+	</Entry>
+	<Entry>
 		<zType>TEXT_MISSION_PLAYER_TRUCE</zType>
 		<en-US>National link(DIPLOMACY_TRUCE)</en-US>
 		<es>link(DIPLOMACY_TRUCE) nacional</es>
@@ -679,16 +692,16 @@
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_MARRY_COURTIER_TARGET</zType>
-		<en-US>Marry</en-US>
-		<es>Casarse con</es>
-		<de>Heiraten – Partner:</de>
-		<fr>Épouser</fr>
-		<ja>結婚相手：</ja>
-		<zh-TW>聯姻</zh-TW>
-		<ru>Вступить в брак</ru>
-		<zh-CN>联姻</zh-CN>
-		<pt-BR>Casar-se com</pt-BR>
-		<ko>결혼</ko>
+		<en-US>Marry {0_character}</en-US>
+		<es>Cásate con {0_character}</es>
+		<de>{0_character} heiraten</de>
+		<fr>Épouser {0_character}</fr>
+		<ja>{0}と結婚する</ja>
+		<zh-TW>與{0_character}聯姻</zh-TW>
+		<ru>Вступить в брак с {0,4_character}</ru>
+		<zh-CN>与{0_character}联姻</zh-CN>
+		<pt-BR>Casar-se com {0_character}</pt-BR>
+		<ko>{0_character}(과)와 결혼</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_MARRY_COURTIER_CHARACTER</zType>
@@ -729,6 +742,19 @@
 		<pt-BR>Inspire as tropas para obter link(YIELD_TRAINING)</pt-BR>
 		<ko>부대를 고취하여 link(YIELD_TRAINING)을 얻는다</ko>
 	</Entry>
+    <Entry>
+        <zType>TEXT_MISSION_VASSALIZE_TRIBE_DESCRIPTION</zType>
+        <en-US>Force a weaker link(CONCEPT_TRIBE) into a link(CONCEPT_ALLIANCE_TRIBE).</en-US>
+		<es>Forzar a una {lowercase:link(CONCEPT_TRIBE)} más débil a aceptar una {lowercase:link(CONCEPT_ALLIANCE_TRIBE)}.</es>
+		<de>Einen schwächeren link(CONCEPT_TRIBE) zu einer link(CONCEPT_ALLIANCE_TRIBE) zwingen</de>
+		<fr>Forcer une link(CONCEPT_TRIBE) plus faible à conclure une link(CONCEPT_ALLIANCE_TRIBE).</fr>
+		<ja>弱体なlink(CONCEPT_TRIBE)にlink(CONCEPT_ALLIANCE_TRIBE)を強いる。</ja>
+		<zh-TW>強迫略弱的link(CONCEPT_TRIBE)融入link(CONCEPT_ALLIANCE_TRIBE)。</zh-TW>
+		<ru>Принуждение слабого {lowercase:link(CONCEPT_TRIBE,1)} к {lowercase:link(CONCEPT_ALLIANCE_TRIBE,2)}.</ru>
+		<zh-CN>强迫略弱的link(CONCEPT_TRIBE)融入link(CONCEPT_ALLIANCE_TRIBE)。</zh-CN>
+		<pt-BR>Forçar uma link(CONCEPT_TRIBE) a uma link(CONCEPT_ALLIANCE_TRIBE)</pt-BR>
+		<ko>더 약한 link(CONCEPT_TRIBE)에게 link(CONCEPT_ALLIANCE_TRIBE)을 강요한다.</ko>
+    </Entry>
 	<Entry>
 		<zType>TEXT_MISSION_HOLD_COURT</zType>
 		<en-US>Hold Court</en-US>
@@ -978,16 +1004,16 @@
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_INFILTRATE_TARGET</zType>
-		<en-US>Infiltrate</en-US>
-		<es>Infiltrarse</es>
-		<de>Ausspionieren – Ziel:</de>
-		<fr>Infiltrer</fr>
-		<ja>潜入対象：</ja>
-		<zh-TW>滲透</zh-TW>
-		<ru>Проникнуть</ru>
-		<zh-CN>渗透</zh-CN>
-		<pt-BR>Infiltrar</pt-BR>
-		<ko>잠입</ko>
+		<en-US>Infiltrate {0_city}</en-US>
+		<es>Infíltrate en {0_city}</es>
+		<de>{0_city} infiltrieren</de>
+		<fr>Infiltrer {0_city}</fr>
+		<ja>{0_city}に潜入</ja>
+		<zh-TW>滲透{0_city}</zh-TW>
+		<ru>Внедриться в {0,3_city}</ru>
+		<zh-CN>渗透{0_city}</zh-CN>
+		<pt-BR>Infiltrar {0_city}</pt-BR>
+		<ko>{0_city} 잠입</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_INFILTRATE_CHARACTER</zType>
@@ -1030,16 +1056,16 @@
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_SLANDER_TARGET</zType>
-		<en-US>Slander</en-US>
-		<es>Calumniar</es>
-		<de>Verleumden</de>
-		<fr>Calomnier</fr>
-		<ja>誹謗中傷</ja>
-		<zh-TW>誹謗</zh-TW>
-		<ru>Оклеветать</ru>
-		<zh-CN>诽谤</zh-CN>
-		<pt-BR>Caluniar</pt-BR>
-		<ko>비방</ko>
+		<en-US>Slander {0_nation}</en-US>
+		<es>Calumnia a {0_nation}</es>
+		<de>{0_nation} verleumden</de>
+		<fr>Calomnier {0_nation}</fr>
+		<ja>{0_nation}を誹謗中傷</ja>
+		<zh-TW>誹謗{0_nation}</zh-TW>
+		<ru>Оклеветать {0,3_nation}</ru>
+		<zh-CN>诽谤{0_nation}</zh-CN>
+		<pt-BR>Caluniar {0_nation}</pt-BR>
+		<ko>{0_nation} 비방</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_SLANDER_CHARACTER</zType>
@@ -1433,16 +1459,16 @@
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_PACIFY_CITY_TARGET</zType>
-		<en-US>Pacify</en-US>
-		<es>Apaciguar</es>
-		<de>Befrieden – Stadt:</de>
-		<fr>Pacifier</fr>
-		<ja>鎮圧</ja>
-		<zh-TW>綏定</zh-TW>
-		<ru>Усмирить</ru>
-		<zh-CN>绥定</zh-CN>
-		<pt-BR>Pacificar</pt-BR>
-		<ko>진정</ko>
+		<en-US>Pacify {0_city}</en-US>
+		<es>Apacigua {0_city}</es>
+		<de>{0_city} befrieden</de>
+		<fr>Pacifier {0_city}</fr>
+		<ja>{0_city}の鎮圧</ja>
+		<zh-TW>綏定{0_city}</zh-TW>
+		<ru>Усмирить {0,3_city}</ru>
+		<zh-CN>绥定{0_city}</zh-CN>
+		<pt-BR>Pacificar {0_city}</pt-BR>
+		<ko>{0_city} 진정</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_PACIFY_CITY_CHARACTER</zType>
@@ -1537,16 +1563,16 @@
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_DIVORCE_TARGET</zType>
-		<en-US>Divorce</en-US>
-		<es>Terminar tu matrimonio con</es>
-		<de>Scheidung – Partner:</de>
-		<fr>Divorcer</fr>
-		<ja>離婚</ja>
-		<zh-TW>離婚</zh-TW>
-		<ru>Развестись с:</ru>
-		<zh-CN>离婚</zh-CN>
-		<pt-BR>Divorciar</pt-BR>
-		<ko>이혼</ko>
+		<en-US>Divorce {0_character}</en-US>
+		<es>Divórciate de tu cónyuge {0_character}</es>
+		<de>Von {0_character} scheiden lassen</de>
+		<fr>Divorcer {0_character}</fr>
+		<ja>{0_character}と離婚する</ja>
+		<zh-TW>與{0_character}離婚</zh-TW>
+		<ru>Развестись с {0,4_character}</ru>
+		<zh-CN>与{0_character}离婚</zh-CN>
+		<pt-BR>Divorciar-se de {0_character}</pt-BR>
+		<ko>{0_character}(과)와 이혼</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_TUTOR</zType>
@@ -1589,16 +1615,16 @@
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_TUTOR_TARGET</zType>
-		<en-US>link(CONCEPT_TUTOR)</en-US>
-		<es>link(CONCEPT_TUTOR,5)</es>
-		<de>{sentencecase:link(CONCEPT_TUTOR,4)}</de>
-		<fr><![CDATA[<sentencecase>link(CONCEPT_TUTOR,4)</sentencecase>]]></fr>
-		<ja>link(CONCEPT_TUTOR)</ja>
-		<zh-TW>link(CONCEPT_TUTOR)</zh-TW>
-		<ru>link(CONCEPT_TUTOR)</ru>
-		<zh-CN>link(CONCEPT_TUTOR)</zh-CN>
-		<pt-BR>link(CONCEPT_TUTOR,4)</pt-BR>
-		<ko>link(CONCEPT_TUTOR)</ko>
+		<en-US>link(CONCEPT_TUTOR) {0_character}</en-US>
+		<es>link[Tutela](CONCEPT_TUTOR) a {0_character}</es>
+		<de>{0_character} link(CONCEPT_TUTOR,4)</de>
+		<fr>link(CONCEPT_TUTOR) {0_character}</fr>
+		<ja>{0_character}をlink(CONCEPT_TUTOR)する</ja>
+		<zh-TW>link(CONCEPT_TUTOR) {0_character}</zh-TW>
+		<ru>link(CONCEPT_TUTOR) для {0,1_character}</ru>
+		<zh-CN>link(CONCEPT_TUTOR) {0_character}</zh-CN>
+		<pt-BR>link(CONCEPT_TUTOR,4) {0_character}</pt-BR>
+		<ko>{0_character} link(CONCEPT_TUTOR)</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_MISSION_TUTOR_CHARACTER</zType>

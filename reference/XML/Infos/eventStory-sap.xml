@@ -1182,6 +1182,7 @@
 			<zValue>SUBJECT_PLAYER_THEM</zValue>
 			<zValue>SUBJECT_RELIGION_WORLD</zValue>
 			<zValue>SUBJECT_RELIGION_WORLD</zValue>
+			<zValue>SUBJECT_LEADER_THEM</zValue>
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
@@ -1189,11 +1190,22 @@
 				<Second>SUBJECT_PLAYER_PEACE_OR_TRUCE</Second>
 			</Pair>
 		</SubjectExtras>
+		<SubjectNotExtras>
+			<Pair>
+				<First>4</First>
+				<Second>SUBJECT_INFLUENCED_BY_LEADER</Second>
+			</Pair>
+		</SubjectNotExtras>
 		<SubjectRelations>
 			<Triple>
 				<First>1</First>
 				<Second>SUBJECTRELATION_RELIGION_STATE</Second>
 				<Third>2</Third>
+			</Triple>
+			<Triple>
+				<First>1</First>
+				<Second>SUBJECTRELATION_PLAYER_SAME</Second>
+				<Third>4</Third>
 			</Triple>
 		</SubjectRelations>
 		<aeBonuses>
@@ -1211,6 +1223,7 @@
 		<iTriggerSubject>3</iTriggerSubject>
 		<iWeight>6</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
+		<bHidePrereqs>1</bHidePrereqs>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_THE_FORGOTTEN_PROPHET_1</zType>
@@ -5073,7 +5086,7 @@
 		<Text>TEXT_EVENTSTORY_FUNERARY_GAMES</Text>
 		<zBackgroundName>Religious_Festival_RP</zBackgroundName>
 		<zFrameType>FRAME_RELIGION</zFrameType>
-		<zEventURL>https://en.wikipedia.org/wiki/Achilles#Fate_of_Achilles'_armour</zEventURL>
+		<zEventURL>https://en.wikipedia.org/wiki/Achilles#Fate_of_Achilles's_armour</zEventURL>
 		<zAudioTrigger>AUDIO_UI_EVENT_OPEN_THE_TOMB</zAudioTrigger>
 		<zAuthor>Josh Unsworth</zAuthor>
 		<aeSubjects>
@@ -6753,6 +6766,16 @@
 		<Class>EVENTCLASS_SUDDEN_DEATH</Class>
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
+		<aiMortalitySkipProb>
+			<Pair>
+				<zIndex>MORTALITY_LONG</zIndex>
+				<iValue>100</iValue>
+			</Pair>
+			<Pair>
+				<zIndex>MORTALITY_STANDARD</zIndex>
+				<iValue>50</iValue>
+			</Pair>
+		</aiMortalitySkipProb>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_LUCKY_IN_LOVE</zType>
@@ -7342,9 +7365,8 @@
 		</aeOptions>
 		<Class>EVENTCLASS_EP_RELIGION</Class>
 		<iImageSubject>2</iImageSubject>
-		<iMaxTurns>80</iMaxTurns>
 		<iWeight>1</iWeight>
-		<iProb>50</iProb>
+		<iGameProb>40</iGameProb>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
 	<Entry>

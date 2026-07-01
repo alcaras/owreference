@@ -2914,6 +2914,45 @@ Se você completar nove outras ambições, uma ambição nacional sempre será o
 		<ko>{0}: icon(GreaterThan) {1}이고 icon(LessThan) {2}</ko>
 	</Entry>
 	<Entry>
+		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_NOT_GT_LT</zType>
+		<en-US>{0} {true_3:is:are} not icon(GreaterThan) {1} and icon(LessThan) {2}</en-US>
+		<es>{0} no es/está icon(GreaterThan) {1} y icon(LessThan) {2}</es>
+		<de>{0} {true_3:ist:sind} nicht icon(GreaterThan) {1} und icon(LessThan) {2}</de>
+		<fr>{0} {true_3:n'est pas:ne sont pas} icon(GreaterThan) {1} et icon(LessThan) {2}</fr>
+		<ja>{0}{true_3:は:は}icon(GreaterThan){1}でicon(LessThan) {2}ではない</ja>
+		<zh-TW>非{0}{true_3:是:是}icon(GreaterThan){1}且icon(LessThan){2}</zh-TW>
+		<ru>Не {0} icon(GreaterThan) {1} и icon(LessThan) {2}</ru>
+		<zh-CN>非{0}{true_3:是:是}icon(GreaterThan){1}且icon(LessThan){2}</zh-CN>
+		<pt-BR>{0} não {true_3:é:são} icon(GreaterThan) {1} e icon(LessThan) {2}</pt-BR>
+		<ko>{0}: icon(GreaterThan) {1}이고 icon(LessThan) {2} 아님</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_NOT_GT_TWO</zType>
+		<en-US>{0_character} {true_3:is:are} not icon(GreaterThan) {1_value} {2_ratingType}</en-US>
+		<es>{0} no icon(GreaterThan) {1} {2}</es>
+		<de>{0} nicht {true_3:ist:sind} icon(GreaterThan) {1} {2}</de>
+		<fr>{0} {true_3:n'est pas:no sont pas} icon(GreaterThan) {1} {2}</fr>
+		<ja>{0}{true_3:は:は}icon(GreaterThan){1} {2}ではない</ja>
+		<zh-TW>非{0}{true_3:是:是}icon(GreaterThan){1}{2}</zh-TW>
+		<ru>Не {0} icon(GreaterThan) {1} {2}</ru>
+		<zh-CN>非{0}{true_3:是:是}icon(GreaterThan){1}{2}</zh-CN>
+		<pt-BR>{0_character} não {true_3:é:são} icon(GreaterThan) {1_value} {2_ratingType}</pt-BR>
+		<ko>{0_character}의 자질: icon(GreaterThan) {1_value} {2_ratingType}</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_NOT_LT_TWO</zType>
+		<en-US>{0_character} {true_3:is:are} not icon(LessThan) {1_value} {2_ratingType}</en-US>
+		<es>{0} icon(LessThan) {1} {2}</es>
+		<de>{0} {true_3:ist:sind} icon(LessThan) {1} {2}</de>
+		<fr>{0} {true_3:est:sont} icon(LessThan) {1} {2}</fr>
+		<ja>{0}{true_3:は:は}icon(LessThan){1} {2}</ja>
+		<zh-TW>{0}{true_3:是:是}icon(LessThan){1}{2}</zh-TW>
+		<ru>Не {0} icon(LessThan) {1} {2}</ru>
+		<zh-CN>{0}{true_3:是:是}icon(LessThan){1}{2}</zh-CN>
+		<pt-BR>{0_character} não {true_3:é:são} icon(LessThan) {1_value} {2_ratingType}</pt-BR>
+		<ko>{0_character}의 자질: icon(LessThan) {1_value} {2_ratingType} 아님</ko>
+	</Entry>
+	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_GT</zType>
 		<en-US>{0} {true_2:is:are} icon(GreaterThan) {1}</en-US>
 		<es>{0} icon(GreaterThan) {1}</es>
@@ -3266,16 +3305,16 @@ Se você completar nove outras ambições, uma ambição nacional sempre será o
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_COOLDOWN</zType>
-		<en-US>Cooldown: {0_turns}</en-US>
-		<es>Recarga: {0_turns}</es>
-		<de>Abklingzeit: {0_turns}</de>
-		<fr>Recharge : {0_turns}</fr>
-		<ja>クールダウン：{0_turns}</ja>
-		<zh-TW>冷卻：{0_turns}</zh-TW>
-		<ru>Восстановление: {0_turns}</ru>
-		<zh-CN>冷却：{0_turns}</zh-CN>
-		<pt-BR>Recarga: {0_turns}</pt-BR>
-		<ko>재활성 대기: {0_turns}</ko>
+		<en-US>{true_1:Unit :}Cooldown: {0_turns}</en-US>
+		<es>Recarga de {true_1:Unit :}: {0_turns}</es>
+		<de>Abklingzeit{true_1: der Einheit:}: {0_turns}</de>
+		<fr>{true_1:Unit :}Recharge : {0_turns}</fr>
+		<ja>{true_1:ユニット :}クールダウン: {0_turns}</ja>
+		<zh-TW>{true_1:Unit :}冷卻：{0_turns}</zh-TW>
+		<ru>{true_1:Отряд :}Восстановление: {0_turns}</ru>
+		<zh-CN>{true_1:Unit :}冷却：{0_turns}</zh-CN>
+		<pt-BR>{true_1:Unidade :}Recarga: {0_turns}</pt-BR>
+		<ko>{true_1:유닛 :}재활성 대기: {0_turns}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_COOLDOWN_NAME</zType>
@@ -5796,6 +5835,19 @@ Se você completar nove outras ambições, uma ambição nacional sempre será o
 		<zh-CN>{0_value}：{1_link}{true_2: (x{2})}</zh-CN>
 		<pt-BR>{0_value}: {1_link}{true_2: (x{2_count})}</pt-BR>
 		<ko>{0_value}: {1_link}{true_2: (x{2_count})}</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_WIDGET_PLAYER_LEGITIMACY_CONVERT</zType>
+		<en-US>{0_value}: Bought link(YIELD_ORDERS,1)</en-US>
+		<es>link(YIELD_ORDERS,1) compradas: {0_value}</es>
+		<de>{0_value}: link(YIELD_ORDERS,1) gekauft</de>
+		<fr>{0_value} : link(YIELD_ORDERS,1) achetés</fr>
+		<ja>-{0_value}: link(YIELD_ORDERS,1)を購入した</ja>
+		<zh-TW>{0_value}：購買了link(YIELD_ORDERS,1)</zh-TW>
+		<ru>{0_value}: Покупка {lowercase:link(YIELD_ORDERS,1)}</ru>
+		<zh-CN>{0_value}：购买了link(YIELD_ORDERS,1)</zh-CN>
+		<pt-BR>{0_value}: link(YIELD_ORDERS,1) compradas</pt-BR>
+		<ko>{0_value}: link(YIELD_ORDERS,1) 구매</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_WIDGET_RIGHT_CLICK_MISSIONS</zType>
@@ -13147,7 +13199,7 @@ Mercenários têm custos de consumo int(CONSUMPTION_MERCENARY_MODIFIER)% mais al
 		<fr>{0_value} : {1_turns} {2_turnScale}</fr>
 		<ja>{0_value}：{1_turns}{2_turnScale}</ja>
 		<zh-TW>{0_value}：{1_turns}{2_turnScale}</zh-TW>
-		<ru>{0_value}: {0_turns} {2_turnScale}</ru>
+		<ru>{0_value}: {1_turns} {2_turnScale}</ru>
 		<zh-CN>{0_value}：{1_turns}{2_turnScale}</zh-CN>
 		<pt-BR>{0_value}: {1_turns} {2_turnScale}</pt-BR>
 		<ko>{0_value}: {1_turns}{2_turnScale}</ko>
@@ -14167,6 +14219,19 @@ link(CONCEPT_IDLE) 중인 신도를 적합한 link(CONCEPT_RELIGION) link(CONCEP
 		<ko>교역 수출: {0_yield} {1_turns}</ko>
 	</Entry>
 	<Entry>
+		<zType>TEXT_HELPTEXT_LINK_HELP_TRADE_BASE</zType>
+		<en-US>Base Yield: {0_value}</en-US>
+		<es>Producción básica: {0_value}</es>
+		<de>Basisertrag: {0_value}</de>
+		<fr>Production de base : {0_value}</fr>
+		<ja>基本収入：{0_value}</ja>
+		<zh-TW>基礎收益：{0_value}</zh-TW>
+		<ru>Базовый запас: {0_value}</ru>
+		<zh-CN>基础收益：{0_value}</zh-CN>
+		<pt-BR>Produção base: {0_value}</pt-BR>
+		<ko>기본 생산: {0_value}</ko>
+	</Entry>
+	<Entry>
 		<zType>TEXT_HELPTEXT_LINK_HELP_TRADE_LUXURY_US</zType>
 		<en-US>Trade from: {0_luxury} {1_turns}</en-US>
 		<es>Importar: {0_luxury} {1_turns}</es>
@@ -14709,16 +14774,16 @@ Toutes les merveilles ne sont pas disponibles chaque partie, elles sont choisies
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_LINK_HELP_WORLD_RELIGION</zType>
-		<en-US>The four World Religions (link(RELIGION_JUDAISM), link(RELIGION_ZOROASTRIANISM), link(RELIGION_CHRISTIANITY), and link(RELIGION_MANICHAEISM)) are founded when a link(CONCEPT_NATION) achieves each one's specific prerequisites. Cities with that Religion can then build link(CONCEPT_DISCIPLE,2) which are capable of spreading the Religion to other link(CONCEPT_SETTLEMENT,2). These link(CONCEPT_DISCIPLE,2) can also build link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2), and link(IMPROVEMENTCLASS_HOLY_SITE,2) of their link(CONCEPT_RELIGION). Finally, link(CONCEPT_DISCIPLE,2) can establish a link(CONCEPT_THEOLOGY) for World Religions.</en-US>
-		<es>Las cuatro religiones mundiales (link(RELIGION_JUDAISM), link(RELIGION_ZOROASTRIANISM), link(RELIGION_CHRISTIANITY) y link(RELIGION_MANICHAEISM)) se fundan cuando una link(CONCEPT_NATION) consigue los requisitos específicos pertinentes a una de ellas. Las ciudades con esa religión podrán crear link(CONCEPT_DISCIPLE,2) que serán capaces de extender la religión a otros link(CONCEPT_SETTLEMENT,2). Estos link(CONCEPT_DISCIPLE,2) también pueden construir link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2) y link(IMPROVEMENTCLASS_HOLY_SITE,2) pertenecientes a su link(CONCEPT_RELIGION). Por último, los link(CONCEPT_DISCIPLE,2) pueden establecer una link(CONCEPT_THEOLOGY) para las religiones mundiales.</es>
-		<de>Die vier Weltreligionen (link(RELIGION_JUDAISM,7), link(RELIGION_ZOROASTRIANISM,7), link(RELIGION_CHRISTIANITY,7) und link(RELIGION_MANICHAEISM,7)) werden gegründet, wenn eine link(CONCEPT_NATION) die jeweiligen Anforderung der Religion erfüllt. Städte, die diese Religion beherbergen, können link(CONCEPT_DISCIPLE,2) generieren, die wiederum die Religion in anderen link(CONCEPT_SETTLEMENT,2) verbreiten können. Diese link(CONCEPT_DISCIPLE,2) können außerdem link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2) und link(IMPROVEMENTCLASS_HOLY_SITE,2) ihrer link(CONCEPT_RELIGION) errichten. Und zu guter Letzt können link(CONCEPT_DISCIPLE,2) eine link(CONCEPT_THEOLOGY) für Weltreligionen begründen.</de>
-		<fr>Les quatre religions mondiales, le (link(RELIGION_JUDAISM), le link(RELIGION_ZOROASTRIANISM), le link(RELIGION_CHRISTIANITY), et le link(RELIGION_MANICHAEISM)) sont fondées quand une link(CONCEPT_NATION) remplit les prérequis. Les cités adoptant une de ces religions peuvent former des link(CONCEPT_DISCIPLE,2) pouvant répandre la religion aux autres link(CONCEPT_SETTLEMENT,2). Ces link(CONCEPT_DISCIPLE,2) peuvent également construire des link(IMPROVEMENTCLASS_MONASTERY,2), des link(IMPROVEMENTCLASS_TEMPLE,2), des link(IMPROVEMENTCLASS_CATHEDRAL,2), et les link(IMPROVEMENTCLASS_HOLY_SITE,2) de leur link(CONCEPT_RELIGION). Enfin, les link(CONCEPT_DISCIPLE,2) peuvent établir une link(CONCEPT_THEOLOGY) pour les religions mondiales.</fr>
-		<ja>4つの世界宗教（link(RELIGION_JUDAISM)・link(RELIGION_ZOROASTRIANISM)・link(RELIGION_CHRISTIANITY)・link(RELIGION_MANICHAEISM)）は、link(CONCEPT_NATION)が各必要条件を満たした時に設立されます。これらの宗教を持つ都市は、その宗教を他のlink(CONCEPT_SETTLEMENT,2)に広めることができる、link(CONCEPT_DISCIPLE,2)の育成が可能となります。このlink(CONCEPT_DISCIPLE,2)により、link(CONCEPT_RELIGION)のlink(IMPROVEMENTCLASS_MONASTERY,2)、link(IMPROVEMENTCLASS_TEMPLE,2)、link(IMPROVEMENTCLASS_CATHEDRAL,2)、link(IMPROVEMENTCLASS_HOLY_SITE,2)も建設できるようになります。またlink(CONCEPT_DISCIPLE,2)は、世界宗教のlink(CONCEPT_THEOLOGY)を確立することができます。</ja>
-		<zh-TW>當link(CONCEPT_NATION)滿足四大世界宗教之一的特定條件，即可創立該世界宗教 (包括link(RELIGION_JUDAISM)、link(RELIGION_ZOROASTRIANISM)、link(RELIGION_CHRISTIANITY)和link(RELIGION_MANICHAEISM))。信仰該宗教的城市可建造link(CONCEPT_DISCIPLE,2)，門徒可向其他link(CONCEPT_SETTLEMENT,2)傳播該宗教。link(CONCEPT_DISCIPLE,2)也可以建造其link(CONCEPT_RELIGION)的link(IMPROVEMENTCLASS_MONASTERY,2)、link(IMPROVEMENTCLASS_TEMPLE,2)、link(IMPROVEMENTCLASS_CATHEDRAL,2)和link(IMPROVEMENTCLASS_HOLY_SITE,2)。最終，link(CONCEPT_DISCIPLE,2)可建立世界宗教的link(CONCEPT_THEOLOGY)。</zh-TW>
-		<ru>Основание каждой из четырех мировых религий ({lowercase:link(RELIGION_JUDAISM)}, {lowercase:link(RELIGION_ZOROASTRIANISM)}, {lowercase:link(RELIGION_CHRISTIANITY)} и {lowercase:link(RELIGION_MANICHAEISM)}) происходит, когда одна из {lowercase:link(CONCEPT_NATION,7)} выполняет определенные условия. Города, в которых исповедуется та или иная мировая религия, могут производить {lowercase:link(CONCEPT_DISCIPLE,9)}, чтобы использовать их для распространения этой религии на другие {lowercase:link(CONCEPT_SETTLEMENT,9)}. link(CONCEPT_DISCIPLE,6) также способны возводить {lowercase:link(IMPROVEMENTCLASS_MONASTERY,9)}, {lowercase:link(IMPROVEMENTCLASS_TEMPLE,9)}, {lowercase:link(IMPROVEMENTCLASS_CATHEDRAL,9)} и {lowercase:link(IMPROVEMENTCLASS_HOLY_SITE,9)} соответствующей {lowercase:link(CONCEPT_RELIGION,1)}. Кроме того, {lowercase:link(CONCEPT_DISCIPLE,6)} могут утверждать {lowercase:link(CONCEPT_THEOLOGY,9)} для мировых религий.</ru>
-		<zh-CN>当link(CONCEPT_NATION)满足四大世界宗教之一的特定条件，即可创立该世界宗教 (包括link(RELIGION_JUDAISM)、link(RELIGION_ZOROASTRIANISM)、link(RELIGION_CHRISTIANITY)和link(RELIGION_MANICHAEISM))。信仰该宗教的城市可建造link(CONCEPT_DISCIPLE,2)，门徒可向其他link(CONCEPT_SETTLEMENT,2)传播该宗教。 link(CONCEPT_DISCIPLE,2)也可以建造其link(CONCEPT_RELIGION)的link(IMPROVEMENTCLASS_MONASTERY,2)、link(IMPROVEMENTCLASS_TEMPLE,2)、link(IMPROVEMENTCLASS_CATHEDRAL,2)和link(IMPROVEMENTCLASS_HOLY_SITE,2)。最终，link(CONCEPT_DISCIPLE,2)可建立世界宗教的link(CONCEPT_THEOLOGY)。</zh-CN>
-		<pt-BR>As quatro religiões mundiais (link(RELIGION_JUDAISM), link(RELIGION_ZOROASTRIANISM), link(RELIGION_CHRISTIANITY) e link(RELIGION_MANICHAEISM)) são fundadas quando uma link(CONCEPT_NATION) cumpre os pré-requisitos específicos de cada uma. Cidades praticantes daquela religião poderão treinar link(CONCEPT_DISCIPLE,2) que podem difundir a religião a outros link(CONCEPT_SETTLEMENT,2). Esses link(CONCEPT_DISCIPLE,2) também podem construir link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2) e link(IMPROVEMENTCLASS_HOLY_SITE,2) de sua link(CONCEPT_RELIGION). Finalmente, link(CONCEPT_DISCIPLE,2) podem estabelecer uma link(CONCEPT_THEOLOGY) para religiões mundiais.</pt-BR>
-		<ko>네 가지 세계 종교(link(RELIGION_JUDAISM), link(RELIGION_ZOROASTRIANISM), link(RELIGION_CHRISTIANITY), link(RELIGION_MANICHAEISM))는 link(CONCEPT_NATION)에서 각 종교의 특정 요구 조건을 갖추었을 때 설립됩니다. 세계 종교를 믿는 도시에서는 link(CONCEPT_DISCIPLE,2)를 생산할 수 있습니다. link(CONCEPT_DISCIPLE,2)는 자신의 종교를 다른 link(CONCEPT_SETTLEMENT,2)에 전파할 수 있으며, link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2) 및 link(CONCEPT_RELIGION) link(IMPROVEMENTCLASS_HOLY_SITE,2)를 건설할 수 있습니다. 또한 link(CONCEPT_DISCIPLE,2)는 세계 종교의 link(CONCEPT_THEOLOGY)을 도입할 수 있습니다.</ko>
+		<en-US>The World Religions (link(RELIGION_JUDAISM), link(RELIGION_ZOROASTRIANISM), link(RELIGION_CHRISTIANITY), link(RELIGION_MANICHAEISM), and link(RELIGION_BUDDHISM)) are founded when a link(CONCEPT_NATION) achieves each one's specific prerequisites. Cities with that Religion can then build link(CONCEPT_DISCIPLE,2) which are capable of spreading the Religion to other link(CONCEPT_SETTLEMENT,2). These link(CONCEPT_DISCIPLE,2) can also build link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2), and link(IMPROVEMENTCLASS_HOLY_SITE,2) of their link(CONCEPT_RELIGION). Finally, link(CONCEPT_DISCIPLE,2) can establish a link(CONCEPT_THEOLOGY) for World Religions.</en-US>
+		<es>Las religiones mundiales (el {lowercase:link(RELIGION_JUDAISM)}, el {lowercase:link(RELIGION_ZOROASTRIANISM)}, el {lowercase:link(RELIGION_CHRISTIANITY)}, el {lowercase:link(RELIGION_MANICHAEISM)} y el {lowercase:link(RELIGION_BUDDHISM)}) se fundan cuando una {lowercase:link(CONCEPT_NATION)} consigue los requisitos específicos pertinentes a una de ellas. Las ciudades con esa religión podrán crear {lowercase:link(CONCEPT_DISCIPLE,2)} que serán capaces de extender la religión a otros {lowercase:link(CONCEPT_SETTLEMENT,2)}. Estos {lowercase:link(CONCEPT_DISCIPLE,2)} también pueden construir {lowercase:link(IMPROVEMENTCLASS_MONASTERY,2)}, {lowercase:link(IMPROVEMENTCLASS_TEMPLE,2)}, {lowercase:link(IMPROVEMENTCLASS_CATHEDRAL,2)} y {lowercase:link(IMPROVEMENTCLASS_HOLY_SITE,2)} pertenecientes a su {lowercase:link(CONCEPT_RELIGION)}. Por último, los {lowercase:link(CONCEPT_DISCIPLE,2)} pueden establecer una {lowercase:link(CONCEPT_THEOLOGY)} para las religiones mundiales.</es>
+		<de>Die Weltreligionen (link(RELIGION_JUDAISM,7), link(RELIGION_ZOROASTRIANISM,7), link(RELIGION_CHRISTIANITY,7), link(RELIGION_MANICHAEISM,7) und link(RELIGION_BUDDHISM,7)) werden gegründet, wenn eine link(CONCEPT_NATION) die jeweiligen Anforderungen der Religion erfüllt. Städte, die diese Religion beherbergen, können link(CONCEPT_DISCIPLE,2) generieren, die wiederum die Religion in anderen link(CONCEPT_SETTLEMENT,2) verbreiten können. Diese link(CONCEPT_DISCIPLE,2) können außerdem link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2) und link(IMPROVEMENTCLASS_HOLY_SITE,2) ihrer link(CONCEPT_RELIGION) errichten. Und zu guter Letzt können link(CONCEPT_DISCIPLE,2) eine link(CONCEPT_THEOLOGY) für Weltreligionen begründen.</de>
+		<fr>Les religions mondiales (le link(RELIGION_JUDAISM), le link(RELIGION_ZOROASTRIANISM), le link(RELIGION_CHRISTIANITY), le link(RELIGION_MANICHAEISM) et le link(RELIGION_BUDDHISM)) sont fondées quand une link(CONCEPT_NATION) remplit les prérequis. Les cités adoptant une de ces religions peuvent former des link(CONCEPT_DISCIPLE,2) pouvant répandre la religion aux autres link(CONCEPT_SETTLEMENT,2). Ces link(CONCEPT_DISCIPLE,2) peuvent également construire des link(IMPROVEMENTCLASS_MONASTERY,2), des link(IMPROVEMENTCLASS_TEMPLE,2), des link(IMPROVEMENTCLASS_CATHEDRAL,2), et les link(IMPROVEMENTCLASS_HOLY_SITE,2) de leur link(CONCEPT_RELIGION). Enfin, les link(CONCEPT_DISCIPLE,2) peuvent établir une link(CONCEPT_THEOLOGY) pour les religions mondiales.</fr>
+		<ja>世界宗教（link(RELIGION_JUDAISM)・link(RELIGION_ZOROASTRIANISM)・link(RELIGION_CHRISTIANITY)・link(RELIGION_MANICHAEISM)・link(RELIGION_BUDDHISM)）は、link(CONCEPT_NATION)が各必要条件を満たした時に設立されます。これらの宗教を持つ都市は、その宗教を他のlink(CONCEPT_SETTLEMENT,2)に広めることができる、link(CONCEPT_DISCIPLE,2)の育成が可能となります。このlink(CONCEPT_DISCIPLE,2)により、link(CONCEPT_RELIGION)のlink(IMPROVEMENTCLASS_MONASTERY,2)、link(IMPROVEMENTCLASS_TEMPLE,2)、link(IMPROVEMENTCLASS_CATHEDRAL,2)、link(IMPROVEMENTCLASS_HOLY_SITE,2)も建設できるようになります。またlink(CONCEPT_DISCIPLE,2)は、世界宗教のlink(CONCEPT_THEOLOGY)を確立することができます。</ja>
+		<zh-TW>當link(CONCEPT_NATION)滿足世界宗教之一的特定條件，即可創立該世界宗教（包括link(RELIGION_JUDAISM)、link(RELIGION_ZOROASTRIANISM)、link(RELIGION_CHRISTIANITY)、link(RELIGION_MANICHAEISM)和link(RELIGION_BUDDHISM)）。信仰該宗教的城市可建造link(CONCEPT_DISCIPLE,2)，門徒可向其他link(CONCEPT_SETTLEMENT,2)傳播該宗教。 link(CONCEPT_DISCIPLE,2)也可以建造其link(CONCEPT_RELIGION)的link(IMPROVEMENTCLASS_MONASTERY,2)、link(IMPROVEMENTCLASS_TEMPLE,2)、link(IMPROVEMENTCLASS_CATHEDRAL,2)和link(IMPROVEMENTCLASS_HOLY_SITE,2)。最終，link(CONCEPT_DISCIPLE,2)可建立世界宗教的link(CONCEPT_THEOLOGY)。</zh-TW>
+		<ru>Основание мировых религий ({lowercase:link(RELIGION_JUDAISM)}, {lowercase:link(RELIGION_ZOROASTRIANISM)}, {lowercase:link(RELIGION_CHRISTIANITY)}, {lowercase:link(RELIGION_MANICHAEISM)} и {lowercase:link(RELIGION_BUDDHISM)}) происходит, когда одна из {lowercase:link(CONCEPT_NATION,7)} выполняет определенные условия. Города, в которых исповедуется та или иная мировая религия, могут производить {lowercase:link(CONCEPT_DISCIPLE,9)}, чтобы использовать их для распространения этой религии на другие {lowercase:link(CONCEPT_SETTLEMENT,9)}. link(CONCEPT_DISCIPLE,6) также способны возводить {lowercase:link(IMPROVEMENTCLASS_MONASTERY,9)}, {lowercase:link(IMPROVEMENTCLASS_TEMPLE,9)}, {lowercase:link(IMPROVEMENTCLASS_CATHEDRAL,9)} и {lowercase:link(IMPROVEMENTCLASS_HOLY_SITE,9)} соответствующей {lowercase:link(CONCEPT_RELIGION,1)}. Кроме того, {lowercase:link(CONCEPT_DISCIPLE,6)} могут утверждать {lowercase:link(CONCEPT_THEOLOGY,9)} для мировых религий.</ru>
+		<zh-CN>当link(CONCEPT_NATION)满足世界宗教之一的特定条件，即可创立该世界宗教（包括link(RELIGION_JUDAISM)、link(RELIGION_ZOROASTRIANISM)、link(RELIGION_CHRISTIANITY)、link(RELIGION_MANICHAEISM)和link(RELIGION_BUDDHISM)）。信仰该宗教的城市可建造link(CONCEPT_DISCIPLE,2)，门徒可向其他link(CONCEPT_SETTLEMENT,2)传播该宗教。 link(CONCEPT_DISCIPLE,2)也可以建造其link(CONCEPT_RELIGION)的link(IMPROVEMENTCLASS_MONASTERY,2)、link(IMPROVEMENTCLASS_TEMPLE,2)、link(IMPROVEMENTCLASS_CATHEDRAL,2)和link(IMPROVEMENTCLASS_HOLY_SITE,2)。最终，link(CONCEPT_DISCIPLE,2)可建立世界宗教的link(CONCEPT_THEOLOGY)。</zh-CN>
+		<pt-BR>As religiões mundiais (link(RELIGION_JUDAISM), link(RELIGION_ZOROASTRIANISM), link(RELIGION_CHRISTIANITY), link(RELIGION_MANICHAEISM) e link(RELIGION_BUDDHISM)) são fundadas quando uma link(CONCEPT_NATION) cumpre os pré-requisitos específicos de cada uma. Cidades praticantes daquela religião poderão treinar link(CONCEPT_DISCIPLE,2) que podem difundir a religião a outros link(CONCEPT_SETTLEMENT,2). Esses link(CONCEPT_DISCIPLE,2) também podem construir link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2) e link(IMPROVEMENTCLASS_HOLY_SITE,2) de sua link(CONCEPT_RELIGION). Finalmente, link(CONCEPT_DISCIPLE,2) podem estabelecer uma link(CONCEPT_THEOLOGY) para religiões mundiais.</pt-BR>
+		<ko>세계 종교(link(RELIGION_JUDAISM), link(RELIGION_ZOROASTRIANISM), link(RELIGION_CHRISTIANITY), link(RELIGION_MANICHAEISM),link(RELIGION_BUDDHISM))는 link(CONCEPT_NATION)에서 각 종교의 특정 요구 조건을 갖추었을 때 설립됩니다. 세계 종교를 믿는 도시에서는 link(CONCEPT_DISCIPLE,2)를 생산할 수 있습니다. link(CONCEPT_DISCIPLE,2)는 자신의 종교를 다른 link(CONCEPT_SETTLEMENT,2)에 전파할 수 있으며, link(IMPROVEMENTCLASS_MONASTERY,2), link(IMPROVEMENTCLASS_TEMPLE,2), link(IMPROVEMENTCLASS_CATHEDRAL,2) 및 link(CONCEPT_RELIGION) link(IMPROVEMENTCLASS_HOLY_SITE,2)를 건설할 수 있습니다. 또한 link(CONCEPT_DISCIPLE,2)는 세계 종교의 link(CONCEPT_THEOLOGY)을 도입할 수 있습니다.</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_LINK_HELP_XP</zType>
@@ -15570,6 +15635,19 @@ Segure [{0_key}] para ver as ZDC das unidades.</pt-BR>
 		<ko>{0_value}: link(IMPROVEMENT_CITY_SITE) 보호 중</ko>
 	</Entry>
 	<Entry>
+		<zType>TEXT_HELPTEXT_NOT_CITY_SITE</zType>
+		<en-US>NOT A CITY SITE</en-US>
+		<es>NO ES UNA UBICACIÓN DE CIUDAD</es>
+		<de>KEIN STADTSTANDORT</de>
+		<fr>N'EST PAS UN EMPLACEMENT DE CITÉ</fr>
+		<ja>都市拠点ではない</ja>
+		<zh-TW>不是城市據點</zh-TW>
+		<ru>НЕ МЕСТО ПОД ГОРОД</ru>
+		<zh-CN>不是城市据点</zh-CN>
+		<pt-BR>NÃO É UM ASSENTAMENTO DE CIDADE</pt-BR>
+		<ko>도시 부지 아님</ko>
+	</Entry>
+	<Entry>
 		<zType>TEXT_HELPTEXT_YIELD_NET_CARAVAN_MISSIONS</zType>
 		<en-US>{0_value}: Active link(CONCEPT_CARAVAN_MISSION)(s)</en-US>
 		<es>{0}: link(CONCEPT_CARAVAN_MISSION) activa</es>
@@ -16248,6 +16326,45 @@ Segure [{0_key}] para ver as ZDC das unidades.</pt-BR>
 		<pt-BR>Avança para {LIST}</pt-BR>
 		<ko>다음으로 발전: {LIST}</ko>
 	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_MAPSEARCH_CITY</zType>
+		<en-US>Cities</en-US>
+		<es>Ciudades</es>
+		<de>Städte</de>
+		<fr>Cités</fr>
+		<ja>都市</ja>
+		<zh-TW>城市</zh-TW>
+		<ru>Города</ru>
+		<zh-CN>城市</zh-CN>
+		<pt-BR>Cidades</pt-BR>
+		<ko>도시</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_MAPSEARCH_UNIT</zType>
+		<en-US>Units</en-US>
+		<es>Unidades</es>
+		<de>Einheiten</de>
+		<fr>Unités</fr>
+		<ja>ユニット</ja>
+		<zh-TW>單位</zh-TW>
+		<ru>Отряды</ru>
+		<zh-CN>单位</zh-CN>
+		<pt-BR>Unidades</pt-BR>
+		<ko>유닛</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_MAPSEARCH_RESOURCE</zType>
+		<en-US>Resources</en-US>
+		<es>Recursos</es>
+		<de>Rohstoffe</de>
+		<fr>Ressources</fr>
+		<ja>資源</ja>
+		<zh-TW>資源</zh-TW>
+		<ru>Ресурсы</ru>
+		<zh-CN>资源</zh-CN>
+		<pt-BR>Recursos</pt-BR>
+		<ko>자원</ko>
+	</Entry>
 	<!-- Improvement Tooltip -->
 	<Entry>
 		<zType>TEXT_HELPTEXT_IMPROVEMENT_TOOLTIP_BUILD</zType>
@@ -16326,6 +16443,84 @@ Segure [{0_key}] para ver as ZDC das unidades.</pt-BR>
 		<zh-CN>{0_yield}产出</zh-CN>
 		<pt-BR>Produção de {0_yield}</pt-BR>
 		<ko>{0_yield} 생산량</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_YIELD_TRADE_MODIFIERS_TOTAL</zType>
+		<en-US>{0_modifiedValue} ({1_baseValue} {2_modifier} from {3_tradeModifierLink})</en-US>
+		<es>{0_modifiedValue} ({1_baseValue} {2_modifier} de {3_tradeModifierLink})</es>
+		<de>{0_modifiedValue} ({1_baseValue} {2_modifier} durch {3_tradeModifierLink})</de>
+		<fr>{0_modifiedValue} ({1_baseValue} {2_modifier} de {3_tradeModifierLink})</fr>
+		<ja>{0_modifiedValue} ({3_tradeModifierLink}により{1_baseValue} {2_modifier})</ja>
+		<zh-TW>{0_modifiedValue} （{1_baseValue} {2_modifier}來自{3_tradeModifierLink}）</zh-TW>
+		<ru>{0_modifiedValue} ({1_baseValue} {2_modifier} от {3,1_tradeModifierLink})</ru>
+		<zh-CN>{0_modifiedValue} （{1_baseValue} {2_modifier}来自{3_tradeModifierLink}）</zh-CN>
+		<pt-BR>{0_modifiedValue} ({1_baseValue} {2_modifier} de {3_tradeModifierLink})</pt-BR>
+		<ko>{0_modifiedValue} ({3_tradeModifierLink}로 인한 {1_baseValue} {2_modifier})</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_YIELD_TRADE_MODIFIERS</zType>
+		<en-US>{0_modifier} from {1_tradeModifierLink}</en-US>
+		<es>{0_modifier} de {1_tradeModifierLink}</es>
+		<de>{0_modifier} durch {1_tradeModifierLink}</de>
+		<fr>{0_modifier} de {1_tradeModifierLink}</fr>
+		<ja>{1_tradeModifierLink}により{0_modifier}</ja>
+		<zh-TW>{0_modifier}來自{1_tradeModifierLink}</zh-TW>
+		<ru>{0_modifier} от {1,1_tradeModifierLink}</ru>
+		<zh-CN>{0_modifier}来自{1_tradeModifierLink}</zh-CN>
+		<pt-BR>{0_modifier} de {1_tradeModifierLink}</pt-BR>
+		<ko>{1_tradeModifierLink}로 인한 {0_modifier}</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_LINK_TRADE_MODIFIERS</zType>
+		<en-US>Trade Modifiers</en-US>
+		<es>Modificadores de comercio</es>
+		<de>Handelsmodifikatoren</de>
+		<fr>Modificateur de commerce</fr>
+		<ja>貿易に対する修正</ja>
+		<zh-TW>貿易修正</zh-TW>
+		<ru>Торговые модификаторы</ru>
+		<zh-CN>贸易修正</zh-CN>
+		<pt-BR>Modificadores de comércio</pt-BR>
+		<ko>교역 계수</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_LINK_HELP_TRADE_MODIFIED</zType>
+		<en-US>Modified Yield: {0_value}</en-US>
+		<es>Producción modificada: {0_value}</es>
+		<de>Modifizierter Ertrag: {0_value}</de>
+		<fr>Production modifiée : {0_value}</fr>
+		<ja>修正後の収入：{0_value}</ja>
+		<zh-TW>修正後的收益：{0_value}</zh-TW>
+		<ru>Модифицированный запас: {0_value}</ru>
+		<zh-CN>修正后的收益：{0_value}</zh-CN>
+		<pt-BR>Produção modificada: {0_value}</pt-BR>
+		<ko>조정된 생산: {0_value}</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_LINK_HELP_TRADE_MODIFIERS</zType>
+		<en-US>Modifiers:</en-US>
+		<es>Modificadores:</es>
+		<de>Modifikatoren:</de>
+		<fr>Modificateurs :</fr>
+		<ja>修正:</ja>
+		<zh-TW>修正：</zh-TW>
+		<ru>Модификаторы:</ru>
+		<zh-CN>修正：</zh-CN>
+		<pt-BR>Modificadores:</pt-BR>
+		<ko>계수:</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_LINK_HELP_TRADE_MODIFIER_MAX</zType>
+		<en-US>(Maximum Trade Value Modifier: int(MAX_TRADE_MODIFIER)%)</en-US>
+		<es>(Modificador del valor máximo de comercio: int(MAX_TRADE_MODIFIER)%)</es>
+		<de>(Maximaler Handelswertmodifikator: int(MAX_TRADE_MODIFIER) %)</de>
+		<fr>(Modificateur maximal de valeur commerciale : int(MAX_TRADE_MODIFIER) %)</fr>
+		<ja>(貿易価値の修正上限: int(MAX_TRADE_MODIFIER)%)</ja>
+		<zh-TW>（最大貿易數值修正：int(MAX_TRADE_MODIFIER)%）</zh-TW>
+		<ru>(Модификатор максимальной ценности торговли: int(MAX_TRADE_MODIFIER)%)</ru>
+		<zh-CN>（最大贸易数值修正：int(MAX_TRADE_MODIFIER)%）</zh-CN>
+		<pt-BR>(Modificador de valor de comércio máximo: int(MAX_TRADE_MODIFIER)%)</pt-BR>
+		<ko>(최대 교역 수치 계수: int(MAX_TRADE_MODIFIER)%)</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_IMPASSABLE_FROM</zType>
@@ -17474,6 +17669,19 @@ Segure [{0_key}] para ver as ZDC das unidades.</pt-BR>
 		<zh-CN>已含有{0_improvement}类别改良设施</zh-CN>
 		<pt-BR>Já tem a melhoria de classe {0_improvement}</pt-BR>
 		<ko>이미 {0_improvement} 시설 유형 보유 중</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_MAPSEARCH_IMPROVEMENT</zType>
+		<en-US>Improvements</en-US>
+		<es>Desarrollos</es>
+		<de>Erweiterungen</de>
+		<fr>Aménagements</fr>
+		<ja>建設物</ja>
+		<zh-TW>改良設施</zh-TW>
+		<ru>Улучшения</ru>
+		<zh-CN>改良设施</zh-CN>
+		<pt-BR>Melhorias</pt-BR>
+		<ko>시설</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_URBAN_TILE_RURAL_IMPROVEMENT</zType>
@@ -21595,16 +21803,16 @@ link(CONCEPT_WEAKNESS)</zh-TW>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EFFECT_PLAYER_HELP_BUILD_ALL_RELIGIONS</zType>
-		<en-US>Can build Non-link(CONCEPT_STATE_RELIGION) Disciples</en-US>
-		<es>Puede crear discípulos de link(CONCEPT_STATE_RELIGION,3)</es>
-		<de>Kann Jünger der Nicht-link(CONCEPT_STATE_RELIGION,2) generieren</de>
-		<fr>Peut construire des disciples n'appartenant pas à une link(CONCEPT_STATE_RELIGION)</fr>
-		<ja>link(CONCEPT_STATE_RELIGION)ではない宗教に属する信徒が作成可能</ja>
-		<zh-TW>可建立非link(CONCEPT_STATE_RELIGION)的門徒</zh-TW>
-		<ru>Может производить последователей, не принадлежащих к {lowercase:link(CONCEPT_STATE_RELIGION,2)}</ru>
-		<zh-CN>可建立非link(CONCEPT_STATE_RELIGION)的门徒</zh-CN>
-		<pt-BR>Pode criar discípulos da link(CONCEPT_STATE_RELIGION)</pt-BR>
-		<ko>link(CONCEPT_STATE_RELIGION)가 아닌 종교의 신도 생산 가능</ko>
+		<en-US>Can build Non-link(CONCEPT_STATE_RELIGION) Units</en-US>
+		<es>Puede crear unidades que no profesen la {lowercase:link(CONCEPT_STATE_RELIGION,3)}</es>
+		<de>Kann Einheiten anderer Religionen neben link(CONCEPT_STATE_RELIGION) bauen</de>
+		<fr>Peut construire des unités n'appartenant pas à une link(CONCEPT_STATE_RELIGION)</fr>
+		<ja>非国教のlink(CONCEPT_STATE_RELIGION)ユニットを生産可能</ja>
+		<zh-TW>可建立非link(CONCEPT_STATE_RELIGION)的單位/部隊</zh-TW>
+		<ru>Может производить отряды, не принадлежащие к {lowercase:link(CONCEPT_STATE_RELIGION,2)}</ru>
+		<zh-CN>可建立非link(CONCEPT_STATE_RELIGION)的单位/部队</zh-CN>
+		<pt-BR>Pode criar unidades que não são da link(CONCEPT_STATE_RELIGION)</pt-BR>
+		<ko>link(CONCEPT_STATE_RELIGION)가 아닌 종교의 유닛 생산 가능</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EFFECT_PLAYER_HELP_PAGAN_STATE_RELIGION</zType>
@@ -21738,16 +21946,16 @@ link(CONCEPT_WEAKNESS)</zh-TW>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EFFECT_PLAYER_MISSION_COST_YIELD</zType>
-		<en-US>{true_0:[Global] }{1_yield} Mission Costs</en-US>
-		<es>Coste de misión: {true_0:[Global] }{1_yield}</es>
-		<de>{true_0:[Global] }{1_yield} Missionskosten</de>
-		<fr>Coûts de mission {true_0:[Global] }{1_yield}</fr>
-		<ja>{true_0:[全体] }{1_yield} ミッションコスト</ja>
-		<zh-TW>{true_0:[整體] }{1_yield}任務花費</zh-TW>
-		<ru>Стоимость задания: {true_0:[глоб.] }{1_yield}</ru>
-		<zh-CN>{true_0:[整体] }{1_yield}任务花费</zh-CN>
-		<pt-BR>{true_0:[Global] }{1_yield} custos da missão</pt-BR>
-		<ko>{true_0:[전체] }{1_yield} 임무 비용</ko>
+		<en-US>{true_0:[Global] }{1_yield} link(CONCEPT_MISSION) Costs</en-US>
+		<es>Coste {true_0:[Global] } de {1_yield} de {lowercase:link(CONCEPT_MISSION)}: </es>
+		<de>{true_0:[Global] :}link[Missionskosten](CONCEPT_MISSION) ({1_yield})</de>
+		<fr>Coûts de link(CONCEPT_MISSION) {true_0:[Global] }{1_yield}</fr>
+		<ja>{true_0:[全体] }{1_yield} link(CONCEPT_MISSION)コスト</ja>
+		<zh-TW>{true_0:[Global] }{1_yield}link(CONCEPT_MISSION)花費</zh-TW>
+		<ru>{true_0:[Глобальн.] }{1_yield} к затратам на {lowercase:link(CONCEPT_MISSION,3)}</ru>
+		<zh-CN>{true_0:[Global] }{1_yield}link(CONCEPT_MISSION)花费</zh-CN>
+		<pt-BR>{true_0:[Global] }{1_yield} custo de link(CONCEPT_MISSION)</pt-BR>
+		<ko>{true_0:[전체] }link(CONCEPT_MISSION) 비용 {1_yield}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EFFECT_PLAYER_HELP_YIELD_RATE</zType>
@@ -29432,16 +29640,29 @@ link(CONCEPT_WEAKNESS)</zh-TW>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_CHARACTER_TRAIT_GENERAL_UNIT_TRAIT</zType>
-		<en-US>As link(CONCEPT_GENERAL) (of {0_unitTrait}): {1_effectUnit}</en-US>
-		<es>Como {lowercase:link(CONCEPT_GENERAL)} (de {0_unitTrait}): {1_effectUnit}</es>
-		<de>Als link(CONCEPT_GENERAL) (von {0_unitTrait}): {1_effectUnit}</de>
-		<fr>Comme link(CONCEPT_GENERAL) ({0_unitTrait}) : {1_effectUnit}</fr>
-		<ja>As link(CONCEPT_GENERAL)として ({0_unitTrait}): {1_effectUnit}</ja>
-		<zh-TW>作為link(CONCEPT_GENERAL)（具備{0_unitTrait}）：{1_effectUnit}</zh-TW>
-		<ru>В качестве {lowercase:link(CONCEPT_GENERAL,1)} ({0_unitTrait}): {1_effectUnit}</ru>
-		<zh-CN>作为link(CONCEPT_GENERAL)（具备{0_unitTrait}）：{1_effectUnit}</zh-CN>
-		<pt-BR>Como link(CONCEPT_GENERAL) (de {0_unitTrait}): {1_effectUnit}</pt-BR>
-		<ko>{0_unitTrait} 특성 유닛의 link(CONCEPT_GENERAL)일 때: {1_effectUnit}</ko>
+		<en-US>As link(CONCEPT_GENERAL) (of {0_unitTrait}{true_2:, excludes {3_unitTrait}:}): {1_effectUnit}</en-US>
+		<es>Como {lowercase:link(CONCEPT_GENERAL)} (de {0_unitTrait}{true_2:, excluye a {3_unitTrait}:}): {1_effectUnit}</es>
+		<de>Als link(CONCEPT_GENERAL) (von {0_unitTrait}{true_2:, außer {3_unitTrait}:}): {1_effectUnit}</de>
+		<fr>En tant que link(CONCEPT_GENERAL) (de {0_unitTrait}{true_2:, excludes {3_unitTrait}:}) : {1_effectUnit}</fr>
+		<ja>{0_unitTrait}{true_2:({3_unitTrait}は除く):}のlink(CONCEPT_GENERAL)として: {1_effectUnit}</ja>
+		<zh-TW>作為link(CONCEPT_GENERAL)（具備{0_unitTrait}{true_2:, excludes {3_unitTrait}:}）：{1_effectUnit}</zh-TW>
+		<ru>В качестве {lowercase:link(CONCEPT_GENERAL,1)} ({0_unitTrait}{true_2:, но не {3_unitTrait}:}): {1_effectUnit}</ru>
+		<zh-CN>作为link(CONCEPT_GENERAL)（具备{0_unitTrait}{true_2:, excludes {3_unitTrait}:}）：{1_effectUnit}</zh-CN>
+		<pt-BR>Como link(CONCEPT_GENERAL) (de {0_unitTrait}{true_2:, exclui {3_unitTrait}:}): {1_effectUnit}</pt-BR>
+		<ko>{0_unitTrait} 유닛 특성의 link(CONCEPT_GENERAL)일 때{true_2:, {3_unitTrait} 제외:}: {1_effectUnit}</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_CHARACTER_TRAIT_GENERAL_UNIT_TRAIT_EXCLUDES</zType>
+		<en-US>As link(CONCEPT_GENERAL) (excludes {0_unitTrait}): {1_effectUnit}</en-US>
+		<es>Como {lowercase:link(CONCEPT_GENERAL)} (excluye a {0_unitTrait}): {1_effectUnit}</es>
+		<de>Als link(CONCEPT_GENERAL) (außer {0_unitTrait}): {1_effectUnit}</de>
+		<fr>En tant que link(CONCEPT_GENERAL) (hors {0_unitTrait}) : {1_effectUnit}</fr>
+		<ja>link(CONCEPT_GENERAL)として ({0_unitTrait}): {1_effectUnit}</ja>
+		<zh-TW>作為link(CONCEPT_GENERAL)（排除{0_unitTrait}）：{1_effectUnit}</zh-TW>
+		<ru>В качестве {lowercase:link(CONCEPT_GENERAL,1)} (не {0_unitTrait}): {1_effectUnit}</ru>
+		<zh-CN>作为link(CONCEPT_GENERAL)（排除{0_unitTrait}）：{1_effectUnit}</zh-CN>
+		<pt-BR>Como link(CONCEPT_GENERAL) (exclui {0_unitTrait}): {1_effectUnit}</pt-BR>
+		<ko>{0_unitTrait} 특성을 제외한 유닛의 link(CONCEPT_GENERAL)일 때: {1_effectUnit}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_CHARACTER_TRAIT_GENERAL_ADJACENT</zType>
@@ -33347,6 +33568,19 @@ link(CONCEPT_LUXURY)} 送至 link(CONCEPT_FAMILY)</zh-TW>
 		<ko>최대 지속 시간: {0_value}{1_turnScale}</ko>
 	</Entry>
 	<Entry>
+		<zType>TEXT_HELPTEXT_OCCURRENCE_MIN_DURATION</zType>
+		<en-US>Minimum Duration: {0_value} {1_turnScale}</en-US>
+		<es>Duración mínima: {0_value} {1_turnScale}</es>
+		<de>Minimale Dauer: {0_value} {1_turnScale}</de>
+		<fr>Durée minimum : {0_value} {1_turnScale}</fr>
+		<ja>最小の持続期間: {0_value} {1_turnScale}</ja>
+		<zh-TW>最短持續時間：{0_value} {1_turnScale}</zh-TW>
+		<ru>Минимальная длительность: {0_value} {1_turnScale}</ru>
+		<zh-CN>最短持续时间：{0_value} {1_turnScale}</zh-CN>
+		<pt-BR>Duração mínima: {0_value} {1_turnScale}</pt-BR>
+		<ko>최소 지속 시간: {0_value}{1_turnScale}</ko>
+	</Entry>
+	<Entry>
 		<zType>TEXT_HELPTEXT_OCCURRENCE_TURNS_LEFT</zType>
 		<en-US>{true_0:Ends next {2_turnScale}:Ends in {1_value} {2_turnScale}}</en-US>
 		<es>{true_0:Termina el próximo {2_turnScale}:Termina en {1_value} {2_turnScale}}</es>
@@ -33423,6 +33657,19 @@ link(CONCEPT_LUXURY)} 送至 link(CONCEPT_FAMILY)</zh-TW>
 		<zh-CN>{true_0:{0_occurrenceClass}:发生率}已停用</zh-CN>
 		<pt-BR>{true_0:{0_occurrenceClass}:As ocorrências} estão desativadas</pt-BR>
 		<ko>{true_0:{0_occurrenceClass}:현상} 비활성화</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_OCCURRENCE_CURRENT_DURATION</zType>
+		<en-US>Current Duration: {0_value} {1_turnScale}</en-US>
+		<es>Duración actual: {0_value} {1_turnScale}</es>
+		<de>Aktuelle Dauer: {0_value} {1_turnScale}</de>
+		<fr>Durée actuelle : {0_value} {1_turnScale}</fr>
+		<ja>現在の持続期間: {0_value} {1_turnScale}</ja>
+		<zh-TW>目前持續時間：{0_value} {1_turnScale}</zh-TW>
+		<ru>Текущая длительность: {0_value} {1_turnScale}</ru>
+		<zh-CN>目前持续时间：{0_value} {1_turnScale}</zh-CN>
+		<pt-BR>Duração atual: {0_value} {1_turnScale}</pt-BR>
+		<ko>현재 지속 시간: {0_value} {1_turnScale}</ko>
 	</Entry>
 	<!-- Law Help -->
 	<Entry>

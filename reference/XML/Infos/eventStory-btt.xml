@@ -288,9 +288,8 @@
 		</aeOptions>
 		<Class>EVENTCLASS_SCANDAL</Class>
 		<iImageSubject>0</iImageSubject>
-		<iMaxTurns>12</iMaxTurns>
 		<iWeight>1</iWeight>
-		<iProb>10</iProb>
+		<iGameProb>20</iGameProb>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidden>1</bHidden>
 	</Entry>
@@ -2506,9 +2505,6 @@
 		<aeOptions>
 			<zValue>EVENTOPTION_ACIDIC</zValue>
 		</aeOptions>
-		<Trigger>EVENTTRIGGER_MISSION_FINISHED</Trigger>
-		<TriggerData>MISSIONRESULT_INFLUENCE_EVENT</TriggerData>
-		<iTriggerSubject>0</iTriggerSubject>
 		<iWeight>10</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 	</Entry>
@@ -4213,8 +4209,8 @@
 		<Class>EVENTCLASS_SCANDAL</Class>
 		<iImageSubject>0</iImageSubject>
 		<iImageExtra>1</iImageExtra>
-		<iMaxTurns>80</iMaxTurns>
 		<iWeight>1</iWeight>
+		<iGameProb>50</iGameProb>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
 	</Entry>
@@ -6841,9 +6837,9 @@
 		<Class>EVENTCLASS_SCANDAL</Class>
 		<iImageSubject>1</iImageSubject>
 		<iImageExtra>2</iImageExtra>
-		<iSortOrder>2</iSortOrder>
-		<iMaxTurns>80</iMaxTurns>		
+		<iSortOrder>2</iSortOrder>	
 		<iWeight>1</iWeight>
+		<iGameProb>50</iGameProb>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<aiMortalitySkipProb>
 			<Pair>
@@ -15781,7 +15777,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>2</iImageSubject>
 		<iWeight>1</iWeight>
-		<iProb>40</iProb>
+		<iGameProb>40</iGameProb>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bHidePrereqs>1</bHidePrereqs>
 		<bIgnoreTriggerProb>1</bIgnoreTriggerProb>
@@ -15876,6 +15872,12 @@
 				<Second>SUBJECT_ADULT</Second>
 			</Pair>
 		</SubjectExtras>
+		<SubjectNotExtras>
+			<Pair>
+				<First>1</First>
+				<Second>SUBJECT_HEIR_US</Second>
+			</Pair>
+		</SubjectNotExtras>
 		<aeBonuses>
 			<zValue/>
 			<zValue>BONUS_GAIN_CHARISMA_2</zValue>
@@ -16432,7 +16434,7 @@
 		<iTriggerSubject>0</iTriggerSubject>
 		<iImageSubject>1</iImageSubject>
 		<iImageExtra>0</iImageExtra>
-		<iSortOrder>6</iSortOrder>
+		<iSortOrder>8</iSortOrder>
 		<iMinLeader>2</iMinLeader>
 		<iPriority>1</iPriority>
 		<iWeight>6</iWeight>
