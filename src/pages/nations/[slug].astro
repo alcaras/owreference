@@ -168,8 +168,6 @@ const familyBoostRows = (g: any) =>
       return c ? { classKey: f.classKey, class: c.class, yields: c.yields } : null;
     })
     .filter(Boolean);
-const boostScale = (g: any) =>
-  g.familyBoost ? g.familyBoost.pcts.map((p: number) => `+${p}%`).join(' / ') : '';
 ---
 
 <Base
@@ -278,6 +276,21 @@ const boostScale = (g: any) =>
                       <span class="kit-cost"><LinkedText text={lv.cost} showIcons={false} iconsForYields={true} /></span>
                       <span class="kit-lv__turns">{lv.buildTurns}t</span>
                     </span>
+                    {lv.familyBoostPct > 0 && familyBoostRows(g).length > 0 && (
+                      <span class="kit-lv__boosts" title="Boost applies to the yield tied to the family class seated in the stele's city">
+                        {familyBoostRows(g).map((r: any) => (
+                          <span class="kit-lv__line kit-lv__line--boost">
+                            <img class="kit-lv__bicon" src={`${base}img/archetypes/${r.classKey}.png`} alt="" onerror="this.style.display='none'" />
+                            <span class="kit-lv__bcls">{r.class}</span>
+                            <span class="kit-fam__arrow">→</span>
+                            +{lv.familyBoostPct}%
+                            {r.yields.map((y: string) => (
+                              <span class="kit-fam__y"><img src={yieldIcon(y)} alt="" onerror="this.style.display='none'" />{yieldLabel(y)}</span>
+                            ))}
+                          </span>
+                        ))}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -287,28 +300,6 @@ const boostScale = (g: any) =>
                   leader's <LinkedText text="Legitimacy" showIcons={false} /> (one stele per
                   leader, placed in a family seat).
                 </p>
-              )}
-              {g.familyBoost && familyBoostRows(g).length > 0 && (
-                <div class="kit-fam">
-                  <div class="kit-fam__hd">
-                    Seated family boosts its yield
-                    <span class="kit-fam__scale">{boostScale(g)} <em>by tier</em></span>
-                  </div>
-                  <ul class="kit-fam__list">
-                    {familyBoostRows(g).map((r: any) => (
-                      <li class="kit-fam__row">
-                        <img class="kit-fam__icon" src={`${base}img/archetypes/${r.classKey}.png`} alt="" onerror="this.style.display='none'" />
-                        <span class="kit-fam__cls">{r.class}</span>
-                        <span class="kit-fam__arrow">→</span>
-                        <span class="kit-fam__yields">
-                          {r.yields.map((y: string) => (
-                            <span class="kit-fam__y"><img src={yieldIcon(y)} alt="" onerror="this.style.display='none'" />{yieldLabel(y)}</span>
-                          ))}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               )}
             </article>
           ))}
@@ -794,6 +785,21 @@ const boostScale = (g: any) =>
     letter-spacing: 0.04em; text-transform: uppercase;
     color: var(--gold-soft); white-space: nowrap;
   }
+  /* Per-tier seated-family boost mapping, folded into the tier as a
+     full-width sub-row (class → % yield) so nothing clips. */
+  .kit-lv__boosts {
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.15rem 0.8rem; margin-top: 0.15rem;
+    padding-top: 0.3rem; border-top: 1px dashed color-mix(in srgb, var(--border) 60%, transparent);
+    cursor: help;
+  }
+  .kit-lv__line--boost {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    color: var(--gold-soft); white-space: nowrap;
+  }
+  .kit-lv__bicon { width: 1rem; height: 1rem; object-fit: contain; opacity: 0.85; flex: none; }
+  .kit-lv__bcls { font-family: var(--font-display); font-weight: 600; color: var(--text); }
   .kit__note {
     margin: 0.5rem 0 0; font-size: 0.74rem; line-height: 1.45;
     color: var(--text-dim); font-style: italic;
@@ -810,44 +816,14 @@ const boostScale = (g: any) =>
   .kit-cost img { width: 0.9em; height: 0.9em; object-fit: contain; }
   .kit-lv__turns { opacity: 0.7; }
 
-  /* Stele: the seated family's class steers which yield gets the % boost. */
-  .kit-fam {
-    border-top: 1px solid var(--border);
-    background: rgba(0,0,0,0.18);
-    padding: 0.45rem 0.7rem 0.5rem;
-  }
-  .kit-fam__hd {
-    display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
-    font-family: var(--font-ui); font-size: 0.62rem;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--text-dim);
-    margin-bottom: 0.35rem;
-  }
-  .kit-fam__scale {
-    margin-left: auto;
-    font-family: var(--font-mono); font-size: 0.72rem;
-    letter-spacing: 0; text-transform: none;
-    color: var(--gold-soft);
-  }
-  .kit-fam__scale em { color: var(--text-faint); font-style: normal; font-size: 0.82em; }
-  .kit-fam__list {
-    list-style: none; margin: 0; padding: 0;
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
-    gap: 0.2rem 0.9rem;
-  }
-  .kit-fam__row {
-    display: flex; align-items: center; gap: 0.35rem;
-    font-size: 0.78rem;
-  }
-  .kit-fam__icon { width: 1.05rem; height: 1.05rem; object-fit: contain; opacity: 0.85; flex: none; }
-  .kit-fam__cls { font-family: var(--font-display); font-weight: 600; color: var(--text); }
+  /* Stele: the seated family's class steers which yield gets the % boost —
+     the class→yield mapping is folded into each tier row. */
   .kit-fam__arrow { color: var(--text-faint); }
-  .kit-fam__yields { display: inline-flex; align-items: center; gap: 0.4rem; }
   .kit-fam__y { display: inline-flex; align-items: center; gap: 0.18rem; color: var(--text-soft); }
   .kit-fam__y img { width: 0.95em; height: 0.95em; object-fit: contain; }
 
   @media (max-width: 560px) {
-    .kit-fam__list { grid-template-columns: 1fr; }
+    .kit--event .kit-lv { grid-template-columns: 6.4rem 1fr auto; }
   }
 
   /* ── Unique unit cards ── */
