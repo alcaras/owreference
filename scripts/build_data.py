@@ -319,6 +319,72 @@ def _family_yield_boost(effectcity_entry: ET.Element, indexes: dict | None):
     return pct, classes
 
 
+_EVENT_ACQ_CACHE: dict[str, dict] | None = None
+
+def _improvement_event_acquisition() -> dict[str, dict]:
+    """imp_id → {"minLegitimacy": int, "onLeaderDeath": bool} for improvements
+    granted by an event rather than built (Aksum's Steles in normal games —
+    their CulturePrereq/bBuild path is gated behind EFFECTPLAYER_NO_CHARACTERS,
+    i.e. it only exists with the No Characters option; see InfoHelpers.cs
+    "hack to hide improvement requirements specific to No Character mode - Stele").
+
+    Derived, not hardcoded: walk bonus AddImprovement → eventOption aeBonuses →
+    eventStory, then read the trigger subject (SUBJECT_WAS_LEADER_DEAD_US) and
+    the SubjectExtras legitimacy floor (SUBJECT_*_MIN_LEGITIMACY_* →
+    subject.xml iMinLegitimacy). Multiple event variants per tier (1/2/3
+    family-seat choices) share one threshold; we keep the minimum."""
+    global _EVENT_ACQ_CACHE
+    if _EVENT_ACQ_CACHE is not None:
+        return _EVENT_ACQ_CACHE
+
+    # bonus id → improvement it grants
+    grant: dict[str, str] = {}
+    for p in XML_DIR.glob("bonus*.xml"):
+        for e in ET.parse(p).getroot().findall("Entry"):
+            imp = (e.findtext("AddImprovement") or "").strip()
+            if imp:
+                grant[e.findtext("zType") or ""] = imp
+
+    # option id → improvement (via its bonuses)
+    opt_grant: dict[str, str] = {}
+    for p in XML_DIR.glob("eventOption*.xml"):
+        for e in ET.parse(p).getroot().findall("Entry"):
+            for b in e.findall("aeBonuses/zValue"):
+                imp = grant.get((b.text or "").strip())
+                if imp:
+                    opt_grant[e.findtext("zType") or ""] = imp
+
+    # subject id → its minimum-legitimacy floor / dead-former-leader marker
+    subj_leg: dict[str, int] = {}
+    subj_leader_death: set[str] = set()
+    for e in parse("subject.xml").findall("Entry"):
+        zt = e.findtext("zType") or ""
+        ml = e.findtext("iMinLegitimacy")
+        if ml:
+            subj_leg[zt] = int(ml)
+        if e.findtext("bWasLeader") == "1" and e.findtext("bDeadCharacter") == "1":
+            subj_leader_death.add(zt)
+
+    out: dict[str, dict] = {}
+    for p in XML_DIR.glob("eventStory*.xml"):
+        for e in ET.parse(p).getroot().findall("Entry"):
+            imps = {opt_grant[o.text or ""] for o in e.findall("aeOptions/zValue")
+                    if (o.text or "") in opt_grant}
+            if not imps:
+                continue
+            death = any((s.text or "") in subj_leader_death
+                        for s in e.findall("aeSubjects/zValue"))
+            min_leg = 0
+            for pair in e.findall("SubjectExtras/Pair"):
+                min_leg = max(min_leg, subj_leg.get((pair.findtext("Second") or "").strip(), 0))
+            for imp in imps:
+                cur = out.get(imp)
+                if cur is None or min_leg < cur["minLegitimacy"]:
+                    out[imp] = {"minLegitimacy": min_leg, "onLeaderDeath": death}
+    _EVENT_ACQ_CACHE = out
+    return out
+
+
 def load_unique_improvements(indexes: dict | None = None) -> dict[str, list[dict]]:
     """Return {nation_id: [improvement_group, ...]} for nation-unique buildable
     improvements that AREN'T shrines (those have their own section). Today this
@@ -379,12 +445,18 @@ def load_unique_improvements(indexes: dict | None = None) -> dict[str, list[dict
 
         nat_groups = groups.setdefault(nation, {})
         g = nat_groups.setdefault(base, {"_levels": []})
-        g["_levels"].append({
+        lv = {
             "level": level_no, "label": name, "icon": icon,
             "outputs": outputs, "effects": effects,
             "cost": cost, "buildTurns": build_turns, "culture": culture,
             "familyBoostPct": fam_pct, "_familyClasses": fam_classes,
-        })
+        }
+        # Event-granted improvements (Steles): surface the real acquisition
+        # gate — the late leader's Legitimacy floor from the event chain.
+        acq = _improvement_event_acquisition().get(zt)
+        if acq and acq["onLeaderDeath"]:
+            lv["minLegitimacy"] = acq["minLegitimacy"]
+        g["_levels"].append(lv)
 
     out: dict[str, list[dict]] = {}
     for nation, nat_groups in groups.items():
@@ -402,6 +474,10 @@ def load_unique_improvements(indexes: dict | None = None) -> dict[str, list[dict
                 "slug": base_label.lower().replace(" ", "-"),
                 "icon": levels[-1]["icon"],  # richest tier as the group glyph
                 "levels": levels,
+                # Any level carrying a legitimacy floor means the whole line is
+                # event-granted on leader death (Steles) — the page footnotes
+                # that the Culture/cost build path is No-Characters-only.
+                "eventGranted": any("minLegitimacy" in lv for lv in levels),
             }
             if fam_classes:
                 group["familyBoost"] = {

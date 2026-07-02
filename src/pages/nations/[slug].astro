@@ -261,7 +261,13 @@ const boostScale = (g: any) =>
               <div class="kit__levels">
                 {g.levels.map((lv: any) => (
                   <div class="kit-lv">
-                    <span class="kit-lv__gate">{(lv.culture || 'Start')}</span>
+                    {lv.minLegitimacy != null ? (
+                      <span class="kit-lv__gate kit-lv__gate--legit" title={`Granted when a former leader dies with at least ${lv.minLegitimacy} Legitimacy`}>
+                        {lv.minLegitimacy > 0 ? `${lv.minLegitimacy}+ Legitimacy` : 'Any Legitimacy'}
+                      </span>
+                    ) : (
+                      <span class="kit-lv__gate">{(lv.culture || 'Start')}</span>
+                    )}
                     <span class="kit-lv__fx">
                       {[...lv.outputs, ...lv.effects].map((e: string) => (
                         <span class="kit-lv__line"><LinkedText text={e} showIcons={false} iconsForYields={true} /></span>
@@ -274,6 +280,15 @@ const boostScale = (g: any) =>
                   </div>
                 ))}
               </div>
+              {g.eventGranted && (
+                <p class="kit__note">
+                  Granted by event when a former leader dies — the tier matches the late
+                  leader's <LinkedText text="Legitimacy" showIcons={false} /> (one stele per
+                  leader, placed in a family seat). The build cost/turns and{' '}
+                  {g.levels.map((lv: any) => lv.culture).filter(Boolean).join('/')} Culture
+                  gates apply only when playing with the No&nbsp;Characters option.
+                </p>
+              )}
               {g.familyBoost && familyBoostRows(g).length > 0 && (
                 <div class="kit-fam">
                   <div class="kit-fam__hd">
@@ -763,6 +778,13 @@ const boostScale = (g: any) =>
     font-size: 0.6rem; letter-spacing: 0.04em; text-transform: uppercase;
     color: var(--gold-soft);
     align-self: start; padding-top: 0.12rem;
+  }
+  /* Event-granted tiers (Steles): gate = the late leader's Legitimacy floor */
+  .kit-lv__gate--legit { white-space: nowrap; cursor: help; }
+  .kit__note {
+    margin: 0.5rem 0 0; font-size: 0.74rem; line-height: 1.45;
+    color: var(--text-dim); font-style: italic;
+    border-top: 1px dashed var(--border); padding-top: 0.45rem;
   }
   .kit-lv__fx { display: flex; flex-direction: column; gap: 0.05rem; color: var(--text-soft); }
   .kit-lv__cost {
