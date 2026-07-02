@@ -252,7 +252,7 @@ const boostScale = (g: any) =>
             </article>
           ))}
           {uniqueImprovements.map((g: any) => (
-            <article class="kit yield-civics">
+            <article class={`kit yield-civics ${g.eventGranted ? 'kit--event' : ''}`}>
               <header class="kit__head">
                 <img class="kit__icon" src={`${base}${g.icon}`} alt="" onerror="this.style.display='none'" />
                 <span class="kit__name">{g.name}</span>
@@ -262,8 +262,9 @@ const boostScale = (g: any) =>
                 {g.levels.map((lv: any) => (
                   <div class="kit-lv">
                     {lv.minLegitimacy != null ? (
-                      <span class="kit-lv__gate kit-lv__gate--legit" title={`Granted when a former leader dies with at least ${lv.minLegitimacy} Legitimacy`}>
-                        {lv.minLegitimacy > 0 ? `${lv.minLegitimacy}+ Legitimacy` : 'Any Legitimacy'}
+                      <span class="kit-lv__gate kit-lv__gate--stele" title={`Granted when a former leader dies with at least ${lv.minLegitimacy} Legitimacy`}>
+                        <span class="kit-lv__tier">{lv.label}</span>
+                        <span class="kit-lv__legit">{lv.minLegitimacy > 0 ? `${lv.minLegitimacy}+ Legitimacy` : 'Any Legitimacy'}</span>
                       </span>
                     ) : (
                       <span class="kit-lv__gate">{(lv.culture || 'Start')}</span>
@@ -777,8 +778,22 @@ const boostScale = (g: any) =>
     color: var(--gold-soft);
     align-self: start; padding-top: 0.12rem;
   }
-  /* Event-granted tiers (Steles): gate = the late leader's Legitimacy floor */
-  .kit-lv__gate--legit { white-space: nowrap; cursor: help; }
+  /* Event-granted tiers (Steles): tier name as the headline, the late
+     leader's Legitimacy floor beneath it. Wider gate column for the names. */
+  .kit--event .kit-lv { grid-template-columns: 8.2rem 1fr auto; }
+  .kit-lv__gate--stele {
+    display: flex; flex-direction: column; gap: 0.1rem;
+    cursor: help; text-transform: none; letter-spacing: 0;
+  }
+  .kit-lv__tier {
+    font-family: var(--font-display); font-weight: 600; font-size: 0.82rem;
+    color: var(--text); line-height: 1.15;
+  }
+  .kit-lv__legit {
+    font-family: var(--font-ui); font-weight: 600; font-size: 0.6rem;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--gold-soft); white-space: nowrap;
+  }
   .kit__note {
     margin: 0.5rem 0 0; font-size: 0.74rem; line-height: 1.45;
     color: var(--text-dim); font-style: italic;
