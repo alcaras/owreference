@@ -15,7 +15,7 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
   title="Camp Unit Spawning"
   active="camp-spawning"
   pageMark="🏕️"
-  description={`When tribal camps in Old World spawn units and when they don't: the spawn countdown (${camps.baseUnitTurns} turns base, ${camps.levels.map((l: any) => l.interval).join('/')} by Tribal Level), the kill acceleration — every tribe unit that dies cuts its nearest settlement's countdown to 4/5 while it is above 4 (that's the 7→5 jump) — and the pause rule that freezes a full camp's countdown. Transcribed from Unit.makeDead and Tile.cs in the game source.`}
+  description={`When tribal camps in Old World spawn units and when they don't: the spawn countdown (${camps.baseUnitTurns} turns base, ${camps.levels.map((l: any) => l.interval).join('/')} by the Tribal Strength setting), the kill acceleration — every tribe unit that dies cuts its nearest settlement's countdown to 4/5 while it is above 4 (that's the 7→5 jump) — and the pause rule that freezes a full camp's countdown. Transcribed from Unit.makeDead and Tile.cs in the game source.`}
   pageStats={[
     { label: 'base interval', value: `${camps.baseUnitTurns}t` },
     { label: 'camp tiers', value: camps.settlements.length },
@@ -59,8 +59,10 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
       A camp is "full" — and its countdown <em>frozen</em> — while the
       tribe's units within <b>{range} tiles</b> (not counting units out
       raiding) reach the cap:
-      <div class="cs-formula">cap = camp tier (+1…+4) + Tribal Level bonus (+0…+4)</div>
+      <div class="cs-formula">cap = camp tier (+1…+4) + Tribal Strength bonus (+0…+4)</div>
       <ul class="cs-rule__mods">
+        <li><b>Camp tier</b> is the settlement's level — Hovel +1 up to Bastion +4 (table below).</li>
+        <li><b>Tribal Strength</b> is the advanced-setup option (Passive → Raging; "Tribal Level" in the game files). Each step adds a flat bonus to every camp's cap — Passive +0, Weak +1, Normal +2, Strong +3, Raging +4 — on top of shortening the spawn interval.</li>
         <li><b>Halved</b> (rounded up) if no raidable city is within the tribe's raid range</li>
         <li>Never more than a third of the landmass's tiles (small islands cap low)</li>
       </ul>
@@ -85,7 +87,7 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
       <li>
         <b>The develop timer</b> counts up toward the tier's threshold (each
         camp also rolls a random head start at placement, up to 10 turns,
-        scaled down at lower Tribal Levels). It <b>pauses while a foreign unit
+        scaled down at lower Tribal Strength settings). It <b>pauses while a foreign unit
         stands on the camp tile</b>. On upgrade, the camp starts rolling the
         stronger tier's units and its next-unit timer gets +2 turns.
       </li>
@@ -101,9 +103,9 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
     <h2 class="cs-h2">The numbers</h2>
     <div class="cs-cols">
       <div>
-        <h3 class="cs-sub">By Tribal Level</h3>
+        <h3 class="cs-sub">By Tribal Strength (advanced-setup option)</h3>
         <table class="cs-tbl">
-          <thead><tr><th>Tribal Level</th><th>New unit every</th><th>Camp cap bonus</th><th>Raid range</th></tr></thead>
+          <thead><tr><th>Tribal Strength</th><th>New unit every</th><th>Camp cap bonus</th><th>Raid range</th></tr></thead>
           <tbody>
             {camps.levels.map((l: any) => (
               <tr>
