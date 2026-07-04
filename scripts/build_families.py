@@ -55,6 +55,53 @@ def granted_traits(ec: ET.Element | None, indexes: dict) -> list[dict]:
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "families.json"
+OUT_HEADS = ROOT / "src" / "data" / "family_heads.json"
+
+
+def build_head_selection() -> dict:
+    """How the family head is chosen → family_heads.json.
+
+    XML-derived: the preferred-age global (globalsInt.xml
+    FAMILY_HEAD_PREFERRED_MIN_AGE), trait selection modifiers (trait.xml
+    iFamilyHeadModifier) and disqualifying traits (bNoFamilyHead).
+
+    The SELECTION ALGORITHM (keep-if-eligible → royal-succession priority →
+    weighted random with +400 elder / +200 council / +200 job on a d1000)
+    lives in Player.updateFamilyHead + Character.canHeadFamily — both
+    registered in verify_source_constants.py so patches that change the
+    weights trip the drift alarm."""
+    text_trait = load_text("text-trait.xml", "text-character.xml", "text-infos.xml")
+
+    min_age = 0
+    for e in ET.parse(XML_DIR / "globalsInt.xml").getroot().findall("Entry"):
+        if (e.findtext("zType") or "") == "FAMILY_HEAD_PREFERRED_MIN_AGE":
+            min_age = int(e.findtext("iValue") or "0")
+
+    modifiers: list[dict] = []
+    blocked: list[str] = []
+    for e in ET.parse(XML_DIR / "trait.xml").getroot().findall("Entry"):
+        zt = e.findtext("zType") or ""
+        # Status traits ship no Name — derive from zType. The archetype-copy
+        # traits (TRAIT_SCHEMER_ARCHETYPE) read better as "Schemer (archetype)".
+        fallback = zt.replace("TRAIT_", "").replace("_", " ").title()
+        if zt.endswith("_ARCHETYPE"):
+            fallback = fallback.replace(" Archetype", " (archetype)")
+        name = text_trait.get(e.findtext("Name") or "", fallback)
+        mod = int(e.findtext("iFamilyHeadModifier") or "0")
+        if mod:
+            modifiers.append({"id": zt, "name": name, "pct": mod})
+        if e.findtext("bNoFamilyHead") == "1":
+            blocked.append(name)
+    modifiers.sort(key=lambda m: (-m["pct"], m["name"]))
+    blocked.sort()
+
+    return {
+        "preferredMinAge": min_age,
+        "traitModifiers": modifiers,
+        "blockedTraits": blocked,
+        # Code-only weights (Player.updateFamilyHead) — hand-verified, drift-watched:
+        "weights": {"roll": 1000, "overAge": 400, "council": 200, "job": 200},
+    }
 
 
 # Scalar opinion fields → human label. Sign comes from the value itself.
@@ -311,6 +358,11 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(families, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(families)} family classes")
+
+    heads = build_head_selection()
+    OUT_HEADS.write_text(json.dumps(heads, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+    print(f"✓ wrote {OUT_HEADS.relative_to(ROOT)} — {len(heads['traitModifiers'])} trait modifiers, "
+          f"{len(heads['blockedTraits'])} blocked traits")
     return 0
 
 

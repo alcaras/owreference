@@ -20,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "tribes.json"
+OUT_CAMPS = ROOT / "src" / "data" / "tribe_camps.json"
 
 
 def first_form(s: str | None) -> str:
@@ -42,6 +43,74 @@ def load_text(*filenames: str) -> dict[str, str]:
 
 def fmt_dlc(tag: str) -> str:
     return tag.replace("_", " ").title() if tag else ""
+
+
+def build_camp_spawn() -> dict:
+    """Camp unit-spawn mechanics → tribe_camps.json.
+
+    XML-derived: settlement tiers (improvement.xml IMPROVEMENT_SETTLEMENT_*:
+    iUnitTurns, iDefendUnits, iDevelopTurns) and per-tribe-level knobs
+    (tribeLevel.xml: iTurnUnitModifier, iDefendUnits, iRaidRange,
+    iMaxUnitsRange). interval = modify(iUnitTurns, iTurnUnitModifier)
+    = turns*(100+mod)//100, matching Tile.resetImprovementUnitTurns.
+
+    The RULES (pause-when-full, cap halving without a raid target, area cap,
+    raiding units not counting, turn-1 halving, +2 on develop) live in game
+    code, not XML — Tile.skipImprovementUnitTurns / resetImprovementUnitTurns
+    / countTribeAvailableUnits, all registered in verify_source_constants.py
+    so a patch that touches them trips the drift alarm."""
+    text_imp = load_text("text-improvement.xml")
+    text_misc = load_text("text-infos.xml", "text-ui.xml", "text-misc.xml")
+
+    settlements = []
+    base_turns = 0
+    for e in ET.parse(XML_DIR / "improvement.xml").getroot().findall("Entry"):
+        zt = e.findtext("zType") or ""
+        m = re.match(r"IMPROVEMENT_SETTLEMENT_(\d+)$", zt)
+        if not m:
+            continue
+        turns = int(e.findtext("iUnitTurns") or "0")
+        base_turns = base_turns or turns
+        settlements.append({
+            "level": int(m.group(1)),
+            "name": text_imp.get(e.findtext("Name") or "", zt),
+            "defendUnits": int(e.findtext("iDefendUnits") or "0"),
+            "unitTurns": turns,
+            "developTurns": int(e.findtext("iDevelopTurns") or "0"),
+        })
+    settlements.sort(key=lambda s: s["level"])
+
+    levels = []
+    for e in ET.parse(XML_DIR / "tribeLevel.xml").getroot().findall("Entry"):
+        zt = e.findtext("zType") or ""
+        if not zt or e.findtext("bNoTribe") == "1":
+            continue
+        mod = int(e.findtext("iTurnUnitModifier") or "0")
+        levels.append({
+            "id": zt,
+            "name": text_misc.get(e.findtext("Name") or "",
+                                  zt.replace("TRIBELEVEL_", "").title()),
+            "interval": base_turns * (100 + mod) // 100,
+            "turnUnitModifier": mod,
+            "defendUnits": int(e.findtext("iDefendUnits") or "0"),
+            "raidRange": int(e.findtext("iRaidRange") or "0"),
+            "maxUnitsRange": int(e.findtext("iMaxUnitsRange") or "0"),
+        })
+
+    return {
+        "baseUnitTurns": base_turns,
+        "settlements": settlements,
+        "levels": levels,
+        # Code-only constants (Tile.cs) — hand-verified, drift-watched:
+        "code": {
+            "unitsNotCountedWhileRaiding": True,   # countTribeAvailableUnits
+            "noRaidTargetCap": "(cap+1)/2",        # skipImprovementUnitTurns
+            "areaCap": "(landmassTiles+2)/3",      # skipImprovementUnitTurns
+            "turn1IntervalHalved": True,           # resetImprovementUnitTurns
+            "developAddsTurns": 2,                 # updateDevelopImprovement
+            "coopExtraPlayerFactor": 3,            # TRIBE_UNIT_SPAWN_TURN_EXTRA_PLAYER_FACTOR
+        },
+    }
 
 
 # Generic XP-tier promos that aren't unique to any tribe — these show up
@@ -404,6 +473,11 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(tribes, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(tribes)} tribes")
+
+    camps = build_camp_spawn()
+    OUT_CAMPS.write_text(json.dumps(camps, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+    print(f"✓ wrote {OUT_CAMPS.relative_to(ROOT)} — {len(camps['settlements'])} camp tiers, "
+          f"{len(camps['levels'])} tribe levels")
     return 0
 
 
