@@ -45,13 +45,13 @@ WATCHED = [
     ("Base/Game/GameCore/Character.cs", "updateCognomen", 80,
      "cognomens-tracker award routine (build_cognomens.py)"),
     ("Base/Game/GameCore/Player.cs", "updateFamilyHead", 110,
-     "family_heads.json weights (d1000 +400 elder +200 council +200 job) — families page"),
+     "family_heads.json weights (d1000 +400 elder +200 council +200 job) — family-heads page"),
     ("Base/Game/GameCore/Character.cs", "canHeadFamily", 60,
-     "family_heads.json eligibility (adult/not-leader/not-religion-head/traits) — families page"),
+     "family_heads.json eligibility (adult/not-leader/not-religion-head/traits) — family-heads page"),
     ("Base/Game/GameCore/Tile.cs", "skipImprovementUnitTurns", 30,
-     "tribe_camps.json pause rule (cap, no-raid-target halving, area cap) — tribes page"),
+     "tribe_camps.json pause rule (cap, no-raid-target halving, area cap) — camp-spawning page"),
     ("Base/Game/GameCore/Tile.cs", "resetImprovementUnitTurns", 35,
-     "tribe_camps.json interval math (level modifier, co-op factor, turn-1 halving) — tribes page"),
+     "tribe_camps.json interval math (level modifier, co-op factor, turn-1 halving) — camp-spawning page"),
 ]
 
 

@@ -1,0 +1,170 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import heads from '../data/family_heads.json';
+
+// Mechanic transcribed from Player.updateFamilyHead + Character.canHeadFamily
+// (reference/Source — both drift-watched in verify_source_constants.py).
+// XML-derived numbers (family_heads.json, build_families.py):
+//   preferredMinAge  ← globalsInt.xml FAMILY_HEAD_PREFERRED_MIN_AGE
+//   traitModifiers   ← trait.xml iFamilyHeadModifier
+//   blockedTraits    ← trait.xml bNoFamilyHead
+const base = import.meta.env.BASE_URL;
+---
+
+<Base
+  title="Family Head Selection"
+  active="family-heads"
+  pageMark="👑"
+  description={`How Old World picks a family head: the sitting head keeps the job while eligible; otherwise the first eligible family member in your dynastic line of succession; otherwise a weighted random roll (d${heads.weights.roll}, +${heads.weights.overAge} over age ${heads.preferredMinAge}, +${heads.weights.council} on Council, +${heads.weights.job} with a job, modified by traits like Power Hungry). Transcribed from Player.updateFamilyHead in the game source.`}
+  pageStats={[
+    { label: 'random roll', value: `d${heads.weights.roll}` },
+    { label: 'trait modifiers', value: heads.traitModifiers.length },
+    { label: 'disqualifying traits', value: heads.blockedTraits.length },
+  ]}
+>
+  <p class="lede">
+    When a family needs a new head — its old one died, became leader, took a
+    religion's mantle, or got locked up — the game does not simply crown the
+    eldest. The selection has a strict order, and only the final fallback is
+    random. Transcribed from <code>Player.updateFamilyHead</code> and
+    <code>Character.canHeadFamily</code> in the game source; numbers from
+    <code>trait.xml</code> and <code>globalsInt.xml</code>.
+  </p>
+
+  <section class="fh-section">
+    <h2 class="fh-h2">The selection order</h2>
+    <ol class="fh-steps">
+      <li>
+        <b>The sitting head keeps the job</b> for as long as they remain
+        eligible. There is no re-election — a head is only replaced when
+        something disqualifies them (death, becoming leader, religion
+        headship, imprisonment, exile…).
+      </li>
+      <li>
+        <b>Royal succession claims it first.</b> The game walks your dynastic
+        line of succession (in succession order, honoring your succession
+        law's gender rules); the <em>first</em> person in it who belongs to
+        the family and is eligible becomes head — ahead of every ordinary
+        family member.
+      </li>
+      <li>
+        <b>Otherwise it's a weighted random roll</b> among all eligible
+        members. Each rolls 1–{heads.weights.roll}, then adds:
+        <ul class="fh-weights">
+          <li><b>+{heads.weights.overAge}</b> if older than {heads.preferredMinAge}</li>
+          <li><b>+{heads.weights.council}</b> if seated on the Council</li>
+          <li><b>+{heads.weights.job}</b> if holding a job (governor, general, agent, …)</li>
+        </ul>
+        …and the total is scaled by trait modifiers. Highest total wins.
+      </li>
+    </ol>
+  </section>
+
+  <section class="fh-section">
+    <h2 class="fh-h2">Trait modifiers</h2>
+    <p class="fh-note">
+      Applied as a percentage to the character's final total in step 3 —
+      schemers and the ambitious push their way to the front.
+    </p>
+    <table class="fh-tbl">
+      <thead><tr><th>Trait</th><th>Selection weight</th></tr></thead>
+      <tbody>
+        {heads.traitModifiers.map((m: any) => (
+          <tr>
+            <td><LinkedText text={m.name} showIcons={false} /></td>
+            <td><b>{m.pct > 0 ? `+${m.pct}%` : `${m.pct}%`}</b></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="fh-section">
+    <h2 class="fh-h2">Who is eligible</h2>
+    <p class="fh-note">
+      From <code>Character.canHeadFamily</code> — every check must pass:
+    </p>
+    <ul class="fh-elig">
+      <li>An <b>adult</b> member of that family, alive and in your court</li>
+      <li>Not your <b>current leader</b></li>
+      <li>Not the <b>head of a religion</b></li>
+      <li>Carrying none of the disqualifying status traits below</li>
+      <li>Not mortally ill — characters with a death-probability trait are skipped when picking a <em>new</em> head (a sitting head who falls ill is not deposed)</li>
+    </ul>
+    <div class="fh-blocked">
+      <div class="fh-blocked__hd">Disqualifying traits ({heads.blockedTraits.length})</div>
+      <div class="fh-blocked__list">
+        {heads.blockedTraits.map((t: string) => <span class="fh-chip">{t}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <p class="provenance">
+    Mechanic transcribed from <code>Player.updateFamilyHead</code> and
+    <code>Character.canHeadFamily</code> in the game source; the age
+    preference (<code>FAMILY_HEAD_PREFERRED_MIN_AGE</code>), trait weights
+    (<code>iFamilyHeadModifier</code>) and disqualifying traits
+    (<code>bNoFamilyHead</code>) are read from the game's XML each patch.
+    Both source functions are hash-watched, so a patch that changes the
+    weights trips this site's drift alarm. See also
+    <a href={`${base}families`}>Families</a>.
+  </p>
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 1rem; line-height: 1.55; color: var(--text-soft);
+    max-width: 70ch; margin: 0.5rem 0 1.5rem;
+  }
+  .lede code, .fh-note code, .provenance code {
+    font-family: var(--font-mono); font-style: normal; font-size: 0.82em; color: var(--text-dim);
+  }
+
+  .fh-section { margin-bottom: 1.8rem; }
+  .fh-h2 {
+    font-family: var(--font-display); font-weight: 600; font-size: 1.25rem;
+    color: var(--text); margin: 0 0 0.5rem;
+    border-bottom: 1px solid var(--gold-deep); padding-bottom: 0.3rem;
+  }
+  .fh-note { font-size: 0.84rem; color: var(--text-dim); margin: 0.3rem 0 0.6rem; max-width: 70ch; }
+
+  .fh-steps { margin: 0; padding-left: 1.3rem; max-width: 76ch; }
+  .fh-steps > li { font-size: 0.9rem; line-height: 1.65; color: var(--text-soft); margin-bottom: 0.7rem; }
+  .fh-steps b { color: var(--text); }
+  .fh-weights { margin: 0.35rem 0 0.35rem; padding-left: 1.1rem; }
+  .fh-weights li { font-size: 0.86rem; line-height: 1.55; margin-bottom: 0.12rem; }
+  .fh-weights b { font-family: var(--font-mono); color: var(--gold-soft); }
+
+  .fh-tbl { border-collapse: collapse; font-size: 0.86rem; }
+  .fh-tbl th {
+    font-family: var(--font-ui); font-size: 0.6rem; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-faint); text-align: left;
+    padding: 0.25rem 1.6rem 0.25rem 0; border-bottom: 1px solid var(--border);
+  }
+  .fh-tbl td { padding: 0.3rem 1.6rem 0.3rem 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent); color: var(--text-soft); }
+  .fh-tbl td b { font-family: var(--font-mono); color: var(--gold-soft); }
+
+  .fh-elig { margin: 0 0 0.9rem; padding-left: 1.1rem; max-width: 74ch; }
+  .fh-elig li { font-size: 0.86rem; line-height: 1.6; color: var(--text-soft); margin-bottom: 0.2rem; }
+  .fh-elig b { color: var(--text); }
+
+  .fh-blocked {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-left: 3px solid var(--gold-deep); border-radius: 4px;
+    padding: 0.6rem 0.9rem; max-width: 74ch;
+  }
+  .fh-blocked__hd {
+    font-family: var(--font-ui); font-size: 0.62rem; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--gold-soft); margin-bottom: 0.45rem;
+  }
+  .fh-blocked__list { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .fh-chip {
+    font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-soft);
+    border: 1px solid var(--border-strong); border-radius: 3px; padding: 0.07rem 0.42rem;
+  }
+
+  .provenance { margin: 1.6rem 0 0; font-size: 0.76rem; color: var(--text-faint); line-height: 1.55; max-width: 80ch; }
+  .provenance a { color: var(--gold-soft); }
+</style>

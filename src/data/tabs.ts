@@ -36,6 +36,11 @@ export const TABS: Tab[] = [
     ],
   },
   {
+    slug: 'family-heads', icon: '👑', label: 'Family Head Selection', section: 'Nations & Families',
+    status: 'built', sourceSheet: '',
+    summary: 'How the game picks a family head — succession priority, then a weighted roll',
+  },
+  {
     slug: 'archetypes', icon: '🎓', label: 'Archetypes', section: 'Characters',
     status: 'built', sourceSheet: '🎓 Archetypes',
     summary: 'Character archetypes, ratings, and traits',
@@ -71,6 +76,11 @@ export const TABS: Tab[] = [
     slug: 'tribes', icon: '🏕️', label: 'Tribes', section: 'Nations & Families',
     status: 'built', sourceSheet: '',
     summary: 'Barbarian tribes — levels, units, sites, diplomacy',
+  },
+  {
+    slug: 'camp-spawning', icon: '⏳', label: 'Camp Unit Spawning', section: 'Nations & Families',
+    status: 'built', sourceSheet: '',
+    summary: 'When tribal camps spawn units and when the timer freezes',
   },
 
   // ── Characters ─────────────────────────────────────────────────

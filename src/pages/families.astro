@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import families from '../data/families.json';
-import heads from '../data/family_heads.json';
 import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
@@ -243,37 +242,11 @@ for (const f of families) {
     </div>
   </div>
 
-  <section class="fhead">
-    <h2 class="fhead__h">How the family head is chosen</h2>
-    <p class="fhead__lede">
-      Grounded in the game source (<code>Player.updateFamilyHead</code> /
-      <code>Character.canHeadFamily</code>); trait numbers from <code>trait.xml</code>.
-    </p>
-    <ol class="fhead__steps">
-      <li><b>The sitting head keeps the job</b> for as long as they remain eligible — there is no re-election.</li>
-      <li><b>Royal succession claims it first:</b> the first eligible family member in your dynastic line of succession (in succession order, honoring your succession law) becomes head.</li>
-      <li>
-        <b>Otherwise it's a weighted random roll</b> among all eligible members — each rolls 1–{heads.weights.roll}, then:
-        <ul class="fhead__weights">
-          <li><b>+{heads.weights.overAge}</b> if older than {heads.preferredMinAge}</li>
-          <li><b>+{heads.weights.council}</b> if on the Council</li>
-          <li><b>+{heads.weights.job}</b> if holding a job (governor, general, agent, …)</li>
-          <li>
-            then modified by traits:
-            {heads.traitModifiers.map((m: any, i: number) => (
-              <span class="fhead__trait"><LinkedText text={m.name} showIcons={false} /> <b>{m.pct > 0 ? `+${m.pct}%` : `${m.pct}%`}</b>{i < heads.traitModifiers.length - 1 ? ' · ' : ''}</span>
-            ))}
-          </li>
-        </ul>
-      </li>
-    </ol>
-    <p class="fhead__elig">
-      <b>Eligible means:</b> an adult of the family, alive and in your court, not the
-      current leader and not head of a religion; characters who are imprisoned, exiled,
-      missing, in asylum, among a tribe, retired to the quiet life, deserters or clergy
-      cannot lead a family, and the mortally ill are skipped when picking a <em>new</em> head.
-    </p>
-  </section>
+  <p class="xref">
+    → <a href={`${base}family-heads`}>How the family head is chosen</a> — the
+    succession priority, the weighted random roll and its trait modifiers,
+    transcribed from the game source.
+  </p>
 
   <script type="application/json" id="family-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
@@ -382,28 +355,9 @@ for (const f of families) {
 </Base>
 
 <style>
-  /* Family-head selection mechanics (source-grounded) */
-  .fhead { margin-top: 2rem; }
-  .fhead__h {
-    font-family: var(--font-display); font-weight: 600; font-size: 1.25rem;
-    color: var(--text); margin: 0 0 0.35rem;
-    border-bottom: 1px solid var(--gold-deep); padding-bottom: 0.3rem;
-  }
-  .fhead__lede { font-size: 0.8rem; color: var(--text-faint); margin: 0.4rem 0 0.8rem; }
-  .fhead__lede code { font-family: var(--font-mono); font-size: 0.85em; color: var(--text-dim); }
-  .fhead__steps { margin: 0; padding-left: 1.3rem; max-width: 76ch; }
-  .fhead__steps > li { font-size: 0.88rem; line-height: 1.6; color: var(--text-soft); margin-bottom: 0.55rem; }
-  .fhead__steps b { color: var(--text); }
-  .fhead__weights { margin: 0.35rem 0 0; padding-left: 1.1rem; }
-  .fhead__weights li { font-size: 0.84rem; line-height: 1.55; color: var(--text-soft); margin-bottom: 0.15rem; }
-  .fhead__weights b { font-family: var(--font-mono); color: var(--gold-soft); }
-  .fhead__trait { white-space: nowrap; }
-  .fhead__elig {
-    font-size: 0.84rem; line-height: 1.6; color: var(--text-soft); max-width: 76ch;
-    background: var(--bg-elev); border: 1px solid var(--border); border-left: 3px solid var(--gold-deep);
-    border-radius: 4px; padding: 0.65rem 0.9rem; margin: 0.9rem 0 0;
-  }
-  .fhead__elig b { color: var(--text); }
+  /* Cross-link to the family-heads mechanics page */
+  .xref { font-size: 0.86rem; line-height: 1.55; color: var(--text-dim); max-width: 72ch; margin: 1.6rem 0 0; }
+  .xref a { color: var(--gold-soft); }
 
   /* Family class column headers — neutral, since classes don't have a single in-game color */
   .nhdr--family {

@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import tribes from '../data/tribes.json';
-import camps from '../data/tribe_camps.json';
 import { existsSync } from 'node:fs';
 
 const base = import.meta.env.BASE_URL;
@@ -194,69 +193,11 @@ const specialCount = combat.reduce(
     </div>
   </div>
 
-  <section class="camps">
-    <h2 class="camps__h">How camps spawn units</h2>
-    <p class="camps__lede">
-      Every tribal settlement runs a spawn countdown ({camps.baseUnitTurns} turns
-      base, scaled by the Tribal Level setting). Each turn the countdown ticks
-      down <em>only if the camp is not already "full"</em> — when it reaches zero,
-      a unit appears and the countdown resets. Grounded in the game source
-      (<code>Tile.skipImprovementUnitTurns</code> / <code>resetImprovementUnitTurns</code>);
-      the numbers below are from <code>improvement.xml</code> and <code>tribeLevel.xml</code>.
-    </p>
-
-    <div class="camps__cols">
-      <div class="camps__col">
-        <h3 class="camps__sub">Spawn interval &amp; garrison bonus, by Tribal Level</h3>
-        <table class="camps__tbl">
-          <thead><tr><th>Tribal Level</th><th>New unit every</th><th>Camp cap bonus</th><th>Raid range</th></tr></thead>
-          <tbody>
-            {camps.levels.map((l: any) => (
-              <tr>
-                <td>{l.name}</td>
-                <td><b>{l.interval}</b> turns</td>
-                <td>+{l.defendUnits}</td>
-                <td>{l.raidRange > 0 ? `${l.raidRange} tiles` : '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div class="camps__col">
-        <h3 class="camps__sub">Camp tiers (settlements develop over time)</h3>
-        <table class="camps__tbl">
-          <thead><tr><th>Camp</th><th>Camp cap base</th><th>Develops in</th></tr></thead>
-          <tbody>
-            {camps.settlements.map((s: any) => (
-              <tr>
-                <td>{s.name}</td>
-                <td>+{s.defendUnits}</td>
-                <td>{s.developTurns > 0 ? `${s.developTurns} turns` : 'top tier'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="camps__rule">
-      <b>The pause rule.</b> A camp is "full" — and its countdown <em>frozen</em> —
-      while the tribe's units within <b>{camps.levels[0]?.maxUnitsRange ?? 3} tiles</b>
-      (not counting units out raiding) reach the cap:
-      <code>camp tier + Tribal Level bonus</code>, <b>halved</b> (rounded up) if no
-      raidable city is within raid range, and never more than a third of the
-      landmass's tiles. Killing units near a camp doesn't speed the timer up —
-      it <em>un-freezes</em> it: once the nearby count drops below the cap, the
-      countdown resumes.
-    </div>
-
-    <ul class="camps__notes">
-      <li>Camps within raid range of a city tolerate <b>twice the standing force</b> before pausing — camps next to your borders keep producing longer.</li>
-      <li>Units that leave to raid stop counting against the cap, so a camp can keep spawning while its raiders are out.</li>
-      <li>The very first countdown of the game is halved on turn 1; a camp that develops into the next tier adds +{(camps.code as any).developAddsTurns} turns to its current countdown.</li>
-      <li>In co-op multiplayer (all players on one team) intervals scale by 4/(3+players) — more players, faster camps.</li>
-    </ul>
-  </section>
+  <p class="xref">
+    → <a href={`${base}camp-spawning`}>How camps spawn units</a> — the spawn
+    countdown, the pause rule (why killing units near a camp restarts the
+    timer), and the develop timers, transcribed from the game source.
+  </p>
 
   {generic.length > 0 && (
     <section class="tribe-generic">
@@ -291,35 +232,9 @@ const specialCount = combat.reduce(
     margin: 0.5rem 0 1.5rem 0;
   }
 
-  /* Camp-spawn mechanics (source-grounded) */
-  .camps { margin-top: 2rem; }
-  .camps__h {
-    font-family: var(--font-display); font-weight: 600; font-size: 1.25rem;
-    color: var(--text); margin: 0 0 0.4rem;
-    border-bottom: 1px solid var(--gold-deep); padding-bottom: 0.3rem;
-  }
-  .camps__lede { font-size: 0.88rem; line-height: 1.55; color: var(--text-soft); max-width: 72ch; margin: 0.5rem 0 1rem; }
-  .camps__lede code, .camps__rule code { font-family: var(--font-mono); font-size: 0.82em; color: var(--text-dim); }
-  .camps__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1rem; margin-bottom: 1rem; }
-  .camps__sub {
-    font-family: var(--font-ui); font-size: 0.62rem; text-transform: uppercase;
-    letter-spacing: 0.14em; color: var(--gold-soft); font-weight: 500; margin: 0 0 0.4rem;
-  }
-  .camps__tbl { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
-  .camps__tbl th {
-    font-family: var(--font-ui); font-size: 0.6rem; text-transform: uppercase;
-    letter-spacing: 0.06em; color: var(--text-faint); text-align: left;
-    padding: 0.25rem 0.6rem 0.25rem 0; border-bottom: 1px solid var(--border);
-  }
-  .camps__tbl td { padding: 0.28rem 0.6rem 0.28rem 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent); color: var(--text-soft); }
-  .camps__tbl td b { color: var(--text); font-family: var(--font-mono); }
-  .camps__rule {
-    font-size: 0.86rem; line-height: 1.6; color: var(--text-soft); max-width: 76ch;
-    background: var(--bg-elev); border: 1px solid var(--border); border-left: 3px solid var(--gold-deep);
-    border-radius: 4px; padding: 0.7rem 0.9rem; margin: 0 0 0.8rem;
-  }
-  .camps__notes { margin: 0; padding-left: 1.1rem; max-width: 76ch; }
-  .camps__notes li { font-size: 0.82rem; line-height: 1.55; color: var(--text-soft); margin-bottom: 0.3rem; }
+  /* Cross-link to the camp-spawning mechanics page */
+  .xref { font-size: 0.86rem; line-height: 1.55; color: var(--text-dim); max-width: 72ch; margin: 1.6rem 0 0; }
+  .xref a { color: var(--gold-soft); }
 
   /* Tribe column header — nickname under the name, mirroring the
      card's title block. Color comes from --nation-bg (set inline per
