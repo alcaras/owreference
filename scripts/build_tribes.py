@@ -101,7 +101,7 @@ def build_camp_spawn() -> dict:
         "baseUnitTurns": base_turns,
         "settlements": settlements,
         "levels": levels,
-        # Code-only constants (Tile.cs) — hand-verified, drift-watched:
+        # Code-only constants (Tile.cs / Unit.cs) — hand-verified, drift-watched:
         "code": {
             "unitsNotCountedWhileRaiding": True,   # countTribeAvailableUnits
             "noRaidTargetCap": "(cap+1)/2",        # skipImprovementUnitTurns
@@ -109,6 +109,11 @@ def build_camp_spawn() -> dict:
             "turn1IntervalHalved": True,           # resetImprovementUnitTurns
             "developAddsTurns": 2,                 # updateDevelopImprovement
             "coopExtraPlayerFactor": 3,            # TRIBE_UNIT_SPAWN_TURN_EXTRA_PLAYER_FACTOR
+            # Unit.makeDead: a dying tribe unit cuts the countdown of its
+            # tribe's NEAREST settlement to (turns*4)/5 (int), only while >4.
+            "killAccelNumerator": 4,
+            "killAccelDenominator": 5,
+            "killAccelMinTurns": 4,
         },
     }
 

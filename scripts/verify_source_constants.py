@@ -52,6 +52,8 @@ WATCHED = [
      "tribe_camps.json pause rule (cap, no-raid-target halving, area cap) — camp-spawning page"),
     ("Base/Game/GameCore/Tile.cs", "resetImprovementUnitTurns", 35,
      "tribe_camps.json interval math (level modifier, co-op factor, turn-1 halving) — camp-spawning page"),
+    ("Base/Game/GameCore/Unit.cs", "makeDead", 60,
+     "tribe_camps.json kill acceleration (nearest settlement ×4/5 while >4) — camp-spawning page"),
 ]
 
 
