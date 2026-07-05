@@ -272,10 +272,12 @@ const familyBoostRows = (g: any) =>
                         <span class="kit-lv__line"><LinkedText text={e} showIcons={false} iconsForYields={true} /></span>
                       ))}
                     </span>
-                    <span class="kit-lv__cost">
-                      <span class="kit-cost"><LinkedText text={lv.cost} showIcons={false} iconsForYields={true} /></span>
-                      <span class="kit-lv__turns">{lv.buildTurns}t</span>
-                    </span>
+                    {!g.eventGranted && (
+                      <span class="kit-lv__cost">
+                        <span class="kit-cost"><LinkedText text={lv.cost} showIcons={false} iconsForYields={true} /></span>
+                        <span class="kit-lv__turns">{lv.buildTurns}t</span>
+                      </span>
+                    )}
                     {lv.familyBoostPct > 0 && familyBoostRows(g).length > 0 && (
                       <span class="kit-lv__boosts" title="Boost applies to the yield tied to the family class seated in the stele's city">
                         {familyBoostRows(g).map((r: any) => (
@@ -771,7 +773,7 @@ const familyBoostRows = (g: any) =>
   }
   /* Event-granted tiers (Steles): tier name as the headline, the late
      leader's Legitimacy floor beneath it. Wider gate column for the names. */
-  .kit--event .kit-lv { grid-template-columns: 8.2rem 1fr auto; }
+  .kit--event .kit-lv { grid-template-columns: 8.2rem 1fr; }
   .kit-lv__gate--stele {
     display: flex; flex-direction: column; gap: 0.1rem;
     cursor: help; text-transform: none; letter-spacing: 0;
@@ -823,7 +825,7 @@ const familyBoostRows = (g: any) =>
   .kit-fam__y img { width: 0.95em; height: 0.95em; object-fit: contain; }
 
   @media (max-width: 560px) {
-    .kit--event .kit-lv { grid-template-columns: 6.4rem 1fr auto; }
+    .kit--event .kit-lv { grid-template-columns: 6.4rem 1fr; }
   }
 
   /* ── Unique unit cards ── */
