@@ -1,11 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
 import data from '../data/stat-scaling.json';
+import { yieldColors } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
 const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
 
 const { ratings, ratingEquivalent, stats } = data as any;
+
+// Color each stat by the yield it GIVES (site convention), not the rating's
+// in-game accent. The game's Wisdom rating is green, but Wisdom → Science, and
+// Science is purple everywhere else on the site; likewise Discipline → Money.
+// yieldColors is the same dark-mode-adapted registry the rest of the site uses.
+const statColor = (s: any): string =>
+  (yieldColors as Record<string, string>)[String(s.yield).toUpperCase()] || s.color;
 
 // Format a Leader (flat-yield) value: signed, drop trailing .0.
 function fmtYield(v: number): string {
@@ -30,7 +38,7 @@ function fmtCell(role: any, v: number): string {
 const graphData = {
   ratings,
   stats: (stats as any[]).map((s) => ({
-    slug: s.slug, name: s.name, color: s.color, yield: s.yield,
+    slug: s.slug, name: s.name, color: statColor(s), yield: s.yield,
     roles: s.roles.map((r: any) => ({ key: r.key, label: r.label, effect: r.effect, kind: r.kind })),
     base: Object.fromEntries(s.roles.map((r: any) => [r.key, s.base.map((row: any) => row[r.key])])),
     cm: Object.fromEntries(s.roles.map((r: any) => [r.key, s.cm.map((row: any) => row[r.key])])),
@@ -108,7 +116,7 @@ const graphData = {
       <section class={`scale-stat yield-${stat.yield}`}>
         <header class="scale-stat__hdr">
           <img class="scale-stat__ico" src={yieldIcon(stat.yield)} alt="" onerror="this.style.display='none'" />
-          <h2 class="scale-stat__name" style={`--stat-color:${stat.color}`}>{stat.name}</h2>
+          <h2 class="scale-stat__name" style={`--stat-color:${statColor(stat)}`}>{stat.name}</h2>
           <span class="scale-stat__yield">signature yield: <b>{stat.yieldLabel}</b></span>
         </header>
         <div class="grid">
