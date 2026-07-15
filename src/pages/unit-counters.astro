@@ -61,7 +61,7 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 // so trait filters won't catch them).
 const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
-interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string }
+interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean }
 
 // Hue = unit class, everywhere on this page (chips, row labels, matrix rows).
 const UCLS: Record<string, string> = {
@@ -84,12 +84,15 @@ function counterTone(v: number): string {
 function countersFor(def: Unit): CounterPick[] {
   const picks: CounterPick[] = [];
   for (const att of landCombat) {
-    if (att.id === def.id) continue;
-    const bonus = counterBonus(att, def.traits, true, att.isMelee);
-    if (bonus <= 0) continue;            // only true counters, like the sheet
+    // Ranked purely by damage, like the legacy sheet — a Cataphract with no
+    // anti-trait bonus still "counters" a Polybolos on raw strength. Mirror
+    // matches stay in (the sheet listed Polybolos as its own counter via
+    // Rapid Fire). This keeps membership consistent with the Unit Damage
+    // matrix: a row here = the defender's best column cells over there.
     const dmg = attackDamage(att, def);
     if (dmg < 7) continue;               // the sheet's "significant" bar
-    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '' });
+    const bonus = counterBonus(att, def.traits, true, att.isMelee);
+    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '', hasBonus: bonus > 0 });
   }
   picks.sort((a, b) => b.dmg - a.dmg || a.name.localeCompare(b.name));
   // One entry per name (upgrade dupes). All picks are rendered so the nation
@@ -127,10 +130,12 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
 >
   <p class="lede">
     <b>If you're facing a unit, build these.</b> Each number is the damage that
-    counter deals per attack — the game's own formula
+    attacker deals per hit — the game's own formula
     (<code>6 × StrAtt / StrDef</code>, both sides' anti-trait modifiers applied,
-    full HP, open terrain, no promotions). Only true counters — attackers with
-    an anti-trait bonus against the target — make the list.
+    full HP, open terrain, no promotions), the same numbers as the
+    <a href={`${base}unit-damage`}>Unit Damage</a> matrix. Ranked by damage;
+    <span class="star">✦</span> marks true counters with an anti-trait bonus
+    against the target.
   </p>
 
   <div class="natbar">
@@ -170,10 +175,10 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                       <span class="cell__dash">no significant counters</span>
                     ) : (
                       picks.map((p, i) => (
-                        <a class={`pick ${ucls(p.cls)}${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack`}>
+                        <a class={`pick ${ucls(p.cls)}${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
-                          <span class="pick__dmg">{p.dmg}</span>
+                          <span class="pick__dmg">{p.dmg}{p.hasBonus && <span class="star">✦</span>}</span>
                         </a>
                       ))
                     )}
@@ -356,6 +361,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       font-size: 0.72rem;
       color: var(--gold);
     }
+    .star { color: var(--gold); font-size: 0.85em; }
     .rl { display: flex; flex-direction: column; gap: 0.1rem; }
     .rl__name {
       font-family: var(--font-display);
