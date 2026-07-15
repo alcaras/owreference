@@ -9,11 +9,21 @@ const base = import.meta.env.BASE_URL;
 type Unit = typeof units[number];
 
 // Rock-paper-scissors matrix. Each row is "Attacker class" → which trait it
-// counters and by how much (averaged across that class's signature units).
-// Built from the XML counter modifiers attached to each unit's effect tree.
+// counters and by how much. Built entirely from the XML counter modifiers on
+// each unit's effect tree (own effects + trait effects): rows are the
+// primary classes present in the data, columns the union of traits any
+// vs-modifier actually targets — so a patch adding a new modifier target
+// (e.g. Camel's "+50% vs Horse" → the Horse column) appears automatically.
 
-const ATTACKER_CLASSES = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege'];
-const DEFENDER_TARGETS = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Melee', 'Siege'];
+const CLASS_ORDER = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege', 'Melee', 'Horse'];
+const orderKey = (s: string) => { const i = CLASS_ORDER.indexOf(s); return i < 0 ? 99 : i; };
+const matrixPool = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
+const ATTACKER_CLASSES = [...new Set(matrixPool.map(u => u.primaryLabel).filter(Boolean))]
+  .sort((a, b) => orderKey(a) - orderKey(b) || a.localeCompare(b));
+const DEFENDER_TARGETS = [...new Set(matrixPool.flatMap(u => u.counters
+  .filter(c => c.kind === 'vs' || c.kind === 'melee vs' || c.kind === 'attack vs')
+  .map(c => c.target)))]
+  .sort((a, b) => orderKey(a) - orderKey(b) || a.localeCompare(b));
 
 // Pick a small set of "iconic" units per class for the row legend.
 function pickIconic(cls: string): Unit[] {
@@ -35,8 +45,13 @@ function cellFor(attackerClass: string, defender: string): CellGroup[] {
     let v = 0;
     for (const c of u.counters) {
       if (c.target !== defender) continue;
-      if (c.kind !== 'vs' && c.kind !== 'melee vs') continue;
-      v += c.value;
+      // Attacker's perspective (row = attacking class), mirroring
+      // Unit.cs attackUnitStrength: 'vs' and 'attack vs' always apply;
+      // the melee bucket only applies if the attacker itself is melee —
+      // a Horse Archer carries Mounted's "+50% melee vs Siege" line but
+      // never benefits when attacking.
+      if (c.kind === 'vs' || c.kind === 'attack vs') v += c.value;
+      else if (c.kind === 'melee vs' && u.isMelee) v += c.value;
     }
     if (v !== 0 && !perUnit.has(u.name)) perUnit.set(u.name, v);
   }
