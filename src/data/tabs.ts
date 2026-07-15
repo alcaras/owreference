@@ -254,6 +254,15 @@ export const TABS: Tab[] = [
     willContain: ['Each unique unit: nation, tier, class, stats, counters'],
   },
   {
+    slug: 'science-to-unlock', icon: '🔬', label: 'Total Science to Unlock', section: 'Units',
+    status: 'built', sourceSheet: '',
+    summary: 'Cumulative research to field each unit',
+    willContain: [
+      'Full tech-prereq closure cost per unit, cheapest first',
+      'Unique units priced by law tier (any 4 / any 7 tech-gated laws)',
+    ],
+  },
+  {
     slug: 'promotions', icon: '🎖️', label: 'Promotions', section: 'Combat',
     status: 'built', sourceSheet: '🎖️ Promotions',
     summary: 'Promotion tree, prerequisites, effects',
@@ -270,15 +279,6 @@ export const TABS: Tab[] = [
     status: 'built', sourceSheet: '⚔️ Unit Counters at-a-glance',
     summary: 'Quick rock-paper-scissors chart',
     willContain: ['Unit type counter matrix'],
-  },
-  {
-    slug: 'science-to-unlock', icon: '🔬', label: 'Total Science to Unlock', section: 'Combat',
-    status: 'built', sourceSheet: '',
-    summary: 'Cumulative research to field each unit',
-    willContain: [
-      'Full tech-prereq closure cost per unit, cheapest first',
-      'Unique units priced by law tier (any 4 / any 7 tech-gated laws)',
-    ],
   },
   {
     slug: 'unit-damage', icon: '⚔️', label: 'Unit Damage & Counters', section: 'Combat',
