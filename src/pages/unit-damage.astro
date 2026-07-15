@@ -105,6 +105,7 @@ function yieldClass(y: string): string {
           {matrixUnits.map(def => (
             <th class="dmx__col" scope="col" data-nation={def.nationLabel || ''}>
               <a href={`#${def.slug}`} title={`${def.name} — STR ${def.strength / 10}`}>
+                <span class="dmx__colname">{def.name}</span>
                 <img class="dmx__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt={def.name} loading="lazy" />
               </a>
             </th>
@@ -359,7 +360,28 @@ function yieldClass(y: string): string {
     background: var(--bg-elev);
     border-bottom: 1px solid var(--border-strong);
     padding: 0.25rem 0.15rem;
+    vertical-align: bottom;
   }
+  .dmx__col a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    text-decoration: none;
+  }
+  .dmx__colname {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    max-height: 8.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dmx__col a:hover .dmx__colname { color: var(--text); }
   .dmx__row {
     position: sticky; left: 0; z-index: 1;
     background: var(--bg-elev);

@@ -74,13 +74,6 @@ const UCLS: Record<string, string> = {
 };
 const ucls = (label: string) => UCLS[label] || 'ucls-misc';
 
-// Matrix cell tone: green = attacker advantage, red = penalty; deeper = bigger.
-function counterTone(v: number): string {
-  const hue = v > 0 ? '#4caf7d' : '#c25555';
-  const pct = Math.round(14 + (Math.min(Math.abs(v), 100) / 100) * 34);
-  return `color-mix(in srgb, ${hue} ${pct}%, var(--bg-elev))`;
-}
-
 function countersFor(def: Unit): CounterPick[] {
   const picks: CounterPick[] = [];
   for (const att of landCombat) {
@@ -133,9 +126,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     attacker deals per hit — the game's own formula
     (<code>6 × StrAtt / StrDef</code>, both sides' anti-trait modifiers applied,
     full HP, open terrain, no promotions), the same numbers as the
-    <a href={`${base}unit-damage`}>Unit Damage</a> matrix. Ranked by damage;
-    <span class="star">✦</span> marks true counters with an anti-trait bonus
-    against the target.
+    <a href={`${base}unit-damage`}>Unit Damage</a> matrix, ranked by damage.
   </p>
 
   <div class="natbar">
@@ -178,7 +169,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                         <a class={`pick ${ucls(p.cls)}${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
-                          <span class="pick__dmg">{p.dmg}{p.hasBonus && <span class="star">✦</span>}</span>
+                          <span class="pick__dmg">{p.dmg}</span>
                         </a>
                       ))
                     )}
@@ -236,9 +227,9 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                   );
                 }
                 return (
-                  <td class="cell" data-target={cell.defender} style={`background:${counterTone(v)}`}>
+                  <td class="cell" data-target={cell.defender}>
                     <div class="counter">
-                      <span class="counter__val">{v > 0 ? '+' : ''}{v}%</span>
+                      <span class={`counter__val ${v > 0 ? 'is-pos' : 'is-neg'}`}>{v > 0 ? '+' : ''}{v}%</span>
                       {cell.sources.length > 0 && (
                         <span class="counter__sources"><LinkedText text={cell.sources.join(' · ')} showIcons={false} /></span>
                       )}
@@ -256,20 +247,20 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
   <div class="legends">
     <div class="legend">
       <span class="legend__label">Read it</span>
-      <span>Row = which class is attacking. Column = the defender's trait. A "+50% vs Mounted" cell means Polearm units (Spearman etc.) get +50% strength when fighting any Mounted-trait unit. Green = advantage, red = penalty; deeper color = bigger modifier.</span>
+      <span>Row = which class is attacking. Column = the defender's trait. A "+50% vs Mounted" cell means Polearm units (Spearman etc.) get +50% strength when fighting any Mounted-trait unit. Green = advantage, red = penalty.</span>
     </div>
     <div class="legend">
-      <span class="legend__label">Color = unit class</span>
+      <span class="legend__label">Dot = unit class</span>
       {['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege'].map(c => (
-        <span class={`chip chip--ucls ${ucls(c)}`}>{c}</span>
+        <span class={`keydot ${ucls(c)}`}>{c}</span>
       ))}
     </div>
     <div class="legend">
       <span class="legend__label">Classic rules of thumb</span>
-      <span class={`chip chip--ucls ${ucls('Polearm')}`}>Polearm beats Mounted</span>
-      <span class={`chip chip--ucls ${ucls('Mounted')}`}>Mounted beats Ranged</span>
-      <span class={`chip chip--ucls ${ucls('Infantry')}`}>Infantry beats Polearm</span>
-      <span class={`chip chip--ucls ${ucls('Ranged')}`}>Ranged softens before melee</span>
+      <span class={`keydot ${ucls('Polearm')}`}>Polearm beats Mounted</span>
+      <span class={`keydot ${ucls('Mounted')}`}>Mounted beats Ranged</span>
+      <span class={`keydot ${ucls('Infantry')}`}>Infantry beats Polearm</span>
+      <span class={`keydot ${ucls('Ranged')}`}>Ranged softens before melee</span>
     </div>
   </div>
 
@@ -300,7 +291,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
           }
         }
         for (const sec of document.querySelectorAll('.ctier')) {
-          sec.classList.toggle('nat-hidden', !sec.querySelector('tbody tr:not(.nat-hidden)'));
+          sec.classList.toggle('nat-hidden', !sec.querySelector('tbody tr:not(.nat-hidden):not(.is-hidden)'));
         }
       }
       function onChange() {
@@ -310,6 +301,26 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       selA.addEventListener('change', onChange);
       selB.addEventListener('change', onChange);
       apply();
+    })();
+  </script>
+
+  <script is:inline>
+    // Header search filters the defender rows by unit name.
+    (function () {
+      const input = document.getElementById('site-search');
+      if (!input) return;
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const tr of document.querySelectorAll('.ctier tbody tr')) {
+          const label = tr.querySelector('.rl');
+          const text = label ? label.textContent.toLowerCase() : '';
+          tr.classList.toggle('is-hidden', !!q && !text.includes(q));
+        }
+        for (const sec of document.querySelectorAll('.ctier')) {
+          sec.classList.toggle('is-hidden', !sec.querySelector('tbody tr:not(.nat-hidden):not(.is-hidden)'));
+        }
+      }
+      input.addEventListener('input', apply);
     })();
   </script>
 
@@ -339,29 +350,32 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     .ctier__h--matrix { margin-top: 1.6rem; }
     .ntbl--counters .rowlabel { min-width: 13rem; }
     .rl__icon { width: 1.15em; height: 1.15em; object-fit: contain; vertical-align: -0.2em; margin-right: 0.3em; }
-    .cell--picks { padding: 0.3rem 0.45rem; }
+    .cell--picks { padding: 0.3rem 0.6rem; }
+    /* Tufte: no boxes — icon, a small class dot, name, number. */
     .pick {
       display: inline-flex; align-items: center; gap: 0.3rem;
-      margin: 0.12rem 0.18rem 0.12rem 0;
-      padding: 0.14rem 0.4rem;
-      border: 1px solid color-mix(in srgb, var(--ucls) 55%, var(--border));
-      border-left: 3px solid var(--ucls);
-      border-radius: 5px;
-      background: color-mix(in srgb, var(--ucls) 13%, var(--bg-elev));
+      margin: 0.14rem 1.1rem 0.14rem 0;
       color: var(--text);
-      font-size: 0.74rem;
+      font-size: 0.76rem;
       text-decoration: none;
       white-space: nowrap;
     }
-    .pick:hover { background: color-mix(in srgb, var(--ucls) 24%, var(--bg-elev)); text-decoration: none; }
-    .pick__icon { width: 1.1em; height: 1.1em; object-fit: contain; }
+    .pick::before {
+      content: '';
+      flex: none;
+      width: 0.42em; height: 0.42em;
+      border-radius: 50%;
+      background: var(--ucls);
+    }
+    .pick:hover { text-decoration: none; }
+    .pick:hover .pick__name { text-decoration: underline; text-underline-offset: 2px; }
+    .pick__icon { width: 1.15em; height: 1.15em; object-fit: contain; }
     .pick__dmg {
       font-family: var(--font-mono);
       font-weight: 600;
       font-size: 0.72rem;
       color: var(--gold);
     }
-    .star { color: var(--gold); font-size: 0.85em; }
     .rl { display: flex; flex-direction: column; gap: 0.1rem; }
     .rl__name {
       font-family: var(--font-display);
@@ -386,13 +400,17 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       margin-right: 0.4em;
       vertical-align: baseline;
     }
-    .chip--ucls {
-      padding: 0.1rem 0.5rem;
-      border: 1px solid color-mix(in srgb, var(--ucls) 55%, var(--border));
-      border-left: 3px solid var(--ucls);
-      border-radius: 5px;
-      background: color-mix(in srgb, var(--ucls) 13%, var(--bg-elev));
-      color: var(--text);
+    .keydot {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      margin-right: 0.9rem;
+      color: var(--text-dim);
+      font-size: 0.74rem;
+    }
+    .keydot::before {
+      content: '';
+      width: 0.45em; height: 0.45em;
+      border-radius: 50%;
+      background: var(--ucls);
     }
     .counter { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; }
     .counter__val {
@@ -401,6 +419,8 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       font-weight: 600;
       letter-spacing: 0.02em;
     }
+    .counter__val.is-pos { color: #4caf7d; }
+    .counter__val.is-neg { color: #c25555; }
     .counter__sources {
       font-size: 0.6rem;
       opacity: 0.85;
