@@ -11,8 +11,11 @@ type Unit = typeof units[number];
 // ── Full damage matrix (the spreadsheet's heatmap): row attacks column ──
 // Same baseline as the legacy sheet: full HP, open terrain, no promotions /
 // terrain / flanking; both sides' anti-trait modifiers applied.
+// isMilitary excludes Scouts, Explorers, and religion Disciples — they can
+// technically fight but aren't army units (their primaryLabel is Infantry,
+// so trait filters won't catch them).
 const matrixUnits = (units as Unit[])
-  .filter(u => u.isCombat && !u.isWater && u.primaryLabel !== 'Disciple')
+  .filter(u => u.isCombat && u.isMilitary && !u.isWater)
   .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name));
 
 const damageRows = matrixUnits.map(att => ({
@@ -23,11 +26,14 @@ const damageRows = matrixUnits.map(att => ({
   }),
 }));
 
-const combatUnits = (units as Unit[]).filter(u => u.isCombat);
-const nonCombat = (units as Unit[]).filter(u => !u.isCombat);
+const combatUnits = (units as Unit[]).filter(u => u.isCombat && u.isMilitary);
+const nonCombat = (units as Unit[]).filter(u => !u.isCombat || !u.isMilitary);
 
 // Group combat units by their primary class trait.
-const CLASS_ORDER = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege', 'Ship', 'Disciple'];
+const CLASS_ORDER = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege', 'Ship'];
+
+// Nation filter options (e.g. you + your opponent). Generic units always show.
+const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filter(Boolean))].sort();
 
 const groupedCombat = new Map<string, Unit[]>();
 for (const u of combatUnits) {
@@ -74,6 +80,20 @@ function yieldClass(y: string): string {
     bonuses. <a href={`${base}combat-damage`}>How the formula works →</a>
   </p>
 
+  <div class="natbar">
+    <span class="natbar__label">Nations</span>
+    <select id="nation-a" class="natbar__sel" aria-label="Your nation">
+      <option value="">All nations</option>
+      {nationOptions.map(n => <option value={n}>{n}</option>)}
+    </select>
+    <span class="natbar__vs">vs</span>
+    <select id="nation-b" class="natbar__sel" aria-label="Opponent nation">
+      <option value="">All nations</option>
+      {nationOptions.map(n => <option value={n}>{n}</option>)}
+    </select>
+    <span class="natbar__hint">Pick your nation and your opponent's to hide everyone else's unique units. Generic units always show.</span>
+  </div>
+
   <div class="dmx-wrap">
     <table class="dmx">
       <thead>
@@ -83,7 +103,7 @@ function yieldClass(y: string): string {
             <span class="dmx__corner-big">Attacker ↓</span>
           </th>
           {matrixUnits.map(def => (
-            <th class="dmx__col" scope="col">
+            <th class="dmx__col" scope="col" data-nation={def.nationLabel || ''}>
               <a href={`#${def.slug}`} title={`${def.name} — STR ${def.strength / 10}`}>
                 <img class="dmx__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt={def.name} loading="lazy" />
               </a>
@@ -93,7 +113,7 @@ function yieldClass(y: string): string {
       </thead>
       <tbody>
         {damageRows.map(({ att, cells }) => (
-          <tr>
+          <tr data-nation={att.nationLabel || ''}>
             <th class="dmx__row" scope="row">
               <a href={`#${att.slug}`} class="dmx__rowlink">
                 <img class="dmx__icon" src={`${base}img/icons/units/${att.iconSlug}.png`} alt="" loading="lazy" />
@@ -123,7 +143,7 @@ function yieldClass(y: string): string {
         </h2>
         <ul class="unit-list">
           {arr.map(u => (
-            <li class="unit" id={u.slug} data-unit={u.slug}>
+            <li class="unit" id={u.slug} data-unit={u.slug} data-nation={u.nationLabel || ''}>
               <div class="unit__head">
                 <div class="unit__title">
                   <span class="unit__name">{u.name}</span>
@@ -240,11 +260,54 @@ function yieldClass(y: string): string {
           }
         }
         for (const sec of grid.querySelectorAll('.unit-class')) {
-          const visible = sec.querySelectorAll('.unit:not(.is-hidden)').length;
+          const visible = sec.querySelectorAll('.unit:not(.is-hidden):not(.nat-hidden)').length;
           sec.classList.toggle('is-hidden', visible === 0);
         }
       }
       input.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
+
+  <script is:inline>
+    (function () {
+      const selA = document.getElementById('nation-a');
+      const selB = document.getElementById('nation-b');
+      if (!selA || !selB) return;
+      const KEY = 'ow-nation-filter';
+      try {
+        const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
+        if (saved[0]) selA.value = saved[0];
+        if (saved[1]) selB.value = saved[1];
+      } catch {}
+      function apply() {
+        const chosen = [selA.value, selB.value].filter(Boolean);
+        const ok = (n) => !n || chosen.length === 0 || chosen.includes(n);
+        // Damage matrix: rows by attacker nation, columns by defender nation.
+        const colHeads = [...document.querySelectorAll('.dmx thead .dmx__col')];
+        const hideCol = colHeads.map(th => !ok(th.dataset.nation || ''));
+        colHeads.forEach((th, i) => th.classList.toggle('nat-hidden', hideCol[i]));
+        for (const tr of document.querySelectorAll('.dmx tbody tr')) {
+          tr.classList.toggle('nat-hidden', !ok(tr.dataset.nation || ''));
+          [...tr.querySelectorAll('td')].forEach((td, i) => td.classList.toggle('nat-hidden', hideCol[i]));
+        }
+        // Unit cards (composes with the header search, which uses .is-hidden).
+        const grid = document.getElementById('unit-grid');
+        if (!grid) return;
+        for (const el of grid.querySelectorAll('.unit[data-nation]')) {
+          el.classList.toggle('nat-hidden', !ok(el.dataset.nation || ''));
+        }
+        for (const sec of grid.querySelectorAll('.unit-class')) {
+          const visible = sec.querySelectorAll('.unit:not(.is-hidden):not(.nat-hidden)').length;
+          sec.classList.toggle('nat-hidden', visible === 0);
+        }
+      }
+      function onChange() {
+        try { localStorage.setItem(KEY, JSON.stringify([selA.value, selB.value])); } catch {}
+        apply();
+      }
+      selA.addEventListener('change', onChange);
+      selB.addEventListener('change', onChange);
       apply();
     })();
   </script>

@@ -380,6 +380,52 @@ h1, h2, h3 {
 .ntbl th.is-hidden,
 .ntbl td.is-hidden { display: revert !important; visibility: collapse; }
 
+/* Nation filter (unit-damage, unit-counters): separate class from .is-hidden
+   so it composes with the header search without the two scripts clobbering
+   each other's state. The .dmx matrix hides matching cells per-index in every
+   row, so display:none is safe there (cell counts stay aligned). */
+.nat-hidden { display: none !important; }
+.natbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 1rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.natbar__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+.natbar__sel {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.2rem 0.4rem;
+}
+.natbar__vs {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+}
+.natbar__hint {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  flex-basis: 100%;
+}
+@media (min-width: 900px) {
+  .natbar__hint { flex-basis: auto; margin-left: 0.4rem; }
+}
+
 /* ──────────────────────────────────────────────────────────
    Nations table — Tufte direction
    ────────────────────────────────────────────────────────── */

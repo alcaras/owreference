@@ -18,7 +18,7 @@ const DEFENDER_TARGETS = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Melee', '
 // Pick a small set of "iconic" units per class for the row legend.
 function pickIconic(cls: string): Unit[] {
   return (units as Unit[])
-    .filter(u => u.isCombat && u.primaryLabel === cls && !u.nationPrereq)
+    .filter(u => u.isCombat && u.isMilitary && u.primaryLabel === cls && !u.nationPrereq)
     .sort((a, b) => a.strength - b.strength)
     .slice(0, 3);
 }
@@ -31,7 +31,7 @@ interface Cell {
 
 function cellFor(attackerClass: string, defender: string): Cell {
   const matchers: Unit[] = (units as Unit[])
-    .filter(u => u.isCombat && u.primaryLabel === attackerClass);
+    .filter(u => u.isCombat && u.isMilitary && u.primaryLabel === attackerClass);
   let best = 0;
   let worst = 0;
   const sources: string[] = [];
@@ -56,7 +56,10 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 // ── Per-unit counter list (the spreadsheet's "If you're facing…" view) ──
 // Damage math lives in src/lib/combat.ts — the game's own
 // InfoHelpers.getAttackDamage with both sides' anti-trait modifiers.
-const landCombat = (units as Unit[]).filter(u => u.isCombat && !u.isWater && u.primaryLabel !== 'Disciple');
+// isMilitary excludes Scouts, Explorers, and religion Disciples — they can
+// technically fight but aren't army units (their primaryLabel is Infantry,
+// so trait filters won't catch them).
+const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
 interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null }
 
@@ -71,10 +74,16 @@ function countersFor(def: Unit): CounterPick[] {
     picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null });
   }
   picks.sort((a, b) => b.dmg - a.dmg || a.name.localeCompare(b.name));
-  // One entry per name (upgrade dupes), capped for scan-ability.
+  // One entry per name (upgrade dupes). All picks are rendered so the nation
+  // filter can surface deeper ones; display is capped to 8 client-side.
   const seen = new Set<string>();
-  return picks.filter(p => !seen.has(p.name) && seen.add(p.name) !== undefined).slice(0, 8);
+  return picks.filter(p => !seen.has(p.name) && seen.add(p.name) !== undefined);
 }
+
+const PICK_CAP = 8;
+
+// Nation filter options (e.g. you + your opponent). Generic units always show.
+const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filter(Boolean))].sort();
 
 const defenders = [...landCombat]
   .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name))
@@ -106,6 +115,20 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     an anti-trait bonus against the target — make the list.
   </p>
 
+  <div class="natbar">
+    <span class="natbar__label">Nations</span>
+    <select id="nation-a" class="natbar__sel" aria-label="Your nation">
+      <option value="">All nations</option>
+      {nationOptions.map(n => <option value={n}>{n}</option>)}
+    </select>
+    <span class="natbar__vs">vs</span>
+    <select id="nation-b" class="natbar__sel" aria-label="Opponent nation">
+      <option value="">All nations</option>
+      {nationOptions.map(n => <option value={n}>{n}</option>)}
+    </select>
+    <span class="natbar__hint">Pick your nation and your opponent's to hide everyone else's unique units. Generic units always show.</span>
+  </div>
+
   {tierList.map(([tier, list]) => (
     <section class="ctier">
       <h2 class="ctier__h">Strength {tier} defenders</h2>
@@ -114,7 +137,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
           <table class="ntbl ntbl--counters">
             <tbody>
               {list.map(({ def, picks }) => (
-                <tr id={def.slug}>
+                <tr id={def.slug} data-nation={def.nationLabel || ''}>
                   <th class="rowlabel" scope="row">
                     <div class="rl">
                       <span class="rl__name">
@@ -128,8 +151,8 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                     {picks.length === 0 ? (
                       <span class="cell__dash">no significant counters</span>
                     ) : (
-                      picks.map(p => (
-                        <a class="pick yield-training" href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} deals ${p.dmg} damage per attack`}>
+                      picks.map((p, i) => (
+                        <a class={`pick yield-training${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} deals ${p.dmg} damage per attack`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
                           <span class="pick__dmg">{p.dmg}</span>
@@ -221,6 +244,46 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       <span class="chip yield-misc">Ranged softens before melee</span>
     </div>
   </div>
+
+  <script is:inline>
+    (function () {
+      const selA = document.getElementById('nation-a');
+      const selB = document.getElementById('nation-b');
+      if (!selA || !selB) return;
+      const KEY = 'ow-nation-filter';
+      const PICK_CAP = 8;
+      try {
+        const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
+        if (saved[0]) selA.value = saved[0];
+        if (saved[1]) selB.value = saved[1];
+      } catch {}
+      function apply() {
+        const chosen = [selA.value, selB.value].filter(Boolean);
+        const ok = (n) => !n || chosen.length === 0 || chosen.includes(n);
+        for (const tr of document.querySelectorAll('.ctier tbody tr')) {
+          const rowOk = ok(tr.dataset.nation || '');
+          tr.classList.toggle('nat-hidden', !rowOk);
+          if (!rowOk) continue;
+          let shown = 0;
+          for (const p of tr.querySelectorAll('.pick')) {
+            const show = ok(p.dataset.nation || '') && shown < PICK_CAP;
+            if (show) shown++;
+            p.classList.toggle('nat-hidden', !show);
+          }
+        }
+        for (const sec of document.querySelectorAll('.ctier')) {
+          sec.classList.toggle('nat-hidden', !sec.querySelector('tbody tr:not(.nat-hidden)'));
+        }
+      }
+      function onChange() {
+        try { localStorage.setItem(KEY, JSON.stringify([selA.value, selB.value])); } catch {}
+        apply();
+      }
+      selA.addEventListener('change', onChange);
+      selB.addEventListener('change', onChange);
+      apply();
+    })();
+  </script>
 
   <style>
     .lede {
