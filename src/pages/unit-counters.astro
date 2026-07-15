@@ -93,7 +93,17 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
 
 const defenders = [...landCombat]
   .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name))
-  .map(def => ({ def, picks: countersFor(def) }));
+  .map(def => {
+    // Server-render the default view: stronger attackers hidden (the
+    // "hide stronger" toggle starts on), capped at PICK_CAP visible.
+    let vis = 0;
+    const picks = countersFor(def).map(p => {
+      const show = p.str <= def.strength && vis < PICK_CAP;
+      if (show) vis++;
+      return { ...p, initiallyHidden: !show };
+    });
+    return { def, picks };
+  });
 
 const tiers = new Map<number, typeof defenders>();
 for (const d of defenders) {
@@ -133,7 +143,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       {nationOptions.map(n => <option value={n}>{n}</option>)}
     </select>
     <label class="natbar__toggle">
-      <input type="checkbox" id="hide-stronger" />
+      <input type="checkbox" id="hide-stronger" checked />
       hide attackers stronger than the defender
     </label>
     <span class="natbar__hint">Pick your nation and your opponent's to hide everyone else's unique units. Generic units always show.</span>
@@ -163,8 +173,8 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                     ) : (
                       <>
                       <span class="cell__none cell__dash">none under current filters</span>
-                      {picks.map((p, i) => (
-                        <a class={`pick${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} data-str={p.str} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
+                      {picks.map(p => (
+                        <a class={`pick${p.initiallyHidden ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} data-str={p.str} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
                           <span class="pick__dmg">{p.dmg}</span>
@@ -269,7 +279,8 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
         const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
         if (saved[0]) selA.value = saved[0];
         if (saved[1]) selB.value = saved[1];
-        if (chk && localStorage.getItem(STR_KEY) === '1') chk.checked = true;
+        // On by default; only an explicit opt-out ('0') unchecks it.
+        if (chk) chk.checked = localStorage.getItem(STR_KEY) !== '0';
       } catch {}
       function apply() {
         const chosen = [selA.value, selB.value].filter(Boolean);
