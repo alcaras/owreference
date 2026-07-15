@@ -64,7 +64,7 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 // so trait filters won't catch them).
 const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
-interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean; str: number }
+interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean; str: number; techCost: number }
 
 function countersFor(def: Unit): CounterPick[] {
   const picks: CounterPick[] = [];
@@ -77,7 +77,7 @@ function countersFor(def: Unit): CounterPick[] {
     const dmg = attackDamage(att, def);
     if (dmg < 7) continue;               // the sheet's "significant" bar
     const bonus = counterBonus(att, def.traits, true, att.isMelee);
-    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '', hasBonus: bonus > 0, str: att.strength });
+    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '', hasBonus: bonus > 0, str: att.strength, techCost: att.techCost });
   }
   picks.sort((a, b) => b.dmg - a.dmg || a.name.localeCompare(b.name));
   // One entry per name (upgrade dupes). All picks are rendered so the nation
@@ -94,11 +94,11 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
 const defenders = [...landCombat]
   .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name))
   .map(def => {
-    // Server-render the default view: stronger attackers hidden (the
-    // "hide stronger" toggle starts on), capped at PICK_CAP visible.
+    // Server-render the default view: stronger and costlier-tech attackers
+    // hidden (both toggles start on), capped at PICK_CAP visible.
     let vis = 0;
     const picks = countersFor(def).map(p => {
-      const show = p.str <= def.strength && vis < PICK_CAP;
+      const show = p.str <= def.strength && p.techCost <= def.techCost && vis < PICK_CAP;
       if (show) vis++;
       return { ...p, initiallyHidden: !show };
     });
@@ -142,9 +142,13 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       <option value="">All nations</option>
       {nationOptions.map(n => <option value={n}>{n}</option>)}
     </select>
-    <label class="natbar__toggle">
+    <label class="natbar__toggle" title="Hide attackers with a higher strength stat than the defender">
       <input type="checkbox" id="hide-stronger" checked />
-      hide attackers stronger than the defender
+      hide stronger attackers
+    </label>
+    <label class="natbar__toggle" title="Hide attackers whose cumulative tech cost (no starting techs; laws for unique units) exceeds the defender's">
+      <input type="checkbox" id="hide-costlier" checked />
+      hide attackers needing more tech
     </label>
     <span class="natbar__hint">Pick your nation and your opponent's to hide everyone else's unique units. Generic units always show.</span>
   </div>
@@ -157,7 +161,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
           <table class="ntbl ntbl--counters">
             <tbody>
               {list.map(({ def, picks }) => (
-                <tr id={def.slug} data-nation={def.nationLabel || ''} data-str={def.strength}>
+                <tr id={def.slug} data-nation={def.nationLabel || ''} data-str={def.strength} data-tech={def.techCost}>
                   <th class="rowlabel" scope="row">
                     <div class="rl">
                       <span class="rl__name">
@@ -174,7 +178,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                       <>
                       <span class="cell__none cell__dash">none under current filters</span>
                       {picks.map(p => (
-                        <a class={`pick${p.initiallyHidden ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} data-str={p.str} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
+                        <a class={`pick${p.initiallyHidden ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} data-str={p.str} data-tech={p.techCost} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls}, STR ${p.str / 10}, ${p.techCost} science to unlock — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
                           <span class="pick__dmg">{p.dmg}</span>
@@ -270,31 +274,37 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     (function () {
       const selA = document.getElementById('nation-a');
       const selB = document.getElementById('nation-b');
-      const chk = document.getElementById('hide-stronger');
+      const chkStr = document.getElementById('hide-stronger');
+      const chkTech = document.getElementById('hide-costlier');
       if (!selA || !selB) return;
       const KEY = 'ow-nation-filter';
       const STR_KEY = 'ow-str-filter';
+      const TECH_KEY = 'ow-tech-filter';
       const PICK_CAP = 8;
       try {
         const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
         if (saved[0]) selA.value = saved[0];
         if (saved[1]) selB.value = saved[1];
-        // On by default; only an explicit opt-out ('0') unchecks it.
-        if (chk) chk.checked = localStorage.getItem(STR_KEY) !== '0';
+        // On by default; only an explicit opt-out ('0') unchecks them.
+        if (chkStr) chkStr.checked = localStorage.getItem(STR_KEY) !== '0';
+        if (chkTech) chkTech.checked = localStorage.getItem(TECH_KEY) !== '0';
       } catch {}
       function apply() {
         const chosen = [selA.value, selB.value].filter(Boolean);
         const ok = (n) => !n || chosen.length === 0 || chosen.includes(n);
-        const hideStronger = chk && chk.checked;
+        const hideStronger = chkStr && chkStr.checked;
+        const hideCostlier = chkTech && chkTech.checked;
         for (const tr of document.querySelectorAll('.ctier tbody tr')) {
           const rowOk = ok(tr.dataset.nation || '');
           tr.classList.toggle('nat-hidden', !rowOk);
           if (!rowOk) continue;
           const defStr = +(tr.dataset.str || 0);
+          const defTech = +(tr.dataset.tech || 0);
           let shown = 0;
           for (const p of tr.querySelectorAll('.pick')) {
             const okPick = ok(p.dataset.nation || '')
-              && (!hideStronger || +(p.dataset.str || 0) <= defStr);
+              && (!hideStronger || +(p.dataset.str || 0) <= defStr)
+              && (!hideCostlier || +(p.dataset.tech || 0) <= defTech);
             const show = okPick && shown < PICK_CAP;
             if (show) shown++;
             p.classList.toggle('nat-hidden', !show);
@@ -307,13 +317,15 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       function onChange() {
         try {
           localStorage.setItem(KEY, JSON.stringify([selA.value, selB.value]));
-          if (chk) localStorage.setItem(STR_KEY, chk.checked ? '1' : '0');
+          if (chkStr) localStorage.setItem(STR_KEY, chkStr.checked ? '1' : '0');
+          if (chkTech) localStorage.setItem(TECH_KEY, chkTech.checked ? '1' : '0');
         } catch {}
         apply();
       }
       selA.addEventListener('change', onChange);
       selB.addEventListener('change', onChange);
-      if (chk) chk.addEventListener('change', onChange);
+      if (chkStr) chkStr.addEventListener('change', onChange);
+      if (chkTech) chkTech.addEventListener('change', onChange);
       apply();
     })();
   </script>

@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import sys
 import xml.etree.ElementTree as ET
+from itertools import combinations
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -393,6 +394,78 @@ def main() -> int:
         if (ge.findtext("zType") or "") == "EXTRA_VISIBILITY":
             extra_vis = int(ge.findtext("iValue") or "0")
 
+    # Cumulative science to unlock a tech from a blank slate (no starting
+    # techs): its own iCost plus every transitive abTechPrereq, each tech
+    # counted once. Drives the counters page's "hide costlier tech" filter.
+    # Pairs with bValue=1 are the real tree edges (bonus cards excluded by
+    # never being a unit's TechPrereq).
+    tech_cost: dict[str, int] = {}
+    tech_prereqs: dict[str, list[str]] = {}
+    for te in parse("tech.xml").findall("Entry"):
+        tz = te.findtext("zType") or ""
+        if not tz:
+            continue
+        tech_cost[tz] = int(te.findtext("iCost") or "0")
+        tech_prereqs[tz] = [
+            (p.findtext("zIndex") or "").strip()
+            for p in te.findall("abTechPrereq/Pair")
+            if (p.findtext("bValue") or "1") == "1"
+        ]
+
+    _closures: dict[str, frozenset] = {}
+
+    def closure_set(tech: str) -> frozenset:
+        if tech in _closures:
+            return _closures[tech]
+        seen: set[str] = set()
+        stack = [tech]
+        while stack:
+            t = stack.pop()
+            if not t or t in seen or t not in tech_cost:
+                continue
+            seen.add(t)
+            stack.extend(tech_prereqs.get(t, []))
+        fs = frozenset(seen)
+        _closures[tech] = fs
+        return fs
+
+    def closure_cost(tech: str) -> int:
+        return sum(tech_cost[t] for t in closure_set(tech))
+
+    # Unique units are culture-gated, not tech-gated, so a raw closure would
+    # call them free. Competitive heuristic (per the user): a Developing UU
+    # (STR 6) needs ~4 laws adopted, a Strong UU (STR 8) ~7 — so their
+    # effective techCost is the MINIMUM cumulative science that unlocks that
+    # many law classes (each lawClass = one adoptable law; classes without a
+    # TechPrereq, i.e. succession, count as free). Minimised by brute force
+    # over closure unions — shared prereqs make greedy non-optimal.
+    law_techs: list[str] = []
+    free_laws = 0
+    for le in parse("lawClass.xml").findall("Entry"):
+        if not (le.findtext("zType") or ""):
+            continue
+        tp = le.findtext("TechPrereq") or ""
+        if tp:
+            law_techs.append(tp)
+        else:
+            free_laws += 1
+
+    def min_science_for_laws(k: int) -> int:
+        need = max(0, k - free_laws)
+        if need == 0:
+            return 0
+        sets = [closure_set(t) for t in law_techs]
+        best: int | None = None
+        for combo in combinations(sets, need):
+            union: set[str] = set().union(*combo)
+            c = sum(tech_cost[t] for t in union)
+            if best is None or c < best:
+                best = c
+        return best or 0
+
+    LAWS_BY_CULTURE = {"CULTURE_DEVELOPING": 4, "CULTURE_STRONG": 7}
+    laws_cost = {c: min_science_for_laws(k) for c, k in LAWS_BY_CULTURE.items()}
+
     units: list[dict] = []
     for entry in parse("unit.xml").findall("Entry"):
         zt = entry.findtext("zType") or ""
@@ -504,6 +577,11 @@ def main() -> int:
             "source": SOURCE_LABEL.get(dlc, token_title(dlc) if dlc else "Base game"),
             "iconSlug": (entry.findtext("zIconName") or zt).replace("UNIT_", "").lower(),
             "techPrereq": entry.findtext("TechPrereq") or "",
+            # Cumulative science to field the unit from a blank slate: full
+            # tech-prereq closure; for culture-gated uniques, the min science
+            # to unlock enough laws for their tier. 0 for Militia/tribals.
+            "techCost": (laws_cost.get(culture, 0) if nation_prereq
+                         else closure_cost(entry.findtext("TechPrereq") or "")),
             "nationPrereq": entry.findtext("NationPrereq") or "",
             "primaryTrait": primary,
             "primaryLabel": trait_label(primary) if primary else "",
