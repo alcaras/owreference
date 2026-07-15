@@ -64,7 +64,7 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 // so trait filters won't catch them).
 const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
-interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean }
+interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean; str: number }
 
 function countersFor(def: Unit): CounterPick[] {
   const picks: CounterPick[] = [];
@@ -77,7 +77,7 @@ function countersFor(def: Unit): CounterPick[] {
     const dmg = attackDamage(att, def);
     if (dmg < 7) continue;               // the sheet's "significant" bar
     const bonus = counterBonus(att, def.traits, true, att.isMelee);
-    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '', hasBonus: bonus > 0 });
+    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '', hasBonus: bonus > 0, str: att.strength });
   }
   picks.sort((a, b) => b.dmg - a.dmg || a.name.localeCompare(b.name));
   // One entry per name (upgrade dupes). All picks are rendered so the nation
@@ -132,6 +132,10 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       <option value="">All nations</option>
       {nationOptions.map(n => <option value={n}>{n}</option>)}
     </select>
+    <label class="natbar__toggle">
+      <input type="checkbox" id="hide-stronger" />
+      hide attackers stronger than the defender
+    </label>
     <span class="natbar__hint">Pick your nation and your opponent's to hide everyone else's unique units. Generic units always show.</span>
   </div>
 
@@ -143,7 +147,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
           <table class="ntbl ntbl--counters">
             <tbody>
               {list.map(({ def, picks }) => (
-                <tr id={def.slug} data-nation={def.nationLabel || ''}>
+                <tr id={def.slug} data-nation={def.nationLabel || ''} data-str={def.strength}>
                   <th class="rowlabel" scope="row">
                     <div class="rl">
                       <span class="rl__name">
@@ -157,13 +161,16 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                     {picks.length === 0 ? (
                       <span class="cell__dash">no significant counters</span>
                     ) : (
-                      picks.map((p, i) => (
-                        <a class={`pick${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
+                      <>
+                      <span class="cell__none cell__dash">none under current filters</span>
+                      {picks.map((p, i) => (
+                        <a class={`pick${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} data-str={p.str} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
                           <span class="pick__dmg">{p.dmg}</span>
                         </a>
-                      ))
+                      ))}
+                      </>
                     )}
                   </td>
                 </tr>
@@ -253,24 +260,31 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     (function () {
       const selA = document.getElementById('nation-a');
       const selB = document.getElementById('nation-b');
+      const chk = document.getElementById('hide-stronger');
       if (!selA || !selB) return;
       const KEY = 'ow-nation-filter';
+      const STR_KEY = 'ow-str-filter';
       const PICK_CAP = 8;
       try {
         const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
         if (saved[0]) selA.value = saved[0];
         if (saved[1]) selB.value = saved[1];
+        if (chk && localStorage.getItem(STR_KEY) === '1') chk.checked = true;
       } catch {}
       function apply() {
         const chosen = [selA.value, selB.value].filter(Boolean);
         const ok = (n) => !n || chosen.length === 0 || chosen.includes(n);
+        const hideStronger = chk && chk.checked;
         for (const tr of document.querySelectorAll('.ctier tbody tr')) {
           const rowOk = ok(tr.dataset.nation || '');
           tr.classList.toggle('nat-hidden', !rowOk);
           if (!rowOk) continue;
+          const defStr = +(tr.dataset.str || 0);
           let shown = 0;
           for (const p of tr.querySelectorAll('.pick')) {
-            const show = ok(p.dataset.nation || '') && shown < PICK_CAP;
+            const okPick = ok(p.dataset.nation || '')
+              && (!hideStronger || +(p.dataset.str || 0) <= defStr);
+            const show = okPick && shown < PICK_CAP;
             if (show) shown++;
             p.classList.toggle('nat-hidden', !show);
           }
@@ -280,11 +294,15 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
         }
       }
       function onChange() {
-        try { localStorage.setItem(KEY, JSON.stringify([selA.value, selB.value])); } catch {}
+        try {
+          localStorage.setItem(KEY, JSON.stringify([selA.value, selB.value]));
+          if (chk) localStorage.setItem(STR_KEY, chk.checked ? '1' : '0');
+        } catch {}
         apply();
       }
       selA.addEventListener('change', onChange);
       selB.addEventListener('change', onChange);
+      if (chk) chk.addEventListener('change', onChange);
       apply();
     })();
   </script>
@@ -336,6 +354,9 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     .ntbl--counters .rowlabel { min-width: 13rem; }
     .rl__icon { width: 1.15em; height: 1.15em; object-fit: contain; vertical-align: -0.2em; margin-right: 0.3em; }
     .cell--picks { padding: 0.3rem 0.6rem; }
+    /* Shown only when every pick in the cell is filtered out. */
+    .cell--picks .cell__none { display: none; }
+    .cell--picks:not(:has(.pick:not(.nat-hidden))) .cell__none { display: inline; }
     /* Tufte: no boxes, no hue system — icon, name, number. */
     .pick {
       display: inline-flex; align-items: center; gap: 0.3rem;

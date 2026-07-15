@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import LinkedText from '../components/LinkedText.astro';
 import units from '../data/units.json';
 import { attackDamage, damageTone } from '../lib/combat';
 
@@ -26,40 +25,8 @@ const damageRows = matrixUnits.map(att => ({
   }),
 }));
 
-const combatUnits = (units as Unit[]).filter(u => u.isCombat && u.isMilitary);
-const nonCombat = (units as Unit[]).filter(u => !u.isCombat || !u.isMilitary);
-
-// Group combat units by their primary class trait.
-const CLASS_ORDER = ['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege', 'Ship'];
-
 // Nation filter options (e.g. you + your opponent). Generic units always show.
 const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filter(Boolean))].sort();
-
-const groupedCombat = new Map<string, Unit[]>();
-for (const u of combatUnits) {
-  const k = u.primaryLabel || 'Other';
-  if (!groupedCombat.has(k)) groupedCombat.set(k, []);
-  groupedCombat.get(k)!.push(u);
-}
-const orderedGroups = [...groupedCombat.entries()].sort((a, b) => {
-  const ia = CLASS_ORDER.indexOf(a[0]);
-  const ib = CLASS_ORDER.indexOf(b[0]);
-  return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-});
-
-for (const arr of groupedCombat.values()) {
-  arr.sort((a, b) => a.strength - b.strength || a.name.localeCompare(b.name));
-}
-
-const searchBlobs: Record<string, string> = {};
-for (const u of units as Unit[]) {
-  searchBlobs[u.slug] = JSON.stringify(u).toLowerCase();
-}
-
-// Map yield key → display label/key for the cost chips.
-function yieldClass(y: string): string {
-  return `yield-${y || 'misc'}`;
-}
 ---
 
 <Base
@@ -67,9 +34,8 @@ function yieldClass(y: string): string {
   active="unit-damage"
   pageMark="⚔️"
   pageStats={[
-    { label: 'combat units', value: combatUnits.length },
-    { label: 'classes',      value: orderedGroups.length },
-    { label: 'all units',    value: units.length },
+    { label: 'land combat units', value: matrixUnits.length },
+    { label: 'matchups', value: matrixUnits.length * matrixUnits.length },
   ]}
 >
   <p class="lede">
@@ -78,6 +44,9 @@ function yieldClass(y: string): string {
     unit's favor) with both sides' anti-trait modifiers. Baseline conditions:
     full HP, open terrain, no promotions, terrain, flanking, or general
     bonuses. <a href={`${base}combat-damage`}>How the formula works →</a>
+    Click a column header to rank attackers against that defender, a row
+    header to rank that unit's targets; click again to flip, a third time to
+    reset. Full unit stats live on the <a href={`${base}units`}>Units</a> page.
   </p>
 
   <div class="natbar">
@@ -103,11 +72,9 @@ function yieldClass(y: string): string {
             <span class="dmx__corner-big">Attacker ↓</span>
           </th>
           {matrixUnits.map((def, i) => (
-            <th class="dmx__col" scope="col" data-nation={def.nationLabel || ''} style={`z-index:${matrixUnits.length - i + 2}`}>
-              <a href={`#${def.slug}`} title={`${def.name} — STR ${def.strength / 10}`}>
-                <span class="dmx__colname">{def.name}</span>
-                <img class="dmx__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt={def.name} loading="lazy" />
-              </a>
+            <th class="dmx__col" scope="col" data-nation={def.nationLabel || ''} style={`z-index:${matrixUnits.length - i + 2}`} title={`${def.name} — STR ${def.strength / 10} — click to sort attackers`}>
+              <span class="dmx__colname">{def.name}</span>
+              <img class="dmx__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt={def.name} loading="lazy" />
             </th>
           ))}
         </tr>
@@ -115,12 +82,12 @@ function yieldClass(y: string): string {
       <tbody>
         {damageRows.map(({ att, cells }) => (
           <tr data-nation={att.nationLabel || ''}>
-            <th class="dmx__row" scope="row">
-              <a href={`#${att.slug}`} class="dmx__rowlink">
+            <th class="dmx__row" scope="row" title={`${att.name} — click to sort targets`}>
+              <div class="dmx__rowlink">
                 <img class="dmx__icon" src={`${base}img/icons/units/${att.iconSlug}.png`} alt="" loading="lazy" />
                 <span class="dmx__rowname">{att.name}</span>
                 <span class="dmx__rowstr">{att.strength / 10}</span>
-              </a>
+              </div>
             </th>
             {cells.map(({ def, d, tone }) => (
               <td
@@ -135,138 +102,80 @@ function yieldClass(y: string): string {
     </table>
   </div>
 
-  <div id="unit-grid">
-    {orderedGroups.map(([cls, arr]) => (
-      <section class="unit-class" data-class={cls}>
-        <h2 class="unit-class__title">
-          <span class="unit-class__name">{cls}</span>
-          <span class="unit-class__count">{arr.length} units</span>
-        </h2>
-        <ul class="unit-list">
-          {arr.map(u => (
-            <li class="unit" id={u.slug} data-unit={u.slug} data-nation={u.nationLabel || ''}>
-              <div class="unit__head">
-                <div class="unit__title">
-                  <span class="unit__name">{u.name}</span>
-                  <span class="unit__sub">
-                    {u.traits.filter(t => t !== 'Promotable').slice(0, 4).join(' · ')}
-                  </span>
-                </div>
-                <div class="unit__stats">
-                  <span class="unit__stat unit__stat--strength" title="Strength">
-                    <b>{u.strength / 10}</b><span class="unit__stat-key">STR</span>
-                  </span>
-                  {u.rangeMax > 0 && (
-                    <span class="unit__stat" title="Range">
-                      <b>{u.rangeMax}</b><span class="unit__stat-key">RNG</span>
-                    </span>
-                  )}
-                  <span class="unit__stat" title="Movement">
-                    <b>{u.movement}</b><span class="unit__stat-key">MOV</span>
-                  </span>
-                  <span class="unit__stat" title="Sight">
-                    <b>{u.vision}</b><span class="unit__stat-key">SGT</span>
-                  </span>
-                  <span class="unit__stat" title="Hit Points">
-                    <b>{u.hp}</b><span class="unit__stat-key">HP</span>
-                  </span>
-                </div>
-              </div>
-
-              {u.costs.length > 0 && (
-                <div class="unit__row">
-                  <span class="unit__label">Cost</span>
-                  {u.costs.map(c => (
-                    <span class={`chip ${yieldClass(c.yield)}`}>
-                      <img class="chip__icon" src={`${base}img/icons/yields/${c.yield}.png`} alt="" onerror="this.style.display='none'" />
-                      {c.value} {c.yield}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {u.consumption.length > 0 && (
-                <div class="unit__row">
-                  <span class="unit__label">Upkeep</span>
-                  {u.consumption.map(c => (
-                    <span class={`chip ${yieldClass(c.yield)}`}>
-                      <img class="chip__icon" src={`${base}img/icons/yields/${c.yield}.png`} alt="" onerror="this.style.display='none'" />
-                      {c.value} {c.yield}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {u.counters.length > 0 && (
-                <div class="unit__row">
-                  <span class="unit__label">Counters</span>
-                  {u.counters.map(c => (
-                    <span class={`chip chip--counter ${c.value > 0 ? 'chip--pos' : 'chip--neg'}`}>
-                      {c.value > 0 ? '+' : ''}{c.value}% {c.kind} {c.target}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {u.techPrereq && (
-                <div class="unit__row unit__row--meta">
-                  <span class="unit__label">Tech</span>
-                  <a class="chip chip--neutral" href={`${base}technologies#${u.techPrereq.replace('TECH_','').toLowerCase()}`}>
-                    {u.techPrereq.replace('TECH_','').replace(/_/g,' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
-                  </a>
-                  {u.nationPrereq && (
-                    <span class="chip chip--neutral">Nation: {u.nationPrereq.replace('NATION_','').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}</span>
-                  )}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))}
-
-    {nonCombat.length > 0 && (
-      <section class="unit-class unit-class--other" data-class="Non-combat">
-        <h2 class="unit-class__title">
-          <span class="unit-class__name">Non-combat & civilians</span>
-          <span class="unit-class__count">{nonCombat.length} units</span>
-        </h2>
-        <ul class="unit-list unit-list--compact">
-          {nonCombat.map(u => (
-            <li class="unit unit--compact" data-unit={u.slug}>
-              <span class="unit__name">{u.name}</span>
-              <span class="unit__sub">{u.traits.slice(0, 3).join(' · ')}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
-  </div>
-
-  <script type="application/json" id="unit-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
+    // Click-to-sort: column header ranks rows by that column's damage,
+    // row header ranks columns by that row's damage. desc → asc → reset.
     (function () {
-      const input = document.getElementById('site-search');
-      const grid = document.getElementById('unit-grid');
-      const blobNode = document.getElementById('unit-search-blobs');
-      if (!input || !grid || !blobNode) return;
-      let blobs;
-      try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
-      function apply() {
-        const q = (input.value || '').trim().toLowerCase();
-        for (const slug of Object.keys(blobs)) {
-          const match = !q || blobs[slug].includes(q);
-          for (const el of grid.querySelectorAll('[data-unit="' + slug + '"]')) {
-            el.classList.toggle('is-hidden', !match);
-          }
+      const table = document.querySelector('.dmx');
+      if (!table) return;
+      const headRow = table.querySelector('thead tr');
+      const tbody = table.querySelector('tbody');
+      headRow.querySelectorAll('.dmx__col').forEach((th, i) => { th.dataset.oi = i; });
+      tbody.querySelectorAll('tr').forEach((tr, i) => { tr.dataset.oi = i; });
+      const cols = () => [...headRow.querySelectorAll('.dmx__col')];
+      const rows = () => [...tbody.querySelectorAll('tr')];
+      let state = null; // {kind, oi, step}
+
+      function stepFor(kind, oi) {
+        if (state && state.kind === kind && state.oi === oi) {
+          state.step += 1;
+          if (state.step > 2) state = null;
+        } else {
+          state = { kind, oi, step: 1 };
         }
-        for (const sec of grid.querySelectorAll('.unit-class')) {
-          const visible = sec.querySelectorAll('.unit:not(.is-hidden):not(.nat-hidden)').length;
-          sec.classList.toggle('is-hidden', visible === 0);
-        }
+        return state ? state.step : 0;
       }
-      input.addEventListener('input', apply);
-      apply();
+      function clearMarks() {
+        table.querySelectorAll('.is-sorted').forEach(el => el.classList.remove('is-sorted'));
+      }
+      function applyZ() {
+        const cs = cols();
+        cs.forEach((th, i) => { th.style.zIndex = cs.length - i + 2; });
+      }
+      function sortRows(th) {
+        const s = stepFor('col', th.dataset.oi);
+        clearMarks();
+        let order;
+        if (s === 0) {
+          order = rows().sort((a, b) => a.dataset.oi - b.dataset.oi);
+        } else {
+          const idx = cols().indexOf(th);
+          const val = tr => +tr.children[idx + 1].textContent || 0;
+          const dir = s === 1 ? -1 : 1;
+          order = rows().sort((a, b) => dir * (val(a) - val(b)) || a.dataset.oi - b.dataset.oi);
+          th.classList.add('is-sorted');
+        }
+        order.forEach(tr => tbody.appendChild(tr));
+      }
+      function sortCols(tr) {
+        const s = stepFor('row', tr.dataset.oi);
+        clearMarks();
+        const cs = cols();
+        const tds = [...tr.querySelectorAll('td')];
+        let perm;
+        if (s === 0) {
+          perm = cs.map((_, i) => i).sort((a, b) => cs[a].dataset.oi - cs[b].dataset.oi);
+        } else {
+          const dir = s === 1 ? -1 : 1;
+          perm = cs.map((_, i) => i).sort((a, b) =>
+            dir * ((+tds[a].textContent || 0) - (+tds[b].textContent || 0)) || cs[a].dataset.oi - cs[b].dataset.oi);
+          tr.querySelector('.dmx__row').classList.add('is-sorted');
+        }
+        perm.map(i => cs[i]).forEach(th => headRow.appendChild(th));
+        for (const r of rows()) {
+          const cells = [...r.querySelectorAll('td')];
+          perm.map(i => cells[i]).forEach(td => r.appendChild(td));
+        }
+        applyZ();
+      }
+      headRow.addEventListener('click', e => {
+        const th = e.target.closest('.dmx__col');
+        if (th) sortRows(th);
+      });
+      tbody.addEventListener('click', e => {
+        const th = e.target.closest('.dmx__row');
+        if (th) sortCols(th.parentElement);
+      });
     })();
   </script>
 
@@ -291,16 +200,6 @@ function yieldClass(y: string): string {
         for (const tr of document.querySelectorAll('.dmx tbody tr')) {
           tr.classList.toggle('nat-hidden', !ok(tr.dataset.nation || ''));
           [...tr.querySelectorAll('td')].forEach((td, i) => td.classList.toggle('nat-hidden', hideCol[i]));
-        }
-        // Unit cards (composes with the header search, which uses .is-hidden).
-        const grid = document.getElementById('unit-grid');
-        if (!grid) return;
-        for (const el of grid.querySelectorAll('.unit[data-nation]')) {
-          el.classList.toggle('nat-hidden', !ok(el.dataset.nation || ''));
-        }
-        for (const sec of grid.querySelectorAll('.unit-class')) {
-          const visible = sec.querySelectorAll('.unit:not(.is-hidden):not(.nat-hidden)').length;
-          sec.classList.toggle('nat-hidden', visible === 0);
         }
       }
       function onChange() {
@@ -333,7 +232,7 @@ function yieldClass(y: string): string {
   /* ── Damage heatmap matrix ── */
   .dmx-wrap {
     overflow: auto;
-    max-height: 80vh;
+    max-height: 85vh;
     border: 1px solid var(--border-strong);
     border-radius: 8px;
     margin: 0 0 1.6rem;
@@ -348,6 +247,7 @@ function yieldClass(y: string): string {
     border-right: 1px solid var(--border-strong);
     text-align: right;
     min-width: 11rem;
+    vertical-align: bottom;
   }
   .dmx__corner-small, .dmx__corner-big {
     display: block;
@@ -363,12 +263,8 @@ function yieldClass(y: string): string {
     /* top padding = room for the 45° labels */
     padding: 4.9rem 0.15rem 0.25rem;
     vertical-align: bottom;
-  }
-  .dmx__col a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
   }
   /* Angled column labels, anchored at the column's center and rising to the
      right — easier to read than fully vertical text. */
@@ -384,8 +280,8 @@ function yieldClass(y: string): string {
     white-space: nowrap;
     pointer-events: none;
   }
-  .dmx__col a:hover + .dmx__colname,
   .dmx__col:hover .dmx__colname { color: var(--text); }
+  .dmx__col.is-sorted .dmx__colname { color: var(--gold); }
   .dmx__row {
     position: sticky; left: 0; z-index: 1;
     background: var(--bg-elev);
@@ -393,16 +289,17 @@ function yieldClass(y: string): string {
     padding: 0;
     text-align: left;
     font-weight: 500;
+    cursor: pointer;
   }
   .dmx__rowlink {
     display: flex; align-items: center; gap: 0.35rem;
     padding: 0.16rem 0.5rem;
     color: var(--text-dim);
     font-size: 0.72rem;
-    text-decoration: none;
     white-space: nowrap;
   }
-  .dmx__rowlink:hover { color: var(--text); text-decoration: none; }
+  .dmx__row:hover .dmx__rowlink { color: var(--text); }
+  .dmx__row.is-sorted .dmx__rowlink { color: var(--gold); }
   .dmx__rowname { flex: 1; }
   .dmx__rowstr {
     font-family: var(--font-mono);
@@ -419,147 +316,4 @@ function yieldClass(y: string): string {
     cursor: default;
   }
   .dmx__cell:hover { outline: 1px solid var(--gold); outline-offset: -1px; }
-
-  .unit-class { margin: 1.4rem 0; }
-  .unit-class__title {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    margin: 0 0 0.6rem;
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
-    padding-bottom: 0.35rem;
-    color: var(--text);
-  }
-  .unit-class__count {
-    margin-left: auto;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--text-faint);
-    font-weight: 400;
-  }
-  .unit-list {
-    list-style: none; margin: 0; padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-    gap: 0.5rem;
-  }
-  .unit-list--compact {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  }
-  .unit {
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 0.55rem 0.7rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-  .unit:target {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent);
-  }
-  .unit--compact {
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.35rem 0.55rem;
-  }
-  .unit__head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-  .unit__title { display: flex; flex-direction: column; gap: 0.05rem; flex: 1; min-width: 0; }
-  .unit__name {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.92rem;
-    letter-spacing: 0.02em;
-    color: var(--text);
-  }
-  .unit__sub {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-faint);
-  }
-  .unit__stats {
-    display: flex;
-    gap: 0.25rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  .unit__stat {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 0.12rem 0.35rem;
-    min-width: 2.2rem;
-    line-height: 1.1;
-    font-variant-numeric: tabular-nums;
-  }
-  .unit__stat b {
-    color: var(--text);
-    font-size: 0.85rem;
-    font-weight: 700;
-  }
-  .unit__stat-key {
-    font-family: var(--font-mono);
-    font-size: 0.55rem;
-    color: var(--text-faint);
-    letter-spacing: 0.05em;
-  }
-  .unit__stat--strength {
-    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-    background: color-mix(in srgb, var(--accent) 8%, var(--bg));
-  }
-  .unit__stat--strength b { color: var(--accent); }
-
-  .unit__row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.2rem;
-  }
-  .unit__row--meta { opacity: 0.85; }
-  .unit__label {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-faint);
-    margin-right: 0.25rem;
-  }
-
-  .unit__row .chip {
-    font-size: 0.62rem;
-    padding: 0.08rem 0.4rem;
-    font-weight: 500;
-  }
-  .chip--counter {
-    background: var(--bg);
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-  }
-  .chip--counter.chip--pos {
-    color: #4caf7d;
-    border-color: rgba(76, 175, 125, 0.4);
-    background: rgba(76, 175, 125, 0.08);
-  }
-  .chip--counter.chip--neg {
-    color: #d46e6e;
-    border-color: rgba(212, 110, 110, 0.4);
-    background: rgba(212, 110, 110, 0.08);
-  }
 </style>
