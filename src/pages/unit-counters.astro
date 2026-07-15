@@ -61,7 +61,25 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 // so trait filters won't catch them).
 const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
-interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null }
+interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string }
+
+// Hue = unit class, everywhere on this page (chips, row labels, matrix rows).
+const UCLS: Record<string, string> = {
+  Infantry: 'ucls-infantry',
+  Polearm: 'ucls-polearm',
+  Mounted: 'ucls-mounted',
+  Ranged: 'ucls-ranged',
+  Siege: 'ucls-siege',
+  Ship: 'ucls-ship',
+};
+const ucls = (label: string) => UCLS[label] || 'ucls-misc';
+
+// Matrix cell tone: green = attacker advantage, red = penalty; deeper = bigger.
+function counterTone(v: number): string {
+  const hue = v > 0 ? '#4caf7d' : '#c25555';
+  const pct = Math.round(14 + (Math.min(Math.abs(v), 100) / 100) * 34);
+  return `color-mix(in srgb, ${hue} ${pct}%, var(--bg-elev))`;
+}
 
 function countersFor(def: Unit): CounterPick[] {
   const picks: CounterPick[] = [];
@@ -71,7 +89,7 @@ function countersFor(def: Unit): CounterPick[] {
     if (bonus <= 0) continue;            // only true counters, like the sheet
     const dmg = attackDamage(att, def);
     if (dmg < 7) continue;               // the sheet's "significant" bar
-    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null });
+    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '' });
   }
   picks.sort((a, b) => b.dmg - a.dmg || a.name.localeCompare(b.name));
   // One entry per name (upgrade dupes). All picks are rendered so the nation
@@ -144,7 +162,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                         <img class="rl__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt="" loading="lazy" />
                         {def.name}
                       </span>
-                      <span class="rl__sources">{def.primaryLabel}{def.nationLabel ? ` · ${def.nationLabel}` : ''}{def.isTribal ? ' · tribal' : ''}</span>
+                      <span class="rl__sources"><span class={`rl__cls ${ucls(def.primaryLabel)}`}>{def.primaryLabel}</span>{def.nationLabel ? ` · ${def.nationLabel}` : ''}{def.isTribal ? ' · tribal' : ''}</span>
                     </div>
                   </th>
                   <td class="cell cell--picks">
@@ -152,7 +170,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                       <span class="cell__dash">no significant counters</span>
                     ) : (
                       picks.map((p, i) => (
-                        <a class={`pick yield-training${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} deals ${p.dmg} damage per attack`}>
+                        <a class={`pick ${ucls(p.cls)}${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
                           <span class="pick__dmg">{p.dmg}</span>
@@ -197,7 +215,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
             <tr>
               <th class="rowlabel" scope="row">
                 <div class="rl">
-                  <span class="rl__name">{row.cls}</span>
+                  <span class="rl__name"><span class={`rl__swatch ${ucls(row.cls)}`}></span>{row.cls}</span>
                   <span class="rl__sources">
                     {row.iconic.map(u => u.name).join(', ')}
                   </span>
@@ -212,9 +230,8 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                     </td>
                   );
                 }
-                const cls = v > 0 ? 'yield-training' : 'yield-misc';
                 return (
-                  <td class={`cell ${cls}`} data-target={cell.defender}>
+                  <td class="cell" data-target={cell.defender} style={`background:${counterTone(v)}`}>
                     <div class="counter">
                       <span class="counter__val">{v > 0 ? '+' : ''}{v}%</span>
                       {cell.sources.length > 0 && (
@@ -234,14 +251,20 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
   <div class="legends">
     <div class="legend">
       <span class="legend__label">Read it</span>
-      <span>Row = which class is attacking. Column = the defender's trait. A "+50% vs Mounted" cell means Polearm units (Spearman etc.) get +50% strength when fighting any Mounted-trait unit.</span>
+      <span>Row = which class is attacking. Column = the defender's trait. A "+50% vs Mounted" cell means Polearm units (Spearman etc.) get +50% strength when fighting any Mounted-trait unit. Green = advantage, red = penalty; deeper color = bigger modifier.</span>
+    </div>
+    <div class="legend">
+      <span class="legend__label">Color = unit class</span>
+      {['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege'].map(c => (
+        <span class={`chip chip--ucls ${ucls(c)}`}>{c}</span>
+      ))}
     </div>
     <div class="legend">
       <span class="legend__label">Classic rules of thumb</span>
-      <span class="chip yield-training">Polearm beats Mounted</span>
-      <span class="chip yield-training">Mounted beats Ranged</span>
-      <span class="chip yield-training">Infantry beats Polearm</span>
-      <span class="chip yield-misc">Ranged softens before melee</span>
+      <span class={`chip chip--ucls ${ucls('Polearm')}`}>Polearm beats Mounted</span>
+      <span class={`chip chip--ucls ${ucls('Mounted')}`}>Mounted beats Ranged</span>
+      <span class={`chip chip--ucls ${ucls('Infantry')}`}>Infantry beats Polearm</span>
+      <span class={`chip chip--ucls ${ucls('Ranged')}`}>Ranged softens before melee</span>
     </div>
   </div>
 
@@ -316,16 +339,16 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       display: inline-flex; align-items: center; gap: 0.3rem;
       margin: 0.12rem 0.18rem 0.12rem 0;
       padding: 0.14rem 0.4rem;
-      border: 1px solid color-mix(in srgb, var(--yield-bg) 55%, var(--border));
-      border-left: 3px solid var(--yield-bg);
+      border: 1px solid color-mix(in srgb, var(--ucls) 55%, var(--border));
+      border-left: 3px solid var(--ucls);
       border-radius: 5px;
-      background: color-mix(in srgb, var(--yield-bg) 12%, var(--bg-elev));
+      background: color-mix(in srgb, var(--ucls) 13%, var(--bg-elev));
       color: var(--text);
       font-size: 0.74rem;
       text-decoration: none;
       white-space: nowrap;
     }
-    .pick:hover { background: color-mix(in srgb, var(--yield-bg) 22%, var(--bg-elev)); text-decoration: none; }
+    .pick:hover { background: color-mix(in srgb, var(--ucls) 24%, var(--bg-elev)); text-decoration: none; }
     .pick__icon { width: 1.1em; height: 1.1em; object-fit: contain; }
     .pick__dmg {
       font-family: var(--font-mono);
@@ -347,6 +370,23 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       color: var(--text-faint);
       letter-spacing: 0.04em;
       text-transform: none;
+    }
+    .rl__cls { color: color-mix(in srgb, var(--ucls) 80%, var(--text)); font-weight: 600; }
+    .rl__swatch {
+      display: inline-block;
+      width: 0.6em; height: 0.6em;
+      border-radius: 2px;
+      background: var(--ucls);
+      margin-right: 0.4em;
+      vertical-align: baseline;
+    }
+    .chip--ucls {
+      padding: 0.1rem 0.5rem;
+      border: 1px solid color-mix(in srgb, var(--ucls) 55%, var(--border));
+      border-left: 3px solid var(--ucls);
+      border-radius: 5px;
+      background: color-mix(in srgb, var(--ucls) 13%, var(--bg-elev));
+      color: var(--text);
     }
     .counter { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; }
     .counter__val {
