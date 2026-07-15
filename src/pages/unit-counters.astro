@@ -23,34 +23,37 @@ function pickIconic(cls: string): Unit[] {
     .slice(0, 3);
 }
 
-interface Cell {
-  best: number;       // largest positive modifier any unit of this class has vs this target
-  worst: number;      // largest negative
-  sources: string[];  // representative unit names
-}
+interface CellGroup { value: number; names: string[] }
 
-function cellFor(attackerClass: string, defender: string): Cell {
+// One group per distinct modifier value, so units are never listed under a
+// number they don't have (Spearman is +50% vs Mounted, only Pikeman is +100%).
+function cellFor(attackerClass: string, defender: string): CellGroup[] {
   const matchers: Unit[] = (units as Unit[])
     .filter(u => u.isCombat && u.isMilitary && u.primaryLabel === attackerClass);
-  let best = 0;
-  let worst = 0;
-  const sources: string[] = [];
+  const perUnit = new Map<string, number>();
   for (const u of matchers) {
+    let v = 0;
     for (const c of u.counters) {
       if (c.target !== defender) continue;
       if (c.kind !== 'vs' && c.kind !== 'melee vs') continue;
-      if (c.value > best) { best = c.value; }
-      if (c.value < worst) { worst = c.value; }
-      if (c.value !== 0 && !sources.includes(u.name)) sources.push(u.name);
+      v += c.value;
     }
+    if (v !== 0 && !perUnit.has(u.name)) perUnit.set(u.name, v);
   }
-  return { best, worst, sources: sources.slice(0, 3) };
+  const byValue = new Map<number, string[]>();
+  for (const [name, v] of perUnit) {
+    if (!byValue.has(v)) byValue.set(v, []);
+    byValue.get(v)!.push(name);
+  }
+  return [...byValue.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(([value, names]) => ({ value, names }));
 }
 
 const matrix = ATTACKER_CLASSES.map(cls => ({
   cls,
   iconic: pickIconic(cls),
-  cells: DEFENDER_TARGETS.map(d => ({ defender: d, ...cellFor(cls, d) })),
+  cells: DEFENDER_TARGETS.map(d => ({ defender: d, groups: cellFor(cls, d) })),
 }));
 
 // ── Per-unit counter list (the spreadsheet's "If you're facing…" view) ──
@@ -62,17 +65,6 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
 interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean }
-
-// Hue = unit class, everywhere on this page (chips, row labels, matrix rows).
-const UCLS: Record<string, string> = {
-  Infantry: 'ucls-infantry',
-  Polearm: 'ucls-polearm',
-  Mounted: 'ucls-mounted',
-  Ranged: 'ucls-ranged',
-  Siege: 'ucls-siege',
-  Ship: 'ucls-ship',
-};
-const ucls = (label: string) => UCLS[label] || 'ucls-misc';
 
 function countersFor(def: Unit): CounterPick[] {
   const picks: CounterPick[] = [];
@@ -158,7 +150,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                         <img class="rl__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt="" loading="lazy" />
                         {def.name}
                       </span>
-                      <span class="rl__sources"><span class={`rl__cls ${ucls(def.primaryLabel)}`}>{def.primaryLabel}</span>{def.nationLabel ? ` · ${def.nationLabel}` : ''}{def.isTribal ? ' · tribal' : ''}</span>
+                      <span class="rl__sources">{def.primaryLabel}{def.nationLabel ? ` · ${def.nationLabel}` : ''}{def.isTribal ? ' · tribal' : ''}</span>
                     </div>
                   </th>
                   <td class="cell cell--picks">
@@ -166,7 +158,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                       <span class="cell__dash">no significant counters</span>
                     ) : (
                       picks.map((p, i) => (
-                        <a class={`pick ${ucls(p.cls)}${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
+                        <a class={`pick${i >= PICK_CAP ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls} — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
                           <span class="pick__dmg">{p.dmg}</span>
@@ -211,15 +203,14 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
             <tr>
               <th class="rowlabel" scope="row">
                 <div class="rl">
-                  <span class="rl__name"><span class={`rl__swatch ${ucls(row.cls)}`}></span>{row.cls}</span>
+                  <span class="rl__name">{row.cls}</span>
                   <span class="rl__sources">
                     {row.iconic.map(u => u.name).join(', ')}
                   </span>
                 </div>
               </th>
               {row.cells.map(cell => {
-                const v = cell.best || cell.worst;
-                if (v === 0) {
+                if (cell.groups.length === 0) {
                   return (
                     <td class="cell is-empty" data-target={cell.defender}>
                       <span class="cell__dash">—</span>
@@ -228,12 +219,12 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                 }
                 return (
                   <td class="cell" data-target={cell.defender}>
-                    <div class="counter">
-                      <span class={`counter__val ${v > 0 ? 'is-pos' : 'is-neg'}`}>{v > 0 ? '+' : ''}{v}%</span>
-                      {cell.sources.length > 0 && (
-                        <span class="counter__sources"><LinkedText text={cell.sources.join(' · ')} showIcons={false} /></span>
-                      )}
-                    </div>
+                    {cell.groups.map(g => (
+                      <div class="counter">
+                        <span class={`counter__val ${g.value > 0 ? 'is-pos' : 'is-neg'}`}>{g.value > 0 ? '+' : ''}{g.value}%</span>
+                        <span class="counter__sources"><LinkedText text={g.names.join(' · ')} showIcons={false} /></span>
+                      </div>
+                    ))}
                   </td>
                 );
               })}
@@ -250,17 +241,11 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       <span>Row = which class is attacking. Column = the defender's trait. A "+50% vs Mounted" cell means Polearm units (Spearman etc.) get +50% strength when fighting any Mounted-trait unit. Green = advantage, red = penalty.</span>
     </div>
     <div class="legend">
-      <span class="legend__label">Dot = unit class</span>
-      {['Infantry', 'Polearm', 'Mounted', 'Ranged', 'Siege'].map(c => (
-        <span class={`keydot ${ucls(c)}`}>{c}</span>
-      ))}
-    </div>
-    <div class="legend">
       <span class="legend__label">Classic rules of thumb</span>
-      <span class={`keydot ${ucls('Polearm')}`}>Polearm beats Mounted</span>
-      <span class={`keydot ${ucls('Mounted')}`}>Mounted beats Ranged</span>
-      <span class={`keydot ${ucls('Infantry')}`}>Infantry beats Polearm</span>
-      <span class={`keydot ${ucls('Ranged')}`}>Ranged softens before melee</span>
+      <span class="rule">Polearm beats Mounted</span>
+      <span class="rule">Mounted beats Ranged</span>
+      <span class="rule">Infantry beats Polearm</span>
+      <span class="rule">Ranged softens before melee</span>
     </div>
   </div>
 
@@ -351,7 +336,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     .ntbl--counters .rowlabel { min-width: 13rem; }
     .rl__icon { width: 1.15em; height: 1.15em; object-fit: contain; vertical-align: -0.2em; margin-right: 0.3em; }
     .cell--picks { padding: 0.3rem 0.6rem; }
-    /* Tufte: no boxes — icon, a small class dot, name, number. */
+    /* Tufte: no boxes, no hue system — icon, name, number. */
     .pick {
       display: inline-flex; align-items: center; gap: 0.3rem;
       margin: 0.14rem 1.1rem 0.14rem 0;
@@ -359,13 +344,6 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       font-size: 0.76rem;
       text-decoration: none;
       white-space: nowrap;
-    }
-    .pick::before {
-      content: '';
-      flex: none;
-      width: 0.42em; height: 0.42em;
-      border-radius: 50%;
-      background: var(--ucls);
     }
     .pick:hover { text-decoration: none; }
     .pick:hover .pick__name { text-decoration: underline; text-underline-offset: 2px; }
@@ -391,28 +369,12 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       letter-spacing: 0.04em;
       text-transform: none;
     }
-    .rl__cls { color: color-mix(in srgb, var(--ucls) 80%, var(--text)); font-weight: 600; }
-    .rl__swatch {
-      display: inline-block;
-      width: 0.6em; height: 0.6em;
-      border-radius: 2px;
-      background: var(--ucls);
-      margin-right: 0.4em;
-      vertical-align: baseline;
-    }
-    .keydot {
-      display: inline-flex; align-items: center; gap: 0.35rem;
+    .rule {
       margin-right: 0.9rem;
       color: var(--text-dim);
       font-size: 0.74rem;
     }
-    .keydot::before {
-      content: '';
-      width: 0.45em; height: 0.45em;
-      border-radius: 50%;
-      background: var(--ucls);
-    }
-    .counter { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; }
+    .counter { display: flex; flex-direction: column; align-items: flex-start; gap: 0.05rem; padding: 0.12rem 0; }
     .counter__val {
       font-family: var(--font-mono);
       font-size: 0.95rem;
