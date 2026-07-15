@@ -54,6 +54,17 @@ WATCHED = [
      "tribe_camps.json interval math (level modifier, co-op factor, turn-1 halving) — camp-spawning page"),
     ("Base/Game/GameCore/Unit.cs", "makeDead", 60,
      "tribe_camps.json kill acceleration (nearest settlement ×4/5 while >4) — camp-spawning page"),
+    # Combat math mirrored in src/lib/combat.ts (unit-damage / unit-counters pages)
+    ("Base/Game/GameCore/InfoHelpers.cs", "getAttackDamage", 25,
+     "combat.ts attackDamage rounding (BASE_DAMAGE × Str, round up in stronger attacker's favor)"),
+    ("Base/Game/GameCore/Unit.cs", "attackUnitStrength", 150,
+     "combat.ts counterBonus: which vs-trait arrays apply on attack (vs/attack/melee-if-attacker-melee)"),
+    ("Base/Game/GameCore/Unit.cs", "defendUnitStrength", 90,
+     "combat.ts counterBonus: which vs-trait arrays apply on defense (vs/defense/melee-if-attacker-melee)"),
+    ("Base/Game/GameCore/Unit.cs", "counterAttackMelee", 15,
+     "unit-counters page: only Melee/Ship defenders counterattack (iMeleeCounter)"),
+    ("Base/Game/GameCore/Unit.cs", "getEffectUnits", 30,
+     "build_unit_damage.py unit_effect_ids(): units carry own aeEffectUnit + one EffectUnit per UnitTrait"),
 ]
 
 
