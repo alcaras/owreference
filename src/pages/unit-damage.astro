@@ -102,8 +102,8 @@ function yieldClass(y: string): string {
             <span class="dmx__corner-small">Defender →</span>
             <span class="dmx__corner-big">Attacker ↓</span>
           </th>
-          {matrixUnits.map(def => (
-            <th class="dmx__col" scope="col" data-nation={def.nationLabel || ''}>
+          {matrixUnits.map((def, i) => (
+            <th class="dmx__col" scope="col" data-nation={def.nationLabel || ''} style={`z-index:${matrixUnits.length - i + 2}`}>
               <a href={`#${def.slug}`} title={`${def.name} — STR ${def.strength / 10}`}>
                 <span class="dmx__colname">{def.name}</span>
                 <img class="dmx__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt={def.name} loading="lazy" />
@@ -340,7 +340,8 @@ function yieldClass(y: string): string {
   }
   .dmx { border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
   .dmx__corner {
-    position: sticky; top: 0; left: 0; z-index: 3;
+    /* above every angled header (they get descending per-column z-index) */
+    position: sticky; top: 0; left: 0; z-index: 999;
     background: var(--bg-elev);
     padding: 0.3rem 0.5rem;
     border-bottom: 1px solid var(--border-strong);
@@ -359,29 +360,32 @@ function yieldClass(y: string): string {
     position: sticky; top: 0; z-index: 2;
     background: var(--bg-elev);
     border-bottom: 1px solid var(--border-strong);
-    padding: 0.25rem 0.15rem;
+    /* top padding = room for the 45° labels */
+    padding: 4.9rem 0.15rem 0.25rem;
     vertical-align: bottom;
   }
   .dmx__col a {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    gap: 0.25rem;
     text-decoration: none;
   }
+  /* Angled column labels, anchored at the column's center and rising to the
+     right — easier to read than fully vertical text. */
   .dmx__colname {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-size: 0.6rem;
+    position: absolute;
+    bottom: 1.75rem;
+    left: 50%;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+    font-size: 0.62rem;
     color: var(--text-dim);
     letter-spacing: 0.02em;
-    max-height: 8.5rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    pointer-events: none;
   }
-  .dmx__col a:hover .dmx__colname { color: var(--text); }
+  .dmx__col a:hover + .dmx__colname,
+  .dmx__col:hover .dmx__colname { color: var(--text); }
   .dmx__row {
     position: sticky; left: 0; z-index: 1;
     background: var(--bg-elev);
