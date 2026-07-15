@@ -272,6 +272,15 @@ export const TABS: Tab[] = [
     willContain: ['Unit type counter matrix'],
   },
   {
+    slug: 'science-to-unlock', icon: '🔬', label: 'Total Science to Unlock', section: 'Combat',
+    status: 'built', sourceSheet: '',
+    summary: 'Cumulative research to field each unit',
+    willContain: [
+      'Full tech-prereq closure cost per unit, cheapest first',
+      'Unique units priced by law tier (any 4 / any 7 tech-gated laws)',
+    ],
+  },
+  {
     slug: 'unit-damage', icon: '⚔️', label: 'Unit Damage & Counters', section: 'Combat',
     status: 'built', sourceSheet: '⚔️ Unit Damage & Counters',
     summary: 'Full unit × unit damage table',

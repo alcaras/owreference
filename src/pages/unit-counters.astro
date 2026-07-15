@@ -106,39 +106,6 @@ const PICK_CAP = 8;
 // Nation filter options (e.g. you + your opponent). Generic units always show.
 const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filter(Boolean))].sort();
 
-// ── Total science to unlock (table below the class overview) ──
-// One row per unlock; unique units group into their two law tiers, since the
-// gate is culture, not tech: Developing (STR 6) ≈ any 4 laws, Strong (STR 8)
-// ≈ any 7 — techCost carries the min science for those from build_unit_damage.
-interface TechRow { cost: number; unlock: string; unlockSlug: string | null; note: string | null; units: Unit[] }
-
-const byStr = (a: Unit, b: Unit) => a.strength - b.strength || a.name.localeCompare(b.name);
-const uuDev = landCombat.filter(u => u.nationPrereq && u.culturePrereq === 'CULTURE_DEVELOPING').sort(byStr);
-const uuStrong = landCombat.filter(u => u.nationPrereq && u.culturePrereq === 'CULTURE_STRONG').sort(byStr);
-const uuIds = new Set([...uuDev, ...uuStrong].map(u => u.id));
-const byTech = new Map<string, Unit[]>();
-for (const u of landCombat.filter(u => !uuIds.has(u.id))) {
-  const k = u.techPrereq || '';
-  if (!byTech.has(k)) byTech.set(k, []);
-  byTech.get(k)!.push(u);
-}
-const techRows: TechRow[] = [...byTech.entries()].map(([tech, us]) => ({
-  cost: us[0].techCost,
-  unlock: us[0].techLabel || 'no tech required',
-  unlockSlug: tech ? tech.replace('TECH_', '').toLowerCase() : null,
-  note: null,
-  units: us.sort(byStr),
-}));
-if (uuDev.length) techRows.push({
-  cost: uuDev[0].techCost, unlock: 'any 4 laws', unlockSlug: null,
-  note: 'Developing-culture uniques — cheapest 4 law techs', units: uuDev,
-});
-if (uuStrong.length) techRows.push({
-  cost: uuStrong[0].techCost, unlock: 'any 7 laws', unlockSlug: null,
-  note: 'Strong-culture uniques — cheapest 7 law techs', units: uuStrong,
-});
-techRows.sort((a, b) => a.cost - b.cost || a.unlock.localeCompare(b.unlock));
-
 const defenders = [...landCombat]
   .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name))
   .map(def => {
@@ -177,6 +144,8 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     (<code>6 × StrAtt / StrDef</code>, both sides' anti-trait modifiers applied,
     full HP, open terrain, no promotions), the same numbers as the
     <a href={`${base}unit-damage`}>Unit Damage</a> matrix, ranked by damage.
+    Research costs live on <a href={`${base}science-to-unlock`}>Total Science
+    to Unlock</a>.
   </p>
 
   <div class="natbar">
@@ -304,47 +273,6 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
     </div>
   </div>
 
-  <h2 class="ctier__h ctier__h--matrix">Total science to unlock</h2>
-  <p class="tcost__note">
-    Cumulative research to field each unit from nothing — its tech plus every
-    prerequisite, each counted once, assuming no starting techs. Unique units
-    are culture-gated instead of tech-gated, so they're grouped by law tier:
-    Developing (STR 6) needs ~4 laws, Strong (STR 8) ~7 — priced at the
-    cheapest set of law techs that gets there. The number on each unit is its
-    strength.
-  </p>
-  <div class="grid">
-    <div class="grid__scroll">
-      <table class="ntbl ntbl--tcost">
-        <tbody>
-          {techRows.map(r => (
-            <tr>
-              <th class="rowlabel" scope="row">
-                <div class="rl">
-                  <span class="rl__num">{r.cost.toLocaleString('en-US')}</span>
-                  <span class="rl__sources">
-                    {r.unlockSlug ? <a href={`${base}technologies#${r.unlockSlug}`}>{r.unlock}</a> : r.unlock}
-                  </span>
-                  {r.note && <span class="rl__sources">{r.note}</span>}
-                </div>
-              </th>
-              <td class="cell cell--picks">
-                <span class="cell__none cell__dash">none under current filters</span>
-                {r.units.map(u => (
-                  <a class="pick" data-nation={u.nationLabel || ''} href={`${base}units#${u.slug}`} title={`${u.name}${u.nationLabel ? ` (${u.nationLabel})` : ''} — STR ${u.strength / 10}`}>
-                    <img class="pick__icon" src={`${base}img/icons/units/${u.iconSlug}.png`} alt="" loading="lazy" />
-                    <span class="pick__name">{u.name}</span>
-                    <span class="pick__dmg">{u.strength / 10}</span>
-                  </a>
-                ))}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
   <div class="legends">
     <div class="legend">
       <span class="legend__label">Read it</span>
@@ -395,10 +323,6 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
         }
         for (const sec of document.querySelectorAll('.ctier')) {
           sec.classList.toggle('nat-hidden', !sec.querySelector('tbody tr:not(.nat-hidden):not(.is-hidden)'));
-        }
-        // Science-cost table: hide other nations' uniques (no cap here).
-        for (const el of document.querySelectorAll('.ntbl--tcost .pick')) {
-          el.classList.toggle('nat-hidden', !ok(el.dataset.nation || ''));
         }
       }
       function onChange() {
@@ -461,22 +385,6 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       margin: 0 0 0.4rem;
     }
     .ctier__h--matrix { margin-top: 1.6rem; }
-    .tcost__note {
-      color: var(--text-dim);
-      max-width: 72ch;
-      margin: 0 0 0.6rem;
-      font-size: 0.78rem;
-      line-height: 1.5;
-    }
-    .rl__num {
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--gold);
-      font-variant-numeric: tabular-nums;
-    }
-    .ntbl--tcost .rowlabel { min-width: 13rem; }
-    .rl__sources a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 2px; }
     .ntbl--counters .rowlabel { min-width: 13rem; }
     .rl__icon { width: 1.15em; height: 1.15em; object-fit: contain; vertical-align: -0.2em; margin-right: 0.3em; }
     .cell--picks { padding: 0.3rem 0.6rem; }

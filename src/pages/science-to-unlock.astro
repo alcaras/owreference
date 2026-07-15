@@ -1,0 +1,255 @@
+---
+import Base from '../layouts/Base.astro';
+import units from '../data/units.json';
+import lawScience from '../data/law_science.json';
+
+const base = import.meta.env.BASE_URL;
+
+type Unit = typeof units[number];
+
+// ── Total science to unlock ──
+// One row per unlock, cheapest first. Regular units carry their full
+// tech-prereq closure cost (build_unit_damage.py); unique units are
+// culture-gated instead of tech-gated, so they group into two law tiers:
+// Developing (STR 6) ≈ any 4 laws, Strong (STR 8) ≈ any 7 — priced at the
+// cheapest set of TECH-GATED law classes (succession needs no tech and
+// doesn't count). law_science.json carries the winning combo so the
+// derivation below the table shows the work.
+const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
+
+interface TechRow { cost: number; unlock: string; unlockSlug: string | null; note: string | null; units: Unit[] }
+
+const byStr = (a: Unit, b: Unit) => a.strength - b.strength || a.name.localeCompare(b.name);
+const uuDev = landCombat.filter(u => u.nationPrereq && u.culturePrereq === 'CULTURE_DEVELOPING').sort(byStr);
+const uuStrong = landCombat.filter(u => u.nationPrereq && u.culturePrereq === 'CULTURE_STRONG').sort(byStr);
+const uuIds = new Set([...uuDev, ...uuStrong].map(u => u.id));
+const byTech = new Map<string, Unit[]>();
+for (const u of landCombat.filter(u => !uuIds.has(u.id))) {
+  const k = u.techPrereq || '';
+  if (!byTech.has(k)) byTech.set(k, []);
+  byTech.get(k)!.push(u);
+}
+const techRows: TechRow[] = [...byTech.entries()].map(([tech, us]) => ({
+  cost: us[0].techCost,
+  unlock: us[0].techLabel || 'no tech required',
+  unlockSlug: tech ? tech.replace('TECH_', '').toLowerCase() : null,
+  note: null,
+  units: us.sort(byStr),
+}));
+if (uuDev.length) techRows.push({
+  cost: uuDev[0].techCost, unlock: 'any 4 laws', unlockSlug: null,
+  note: 'Developing-culture uniques — cheapest 4 law techs', units: uuDev,
+});
+if (uuStrong.length) techRows.push({
+  cost: uuStrong[0].techCost, unlock: 'any 7 laws', unlockSlug: null,
+  note: 'Strong-culture uniques — cheapest 7 law techs', units: uuStrong,
+});
+techRows.sort((a, b) => a.cost - b.cost || a.unlock.localeCompare(b.unlock));
+
+const lawTiers = [
+  { title: 'Any 4 laws (Developing uniques)', ...lawScience.developing },
+  { title: 'Any 7 laws (Strong uniques)', ...lawScience.strong },
+];
+
+// Nation filter options (e.g. you + your opponent). Generic units always show.
+const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filter(Boolean))].sort();
+---
+
+<Base
+  title="Total Science to Unlock"
+  active="science-to-unlock"
+  pageMark="🔬"
+  pageStats={[
+    { label: 'unlocks', value: techRows.length },
+    { label: 'units', value: landCombat.length },
+  ]}
+>
+  <p class="lede">
+    <b>Cumulative research to field each unit from nothing</b> — its tech plus
+    every prerequisite, each counted once, assuming no starting techs. Unique
+    units are culture-gated instead of tech-gated, so they're grouped by law
+    tier: Developing (STR 6) needs ~4 laws, Strong (STR 8) ~7 — priced at the
+    cheapest set of tech-gated law classes (succession laws need no tech and
+    don't count toward the tier). The number on each unit is its strength.
+    Companion to <a href={`${base}unit-counters`}>Unit Counters</a>.
+  </p>
+
+  <div class="natbar">
+    <span class="natbar__label">Nations</span>
+    <select id="nation-a" class="natbar__sel" aria-label="Your nation">
+      <option value="">All nations</option>
+      {nationOptions.map(n => <option value={n}>{n}</option>)}
+    </select>
+    <span class="natbar__vs">vs</span>
+    <select id="nation-b" class="natbar__sel" aria-label="Opponent nation">
+      <option value="">All nations</option>
+      {nationOptions.map(n => <option value={n}>{n}</option>)}
+    </select>
+    <span class="natbar__hint">Pick your nation and your opponent's to hide everyone else's unique units. Generic units always show.</span>
+  </div>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl ntbl--tcost">
+        <tbody>
+          {techRows.map(r => (
+            <tr>
+              <th class="rowlabel" scope="row">
+                <div class="rl">
+                  <span class="rl__num">{r.cost.toLocaleString('en-US')}</span>
+                  <span class="rl__sources">
+                    {r.unlockSlug ? <a href={`${base}technologies#${r.unlockSlug}`}>{r.unlock}</a> : r.unlock}
+                  </span>
+                  {r.note && <span class="rl__sources">{r.note}</span>}
+                </div>
+              </th>
+              <td class="cell cell--picks">
+                <span class="cell__none cell__dash">none under current filters</span>
+                {r.units.map(u => (
+                  <a class="pick" data-nation={u.nationLabel || ''} href={`${base}units#${u.slug}`} title={`${u.name}${u.nationLabel ? ` (${u.nationLabel})` : ''} — STR ${u.strength / 10}`}>
+                    <img class="pick__icon" src={`${base}img/icons/units/${u.iconSlug}.png`} alt="" loading="lazy" />
+                    <span class="pick__name">{u.name}</span>
+                    <span class="pick__dmg">{u.strength / 10}</span>
+                  </a>
+                ))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2 class="ctier__h ctier__h--matrix">How the law tiers are priced</h2>
+  <p class="tcost__note">
+    Cheapest research path to have that many law classes unlocked, brute-forced
+    over every combination (shared prerequisites make the greedy pick wrong).
+    Which laws you actually adopt within each class doesn't matter — one law
+    per unlocked class.
+  </p>
+  <div class="legends">
+    {lawTiers.map(t => (
+      <div class="legend">
+        <span class="legend__label">{t.title}</span>
+        <span>
+          <b class="law__cost">{t.cost.toLocaleString('en-US')} science</b> —
+          {t.lawClasses.join(', ')} · via
+          {t.techs.map((tech, i) => (
+            <>{i > 0 && ' + '}<a href={`${base}technologies#${tech.id.replace('TECH_', '').toLowerCase()}`}>{tech.label}</a> {tech.cost}</>
+          ))}
+        </span>
+      </div>
+    ))}
+  </div>
+
+  <script is:inline>
+    (function () {
+      // Same storage key as Unit Counters / Unit Damage, so the nation pick
+      // follows the user across the combat pages.
+      const selA = document.getElementById('nation-a');
+      const selB = document.getElementById('nation-b');
+      if (!selA || !selB) return;
+      const KEY = 'ow-nation-filter';
+      try {
+        const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
+        if (saved[0]) selA.value = saved[0];
+        if (saved[1]) selB.value = saved[1];
+      } catch {}
+      function apply() {
+        const chosen = [selA.value, selB.value].filter(Boolean);
+        const ok = (n) => !n || chosen.length === 0 || chosen.includes(n);
+        for (const el of document.querySelectorAll('.ntbl--tcost .pick')) {
+          el.classList.toggle('nat-hidden', !ok(el.dataset.nation || ''));
+        }
+      }
+      function onChange() {
+        try { localStorage.setItem(KEY, JSON.stringify([selA.value, selB.value])); } catch {}
+        apply();
+      }
+      selA.addEventListener('change', onChange);
+      selB.addEventListener('change', onChange);
+      apply();
+    })();
+  </script>
+
+  <script is:inline>
+    // Header search filters rows by tech name or any unit name in the row.
+    (function () {
+      const input = document.getElementById('site-search');
+      if (!input) return;
+      function apply() {
+        const q = (input.value || '').trim().toLowerCase();
+        for (const tr of document.querySelectorAll('.ntbl--tcost tbody tr')) {
+          tr.classList.toggle('is-hidden', !!q && !tr.textContent.toLowerCase().includes(q));
+        }
+      }
+      input.addEventListener('input', apply);
+    })();
+  </script>
+
+  <style>
+    .lede {
+      color: var(--text-dim);
+      max-width: 72ch;
+      margin: 0 0 1rem;
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+    .ctier__h {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--text-dim);
+      margin: 0 0 0.4rem;
+    }
+    .ctier__h--matrix { margin-top: 1.6rem; }
+    .tcost__note {
+      color: var(--text-dim);
+      max-width: 72ch;
+      margin: 0 0 0.6rem;
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+    .law__cost { color: var(--gold); font-family: var(--font-mono); font-weight: 600; }
+    .rl__num {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+    }
+    .ntbl--tcost .rowlabel { min-width: 13rem; }
+    .rl__sources a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 2px; }
+    .cell--picks { padding: 0.3rem 0.6rem; }
+    /* Shown only when every pick in the cell is filtered out. */
+    .cell--picks .cell__none { display: none; }
+    .cell--picks:not(:has(.pick:not(.nat-hidden))) .cell__none { display: inline; }
+    /* Tufte: no boxes, no hue system — icon, name, number. */
+    .pick {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      margin: 0.14rem 1.1rem 0.14rem 0;
+      color: var(--text);
+      font-size: 0.76rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .pick:hover { text-decoration: none; }
+    .pick:hover .pick__name { text-decoration: underline; text-underline-offset: 2px; }
+    .pick__icon { width: 1.15em; height: 1.15em; object-fit: contain; }
+    .pick__dmg {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: var(--gold);
+    }
+    .rl { display: flex; flex-direction: column; gap: 0.1rem; }
+    .rl__sources {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-faint);
+      letter-spacing: 0.04em;
+      text-transform: none;
+    }
+  </style>
+</Base>

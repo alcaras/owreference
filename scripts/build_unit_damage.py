@@ -31,6 +31,7 @@ from humanize import (  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "units.json"
+LAW_OUT = ROOT / "src" / "data" / "law_science.json"
 
 
 # The classes we surface as primary "unit class" labels. Same vocabulary the
@@ -400,12 +401,14 @@ def main() -> int:
     # Pairs with bValue=1 are the real tree edges (bonus cards excluded by
     # never being a unit's TechPrereq).
     tech_cost: dict[str, int] = {}
+    tech_name: dict[str, str] = {}
     tech_prereqs: dict[str, list[str]] = {}
     for te in parse("tech.xml").findall("Entry"):
         tz = te.findtext("zType") or ""
         if not tz:
             continue
         tech_cost[tz] = int(te.findtext("iCost") or "0")
+        tech_name[tz] = text.get(te.findtext("Name") or "", token_title(tz, "TECH_"))
         tech_prereqs[tz] = [
             (p.findtext("zIndex") or "").strip()
             for p in te.findall("abTechPrereq/Pair")
@@ -436,35 +439,48 @@ def main() -> int:
     # call them free. Competitive heuristic (per the user): a Developing UU
     # (STR 6) needs ~4 laws adopted, a Strong UU (STR 8) ~7 — so their
     # effective techCost is the MINIMUM cumulative science that unlocks that
-    # many law classes (each lawClass = one adoptable law; classes without a
-    # TechPrereq, i.e. succession, count as free). Minimised by brute force
-    # over closure unions — shared prereqs make greedy non-optimal.
-    law_techs: list[str] = []
-    free_laws = 0
-    for le in parse("lawClass.xml").findall("Entry"):
-        if not (le.findtext("zType") or ""):
-            continue
-        tp = le.findtext("TechPrereq") or ""
-        if tp:
-            law_techs.append(tp)
-        else:
-            free_laws += 1
+    # many TECH-GATED law classes. The succession class (LAWCLASS_ORDER, no
+    # TechPrereq) does NOT count toward the tier — counting it as a free law
+    # once shipped 770/1680, contradicting owtt's cheapest paths (4 laws =
+    # 1030, 7 = 2330). Minimised by brute force over closure unions — shared
+    # prereqs make greedy non-optimal. The winning combo (law classes + tech
+    # path) is exported to law_science.json so the page can show the work.
+    law_names: dict[str, list[str]] = {}
+    for le in parse("law.xml").findall("Entry"):
+        lc = le.findtext("LawClass") or ""
+        nm = text.get(le.findtext("Name") or "", "")
+        if lc and nm:
+            law_names.setdefault(lc, []).append(nm)
 
-    def min_science_for_laws(k: int) -> int:
-        need = max(0, k - free_laws)
-        if need == 0:
-            return 0
-        sets = [closure_set(t) for t in law_techs]
-        best: int | None = None
-        for combo in combinations(sets, need):
-            union: set[str] = set().union(*combo)
+    law_classes: list[tuple[str, str]] = []  # (label "Slavery / Freedom", TechPrereq)
+    for le in parse("lawClass.xml").findall("Entry"):
+        lz = le.findtext("zType") or ""
+        tp = le.findtext("TechPrereq") or ""
+        if lz and tp:
+            label = " / ".join(law_names.get(lz, [])) or token_title(lz, "LAWCLASS_")
+            law_classes.append((label, tp))
+
+    def min_science_for_laws(k: int) -> dict:
+        sets = [(label, closure_set(tp)) for label, tp in law_classes]
+        best: dict | None = None
+        for combo in combinations(sets, k):
+            union: set[str] = set().union(*(s for _, s in combo))
             c = sum(tech_cost[t] for t in union)
-            if best is None or c < best:
-                best = c
-        return best or 0
+            if best is None or c < best["cost"]:
+                best = {
+                    "laws": k,
+                    "cost": c,
+                    "lawClasses": [label for label, _ in combo],
+                    "techs": [
+                        {"id": t, "label": tech_name[t], "cost": tech_cost[t]}
+                        for t in sorted(union, key=lambda t: (tech_cost[t], t))
+                    ],
+                }
+        return best or {"laws": k, "cost": 0, "lawClasses": [], "techs": []}
 
     LAWS_BY_CULTURE = {"CULTURE_DEVELOPING": 4, "CULTURE_STRONG": 7}
-    laws_cost = {c: min_science_for_laws(k) for c, k in LAWS_BY_CULTURE.items()}
+    law_tiers = {c: min_science_for_laws(k) for c, k in LAWS_BY_CULTURE.items()}
+    laws_cost = {c: t["cost"] for c, t in law_tiers.items()}
 
     units: list[dict] = []
     for entry in parse("unit.xml").findall("Entry"):
@@ -619,6 +635,11 @@ def main() -> int:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(units, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"✓ wrote {OUT.relative_to(ROOT)} — {len(units)} units")
+
+    LAW_OUT.write_text(json.dumps(
+        {"developing": law_tiers["CULTURE_DEVELOPING"], "strong": law_tiers["CULTURE_STRONG"]},
+        indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+    print(f"✓ wrote {LAW_OUT.relative_to(ROOT)}")
     return 0
 
 
