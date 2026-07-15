@@ -94,11 +94,11 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
 const defenders = [...landCombat]
   .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name))
   .map(def => {
-    // Server-render the default view: stronger and costlier-tech attackers
-    // hidden (both toggles start on), capped at PICK_CAP visible.
+    // Server-render the default view: stronger attackers hidden (that toggle
+    // starts on; the tech toggle starts off), capped at PICK_CAP visible.
     let vis = 0;
     const picks = countersFor(def).map(p => {
-      const show = p.str <= def.strength && p.techCost <= def.techCost && vis < PICK_CAP;
+      const show = p.str <= def.strength && vis < PICK_CAP;
       if (show) vis++;
       return { ...p, initiallyHidden: !show };
     });
@@ -147,7 +147,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       hide stronger attackers
     </label>
     <label class="natbar__toggle" title="Hide attackers whose cumulative tech cost (no starting techs; laws for unique units) exceeds the defender's">
-      <input type="checkbox" id="hide-costlier" checked />
+      <input type="checkbox" id="hide-costlier" />
       hide attackers needing more tech
     </label>
     <span class="natbar__hint">Pick your nation and your opponent's to hide everyone else's unique units. Generic units always show.</span>
@@ -285,9 +285,10 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
         const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
         if (saved[0]) selA.value = saved[0];
         if (saved[1]) selB.value = saved[1];
-        // On by default; only an explicit opt-out ('0') unchecks them.
+        // Strength filter defaults on (explicit '0' opts out); tech filter
+        // defaults off (explicit '1' opts in).
         if (chkStr) chkStr.checked = localStorage.getItem(STR_KEY) !== '0';
-        if (chkTech) chkTech.checked = localStorage.getItem(TECH_KEY) !== '0';
+        if (chkTech) chkTech.checked = localStorage.getItem(TECH_KEY) === '1';
       } catch {}
       function apply() {
         const chosen = [selA.value, selB.value].filter(Boolean);
