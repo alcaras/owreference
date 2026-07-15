@@ -481,6 +481,12 @@ def main() -> int:
     LAWS_BY_CULTURE = {"CULTURE_DEVELOPING": 4, "CULTURE_STRONG": 7}
     law_tiers = {c: min_science_for_laws(k) for c, k in LAWS_BY_CULTURE.items()}
     laws_cost = {c: t["cost"] for c, t in law_tiers.items()}
+    # Tech sets behind each tier's cheapest path, for the marginal columns:
+    # "science beyond 4/7 laws" = the unlock's closure minus what that path
+    # already researched. Relative to OUR cheapest sets (ties broken by file
+    # order), so a 0 means "included in the path shown on the page".
+    law_tier_sets = {c: frozenset(t["id"] for t in tier["techs"])
+                     for c, tier in law_tiers.items()}
 
     units: list[dict] = []
     for entry in parse("unit.xml").findall("Entry"):
@@ -568,6 +574,13 @@ def main() -> int:
         culture = entry.findtext("CulturePrereq") or ""
         if nation_prereq and not culture and imp_prereq:
             culture = imp_culture.get(imp_prereq, culture)
+
+        # Everything the unit's unlock requires researched: the tech-prereq
+        # closure, or for culture-gated uniques the cheapest law-tier set.
+        if nation_prereq:
+            req_techs = law_tier_sets.get(culture, frozenset())
+        else:
+            req_techs = closure_set(entry.findtext("TechPrereq") or "")
         era = ERA_BY_CULTURE.get(culture, {"order": 0, "label": token_title(culture, "CULTURE_")})
         dlc = entry.findtext("GameContentRequired") or ""
 
@@ -602,6 +615,10 @@ def main() -> int:
             # to unlock enough laws for their tier. 0 for Militia/tribals.
             "techCost": (laws_cost.get(culture, 0) if nation_prereq
                          else closure_cost(entry.findtext("TechPrereq") or "")),
+            # Marginal science if the cheapest 4-law / 7-law path is already
+            # researched (0 = nothing extra needed on that path).
+            "techCostBeyond4": sum(tech_cost[t] for t in req_techs - law_tier_sets["CULTURE_DEVELOPING"]),
+            "techCostBeyond7": sum(tech_cost[t] for t in req_techs - law_tier_sets["CULTURE_STRONG"]),
             "nationPrereq": entry.findtext("NationPrereq") or "",
             "primaryTrait": primary,
             "primaryLabel": trait_label(primary) if primary else "",

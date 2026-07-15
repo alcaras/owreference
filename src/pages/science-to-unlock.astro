@@ -17,7 +17,7 @@ type Unit = typeof units[number];
 // derivation below the table shows the work.
 const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
-interface TechRow { cost: number; unlock: string; unlockSlug: string | null; note: string | null; units: Unit[] }
+interface TechRow { cost: number; beyond4: number; beyond7: number; unlock: string; unlockSlug: string | null; note: string | null; units: Unit[] }
 
 const byStr = (a: Unit, b: Unit) => a.strength - b.strength || a.name.localeCompare(b.name);
 const uuDev = landCombat.filter(u => u.nationPrereq && u.culturePrereq === 'CULTURE_DEVELOPING').sort(byStr);
@@ -31,17 +31,21 @@ for (const u of landCombat.filter(u => !uuIds.has(u.id))) {
 }
 const techRows: TechRow[] = [...byTech.entries()].map(([tech, us]) => ({
   cost: us[0].techCost,
+  beyond4: us[0].techCostBeyond4,
+  beyond7: us[0].techCostBeyond7,
   unlock: us[0].techLabel || 'no tech required',
   unlockSlug: tech ? tech.replace('TECH_', '').toLowerCase() : null,
   note: null,
   units: us.sort(byStr),
 }));
 if (uuDev.length) techRows.push({
-  cost: uuDev[0].techCost, unlock: 'any 4 laws', unlockSlug: null,
+  cost: uuDev[0].techCost, beyond4: uuDev[0].techCostBeyond4, beyond7: uuDev[0].techCostBeyond7,
+  unlock: 'any 4 laws', unlockSlug: null,
   note: 'Developing-culture uniques — cheapest 4 law techs', units: uuDev,
 });
 if (uuStrong.length) techRows.push({
-  cost: uuStrong[0].techCost, unlock: 'any 7 laws', unlockSlug: null,
+  cost: uuStrong[0].techCost, beyond4: uuStrong[0].techCostBeyond4, beyond7: uuStrong[0].techCostBeyond7,
+  unlock: 'any 7 laws', unlockSlug: null,
   note: 'Strong-culture uniques — cheapest 7 law techs', units: uuStrong,
 });
 techRows.sort((a, b) => a.cost - b.cost || a.unlock.localeCompare(b.unlock));
@@ -65,14 +69,28 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
   ]}
 >
   <p class="lede">
-    <b>Cumulative research to field each unit from nothing</b> — its tech plus
-    every prerequisite, each counted once, assuming no starting techs. Unique
-    units are culture-gated instead of tech-gated, so they're grouped by law
-    tier: Developing (STR 6) needs ~4 laws, Strong (STR 8) ~7 — priced at the
-    cheapest set of tech-gated law classes (succession laws need no tech and
-    don't count toward the tier). The number on each unit is its strength.
-    Companion to <a href={`${base}unit-counters`}>Unit Counters</a>.
+    <b>How much research it takes to field each unit.</b> Each row is one
+    unlock — a technology, or a law tier for the culture-gated unique units
+    (Developing needs ~4 laws, Strong ~7; succession laws need no tech and
+    don't count). Rows are sorted cheapest first, so reading top to bottom is
+    the order units become available on a minimal research path. Companion to
+    <a href={`${base}unit-counters`}>Unit Counters</a>.
   </p>
+
+  <div class="legends legends--top">
+    <div class="legend">
+      <span class="legend__label">Read it</span>
+      <span>
+        <b>Total science</b> = research to get that unlock from a fresh start
+        (no starting techs), its tech plus every prerequisite, each counted
+        once. <b>Beyond 4 / 7 laws</b> = the extra science on top of the
+        cheapest 4-law or 7-law path (spelled out at the bottom of the page) —
+        0 means that path already includes it. On the right: every unit that
+        unlock lets you build; the gold number is the unit's <em>strength</em>
+        (Warrior 4, Hoplite 6…), and each links to its entry on the Units page.
+      </span>
+    </div>
+  </div>
 
   <div class="natbar">
     <span class="natbar__label">Nations</span>
@@ -91,6 +109,28 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
   <div class="grid">
     <div class="grid__scroll">
       <table class="ntbl ntbl--tcost">
+        <colgroup>
+          <col class="tcost-col--label" />
+          <col class="tcost-col--delta" />
+          <col class="tcost-col--delta" />
+          <col />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="nhdr nhdr--family" title="Research to get this unlock from a fresh start — its tech plus every prerequisite, no starting techs">
+              <div class="nhdr__inner"><span class="nhdr__name">Total science</span></div>
+            </th>
+            <th class="nhdr nhdr--family" title="Extra science on top of the cheapest 4-law path (Developing uniques) — 0 = already included in it">
+              <div class="nhdr__inner"><span class="nhdr__name">beyond 4 laws</span></div>
+            </th>
+            <th class="nhdr nhdr--family" title="Extra science on top of the cheapest 7-law path (Strong uniques) — 0 = already included in it">
+              <div class="nhdr__inner"><span class="nhdr__name">beyond 7 laws</span></div>
+            </th>
+            <th class="nhdr nhdr--family" title="Every land combat unit this unlock makes buildable — the gold number is the unit's strength">
+              <div class="nhdr__inner"><span class="nhdr__name">Units unlocked <span class="nhdr__hint">(number = strength)</span></span></div>
+            </th>
+          </tr>
+        </thead>
         <tbody>
           {techRows.map(r => (
             <tr>
@@ -103,6 +143,8 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
                   {r.note && <span class="rl__sources">{r.note}</span>}
                 </div>
               </th>
+              <td class={`cell cell--delta${r.beyond4 === 0 ? ' is-zero' : ''}`}>{r.beyond4.toLocaleString('en-US')}</td>
+              <td class={`cell cell--delta${r.beyond7 === 0 ? ' is-zero' : ''}`}>{r.beyond7.toLocaleString('en-US')}</td>
               <td class="cell cell--picks">
                 <span class="cell__none cell__dash">none under current filters</span>
                 {r.units.map(u => (
@@ -212,6 +254,26 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
       line-height: 1.5;
     }
     .law__cost { color: var(--gold); font-family: var(--font-mono); font-weight: 600; }
+    .legends--top { margin: 0 0 1rem; }
+    .tcost-col--label { width: 14rem; }
+    .tcost-col--delta { width: 6.5rem; }
+    .cell--delta {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.3rem 0.6rem;
+      vertical-align: top;
+    }
+    .cell--delta.is-zero { color: var(--text-faint); font-weight: 400; }
+    .nhdr__hint { font-weight: 400; font-family: var(--font-mono); font-size: 0.6em; color: var(--text-faint); letter-spacing: 0.04em; }
+    .nhdr--family {
+      background: var(--bg-elev-2);
+      color: var(--text);
+      border-bottom: 2px solid var(--border-strong);
+      background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.18));
+    }
+    .nhdr--family .nhdr__name { font-size: 0.8rem; }
     .rl__num {
       font-family: var(--font-mono);
       font-size: 0.95rem;
