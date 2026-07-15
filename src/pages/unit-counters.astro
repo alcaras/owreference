@@ -64,7 +64,7 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 // so trait filters won't catch them).
 const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
-interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean; str: number; techCost: number }
+interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean; str: number; techCost: number; freeHit: boolean }
 
 function countersFor(def: Unit): CounterPick[] {
   const picks: CounterPick[] = [];
@@ -74,10 +74,18 @@ function countersFor(def: Unit): CounterPick[] {
     // matches stay in (the sheet listed Polybolos as its own counter via
     // Rapid Fire). This keeps membership consistent with the Unit Damage
     // matrix: a row here = the defender's best column cells over there.
+    //
+    // One exception to the ≥7 bar: counter damage on being attacked is the
+    // defender's iMeleeCounter sum (Unit.cs counterAttackMelee), and only
+    // EFFECTUNIT_MELEE/_SHIP carry it — ranged and siege defenders hit back
+    // for zero. A mounted melee attacker (fast enough to actually catch
+    // them) therefore qualifies at an even trade: horses counter onagers
+    // even though the damage roll is level.
     const dmg = attackDamage(att, def);
-    if (dmg < 7) continue;               // the sheet's "significant" bar
+    const freeHit = !def.isMelee && att.isMelee && att.traits.includes('Mounted');
+    if (dmg < (freeHit ? 6 : 7)) continue;  // 7 = the sheet's "significant" bar
     const bonus = counterBonus(att, def.traits, true, att.isMelee);
-    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '', hasBonus: bonus > 0, str: att.strength, techCost: att.techCost });
+    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '', hasBonus: bonus > 0, str: att.strength, techCost: att.techCost, freeHit });
   }
   picks.sort((a, b) => b.dmg - a.dmg || a.name.localeCompare(b.name));
   // One entry per name (upgrade dupes). All picks are rendered so the nation
@@ -178,7 +186,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                       <>
                       <span class="cell__none cell__dash">none under current filters</span>
                       {picks.map(p => (
-                        <a class={`pick${p.initiallyHidden ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} data-str={p.str} data-tech={p.techCost} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls}, STR ${p.str / 10}, ${p.techCost} science to unlock — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
+                        <a class={`pick${p.initiallyHidden ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} data-str={p.str} data-tech={p.techCost} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls}, STR ${p.str / 10}, ${p.techCost} science to unlock — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}${p.freeHit ? ' (uncontested: this defender never counterattacks)' : ''}`}>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
                           <span class="pick__dmg">{p.dmg}</span>
