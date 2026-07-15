@@ -511,7 +511,11 @@ def main() -> int:
         # XML-derived counter modifiers (kept for other pages' damage math) +
         # named special abilities. Each ability carries its own grounded
         # description `lines`, so abilities and counters never render doubled.
-        counters = collect_counter_lines(effect_ids, eu_idx)
+        # Counters must include trait-attached effects (Unit.cs getEffectUnits
+        # adds one EffectUnit per UnitTrait): UNITTRAIT_MOUNTED carries
+        # +50% melee vs Siege and UNITTRAIT_CAMEL +50% vs Horse — both were
+        # invisible when this walked only the unit's own aeEffectUnit.
+        counters = collect_counter_lines(unit_effect_ids(entry, trait_effect), eu_idx)
         abilities = collect_abilities(effect_ids, eu_idx, text)
 
         # Effective vision / movement: base + every EffectUnit's extra (own +

@@ -53,6 +53,7 @@ export function counterBonus(
     if (c.kind === 'vs') b += c.value;
     else if (c.kind === 'melee vs' && (attacking ? u.isMelee : attackerIsMelee)) b += c.value;
     else if (c.kind === 'attack vs' && attacking) b += c.value;
+    else if (c.kind === 'defense vs' && !attacking) b += c.value;
   }
   return b;
 }
