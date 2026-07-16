@@ -6,7 +6,15 @@ import { yieldColors } from '../lib/entities';
 const base = import.meta.env.BASE_URL;
 const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
 
-const { ratings, ratingEquivalent, stats } = data as any;
+const { ratings, ratingEquivalent, stats, agentCalc } = data as any;
+
+// Union of role keys across stats, in first-seen order — the graph's role
+// picker shows them all and hides the ones the active stat doesn't have
+// (council seats differ per rating: Spymaster draws on Wisdom+Discipline+Courage, etc.).
+const allRoles: { key: string; label: string }[] = [];
+for (const s of stats as any[])
+  for (const r of s.roles)
+    if (!allRoles.some((x) => x.key === r.key)) allRoles.push({ key: r.key, label: r.label });
 
 // Color each stat by the yield it GIVES (site convention), not the rating's
 // in-game accent. The game's Wisdom rating is green, but Wisdom → Science, and
@@ -35,6 +43,18 @@ function fmtCell(role: any, v: number): string {
 
 // Compact payload for the interactive graph: per stat, each role's Base and
 // Competitive series (one value per rating, in `ratings` order).
+// Payload for the agent-yield calculator: per-stat linear percent (rating.xml
+// aiYieldAgentPercent — 5 for all four), the Schemer trait's flat +10
+// (trait.xml iAgentModifier) and the opinion rate modifiers (opinionCharacter.xml).
+const agentData = {
+  stats: (stats as any[]).map((s) => ({
+    slug: s.slug, name: s.name, yield: s.yield, yieldLabel: s.yieldLabel,
+    percent: s.baseRates.agent, color: statColor(s),
+  })),
+  schemerModifier: agentCalc.schemerModifier,
+  opinions: agentCalc.opinions,
+};
+
 const graphData = {
   ratings,
   stats: (stats as any[]).map((s) => ({
@@ -50,9 +70,10 @@ const graphData = {
   title="Stat Scaling"
   active="stat-scaling"
   pageMark="📈"
-  description="How each character rating (Wisdom, Charisma, Courage, Discipline) scales into yields and combat bonuses, by role and rating value (−3 to +15), computed directly from the game's own formula. Compare Non-competitive (triangular) vs Competitive Mode (linear) scaling side by side. Every number is derived from rating.xml and yield.xml via the triangle formula in the game code — not the legacy spreadsheet."
+  description="How each character rating (Wisdom, Charisma, Courage, Discipline) scales into yields and combat bonuses, by role and rating value (−3 to +15), computed directly from the game's own formula — including the Chancellor, Spymaster and Ambassador council seats and an agent yield calculator. Compare Non-competitive (triangular) vs Competitive Mode (linear) scaling side by side. Every number is derived from rating.xml, council.xml and yield.xml via the triangle formula in the game code — not the legacy spreadsheet."
   pageStats={[
     { label: 'stats', value: stats.length },
+    { label: 'roles', value: allRoles.length },
     { label: 'rating range', value: `${ratings[0]}…${ratings[ratings.length - 1]}` },
     { label: 'modes', value: 2 },
   ]}
@@ -69,8 +90,12 @@ const graphData = {
     <ul class="scale-roles">
       <li><b>Leader</b> — flat yield of the stat's signature yield (its own <code>iTriangleOffset</code>).</li>
       <li><b>Governor</b> — percent boost to that yield (triangle-boosted).</li>
-      <li><b>Agent</b> — percent boost to that yield (linear with rating).</li>
+      <li><b>Agent</b> — percent boost to that yield (linear with rating; see the <a href="#agent-calc">calculator below</a>).</li>
       <li><b>General</b> — a combat bonus (Crit / Defense / Attack / Unit XP), triangle-boosted.</li>
+      <li><b>Council seats</b> — <b>Chancellor</b>, <b>Spymaster</b> and <b>Ambassador</b> each turn specific
+        ratings into flat yields (<code>council.xml</code>), scaled by the plain triangle
+        R·(R+1)/2 with no offset. Some are empire-wide per turn, some are <i>per city</i>
+        (marked <code>/city</code> in the column header). The Grand Vizier seat grants no rating yields.</li>
     </ul>
     <p class="scale-note">
       These are the raw outputs of the game formula and can differ from the legacy spreadsheet's
@@ -86,9 +111,9 @@ const graphData = {
         ))}
       </div>
       <div class="seg" id="sg-roles" role="tablist" aria-label="Role">
-        {['leader', 'governor', 'agent', 'general'].map((k, i) => (
-          <button type="button" class={`seg__btn ${i === 0 ? 'is-active' : ''}`} data-role={k}>
-            {k.charAt(0).toUpperCase() + k.slice(1)}
+        {allRoles.map((r, i) => (
+          <button type="button" class={`seg__btn ${i === 0 ? 'is-active' : ''}`} data-role={r.key}>
+            {r.label}
           </button>
         ))}
       </div>
@@ -145,7 +170,9 @@ const graphData = {
                       {stat.roles.map((role: any) => {
                         const v = r[role.key];
                         const txt = fmtCell(role, v);
-                        const tint = role.kind === 'yield' ? `yield-${stat.yield}` : (role.key === 'general' ? 'yield-misc' : `yield-${stat.yield}`);
+                        // Tint by the yield the ROLE gives (council seats can give a
+                        // different yield than the stat's signature one); General stays misc.
+                        const tint = role.key === 'general' ? 'yield-misc' : `yield-${role.yield}`;
                         return (
                           <td class={`cell cell--num ${v === 0 ? 'is-empty' : tint} ${v < 0 ? 'is-neg' : ''}`}>
                             <span class="numval">{txt}</span>
@@ -162,6 +189,143 @@ const graphData = {
       </section>
     ))}
   </div>
+
+  <section class="agent-sec" id="agent-calc">
+    <h2 class="agent-sec__title">Agent yields</h2>
+    <div class="scale-intro">
+      <p>
+        Agents unlock once a <b>Spymaster</b> is seated on your council. Courtiers, characters with the
+        <b>Hero</b> or <b>Schemer</b> archetype, and clergy of a world religion (those only in cities
+        following their religion) can be sent as agents into a foreign city; taking the job gives the
+        character +20 opinion of you.
+      </p>
+      <p>
+        Each turn the agent skims the <b>target city's base yields</b>
+        (<code>City.calculateAgentYield</code> / <code>InfoHelpers.getRatingYieldAgentPercent</code>):
+        every rating contributes <b>rating × 5%</b> of the city's base signature yield — Wisdom→Science,
+        Charisma→Civics, Courage→Training, Discipline→Money — all four at once. That percent is scaled by
+        the <b>agent's opinion of you</b> (Furious −200% … Friendly +100%, so a Friendly agent yields
+        double and an Angry one nothing), and a <b>Schemer</b> then adds a flat
+        <b>+{agentCalc.schemerModifier} percentage points</b> per yield — added <i>after</i> the opinion
+        scaling, so the Schemer bonus itself is never reduced (and works even at rating 0).
+      </p>
+      <p>
+        “Base” means <code>getBaseYieldNet</code> — the city's yield <i>before its percentage modifiers</i>,
+        so the owner's yield-% buildings, governor and specialists' modifiers don't multiply your take.
+        Agent scaling is already linear, so Competitive Mode doesn't change it.
+      </p>
+    </div>
+
+    <div class="ac-panel">
+      <div class="ac-controls">
+        <label class="ac-field">
+          <span class="ac-field__lab">Rating</span>
+          <select id="ac-stat">
+            {(agentData.stats as any[]).map((s, i) => (
+              <option value={s.slug} selected={i === 0}>{s.name} → {s.yieldLabel}</option>
+            ))}
+          </select>
+        </label>
+        <label class="ac-field">
+          <span class="ac-field__lab">Rating value</span>
+          <input type="number" id="ac-rating" value="4" min="-10" max="30" step="1" />
+        </label>
+        <label class="ac-field ac-field--check">
+          <span class="ac-field__lab">Schemer</span>
+          <input type="checkbox" id="ac-schemer" checked />
+        </label>
+        <label class="ac-field">
+          <span class="ac-field__lab">Agent's opinion of you</span>
+          <select id="ac-opinion">
+            {(agentData.opinions as any[]).map((o) => (
+              <option value={o.id} selected={o.modifier === 0}>{o.name} ({o.modifier > 0 ? '+' : ''}{o.modifier}%)</option>
+            ))}
+          </select>
+        </label>
+        <label class="ac-field">
+          <span class="ac-field__lab" id="ac-base-lab">City base Science</span>
+          <input type="number" id="ac-base" value="30" min="0" step="0.1" />
+        </label>
+      </div>
+      <p class="ac-result" id="ac-result"></p>
+      <p class="ac-breakdown" id="ac-breakdown"></p>
+      <p class="scale-note">
+        The math is the game's integer math (percents truncate toward zero; the yield is truncated to a
+        tenth). With a negative rating the opinion scaling flips sign, so a hostile agent hurts less —
+        and a friendly one helps less — when the rating is a penalty.
+      </p>
+    </div>
+  </section>
+
+  <script type="application/json" id="ac-data" set:html={JSON.stringify(agentData)}></script>
+
+  <script is:inline>
+    // Agent-yield calculator — a faithful port of
+    // InfoHelpers.getRatingYieldAgentPercent + City.calculateAgentYield:
+    //   pct = 5 · rating
+    //   pct = modify(pct, opinionMod · (rating < 0 ? −1 : 1))   [truncating int math]
+    //   pct += 10 if Schemer                                     [after opinion!]
+    //   yield = trunc(base(in tenths) · pct / 100) / 10
+    (function () {
+      const node = document.getElementById('ac-data');
+      if (!node) return;
+      let DATA; try { DATA = JSON.parse(node.textContent || '{}'); } catch { return; }
+      const byStat = Object.fromEntries(DATA.stats.map((s) => [s.slug, s]));
+      const oppByid = Object.fromEntries(DATA.opinions.map((o) => [o.id, o]));
+      const el = (id) => document.getElementById(id);
+      const statEl = el('ac-stat'), ratingEl = el('ac-rating'), schemerEl = el('ac-schemer'),
+            opinionEl = el('ac-opinion'), baseEl = el('ac-base'),
+            resultEl = el('ac-result'), breakEl = el('ac-breakdown'), baseLab = el('ac-base-lab');
+
+      // Utils.modify(v, m, allowNegative:true) — C# int division truncates toward zero.
+      const modify = (v, m) => (v === 0 || m === 0) ? v : Math.trunc(v * (m + 100) / 100);
+
+      function agentPercent(stat, rating, schemer, oppMod) {
+        let pct = stat.percent;           // 5 — nonzero, so the branch always runs
+        pct *= rating;
+        // yieldWarning: for a normal yield the sign flips when the rating is negative
+        if (oppMod !== 0) pct = modify(pct, oppMod * (rating < 0 ? -1 : 1));
+        if (schemer) pct += DATA.schemerModifier;
+        return pct;
+      }
+
+      function calc() {
+        const stat = byStat[statEl.value];
+        const rating = Math.trunc(Number(ratingEl.value) || 0);
+        const schemer = schemerEl.checked;
+        const opp = oppByid[opinionEl.value];
+        const base10 = Math.round((Number(baseEl.value) || 0) * 10);
+
+        baseLab.textContent = `City base ${stat.yieldLabel}`;
+
+        const pct = agentPercent(stat, rating, schemer, opp.modifier);
+        const y = Math.trunc(base10 * pct / 100) / 10;
+        const pctOther = agentPercent(stat, rating, !schemer, opp.modifier);
+        const yOther = Math.trunc(base10 * pctOther / 100) / 10;
+
+        const fmt = (v) => (v > 0 ? '+' : '') + (Number.isInteger(v) ? v : v.toFixed(1));
+        resultEl.innerHTML =
+          `<b style="color:${stat.color}">${fmt(y)} ${stat.yieldLabel}</b> per turn ` +
+          `<span class="ac-result__pct">(${pct}% of the city's base ${stat.yieldLabel})</span>`;
+
+        let steps = `${stat.percent} × ${rating} (${stat.name})`;
+        if (opp.modifier !== 0) {
+          const eff = opp.modifier * (rating < 0 ? -1 : 1);
+          steps += ` → ×${(100 + eff) / 100} (${opp.name})`;
+        }
+        if (schemer) steps += ` + ${DATA.schemerModifier} (Schemer)`;
+        steps += ` = ${pct}% · ${(base10 / 10).toFixed(1)} base ${stat.yieldLabel} → ${fmt(y)}/turn`;
+        steps += schemer
+          ? ` — without Schemer: ${fmt(yOther)}`
+          : ` — as a Schemer: ${fmt(yOther)}`;
+        breakEl.textContent = steps;
+      }
+
+      [statEl, ratingEl, schemerEl, opinionEl, baseEl].forEach((e) =>
+        e.addEventListener('input', calc));
+      calc();
+    })();
+  </script>
 
   <script is:inline>
     (function () {
@@ -271,9 +435,19 @@ const graphData = {
       });
       svg.addEventListener('pointerleave', () => { hoverR = null; draw(); });
 
+      // Council-seat roles vary per stat (Spymaster draws on Wisdom, Courage and
+      // Discipline; Chancellor on all four; Ambassador only Wisdom) — hide role
+      // buttons the active stat doesn't have, and fall back to Leader if needed.
+      function syncRoleButtons() {
+        const keys = new Set(byStat[statSlug].roles.map((r) => r.key));
+        roleBtns.forEach((b) => { b.style.display = keys.has(b.getAttribute('data-role')) ? '' : 'none'; });
+        if (!keys.has(roleKey)) roleKey = 'leader';
+        roleBtns.forEach((x) => x.classList.toggle('is-active', x.getAttribute('data-role') === roleKey));
+      }
       statBtns.forEach((b) => b.addEventListener('click', () => {
         statSlug = b.getAttribute('data-stat');
         statBtns.forEach((x) => x.classList.toggle('is-active', x === b));
+        syncRoleButtons();
         draw();
       }));
       roleBtns.forEach((b) => b.addEventListener('click', () => {
@@ -281,6 +455,7 @@ const graphData = {
         roleBtns.forEach((x) => x.classList.toggle('is-active', x === b));
         draw();
       }));
+      syncRoleButtons();
       draw();
     })();
   </script>
@@ -371,4 +546,25 @@ const graphData = {
   .sg-graph :global(.cg-guide) { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.55; }
   .sg-graph :global(.cg-dot-base) { fill: var(--text-faint); stroke: var(--bg); stroke-width: 1.5; }
   .sg-graph :global(.cg-dot-cm) { stroke: var(--bg); stroke-width: 2; }
+
+  /* ── Agent yields section ── */
+  .agent-sec { margin-top: 2.25rem; }
+  .agent-sec__title { font-family: var(--font-display); font-size: 1.3rem; margin: 0 0 0.6rem; color: var(--accent); }
+  .ac-panel {
+    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+    background: var(--bg-elev); padding: 0.9rem 1rem 0.8rem; max-width: 760px;
+  }
+  .ac-controls { display: flex; flex-wrap: wrap; gap: 0.7rem 1.1rem; margin-bottom: 0.8rem; }
+  .ac-field { display: flex; flex-direction: column; gap: 0.25rem; }
+  .ac-field__lab { font-size: 0.7rem; color: var(--text-faint); font-family: var(--font-mono); letter-spacing: 0.02em; }
+  .ac-field select, .ac-field input[type='number'] {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: 6px; padding: 0.32rem 0.5rem; font-size: 0.85rem; font-family: var(--font-body, inherit);
+  }
+  .ac-field input[type='number'] { width: 6.5rem; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .ac-field--check { justify-content: flex-end; }
+  .ac-field--check input { width: 1.15rem; height: 1.15rem; margin: 0.3rem 0; accent-color: var(--accent); }
+  .ac-result { font-size: 1.05rem; margin: 0 0 0.3rem; color: var(--text); }
+  .ac-result__pct { font-size: 0.8rem; color: var(--text-dim); }
+  .ac-breakdown { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-dim); margin: 0 0 0.5rem; overflow-wrap: anywhere; }
 </style>

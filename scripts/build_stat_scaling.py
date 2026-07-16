@@ -14,6 +14,18 @@ Source of truth (all XML + the decompiled C# the formula lives in):
   yield.xml    → iTriangleOffset per yield (Science -2, Civics -1, Training 0,
                  Money +1) — the offset fed to triangleOffset for flat yields
   color.xml    → per-rating accent hex
+  council.xml / council-btt.xml → per-seat aaiRatingYieldGlobal (flat/turn) and
+                 aaiRatingYieldCity (flat per city) tables. Council seats scale
+                 via modifyRating with OFFSET 0 (InfoHelpers.getRatingYieldRateCouncil),
+                 i.e. base × triangle(rating) — R(R+1)/2. Grand Vizier (BTT) has
+                 no rating-yield table, so only Ambassador/Chancellor/Spymaster
+                 appear. (council-btt.xml is still parsed in case a patch adds one.)
+  trait.xml / opinionCharacter.xml → agent-calculator constants: the Schemer
+                 archetype's iAgentModifier (+10 percentage points, added flat
+                 AFTER the rating multiply — InfoHelpers.getRatingYieldAgentPercent)
+                 and each opinion level's iRateModifier (the agent's opinion of
+                 you modifies the percent; sign flips when the rating is negative
+                 via yieldWarning).
 
 Formula (Utils.cs / InfoHelpers.cs, verified against the source):
   triangle(n)            = sign(n)·|n|·(|n|+1)/2
@@ -25,6 +37,8 @@ Formula (Utils.cs / InfoHelpers.cs, verified against the source):
   Governor (yield %)    = govModifier · triangleBoost(rating)
   Agent    (yield %)    = agentPercent · rating                  (linear)
   General  (combat)     = combatBase  · triangleBoost(rating)
+  Council  (flat yield) = seatRate   · triangleOffset(rating, 0)            [/10 display]
+                          (= seatRate · R(R+1)/2; global or per-city per the seat)
 
 Competitive Mode = the GAMEOPTION_LOWER_CHARACTER_YIELDS sub-option. It swaps
 the triangular curve for a LINEAR one through an "equivalent rating" of
@@ -105,6 +119,62 @@ def boost_rating(value: int, rating: int, competitive: bool) -> int:
     return value * rating * triangle_boost(eq) // eq
 
 
+def council_roles_by_rating() -> dict[str, list[dict]]:
+    """rating zType → council seat roles giving flat yields from that rating.
+
+    InfoHelpers.getRatingYieldRateCouncil{Global,City}: seat base value ×
+    modifyRating(rating, offset=0). Global = empire-wide per turn; City = per city.
+    """
+    out: dict[str, list[dict]] = {}
+    for fn in ("council.xml", "council-btt.xml"):
+        p = XML_DIR / fn
+        if not p.exists():
+            continue
+        for e in ET.parse(p).getroot().findall("Entry"):
+            cid = e.findtext("zType") or ""
+            if not cid:
+                continue
+            label = cid.replace("COUNCIL_", "").replace("_", " ").title()
+            for tag, per_city in (("aaiRatingYieldGlobal", False), ("aaiRatingYieldCity", True)):
+                for pair in e.findall(f"{tag}/Pair"):
+                    rid = pair.findtext("zIndex") or ""
+                    for sub in pair.findall("SubPair"):
+                        ykey = (sub.findtext("zSubIndex") or "").replace("YIELD_", "")
+                        val = int(sub.findtext("iValue") or "0")
+                        if rid and ykey and val:
+                            out.setdefault(rid, []).append({
+                                "council": cid,
+                                "label": label,
+                                "yield": ykey,
+                                "value": val,
+                                "perCity": per_city,
+                            })
+    for roles in out.values():
+        roles.sort(key=lambda r: (r["label"], r["perCity"]))
+    return out
+
+
+def agent_calc_constants() -> dict:
+    """Constants the page's agent-yield calculator needs beyond the per-stat
+    aiYieldAgentPercent: the Schemer trait's flat percent bonus and the
+    opinion-level rate modifiers (InfoHelpers.getRatingYieldAgentPercent)."""
+    schemer = 0
+    for e in parse("trait.xml").findall("Entry"):
+        if e.findtext("zType") == "TRAIT_SCHEMER_ARCHETYPE":
+            schemer = int(e.findtext("iAgentModifier") or "0")
+    opinions = []
+    for e in parse("opinionCharacter.xml").findall("Entry"):
+        zt = e.findtext("zType") or ""
+        if not zt:
+            continue
+        opinions.append({
+            "id": zt,
+            "name": zt.replace("OPINIONCHARACTER_", "").title(),
+            "modifier": int(e.findtext("iRateModifier") or "0"),
+        })
+    return {"schemerModifier": schemer, "opinions": opinions}
+
+
 def text_index(*files: str) -> dict[str, str]:
     out: dict[str, str] = {}
     for fn in files:
@@ -127,6 +197,7 @@ def main() -> int:
         for e in parse("yield.xml").findall("Entry") if e.findtext("zType")
     }
     text = text_index("text-infos.xml", "text-rating.xml")
+    council_by_rating = council_roles_by_rating()
 
     def first_pair_value(entry: ET.Element, tag: str, yield_key: str) -> int:
         for pair in entry.findall(f"{tag}/Pair"):
@@ -154,6 +225,7 @@ def main() -> int:
         combat_base = int(entry.findtext(combat_field) or "0")
         off = yield_off.get(ykey, 0)
         yield_label = ykey.title()
+        councils = council_by_rating.get(rid, [])
 
         # Each role declares: key, label, the effect kind, and the per-rating
         # cell builder for base + competitive. Flat-yield cells display /10.
@@ -162,13 +234,17 @@ def main() -> int:
             governor = boost_rating(gov, rating, competitive)
             agt = agent * rating  # Agent percent is linear in both modes
             general = boost_rating(combat_base, rating, competitive)
-            return {
+            out = {
                 "rating": rating,
                 "leader": round(leader, 2),
                 "governor": governor,
                 "agent": agt,
                 "general": general,
             }
+            for c in councils:
+                # Council seats: base × triangleOffset(rating, 0) = triangle(rating).
+                out[c["label"].lower()] = round(modify_rating(c["value"], rating, 0, competitive) / 10, 2)
+            return out
 
         roles = [
             {"key": "leader",   "label": "Leader",   "effect": yield_label,           "kind": "yield", "yield": ykey.lower()},
@@ -176,6 +252,16 @@ def main() -> int:
             {"key": "agent",    "label": "Agent",    "effect": f"{yield_label} %",     "kind": "pct",   "yield": ykey.lower()},
             {"key": "general",  "label": "General",  "effect": combat_label,           "kind": combat_fmt, "yield": ykey.lower()},
         ]
+        for c in councils:
+            cy = c["yield"].title()
+            roles.append({
+                "key": c["label"].lower(),
+                "label": c["label"],
+                "effect": f"{cy} /city" if c["perCity"] else cy,
+                "kind": "yield",
+                "yield": c["yield"].lower(),
+                "council": True,
+            })
 
         stats_out.append({
             "id": rid,
@@ -196,6 +282,7 @@ def main() -> int:
         "ratings": ratings,
         "ratingEquivalent": RATING_EQUIVALENT,
         "stats": stats_out,
+        "agentCalc": agent_calc_constants(),
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
