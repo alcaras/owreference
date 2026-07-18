@@ -197,12 +197,18 @@ def main() -> int:
                 "effects": effects,
                 "specialist": specialist_label,
                 "culturePrereq": culture_label,
+                "buildTurns": int(entry.findtext("iBuildTurns") or "0"),
             })
 
+        # Worker turns are uniform per tier (Monastery 4 / Temple 5 /
+        # Cathedral 6 / Holy Site 8) — surface once on the row label; the
+        # page falls back to per-cell display if a patch ever diverges them.
+        turn_set = {c["buildTurns"] for c in cells if c is not None}
         rows.append({
             "class": cls_id,
             "slug": cls_short.lower(),
             "label": cls_label,
+            "buildTurns": turn_set.pop() if len(turn_set) == 1 else None,
             "cells": cells,
         })
 

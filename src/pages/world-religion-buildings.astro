@@ -77,7 +77,12 @@ function cellYield(cell: any): string {
         <tbody>
           {rows.map(row => (
             <tr>
-              <th class="rowlabel" scope="row">{row.label}</th>
+              <th class="rowlabel" scope="row">
+                {row.label}
+                {(row as any).buildTurns > 0 && (
+                  <span class="rowlabel__turns">{(row as any).buildTurns} turns to build</span>
+                )}
+              </th>
               {row.cells.map((cell, i) => {
                 const r = religions[i];
                 if (!cell) {
@@ -114,6 +119,9 @@ function cellYield(cell: any): string {
                       {cell.costs.map(c => (
                         <span class="bld__cost"><LinkedText text={c} showIcons={false} iconsForYields={true} /></span>
                       ))}
+                      {!(row as any).buildTurns && (cell as any).buildTurns > 0 && (
+                        <span class="bld__culture">{(cell as any).buildTurns} turns to build</span>
+                      )}
                       {(cell.consumption ?? []).map(c => (
                         <span class="bld__consume" title="Per-turn consumption">−<LinkedText text={c} showIcons={false} iconsForYields={true} /></span>
                       ))}
@@ -133,6 +141,15 @@ function cellYield(cell: any): string {
 </Base>
 
 <style>
+  .rowlabel__turns {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--text-faint);
+    margin-top: 0.15rem;
+  }
   .nhdr__sub {
     display: block;
     font-family: var(--font-mono);
