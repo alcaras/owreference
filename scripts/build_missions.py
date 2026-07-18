@@ -617,6 +617,15 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
     hap = int(b.findtext("iHappinessLevels") or "0")
     if hap:
         out.append(_txt(f"{'+' if hap >= 0 else ''}{hap} Happiness level{'s' if abs(hap) != 1 else ''}"))
+    cit = int(b.findtext("iCitizens") or "0")
+    if cit:
+        out.append({"text": f"{'+' if cit >= 0 else ''}{cit} Citizen{'s' if abs(cit) != 1 else ''}", "yield": "growth"})
+    clv = int(b.findtext("iCultureLevels") or "0")
+    if clv:
+        out.append({"text": f"{'+' if clv >= 0 else ''}{clv} Culture level{'s' if abs(clv) != 1 else ''} for the city", "yield": "culture"})
+    ft = b.findtext("FreeTheology")
+    if ft and ft != "NONE":
+        out.append(_txt(f"Free theology: {_named(text, ft, 'THEOLOGY_')}"))
     for r, v in pairs(b, "aiRatings"):
         out.append(_txt(f"{'+' if v >= 0 else ''}{v} {_named(text, r, 'RATING_')}"))
 

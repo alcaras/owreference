@@ -38,6 +38,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_events as bev   # noqa: E402  conditions/timing/options/dlc_label
 import build_missions as m   # noqa: E402  text/index/bonus/clean_text helpers
+import wonder_events_util as weu  # noqa: E402  shared wonder-event definition
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -154,6 +155,8 @@ def excluded_sets(story_idx: dict[str, ET.Element], eopt_idx: dict) -> dict[str,
     study = {z for z, s in story_idx.items() if (s.findtext("Class") or "") == "EVENTCLASS_STUDY"}
     harvest = {z for z, s in story_idx.items() if (s.findtext("Class") or "") == "EVENTCLASS_HARVESTING"}
     expeditions = {z for z, s in story_idx.items() if (s.findtext("Class") or "") == "EVENTCLASS_EXPLORING"}
+    wonder_set = weu.wonder_ids(m.XML_DIR)
+    wonders = {z for z, s in story_idx.items() if weu.is_wonder_decision_event(s, wonder_set)}
 
     # Ruins + transitive chain closure, copied from build_events.py main() so
     # the excluded set matches the ruin-events page exactly.
@@ -206,7 +209,7 @@ def excluded_sets(story_idx: dict[str, ET.Element], eopt_idx: dict) -> dict[str,
         frontier = nxt
 
     return {"ruins": ruin_ids, "expeditions": expeditions,
-            "harvest": harvest, "study": study}
+            "harvest": harvest, "study": study, "wonders": wonders}
 
 
 def categorize(s: ET.Element) -> tuple[str, str]:
@@ -375,6 +378,8 @@ def main() -> int:
         if zid in excluded["study"]:
             return {"ext": "study-events",
                     "anchor": zid.replace("EVENTSTORY_STUDY_", "").lower()}
+        if zid in excluded["wonders"]:
+            return {"ext": "wonder-events", "anchor": zid}
         return None
 
     def story_name(zid: str) -> str:
@@ -585,9 +590,10 @@ def main() -> int:
             "expedition-events": len(excluded["expeditions"]),
             "harvest-events": len(excluded["harvest"]),
             "study-events": len(excluded["study"]),
+            "wonder-events": len(excluded["wonders"]),
             "total": len(excluded_all),
         },
-        "note": "excluded = stories already rendered by the four specialized "
+        "note": "excluded = stories already rendered by the five specialized "
                 "pages (same trigger/class criteria as their builders)",
     }
     index_payload = json.dumps(

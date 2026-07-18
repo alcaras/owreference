@@ -375,6 +375,41 @@ DLC_LABEL = {
 }
 
 
+def wonder_decision_events() -> dict[str, list[dict]]:
+    """Wonder improvement id → its completion decision events (id + name),
+    for cross-linking each wonder to the Wonder Events page. Same definition
+    the events pipeline uses (wonder_events_util)."""
+    import wonder_events_util as weu
+    text_ev = load_text(
+        "text-eventStoryTitle.xml", "text-eventStoryTitle-sap.xml",
+        "text-eventStoryTitle-btt.xml", "text-eventStoryTitle-hittite.xml",
+        "text-wonders-dynasties-events.xml", "text-calamities-events.xml",
+    )
+    wset = weu.wonder_ids(XML_DIR)
+    out: dict[str, list[dict]] = {}
+    seen: set[str] = set()
+    for fn in ("eventStory.xml", "eventStory-sap.xml", "eventStory-btt.xml",
+               "eventStory-eoti.xml", "eventStory-wd.xml", "eventStory-wog.xml"):
+        p = XML_DIR / fn
+        if not p.exists():
+            continue
+        for s in ET.parse(p).getroot().findall("Entry"):
+            zid = s.findtext("zType") or ""
+            if zid in seen or not weu.is_wonder_decision_event(s, wset):
+                continue
+            seen.add(zid)
+            nm = text_ev.get(s.findtext("Name") or "",
+                             zid.replace("EVENTSTORY_", "").replace("_", " ").title())
+            # Titles may embed cast placeholders ("The Oracle of {CITY-0}") —
+            # strip them for the link label.
+            nm = re.sub(r"\s*\{[^}]*\}", "", nm).strip()
+            nm = re.sub(r"\s+(?:of|the)$", "", nm, flags=re.I).strip()
+            out.setdefault(s.findtext("TriggerData") or "", []).append({"id": zid, "name": nm})
+    for lst in out.values():
+        lst.sort(key=lambda e: e["name"])
+    return out
+
+
 def main() -> int:
     text_imp = load_text(
         "text-improvement.xml",
@@ -384,6 +419,7 @@ def main() -> int:
         "text-improvement-hittite.xml",
     )
     indexes = load_xml_indexes(XML_DIR)
+    events_by_wonder = wonder_decision_events()
 
     wonders: list[dict] = []
     for entry in parse("improvement.xml").findall("Entry"):
@@ -494,6 +530,7 @@ def main() -> int:
             "dlcLabel": dlc_label,
             "nation": "Any",     # All XML wonders are universal in OW
             "isHolyCity": (entry.findtext("bHolyCityValid") or "") == "1",
+            "events": events_by_wonder.get(zt, []),
         })
 
     # Stable order: era first, then alphabetical by sortName

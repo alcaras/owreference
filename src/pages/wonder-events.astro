@@ -1,0 +1,13 @@
+---
+import EventGroupPage from '../components/EventGroupPage.astro';
+const base = import.meta.env.BASE_URL;
+---
+<EventGroupPage sectionKey="wonders" title="Wonder Events" active="wonder-events" pageMark="🏛️">
+  The decision pop-ups that can fire the moment you complete a <a href={`${base}wonders`}>Wonder</a> —
+  dedicate the Ziggurat's terrace shrine, choose what the Lighthouse guides in, pick which family the
+  Acropolis honors. Each card shows the wonder that triggers it and what every choice grants. Some
+  roll a chance to appear (shown on the card); all are separate from the plain completion announcement,
+  which always fires and grants +2/+4/+6/+8 Legitimacy by wonder tier. Building a wonder in its
+  historical city (Pyramids in Memphis, Great Ziggurat in Ur, …) additionally pops a hidden
+  Steam-achievement event with no in-game reward.
+</EventGroupPage>

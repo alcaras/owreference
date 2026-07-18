@@ -173,6 +173,12 @@ const FACETS: Facet[] = [
                       {w.vp > 0 && <span class="chip chip--vp" title="Victory Points"><b>{w.vp}</b> VP</span>}
                       {w.dlc && <span class="chip chip--dlc" title={w.dlcLabel}>DLC</span>}
                       {w.isHolyCity && <span class="chip chip--holy" title="Holy City Wonder">✧ Holy</span>}
+                      {(w as any).events?.length > 0 && (
+                        <a class="chip chip--event" href={`${base}wonder-events#${(w as any).events[0].id}`}
+                           title="Completing this wonder can fire a decision event — see its choices and rewards">
+                          📜 Event
+                        </a>
+                      )}
                     </div>
                     {w.otherOutput.length > 0 && (
                       <div class="wname__output">
@@ -510,6 +516,8 @@ const FACETS: Facet[] = [
   .chip--vp b { font-family: var(--font-mono); font-weight: 700; color: var(--accent); margin-right: 0.2rem; }
   .chip--dlc { background: var(--bg-elev-2); color: var(--text-dim); border: 1px solid var(--border); padding: 0.05rem 0.4rem; font-size: 0.64rem; letter-spacing: 0.06em; font-family: var(--font-mono); text-transform: uppercase; }
   .chip--holy { background: color-mix(in srgb, #6b5ea6 30%, var(--bg-elev) 70%); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 50%, transparent); padding: 0.05rem 0.4rem; font-size: 0.66rem; }
+  .chip--event { background: color-mix(in srgb, var(--accent) 22%, var(--bg-elev) 78%); color: var(--text); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); padding: 0.05rem 0.4rem; font-size: 0.66rem; text-decoration: none; }
+  .chip--event:hover { background: color-mix(in srgb, var(--accent) 38%, var(--bg-elev) 62%); }
 
   .cell--loc { font-size: 0.78rem; }
   tr.is-hidden { display: none; }

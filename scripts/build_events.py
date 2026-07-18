@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Build src/data/events.json — the Exploration Events tab.
+"""Build src/data/events.json — the exploration + wonder event pages.
 
-Scope is exploration only, in two groups:
+Three groups, each its own page:
   · Ruins        — stories with Trigger=EVENTTRIGGER_RUINS_EXPLORED, the
                    pop-up you get when a unit explores a Ruins tile.
   · Expeditions  — stories with Class=EVENTCLASS_EXPLORING, the scripted
                    "send a character off exploring distant lands" chains
                    (some are EventLink follow-ups to an earlier expedition).
+  · Wonders      — the decision events that can fire when a wonder completes
+                   (Trigger=EVENTTRIGGER_IMPROVEMENT_FINISHED on a bWonder
+                   improvement, 2+ options — see wonder_events_util.py).
 
 Reuses the mission-event humanizer (build_missions) so reward/option/condition
 text matches the Rally / Hold Court / Steal Research pages exactly, and layers
@@ -27,6 +30,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_missions as m  # noqa: E402  reuse the mission-event humanizer
+import wonder_events_util as weu  # noqa: E402  shared wonder-event definition
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "events.json"
@@ -44,6 +48,7 @@ TEXT_FILES = (
     "text-eventStory-wd.xml", "text-eventStory-wog.xml", "text-eventStoryTitle.xml",
     "text-eventStoryTitle-sap.xml", "text-eventOption.xml", "text-eventOption-sap.xml",
     "text-trait.xml", "text-unit.xml", "text-infos.xml",
+    "text-improvement.xml",  # wonder names for the Wonder Events group
 )
 
 # Trigger token → readable "what makes this fire" label.
@@ -306,6 +311,30 @@ def main() -> int:
         return {"key": key, "label": label, "blurb": blurb,
                 "totalWeight": total, "events": events}
 
+    # Wonder decision events: the choose-one pop-ups that can fire when a
+    # wonder completes. Weighted-pool shares are meaningless here (each wonder's
+    # event competes only against its own completion trigger, and the flat
+    # +Legitimacy announcement fires regardless via bMultiples), so share is
+    # dropped and the trigger label names the wonder instead.
+    wonder_set = weu.wonder_ids(m.XML_DIR)
+    wonder_names: dict[str, str] = {}
+    for e in ET.parse(m.XML_DIR / "improvement.xml").getroot().findall("Entry"):
+        zt = e.findtext("zType") or ""
+        if zt in wonder_set:
+            wonder_names[zt] = m.clean_text(text.get(e.findtext("Name") or "", m._tok(zt, "IMPROVEMENT_")))
+    wonder_stories = [s for s in story_idx.values() if weu.is_wonder_decision_event(s, wonder_set)]
+    wonder_events = []
+    for s in wonder_stories:
+        ev = build_event(s, 0, eopt_idx, bonus_idx, text)
+        wid = s.findtext("TriggerData") or ""
+        ev["share"] = None
+        wname = wonder_names.get(wid, wid)
+        ev["wonder"] = {"id": wid, "name": wname}
+        # Wonder names already carry their article ("The Acropolis").
+        ev["trigger"] = f"Completing {wname}" if wname.lower().startswith("the ") else f"Completing the {wname}"
+        wonder_events.append(ev)
+    wonder_events.sort(key=lambda e: (e["wonder"]["name"], e["name"]))
+
     sections = [
         group(ruins, "ruins", "Ruins",
               "Fires when one of your units explores a Ruins tile. One story is "
@@ -315,6 +344,9 @@ def main() -> int:
               "The scripted “send a character off to explore distant lands” chains. "
               "Some entries are follow-ups that only fire after an earlier expedition "
               "via an event link."),
+        {"key": "wonders", "label": "Wonders", "totalWeight": 0,
+         "blurb": "Decision events that can fire when a wonder is completed.",
+         "events": wonder_events},
     ]
 
     # ── Locate any story by id ──────────────────────────────────────────────
@@ -330,11 +362,15 @@ def main() -> int:
         for row in json.loads(search_path.read_text()):
             part_of[row["i"]] = row["s"]
 
+    wonder_event_ids = {e["id"] for e in wonder_events}
+
     def can_location(zid: str) -> dict | None:
         if zid in ruin_ids:
             return {"ext": "ruin-events", "anchor": zid}
         if zid in exp_ids:
             return {"ext": "expedition-events", "anchor": zid}
+        if zid in wonder_event_ids:
+            return {"ext": "wonder-events", "anchor": zid}
         s = story_idx.get(zid)
         cls = (s.findtext("Class") or "") if s is not None else ""
         if cls == "EVENTCLASS_HARVESTING":

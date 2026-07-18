@@ -189,6 +189,12 @@ export const TABS: Tab[] = [
     willContain: ['Each harvest event and its option rewards'],
   },
   {
+    slug: 'wonder-events', icon: '🏛️', label: 'Wonder Events', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Decision events fired by completing a wonder, with each choice’s rewards',
+    willContain: ['Every wonder-completion decision event and its option rewards'],
+  },
+  {
     // Split into Urban Specialists + Rural Specialists. Slug kept as a
     // redirect; not surfaced in nav/index.
     slug: 'specialists', icon: '👨‍🌾', label: 'Specialists', section: 'Cities',

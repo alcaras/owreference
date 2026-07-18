@@ -75,6 +75,14 @@ const scopeGroups = SCOPES
       </div>
       <p class="whead__wiki">
         <a href={w.wikipedia} target="_blank" rel="noopener noreferrer">Read about {w.name} on Wikipedia ↗</a>
+        {(w as any).events?.length > 0 && (w as any).events.map((ev: any, i: number) => (
+          <Fragment>
+            {' · '}
+            <a href={`${base}wonder-events#${ev.id}`} title="Decision event that can fire when this wonder completes">
+              Completion event: {(w as any).events.length > 1 ? `${ev.name} (${i + 1})` : ev.name} →
+            </a>
+          </Fragment>
+        ))}
       </p>
     </div>
   </header>

@@ -1370,6 +1370,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
+                    "text": "+1 Citizen",
+                    "yield": "growth"
+                  },
+                  {
                     "text": "Converts to the target religion"
                   }
                 ],
@@ -1525,7 +1529,12 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "+1 Citizen",
+                    "yield": "growth"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -3542,7 +3551,12 @@
               {
                 "label": "Ruins Weary Marauders Labor New",
                 "probability": 0.999000999000999,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "+2 Citizens",
+                    "yield": "growth"
+                  }
+                ],
                 "weight": 1000
               },
               {
@@ -3553,6 +3567,10 @@
                     "eachCity": 20,
                     "text": "+20 Discontent (city)",
                     "yield": "discontent"
+                  },
+                  {
+                    "text": "+2 Citizens",
+                    "yield": "growth"
                   }
                 ],
                 "weight": 1
@@ -12194,6 +12212,10 @@
                 "probability": 1.0,
                 "rewards": [
                   {
+                    "text": "+1 Citizen",
+                    "yield": "growth"
+                  },
+                  {
                     "text": "Gain trait: Compassionate",
                     "tip": [
                       "+1 Charisma",
@@ -12282,6 +12304,10 @@
                 "rewards": [
                   {
                     "text": "Gain trait: Doomed"
+                  },
+                  {
+                    "text": "+2 Citizens",
+                    "yield": "growth"
                   },
                   {
                     "base": 30,
@@ -15557,5 +15583,2122 @@
     "key": "expeditions",
     "label": "Expeditions",
     "totalWeight": 71
+  },
+  {
+    "blurb": "Decision events that can fire when a wonder is completed.",
+    "events": [
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_ACROPOLIS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Acropolis",
+        "options": [
+          {
+            "canLeadTo": [
+              {
+                "cat": "on-new-turn-1",
+                "id": "EVENTSTORY_ACROPOLIS_GUARD",
+                "name": "Acropolis Guard"
+              }
+            ],
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYFAMILY_ACROPOLIS_TREASURY",
+                    "text": "Remembered: Granted a treasury in the Acropolis (+80 opinion for 20 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_ACROPOLIS_TREASURY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ACROPOLIS_FAMILY_TREASURY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The [family] family."
+          },
+          {
+            "canLeadTo": [
+              {
+                "cat": "on-new-turn-1",
+                "id": "EVENTSTORY_ACROPOLIS_GUARD",
+                "name": "Acropolis Guard"
+              }
+            ],
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYFAMILY_ACROPOLIS_TREASURY",
+                    "text": "Remembered: Granted a treasury in the Acropolis (+80 opinion for 20 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_ACROPOLIS_TREASURY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ACROPOLIS_FAMILY_TREASURY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The [family] family."
+          },
+          {
+            "canLeadTo": [
+              {
+                "cat": "on-new-turn-1",
+                "id": "EVENTSTORY_ACROPOLIS_GUARD",
+                "name": "Acropolis Guard"
+              }
+            ],
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYFAMILY_ACROPOLIS_TREASURY",
+                    "text": "Remembered: Granted a treasury in the Acropolis (+80 opinion for 20 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYFAMILY_ACROPOLIS_TREASURY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ACROPOLIS_FAMILY_TREASURY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The [family] family."
+          }
+        ],
+        "prob": 50,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Acropolis",
+        "url": null,
+        "weight": 1,
+        "wonder": {
+          "id": "IMPROVEMENT_ACROPOLIS",
+          "name": "The Acropolis"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_VIEW_FROM_THE_THRONE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "View from the Throne",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 120,
+                    "per": 30,
+                    "text": "+120 Money (+30/city)",
+                    "yield": "money"
+                  },
+                  {
+                    "base": 30,
+                    "per": 10,
+                    "text": "+30 Food (+10/city)",
+                    "yield": "food"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_MONEY_GAIN_SMALL, BONUS_FOOD_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_VIEW_FROM_THE_THRONE_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Invite delegations to pay tribute."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "eachCity": 120,
+                    "text": "+120 Happiness (city)",
+                    "yield": "happiness"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_HAPPINESS=120"
+                  ],
+                  "id": "BONUS_HAPPINESS_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Let the common people come."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+2 Legitimacy"
+                  },
+                  {
+                    "text": "Gain trait: Engineer",
+                    "tip": [
+                      "As leader: +10% Strength vs Siege units",
+                      "As leader: +10% Strength vs Ship units",
+                      "As general: Can build Roads",
+                      "+1 Wisdom",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Engineer — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy 2",
+                    "aeAddTraits: TRAIT_ENGINEER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_VIEW_FROM_THE_THRONE_OPTION_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I wish to enjoy the view alone."
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Apadana",
+        "url": null,
+        "weight": 1,
+        "wonder": {
+          "id": "IMPROVEMENT_APADANA",
+          "name": "The Apadana"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_WONDER_THE_CIRCUS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Circus Maximus",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Begin project: Gladiators"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_GLADIATORS"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_THE_CIRCUS_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Plan for the bloodiest gladiatorial combat."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Begin project: Plays"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_PLAYS"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_THE_CIRCUS_OPTION_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Hold plays of high culture and drama."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Circus Maximus",
+        "url": "https://en.wikipedia.org/wiki/Circus_Maximus",
+        "weight": 2,
+        "wonder": {
+          "id": "IMPROVEMENT_CIRCUS_MAXIMUS",
+          "name": "The Circus Maximus"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_COLOSSUS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Colossus",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Warlike",
+                    "tip": [
+                      "As leader: +1 Training/Culture Level",
+                      "As governor: +2 Training/Culture Level",
+                      "+1 Courage",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Warlike — trait"
+                  },
+                  {
+                    "base": 160,
+                    "per": 40,
+                    "text": "+160 Training (+40/city)",
+                    "yield": "training"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_WARLIKE",
+                    "aeBonuses: BONUS_TRAINING_GAIN_HUGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_COLOSSUS_WARLIKE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Host a military parade and address the army."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+6 Legitimacy"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy 6"
+                  ],
+                  "id": "BONUS_EVENTOPTION_COLOSSUS_ANCESTOR",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Dedicate the statue to a family ancestor."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Culture level for the city",
+                    "yield": "culture"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iCultureLevels 1"
+                  ],
+                  "id": "BONUS_EVENTOPTION_COLOSSUS_SCULPTOR",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Raise the sculptor to the nobility."
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Colossus",
+        "url": null,
+        "weight": 1,
+        "wonder": {
+          "id": "IMPROVEMENT_COLOSSUS",
+          "name": "The Colossus"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_WONDER_A_SPIRITUAL_CROSSROADS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Hagia Sophia",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYRELIGION_WONDER_HAGIA_SOPHIA",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Our faith has been given a home (+40 opinion for 80 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYRELIGION_WONDER_HAGIA_SOPHIA"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_A_SPIRITUAL_CROSSROADS_OPTION_0_RELIGION",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "It will be a house of worship for [religion]."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYRELIGION_WONDER_HAGIA_SOPHIA",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Our faith has been given a home (+40 opinion for 80 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYRELIGION_WONDER_HAGIA_SOPHIA"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_A_SPIRITUAL_CROSSROADS_OPTION_1_RELIGION",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "[religion] shall find a home here."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 80,
+                    "per": 20,
+                    "text": "+80 Civics (+20/city)",
+                    "yield": "civics"
+                  },
+                  {
+                    "text": "+10–100 Culture (by city tier)",
+                    "yield": "culture"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_CIVICS_GAIN_LARGE, BONUS_CULTURE_GAIN_TINY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_A_SPIRITUAL_CROSSROADS_OPTION_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Make it open to all as a public building."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Hagia Sophia",
+        "url": "https://en.wikipedia.org/wiki/Hagia_Sophia",
+        "weight": 2,
+        "wonder": {
+          "id": "IMPROVEMENT_HAGIA_SOPHIA",
+          "name": "The Hagia Sophia"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_HANGING_GARDENS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Hanging Gardens",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+2 Discipline"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_DISCIPLINE=2"
+                  ],
+                  "id": "BONUS_GAIN_DISCIPLINE_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Nature provides the best kind of peace."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Wisdom"
+                  },
+                  {
+                    "text": "Gain trait: Herbalist",
+                    "tip": [
+                      "As leader: +2 Heal Extra",
+                      "As general: +4 Heal Extra",
+                      "+1 Wisdom",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Herbalist — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_WISDOM=1",
+                    "aeAddTraits: TRAIT_HERBALIST"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HANGING_GARDENS_STUDY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Plants hold many healing properties."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+2 Citizens",
+                    "yield": "growth"
+                  },
+                  {
+                    "text": "-1 Discipline"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_ADD_CITIZEN_2"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HANGING_GARDENS_PARTY_CITY",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiRatings: RATING_DISCIPLINE=-1",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_HANGING_GARDENS_PARTY_LEADER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_NOT_RIGHTEOUS"
+                  ]
+                },
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "We should celebrate life more often."
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Hanging Gardens",
+        "url": null,
+        "weight": 1,
+        "wonder": {
+          "id": "IMPROVEMENT_HANGING_GARDENS",
+          "name": "The Hanging Gardens"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [
+          "Max 2 Strengths"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_ISHTAR_GATE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Ishtar Gate",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Inspiring",
+                    "tip": [
+                      "As leader: +1 Culture/Culture Level",
+                      "As governor: +2 Culture/Culture Level",
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Inspiring — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_INSPIRING"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ISHTAR_GATE_ME",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "I shall paint it myself."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+30–300 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "text": "+1 Wisdom"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aaiCultureYield: CULTURE_WEAK[YIELD_CULTURE=30], CULTURE_DEVELOPING[YIELD_CULTURE=60], CULTURE_STRONG[YIELD_CULTURE=120], CULTURE_LEGENDARY[YIELD_CULTURE=300]"
+                  ],
+                  "id": "BONUS_CULTURE_GAIN_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiRatings: RATING_WISDOM=1",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ISHTAR_GATE_ARTISTS_LEADER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_NOT_FRUGAL"
+                  ]
+                },
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Hire the most famous among them."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Gracious",
+                    "tip": [
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Gracious — trait"
+                  },
+                  {
+                    "base": -80,
+                    "per": -20,
+                    "text": "-80 Money (-20/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_GRACIOUS",
+                    "aeBonuses: BONUS_MONEY_LOSS_TINY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ISHTAR_GATE_CHILDREN",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectNotAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_TERRIFYING"
+                  ]
+                },
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Let local children decorate it."
+          }
+        ],
+        "prob": 50,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Ishtar Gate",
+        "url": null,
+        "weight": 1,
+        "wonder": {
+          "id": "IMPROVEMENT_ISHTAR_GATE",
+          "name": "The Ishtar Gate"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LIGHTHOUSE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Lighthouse",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Ship unit"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiBonusUnits: BONUSUNITCLASS_SHIP=1"
+                  ],
+                  "id": "BONUS_UNITCLASS_SHIP",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Mighty warships and military transports."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "eachCity": 120,
+                    "text": "+120 Growth (city)",
+                    "yield": "growth"
+                  },
+                  {
+                    "base": 30,
+                    "per": 10,
+                    "text": "+30 Food (+10/city)",
+                    "yield": "food"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_GROWTH_GAIN_HUGE, BONUS_FOOD_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LIGHTHOUSE_GRAIN",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Vast barges laden with fruit and grain."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+80–800 Culture (by city tier)",
+                    "yield": "culture"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aaiCultureYield: CULTURE_WEAK[YIELD_CULTURE=80], CULTURE_DEVELOPING[YIELD_CULTURE=160], CULTURE_STRONG[YIELD_CULTURE=320], CULTURE_LEGENDARY[YIELD_CULTURE=800]"
+                  ],
+                  "id": "BONUS_CULTURE_GAIN_GIGANTIC",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Beautiful vessels full of luxury goods."
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Lighthouse",
+        "url": null,
+        "weight": 2,
+        "wonder": {
+          "id": "IMPROVEMENT_LIGHTHOUSE",
+          "name": "The Lighthouse"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [
+          "Heir Us"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_WONDER_ETERNAL_REST",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Mausoleum",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Romantic",
+                    "tip": [
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Romantic — trait"
+                  },
+                  {
+                    "memory": "MEMORYCHARACTER_WONDER_GIFTED_MAUSOLEUM",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: I was given a wondrous resting place (+40 opinion, permanent)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_ROMANTIC"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_ROMANTIC",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYCHARACTER_WONDER_GIFTED_MAUSOLEUM"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_ETERNAL_REST_OPTION_0_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "My love, [character], will make this his eternal home."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Extravagant",
+                    "tip": [
+                      "As leader: -10% Money",
+                      "As governor: -20% Money",
+                      "-1 Discipline",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Extravagant — trait"
+                  },
+                  {
+                    "memory": "MEMORYCHARACTER_WONDER_GIFTED_MAUSOLEUM",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: I was given a wondrous resting place (+40 opinion, permanent)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_EXTRAVAGANT"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_EXTRAVAGANT",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYCHARACTER_WONDER_GIFTED_MAUSOLEUM"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_ETERNAL_REST_OPTION_1_CHARACTER_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The name of my heir, [character] will never by forgotten."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+2 Legitimacy"
+                  },
+                  {
+                    "text": "Gain trait: Inspiring",
+                    "tip": [
+                      "As leader: +1 Culture/Culture Level",
+                      "As governor: +2 Culture/Culture Level",
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Inspiring — trait"
+                  },
+                  {
+                    "text": "+5–50 Culture (by city tier)",
+                    "yield": "culture"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy 2",
+                    "aeAddTraits: TRAIT_INSPIRING",
+                    "aeBonuses: BONUS_CULTURE_GAIN_MINIMAL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_ETERNAL_REST_OPTION_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Only a leader of my stature is fit for such a tomb."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Mausoleum",
+        "url": "https://en.wikipedia.org/wiki/Mausoleum_at_Halicarnassus",
+        "weight": 2,
+        "wonder": {
+          "id": "IMPROVEMENT_MAUSOLEUM",
+          "name": "The Mausoleum"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_WONDER_BEACON_OF_KNOWLEDGE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Musaeum",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain a Scribe"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_SCRIBE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_BEACON_OF_KNOWLEDGE_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "An extensive library with a scribe."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain a Philosopher"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_PHILOSOPHER"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_BEACON_OF_KNOWLEDGE_OPTION_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "An observatory with a philosopher."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain a Doctor"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddSpecialistClasses: SPECIALISTCLASS_DOCTOR"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_BEACON_OF_KNOWLEDGE_OPTION_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "An anatomy lab with a physician."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Musaeum",
+        "url": "https://en.wikipedia.org/wiki/Musaeum",
+        "weight": 4,
+        "wonder": {
+          "id": "IMPROVEMENT_MUSAEUM",
+          "name": "The Musaeum"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_ORACLE_1",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Oracle of [city]",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Charisma"
+                  },
+                  {
+                    "text": "+1 Courage"
+                  },
+                  {
+                    "text": "+1 Wisdom"
+                  },
+                  {
+                    "text": "+1 Discipline"
+                  },
+                  {
+                    "text": "Gain trait: Cruel",
+                    "tip": [
+                      "As leader: -10% Growth",
+                      "As governor: -20% Growth",
+                      "-1 Charisma",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Cruel — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_CHARISMA=1, RATING_COURAGE=1, RATING_WISDOM=1, RATING_DISCIPLINE=1",
+                    "aeAddTraits: TRAIT_CRUEL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ORACLE_ME",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Only I deserve this privilege."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "eachCity": 60,
+                    "text": "+60 Discontent (city)",
+                    "yield": "discontent"
+                  },
+                  {
+                    "text": "Gain trait: Prosperous",
+                    "tip": [
+                      "As leader: +8 Money/Culture Level",
+                      "As governor: +16 Money/Culture Level",
+                      "+1 Discipline",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Prosperous — trait"
+                  },
+                  {
+                    "base": 160,
+                    "per": 40,
+                    "text": "+160 Money (+40/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_DISCONTENT=60"
+                  ],
+                  "id": "BONUS_DISCONTENT_GAIN_SMALL",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_PROSPEROUS",
+                    "aeBonuses: BONUS_MONEY_GAIN_AVERAGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ORACLE_WEALTHY_LEADER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectNotAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_VAIN"
+                  ]
+                },
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Those who can afford the fee."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Citizen",
+                    "yield": "growth"
+                  },
+                  {
+                    "text": "+30–300 Culture (by city tier)",
+                    "yield": "culture"
+                  },
+                  {
+                    "text": "Gain trait: Gracious",
+                    "tip": [
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Gracious — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_ADD_CITIZEN_1, BONUS_CULTURE_GAIN_AVERAGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ORACLE_EVERYONE_CITY",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_GRACIOUS"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_GRACIOUS",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectNotAny",
+                  "values": [
+                    "SUBJECT_CHARACTER_TERRIFYING"
+                  ]
+                },
+                {
+                  "tag": "bHidePrereqs",
+                  "values": [
+                    "prereqs hidden in-game"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "The gods should be heard by everyone!"
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Oracle",
+        "url": null,
+        "weight": 1,
+        "wonder": {
+          "id": "IMPROVEMENT_ORACLE",
+          "name": "The Oracle"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_ORACLE_2",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Oracle of [city]",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Discipline"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_DISCIPLINE=1"
+                  ],
+                  "id": "BONUS_GAIN_DISCIPLINE_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The high priestess has lost her mind."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Vigilant",
+                    "tip": [
+                      "+1 Discipline",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Vigilant — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_VIGILANT"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_VIGILANT",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "It is vague. We should proceed with caution."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ORACLE_PLEASED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The gods favor us! Pay the Oracle handsomely."
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Oracle",
+        "url": null,
+        "weight": 1,
+        "wonder": {
+          "id": "IMPROVEMENT_ORACLE",
+          "name": "The Oracle"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_WONDER_GODS_AND_MEN",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Pantheon",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+4 Legitimacy"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy 4"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_GODS_AND_MEN_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Icons of our royal line."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Free theology: Veneration"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "FreeTheology THEOLOGY_VENERATION"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_GODS_AND_MEN_OPTION_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Statues of the gods."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Greedy",
+                    "tip": [
+                      "-1 Charisma",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Greedy — trait"
+                  },
+                  {
+                    "text": "Free law: Divine Rule"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "FreeLaw LAW_DIVINE_RULE",
+                    "aeAddTraits: TRAIT_GREEDY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_GODS_AND_MEN_OPTION_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Busts of... me."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Pantheon",
+        "url": "https://en.wikipedia.org/wiki/Pantheon,_Rome",
+        "weight": 4,
+        "wonder": {
+          "id": "IMPROVEMENT_PANTHEON",
+          "name": "The Pantheon"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [
+          "Child"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_PYRAMIDS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Pyramids",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Wisdom"
+                  },
+                  {
+                    "text": "Gain trait: Affable",
+                    "tip": [
+                      "As leader: +1 Growth/Culture Level",
+                      "As governor: +2 Growth/Culture Level",
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Affable — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_WISDOM=1",
+                    "aeAddTraits: TRAIT_AFFABLE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PYRAMIDS_WORK",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "They are a testament to hard work."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Eloquent",
+                    "tip": [
+                      "As leader: +1 Civics/Culture Level",
+                      "As governor: +2 Civics/Culture Level",
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Eloquent — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_ELOQUENT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PYRAMIDS_BLOODLINE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Our legacy will last forever."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Courage"
+                  },
+                  {
+                    "text": "Gain trait: Warlike",
+                    "tip": [
+                      "As leader: +1 Training/Culture Level",
+                      "As governor: +2 Training/Culture Level",
+                      "+1 Courage",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Warlike — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_COURAGE=1",
+                    "aeAddTraits: TRAIT_WARLIKE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PYRAMIDS_DEATH",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Death is not the end, but a beginning..."
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Completing The Pyramids",
+        "url": null,
+        "weight": 1,
+        "wonder": {
+          "id": "IMPROVEMENT_PYRAMIDS",
+          "name": "The Pyramids"
+        }
+      },
+      {
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_WONDER_THE_ZIGGURAT",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Ziggurat of [city]",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Begin project: Terrace Love Shrine"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_TERRACE_LOVE_SHRINE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_THE_ZIGGURAT_OPTION_0_CITY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Dedicate this shrine to Love."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Begin project: Terrace Wisdom Shrine"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_TERRACE_WISDOM_SHRINE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_THE_ZIGGURAT_OPTION_1_CITY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Dedicate this shrine to Wisdom."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Begin project: Terrace War Shrine"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_TERRACE_WAR_SHRINE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_WONDER_THE_ZIGGURAT_OPTION_2_CITY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Dedicate this shrine to War."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Completing The Ziggurat",
+        "url": null,
+        "weight": 2,
+        "wonder": {
+          "id": "IMPROVEMENT_GREAT_ZIGGURAT",
+          "name": "The Ziggurat"
+        }
+      }
+    ],
+    "key": "wonders",
+    "label": "Wonders",
+    "totalWeight": 0
   }
 ]
