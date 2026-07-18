@@ -88,6 +88,12 @@ const FACETS: Facet[] = [
     </div>
   </div>
 
+  <p class="lede">
+    Completing a wonder always grants <b>Legitimacy</b> by its tier — and many wonders also fire a
+    <b>decision event</b> with its own rewards (the <span class="chip chip--event chip--event-demo">📜 Event</span>
+    chip below): see <a href={`${base}wonder-events`}>Wonder Events</a> for every choice.
+  </p>
+
   <div class="nation-picker nation-picker--facets" id="wonder-picker" hidden role="dialog" aria-label="Filter wonders">
     <div class="nation-picker__actions">
       <button type="button" class="nation-picker__action" data-pick="all">Select all</button>
@@ -518,6 +524,10 @@ const FACETS: Facet[] = [
   .chip--holy { background: color-mix(in srgb, #6b5ea6 30%, var(--bg-elev) 70%); color: var(--text); border: 1px solid color-mix(in srgb, #6b5ea6 50%, transparent); padding: 0.05rem 0.4rem; font-size: 0.66rem; }
   .chip--event { background: color-mix(in srgb, var(--accent) 22%, var(--bg-elev) 78%); color: var(--text); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); padding: 0.05rem 0.4rem; font-size: 0.66rem; text-decoration: none; }
   .chip--event:hover { background: color-mix(in srgb, var(--accent) 38%, var(--bg-elev) 62%); }
+  .chip--event-demo { cursor: default; }
+  .lede { color: var(--text-dim); font-size: 0.85rem; line-height: 1.55; max-width: 78ch; margin: 0.4rem 0 1.1rem; }
+  .lede b { color: var(--text); }
+  .lede a { color: var(--accent); }
 
   .cell--loc { font-size: 0.78rem; }
   tr.is-hidden { display: none; }
