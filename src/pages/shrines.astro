@@ -108,6 +108,10 @@ const SHRINE_GLYPH: Record<string, string> = {
   pageStats={[
     { label: 'shrines', value: data.totals.shrines },
     { label: 'types',   value: groups.length },
+    ...(data.build ? [
+      { label: 'cost',  value: data.build.costs.join(', ') },
+      { label: 'build', value: `${data.build.turns} worker turns` },
+    ] : []),
   ]}
 >
   <p class="lede">
@@ -116,6 +120,11 @@ const SHRINE_GLYPH: Record<string, string> = {
     that religion. Each shrine belongs to a <em>type</em> (War, Kingship,
     Wisdom, …) which determines its signature yield and adjacency. With
     <LinkedText text="Polytheism" /> a nation can build unlimited shrines.
+    {data.build && (
+      <Fragment> All shrines cost <LinkedText text={data.build.costs.join(', ')} /> and take a
+      <LinkedText text="Worker" /> {data.build.turns} turns to build (base — terrain, hills and
+      out-of-family territory can add turns).</Fragment>
+    )}
   </p>
 
   <div class="legend legend--types">

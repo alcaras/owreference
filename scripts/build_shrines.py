@@ -102,12 +102,13 @@ def main() -> int:
             v = int(pair.findtext("iValue") or "0") / 10
             outputs.append(f"{fmt_decimal(v)} {y}")
 
-        # Build cost (resource investment).
+        # Build cost (resource investment) + worker turns.
         costs: list[str] = []
         for pair in entry.findall("aiYieldCost/Pair"):
             y = yield_name(pair.findtext("zIndex"))
             v = int(pair.findtext("iValue") or "0")
             costs.append(f"{v} {y}")
+        build_turns = int(entry.findtext("iBuildTurns") or "0")
 
         # Tile-bonus / adjacency / improvement-class effects (e.g., the
         # FIRE / HEALING / HUNTING shrines that work by modifying nearby
@@ -206,6 +207,7 @@ def main() -> int:
             "specialist": specialist_label,
             "outputs": outputs,
             "costs": costs,
+            "buildTurns": build_turns,
             "effects": effects,
         })
 
@@ -231,9 +233,21 @@ def main() -> int:
             "shrines": by_type[t],
         })
 
+    # All shrines currently share one build cost/time (40 Stone, 4 worker
+    # turns) — surface it once, page-wide. If a patch ever diverges them,
+    # emit null and warn so the page falls back to per-shrine display.
+    signatures = {(tuple(s["costs"]), s["buildTurns"]) for s in shrines}
+    if len(signatures) == 1:
+        (cost_list, turns), = signatures
+        build = {"costs": list(cost_list), "turns": turns}
+    else:
+        build = None
+        print(f"⚠ shrine build cost/turns no longer uniform ({len(signatures)} variants) — page shows no global line")
+
     out_obj = {
         "shrines": shrines,
         "groups": type_groups,
+        "build": build,
         "totals": {
             "shrines": len(shrines),
             "types": len(type_groups),
