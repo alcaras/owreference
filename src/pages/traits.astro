@@ -31,9 +31,17 @@ const RATING_TONE: Record<string, string> = {
   Discipline: 'yield-orders',
 };
 
+// Direct ratings for a stat column exclude fallbacks — those get their own
+// column (they only apply when the stat isn't already set another way).
 function ratingsFor(t: Trait, r: string) {
-  return t.ratings.filter(x => x.rating === r);
+  return t.ratings.filter(x => x.rating === r && !x.fallback);
 }
+function fallbackRatings(t: Trait) {
+  return t.ratings.filter(x => x.fallback);
+}
+const RATING_ICON: Record<string, string> = {
+  Wisdom: 'wisdom', Charisma: 'charisma', Courage: 'courage', Discipline: 'discipline',
+};
 
 const allTraits: Trait[] = CATEGORIES.flatMap(c => traitData[c.key] as Trait[]);
 const dynastyCount = allTraits.filter(t => (t as any).dynastyOf).length;
@@ -83,7 +91,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
   <p class="traits-intro">
     Every character trait in <code>trait.xml</code>, grouped the way the game flags
     them. Rating columns show the trait's Wisdom / Charisma / Courage / Discipline
-    contribution (dimmed italics mark a fallback value, used only when the rating isn't already set).
+    contribution, with a separate Fallback column for ratings that apply only when that stat isn't already set another way.
     Most traits are granted by events; the Acquired column lists only what the XML
     states directly — minimum age, the childhood adjective and injury rolls, recovery
     odds. Which child traits a parent can pass on lives on
@@ -151,6 +159,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                       <img class="rating-hdr-ico" src={`${base}img/icons/ratings/${r.toLowerCase()}.png`} alt={r} />
                     </th>
                   ))}
+                  <th class="nhdr nhdr--family nhdr--rating" title="Fallback ratings — apply only when that stat is not already set another way">Fallback</th>
                   <th class="nhdr nhdr--family">Effects</th>
                   <th class="nhdr nhdr--family">Opinions</th>
                   <th class="nhdr nhdr--family">Replaces / Blocks</th>
@@ -182,8 +191,8 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                           <td class={`cell cell--rating ${RATING_TONE[r]}`}>
                             {vals.map(v => (
                               <span
-                                class={`rt ${v.value >= 0 ? 'rt--pos' : 'rt--neg'} ${v.fallback ? 'rt--fallback' : ''}`}
-                                title={v.fallback ? `${r} — fallback rating, applies only when ${r} is not already set another way` : r}
+                                class={`rt ${v.value >= 0 ? 'rt--pos' : 'rt--neg'}`}
+                                title={r}
                               ><span class="rt__num">{v.value > 0 ? `+${v.value}` : `−${-v.value}`}</span
                               ><img class="rt__ico" src={`${base}img/icons/ratings/${r.toLowerCase()}.png`} alt={r} /></span>
                             ))}
@@ -192,6 +201,22 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                           <td class="cell cell--rating is-empty"><span class="cell__dash">—</span></td>
                         );
                       })}
+                      {(() => {
+                        const fb = fallbackRatings(t);
+                        return fb.length ? (
+                          <td class="cell cell--rating cell--fallback">
+                            {fb.map(v => (
+                              <span
+                                class={`rt ${v.value >= 0 ? 'rt--pos' : 'rt--neg'}`}
+                                title={`${v.rating} — fallback, applies only when ${v.rating} is not already set another way`}
+                              ><span class="rt__num">{v.value > 0 ? `+${v.value}` : `−${-v.value}`}</span
+                              ><img class="rt__ico" src={`${base}img/icons/ratings/${RATING_ICON[v.rating] || v.rating.toLowerCase()}.png`} alt={v.rating} /></span>
+                            ))}
+                          </td>
+                        ) : (
+                          <td class="cell cell--rating cell--fallback is-empty"><span class="cell__dash">—</span></td>
+                        );
+                      })()}
                       <td class={`cell cell--effects ${hasEffects ? '' : 'is-empty'}`}>
                         {hasEffects ? (
                           <div class="fxstack">
@@ -563,8 +588,9 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
   .rt__ico { width: 13px; height: 13px; object-fit: contain; opacity: 0.9; flex: none; }
   .rt + .rt { margin-left: 0.35rem; }
   .rt--neg { opacity: 0.85; }
-  /* Fallback ratings (only apply when the stat isn't otherwise set) read dimmer */
-  .rt--fallback { opacity: 0.5; font-style: italic; }
+  /* Fallback column reads a touch quieter than the direct-rating columns */
+  .cell--fallback:not(.is-empty) { opacity: 0.82; }
+  .nhdr--rating { text-align: center; }
 
   .cell--effects { min-width: 16rem; }
   .fxstack {
