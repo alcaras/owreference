@@ -37,6 +37,7 @@ function ratingsFor(t: Trait, r: string) {
 
 const allTraits: Trait[] = CATEGORIES.flatMap(c => traitData[c.key] as Trait[]);
 const dynastyCount = allTraits.filter(t => (t as any).dynastyOf).length;
+const childhoodCount = allTraits.filter(t => (t as any).childhood).length;
 
 // Source facet: base game + each DLC/pack present, ordered biggest-first
 // (base always leads). Each trait carries `source` from build_traits.py.
@@ -104,6 +105,11 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
     <div class="tfilter__row">
       <span class="tfilter__label">Options</span>
       <div class="tfilter__chips">
+        <button type="button" class="dyn-toggle" id="core-toggle" aria-pressed="false"
+          title="Only the born-with personality pool — traits with a childhood adjective roll (the core set the leader customizer draws on). Excludes event-only strengths like Famous and all dynasty kits.">
+          <span class="dyn-toggle__box" aria-hidden="true"></span>
+          Core personality only <span class="dyn-toggle__count">({childhoodCount})</span>
+        </button>
         <button type="button" class="dyn-toggle" id="dyn-toggle" aria-pressed="false"
           title="Character-kit traits tied to one historical leader (Wonders & Dynasties dynasty kits and scenario leaders) — marked with a 👑 name tag below">
           <span class="dyn-toggle__box" aria-hidden="true"></span>
@@ -150,7 +156,8 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                   return (
                     <tr data-trait={t.slug} id={t.slug} data-cat={cat.key}
                         data-source={sourceSlug((t as any).source || 'Base game')}
-                        data-dynasty={(t as any).dynastyOf ? '1' : undefined}>
+                        data-dynasty={(t as any).dynastyOf ? '1' : undefined}
+                        data-childhood={(t as any).childhood ? '1' : undefined}>
                       <th class="rowlabel" scope="row">
                         <span class="trait__name" title={t.description || undefined}>{t.name}</span>
                         {t.religion && <span class="trait__sub">{t.religion}</span>}
@@ -262,6 +269,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       const grid = document.getElementById('traits-grid');
       const blobNode = document.getElementById('traits-search-blobs');
       const dynBtn = document.getElementById('dyn-toggle');
+      const coreBtn = document.getElementById('core-toggle');
       const resetBtn = document.getElementById('tfilter-reset');
       const countEl = document.getElementById('tfilter-count');
       const facetBtns = Array.from(document.querySelectorAll('.fchip'));
@@ -269,6 +277,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
       let hideDyn = false;
+      let coreOnly = false;
 
       // Active facet sets: a row must match one of the ON values in EACH facet
       // that has any chips. An empty set (all off) hides everything in that facet.
@@ -292,7 +301,8 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
           const okCat = cats.has(el.getAttribute('data-cat'));
           const okSrc = srcs.has(el.getAttribute('data-source'));
           const okDyn = !(hideDyn && el.hasAttribute('data-dynasty'));
-          const show = okSearch && okCat && okSrc && okDyn;
+          const okCore = !coreOnly || el.hasAttribute('data-childhood');
+          const show = okSearch && okCat && okSrc && okDyn && okCore;
           el.classList.toggle('is-hidden', !show);
           if (show) shown++;
         }
@@ -316,6 +326,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
         if (offCat.length) p.set('hidecat', offCat.join(','));
         if (offSrc.length) p.set('hidesrc', offSrc.join(','));
         if (hideDyn) p.set('hidedyn', '1');
+        if (coreOnly) p.set('core', '1');
         const q = p.toString();
         history.replaceState(null, '', q ? '?' + q + location.hash : location.pathname + location.hash);
       }
@@ -333,6 +344,8 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
         setOff('src', p.get('hidesrc'));
         hideDyn = p.get('hidedyn') === '1';
         if (dynBtn) { dynBtn.classList.toggle('is-on', hideDyn); dynBtn.setAttribute('aria-pressed', String(hideDyn)); }
+        coreOnly = p.get('core') === '1';
+        if (coreBtn) { coreBtn.classList.toggle('is-on', coreOnly); coreBtn.setAttribute('aria-pressed', String(coreOnly)); }
       }
 
       for (const b of facetBtns) b.addEventListener('click', () => {
@@ -346,10 +359,17 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
         dynBtn.classList.toggle('is-on', hideDyn);
         writeURL(); apply();
       });
+      if (coreBtn) coreBtn.addEventListener('click', () => {
+        coreOnly = !coreOnly;
+        coreBtn.setAttribute('aria-pressed', String(coreOnly));
+        coreBtn.classList.toggle('is-on', coreOnly);
+        writeURL(); apply();
+      });
       if (resetBtn) resetBtn.addEventListener('click', () => {
         for (const b of facetBtns) { b.classList.add('is-on'); b.setAttribute('aria-pressed', 'true'); }
-        hideDyn = false;
+        hideDyn = false; coreOnly = false;
         if (dynBtn) { dynBtn.classList.remove('is-on'); dynBtn.setAttribute('aria-pressed', 'false'); }
+        if (coreBtn) { coreBtn.classList.remove('is-on'); coreBtn.setAttribute('aria-pressed', 'false'); }
         input.value = '';
         writeURL(); apply();
       });

@@ -665,10 +665,19 @@ def main() -> int:
             dynasty_of = re.sub(r"\b(I[ixv]|Vi{0,3}|Xi{0,3}|Iii?)\b",
                                 lambda m: m.group(1).upper(), dynasty_of)
 
+        # Childhood / core-personality trait: carries iAdjectiveDie, the weight
+        # for the "grew up <adjective>" childhood roll. These 42 strengths and
+        # 20 weaknesses are the born-with personality pool (and the core set the
+        # leader customizer draws on) — distinct from event-only strengths
+        # (Famous, the Buddhist meditation stages) and the dynasty kits, which
+        # have no childhood roll.
+        childhood = bool(e.findtext("iAdjectiveDie"))
+
         categories[cat].append({
             "acquisition": acquisition,
             "blocks": blocks,
             "category": cat,
+            "childhood": childhood,
             "description": description,
             "dlc": nice_token(dlc) if dlc else "",
             "source": SOURCE_LABELS.get(dlc, nice_token(dlc)) if dlc else "Base game",
