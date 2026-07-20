@@ -303,25 +303,58 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
         if (countEl) countEl.textContent = shown + ' of ' + rows.length + ' traits';
       }
 
+      // ── Shareable URL state ──────────────────────────────────────────────
+      // Only OFF facets and active options are encoded, so the default view
+      // stays a clean paramless URL. cat=/src= list the HIDDEN values.
+      function offList(facet) {
+        return facetBtns.filter(b => b.getAttribute('data-facet') === facet && !b.classList.contains('is-on'))
+          .map(b => b.getAttribute('data-val'));
+      }
+      function writeURL() {
+        const p = new URLSearchParams();
+        const offCat = offList('cat'), offSrc = offList('src');
+        if (offCat.length) p.set('hidecat', offCat.join(','));
+        if (offSrc.length) p.set('hidesrc', offSrc.join(','));
+        if (hideDyn) p.set('hidedyn', '1');
+        const q = p.toString();
+        history.replaceState(null, '', q ? '?' + q + location.hash : location.pathname + location.hash);
+      }
+      function readURL() {
+        const p = new URLSearchParams(location.search);
+        const setOff = (facet, csv) => {
+          const off = new Set((csv || '').split(',').filter(Boolean));
+          for (const b of facetBtns) if (b.getAttribute('data-facet') === facet) {
+            const on = !off.has(b.getAttribute('data-val'));
+            b.classList.toggle('is-on', on);
+            b.setAttribute('aria-pressed', String(on));
+          }
+        };
+        setOff('cat', p.get('hidecat'));
+        setOff('src', p.get('hidesrc'));
+        hideDyn = p.get('hidedyn') === '1';
+        if (dynBtn) { dynBtn.classList.toggle('is-on', hideDyn); dynBtn.setAttribute('aria-pressed', String(hideDyn)); }
+      }
+
       for (const b of facetBtns) b.addEventListener('click', () => {
         const on = b.classList.toggle('is-on');
         b.setAttribute('aria-pressed', String(on));
-        apply();
+        writeURL(); apply();
       });
       if (dynBtn) dynBtn.addEventListener('click', () => {
         hideDyn = !hideDyn;
         dynBtn.setAttribute('aria-pressed', String(hideDyn));
         dynBtn.classList.toggle('is-on', hideDyn);
-        apply();
+        writeURL(); apply();
       });
       if (resetBtn) resetBtn.addEventListener('click', () => {
         for (const b of facetBtns) { b.classList.add('is-on'); b.setAttribute('aria-pressed', 'true'); }
         hideDyn = false;
         if (dynBtn) { dynBtn.classList.remove('is-on'); dynBtn.setAttribute('aria-pressed', 'false'); }
         input.value = '';
-        apply();
+        writeURL(); apply();
       });
       input.addEventListener('input', apply);
+      readURL();
       apply();
     })();
   </script>

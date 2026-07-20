@@ -643,14 +643,24 @@ def main() -> int:
         nick_key = gendered.get(e.findtext("GenderedNickname") or "", "")
         nickname = text.get(nick_key, "")
 
-        # Character-kit traits: EncyclopediaCharacter ties a trait to one
-        # specific historical character (the W&D dynasty-leader kits and the
-        # scenario leaders — "Darius Leader", Caesar's "Expansionist", …).
-        # The page uses this to offer a "hide dynasty traits" toggle.
+        # Character-kit / dynasty traits: a trait bound to one specific
+        # historical leader rather than rollable/earnable by anyone. Two XML
+        # tells, both authored per-character (never the childhood pool):
+        #   • EncyclopediaCharacter — the Civilopedia link the game ships on
+        #     every dynasty-leader kit (Darius Leader, Caesar's Expansionist,
+        #     the EotI leader strengths, …), and
+        #   • a LeaderEffectPlayer whose effect is a per-dynasty bundle
+        #     (EFFECTPLAYER_DYNASTY_* — e.g. Ambusher → Scipio), which a few
+        #     kits use instead of the pedia link.
+        # Generic event/health traits (Famous, Sickly, the Buddhist meditation
+        # stages …) have neither, so they stay out — they aren't leader kits.
         enc_char = e.findtext("EncyclopediaCharacter") or ""
+        lead_ep = e.findtext("LeaderEffectPlayer") or ""
+        kit_char = enc_char or (
+            lead_ep[len("EFFECTPLAYER_DYNASTY_"):] if lead_ep.startswith("EFFECTPLAYER_DYNASTY_") else "")
         dynasty_of = ""
-        if enc_char:
-            dynasty_of = (enc_char.replace("CHARACTER_", "")
+        if kit_char:
+            dynasty_of = (kit_char.replace("CHARACTER_", "")
                           .removesuffix("_LEADER").replace("_", " ").title())
             dynasty_of = re.sub(r"\b(I[ixv]|Vi{0,3}|Xi{0,3}|Iii?)\b",
                                 lambda m: m.group(1).upper(), dynasty_of)
