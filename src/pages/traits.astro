@@ -36,6 +36,7 @@ function ratingsFor(t: Trait, r: string) {
 }
 
 const allTraits: Trait[] = CATEGORIES.flatMap(c => traitData[c.key] as Trait[]);
+const dynastyCount = allTraits.filter(t => (t as any).dynastyOf).length;
 
 const searchBlobs: Record<string, string> = {};
 for (const t of allTraits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
@@ -63,6 +64,12 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
     <a href={`${base}trait-inheritance`}>Trait Inheritance</a>; the ten archetypes are
     detailed on <a href={`${base}archetypes`}>Archetypes</a>.
   </p>
+
+  <button type="button" class="dyn-toggle" id="dyn-toggle" aria-pressed="false"
+    title="Character-kit traits tied to one historical leader (Wonders & Dynasties dynasty kits and scenario leaders) — marked with a name tag below">
+    <span class="dyn-toggle__box" aria-hidden="true"></span>
+    Hide dynasty traits <span class="dyn-toggle__count">({dynastyCount})</span>
+  </button>
 
   <div id="traits-grid">
     {CATEGORIES.map(cat => {
@@ -97,11 +104,14 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                   const hasRel = t.replaces.length || t.blocks.length || t.leadsTo.length;
                   const hasMods = t.modifiers.length || t.flags.length;
                   return (
-                    <tr data-trait={t.slug} id={t.slug}>
+                    <tr data-trait={t.slug} id={t.slug} data-dynasty={(t as any).dynastyOf ? '1' : undefined}>
                       <th class="rowlabel" scope="row">
                         <span class="trait__name" title={t.description || undefined}>{t.name}</span>
                         {t.religion && <span class="trait__sub">{t.religion}</span>}
                         {t.dlc && <span class="trait__dlc">{t.dlc}</span>}
+                        {(t as any).dynastyOf && (
+                          <span class="trait__dlc trait__dyn" title={`Character-kit trait of ${(t as any).dynastyOf}`}>👑 {(t as any).dynastyOf}</span>
+                        )}
                       </th>
                       {RATINGS.map(r => {
                         const vals = ratingsFor(t, r);
@@ -205,15 +215,18 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       const input = document.getElementById('site-search');
       const grid = document.getElementById('traits-grid');
       const blobNode = document.getElementById('traits-search-blobs');
+      const dynBtn = document.getElementById('dyn-toggle');
       if (!input || !grid || !blobNode) return;
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      let hideDyn = false;
       function apply() {
         const q = (input.value || '').trim().toLowerCase();
         for (const slug of Object.keys(blobs)) {
           const match = !q || blobs[slug].includes(q);
           for (const el of grid.querySelectorAll('[data-trait="' + slug + '"]')) {
-            el.classList.toggle('is-hidden', !match);
+            const dyn = hideDyn && el.hasAttribute('data-dynasty');
+            el.classList.toggle('is-hidden', !match || dyn);
           }
         }
         for (const sec of grid.querySelectorAll('.tcat')) {
@@ -221,6 +234,12 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
           sec.classList.toggle('is-hidden', visible === 0);
         }
       }
+      if (dynBtn) dynBtn.addEventListener('click', () => {
+        hideDyn = !hideDyn;
+        dynBtn.setAttribute('aria-pressed', String(hideDyn));
+        dynBtn.classList.toggle('is-on', hideDyn);
+        apply();
+      });
       input.addEventListener('input', apply);
       apply();
     })();
@@ -298,6 +317,32 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
     border-radius: 4px;
     padding: 0.02rem 0.3rem;
   }
+  .trait__dyn {
+    color: var(--text-dim);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  /* Dynasty-trait toggle */
+  .dyn-toggle {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 0.03em;
+    color: var(--text-dim); background: var(--bg-elev);
+    border: 1px solid var(--border-strong); border-radius: 8px;
+    padding: 0.38rem 0.8rem; cursor: pointer; margin: 0 0 1rem;
+    transition: background 0.12s, color 0.12s;
+  }
+  .dyn-toggle:hover { color: var(--text); }
+  .dyn-toggle.is-on { background: color-mix(in srgb, var(--accent) 28%, var(--bg-elev) 72%); color: var(--text); }
+  .dyn-toggle__box {
+    width: 0.85rem; height: 0.85rem; border: 1px solid var(--border-strong);
+    border-radius: 4px; background: var(--bg); position: relative; flex: none;
+  }
+  .dyn-toggle.is-on .dyn-toggle__box { background: var(--accent); border-color: var(--accent); }
+  .dyn-toggle.is-on .dyn-toggle__box::after {
+    content: '✓'; position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 0.62rem; color: var(--bg); font-weight: 700;
+  }
+  .dyn-toggle__count { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-faint); }
 
   .cell--rating {
     text-align: center;

@@ -31,6 +31,7 @@ this page is the catalog and cross-links there.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -630,12 +631,25 @@ def main() -> int:
         nick_key = gendered.get(e.findtext("GenderedNickname") or "", "")
         nickname = text.get(nick_key, "")
 
+        # Character-kit traits: EncyclopediaCharacter ties a trait to one
+        # specific historical character (the W&D dynasty-leader kits and the
+        # scenario leaders — "Darius Leader", Caesar's "Expansionist", …).
+        # The page uses this to offer a "hide dynasty traits" toggle.
+        enc_char = e.findtext("EncyclopediaCharacter") or ""
+        dynasty_of = ""
+        if enc_char:
+            dynasty_of = (enc_char.replace("CHARACTER_", "")
+                          .removesuffix("_LEADER").replace("_", " ").title())
+            dynasty_of = re.sub(r"\b(I[ixv]|Vi{0,3}|Xi{0,3}|Iii?)\b",
+                                lambda m: m.group(1).upper(), dynasty_of)
+
         categories[cat].append({
             "acquisition": acquisition,
             "blocks": blocks,
             "category": cat,
             "description": description,
             "dlc": nice_token(dlc) if dlc else "",
+            "dynastyOf": dynasty_of,
             "flags": flags,
             "generalEffects": general_effects,
             "governorEffects": governor_effects,
