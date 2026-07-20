@@ -38,6 +38,21 @@ function ratingsFor(t: Trait, r: string) {
 const allTraits: Trait[] = CATEGORIES.flatMap(c => traitData[c.key] as Trait[]);
 const dynastyCount = allTraits.filter(t => (t as any).dynastyOf).length;
 
+// Source facet: base game + each DLC/pack present, ordered biggest-first
+// (base always leads). Each trait carries `source` from build_traits.py.
+const SOURCE_ORDER = [
+  'Base game', 'Empires of the Indus', 'Wonders & Dynasties',
+  'The Sacred and the Profane', 'Religion event pack', 'Behind the Throne', 'Wrath of Gods',
+];
+const sourceCounts = new Map<string, number>();
+for (const t of allTraits) {
+  const s = (t as any).source || 'Base game';
+  sourceCounts.set(s, (sourceCounts.get(s) || 0) + 1);
+}
+const SOURCES = [...sourceCounts.keys()].sort(
+  (a, b) => (SOURCE_ORDER.indexOf(a) + 1 || 99) - (SOURCE_ORDER.indexOf(b) + 1 || 99));
+const sourceSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 const searchBlobs: Record<string, string> = {};
 for (const t of allTraits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
 
@@ -65,11 +80,40 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
     detailed on <a href={`${base}archetypes`}>Archetypes</a>.
   </p>
 
-  <button type="button" class="dyn-toggle" id="dyn-toggle" aria-pressed="false"
-    title="Character-kit traits tied to one historical leader (Wonders & Dynasties dynasty kits and scenario leaders) — marked with a name tag below">
-    <span class="dyn-toggle__box" aria-hidden="true"></span>
-    Hide dynasty traits <span class="dyn-toggle__count">({dynastyCount})</span>
-  </button>
+  <div class="tfilter" id="tfilter">
+    <div class="tfilter__row">
+      <span class="tfilter__label">Category</span>
+      <div class="tfilter__chips">
+        {CATEGORIES.map(cat => (
+          <button type="button" class="fchip is-on" data-facet="cat" data-val={cat.key} aria-pressed="true">
+            {cat.label}<span class="fchip__n">{(traitData[cat.key] as Trait[]).length}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+    <div class="tfilter__row">
+      <span class="tfilter__label">Source</span>
+      <div class="tfilter__chips">
+        {SOURCES.map(s => (
+          <button type="button" class="fchip is-on" data-facet="src" data-val={sourceSlug(s)} aria-pressed="true">
+            {s === 'Base game' ? 'Base game' : s}<span class="fchip__n">{sourceCounts.get(s)}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+    <div class="tfilter__row">
+      <span class="tfilter__label">Options</span>
+      <div class="tfilter__chips">
+        <button type="button" class="dyn-toggle" id="dyn-toggle" aria-pressed="false"
+          title="Character-kit traits tied to one historical leader (Wonders & Dynasties dynasty kits and scenario leaders) — marked with a 👑 name tag below">
+          <span class="dyn-toggle__box" aria-hidden="true"></span>
+          Hide dynasty traits <span class="dyn-toggle__count">({dynastyCount})</span>
+        </button>
+        <button type="button" class="tfilter__reset" id="tfilter-reset">Reset</button>
+        <span class="tfilter__count" id="tfilter-count" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
 
   <div id="traits-grid">
     {CATEGORIES.map(cat => {
@@ -104,7 +148,9 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                   const hasRel = t.replaces.length || t.blocks.length || t.leadsTo.length;
                   const hasMods = t.modifiers.length || t.flags.length;
                   return (
-                    <tr data-trait={t.slug} id={t.slug} data-dynasty={(t as any).dynastyOf ? '1' : undefined}>
+                    <tr data-trait={t.slug} id={t.slug} data-cat={cat.key}
+                        data-source={sourceSlug((t as any).source || 'Base game')}
+                        data-dynasty={(t as any).dynastyOf ? '1' : undefined}>
                       <th class="rowlabel" scope="row">
                         <span class="trait__name" title={t.description || undefined}>{t.name}</span>
                         {t.religion && <span class="trait__sub">{t.religion}</span>}
@@ -216,28 +262,63 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       const grid = document.getElementById('traits-grid');
       const blobNode = document.getElementById('traits-search-blobs');
       const dynBtn = document.getElementById('dyn-toggle');
+      const resetBtn = document.getElementById('tfilter-reset');
+      const countEl = document.getElementById('tfilter-count');
+      const facetBtns = Array.from(document.querySelectorAll('.fchip'));
       if (!input || !grid || !blobNode) return;
       let blobs;
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
       let hideDyn = false;
+
+      // Active facet sets: a row must match one of the ON values in EACH facet
+      // that has any chips. An empty set (all off) hides everything in that facet.
+      function activeSet(facet) {
+        const on = new Set();
+        for (const b of facetBtns)
+          if (b.getAttribute('data-facet') === facet && b.classList.contains('is-on'))
+            on.add(b.getAttribute('data-val'));
+        return on;
+      }
+
+      const rows = Array.from(grid.querySelectorAll('tbody tr[data-trait]'));
       function apply() {
         const q = (input.value || '').trim().toLowerCase();
-        for (const slug of Object.keys(blobs)) {
-          const match = !q || blobs[slug].includes(q);
-          for (const el of grid.querySelectorAll('[data-trait="' + slug + '"]')) {
-            const dyn = hideDyn && el.hasAttribute('data-dynasty');
-            el.classList.toggle('is-hidden', !match || dyn);
-          }
+        const cats = activeSet('cat');
+        const srcs = activeSet('src');
+        let shown = 0;
+        for (const el of rows) {
+          const slug = el.getAttribute('data-trait');
+          const okSearch = !q || (blobs[slug] || '').includes(q);
+          const okCat = cats.has(el.getAttribute('data-cat'));
+          const okSrc = srcs.has(el.getAttribute('data-source'));
+          const okDyn = !(hideDyn && el.hasAttribute('data-dynasty'));
+          const show = okSearch && okCat && okSrc && okDyn;
+          el.classList.toggle('is-hidden', !show);
+          if (show) shown++;
         }
         for (const sec of grid.querySelectorAll('.tcat')) {
           const visible = sec.querySelectorAll('tbody tr:not(.is-hidden)').length;
           sec.classList.toggle('is-hidden', visible === 0);
         }
+        if (countEl) countEl.textContent = shown + ' of ' + rows.length + ' traits';
       }
+
+      for (const b of facetBtns) b.addEventListener('click', () => {
+        const on = b.classList.toggle('is-on');
+        b.setAttribute('aria-pressed', String(on));
+        apply();
+      });
       if (dynBtn) dynBtn.addEventListener('click', () => {
         hideDyn = !hideDyn;
         dynBtn.setAttribute('aria-pressed', String(hideDyn));
         dynBtn.classList.toggle('is-on', hideDyn);
+        apply();
+      });
+      if (resetBtn) resetBtn.addEventListener('click', () => {
+        for (const b of facetBtns) { b.classList.add('is-on'); b.setAttribute('aria-pressed', 'true'); }
+        hideDyn = false;
+        if (dynBtn) { dynBtn.classList.remove('is-on'); dynBtn.setAttribute('aria-pressed', 'false'); }
+        input.value = '';
         apply();
       });
       input.addEventListener('input', apply);
@@ -322,13 +403,49 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
     border-color: color-mix(in srgb, var(--accent) 40%, transparent);
   }
 
+  /* Faceted filter bar */
+  .tfilter {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    border: 1px solid var(--border-strong); border-radius: 10px;
+    background: var(--bg-elev); padding: 0.7rem 0.85rem; margin: 0 0 1.25rem;
+  }
+  .tfilter__row { display: flex; align-items: flex-start; gap: 0.7rem; flex-wrap: wrap; }
+  .tfilter__label {
+    font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-faint);
+    min-width: 4.2rem; padding-top: 0.32rem; flex: none;
+  }
+  .tfilter__chips { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+  .fchip {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-family: var(--font-display); font-size: 0.76rem; letter-spacing: 0.02em;
+    color: var(--text-faint); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 0.25rem 0.65rem; cursor: pointer; transition: all 0.12s;
+  }
+  .fchip:hover { color: var(--text-dim); border-color: var(--border-strong); }
+  .fchip.is-on {
+    color: var(--text); background: color-mix(in srgb, var(--accent) 22%, var(--bg-elev) 78%);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  .fchip:not(.is-on) { opacity: 0.55; text-decoration: line-through; text-decoration-color: color-mix(in srgb, currentColor 50%, transparent); }
+  .fchip__n { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint); }
+  .fchip.is-on .fchip__n { color: color-mix(in srgb, var(--accent) 80%, var(--text)); }
+  .tfilter__reset {
+    font-family: var(--font-display); font-size: 0.74rem; color: var(--text-dim);
+    background: none; border: 1px solid var(--border); border-radius: 999px;
+    padding: 0.25rem 0.7rem; cursor: pointer; transition: color 0.12s, border-color 0.12s;
+  }
+  .tfilter__reset:hover { color: var(--text); border-color: var(--border-strong); }
+  .tfilter__count { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-faint); margin-left: 0.2rem; }
+
   /* Dynasty-trait toggle */
   .dyn-toggle {
     display: inline-flex; align-items: center; gap: 0.45rem;
-    font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 0.03em;
-    color: var(--text-dim); background: var(--bg-elev);
-    border: 1px solid var(--border-strong); border-radius: 8px;
-    padding: 0.38rem 0.8rem; cursor: pointer; margin: 0 0 1rem;
+    font-family: var(--font-display); font-size: 0.76rem; letter-spacing: 0.02em;
+    color: var(--text-dim); background: var(--bg);
+    border: 1px solid var(--border-strong); border-radius: 999px;
+    padding: 0.25rem 0.7rem; cursor: pointer;
     transition: background 0.12s, color 0.12s;
   }
   .dyn-toggle:hover { color: var(--text); }

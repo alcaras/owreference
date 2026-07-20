@@ -55,6 +55,18 @@ RATING_LABELS: dict[str, str] = {
     "RATING_DISCIPLINE": "Discipline",
 }
 
+# GameContentRequired token → the DLC / content pack it ships with, matching
+# the labels used site-wide (see build_events.DLC_LABELS). "" = base game.
+SOURCE_LABELS: dict[str, str] = {
+    "":                     "Base game",
+    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
+    "WONDERS_DYNASTIES":    "Wonders & Dynasties",
+    "AKSUM":                "The Sacred and the Profane",
+    "EVENTPACK_RELIGION":   "Religion event pack",
+    "EVENTPACK_SCANDAL":    "Behind the Throne",
+    "CALAMITIES":           "Wrath of Gods",
+}
+
 # UI placeholders in the archetype-picker, not real character traits.
 SKIP_IDS = {
     "TRAIT_PRESET_ARCHETYPE",
@@ -649,6 +661,7 @@ def main() -> int:
             "category": cat,
             "description": description,
             "dlc": nice_token(dlc) if dlc else "",
+            "source": SOURCE_LABELS.get(dlc, nice_token(dlc)) if dlc else "Base game",
             "dynastyOf": dynasty_of,
             "flags": flags,
             "generalEffects": general_effects,
