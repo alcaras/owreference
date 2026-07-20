@@ -54,6 +54,16 @@ const SOURCES = [...sourceCounts.keys()].sort(
   (a, b) => (SOURCE_ORDER.indexOf(a) + 1 || 99) - (SOURCE_ORDER.indexOf(b) + 1 || 99));
 const sourceSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+// Single-char codes keep shareable URLs short (?cat=sw&src=b&core).
+const CAT_CODE: Record<string, string> = {
+  strength: 's', weakness: 'w', archetype: 'a', affliction: 'f', item: 'i', status: 't',
+};
+const SRC_CODE: Record<string, string> = {
+  'base-game': 'b', 'empires-of-the-indus': 'e', 'wonders-dynasties': 'd',
+  'the-sacred-and-the-profane': 'p', 'religion-event-pack': 'r',
+  'behind-the-throne': 'h', 'wrath-of-gods': 'g',
+};
+
 const searchBlobs: Record<string, string> = {};
 for (const t of allTraits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
 
@@ -73,7 +83,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
   <p class="traits-intro">
     Every character trait in <code>trait.xml</code>, grouped the way the game flags
     them. Rating columns show the trait's Wisdom / Charisma / Courage / Discipline
-    contribution (° marks a fallback value, used when the rating isn't already set).
+    contribution (dimmed italics mark a fallback value, used only when the rating isn't already set).
     Most traits are granted by events; the Acquired column lists only what the XML
     states directly — minimum age, the childhood adjective and injury rolls, recovery
     odds. Which child traits a parent can pass on lives on
@@ -86,7 +96,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       <span class="tfilter__label">Category</span>
       <div class="tfilter__chips">
         {CATEGORIES.map(cat => (
-          <button type="button" class="fchip is-on" data-facet="cat" data-val={cat.key} aria-pressed="true">
+          <button type="button" class="fchip is-on" data-facet="cat" data-val={cat.key} data-code={CAT_CODE[cat.key]} aria-pressed="true">
             {cat.label}<span class="fchip__n">{(traitData[cat.key] as Trait[]).length}</span>
           </button>
         ))}
@@ -96,7 +106,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       <span class="tfilter__label">Source</span>
       <div class="tfilter__chips">
         {SOURCES.map(s => (
-          <button type="button" class="fchip is-on" data-facet="src" data-val={sourceSlug(s)} aria-pressed="true">
+          <button type="button" class="fchip is-on" data-facet="src" data-val={sourceSlug(s)} data-code={SRC_CODE[sourceSlug(s)]} aria-pressed="true">
             {s === 'Base game' ? 'Base game' : s}<span class="fchip__n">{sourceCounts.get(s)}</span>
           </button>
         ))}
@@ -128,7 +138,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
         <section class="tcat" data-cat={cat.key} id={cat.key}>
           <h2 class="tcat__title">
             <span class="tcat__name">{cat.label}</span>
-            <span class="tcat__count">{list.length} traits</span>
+            <span class="tcat__count" data-total={list.length}>{list.length} traits</span>
           </h2>
           <p class="tcat__blurb">{cat.blurb}</p>
           <div class="grid__scroll">
@@ -172,9 +182,10 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                           <td class={`cell cell--rating ${RATING_TONE[r]}`}>
                             {vals.map(v => (
                               <span
-                                class={`rt ${v.value >= 0 ? 'rt--pos' : 'rt--neg'}`}
-                                title={v.fallback ? 'Fallback rating — applies when the rating is not set another way' : undefined}
-                              >{v.value > 0 ? `+${v.value}` : `−${-v.value}`}{v.fallback ? '°' : ''}</span>
+                                class={`rt ${v.value >= 0 ? 'rt--pos' : 'rt--neg'} ${v.fallback ? 'rt--fallback' : ''}`}
+                                title={v.fallback ? `${r} — fallback rating, applies only when ${r} is not already set another way` : r}
+                              ><span class="rt__num">{v.value > 0 ? `+${v.value}` : `−${-v.value}`}</span
+                              ><img class="rt__ico" src={`${base}img/icons/ratings/${r.toLowerCase()}.png`} alt={r} /></span>
                             ))}
                           </td>
                         ) : (
@@ -290,11 +301,20 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       }
 
       const rows = Array.from(grid.querySelectorAll('tbody tr[data-trait]'));
+      // Top page-meta pills → the category (or total) each one counts, so they
+      // can track the filter instead of showing the static catalog totals.
+      const pills = Array.from(document.querySelectorAll('.page-stats .stat'));
+      const catByLabel = { strengths: 'strength', weaknesses: 'weakness', items: 'item' };
+      function pillInfo(pill) {
+        const label = (pill.textContent || '').trim().split(/\s+/).slice(1).join(' ').toLowerCase();
+        return { b: pill.querySelector('b'), label };
+      }
       function apply() {
         const q = (input.value || '').trim().toLowerCase();
         const cats = activeSet('cat');
         const srcs = activeSet('src');
         let shown = 0;
+        const perCat = {};
         for (const el of rows) {
           const slug = el.getAttribute('data-trait');
           const okSearch = !q || (blobs[slug] || '').includes(q);
@@ -304,47 +324,60 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
           const okCore = !coreOnly || el.hasAttribute('data-childhood');
           const show = okSearch && okCat && okSrc && okDyn && okCore;
           el.classList.toggle('is-hidden', !show);
-          if (show) shown++;
+          if (show) { shown++; const c = el.getAttribute('data-cat'); perCat[c] = (perCat[c] || 0) + 1; }
         }
         for (const sec of grid.querySelectorAll('.tcat')) {
           const visible = sec.querySelectorAll('tbody tr:not(.is-hidden)').length;
           sec.classList.toggle('is-hidden', visible === 0);
+          const cnt = sec.querySelector('.tcat__count');
+          if (cnt) {
+            const total = cnt.getAttribute('data-total');
+            cnt.textContent = (visible == total ? total : visible + ' of ' + total) + ' traits';
+          }
+        }
+        // Keep the top pills in sync with what's actually shown.
+        for (const pill of pills) {
+          const { b, label } = pillInfo(pill);
+          if (!b) continue;
+          if (label === 'traits') b.textContent = String(shown);
+          else if (catByLabel[label]) b.textContent = String(perCat[catByLabel[label]] || 0);
         }
         if (countEl) countEl.textContent = shown + ' of ' + rows.length + ' traits';
       }
 
       // ── Shareable URL state ──────────────────────────────────────────────
-      // Only OFF facets and active options are encoded, so the default view
-      // stays a clean paramless URL. cat=/src= list the HIDDEN values.
-      function offList(facet) {
-        return facetBtns.filter(b => b.getAttribute('data-facet') === facet && !b.classList.contains('is-on'))
-          .map(b => b.getAttribute('data-val'));
+      // Compact: cat=/src= list the SHOWN values as single-char codes, present
+      // only when some are hidden; core / nokit are bare flags. Default view is
+      // a clean paramless URL. e.g. ?cat=sw&core  or  ?src=b&nokit
+      function facetChips(facet) {
+        return facetBtns.filter(b => b.getAttribute('data-facet') === facet);
       }
       function writeURL() {
-        const p = new URLSearchParams();
-        const offCat = offList('cat'), offSrc = offList('src');
-        if (offCat.length) p.set('hidecat', offCat.join(','));
-        if (offSrc.length) p.set('hidesrc', offSrc.join(','));
-        if (hideDyn) p.set('hidedyn', '1');
-        if (coreOnly) p.set('core', '1');
-        const q = p.toString();
-        history.replaceState(null, '', q ? '?' + q + location.hash : location.pathname + location.hash);
+        const parts = [];
+        for (const facet of ['cat', 'src']) {
+          const chips = facetChips(facet);
+          const onCodes = chips.filter(b => b.classList.contains('is-on')).map(b => b.getAttribute('data-code'));
+          if (onCodes.length !== chips.length) parts.push(facet + '=' + onCodes.join(''));
+        }
+        if (coreOnly) parts.push('core');
+        if (hideDyn) parts.push('nokit');
+        const q = parts.join('&');
+        history.replaceState(null, '', (q ? '?' + q : location.pathname) + location.hash);
       }
       function readURL() {
         const p = new URLSearchParams(location.search);
-        const setOff = (facet, csv) => {
-          const off = new Set((csv || '').split(',').filter(Boolean));
-          for (const b of facetBtns) if (b.getAttribute('data-facet') === facet) {
-            const on = !off.has(b.getAttribute('data-val'));
+        for (const facet of ['cat', 'src']) {
+          const val = p.get(facet);
+          const shown = val == null ? null : new Set(val.split(''));
+          for (const b of facetChips(facet)) {
+            const on = shown == null ? true : shown.has(b.getAttribute('data-code'));
             b.classList.toggle('is-on', on);
             b.setAttribute('aria-pressed', String(on));
           }
-        };
-        setOff('cat', p.get('hidecat'));
-        setOff('src', p.get('hidesrc'));
-        hideDyn = p.get('hidedyn') === '1';
+        }
+        hideDyn = p.has('nokit');
         if (dynBtn) { dynBtn.classList.toggle('is-on', hideDyn); dynBtn.setAttribute('aria-pressed', String(hideDyn)); }
-        coreOnly = p.get('core') === '1';
+        coreOnly = p.has('core');
         if (coreBtn) { coreBtn.classList.toggle('is-on', coreOnly); coreBtn.setAttribute('aria-pressed', String(coreOnly)); }
       }
 
@@ -519,13 +552,19 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
     white-space: nowrap;
   }
   .rt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.18rem;
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     font-weight: 600;
     font-size: 0.82rem;
   }
-  .rt + .rt { margin-left: 0.3rem; }
+  .rt__ico { width: 13px; height: 13px; object-fit: contain; opacity: 0.9; flex: none; }
+  .rt + .rt { margin-left: 0.35rem; }
   .rt--neg { opacity: 0.85; }
+  /* Fallback ratings (only apply when the stat isn't otherwise set) read dimmer */
+  .rt--fallback { opacity: 0.5; font-style: italic; }
 
   .cell--effects { min-width: 16rem; }
   .fxstack {
