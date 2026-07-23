@@ -39,6 +39,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_events as bev   # noqa: E402  conditions/timing/options/dlc_label
 import build_missions as m   # noqa: E402  text/index/bonus/clean_text helpers
 import wonder_events_util as weu  # noqa: E402  shared wonder-event definition
+import project_events_util as peu  # noqa: E402  shared project-event definition
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -157,6 +158,7 @@ def excluded_sets(story_idx: dict[str, ET.Element], eopt_idx: dict) -> dict[str,
     expeditions = {z for z, s in story_idx.items() if (s.findtext("Class") or "") == "EVENTCLASS_EXPLORING"}
     wonder_set = weu.wonder_ids(m.XML_DIR)
     wonders = {z for z, s in story_idx.items() if weu.is_wonder_decision_event(s, wonder_set)}
+    projects = {z for z, s in story_idx.items() if peu.is_project_event(s)}
 
     # Ruins + transitive chain closure, copied from build_events.py main() so
     # the excluded set matches the ruin-events page exactly.
@@ -209,7 +211,8 @@ def excluded_sets(story_idx: dict[str, ET.Element], eopt_idx: dict) -> dict[str,
         frontier = nxt
 
     return {"ruins": ruin_ids, "expeditions": expeditions,
-            "harvest": harvest, "study": study, "wonders": wonders}
+            "harvest": harvest, "study": study, "wonders": wonders,
+            "projects": projects}
 
 
 def categorize(s: ET.Element) -> tuple[str, str]:
@@ -380,6 +383,8 @@ def main() -> int:
                     "anchor": zid.replace("EVENTSTORY_STUDY_", "").lower()}
         if zid in excluded["wonders"]:
             return {"ext": "wonder-events", "anchor": zid}
+        if zid in excluded["projects"]:
+            return {"ext": "project-events", "anchor": zid}
         return None
 
     def story_name(zid: str) -> str:
@@ -591,6 +596,7 @@ def main() -> int:
             "harvest-events": len(excluded["harvest"]),
             "study-events": len(excluded["study"]),
             "wonder-events": len(excluded["wonders"]),
+            "project-events": len(excluded["projects"]),
             "total": len(excluded_all),
         },
         "note": "excluded = stories already rendered by the five specialized "

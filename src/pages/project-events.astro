@@ -1,0 +1,14 @@
+---
+import EventGroupPage from '../components/EventGroupPage.astro';
+const base = import.meta.env.BASE_URL;
+---
+<EventGroupPage sectionKey="projects" title="Project Events" active="project-events" pageMark="🏗️">
+  The decision pop-ups that fire when a city finishes a production <strong>Project</strong>. Two kinds:
+  <strong>one-time building projects</strong> — the <a href={`${base}urban-improvements`}>Archive</a>, Forum,
+  Walls, Treasury, Sangam and Opulence each fire one specific decision, much like a
+  <a href={`${base}wonder-events`}>wonder event</a>; and <strong>repeatable projects</strong> —
+  the Festival, Hunt and Olympiad are event generators, rolling one story from a weighted pool every
+  time you run them (Festivals draw on the largest pool). Each card shows what triggers it and what
+  every choice grants. As elsewhere, the weights are the XML knob, not real in-game odds — character
+  and empire conditions filter which stories are actually eligible.
+</EventGroupPage>

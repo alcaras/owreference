@@ -50,7 +50,8 @@ def main() -> int:
     # ── Ruins + Expeditions (events.json sections anchor cards by id) ────────
     PAGE_FOR = {"ruins": ("ruin-events", "Ruin Event"),
                 "expeditions": ("expedition-events", "Expedition Event"),
-                "wonders": ("wonder-events", "Wonder Event")}
+                "wonders": ("wonder-events", "Wonder Event"),
+                "projects": ("project-events", "Project Event")}
     sections = json.loads((DATA / "events.json").read_text())
     for sec in sections:
         page, label = PAGE_FOR.get(sec.get("key", ""), (None, None))

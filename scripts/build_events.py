@@ -10,6 +10,9 @@ Three groups, each its own page:
   · Wonders      — the decision events that can fire when a wonder completes
                    (Trigger=EVENTTRIGGER_IMPROVEMENT_FINISHED on a bWonder
                    improvement, 2+ options — see wonder_events_util.py).
+  · Projects     — the decision events fired by finishing a production Project
+                   (Trigger=EVENTTRIGGER_PRODUCTION_PROJECT, 2+ options — see
+                   project_events_util.py).
 
 Reuses the mission-event humanizer (build_missions) so reward/option/condition
 text matches the Rally / Hold Court / Steal Research pages exactly, and layers
@@ -31,6 +34,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_missions as m  # noqa: E402  reuse the mission-event humanizer
 import wonder_events_util as weu  # noqa: E402  shared wonder-event definition
+import project_events_util as peu  # noqa: E402  shared project-event definition
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "events.json"
@@ -46,9 +50,14 @@ OPT_FILES = (
 TEXT_FILES = (
     "text-eventStory.xml", "text-eventStory-sap.xml", "text-eventStory-eoti.xml",
     "text-eventStory-wd.xml", "text-eventStory-wog.xml", "text-eventStoryTitle.xml",
-    "text-eventStoryTitle-sap.xml", "text-eventOption.xml", "text-eventOption-sap.xml",
+    "text-eventStoryTitle-sap.xml", "text-eventStoryTitle-btt.xml",
+    "text-eventOption.xml", "text-eventOption-sap.xml", "text-eventOption-btt.xml",
+    # QUIRK: wd/wog packs ship story+option text in these oddly-named files.
+    "text-wonders-dynasties-events.xml", "text-calamities-events.xml",
     "text-trait.xml", "text-unit.xml", "text-infos.xml",
     "text-improvement.xml",  # wonder names for the Wonder Events group
+    "text-project.xml", "text-project-event.xml", "text-project-event-sap.xml",
+    "text-project-event-wog.xml", "text-eoti.xml", "text-misc-btt.xml",  # project names for the Project Events group
 )
 
 # Trigger token → readable "what makes this fire" label.
@@ -335,6 +344,41 @@ def main() -> int:
         wonder_events.append(ev)
     wonder_events.sort(key=lambda e: (e["wonder"]["name"], e["name"]))
 
+    # Project decision events: pop-ups fired by finishing a production Project.
+    # Two kinds (peu.is_one_time): one-time building projects (Archive, Forum,
+    # Walls, …) behave like wonder events; repeatable projects (Festival, Hunt,
+    # Olympiad) are event generators whose stories share a weighted pool, so we
+    # compute each story's share WITHIN its project's pool.
+    proj_idx = peu.project_index(m.XML_DIR)
+    def project_name(pid: str) -> str:
+        e = proj_idx.get(pid)
+        key = e.findtext("Name") if e is not None else None
+        return m.clean_text(text.get(key or "", m._tok(pid, "PROJECT_")))
+    proj_stories = [s for s in story_idx.values() if peu.is_project_event(s)]
+    pool_total: dict[str, int] = {}
+    for s in proj_stories:
+        pid = s.findtext("TriggerData") or ""
+        pool_total[pid] = pool_total.get(pid, 0) + max(1, int(s.findtext("iWeight") or "0"))
+    project_events = []
+    for s in proj_stories:
+        ev = build_event(s, 0, eopt_idx, bonus_idx, text)
+        pid = s.findtext("TriggerData") or ""
+        pentry = proj_idx.get(pid)
+        one_time = peu.is_one_time(pentry)
+        pname = project_name(pid)
+        ev["project"] = {"id": pid, "name": pname, "oneTime": one_time}
+        # Pool share is meaningful only for repeatable multi-story pools.
+        if one_time or pool_total.get(pid, 0) <= max(1, ev["weight"]):
+            ev["share"] = None
+        else:
+            ev["share"] = max(1, ev["weight"]) / pool_total[pid]
+        art = "an" if pname[:1].upper() in "AEIOU" else "a"
+        ev["trigger"] = (f"Completing the {pname}" if one_time
+                         else f"Completing {art} {pname}")
+        project_events.append(ev)
+    # One-time building projects first (alphabetical), then repeatable pools.
+    project_events.sort(key=lambda e: (not e["project"]["oneTime"], e["project"]["name"], -e["weight"], e["name"]))
+
     sections = [
         group(ruins, "ruins", "Ruins",
               "Fires when one of your units explores a Ruins tile. One story is "
@@ -347,6 +391,9 @@ def main() -> int:
         {"key": "wonders", "label": "Wonders", "totalWeight": 0,
          "blurb": "Decision events that can fire when a wonder is completed.",
          "events": wonder_events},
+        {"key": "projects", "label": "Projects", "totalWeight": 0,
+         "blurb": "Decision events fired by finishing a production Project.",
+         "events": project_events},
     ]
 
     # ── Locate any story by id ──────────────────────────────────────────────
@@ -363,6 +410,7 @@ def main() -> int:
             part_of[row["i"]] = row["s"]
 
     wonder_event_ids = {e["id"] for e in wonder_events}
+    project_event_ids = {e["id"] for e in project_events}
 
     def can_location(zid: str) -> dict | None:
         if zid in ruin_ids:
@@ -371,6 +419,8 @@ def main() -> int:
             return {"ext": "expedition-events", "anchor": zid}
         if zid in wonder_event_ids:
             return {"ext": "wonder-events", "anchor": zid}
+        if zid in project_event_ids:
+            return {"ext": "project-events", "anchor": zid}
         s = story_idx.get(zid)
         cls = (s.findtext("Class") or "") if s is not None else ""
         if cls == "EVENTCLASS_HARVESTING":

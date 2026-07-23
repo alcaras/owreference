@@ -195,6 +195,12 @@ export const TABS: Tab[] = [
     willContain: ['Every wonder-completion decision event and its option rewards'],
   },
   {
+    slug: 'project-events', icon: '🏗️', label: 'Project Events', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Decision events fired by finishing a production project (Archive, Forum, Walls, Festival…)',
+    willContain: ['Every project-completion decision event and its option rewards'],
+  },
+  {
     // Split into Urban Specialists + Rural Specialists. Slug kept as a
     // redirect; not surfaced in nav/index.
     slug: 'specialists', icon: '👨‍🌾', label: 'Specialists', section: 'Cities',
