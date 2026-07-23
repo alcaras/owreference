@@ -13,6 +13,11 @@ Three groups, each its own page:
   · Projects     — the decision events fired by finishing a production Project
                    (Trigger=EVENTTRIGGER_PRODUCTION_PROJECT, 2+ options — see
                    project_events_util.py).
+  · Buildings    — the decision events fired by finishing a NON-wonder building
+                   (Trigger=EVENTTRIGGER_IMPROVEMENT_FINISHED on an ordinary
+                   improvement, 2+ options — see building_events_util.py).
+  · Family       — stories tied to a specific family class (non-exclusive
+                   cross-cut — see family_events_util.py; also on Story Events).
 
 Reuses the mission-event humanizer (build_missions) so reward/option/condition
 text matches the Rally / Hold Court / Steal Research pages exactly, and layers
@@ -35,6 +40,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_missions as m  # noqa: E402  reuse the mission-event humanizer
 import wonder_events_util as weu  # noqa: E402  shared wonder-event definition
 import project_events_util as peu  # noqa: E402  shared project-event definition
+import building_events_util as beu  # noqa: E402  shared building-event definition
+import family_events_util as feu  # noqa: E402  shared family-event definition
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "events.json"
@@ -52,10 +59,12 @@ TEXT_FILES = (
     "text-eventStory-wd.xml", "text-eventStory-wog.xml", "text-eventStoryTitle.xml",
     "text-eventStoryTitle-sap.xml", "text-eventStoryTitle-btt.xml",
     "text-eventOption.xml", "text-eventOption-sap.xml", "text-eventOption-btt.xml",
+    "text-eventOption-hittite.xml",
     # QUIRK: wd/wog packs ship story+option text in these oddly-named files.
     "text-wonders-dynasties-events.xml", "text-calamities-events.xml",
     "text-trait.xml", "text-unit.xml", "text-infos.xml",
-    "text-improvement.xml",  # wonder names for the Wonder Events group
+    "text-improvement.xml", "text-improvement-sap.xml", "text-improvement-hittite.xml",
+    # (wonder/building improvement names; family-class names live in text-infos)
     "text-project.xml", "text-project-event.xml", "text-project-event-sap.xml",
     "text-project-event-wog.xml", "text-eoti.xml", "text-misc-btt.xml",  # project names for the Project Events group
 )
@@ -379,6 +388,50 @@ def main() -> int:
     # One-time building projects first (alphabetical), then repeatable pools.
     project_events.sort(key=lambda e: (not e["project"]["oneTime"], e["project"]["name"], -e["weight"], e["name"]))
 
+    # Building decision events: finishing a NON-wonder improvement. Each
+    # building has its own weighted pool (a Quarry rolls Ancient Statue vs the
+    # Dinosaur-Bones set vs Disturbed Rest), so share is computed within the
+    # building's pool, like the repeatable projects.
+    imp_idx = beu.improvement_index(m.XML_DIR)
+    imp_ids = set(imp_idx.keys())
+    def building_name(iid: str) -> str:
+        e = imp_idx.get(iid)
+        raw = text.get(e.findtext("Name") or "", "") if e is not None else ""
+        return beu.clean_improvement_name(raw) or m.clean_text(m._tok(iid, "IMPROVEMENT_"))
+    building_stories = [s for s in story_idx.values() if beu.is_building_event(s, wonder_set, imp_ids)]
+    bpool_total: dict[str, int] = {}
+    for s in building_stories:
+        bid = s.findtext("TriggerData") or ""
+        bpool_total[bid] = bpool_total.get(bid, 0) + max(1, int(s.findtext("iWeight") or "0"))
+    building_events = []
+    for s in building_stories:
+        ev = build_event(s, 0, eopt_idx, bonus_idx, text)
+        bid = s.findtext("TriggerData") or ""
+        bname = building_name(bid)
+        ev["building"] = {"id": bid, "name": bname}
+        ev["share"] = (max(1, ev["weight"]) / bpool_total[bid]
+                       if bpool_total.get(bid, 0) > max(1, ev["weight"]) else None)
+        ev["trigger"] = f"Completing the {bname}"
+        building_events.append(ev)
+    building_events.sort(key=lambda e: (e["building"]["name"], -e["weight"], e["name"]))
+
+    # Family decision events: stories tied to a specific family CLASS. This is a
+    # NON-exclusive cross-cut (they also live under their class on Story Events),
+    # so build_story_events does NOT drop them. Each carries the class(es) it
+    # references; the trigger label names the family class.
+    fam_names = {c: m.clean_text(text.get(f"TEXT_FAMILYCLASS_{c}", c.title())) for c in feu.CLASSES}
+    family_stories = [s for s in story_idx.values() if feu.is_family_event(s)]
+    family_events = []
+    for s in family_stories:
+        ev = build_event(s, 0, eopt_idx, bonus_idx, text)
+        classes = feu.family_classes(s)
+        names = [fam_names[c] for c in classes]
+        ev["family"] = {"classes": classes, "names": names}
+        ev["share"] = None  # not a completion pool; raw weight still shown
+        ev["trigger"] = " · ".join(names) + (" family" if len(names) == 1 else " families")
+        family_events.append(ev)
+    family_events.sort(key=lambda e: (e["family"]["names"][0] if e["family"]["names"] else "", -e["weight"], e["name"]))
+
     sections = [
         group(ruins, "ruins", "Ruins",
               "Fires when one of your units explores a Ruins tile. One story is "
@@ -394,6 +447,12 @@ def main() -> int:
         {"key": "projects", "label": "Projects", "totalWeight": 0,
          "blurb": "Decision events fired by finishing a production Project.",
          "events": project_events},
+        {"key": "buildings", "label": "Buildings", "totalWeight": 0,
+         "blurb": "Decision events fired by finishing a (non-wonder) building.",
+         "events": building_events},
+        {"key": "family", "label": "Family", "totalWeight": 0,
+         "blurb": "Stories tied to a specific family class.",
+         "events": family_events},
     ]
 
     # ── Locate any story by id ──────────────────────────────────────────────
@@ -411,6 +470,9 @@ def main() -> int:
 
     wonder_event_ids = {e["id"] for e in wonder_events}
     project_event_ids = {e["id"] for e in project_events}
+    building_event_ids = {e["id"] for e in building_events}
+    # Family events are NOT an exclusive home (non-exclusive cross-cut), so a
+    # chain link to one still resolves to its primary page — not listed here.
 
     def can_location(zid: str) -> dict | None:
         if zid in ruin_ids:
@@ -421,6 +483,8 @@ def main() -> int:
             return {"ext": "wonder-events", "anchor": zid}
         if zid in project_event_ids:
             return {"ext": "project-events", "anchor": zid}
+        if zid in building_event_ids:
+            return {"ext": "building-events", "anchor": zid}
         s = story_idx.get(zid)
         cls = (s.findtext("Class") or "") if s is not None else ""
         if cls == "EVENTCLASS_HARVESTING":

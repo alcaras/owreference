@@ -48,10 +48,13 @@ def main() -> int:
         add(e["i"], e["n"], e["g"], f"events/{e['s']}#{e['i']}")
 
     # ── Ruins + Expeditions (events.json sections anchor cards by id) ────────
+    # Family events are a non-exclusive cross-cut (already indexed via their
+    # primary page), so they're intentionally absent here.
     PAGE_FOR = {"ruins": ("ruin-events", "Ruin Event"),
                 "expeditions": ("expedition-events", "Expedition Event"),
                 "wonders": ("wonder-events", "Wonder Event"),
-                "projects": ("project-events", "Project Event")}
+                "projects": ("project-events", "Project Event"),
+                "buildings": ("building-events", "Building Event")}
     sections = json.loads((DATA / "events.json").read_text())
     for sec in sections:
         page, label = PAGE_FOR.get(sec.get("key", ""), (None, None))

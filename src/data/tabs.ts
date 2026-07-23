@@ -201,6 +201,18 @@ export const TABS: Tab[] = [
     willContain: ['Every project-completion decision event and its option rewards'],
   },
   {
+    slug: 'building-events', icon: '🧱', label: 'Building Events', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Decision events fired by finishing a (non-wonder) building — Barracks, Library, Quarry…',
+    willContain: ['Every building-completion decision event and its option rewards'],
+  },
+  {
+    slug: 'family-events', icon: '👪', label: 'Family Events', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Stories tied to a specific family class (Champions, Clerics, Hunters…)',
+    willContain: ['Family-class events grouped by class, with option rewards'],
+  },
+  {
     // Split into Urban Specialists + Rural Specialists. Slug kept as a
     // redirect; not surfaced in nav/index.
     slug: 'specialists', icon: '👨‍🌾', label: 'Specialists', section: 'Cities',

@@ -1,0 +1,13 @@
+---
+import EventGroupPage from '../components/EventGroupPage.astro';
+const base = import.meta.env.BASE_URL;
+---
+<EventGroupPage sectionKey="buildings" title="Building Events" active="building-events" pageMark="🧱">
+  The decision pop-ups that can fire when a city finishes an ordinary
+  <a href={`${base}urban-improvements`}>building or improvement</a> — a Barracks, Library, Market,
+  Temple, Quarry, Grove and more. Like the <a href={`${base}wonder-events`}>wonder</a> and
+  <a href={`${base}project-events`}>project</a> events, each building has its own weighted pool
+  (finishing a Quarry might roll <em>Ancient Statue</em>, one of the <em>Dinosaur Bones</em> stories,
+  or <em>Disturbed Rest</em>), so the share shown is within that building's pool. As always, the weight
+  is the XML knob, not real in-game odds — character and empire conditions filter what's eligible.
+</EventGroupPage>
