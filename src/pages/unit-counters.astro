@@ -79,54 +79,67 @@ const matrix = ATTACKER_CLASSES.map(cls => ({
 // so trait filters won't catch them).
 const landCombat = (units as Unit[]).filter(u => u.isCombat && u.isMilitary && !u.isWater);
 
-interface CounterPick { name: string; slug: string; iconSlug: string; dmg: number; nation: string | null; cls: string; hasBonus: boolean; str: number; techCost: number }
+interface CounterPick {
+  name: string; slug: string; iconSlug: string; cls: string;
+  nation: string | null; str: number; techCost: number;
+  deal: number; take: number; net: number;
+}
 
+// A counter is who wins the TRADE, not who hits hardest: a Spearman deals 8 to
+// a Horse Archer but takes 8 back (net 0), while a Camel Archer deals the same
+// 8 and takes only 4 (net +4). The XML shows why — the Spearman's anti-Mounted
+// line is `melee vs`, which Unit.cs applies only when the melee side is
+// involved (nothing on defense against a ranged attacker), whereas the Camel's
+// anti-Horse is a plain `vs` that applies attacking AND defending.
+//   deal = we attack them · take = they attack us.
+// No counterattack is modelled: Unit.getCounterAttackDamage returns 0 unless
+// the ATTACKER is melee, so a ranged attacker takes no return fire.
 function countersFor(def: Unit): CounterPick[] {
   const picks: CounterPick[] = [];
   for (const att of landCombat) {
-    // Ranked purely by damage, like the legacy sheet — a Cataphract with no
-    // anti-trait bonus still "counters" a Polybolos on raw strength. Mirror
-    // matches stay in (the sheet listed Polybolos as its own counter via
-    // Rapid Fire). This keeps membership consistent with the Unit Damage
-    // matrix: a row here = the defender's best column cells over there.
-    const dmg = attackDamage(att, def);
-    if (dmg < 7) continue;               // the sheet's "significant" bar
-    const bonus = counterBonus(att, def.traits, true, att.isMelee);
-    picks.push({ name: att.name, slug: att.slug, iconSlug: att.iconSlug, dmg, nation: att.nationLabel || null, cls: att.primaryLabel || '', hasBonus: bonus > 0, str: att.strength, techCost: att.techCost });
+    const deal = attackDamage(att, def);
+    if (deal < 7) continue;              // the sheet's "significant" bar
+    const take = attackDamage(def, att);
+    picks.push({
+      name: att.name, slug: att.slug, iconSlug: att.iconSlug,
+      cls: att.primaryLabel || '', nation: att.nationLabel || null,
+      str: att.strength, techCost: att.techCost,
+      deal, take, net: deal - take,
+    });
   }
-  picks.sort((a, b) => b.dmg - a.dmg || a.name.localeCompare(b.name));
-  // One entry per name (upgrade dupes). All picks are rendered so the nation
-  // filter can surface deeper ones; display is capped to 8 client-side.
+  picks.sort((a, b) => b.net - a.net || b.deal - a.deal || a.name.localeCompare(b.name));
+  // One entry per name (upgrade dupes). Every pick is rendered — the filters
+  // below decide what shows, and nothing is silently truncated.
   const seen = new Set<string>();
   return picks.filter(p => !seen.has(p.name) && seen.add(p.name) !== undefined);
 }
-
-const PICK_CAP = 8;
 
 // Nation filter options (e.g. you + your opponent). Generic units always show.
 const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filter(Boolean))].sort();
 
 const defenders = [...landCombat]
   .sort((a, b) => b.strength - a.strength || a.name.localeCompare(b.name))
-  .map(def => {
-    // Server-render the default view: stronger attackers hidden (that toggle
-    // starts on; the tech toggle starts off), capped at PICK_CAP visible.
-    let vis = 0;
-    const picks = countersFor(def).map(p => {
-      const show = p.str <= def.strength && vis < PICK_CAP;
-      if (show) vis++;
-      return { ...p, initiallyHidden: !show };
-    });
-    return { def, picks };
-  });
+  .map(def => ({ def, picks: countersFor(def) }));
 
-const tiers = new Map<number, typeof defenders>();
+// Group by strength tier, and within each tier split unique units out from the
+// standard ones — a UU only matters in some matchups, so mixing them into one
+// list makes the generic tier harder to read.
+const groups = new Map<string, { tier: number; uu: boolean; list: typeof defenders }>();
 for (const d of defenders) {
-  const t = Math.round(d.def.strength / 10);
-  if (!tiers.has(t)) tiers.set(t, []);
-  tiers.get(t)!.push(d);
+  const tier = Math.round(d.def.strength / 10);
+  const uu = !!d.def.nationLabel;
+  const key = `${tier}-${uu ? 'u' : 'g'}`;
+  if (!groups.has(key)) groups.set(key, { tier, uu, list: [] });
+  groups.get(key)!.list.push(d);
 }
-const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
+// Tier descending; unique units before standard within a tier.
+const tierList = [...groups.values()].sort(
+  (a, b) => b.tier - a.tier || Number(b.uu) - Number(a.uu));
+
+// Wider ramp so a +9 reads instantly hotter than a +3.
+const netClass = (n: number) =>
+  n >= 8 ? 'n8' : n >= 6 ? 'n6' : n >= 4 ? 'n4' : n >= 2 ? 'n2' : n >= 1 ? 'n1' : n === 0 ? 'n0' : 'nn';
+const fmtNet = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 ---
 
 <Base
@@ -139,13 +152,12 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
   ]}
 >
   <p class="lede">
-    <b>If you're facing a unit, build these.</b> Each number is the damage that
-    attacker deals per hit — the game's own formula
-    (<code>6 × StrAtt / StrDef</code>, both sides' anti-trait modifiers applied,
-    full HP, open terrain, no promotions), the same numbers as the
-    <a href={`${base}unit-damage`}>Unit Damage</a> matrix, ranked by damage.
-    Research costs live on <a href={`${base}science-to-unlock`}>Total Science
-    to Unlock</a>.
+    <b>If you're facing a unit, build these</b> — ranked by the trade, not raw damage.
+    Each pick reads <span class="key"><b class="k-str">STR</b> · unit · <b class="k-deal">dealt</b>/<b class="k-take">taken</b> · <b class="k-net">net</b></span>,
+    where <i>dealt</i> is your damage attacking it and <i>taken</i> is its damage attacking you
+    (<code>6 × StrAtt / StrDef</code>, both sides' anti-trait modifiers, full HP, open terrain,
+    no promotions — the same numbers as <a href={`${base}unit-damage`}>Unit Damage</a>).
+    Research costs live on <a href={`${base}science-to-unlock`}>Total Science to Unlock</a>.
   </p>
 
   <div class="natbar">
@@ -159,20 +171,36 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       <option value="">All nations</option>
       {nationOptions.map(n => <option value={n}>{n}</option>)}
     </select>
-    <label class="natbar__toggle" title="Hide attackers with a higher strength stat than the defender">
-      <input type="checkbox" id="hide-stronger" checked />
-      hide stronger attackers
-    </label>
-    <label class="natbar__toggle" title="Hide attackers whose cumulative tech cost (no starting techs; laws for unique units) exceeds the defender's">
-      <input type="checkbox" id="hide-costlier" />
-      hide attackers needing more tech
-    </label>
     <span class="natbar__hint">Pick your nation and your opponent's to hide everyone else's unique units. Generic units always show.</span>
   </div>
 
-  {tierList.map(([tier, list]) => (
+  <div class="ctrl">
+    <label class="ctrl__tog" title="Hide attackers with a higher strength stat than the defender">
+      <input type="checkbox" id="hide-stronger" /> hide stronger attackers
+    </label>
+    <label class="ctrl__tog" title="Hide attackers whose cumulative tech cost (no starting techs; laws for unique units) exceeds the defender's">
+      <input type="checkbox" id="hide-costlier" checked /> hide attackers needing more tech
+    </label>
+    <label class="ctrl__tog" title="Drop attackers that lose the exchange; even trades (net 0) still show">
+      <input type="checkbox" id="hide-losing" /> hide losing trades
+    </label>
+    <span class="scale" aria-hidden="true">
+      <span class="netbig nn">−2</span>
+      <span class="netbig n0">0</span>
+      <span class="netbig n1">+1</span>
+      <span class="netbig n2">+2</span>
+      <span class="netbig n4">+4</span>
+      <span class="netbig n6">+6</span>
+      <span class="netbig n8">+8</span>
+    </span>
+  </div>
+
+  {tierList.map(({ tier, uu, list }) => (
     <section class="ctier">
-      <h2 class="ctier__h">Strength {tier} defenders</h2>
+      <h2 class="ctier__h">
+        Strength {tier}
+        <span class={`ctier__kind ${uu ? 'is-uu' : ''}`}>{uu ? 'unique units' : 'standard units'}</span>
+      </h2>
       <div class="grid">
         <div class="grid__scroll">
           <table class="ntbl ntbl--counters">
@@ -195,10 +223,12 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
                       <>
                       <span class="cell__none cell__dash">none under current filters</span>
                       {picks.map(p => (
-                        <a class={`pick${p.initiallyHidden ? ' nat-hidden' : ''}`} data-nation={p.nation || ''} data-str={p.str} data-tech={p.techCost} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls}, STR ${p.str / 10}, ${p.techCost} science to unlock — deals ${p.dmg} damage per attack${p.hasBonus ? ' (anti-trait bonus vs this unit)' : ''}`}>
+                        <a class="pick" data-nation={p.nation || ''} data-str={p.str} data-tech={p.techCost} data-net={p.net} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls}, STR ${p.str / 10}, ${p.techCost} science to unlock. Deals ${p.deal} attacking it; takes ${p.take} when it attacks. Net ${fmtNet(p.net)}.`}>
+                          <span class="pick__str">{p.str / 10}</span>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>
-                          <span class="pick__dmg">{p.dmg}</span>
+                          <span class="pick__xch"><b>{p.deal}</b>/{p.take}</span>
+                          <span class={`netbig ${netClass(p.net)}`}>{fmtNet(p.net)}</span>
                         </a>
                       ))}
                       </>
@@ -287,24 +317,27 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       const chkStr = document.getElementById('hide-stronger');
       const chkTech = document.getElementById('hide-costlier');
       if (!selA || !selB) return;
+      const chkLose = document.getElementById('hide-losing');
       const KEY = 'ow-nation-filter';
       const STR_KEY = 'ow-str-filter';
       const TECH_KEY = 'ow-tech-filter';
-      const PICK_CAP = 8;
+      const LOSE_KEY = 'ow-lose-filter';
       try {
         const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
         if (saved[0]) selA.value = saved[0];
         if (saved[1]) selB.value = saved[1];
-        // Strength filter defaults on (explicit '0' opts out); tech filter
-        // defaults off (explicit '1' opts in).
-        if (chkStr) chkStr.checked = localStorage.getItem(STR_KEY) !== '0';
-        if (chkTech) chkTech.checked = localStorage.getItem(TECH_KEY) === '1';
+        // Strength + losing-trade filters default OFF (explicit '1' opts in);
+        // the tech filter defaults ON (explicit '0' opts out).
+        if (chkStr) chkStr.checked = localStorage.getItem(STR_KEY) === '1';
+        if (chkTech) chkTech.checked = localStorage.getItem(TECH_KEY) !== '0';
+        if (chkLose) chkLose.checked = localStorage.getItem(LOSE_KEY) === '1';
       } catch {}
       function apply() {
         const chosen = [selA.value, selB.value].filter(Boolean);
         const ok = (n) => !n || chosen.length === 0 || chosen.includes(n);
         const hideStronger = chkStr && chkStr.checked;
         const hideCostlier = chkTech && chkTech.checked;
+        const hideLosing = chkLose && chkLose.checked;
         for (const tr of document.querySelectorAll('.ctier tbody tr')) {
           const rowOk = ok(tr.dataset.nation || '');
           tr.classList.toggle('nat-hidden', !rowOk);
@@ -312,11 +345,12 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
           const defStr = +(tr.dataset.str || 0);
           const defTech = +(tr.dataset.tech || 0);
           let shown = 0;
+          // No cap — every pick that clears the filters is shown.
           for (const p of tr.querySelectorAll('.pick')) {
-            const okPick = ok(p.dataset.nation || '')
+            const show = ok(p.dataset.nation || '')
               && (!hideStronger || +(p.dataset.str || 0) <= defStr)
-              && (!hideCostlier || +(p.dataset.tech || 0) <= defTech);
-            const show = okPick && shown < PICK_CAP;
+              && (!hideCostlier || +(p.dataset.tech || 0) <= defTech)
+              && (!hideLosing || +(p.dataset.net || 0) >= 0);
             if (show) shown++;
             p.classList.toggle('nat-hidden', !show);
           }
@@ -330,6 +364,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
           localStorage.setItem(KEY, JSON.stringify([selA.value, selB.value]));
           if (chkStr) localStorage.setItem(STR_KEY, chkStr.checked ? '1' : '0');
           if (chkTech) localStorage.setItem(TECH_KEY, chkTech.checked ? '1' : '0');
+          if (chkLose) localStorage.setItem(LOSE_KEY, chkLose.checked ? '1' : '0');
         } catch {}
         apply();
       }
@@ -337,6 +372,7 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       selB.addEventListener('change', onChange);
       if (chkStr) chkStr.addEventListener('change', onChange);
       if (chkTech) chkTech.addEventListener('change', onChange);
+      if (chkLose) chkLose.addEventListener('change', onChange);
       apply();
     })();
   </script>
@@ -385,29 +421,64 @@ const tierList = [...tiers.entries()].sort((a, b) => b[0] - a[0]);
       margin: 0 0 0.4rem;
     }
     .ctier__h--matrix { margin-top: 1.6rem; }
-    .ntbl--counters .rowlabel { min-width: 13rem; }
+    .ntbl--counters .rowlabel { width: 13rem; text-align: left; vertical-align: top; }
+    .ntbl--counters .rl { align-items: flex-start; }
     .rl__icon { width: 1.15em; height: 1.15em; object-fit: contain; vertical-align: -0.2em; margin-right: 0.3em; }
     .cell--picks { padding: 0.3rem 0.6rem; }
     /* Shown only when every pick in the cell is filtered out. */
     .cell--picks .cell__none { display: none; }
     .cell--picks:not(:has(.pick:not(.nat-hidden))) .cell__none { display: inline; }
-    /* Tufte: no boxes, no hue system — icon, name, number. */
+    .cell--picks { display: flex; flex-wrap: wrap; gap: 0.35rem; }
     .pick {
-      display: inline-flex; align-items: center; gap: 0.3rem;
-      margin: 0.14rem 1.1rem 0.14rem 0;
-      color: var(--text);
-      font-size: 0.76rem;
-      text-decoration: none;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 0.32rem;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.18rem 0.4rem 0.18rem 0.28rem;
+      color: var(--text-dim); text-decoration: none; white-space: nowrap;
+      transition: border-color 0.12s, background 0.12s;
     }
-    .pick:hover { text-decoration: none; }
-    .pick:hover .pick__name { text-decoration: underline; text-underline-offset: 2px; }
-    .pick__icon { width: 1.15em; height: 1.15em; object-fit: contain; }
-    .pick__dmg {
-      font-family: var(--font-mono);
-      font-weight: 600;
-      font-size: 0.72rem;
-      color: var(--gold);
+    .pick:hover { text-decoration: none; border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--bg)); }
+    .pick__icon { width: 18px; height: 18px; object-fit: contain; }
+    .pick__name { font-size: 0.78rem; color: var(--text); }
+    .pick__str {
+      font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; color: var(--text-faint);
+      background: var(--bg-elev-2); border-radius: 4px; padding: 0.02rem 0.28rem;
+      min-width: 1.1rem; text-align: center;
+    }
+    .pick__xch { font-family: var(--font-mono); font-size: 0.68rem; color: #7fa8d0; }
+    .pick__xch b { color: #e08a5f; font-weight: 700; }
+
+    /* Net badge — saturated ramp so big trades read at a glance. */
+    .netbig {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 700;
+      font-size: 0.78rem; text-align: center; border-radius: 5px; padding: 0.05rem 0.34rem;
+      min-width: 2rem; display: inline-block; color: #1a1206;
+    }
+    .nn { background: #3f6187; color: #cddcea; }
+    .n0 { background: #4a4740; color: #b9b2a4; }
+    .n1 { background: #b99447; }
+    .n2 { background: #d99a3c; }
+    .n4 { background: #e07a33; }
+    .n6 { background: #e2542c; color: #fff2ec; }
+    .n8 { background: #d3231f; color: #fff; box-shadow: 0 0 0 1px #ff6a5e55, 0 0 10px #d3231f55; }
+
+    /* Filter row + net scale legend */
+    .ctrl { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 1.1rem; margin: 0 0 1.1rem; }
+    .ctrl__tog { font-size: 0.78rem; color: var(--text-dim); display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+    .ctrl__tog input { accent-color: var(--accent); }
+    .scale { display: inline-flex; gap: 2px; margin-left: auto; }
+
+    .key { font-family: var(--font-mono); font-size: 0.8em; background: var(--bg-elev-2); border-radius: 5px; padding: 0.05rem 0.35rem; white-space: nowrap; }
+    .k-str { color: var(--text-faint); } .k-deal { color: #e08a5f; } .k-take { color: #7fa8d0; } .k-net { color: var(--accent); }
+
+    .ctier__kind {
+      font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-faint); margin-left: 0.45rem;
+      border: 1px solid var(--border); border-radius: 4px; padding: 0.02rem 0.32rem;
+    }
+    .ctier__kind.is-uu {
+      color: color-mix(in srgb, var(--accent) 85%, var(--text));
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
     }
     .rl { display: flex; flex-direction: column; gap: 0.1rem; }
     .rl__name {
