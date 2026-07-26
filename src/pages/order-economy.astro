@@ -24,6 +24,7 @@ const payload = {
     familyCount: n.familyCount, specials: n.specials,
     startingTechs: n.startingTechs, startingTechNames: n.startingTechNames,
     ordersShrine: n.ordersShrine, ordersShrines: n.ordersShrines,
+    shrineModifier: n.shrineModifier,
   })),
 };
 ---
@@ -140,7 +141,8 @@ const payload = {
         <ul>
           {nations.filter((n: any) => n.ordersShrines?.length).map((n: any) => (
             <li><b>{n.name}</b> — {n.ordersShrines.map((s: any) =>
-              `${s.name} (${s.type}) +${s.orders}${s.per === 'wonder' ? '/adjacent Wonder' : ''}`).join(' · ')}</li>
+              `${s.name} (${s.type}) +${+(s.orders * (1 + (n.shrineModifier || 0) / 100)).toFixed(2)}${s.per === 'wonder' ? '/adjacent Wonder' : ''}`).join(' · ')}
+              {n.shrineModifier ? <i> (incl. this nation's +{n.shrineModifier}% Shrines)</i> : null}</li>
           ))}
           <li class="muted"><b>Sun</b> shrines pay a flat +0.5; <b>Kingship</b> shrines pay
             +1 <i>per adjacent Wonder</i> — so Babylonia and Greece have an Orders shrine after all,
@@ -149,6 +151,13 @@ const payload = {
             outright (<code>LAW_POLYTHEISM</code> sets <code>abNoImprovementClassMax</code> for Shrines,
             checked at <code>City.cs:10277</code>) — tick it and you can run one in every city.
             Needs Divination. The other eight nations' pantheons have no Sun shrine at all.</li>
+          <li class="muted"><b>Kush multiplies both of its shrines by 1.5</b> —
+            <code>EFFECTCITY_NATION_KUSH</code> carries <code>aiImprovementClassModifier</code>
+            SHRINE +50, so Melul pays 0.75 flat and Amani 1.5 per adjacent Wonder. The
+            per-wonder output is scaled too: <code>Tile.cs:13608</code> folds
+            <code>maiAdjacentWonderYieldOutput</code> into the same total that
+            <code>getImprovementModifierForGovernor</code> modifies
+            (<code>Tile.cs:13717</code> → <code>City.cs:4365</code>).</li>
         </ul>
       </div>
       <div>
@@ -211,6 +220,9 @@ const payload = {
         camp: D.tiles.camp.byResource.Camel,
       };
       const r1 = (v) => Math.round(v * 10) / 10;
+      // Shrine rates land on quarters once Kush's +50% is applied (0.75, 1.5),
+      // so this column keeps the second decimal when there is one.
+      const r2 = (v) => +(Math.round(v * 100) / 100).toFixed(2).replace(/0$/, '');
       const nice = (c) => { const s = c.replace('FAMILYCLASS_', '').toLowerCase(); return s[0].toUpperCase() + s.slice(1); };
 
       function compute(n, A) {
@@ -301,25 +313,30 @@ const payload = {
         // A nation can own more than one Orders shrine. The Sun shrine pays a
         // flat rate; the Kingship shrine pays per ADJACENT WONDER. Normally one
         // of each per player, but LAW_POLYTHEISM lifts the cap entirely.
+        // Kush's national city effect adds +50% to every Shrine it builds, so
+        // its Sun shrine pays 0.75 and its Kingship shrine 1.5/wonder. One
+        // modifier covers both: Tile.cs folds the per-adjacent-wonder output
+        // into the same iOutput the improvement-class modifier scales.
+        const shMod = 1 + (n.shrineModifier || 0) / 100;
         let shrine = 0; const shrineBits = [];
         for (const sh of (n.ordersShrines || [])) {
           const label = `${sh.name} (${sh.type})`;
           if (!hasDiv) { shrineBits.push(`${label} — needs Divination`); continue; }
+          const rate = sh.orders * shMod;
           if (sh.per === 'wonder') {
             // Scales with how many Wonders sit next to a Kingship shrine. The
             // era preset follows measured owglick counts: ~0.8 wonders/player at
             // turn 50, ~3.4 past turn 90.
             if (!A.wonders) { shrineBits.push(`${label} — no adjacent Wonder`); continue; }
-            const v = sh.orders * A.wonders;
-            shrine += v;
-            shrineBits.push(A.wonders ? `${label} ×${A.wonders} wonder${A.wonders > 1 ? 's' : ''}`
-                                      : `${label} — no adjacent wonder`);
+            shrine += rate * A.wonders;
+            shrineBits.push(`${label} ×${A.wonders} wonder${A.wonders > 1 ? 's' : ''}`);
           } else {
             const count = A.poly ? cities : 1;
-            shrine += sh.orders * count;
+            shrine += rate * count;
             shrineBits.push(A.poly ? `${label} ×${count}` : label);
           }
         }
+        if (n.shrineModifier) shrineBits.push(`+${n.shrineModifier}% Shrines applied`);
         const shrineNote = shrineBits.join(' · ');
 
         // Legitimacy that a Schemer leader can convert into Orders. Kush builds
@@ -394,7 +411,7 @@ const payload = {
             <td class="cell tchcell">${techChips}</td>
             <td class="cell cell--num">${r1(r.famOrders)}</td>
             <td class="cell cell--num">${r.tiles ? r1(r.tiles) : '<span class="dash">—</span>'}</td>
-            <td class="cell cell--num">${r.shrine ? r1(r.shrine) : '<span class="dash">—</span>'}${r.shrineNote ? `<span class="natnote">${r.shrineNote}</span>` : ''}</td>
+            <td class="cell cell--num">${r.shrine ? r2(r.shrine) : '<span class="dash">—</span>'}${r.shrineNote ? `<span class="natnote">${r.shrineNote}</span>` : ''}</td>
             <td class="cell cell--num">${r.national ? r1(r.national) : '<span class="dash">—</span>'}${note}</td>
             <td class="cell cell--num">${r.legitOrders ? r1(r.legitOrders) : '<span class="dash">—</span>'}${r.legitNote ? `<span class="natnote">${r.legitNote}</span>` : ''}</td>
             <td class="cell cell--num oe__tot"><b>${r1(r.total)}</b></td>

@@ -281,6 +281,27 @@ def main() -> int:
                         "label": f"+{v} Orders per Harbor"})
         return out
 
+    # A nation's own city effect can scale every Shrine it builds — Kush's
+    # EFFECTCITY_NATION_KUSH carries aiImprovementClassModifier SHRINE +50, so
+    # its Sun shrine pays 0.75 Orders rather than 0.5. This applies to the
+    # per-adjacent-wonder Kingship output too: Tile.cs:13608 folds
+    # maiAdjacentWonderYieldOutput into the same iOutput that
+    # City.getImprovementModifierForGovernor scales (Tile.cs:13717 →
+    # City.cs:4365), so it is one modifier over the whole shrine yield.
+    eff_player = index("effectPlayer.xml")
+
+    def shrine_modifier(entry: ET.Element) -> int:
+        epe = eff_player.get(entry.findtext("EffectPlayer") or "")
+        if epe is None:
+            return 0
+        ece = ec.get(epe.findtext("EffectCity") or "")
+        if ece is None:
+            return 0
+        for pair in ece.findall("aiImprovementClassModifier/Pair"):
+            if pair.findtext("zIndex") == "IMPROVEMENTCLASS_SHRINE":
+                return int(pair.findtext("iValue") or "0")
+        return 0
+
     nations = []
     for e in parse("nation.xml").findall("Entry"):
         nid = e.findtext("zType") or ""
@@ -329,6 +350,7 @@ def main() -> int:
             "startingTechNames": [text.get("TEXT_" + t, t.replace("TECH_", "").title()) for t in start],
             "ordersShrine": shrine,
             "ordersShrines": shrines,
+            "shrineModifier": shrine_modifier(e),
             "specials": nation_specials(nid),
         })
     nations.sort(key=lambda n: n["name"])
