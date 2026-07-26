@@ -1,0 +1,474 @@
+---
+// Per-nation Orders economy comparison (Tools).
+// Only things that DIFFER by nation are counted: family classes, that nation's
+// starting techs, its own Orders shrine, its national effect. Garrisons,
+// citizens, the Pyramids wonder and plain temples are identical for everyone,
+// so they'd shift every row equally and are left out.
+//
+// Tile densities default to measured values from owtournamentatlas (128 map
+// configs): Horse 0.43 / city site, Camel+Elephant 0.31, all pastures 0.93.
+import Base from '../layouts/Base.astro';
+import data from '../data/order_economy.json';
+
+const D = data as any;
+const nations = D.nations as any[];
+const payload = {
+  maxFamilies: D.maxFamilies,
+  classes: D.classes,
+  tiles: D.tiles,
+  techs: D.techs,
+  legitimacy: D.legitimacy,
+  buildings: D.buildings,
+  nations: nations.map(n => ({
+    slug: n.slug, name: n.name, dlc: n.dlc, classes: n.classes,
+    familyCount: n.familyCount, specials: n.specials,
+    startingTechs: n.startingTechs, startingTechNames: n.startingTechNames,
+    ordersShrine: n.ordersShrine, ordersShrines: n.ordersShrines,
+  })),
+};
+---
+
+<Base
+  title="Order Economy by Nation"
+  active="order-economy"
+  pageMark="⚡"
+  pageStats={[
+    { label: 'nations', value: nations.length },
+    { label: 'families each', value: D.maxFamilies },
+  ]}
+>
+  <p class="lede">
+    <b>Orders/turn that differs by nation</b>, at <b id="l-cities">9</b> cities of which
+    <span id="l-cpf">3</span> sit in each Orders family. Only nation-specific sources are
+    counted — family classes, that nation's <b>starting techs</b>, its own Sun shrine, its national
+    effect. Garrisons, citizens, the Pyramids wonder and a plain temple's base Orders are the same for
+    everyone, so they'd move every row equally and are left out. Tile densities are <b>measured</b> from
+    <a href="https://alcaras.github.io/owtournamentatlas/">owtournamentatlas</a> (128 map configs).
+  </p>
+
+  <section class="asm">
+    <div class="asm__row">
+      <span class="asm__tag">Your empire</span>
+      <div class="asm__fields">
+        <label class="f f--wide"><span>Era</span>
+          <select id="a-era">
+            <option value="early" selected>Early — starting techs + Divination</option>
+            <option value="mid">Mid — all tier 1–4 techs, no temples</option>
+            <option value="late">Late — all techs + temples</option>
+          </select>
+        </label>
+        <label class="f"><span>Total cities</span><input type="number" id="a-cities" value="9" min="1" max="30" step="1" /></label>
+        <label class="f"><span>Statesmen cities</span><input type="number" id="a-st" value="3" min="0" max="20" step="1" /></label>
+        <label class="f"><span>Clerics cities</span><input type="number" id="a-cl" value="3" min="0" max="20" step="1" /></label>
+        <label class="f"><span>Hunters cities</span><input type="number" id="a-hu" value="3" min="0" max="20" step="1" /></label>
+      </div>
+    </div>
+
+    <div class="asm__row">
+      <span class="asm__tag">Map <i>measured</i></span>
+      <div class="asm__fields">
+        <label class="f"><span>Horse / city <i>0.43</i></span><input type="number" id="a-horse" value="0.43" min="0" max="5" step="0.05" /></label>
+        <label class="f"><span>Camel+Elephant / city <i>0.31</i></span><input type="number" id="a-camp" value="0.31" min="0" max="5" step="0.05" /></label>
+        <label class="f"><span>Other pastures / city <i>0.50, Persia</i></span><input type="number" id="a-past" value="0.50" min="0" max="5" step="0.05" /></label>
+        <label class="f"><span>Wonders by Kingship shrine <i>1 mid · 3 late</i></span><input type="number" id="a-wonder" value="0" min="0" max="8" step="1" /></label>
+        <label class="f"><span>Harbors <i>2 when built, Tamil</i></span><input type="number" id="a-harbor" value="2" min="0" max="20" step="1" /></label>
+        <label class="f"><span>Kills / turn <i>0.55, Assyria</i></span><input type="number" id="a-kill" value="0.55" min="0" max="3" step="0.05" /></label>
+      </div>
+    </div>
+
+    <div class="asm__row">
+      <span class="asm__tag">Your play</span>
+      <div class="asm__fields">
+        <label class="f--chk"><input type="checkbox" id="a-rev" /> <span>Revelation theology <i>temples +0.5 Orders</i></span></label>
+        <label class="f--chk"><input type="checkbox" id="a-poly" /> <span>Polytheism <i>Sun shrine per city — automatic from Mid</i></span></label>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl oe">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">Nation</th>
+            <th class="nhdr">Starting techs</th>
+            <th class="nhdr nhdr--num" title="Orders from the family classes it can field">Families</th>
+            <th class="nhdr nhdr--num" title="Horse pastures + Camel/Elephant camps, gated by this nation's techs">Tiles</th>
+            <th class="nhdr nhdr--num" title="This nation's own Orders-yielding shrine — all five are Sun shrines, one per player, needs Divination">Shrine</th>
+            <th class="nhdr nhdr--num" title="The nation's own unique Orders effect: Persia's pasture bonus, Assyria's kills, Tamil's harbours. Yuezhi's free Horse lands in Tiles instead.">National</th>
+            <th class="nhdr nhdr--num" title="Legitimacy from Kushite Pyramids / Mint Coin, converted to Orders">Legit</th>
+            <th class="nhdr nhdr--num oe__tot">Orders / turn</th>
+            <th class="nhdr">Best families for Orders</th>
+          </tr>
+        </thead>
+        <tbody id="oe-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <section class="rates">
+    <h2 class="rates__h">What the XML says</h2>
+    <div class="rates__cols">
+      <div>
+        <h3>Family classes that matter</h3>
+        <ul>
+          <li><b>Statesmen</b> +{D.classes.FAMILYCLASS_STATESMEN.perCity}/turn in <i>every</i> city of that family; its <b>seat unlocks Decree</b></li>
+          <li><b>Riders</b> +{D.classes.FAMILYCLASS_RIDERS.seat}/turn, <i>seat only</i></li>
+          <li><b>Hunters</b> camps +{D.classes.FAMILYCLASS_HUNTERS.campModifier}% — doubles camp Orders in its cities</li>
+          <li><b>Clerics</b> temples +{D.classes.FAMILYCLASS_CLERICS.templeModifier}% — doubles a temple's
+            Orders in its cities. With <b>Revelation</b> a temple makes
+            {D.buildings.templeWorldReligion.orders} + {D.buildings.revelationTemple.orders} =
+            {D.buildings.templeWorldReligion.orders + D.buildings.revelationTemple.orders}, so Clerics
+            double-dip and their marginal doubles too.</li>
+          <li>The other six classes give no Orders.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Tiles — and their tech</h3>
+        <ul>
+          <li><b>Pasture</b> +{D.tiles.pasture.byResource.Horse} on <b>Horse only</b> — needs {D.tiles.pasture.techName} ({D.techs.TECH_HUSBANDRY.cost} sci, via Ironworking)</li>
+          <li><b>Camp</b> +{D.tiles.camp.byResource.Camel} on <b>Camel/Elephant only</b> — needs {D.tiles.camp.techName} ({D.techs.TECH_TRAPPING.cost} sci, no prereq)</li>
+          <li>Cattle/Sheep/Pig/Goat pastures and Game/Fur camps give <b>no</b> Orders.</li>
+          <li><b>Persia</b> adds +0.5 to <i>every</i> pasture, any resource — a horse pasture pays 1.0.</li>
+          <li><b>Yuezhi</b> founds every city with a <b>Horse</b> resource
+            (<code>BONUS_NATION_YUEZHI</code> FoundBonus), so it banks +0.5 Orders per city on top of
+            the map's horses — and it starts with Husbandry to use them.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Orders shrines <span class="tag">7 nations</span></h3>
+        <ul>
+          {nations.filter((n: any) => n.ordersShrines?.length).map((n: any) => (
+            <li><b>{n.name}</b> — {n.ordersShrines.map((s: any) =>
+              `${s.name} (${s.type}) +${s.orders}${s.per === 'wonder' ? '/adjacent Wonder' : ''}`).join(' · ')}</li>
+          ))}
+          <li class="muted"><b>Sun</b> shrines pay a flat +0.5; <b>Kingship</b> shrines pay
+            +1 <i>per adjacent Wonder</i> — so Babylonia and Greece have an Orders shrine after all,
+            it just needs a Wonder next door. Normally
+            <b>one per player</b> (<code>iMaxPlayerCount 1</code>), but <b>Polytheism</b> lifts the cap
+            outright (<code>LAW_POLYTHEISM</code> sets <code>abNoImprovementClassMax</code> for Shrines,
+            checked at <code>City.cs:10277</code>) — tick it and you can run one in every city.
+            Needs Divination. The other eight nations' pantheons have no Sun shrine at all.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Legitimacy → Orders</h3>
+        <ul>
+          <li><b>{D.buildings.legitimacyPerOrder} Orders per Legitimacy</b>, always on — <code>iPerLegitimacy 1</code> in <code>yield.xml</code>, applied ungated in <code>Player.calculateNonCityYield</code>. Not a setting: it's the game's rate.</li>
+          <li><b>Kush</b> — Kushite Pyramids +4 Legitimacy, one per city</li>
+          <li><b>Aksum</b> — Mint Coin +20 (Strong) → +40 (Legendary), upgrading in place</li>
+          <li class="muted">A Schemer leader can additionally dump Legitimacy for a lump
+            +10 Orders (<code>CONVERT_LEGITIMACY</code>, 2 Legitimacy rising +1 per use, once a turn) —
+            leader-dependent, so not scored here.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Decree <span class="tag">Statesmen seat</span></h3>
+        <ul>
+          {D.decree.map((d: any) => (
+            <li>{d.name} — {d.civics} Civics → <b>{d.orders} Orders</b> <i>({d.culture})</i></li>
+          ))}
+        </ul>
+        <p class="fine">A repeatable Civics→Orders conversion, not a per-turn yield, so it's outside the
+        table. The seat alone unlocks it — Constitution is an alternative, not a requirement
+        (<code>City.cs:9914</code> ORs the prereqs). <code>RequiresCulture</code> is exact, so one tier at a time.</p>
+      </div>
+    </div>
+    <p class="fine">
+      <b>Legitimacy IS Orders.</b> <code>YIELD_ORDERS</code> carries <code>iPerLegitimacy 1</code> and
+      <code>Player.calculateNonCityYield</code> adds <code>getLegitimacy() × iPerLegitimacy</code> to the
+      rate with no gating — so every point of Legitimacy is <b>+0.1 Orders/turn</b>, i.e.
+      <b>100 Legitimacy = +10 Orders</b>. That makes <b>Kushite Pyramids</b> (+4 each, one per city) and
+      <b>Aksum's Mint Coin</b> (+20 at Strong, +40 at Legendary, each tier replacing the last) real
+      Orders sources, scored in the Legit column from Mid onward.
+      <b>Left out deliberately</b> (same for every nation): garrisons +0.5, citizens +0.1 each, Pyramids wonder +1,
+      a plain temple's +0.5, and laws like Serfdom (+5 flat).
+      <b>Assyria's +2/kill</b> is scored off a <b>measured</b> rate: 0.55 military kills per player per
+      turn, from 639 player-games in the owglick save corpus (median 0.53, p25–p75 0.39–0.71; games past
+      turn 60 run a bit hotter at 0.59). <b>Tamil's +1/Harbor</b> is scored once Cartography is in —
+      tier 5, so late game only.
+    </p>
+  </section>
+
+  <script type="application/json" id="oe-data" set:html={JSON.stringify(payload)}></script>
+  <script is:inline>
+    (function () {
+      const node = document.getElementById('oe-data');
+      if (!node) return;
+      let D; try { D = JSON.parse(node.textContent || '{}'); } catch { return; }
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat($(id).value) || 0;
+      const body = $('oe-body');
+      let lastEra = null;   // so changing era can re-preset the wonder count
+      const R = {
+        statesmen: D.classes.FAMILYCLASS_STATESMEN.perCity,
+        riders: D.classes.FAMILYCLASS_RIDERS.seat,
+        campUp: D.classes.FAMILYCLASS_HUNTERS.campModifier / 100,
+        templeUp: D.classes.FAMILYCLASS_CLERICS.templeModifier / 100,
+        temple: D.buildings.templeWorldReligion.orders,
+        revelation: D.buildings.revelationTemple.orders,
+        horse: D.tiles.pasture.byResource.Horse,
+        camp: D.tiles.camp.byResource.Camel,
+      };
+      const r1 = (v) => Math.round(v * 10) / 10;
+      const nice = (c) => { const s = c.replace('FAMILYCLASS_', '').toLowerCase(); return s[0].toUpperCase() + s.slice(1); };
+
+      function compute(n, A) {
+        const cities = A.cities;              // whole empire — drives tiles
+        // Early: this nation's own starting techs + Divination (cheap, and you
+        // want the shrine). Mid: every tier 1-4 tech. Late: everything.
+        const tier = (t) => (D.techs[t] || {}).tier || 9;
+        const tech = (t) => A.era === 'late'
+          || (A.era === 'mid' && tier(t) <= 4)
+          || t === 'TECH_DIVINATION'
+          || n.startingTechs.includes(t);
+        const hasTrap = tech('TECH_TRAPPING'), hasHusb = tech('TECH_HUSBANDRY'), hasDiv = tech('TECH_DIVINATION');
+
+        // Per-family Orders value, so we can pick the best set of MAX_FAMILIES.
+        const campPerCity = hasTrap ? A.camp * R.camp : 0;
+        const opts = [];
+        for (const c of n.classes) {
+          let v = 0;
+          if (c === 'FAMILYCLASS_STATESMEN') v = A.st * R.statesmen;
+          else if (c === 'FAMILYCLASS_RIDERS') v = R.riders;
+          else if (c === 'FAMILYCLASS_HUNTERS') v = A.hu * campPerCity * R.campUp;
+          else if (c === 'FAMILYCLASS_CLERICS') {
+            // Clerics double the temple's whole Orders output, so Revelation
+            // double-dips: +0.5 base becomes +1.0, doubled again by Clerics.
+            const perTemple = R.temple + (A.rev ? R.revelation : 0);
+            v = A.cl * A.temple * perTemple * R.templeUp;
+          }
+          if (v > 0) opts.push({ c, v });
+        }
+        opts.sort((a, b) => b.v - a.v || nice(a.c).localeCompare(nice(b.c)));
+
+        // You only get MAX_FAMILIES families. If MORE than that matter for
+        // Orders you have a real choice, so enumerate every combination and
+        // rank them — the top one drives the total, the rest are alternatives.
+        const cap = D.maxFamilies;
+        let combos;
+        if (opts.length > cap) {
+          combos = [];
+          const pick = (start, acc) => {
+            if (acc.length === cap) { combos.push(acc); return; }
+            for (let i = start; i < opts.length; i++) pick(i + 1, [...acc, opts[i]]);
+          };
+          pick(0, []);
+          combos.sort((a, b) => b.reduce((s, o) => s + o.v, 0) - a.reduce((s, o) => s + o.v, 0));
+        } else {
+          combos = [opts];
+        }
+        const famOrders = (combos[0] || []).reduce((s, o) => s + o.v, 0);
+
+        // Tiles is strictly what the map hands you; a nation's own resource
+        // grant (Yuezhi's founding Horse) is scored under National instead, so
+        // the two columns mean the same thing for every nation.
+        const horse = hasHusb ? cities * A.horse * R.horse : 0;
+        const camps = cities * campPerCity;
+        const tiles = horse + camps;
+
+        let national = 0; const notes = [];
+        for (const s of n.specials) {
+          if (s.kind === 'pastureBonus') {
+            if (hasHusb) {
+              // +0.5 on EVERY pasture, any resource — so horse + the rest.
+              const pastures = A.horse + A.past;
+              const v = cities * pastures * s.value;
+              national += v;
+              notes.push(`+${s.value}/pasture × ${r1(pastures)} pastures × ${cities} cities`);
+            } else notes.push('pasture bonus — needs Husbandry');
+          } else if (s.kind === 'foundHorse') {
+            if (hasHusb) {
+              const v = cities * s.value * R.horse;
+              national += v;
+              notes.push(`+${s.value} Horse/city × ${cities} cities × ${R.horse}`);
+            } else notes.push(`+${s.value} Horse/city — needs Husbandry`);
+          } else if (s.kind === 'perKill') {
+            national += s.value * A.kills;
+            notes.push(`+${s.value}/kill × ${A.kills} kills/turn`);
+          }
+          else if (s.kind === 'harbor') {
+            // Harbors need Cartography (tier 5), so late game only.
+            if (tech('TECH_CARTOGRAPHY')) {
+              national += s.value * A.harbors;
+              notes.push(`+${s.value}/Harbor × ${A.harbors} harbors`);
+            } else {
+              notes.push(`+${s.value}/Harbor — needs Cartography`);
+            }
+          }
+        }
+        // Its own Orders shrine — a separate column; all five are Sun shrines.
+        // A nation can own more than one Orders shrine. The Sun shrine pays a
+        // flat rate; the Kingship shrine pays per ADJACENT WONDER. Normally one
+        // of each per player, but LAW_POLYTHEISM lifts the cap entirely.
+        let shrine = 0; const shrineBits = [];
+        for (const sh of (n.ordersShrines || [])) {
+          const label = `${sh.name} (${sh.type})`;
+          if (!hasDiv) { shrineBits.push(`${label} — needs Divination`); continue; }
+          if (sh.per === 'wonder') {
+            // Scales with how many Wonders sit next to a Kingship shrine. The
+            // era preset follows measured owglick counts: ~0.8 wonders/player at
+            // turn 50, ~3.4 past turn 90.
+            if (!A.wonders) { shrineBits.push(`${label} — no adjacent Wonder`); continue; }
+            const v = sh.orders * A.wonders;
+            shrine += v;
+            shrineBits.push(A.wonders ? `${label} ×${A.wonders} wonder${A.wonders > 1 ? 's' : ''}`
+                                      : `${label} — no adjacent wonder`);
+          } else {
+            const count = A.poly ? cities : 1;
+            shrine += sh.orders * count;
+            shrineBits.push(A.poly ? `${label} ×${count}` : label);
+          }
+        }
+        const shrineNote = shrineBits.join(' · ');
+
+        // Legitimacy that a Schemer leader can convert into Orders. Kush builds
+        // a Kushite Pyramid per city; Aksum's Mint Coin upgrades in place, so
+        // only the current tier's Legitimacy counts, not the sum of tiers.
+        let legit = 0; const legitBits = [];
+        if (A.era !== 'early') {
+          const kp = D.legitimacy.kushitePyramid;
+          if (n.slug === 'kush' && kp) {
+            legit += kp.perCity * cities;
+            legitBits.push(`${kp.name} ×${cities} = ${kp.perCity * cities}`);
+          }
+          if (n.slug === 'aksum' && D.legitimacy.aksumMintCoin) {
+            const want = A.era === 'late' ? 'Legendary' : 'Strong';
+            const tier = D.legitimacy.aksumMintCoin.find(m => m.culture === want);
+            if (tier) { legit += tier.legitimacy; legitBits.push(`Mint Coin (${want}) = ${tier.legitimacy}`); }
+          }
+        }
+        const legitOrders = A.legitPer > 0 ? legit / A.legitPer : 0;
+        if (legit) legitBits.push(`÷${A.legitPer} → ${Math.round(legitOrders * 10) / 10} Orders`);
+
+        return { cities, combos, opts, famOrders, tiles, national, notes, shrine, shrineNote,
+                 legit, legitOrders, legitNote: legitBits.join(' · '),
+                 total: famOrders + tiles + national + shrine + legitOrders,
+                 techs: { hasTrap, hasHusb, hasDiv } };
+      }
+
+      function render() {
+        const A = {
+          cities: num('a-cities'), st: num('a-st'), cl: num('a-cl'), hu: num('a-hu'),
+          horse: num('a-horse'), camp: num('a-camp'), past: num('a-past'),
+          era: $('a-era').value, rev: $('a-rev').checked, poly: $('a-poly').checked,
+          kills: num('a-kill'), harbors: num('a-harbor'), wonders: num('a-wonder'),
+          legitPer: 1 / (D.buildings.legitimacyPerOrder || 0.1),
+        };
+        // Temples are a late-game assumption (world religion + build time).
+        A.temple = A.era === 'late' ? 1 : 0;
+        // Wonder count follows the era unless the reader has just typed one.
+        if (lastEra !== A.era) {
+          const preset = { early: 0, mid: 1, late: 3 }[A.era];
+          $('a-wonder').value = String(preset);
+          A.wonders = preset;
+          lastEra = A.era;
+        }
+        // Polytheism is assumed from Mid onward; in Early it's an opt-in.
+        if (A.era !== 'early') { A.poly = true; $('a-poly').checked = true; }
+        $('a-poly').disabled = A.era !== 'early';
+        $('l-cities').textContent = String(A.cities);
+        $('l-cpf').textContent = String(A.st);
+
+        const rows = D.nations.map(n => ({ n, r: compute(n, A) }));
+        rows.sort((a, b) => b.r.total - a.r.total || a.n.name.localeCompare(b.n.name));
+
+        body.innerHTML = rows.map(({ n, r }) => {
+          const techChips = n.startingTechNames.map((t, i) => {
+            const id = n.startingTechs[i];
+            const on = ['TECH_TRAPPING', 'TECH_HUSBANDRY', 'TECH_DIVINATION'].includes(id);
+            return `<span class="tch ${on ? 'tch--on' : ''}">${t.replace('_', ' ')}</span>`;
+          }).join('');
+          const inBest = new Set((r.combos[0] || []).map(o => o.c));
+          const combos = r.opts.map(o =>
+            `<span class="combo${inBest.has(o.c) ? '' : ' combo--alt'}">` +
+            `<span class="combo__n">${nice(o.c)}</span><b>${r1(o.v)}</b>` +
+            `${inBest.has(o.c) ? '' : '<i>alt</i>'}</span>`
+          ).join('');
+          const note = r.notes.length ? `<span class="natnote">${r.notes.join(' · ')}</span>` : '';
+          return `<tr>
+            <th class="rowlabel" scope="row">
+              <span class="oe__name">${n.name}</span>${n.dlc ? '<span class="oe__dlc">DLC</span>' : ''}
+              <span class="oe__sub">${n.familyCount} families available</span>
+            </th>
+            <td class="cell tchcell">${techChips}</td>
+            <td class="cell cell--num">${r1(r.famOrders)}</td>
+            <td class="cell cell--num">${r.tiles ? r1(r.tiles) : '<span class="dash">—</span>'}</td>
+            <td class="cell cell--num">${r.shrine ? r1(r.shrine) : '<span class="dash">—</span>'}${r.shrineNote ? `<span class="natnote">${r.shrineNote}</span>` : ''}</td>
+            <td class="cell cell--num">${r.national ? r1(r.national) : '<span class="dash">—</span>'}${note}</td>
+            <td class="cell cell--num">${r.legitOrders ? r1(r.legitOrders) : '<span class="dash">—</span>'}${r.legitNote ? `<span class="natnote">${r.legitNote}</span>` : ''}</td>
+            <td class="cell cell--num oe__tot"><b>${r1(r.total)}</b></td>
+            <td class="cell">${combos || '<span class="dash">none</span>'}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      ['a-cities','a-st','a-cl','a-hu','a-horse','a-camp','a-past','a-kill','a-harbor','a-wonder']
+        .forEach(id => $(id).addEventListener('input', render));
+      ['a-era','a-rev','a-poly'].forEach(id => $(id).addEventListener('change', render));
+      render();
+    })();
+  </script>
+</Base>
+
+<style>
+  .draft { display: inline-block; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
+    background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev));
+    border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 8px; padding: 0.28rem 0.65rem; margin: 0 0 0.8rem; }
+  .lede { max-width: 84ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
+  .lede a { color: var(--accent); }
+  .lede code, .fine code, .rates code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-elev-2); padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
+
+  .asm { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elev); padding: 0.2rem 0.9rem 0.6rem; margin: 0 0 1.1rem; }
+  .asm__row { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.55rem 0; }
+  .asm__row + .asm__row { border-top: 1px solid var(--border); }
+  .asm__tag {
+    flex: none; width: 7rem; padding-top: 0.95rem;
+    font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-faint);
+  }
+  .asm__tag i { display: block; font-style: italic; text-transform: none; letter-spacing: 0; opacity: 0.75; }
+  .asm__fields { display: flex; flex-wrap: wrap; gap: 0.5rem 1.3rem; align-items: flex-end; flex: 1; }
+  .f { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.74rem; color: var(--text-dim); }
+  .f i { color: var(--text-faint); font-size: 0.9em; font-style: italic; }
+  .f input, .f select { width: 7rem; background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: 6px; padding: 0.25rem 0.4rem; font-family: var(--font-mono); font-size: 0.78rem; }
+  .f--wide select { width: 15rem; font-family: var(--font-body); }
+  .f--chk { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.74rem;
+    color: var(--text-dim); cursor: pointer; padding-bottom: 0.32rem; }
+  .f--chk input { accent-color: var(--accent); }
+  .f--chk i { color: var(--text-faint); font-style: italic; }
+
+  :global(.oe .rowlabel) { text-align: left; width: 11rem; vertical-align: top; }
+  :global(.oe__name) { font-family: var(--font-display); font-size: 0.86rem; color: var(--text); }
+  :global(.oe__dlc) { font-family: var(--font-mono); font-size: 0.54rem; color: var(--text-faint); border: 1px solid var(--border); border-radius: 3px; padding: 0 0.22rem; margin-left: 0.3rem; }
+  :global(.oe__sub) { display: block; font-size: 0.64rem; color: var(--text-faint); }
+  .nhdr--num, :global(.cell--num) { text-align: right; }
+  :global(.cell--num) { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.8rem; vertical-align: top; }
+  :global(.oe__tot b) { color: var(--accent); font-size: 0.92rem; }
+  :global(.dash) { color: var(--text-faint); }
+  :global(.natnote) { display: block; font-size: 0.6rem; color: var(--text-faint); font-family: var(--font-body); font-weight: 400; }
+  :global(.oe .tchcell) { width: 11rem; }
+  :global(.tch) { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-faint); margin-right: 0.35rem; white-space: nowrap; }
+  :global(.tch--on) { color: #d99a3c; font-weight: 700; }
+  :global(.combo) { display: flex; align-items: baseline; gap: 0.4rem; font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+  :global(.combo__n) { min-width: 4.6rem; }
+  :global(.combo b) { font-family: var(--font-mono); color: var(--accent); font-weight: 700; }
+  :global(.combo--alt) { opacity: 0.5; }
+  :global(.combo--alt b) { color: var(--text-dim); }
+  :global(.combo--alt i) { font-family: var(--font-mono); font-size: 0.55rem; font-style: normal;
+    letter-spacing: 0.06em; color: var(--text-faint); text-transform: uppercase; }
+
+  .rates { margin-top: 1.5rem; }
+  .rates__h { font-family: var(--font-display); font-size: 1rem; color: var(--accent); margin: 0 0 0.6rem; }
+  .rates__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.9rem 1.6rem; }
+  .rates h3 { font-family: var(--font-display); font-size: 0.82rem; color: var(--text); margin: 0 0 0.3rem; }
+  .rates ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.18rem; font-size: 0.75rem; color: var(--text-dim); line-height: 1.45; }
+  .rates b { color: var(--text); }
+  .rates .muted { color: var(--text-faint); }
+  .tag { font-family: var(--font-mono); font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 3px; padding: 0 0.25rem; }
+  .fine { font-size: 0.73rem; color: var(--text-faint); line-height: 1.55; max-width: 95ch; margin: 0.7rem 0 0; }
+  .fine b { color: var(--text-dim); }
+</style>

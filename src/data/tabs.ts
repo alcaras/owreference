@@ -62,7 +62,17 @@ export const TABS: Tab[] = [
     willContain: ['All cognomens with unlock triggers and bonuses'],
   },
   {
-    slug: 'cognomens-tracker', icon: '🧮', label: 'Cognomens Tracker', section: 'Characters',
+    slug: 'order-economy', icon: '⚡', label: 'Order Economy', section: 'Tools',
+    status: 'built', sourceSheet: '',
+    summary: 'Compare nations on Orders/turn — families, starting techs, shrines, national effects',
+    willContain: [
+      'Per-nation Orders/turn from only the sources that differ by nation',
+      'Era presets (early / mid / late) driven by each nation\'s starting techs',
+      'Map densities measured from owtournamentatlas; kill and wonder rates from save data',
+    ],
+  },
+  {
+    slug: 'cognomens-tracker', icon: '🧮', label: 'Cognomens Tracker', section: 'Tools',
     status: 'built', sourceSheet: '👑Cognomens (Tracker)',
     summary: 'Interactive calculator: which title your leader earns',
     willContain: [
@@ -448,5 +458,6 @@ export const SECTIONS = [
   'Events',
   'World',
   'Concepts',
+  'Tools',
   'Meta',
 ] as const;
