@@ -147,13 +147,27 @@ const updatedLabel = updatedAt
                 .forEach(d => d.removeAttribute('open'));
             }
           });
+          // Panels are left-anchored; flip the ones near the right edge so they
+          // don't spill off-screen. `toggle` doesn't bubble — listen in capture.
+          document.addEventListener('toggle', (e) => {
+            const d = e.target;
+            if (!d.classList?.contains('hdr__menu') || !d.open) return;
+            const panel = d.querySelector('.hdr__panel');
+            if (!panel) return;
+            panel.classList.remove('is-right');
+            if (panel.getBoundingClientRect().right > window.innerWidth - 8) {
+              panel.classList.add('is-right');
+            }
+          }, true);
         </script>
         <details class="hdr__mobilemenu">
           <summary class="hdr__navlink">Menu<span class="hdr__caret" aria-hidden="true">▾</span></summary>
           <nav class="hdr__mobilepanel" aria-label="All pages">
             {navSections.map(({ section, items }) => (
               <div class="hdr__mgroup">
-                <div class="hdr__mgroup-label">{section}</div>
+                {/* Single-page sections (Wonders, Laws, Ambitions) are their own
+                    label — don't repeat it above the one link. */}
+                {items.length > 1 && <div class="hdr__mgroup-label">{section}</div>}
                 {items.map(t => (
                   <a
                     href={`${base}${t.slug}`}

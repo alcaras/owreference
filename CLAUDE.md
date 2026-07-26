@@ -328,8 +328,13 @@ is the fastest regression check (see git history of commit `5c37ecd`).
   rendering (see "Effect rendering" section).
 - **Backstop phrasing polish** — generic lines like "+10% Vegetation From Modifier / Trees"
   are honest but clunky; promote the common ones to curated phrasing as they're noticed.
-- **Header nav (`nav.ts`) is still the narrow curated set** — the home page now lists
-  every built tab by section; decide which of the new pages earn header slots.
+- **Header nav and the home index share one source of truth** — `SECTIONS` +
+  `TABS` in `src/data/tabs.ts`, in array order. 15 sections; single-page sections
+  (Wonders, Laws, Ambitions) render as plain links, not dropdowns. The grouping
+  follows the official manual's chapter order (nations → families → characters →
+  religion → cities/tile improvement → laws → combat) with reference tables and
+  calculators in Tools, mirroring the manual's appendix. Adding a page = add a
+  `TABS` entry under the right section comment; nothing else to wire up.
 - **Registry re-extraction** — when a patch changes `reference/Source` HelpText code,
   re-extract `scripts/data/helptext_registry.json` (recipe in its git history).
 
