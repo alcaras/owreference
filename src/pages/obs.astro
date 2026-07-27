@@ -40,7 +40,7 @@ import '../styles/overlay-card.css';
     const useServer = params.has('server');
 
     let cards: Record<string, any> | null = null;
-    let shownTs = 0;
+    let lastTs = 0;    // newest state timestamp seen, from ANY source
     let hideTimer: ReturnType<typeof setTimeout> | undefined;
 
     // The state is a card id, or "MATCHUP|A|B" for the head-to-head view.
@@ -54,29 +54,35 @@ import '../styles/overlay-card.css';
     }
     let spoilerFree = false;
 
+    let visible = false;
     function hide() {
-      shownTs = 0;
+      visible = false;
       el.classList.remove('is-in');
-      setTimeout(() => { if (!shownTs) el.hidden = true; }, 350);
+      setTimeout(() => { if (!visible) el.hidden = true; }, 350);
     }
 
     // State = {id, ts, ttl}. `ts` distinguishes every push, so re-showing the
     // same card restarts the auto-hide countdown; ttl (seconds, 0 = stay)
     // rides along from the panel — the overlay itself has no settings.
+    //
+    // Multiple sources feed this (localStorage poll, BroadcastChannel, session
+    // relay, local relay), so precedence is strictly by ts: older or absent
+    // state is a NO-OP — an empty localStorage in OBS's fresh profile must not
+    // clear a card the session relay just delivered. Explicit clears carry
+    // their own newer ts.
     function apply(state: { id?: string; ts?: number; ttl?: number; sp?: number } | null) {
-      const id = state?.id || '';
-      const ts = state?.ts || 0;
-      if (!id) { if (shownTs) hide(); return; }
-      if (ts === shownTs) return;
-      spoilerFree = !!state?.sp;
-      const html = renderState(id);
+      if (!state || !state.ts || state.ts <= lastTs) return;
+      lastTs = state.ts;
+      if (!state.id) { hide(); return; }
+      spoilerFree = !!state.sp;
+      const html = renderState(state.id);
       if (!html) { hide(); return; }
-      shownTs = ts;
+      visible = true;
       el.innerHTML = html;
       el.hidden = false;
       requestAnimationFrame(() => el.classList.add('is-in'));
       clearTimeout(hideTimer);
-      if (state?.ttl && state.ttl > 0) hideTimer = setTimeout(hide, state.ttl * 1000);
+      if (state.ttl && state.ttl > 0) hideTimer = setTimeout(hide, state.ttl * 1000);
     }
 
     function readLocal(): any {
@@ -115,7 +121,7 @@ import '../styles/overlay-card.css';
         cards = d;
         if (pinned) {
           const html = renderState(pinned);
-          if (html) { shownTs = 1; el.innerHTML = html; el.hidden = false;
+          if (html) { visible = true; el.innerHTML = html; el.hidden = false;
                       requestAnimationFrame(() => el.classList.add('is-in')); }
           return;
         }

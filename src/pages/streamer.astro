@@ -62,28 +62,33 @@ const base = import.meta.env.BASE_URL;
         </label>
         <label class="sl__ttl sl__spoiler"><input type="checkbox" id="spoiler" />
           Hide chain spoilers</label>
+        <label class="sl__ttl sl__spoiler"><input type="checkbox" id="remote" />
+          Remote session</label>
         <p class="sl__live"><span id="live-dot" class="sl__dot"></span> <span id="live-text">Overlay is clear</span></p>
       </div>
 
       <details class="sl__setup">
         <summary>OBS setup</summary>
         <ol>
-          <li><b>Add a Browser Source in OBS with this URL</b> (transparent background, suggested
-            460 × 800):<br />
+          <li><b>Overlay:</b> add a <i>Browser Source</i> in OBS with this URL (transparent
+            background, suggested 460 × 800):<br />
             <code id="obs-url">…</code>
-            <button class="sl__copy" data-copy="obs-url">copy</button><br />
-            That's it — control it from this page in <i>any</i> browser. OBS's browser is a
-            separate program that shares nothing with yours, so the URL carries your private
-            session code and pushes travel over a free public relay
-            (<a href="https://ntfy.sh" rel="noopener">ntfy.sh</a>). Every visitor gets their own
-            code — any number of streamers can use this at once.</li>
-          <li><b>No-relay alternative:</b> in OBS, <i>View → Docks → Custom Browser Docks…</i>,
-            add this page as a dock:<br />
+            <button class="sl__copy" data-copy="obs-url">copy</button></li>
+          <li><b>Controls:</b> in OBS, <i>View → Docks → Custom Browser Docks…</i>, add this
+            page as a dock:<br />
             <code id="dock-url">…</code>
             <button class="sl__copy" data-copy="dock-url">copy</button><br />
-            Dock and browser source share one browser profile, so everything stays on your
-            machine (the browser-source URL works with or without the session code).</li>
-          <li><b>Fully offline:</b> run <code>make overlay-server</code> (or
+            The dock and the browser source share one browser profile inside OBS, so the panel
+            drives the overlay directly — everything stays on your machine. (The overlay source
+            keeps its transparency either way; it's the Browser Source that renders on stream,
+            the dock is only controls.)</li>
+          <li><b>Prefer controlling from your own browser?</b> OBS's browser is a separate
+            program that shares nothing with yours. Tick <b>Remote session</b> above — the
+            overlay URL gains your private session code and pushes travel over a free public
+            relay (<a href="https://ntfy.sh" rel="noopener">ntfy.sh</a>; only card ids are sent,
+            each visitor gets their own random code). Off by default; with it off, nothing
+            leaves your browser. Re-copy the overlay URL after toggling.</li>
+          <li><b>Fully offline alternative:</b> run <code>make overlay-server</code> (or
             <code>node scripts/overlay_state_server.cjs</code>) from the repo and add
             <code>?server</code> to the Browser Source URL.</li>
           <li><b>Pin a card statically:</b> <code>/obs?id=UNIT_HOPLITE</code> shows one card with no
@@ -141,9 +146,20 @@ const base = import.meta.env.BASE_URL;
       localStorage.setItem('ow-overlay-session', sessionCode);
     }
 
-    // absolute URLs for the setup box
+    // absolute URLs for the setup box; the session code only appears in the
+    // overlay URL when the remote toggle is on
     const site = location.origin + base;
-    $('obs-url').textContent = `${site}obs?session=${sessionCode}`;
+    const remoteBox = $('remote') as HTMLInputElement;
+    remoteBox.checked = localStorage.getItem('ow-overlay-remote') === '1';
+    function syncObsUrl() {
+      $('obs-url').textContent = remoteBox.checked
+        ? `${site}obs?session=${sessionCode}` : `${site}obs`;
+    }
+    remoteBox.addEventListener('change', () => {
+      localStorage.setItem('ow-overlay-remote', remoteBox.checked ? '1' : '0');
+      syncObsUrl();
+    });
+    syncObsUrl();
     $('dock-url').textContent = site + 'streamer';
     document.querySelectorAll<HTMLButtonElement>('.sl__copy').forEach((b) => {
       b.addEventListener('click', () => {
@@ -227,9 +243,12 @@ const base = import.meta.env.BASE_URL;
       liveExpiry = id && ttl ? state.ts + ttl * 1000 : 0;
       tickLive();
       // Public relay — reaches an /obs?session= Browser Source in OBS's own
-      // browser, where localStorage can't. Fire and forget.
-      fetch(`https://ntfy.sh/owref-${sessionCode}`, { method: 'POST', body: JSON.stringify(state) })
-        .catch(() => { /* relay unreachable; same-profile paths still work */ });
+      // browser, where localStorage can't. Opt-in only: with the toggle off,
+      // nothing leaves the browser. Fire and forget.
+      if (remoteBox.checked) {
+        fetch(`https://ntfy.sh/owref-${sessionCode}`, { method: 'POST', body: JSON.stringify(state) })
+          .catch(() => { /* relay unreachable; same-profile paths still work */ });
+      }
       // Optional local relay for offline/LAN use.
       try {
         await fetch(`http://127.0.0.1:43210/set?id=${encodeURIComponent(id)}&ttl=${ttl}`, { method: 'POST' });
