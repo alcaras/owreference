@@ -164,6 +164,21 @@ const payload = {
                   ))
               ))}
             </optgroup>
+            {/* Specialists build with Civics (getBuildYieldType falls through
+                for SPECIALIST_BUILD) and cost by tier: _1 40 / _2 60 / _3 80,
+                rural flat 40 — uniform across all 38 specialists in the XML.
+                Unlock-wise they share the Projects column of the matrix. */}
+            <optgroup label="Specialists">
+              <option value="SPEC_TIER_1" data-cost="40" data-pt="YIELD_CIVICS" data-pc="0" data-pcpct="5" data-kind="project">
+                Apprentice (urban I) / any rural — 40
+              </option>
+              <option value="SPEC_TIER_2" data-cost="60" data-pt="YIELD_CIVICS" data-pc="0" data-pcpct="5" data-kind="project">
+                Master (urban II) — 60
+              </option>
+              <option value="SPEC_TIER_3" data-cost="80" data-pt="YIELD_CIVICS" data-pc="0" data-pcpct="5" data-kind="project">
+                Elder (urban III) — 80
+              </option>
+            </optgroup>
             <optgroup label="Projects">
               {genericTiers.map((r: any) => (
                 <option value={`PROJECT_TIER_${r.tier}`} data-cost={r.production}
@@ -181,7 +196,7 @@ const payload = {
         </label>
         <label class="f"><span>Production cost <i>edit for custom</i></span>
           <input type="number" id="h-cost" value="80" min="1" max="2000" step="1" /></label>
-        <label class="f"><span>Already built here <i>+cost per copy</i></span>
+        <label class="f"><span>Already built here <i>Workers/Settlers/Disciples +10 · Specialists +5%</i></span>
           <input type="number" id="h-copies" value="0" min="0" max="20" step="1" /></label>
         <label class="f--chk"><input type="checkbox" id="h-growth" />
           <span>Growth production <i>+50% hurry</i></span></label>
@@ -366,7 +381,8 @@ const payload = {
       const opt = $('h-pick').selectedOptions[0];
       return opt ? {
         cost: +opt.dataset.cost, growth: opt.dataset.pt === 'YIELD_GROWTH',
-        perCopy: +(opt.dataset.pc || 0), kind: opt.dataset.kind || 'unit',
+        perCopy: +(opt.dataset.pc || 0), perCopyPct: +(opt.dataset.pcpct || 0),
+        kind: opt.dataset.kind || 'unit',
       } : null;
     }
 
@@ -392,8 +408,13 @@ const payload = {
     function render() {
       const p = readPick();
       const perCopy = custom ? 0 : (p ? p.perCopy : 0);
+      const perCopyPct = custom ? 0 : (p ? p.perCopyPct : 0);
       const copies = Math.max(0, +$('h-copies').value || 0);
-      const total = Math.max(1, (+$('h-cost').value || 0) + perCopy * copies);
+      // Units escalate flat (iProductionCity); specialists escalate +5%/copy
+      // (SPECIALIST_COST_PRODUCED_MODIFIER, applied via utils().modify)
+      let total = (+$('h-cost').value || 0) + perCopy * copies;
+      if (perCopyPct && copies) total = modify(total, perCopyPct * copies);
+      total = Math.max(1, total);
       let done = Math.max(0, Math.min(total, +$('h-done').value || 0));
       $('h-done').max = total;
       $('h-slide').value = Math.round((done / total) * 100);
@@ -405,7 +426,7 @@ const payload = {
       setNotes(p ? p.kind : 'unit');
 
       $('h-sum').innerHTML = [
-        `<span><b>${mp}</b> production missing<i>of ${total}${perCopy && copies ? ` — incl. +${perCopy * copies} for ${copies} built here` : ''}</i></span>`,
+        `<span><b>${mp}</b> production missing<i>of ${total}${(perCopy || perCopyPct) && copies ? ` — incl. ${perCopyPct ? `+${perCopyPct * copies}%` : `+${perCopy * copies}`} for ${copies} built here` : ''}</i></span>`,
         `<span><b>${pct}%</b> done<i>${penalty ? `under half — +${penalty}% cost` : 'at or past half — no penalty'}</i></span>`,
         `<span><b>${growth ? '+50%' : 'none'}</b> production-type surcharge<i>${growth ? 'Growth build' : 'Training / Civics build'}</i></span>`,
       ].join('');
@@ -437,7 +458,11 @@ const payload = {
     $('h-slide').addEventListener('input', () => {
       const p = readPick();
       const perCopy = custom ? 0 : (p ? p.perCopy : 0);
-      const total = Math.max(1, (+$('h-cost').value || 0) + perCopy * (+$('h-copies').value || 0));
+      const perCopyPct = custom ? 0 : (p ? p.perCopyPct : 0);
+      const copies = Math.max(0, +$('h-copies').value || 0);
+      let total = (+$('h-cost').value || 0) + perCopy * copies;
+      if (perCopyPct && copies) total = modify(total, perCopyPct * copies);
+      total = Math.max(1, total);
       $('h-done').value = Math.round((total * +$('h-slide').value) / 100);
       render();
     });
