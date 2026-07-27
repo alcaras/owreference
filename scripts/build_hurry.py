@@ -54,7 +54,11 @@ def load_text() -> dict[str, str]:
         for e in root.findall("Entry"):
             k, v = e.findtext("zType"), e.findtext("en-US")
             if k and v and k not in out:
-                out[k] = re.sub(r"^icon\([^)]*\)", "", v.split("~")[0]).strip()
+                v = re.sub(r"^icon\([^)]*\)", "", v.split("~")[0])
+                # Disciple names are templated per religion ("{UNIT-RELIGION,1}
+                # Disciple"); with no religion to substitute, drop the token.
+                v = re.sub(r"\{[^}]*\}", "", v)
+                out[k] = re.sub(r"\s{2,}", " ", v).strip()
     return out
 
 
@@ -98,6 +102,8 @@ def main() -> int:
             "productionPer": int(e.findtext("iProductionPer") or "0"),
             "strength": int(e.findtext("iStrength") or "0") // 10,
             "nation": e.findtext("NationPrereq") or "",
+            # Disciples/Brahmins are one unit per religion, priced identically
+            "buildReligion": e.findtext("BuildReligion") or "",
             "noHurry": (e.findtext("bNoHurry") or "0") == "1",
             "dlc": e.findtext("GameContentRequired") or "",
         })

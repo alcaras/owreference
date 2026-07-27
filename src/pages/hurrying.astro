@@ -42,7 +42,6 @@ const base = import.meta.env.BASE_URL;
 //                           EffectCity (all cities) → EFFECTCITY_LAW_VOLUNTEERS:
 //                           bHurryPopulation=1
 //
-// Where the legacy spreadsheet disagrees, the XML wins (see notes below).
 // ───────────────────────────────────────────────────────────────────────────
 
 type MatrixCell = {
@@ -175,6 +174,11 @@ const costs: CostRow[] = [
       through specific Laws, an archetype Leader, a Governor, or a themed Improvement, as wired in
       <code>effectCity.xml</code>.
     </p>
+    <p class="hurry-intro__note">
+      For what a given Hurry actually costs — by build, by progress, and by how many times you have
+      already hurried that channel in that City — use the
+      <a href={`${base}hurry-calculator`}>Hurry Production Calculator</a>.
+    </p>
   </section>
 
   <h2 class="hurry-h2">What can hurry what</h2>
@@ -209,10 +213,11 @@ const costs: CostRow[] = [
     </div>
   </div>
   <p class="hurry-footnote">
-    The legacy spreadsheet listed the Zealot Leader as unlocking Training hurry for all three
-    targets; in the current XML it covers <strong>Units only</strong>
+    The Zealot Leader covers <strong>Units only</strong>
     (<code>aeHurryTraining = BUILD_UNIT</code>) — Training hurry for Specialists and Projects
     instead comes from a <LinkedText text="Cathedral" /> whose religion holds the Redemption theology.
+    Money splits the same way: the Holy War law unlocks Units, a Judge Governor unlocks
+    Specialists and Projects.
   </p>
 
   <h2 class="hurry-h2">What it costs</h2>
