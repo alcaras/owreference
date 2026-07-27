@@ -1,0 +1,376 @@
+---
+// Streamer overlay control panel — search any card (entities + events), preview
+// it exactly as the overlay renders it, push it to /obs. Based on PR #1 by
+// machinefolly, rebuilt on the entity registry and the shared ocard renderer.
+import Base from '../layouts/Base.astro';
+import '../styles/overlay-card.css';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<Base
+  title="Streamer Overlay"
+  active="streamer"
+  pageMark="🎙️"
+  pageStats={[{ label: 'cards', value: '5,900+' }]}
+>
+  <p class="lede">
+    Show any reference card on stream. Search below, check the preview — it renders exactly what the
+    overlay shows — and push it. The overlay page is <a href={`${base}obs`}><code>/obs</code></a>,
+    a transparent page made to be an OBS <b>Browser Source</b>; this panel drives it. Cards cover
+    every entity on the site plus all story, harvest and study events with their options and rewards.
+  </p>
+
+  <div class="sl">
+    {/* Inputs on the left: search a card, or build a matchup. Either stages
+        the preview on the right; nothing reaches the stream until "Show". */}
+    <section class="sl__left">
+      <div class="sl__searchrow">
+        <input id="q" class="sl__search" type="search" placeholder="Search units, techs, traits, events…" autocomplete="off" />
+        <select id="typef" class="sl__typef" aria-label="Filter by card type">
+          <option value="">All types</option>
+        </select>
+      </div>
+      <div class="sl__mbar">
+        <span class="sl__mbarlbl">Matchup</span>
+        <select id="m-a" class="sl__msel" aria-label="Attacker"></select>
+        <span class="sl__vs">vs</span>
+        <select id="m-b" class="sl__msel" aria-label="Defender"></select>
+        <button id="m-send" class="sl__btn sl__btn--mini">Preview</button>
+      </div>
+      <div id="results" class="sl__results" role="listbox"></div>
+    </section>
+
+    <section class="sl__right">
+      <div class="sl__stage">
+        <div id="preview" class="ocard" hidden></div>
+        <p id="stage-empty" class="sl__empty">Search a card or build a matchup on the left to preview it here.</p>
+      </div>
+      <div class="sl__actions">
+        <button id="send" class="sl__btn sl__btn--send" disabled>Show on stream</button>
+        <button id="clear" class="sl__btn">Clear now</button>
+      </div>
+      <div class="sl__optsrow">
+        <label class="sl__ttl">Auto-hide after
+          <select id="ttl">
+            <option value="10">10 s</option>
+            <option value="20" selected>20 s</option>
+            <option value="30">30 s</option>
+            <option value="60">60 s</option>
+            <option value="0">never</option>
+          </select>
+        </label>
+        <p class="sl__live"><span id="live-dot" class="sl__dot"></span> <span id="live-text">Overlay is clear</span></p>
+      </div>
+
+      <details class="sl__setup">
+        <summary>OBS setup</summary>
+        <ol>
+          <li><b>Overlay:</b> add a <i>Browser Source</i> with this URL (transparent background,
+            suggested 460 × 800):<br />
+            <code id="obs-url">…</code>
+            <button class="sl__copy" data-copy="obs-url">copy</button></li>
+          <li><b>Controls:</b> in OBS, <i>View → Docks → Custom Browser Docks…</i>, add this page:<br />
+            <code id="dock-url">…</code>
+            <button class="sl__copy" data-copy="dock-url">copy</button><br />
+            The dock and the browser source share one browser profile, so the panel drives the
+            overlay directly — no extra software.</li>
+          <li><b>Prefer your own browser for controls?</b> The dock trick doesn't reach a separate
+            browser, so run the little relay from the repo —
+            <code>make overlay-server</code> (or <code>node scripts/overlay_state_server.cjs</code>) —
+            and add <code>?server</code> to the Browser Source URL. This page pushes to it
+            automatically when it's running.</li>
+          <li><b>Pin a card statically:</b> <code>/obs?id=UNIT_HOPLITE</code> shows one card with no
+            controls at all — handy for testing the look.</li>
+        </ol>
+      </details>
+    </section>
+  </div>
+
+  <script>
+    import { cardHTML, matchupHTML, MATCHUP_PREFIX } from '../lib/overlay-card';
+
+    const base = import.meta.env.BASE_URL;
+    const $ = (id: string) => document.getElementById(id)!;
+    const q = $('q') as HTMLInputElement;
+    const typef = $('typef') as HTMLSelectElement;
+    const results = $('results');
+    const preview = $('preview');
+    const stageEmpty = $('stage-empty');
+    const sendBtn = $('send') as HTMLButtonElement;
+
+    let cards: Record<string, any> = {};
+    let list: any[] = [];
+    // what's staged in the preview — a card id or a MATCHUP| state string
+    let selectedId: string | null = null;
+    const channel = new BroadcastChannel('ow-overlay');
+
+    // ── live indicator (with the auto-hide countdown) ───────────────────────
+    let liveId: string | null = null;
+    let liveExpiry = 0;  // epoch ms, 0 = no auto-hide
+    function describeState(id: string): string {
+      if (id.startsWith(MATCHUP_PREFIX)) {
+        const [, a, b] = id.split('|');
+        return `${cards[a]?.name ?? a} vs ${cards[b]?.name ?? b}`;
+      }
+      return cards[id]?.name ?? id;
+    }
+    function tickLive() {
+      if (liveId && liveExpiry && Date.now() >= liveExpiry) { liveId = null; liveExpiry = 0; }
+      const dot = $('live-dot'), txt = $('live-text');
+      dot.classList.toggle('is-on', !!liveId);
+      if (!liveId) { txt.textContent = 'Overlay is clear'; return; }
+      const left = liveExpiry ? Math.max(0, Math.ceil((liveExpiry - Date.now()) / 1000)) : 0;
+      txt.textContent = `Live: ${describeState(liveId)}` + (left ? ` — hides in ${left}s` : '');
+    }
+    setInterval(tickLive, 1000);
+
+    // absolute URLs for the setup box
+    const site = location.origin + base;
+    $('obs-url').textContent = site + 'obs';
+    $('dock-url').textContent = site + 'streamer';
+    document.querySelectorAll<HTMLButtonElement>('.sl__copy').forEach((b) => {
+      b.addEventListener('click', () => {
+        navigator.clipboard.writeText($(b.dataset.copy!).textContent || '');
+        b.textContent = 'copied';
+        setTimeout(() => (b.textContent = 'copy'), 1200);
+      });
+    });
+
+    function render(items: any[]) {
+      results.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      for (const c of items.slice(0, 60)) {
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'sl__row' + (c.id === selectedId ? ' is-active' : '');
+        row.setAttribute('role', 'option');
+        const icon = c.icon
+          ? `<img class="sl__rowicon" src="${base}${c.icon}" alt="" loading="lazy" />`
+          : `<span class="sl__rowicon sl__rowicon--blank"></span>`;
+        row.innerHTML = `${icon}
+          <span class="sl__rowtext"><b>${c.name.replace(/</g, '&lt;')}</b><i>${c.type}</i></span>`;
+        row.addEventListener('click', () => select(c.id));
+        frag.appendChild(row);
+      }
+      if (!items.length) {
+        results.innerHTML = '<p class="sl__empty">No matches.</p>';
+      } else {
+        results.appendChild(frag);
+        if (items.length > 60) {
+          const more = document.createElement('p');
+          more.className = 'sl__empty';
+          more.textContent = `…and ${items.length - 60} more — keep typing`;
+          results.appendChild(more);
+        }
+      }
+    }
+
+    function filter() {
+      const needle = q.value.trim().toLowerCase();
+      const t = typef.value;
+      let out = list;
+      if (t) out = out.filter((c) => c.type === t);
+      if (needle) {
+        const starts: any[] = [], contains: any[] = [];
+        for (const c of out) {
+          const hay = c._hay as string;
+          const pos = hay.indexOf(needle);
+          if (pos < 0) continue;
+          (c.name.toLowerCase().startsWith(needle) ? starts : contains).push(c);
+        }
+        out = starts.concat(contains);
+      }
+      render(out);
+    }
+
+    function select(id: string) {
+      selectedId = id;
+      const c = cards[id];
+      preview.innerHTML = cardHTML(c, base);
+      preview.hidden = false;
+      stageEmpty.hidden = true;
+      sendBtn.disabled = false;
+      results.querySelectorAll('.sl__row').forEach((r) => r.classList.remove('is-active'));
+      filter();
+    }
+
+    // State pushed to the overlay: {id, ts, ttl}. `ts` makes every push
+    // distinct so re-showing the same card restarts the overlay's auto-hide
+    // timer; `ttl` (seconds, 0 = never) rides along so the overlay needs no
+    // configuration of its own.
+    async function push(id: string) {
+      const ttl = id ? +($('ttl') as HTMLSelectElement).value || 0 : 0;
+      const state = { id, ts: Date.now(), ttl };
+      // Same-profile paths (OBS dock, or a tab in the same browser):
+      localStorage.setItem('ow-overlay-state', JSON.stringify(state));
+      channel.postMessage(state);
+      liveId = id || null;
+      liveExpiry = id && ttl ? state.ts + ttl * 1000 : 0;
+      tickLive();
+      // Optional local relay for cross-browser control — fire and forget.
+      try {
+        await fetch(`http://127.0.0.1:43210/set?id=${encodeURIComponent(id)}&ttl=${ttl}`, { method: 'POST' });
+      } catch { /* relay not running; same-profile paths already handled it */ }
+    }
+    ($('ttl') as HTMLSelectElement).value = localStorage.getItem('ow-overlay-ttl') || '20';
+    $('ttl').addEventListener('change', () =>
+      localStorage.setItem('ow-overlay-ttl', ($('ttl') as HTMLSelectElement).value));
+
+    sendBtn.addEventListener('click', () => { if (selectedId) push(selectedId); });
+    $('clear').addEventListener('click', () => push(''));
+    q.addEventListener('input', filter);
+    typef.addEventListener('change', filter);
+
+    // ── matchup builder ─────────────────────────────────────────────────────
+    const mA = $('m-a') as HTMLSelectElement;
+    const mB = $('m-b') as HTMLSelectElement;
+    function initMatchup() {
+      const combat = list
+        .filter((c) => c.combat && c.combat.strength > 0)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      for (const sel of [mA, mB]) {
+        for (const c of combat) {
+          const o = document.createElement('option');
+          o.value = c.id;
+          o.textContent = `${c.name} (str ${c.stats?.Strength ?? '?'})`;
+          sel.appendChild(o);
+        }
+      }
+      // a classic opener as the default pair
+      mA.value = 'UNIT_HORSE_ARCHER';
+      mB.value = 'UNIT_SPEARMAN';
+    }
+    $('m-send').addEventListener('click', () => {
+      const a = cards[mA.value], b = cards[mB.value];
+      if (!a || !b) return;
+      selectedId = `${MATCHUP_PREFIX}${a.id}|${b.id}`;
+      preview.innerHTML = matchupHTML(a, b, base);
+      preview.hidden = false;
+      stageEmpty.hidden = true;
+      sendBtn.disabled = false;
+    });
+
+    fetch(`${base}data/overlay-cards.json`)
+      .then((r) => r.json())
+      .then((d) => {
+        cards = d;
+        list = Object.values(d);
+        for (const c of list) {
+          c._hay = (c.name + ' ' + c.id + ' ' + (c.aliases || []).join(' ')).toLowerCase();
+        }
+        list.sort((a, b) => (a.type === 'Event') !== (b.type === 'Event')
+          ? (a.type === 'Event' ? 1 : -1)
+          : a.name.localeCompare(b.name));
+        const types = [...new Set(list.map((c) => c.type))].sort();
+        for (const t of types) {
+          const o = document.createElement('option');
+          o.value = t; o.textContent = t;
+          typef.appendChild(o);
+        }
+        filter();
+        initMatchup();
+        try {
+          const st = JSON.parse(localStorage.getItem('ow-overlay-state') || 'null');
+          if (st && st.id) {
+            liveId = st.id;
+            liveExpiry = st.ttl ? st.ts + st.ttl * 1000 : 0;
+          }
+        } catch { /* no prior state */ }
+        tickLive();
+      });
+  </script>
+
+  <style is:global>
+    .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
+    .lede a { color: var(--accent); }
+    .lede b { color: var(--text); }
+    .lede code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-elev); padding: 0.05rem 0.3rem; border-radius: 4px; }
+
+    .sl { display: grid; grid-template-columns: minmax(0, 1fr) 430px; gap: 1.2rem; align-items: start; }
+    @media (max-width: 900px) { .sl { grid-template-columns: 1fr; } }
+
+    .sl__left, .sl__right {
+      background: var(--bg-elev); border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg); padding: 0.9rem;
+    }
+
+    .sl__searchrow { display: flex; gap: 0.5rem; margin-bottom: 0.7rem; }
+    .sl__search {
+      flex: 1; background: var(--bg); color: var(--text);
+      border: 1px solid var(--border-strong); border-radius: 6px;
+      padding: 0.45rem 0.7rem; font: inherit; font-size: 0.88rem;
+    }
+    .sl__search:focus { outline: 0; border-color: var(--gold-deep); box-shadow: 0 0 0 2px var(--gold-glow); }
+    .sl__typef {
+      background: var(--bg); color: var(--text-dim); border: 1px solid var(--border-strong);
+      border-radius: 6px; padding: 0.45rem 0.5rem; font-size: 0.78rem;
+    }
+
+    .sl__results {
+      display: flex; flex-direction: column; gap: 0.3rem;
+      max-height: 34rem; overflow-y: auto;
+    }
+    .sl__row {
+      display: flex; align-items: center; gap: 0.6rem; text-align: left;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.4rem 0.6rem; cursor: pointer;
+      color: var(--text); font: inherit;
+    }
+    .sl__row:hover { border-color: var(--gold-deep); }
+    .sl__row.is-active { border-color: var(--gold); background: var(--bg-elev); }
+    .sl__rowicon { width: 26px; height: 26px; object-fit: contain; flex: none; }
+    .sl__rowicon--blank { display: inline-block; }
+    .sl__rowtext { min-width: 0; display: flex; flex-direction: column; }
+    .sl__rowtext b { font-weight: 600; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sl__rowtext i { font-family: var(--font-mono); font-style: normal; font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-soft); }
+
+    .sl__actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+    .sl__btn {
+      flex: 1; font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.05em;
+      padding: 0.5rem 0.8rem; border-radius: 6px; cursor: pointer;
+      background: var(--bg); color: var(--text-dim); border: 1px solid var(--border-strong);
+    }
+    .sl__btn:hover { border-color: var(--gold-deep); color: var(--text); }
+    .sl__btn--send { background: var(--gold-deep); color: var(--bg); border-color: var(--gold); font-weight: 700; }
+    .sl__btn--send:not(:disabled):hover { background: var(--gold); }
+    .sl__btn--send:disabled { opacity: 0.45; cursor: default; }
+
+    .sl__stage {
+      display: grid; place-items: center; min-height: 12rem;
+      background: var(--bg); border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-lg); padding: 1rem;
+    }
+
+    .sl__live { display: flex; align-items: center; gap: 0.4rem; margin: 0; font-size: 0.74rem; color: var(--text-dim); font-family: var(--font-mono); }
+    .sl__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); flex: none; }
+    .sl__dot.is-on { background: #d9603c; box-shadow: 0 0 6px #d9603c; }
+
+    .sl__mbar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.7rem;
+      padding: 0.45rem 0.55rem; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; }
+    .sl__mbarlbl { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-faint); flex: none; }
+    .sl__msel { flex: 1; min-width: 0; background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border-strong); border-radius: 6px; padding: 0.35rem 0.4rem; font-size: 0.78rem; }
+    .sl__vs { font-family: var(--font-mono); font-size: 0.66rem; color: var(--gold-soft); text-transform: uppercase; flex: none; }
+    .sl__btn--mini { flex: none; padding: 0.35rem 0.7rem; font-size: 0.66rem; }
+    .sl__optsrow { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; margin-top: 0.7rem; flex-wrap: wrap; }
+    .sl__ttl { font-size: 0.74rem; color: var(--text-dim); display: inline-flex; align-items: center; gap: 0.4rem; }
+    .sl__ttl select { background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
+      border-radius: 6px; padding: 0.25rem 0.35rem; font-family: var(--font-mono); font-size: 0.72rem; }
+    .sl__empty { color: var(--text-faint); font-size: 0.8rem; margin: 0.5rem; text-align: center; }
+
+    .sl__setup { margin-top: 0.9rem; font-size: 0.78rem; color: var(--text-dim); }
+    .sl__setup summary { cursor: pointer; color: var(--text-soft); font-weight: 600; }
+    .sl__setup ol { margin: 0.5rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.55rem; line-height: 1.5; }
+    .sl__setup code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; }
+    .sl__setup b { color: var(--text); }
+    .sl__copy {
+      font-family: var(--font-mono); font-size: 0.62rem; margin-left: 0.4rem;
+      background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border);
+      border-radius: 4px; padding: 0.08rem 0.4rem; cursor: pointer;
+    }
+    .sl__copy:hover { border-color: var(--gold-deep); color: var(--text); }
+  </style>
+</Base>

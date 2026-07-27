@@ -435,6 +435,16 @@ export const TABS: Tab[] = [
     ],
   },
   {
+    slug: 'streamer', icon: '🎙️', label: 'Streamer Overlay', section: 'Tools',
+    status: 'built', sourceSheet: '',
+    summary: 'Push reference cards to an OBS overlay — units, techs, traits, events',
+    willContain: [
+      'Search across all entities and events, live preview of the overlay card',
+      'OBS setup: Browser Source overlay + Custom Browser Dock controls',
+      'Optional local relay for driving the overlay from a separate browser',
+    ],
+  },
+  {
     slug: 'hurry-calculator', icon: '⏩', label: 'Hurry Production Calculator', section: 'Tools',
     status: 'built', sourceSheet: '',
     summary: 'What Hurry Production costs — by channel, progress, and how often you have hurried in that city',

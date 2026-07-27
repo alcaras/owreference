@@ -1,0 +1,132 @@
+---
+// The OBS browser-source overlay: a transparent page showing the card that
+// /streamer last pushed. Not in the nav — its URL is pasted into OBS.
+//
+// How the two pages talk (in priority order):
+//   1. ?id=UNIT_HOPLITE      — pin one card forever (testing, or a static badge)
+//   2. BroadcastChannel + localStorage — works when /streamer runs as an OBS
+//      Custom Browser Dock (dock and browser source share one CEF profile)
+//   3. ?server               — also poll the optional local state server
+//      (scripts/overlay_state_server.cjs) so a normal desktop browser can drive
+//      the overlay. Not polled unless asked: silent failed fetches every 400ms
+//      would be noise.
+import '../styles/theme.css';
+import '../styles/overlay-card.css';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>OBS Overlay — Old World Reference</title>
+</head>
+<body class="obs">
+  <div id="card" class="ocard obs__card" hidden></div>
+
+  <script>
+    import { cardHTML, matchupHTML, MATCHUP_PREFIX } from '../lib/overlay-card';
+
+    const base = import.meta.env.BASE_URL;
+    const el = document.getElementById('card')!;
+    const params = new URLSearchParams(location.search);
+    const pinned = params.get('id');
+    const useServer = params.has('server');
+
+    let cards: Record<string, any> | null = null;
+    let shownTs = 0;
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
+
+    // The state is a card id, or "MATCHUP|A|B" for the head-to-head view.
+    function renderState(id: string): string | null {
+      if (!cards) return null;
+      if (id.startsWith(MATCHUP_PREFIX)) {
+        const [, a, b] = id.split('|');
+        return cards[a] && cards[b] ? matchupHTML(cards[a], cards[b], base) : null;
+      }
+      return cards[id] ? cardHTML(cards[id], base) : null;
+    }
+
+    function hide() {
+      shownTs = 0;
+      el.classList.remove('is-in');
+      setTimeout(() => { if (!shownTs) el.hidden = true; }, 350);
+    }
+
+    // State = {id, ts, ttl}. `ts` distinguishes every push, so re-showing the
+    // same card restarts the auto-hide countdown; ttl (seconds, 0 = stay)
+    // rides along from the panel — the overlay itself has no settings.
+    function apply(state: { id?: string; ts?: number; ttl?: number } | null) {
+      const id = state?.id || '';
+      const ts = state?.ts || 0;
+      if (!id) { if (shownTs) hide(); return; }
+      if (ts === shownTs) return;
+      const html = renderState(id);
+      if (!html) { hide(); return; }
+      shownTs = ts;
+      el.innerHTML = html;
+      el.hidden = false;
+      requestAnimationFrame(() => el.classList.add('is-in'));
+      clearTimeout(hideTimer);
+      if (state?.ttl && state.ttl > 0) hideTimer = setTimeout(hide, state.ttl * 1000);
+    }
+
+    function readLocal(): any {
+      try { return JSON.parse(localStorage.getItem('ow-overlay-state') || 'null'); }
+      catch { return null; }
+    }
+
+    const channel = new BroadcastChannel('ow-overlay');
+    channel.onmessage = (e) => { if (!pinned) apply(e.data); };
+
+    window.addEventListener('storage', (e) => {
+      if (!pinned && e.key === 'ow-overlay-state') apply(readLocal());
+    });
+
+    async function pollServer() {
+      try {
+        const r = await fetch('http://127.0.0.1:43210/get');
+        apply(await r.json());
+      } catch { /* server not running — stay on last state */ }
+    }
+
+    fetch(`${base}data/overlay-cards.json`)
+      .then((r) => r.json())
+      .then((d) => {
+        cards = d;
+        if (pinned) {
+          const html = renderState(pinned);
+          if (html) { shownTs = 1; el.innerHTML = html; el.hidden = false;
+                      requestAnimationFrame(() => el.classList.add('is-in')); }
+          return;
+        }
+        apply(readLocal());
+        setInterval(() => apply(readLocal()), 500);
+        if (useServer) setInterval(pollServer, 400);
+      });
+  </script>
+
+  <style is:global>
+    /* theme.css paints the body with gradients AND a body::before grid
+       texture — kill every layer for a transparent OBS capture. It also sets
+       color-scheme: dark, which makes Chromium composite a transparent page
+       onto DARK GRAY instead of showing through (the classic OBS-overlay
+       gotcha) — force light so the canvas stays genuinely transparent. */
+    :root { color-scheme: light; }
+    html, body.obs {
+      background: none !important;
+      background-color: transparent !important;
+      margin: 0; padding: 0;
+      overflow: hidden;
+    }
+    body.obs::before, body.obs::after { display: none !important; }
+    .obs__card {
+      position: fixed; left: 20px; top: 20px;
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .obs__card.is-in { opacity: 1; transform: translateY(0); }
+  </style>
+</body>
+</html>

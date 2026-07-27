@@ -139,6 +139,14 @@ def humanize_bonus(b: ET.Element, indexes: dict, text: dict) -> list[str]:
             nm = text.get(f"TEXT_{t.text}", t.text.replace("TRAIT_", "").replace("_", " ").title())
             out.append(f"Lose {nm}")
 
+    # Archetype changes (BONUS_SET_COMMANDER_ARCHETYPE → SetArchetype
+    # TRAIT_COMMANDER_ARCHETYPE) — the four archetype rolls in Wonder
+    # Inspiration use these rather than aeAddTraits
+    v = b.findtext("SetArchetype") or ""
+    if v:
+        nm = text.get(f"TEXT_{v}", v.replace("TRAIT_", "").replace("_ARCHETYPE", "").replace("_", " ").title())
+        out.append(f"Becomes {nm}")
+
     # Relationships (BONUS_LEADER_LOVER_OF → "Becomes Lover of Leader")
     for tag in ("AddLeaderRelationship", "AddSubjectRelationship"):
         v = b.findtext(tag) or ""
@@ -254,6 +262,34 @@ def main() -> int:
                 if b is None:
                     continue
                 outcomes.extend(humanize_bonus(b, bonus_idx, text))
+            # Options like EVENTOPTION_WONDER_INSPIRATION carry no bonuses of
+            # their own — they roll one of many sub-options (aiEventOptionProb),
+            # each granting its own bonus. Resolve one level so the outcome
+            # isn't silently empty.
+            pairs = opt.findall("aiEventOptionProb/Pair")
+            if pairs and not outcomes:
+                rolls: list[str] = []
+                weights: list[int] = []
+                for pr in pairs:
+                    sub = option_idx.get(pr.findtext("zIndex") or "")
+                    if sub is None:
+                        continue
+                    sub_out: list[str] = []
+                    for b_ref in sub.findall("aeBonuses/zValue"):
+                        b = bonus_idx.get(b_ref.text or "")
+                        if b is not None:
+                            sub_out.extend(humanize_bonus(b, bonus_idx, text))
+                    if sub_out:
+                        rolls.append("; ".join(sub_out))
+                        weights.append(int(pr.findtext("iValue") or "0"))
+                if rolls:
+                    odds = "equal odds" if len(set(weights)) == 1 else "weighted"
+                    prefix = "Gain trait: "
+                    if all(r.startswith(prefix) for r in rolls):
+                        names = ", ".join(r[len(prefix):] for r in rolls)
+                        outcomes.append(f"Rolls one of {len(rolls)} traits ({odds}): {names}")
+                    else:
+                        outcomes.append(f"Rolls one of {len(rolls)} outcomes ({odds}): " + "; ".join(rolls))
             options.append({
                 "id": opt_id,
                 "text": opt_text,

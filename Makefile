@@ -70,6 +70,7 @@ data:
 	@python3 scripts/build_culture.py
 	@python3 scripts/build_entities.py
 	@python3 scripts/build_backlinks.py
+	@python3 scripts/build_overlay_cards.py
 
 changelog:
 	@python3 scripts/changelog.py
@@ -94,3 +95,6 @@ clean:
 # One-time seed of human-curated descriptions from the legacy xlsx
 seed-annotations:
 	@python3 scripts/seed_annotations.py
+
+overlay-server:
+	@node scripts/overlay_state_server.cjs

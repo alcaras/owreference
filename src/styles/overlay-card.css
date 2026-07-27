@@ -1,0 +1,152 @@
+/* The streamer-overlay card — shared between /streamer's preview and /obs.
+   Same tokens as the site (theme.css must be loaded alongside): parchment-dark
+   panel, gold accent, Cinzel display names. Kept self-scoped under .ocard so
+   it can sit inside any page without leaking. */
+
+.ocard {
+  /* Fixed width + clamped content (renderer caps lines/options) keeps the
+     stream footprint consistent card-to-card. */
+  width: 400px;
+  max-width: 100%;
+  min-height: 7rem;
+  background: rgba(14, 15, 18, 0.94);
+  border: 1px solid var(--gold-deep);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), 0 0 22px var(--gold-glow);
+  padding: 1rem 1.1rem;
+  color: var(--text);
+  font-family: var(--font-ui);
+}
+
+.ocard__head { display: flex; align-items: center; gap: 0.75rem; }
+/* identity colour (nation/family/tribe/yield) lives in the header strip only,
+   same rule as the site's nation columns */
+.ocard__inner[style*='--ocard-accent'] .ocard__head {
+  border-bottom: 2px solid var(--ocard-accent);
+  padding-bottom: 0.55rem;
+}
+.ocard__icon {
+  width: 52px; height: 52px; flex: none;
+  display: grid; place-items: center;
+  background: rgba(201, 160, 74, 0.08);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+}
+.ocard__icon img { max-width: 42px; max-height: 42px; object-fit: contain; }
+.ocard__title { min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+.ocard__type {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold-soft);
+}
+.ocard__name {
+  font-family: var(--font-display); font-size: 1.35rem; line-height: 1.15;
+  color: var(--text);
+}
+
+.ocard__stats {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem;
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 0.45rem 0; margin-top: 0.7rem;
+}
+.ocard__stat { display: flex; flex-direction: column; gap: 0.05rem; }
+.ocard__stat i {
+  font-style: normal; font-size: 0.6rem; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.ocard__stat b {
+  font-family: var(--font-mono); font-size: 0.98rem; color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ocard__costs { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem; }
+.ocard__cost {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-soft);
+  background: var(--bg-elev); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.14rem 0.4rem;
+}
+
+.ocard__lines {
+  list-style: none; margin: 0.65rem 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: 0.35rem;
+  font-size: 0.82rem; line-height: 1.45; color: var(--text-soft);
+}
+.ocard__lines li { position: relative; padding-left: 0.8rem; }
+.ocard__lines li::before {
+  content: '•'; position: absolute; left: 0; color: var(--gold); font-weight: 700;
+}
+.ocard__lines li.ocard__reward { padding-left: 1.6rem; color: var(--text-dim); font-size: 0.78rem; }
+.ocard__lines li.ocard__reward::before { content: '→'; left: 0.8rem; color: var(--gold-soft); }
+
+/* meta chips — era, tech, law pair, chain, trigger */
+.ocard__chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.55rem; }
+.ocard__chip {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.04em;
+  color: var(--text-dim); background: var(--bg-elev);
+  border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.38rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+/* inline yield icons inside effect/cost text */
+.ocard__yicon {
+  width: 0.95em; height: 0.95em; object-fit: contain;
+  vertical-align: -0.1em; margin-right: 0.15em;
+}
+
+/* event options — the event pages' shape: option text as the block headline,
+   rewards under it, requirements in small print */
+.ocard__opts { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.7rem; }
+.ocard__opt {
+  border-left: 2px solid var(--gold-deep);
+  padding: 0.1rem 0 0.1rem 0.6rem;
+}
+.ocard__opttext { font-size: 0.82rem; line-height: 1.4; color: var(--text); }
+.ocard__opttext b { color: var(--gold-soft); font-family: var(--font-mono); font-size: 0.72rem; }
+.ocard__optreq {
+  font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint);
+  margin-top: 0.12rem;
+}
+.ocard__optreward {
+  font-size: 0.76rem; color: var(--text-dim); line-height: 1.4;
+  padding-left: 1rem; position: relative; margin-top: 0.12rem;
+}
+.ocard__optreward::before { content: '→'; position: absolute; left: 0.1rem; color: var(--gold-soft); }
+.ocard__guaranteed { padding-left: 1rem; margin: 0 0 0.1rem; }
+.ocard__optnext {
+  font-size: 0.66rem; font-style: italic; color: var(--text-faint); margin-top: 0.15rem;
+}
+.ocard__more { color: var(--text-faint); font-size: 0.72rem; font-style: italic; }
+
+/* the head-to-head matchup card */
+.ocard__name--sm { font-size: 1.05rem; }
+.ocard__mgrid {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.6rem;
+  align-items: start; margin-top: 0.75rem;
+}
+.ocard__mside { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; text-align: center; }
+.ocard__micon { width: 56px; height: 56px; object-fit: contain; }
+.ocard__mname { font-family: var(--font-display); font-size: 0.95rem; line-height: 1.15; }
+.ocard__mstr i {
+  font-style: normal; font-size: 0.58rem; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-right: 0.3em;
+}
+.ocard__mstr b { font-family: var(--font-mono); font-size: 1.05rem; color: var(--gold); }
+.ocard__mcost { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-soft); line-height: 1.5; }
+.ocard__mfx { font-size: 0.68rem; color: var(--text-dim); line-height: 1.45; }
+.ocard__mmid {
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  align-self: center;
+}
+.ocard__mdmg {
+  font-family: var(--font-mono); font-weight: 700; font-size: 1rem;
+  color: var(--text); border-radius: 6px; padding: 0.18rem 0.5rem;
+  white-space: nowrap;
+}
+.ocard__mdmglbl {
+  font-family: var(--font-mono); font-size: 0.54rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-faint);
+}
+.ocard__mfoot {
+  margin-top: 0.7rem; padding-top: 0.45rem; border-top: 1px solid var(--border);
+  font-size: 0.62rem; color: var(--text-faint); font-style: italic; text-align: center;
+}
