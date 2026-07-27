@@ -4,28 +4,48 @@ import D from '../data/hurry.json';
 
 const base = import.meta.env.BASE_URL;
 
+// Anything the engine refuses to hurry is dead weight in a rush picker.
+const rushable = (x: any) => !x.noHurry;
+
+const stdUnits = D.units.filter((u: any) => rushable(u) && !u.nation && u.productionType === 'YIELD_TRAINING');
+// Steppe Rider is Yuezhi-unique but Growth-produced and priced on its own, so
+// it belongs here by name rather than in a collapsed unique-unit bucket.
+const growthUnits = D.units.filter((u: any) => rushable(u) && u.productionType === 'YIELD_GROWTH');
+const rushableProjects = D.projects.filter(rushable);
+
+// Every str-6 unique costs 120 and every str-8 unique 160, so one row each
+// beats thirteen identical ones. Verify per patch instead of hardcoding it:
+// a strength band that stops being uniform falls back to listing its members.
+const uniqueTraining = D.units.filter((u: any) => rushable(u) && u.nation && u.productionType === 'YIELD_TRAINING');
+const uniqueBands = [...new Set(uniqueTraining.map((u: any) => u.strength))]
+  .sort((a: any, b: any) => a - b)
+  .map((strength: any) => {
+    const members = uniqueTraining.filter((u: any) => u.strength === strength);
+    const costs = [...new Set(members.map((u: any) => u.production))];
+    return { strength, members, uniform: costs.length === 1 ? costs[0] : null };
+  });
+
+// What unlocks each channel, and it is NOT the same for every build target —
+// Money on a unit wants the Holy War law, but on a project or specialist it is
+// a Judge governor instead. Same split for Training. Source chains are
+// documented on /hurrying; these follow it, and the column notes track whatever
+// is selected in the picker.
+const channels = [
+  { key: 'civics', label: 'Civics', unit: 'always', project: 'always' },
+  { key: 'training', label: 'Training', unit: 'Zealot leader', project: 'Cathedral + Redemption' },
+  { key: 'money', label: 'Money', unit: 'Holy War law', project: 'Judge governor' },
+  { key: 'orders', label: 'Orders', unit: 'Orthodoxy law', project: 'Orthodoxy law' },
+  { key: 'growth', label: 'Citizens', unit: 'Volunteers law', project: 'Volunteers law' },
+];
+const availability = Object.fromEntries(channels.map(c => [c.key, { unit: c.unit, project: c.project }]));
+
 // Everything the client needs to replay City.cs integer arithmetic exactly.
 const payload = {
   globals: D.globals,
   ym: D.yieldsMultiplier,
   hurryMod: D.yieldHurryModifier,
-  units: D.units,
-  projects: D.projects,
+  avail: availability,
 };
-
-const stdUnits = D.units.filter((u: any) => !u.nation && u.productionType === 'YIELD_TRAINING');
-const growthUnits = D.units.filter((u: any) => !u.nation && u.productionType === 'YIELD_GROWTH');
-const uniqueUnits = D.units.filter((u: any) => u.nation);
-
-// Channels in the order the engine defines them. `always` marks the one that
-// needs no unlock — see /hurrying for the full availability matrix.
-const channels = [
-  { key: 'civics', label: 'Civics', always: true, note: 'always available' },
-  { key: 'training', label: 'Training', note: 'Zealot leader · Cathedral+Redemption' },
-  { key: 'money', label: 'Money', note: 'Holy War law · Judge governor' },
-  { key: 'orders', label: 'Orders', note: 'Orthodoxy law' },
-  { key: 'growth', label: 'Citizens', note: 'Volunteers law' },
-];
 ---
 
 <Base
@@ -34,7 +54,7 @@ const channels = [
   pageMark="⏩"
   pageStats={[
     { label: 'channels', value: channels.length },
-    { label: 'builds', value: D.units.length + D.projects.length },
+    { label: 'rushable', value: stdUnits.length + growthUnits.length + uniqueTraining.length + rushableProjects.length },
   ]}
 >
   <p class="lede">
@@ -56,29 +76,35 @@ const channels = [
           <select id="h-pick">
             <optgroup label="Training units">
               {stdUnits.map((u: any) => (
-                <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity}>
+                <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity} data-kind="unit">
                   {u.name} — {u.production}{u.strength ? ` · str ${u.strength}` : ''}
                 </option>
               ))}
             </optgroup>
             <optgroup label="Growth units — +50% hurry cost">
               {growthUnits.map((u: any) => (
-                <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity}>
-                  {u.name} — {u.production}
+                <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity} data-kind="unit">
+                  {u.name} — {u.production}{u.productionCity ? ` · +${u.productionCity}/copy` : ''}
+                  {u.nation ? ` · ${u.nation.replace('NATION_', '').toLowerCase()}` : ''}
                 </option>
               ))}
             </optgroup>
             <optgroup label="Unique units">
-              {uniqueUnits.map((u: any) => (
-                <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity}>
-                  {u.name} — {u.production} · {u.nation.replace('NATION_', '').toLowerCase()}
-                </option>
+              {uniqueBands.map((b: any) => (b.uniform
+                ? <option value={`UU_STR_${b.strength}`} data-cost={b.uniform} data-pt="YIELD_TRAINING" data-pc="0" data-kind="unit">
+                    Unique unit · str {b.strength} — {b.uniform} <span set:html="&nbsp;" />(all {b.members.length})
+                  </option>
+                : b.members.map((u: any) => (
+                    <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity} data-kind="unit">
+                      {u.name} — {u.production} · {u.nation.replace('NATION_', '').toLowerCase()}
+                    </option>
+                  ))
               ))}
             </optgroup>
             <optgroup label="Projects">
-              {D.projects.map((p: any) => (
-                <option value={p.id} data-cost={p.production} data-pt={p.productionType} data-pc="0" data-nohurry={p.noHurry ? '1' : ''}>
-                  {p.name} — {p.production}{p.noHurry ? ' · cannot hurry' : ''}
+              {rushableProjects.map((p: any) => (
+                <option value={p.id} data-cost={p.production} data-pt={p.productionType} data-pc="0" data-kind="project">
+                  {p.name} — {p.production}
                 </option>
               ))}
             </optgroup>
@@ -119,9 +145,16 @@ const channels = [
                   <img src={`${base}img/icons/yields/${c.key}.png`} alt="" width="14" height="14" />
                   {c.label}
                 </span>
-                <span class="hc__hdnote">{c.note}</span>
+                <span class="hc__hdnote" id={`hn-${c.key}`}>{c.unit}</span>
               </th>
             ))}
+            <th class="nhdr nhdr--num hc__dcol">
+              <span class="hc__hd">
+                <img src={`${base}img/icons/yields/discontent.png`} alt="" width="14" height="14" />
+                Discontent
+              </span>
+              <span class="hc__hdnote">never escalates</span>
+            </th>
           </tr>
         </thead>
         <tbody id="h-body"></tbody>
@@ -177,11 +210,15 @@ const channels = [
             it does <b>not</b> escalate with the hurry count — but it does take both multipliers
             above. <b>Monetary Reform</b> zeroes it (<code>iHurryDiscontentModifier −100</code>).
             In practice that is a near-flat 10–18, not something that scales with the build.</li>
+          <li>Because it does not escalate, a city that has already hurried nine times pays the
+            <b>same</b> Discontent as one that never has — only the yield price climbs.</li>
           <li class="muted">The community <i>Rush Buy Rules Summary Table</i> in the official
             manual (p.220) gives this one as <code>10 + mp/10</code>. That converts the base to
             displayed Discontent but not the <code>mp</code> term: the engine holds Discontent in
             tenths and the UI divides by 10 (<code>HelpText.cs:1316</code>), so the missing-production
-            term is <code>mp/100</code>. Every other row of that table matches the code exactly.</li>
+            term is <code>mp/100</code>. The same table's note that “Discontent … increases by 10%
+            base too” is also wrong — <code>getHurryDiscontent</code> has no count term, and all five
+            <code>hurry*Build</code> functions call it identically. Every other row matches the code.</li>
           <li>You cannot hurry when the build would finish next turn anyway
             (<code>getBuildTurnsLeft == 1</code>), and the city needs Developing culture.</li>
           <li>Workers, Settlers and Disciples also cost <b>+10 production per copy already built
@@ -256,8 +293,17 @@ const channels = [
       const opt = $('h-pick').selectedOptions[0];
       return opt ? {
         cost: +opt.dataset.cost, growth: opt.dataset.pt === 'YIELD_GROWTH',
-        perCopy: +(opt.dataset.pc || 0), noHurry: !!opt.dataset.nohurry,
+        perCopy: +(opt.dataset.pc || 0), kind: opt.dataset.kind || 'unit',
       } : null;
+    }
+
+    // Which unlock each channel needs depends on the build target: Money on a
+    // unit is the Holy War law, on a project/specialist it's a Judge governor.
+    function setNotes(kind) {
+      for (const k of ORDER) {
+        const el = $('hn-' + k);
+        if (el && D.avail[k]) el.textContent = D.avail[k][kind] || D.avail[k].unit;
+      }
     }
 
     function applyPick() {
@@ -283,15 +329,15 @@ const channels = [
       const pct = Math.trunc((done * 100) / total);
       const penalty = pct < 50 ? 50 - pct : 0;
 
-      const bits = [
+      setNotes(p ? p.kind : 'unit');
+
+      $('h-sum').innerHTML = [
         `<span><b>${mp}</b> production missing<i>of ${total}${perCopy && copies ? ` — incl. +${perCopy * copies} for ${copies} built here` : ''}</i></span>`,
         `<span><b>${pct}%</b> done<i>${penalty ? `under half — +${penalty}% cost` : 'at or past half — no penalty'}</i></span>`,
         `<span><b>${growth ? '+50%' : 'none'}</b> production-type surcharge<i>${growth ? 'Growth build' : 'Training / Civics build'}</i></span>`,
-        `<span><b>${discontent(mp, total, done, growth)}</b> Discontent<i>same for every channel and count</i></span>`,
-      ];
-      if (p && p.noHurry) bits.unshift('<span class="sum__warn"><b>Cannot be hurried</b><i>bNoHurry is set on this build</i></span>');
-      $('h-sum').innerHTML = bits.join('');
+      ].join('');
 
+      const disc = discontent(mp, total, done, growth);
       const rows = [];
       for (let n = 0; n <= 9; n++) {
         const cells = ORDER.map((k) => {
@@ -304,7 +350,8 @@ const channels = [
           `<tr${n === 0 ? ' class="hc--first"' : ''}>` +
           `<td class="rowlabel hc__n">${n === 0 ? 'none yet' : n + (n === 1 ? ' time' : ' times')}</td>` +
           `<td class="cell cell--num hc__mul">×${((10 + n) / 10).toFixed(1)}</td>` +
-          cells + '</tr>');
+          cells +
+          `<td class="cell cell--num hc__dcol hc__disc">${disc}</td>` + '</tr>');
       }
       $('h-body').innerHTML = rows.join('');
     }
@@ -364,10 +411,15 @@ const channels = [
   .hc__hd img { image-rendering: auto; opacity: 0.95; }
   .hc__hdnote { display: block; font-family: var(--font-body); font-weight: 400; text-transform: none;
     letter-spacing: 0; font-size: 0.58rem; color: var(--text-faint); margin-top: 0.15rem; }
+  /* Ten short rows of numbers — stretching them over 1500px makes a row
+     impossible to track across. Cap it and let the columns sit close. */
+  .hc { width: auto; min-width: 40rem; max-width: 54rem; }
   .nhdr--num, .hc :global(.cell--num) { text-align: right; }
   .hc :global(.cell--num) { font-family: var(--font-mono); font-variant-numeric: tabular-nums;
     font-size: 0.86rem; vertical-align: top; }
-  .hc :global(.rowlabel) { text-align: left; width: 9rem; }
+  .hc :global(.rowlabel) { text-align: left; width: 7rem; }
+  .hc :global(.hc__dcol) { border-left: 1px solid var(--border-strong); width: 6rem; }
+  .hc :global(.hc__disc) { color: var(--text-dim); }
   .hc :global(.hc__n) { font-size: 0.76rem; color: var(--text-dim); }
   .hc :global(.hc__mul) { color: var(--text-faint); font-size: 0.74rem; }
   .hc :global(.hc--first) { background: color-mix(in srgb, var(--accent) 7%, transparent); }
