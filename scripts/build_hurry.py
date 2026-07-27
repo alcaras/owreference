@@ -104,6 +104,8 @@ def main() -> int:
             "nation": e.findtext("NationPrereq") or "",
             # Disciples/Brahmins are one unit per religion, priced identically
             "buildReligion": e.findtext("BuildReligion") or "",
+            "ship": any((t.text or "") == "UNITTRAIT_SHIP"
+                        for t in e.findall("aeUnitTrait/zValue")),
             "noHurry": (e.findtext("bNoHurry") or "0") == "1",
             "dlc": e.findtext("GameContentRequired") or "",
         })

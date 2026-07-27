@@ -8,6 +8,18 @@ const base = import.meta.env.BASE_URL;
 const hurryable = (x: any) => !x.noHurry;
 
 const stdUnits = D.units.filter((u: any) => hurryable(u) && !u.nation && u.productionType === 'YIELD_TRAINING');
+// Ships stand apart (they cost the same as land units of the same strength but
+// are never an alternative to one), then land units group by strength. Cost is
+// NOT uniform within a strength band — str 5 spans 80-100 and str 8 spans
+// 100-120 — so these are groupings, not collapses.
+const ships = stdUnits.filter((u: any) => u.ship);
+const landByStrength = [...new Set(stdUnits.filter((u: any) => !u.ship).map((u: any) => u.strength))]
+  .sort((a: any, b: any) => a - b)
+  .map((strength: any) => ({
+    strength,
+    units: stdUnits.filter((u: any) => !u.ship && u.strength === strength)
+      .sort((a: any, b: any) => a.production - b.production || a.name.localeCompare(b.name)),
+  }));
 // Steppe Rider is Yuezhi-unique but Growth-produced and priced on its own, so
 // it belongs here by name rather than in a collapsed bucket.
 const allGrowth = D.units.filter((u: any) => hurryable(u) && u.productionType === 'YIELD_GROWTH');
@@ -118,10 +130,19 @@ const payload = {
       <div class="asm__fields">
         <label class="f f--wide"><span>What you're hurrying</span>
           <select id="h-pick">
-            <optgroup label="Training units">
-              {stdUnits.map((u: any) => (
+            {landByStrength.map((g: any) => (
+              <optgroup label={`Strength ${g.strength}`}>
+                {g.units.map((u: any) => (
+                  <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity} data-kind="unit">
+                    {u.name} — {u.production}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+            <optgroup label="Ships">
+              {ships.map((u: any) => (
                 <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity} data-kind="unit">
-                  {u.name} — {u.production}{u.strength ? ` · str ${u.strength}` : ''}
+                  {u.name} — {u.production} · str {u.strength}
                 </option>
               ))}
             </optgroup>
@@ -422,7 +443,8 @@ const payload = {
     });
 
     // Default to a Spearman-ish mid unit rather than the first option.
-    const pref = [...$('h-pick').options].find((o) => +o.dataset.cost === 80 && o.parentElement.label === 'Training units');
+    // Open on a mid-tier line unit rather than whatever sorts first.
+    const pref = [...$('h-pick').options].find((o) => o.value === 'UNIT_SPEARMAN');
     if (pref) pref.selected = true;
     applyPick();
   })();
