@@ -11,6 +11,7 @@ export function getStaticPaths() {
     'technologies', 'promotions',
     'unit-damage', 'unit-counters', 'combat-damage',
     'rally', 'hold-court', 'steal-research',
+    'events/chains', 'streamer', 'obs',
   ]);
   return TABS
     .filter(t => !built.has(t.slug))
