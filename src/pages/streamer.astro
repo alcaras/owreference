@@ -60,26 +60,32 @@ const base = import.meta.env.BASE_URL;
             <option value="0">never</option>
           </select>
         </label>
+        <label class="sl__ttl sl__spoiler"><input type="checkbox" id="spoiler" />
+          Hide chain spoilers</label>
         <p class="sl__live"><span id="live-dot" class="sl__dot"></span> <span id="live-text">Overlay is clear</span></p>
       </div>
 
       <details class="sl__setup">
         <summary>OBS setup</summary>
         <ol>
-          <li><b>Overlay:</b> add a <i>Browser Source</i> with this URL (transparent background,
-            suggested 460 × 800):<br />
+          <li><b>Add a Browser Source in OBS with this URL</b> (transparent background, suggested
+            460 × 800):<br />
             <code id="obs-url">…</code>
-            <button class="sl__copy" data-copy="obs-url">copy</button></li>
-          <li><b>Controls:</b> in OBS, <i>View → Docks → Custom Browser Docks…</i>, add this page:<br />
+            <button class="sl__copy" data-copy="obs-url">copy</button><br />
+            That's it — control it from this page in <i>any</i> browser. OBS's browser is a
+            separate program that shares nothing with yours, so the URL carries your private
+            session code and pushes travel over a free public relay
+            (<a href="https://ntfy.sh" rel="noopener">ntfy.sh</a>). Every visitor gets their own
+            code — any number of streamers can use this at once.</li>
+          <li><b>No-relay alternative:</b> in OBS, <i>View → Docks → Custom Browser Docks…</i>,
+            add this page as a dock:<br />
             <code id="dock-url">…</code>
             <button class="sl__copy" data-copy="dock-url">copy</button><br />
-            The dock and the browser source share one browser profile, so the panel drives the
-            overlay directly — no extra software.</li>
-          <li><b>Prefer your own browser for controls?</b> The dock trick doesn't reach a separate
-            browser, so run the little relay from the repo —
-            <code>make overlay-server</code> (or <code>node scripts/overlay_state_server.cjs</code>) —
-            and add <code>?server</code> to the Browser Source URL. This page pushes to it
-            automatically when it's running.</li>
+            Dock and browser source share one browser profile, so everything stays on your
+            machine (the browser-source URL works with or without the session code).</li>
+          <li><b>Fully offline:</b> run <code>make overlay-server</code> (or
+            <code>node scripts/overlay_state_server.cjs</code>) from the repo and add
+            <code>?server</code> to the Browser Source URL.</li>
           <li><b>Pin a card statically:</b> <code>/obs?id=UNIT_HOPLITE</code> shows one card with no
             controls at all — handy for testing the look.</li>
         </ol>
@@ -125,9 +131,19 @@ const base = import.meta.env.BASE_URL;
     }
     setInterval(tickLive, 1000);
 
+    // Per-user session code for the public relay — random, generated once.
+    // Anyone with the code could push to this user's overlay, so it's long
+    // enough to be unguessable; worst case is a wrong card on stream and the
+    // fix is clearing localStorage for a fresh code.
+    let sessionCode = localStorage.getItem('ow-overlay-session') || '';
+    if (!/^[a-z0-9]{12}$/.test(sessionCode)) {
+      sessionCode = Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => (b % 36).toString(36)).join('');
+      localStorage.setItem('ow-overlay-session', sessionCode);
+    }
+
     // absolute URLs for the setup box
     const site = location.origin + base;
-    $('obs-url').textContent = site + 'obs';
+    $('obs-url').textContent = `${site}obs?session=${sessionCode}`;
     $('dock-url').textContent = site + 'streamer';
     document.querySelectorAll<HTMLButtonElement>('.sl__copy').forEach((b) => {
       b.addEventListener('click', () => {
@@ -184,10 +200,11 @@ const base = import.meta.env.BASE_URL;
       render(out);
     }
 
+    const spoilerOpts = () => ({ noSpoilers: ($('spoiler') as HTMLInputElement).checked });
     function select(id: string) {
       selectedId = id;
       const c = cards[id];
-      preview.innerHTML = cardHTML(c, base);
+      preview.innerHTML = cardHTML(c, base, spoilerOpts());
       preview.hidden = false;
       stageEmpty.hidden = true;
       sendBtn.disabled = false;
@@ -201,14 +218,19 @@ const base = import.meta.env.BASE_URL;
     // configuration of its own.
     async function push(id: string) {
       const ttl = id ? +($('ttl') as HTMLSelectElement).value || 0 : 0;
-      const state = { id, ts: Date.now(), ttl };
+      const state: any = { id, ts: Date.now(), ttl };
+      if (($('spoiler') as HTMLInputElement).checked) state.sp = 1;
       // Same-profile paths (OBS dock, or a tab in the same browser):
       localStorage.setItem('ow-overlay-state', JSON.stringify(state));
       channel.postMessage(state);
       liveId = id || null;
       liveExpiry = id && ttl ? state.ts + ttl * 1000 : 0;
       tickLive();
-      // Optional local relay for cross-browser control — fire and forget.
+      // Public relay — reaches an /obs?session= Browser Source in OBS's own
+      // browser, where localStorage can't. Fire and forget.
+      fetch(`https://ntfy.sh/owref-${sessionCode}`, { method: 'POST', body: JSON.stringify(state) })
+        .catch(() => { /* relay unreachable; same-profile paths still work */ });
+      // Optional local relay for offline/LAN use.
       try {
         await fetch(`http://127.0.0.1:43210/set?id=${encodeURIComponent(id)}&ttl=${ttl}`, { method: 'POST' });
       } catch { /* relay not running; same-profile paths already handled it */ }
@@ -217,6 +239,9 @@ const base = import.meta.env.BASE_URL;
     $('ttl').addEventListener('change', () =>
       localStorage.setItem('ow-overlay-ttl', ($('ttl') as HTMLSelectElement).value));
 
+    $('spoiler').addEventListener('change', () => {
+      if (selectedId && !selectedId.startsWith(MATCHUP_PREFIX)) select(selectedId);
+    });
     sendBtn.addEventListener('click', () => { if (selectedId) push(selectedId); });
     $('clear').addEventListener('click', () => push(''));
     q.addEventListener('input', filter);
@@ -366,6 +391,9 @@ const base = import.meta.env.BASE_URL;
     .sl__setup ol { margin: 0.5rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.55rem; line-height: 1.5; }
     .sl__setup code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.35rem; }
     .sl__setup b { color: var(--text); }
+    .sl__setup a { color: var(--accent); }
+    .sl__spoiler { cursor: pointer; }
+    .sl__spoiler input { accent-color: var(--accent); }
     .sl__copy {
       font-family: var(--font-mono); font-size: 0.62rem; margin-left: 0.4rem;
       background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border);

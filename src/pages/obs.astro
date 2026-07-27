@@ -4,12 +4,17 @@
 //
 // How the two pages talk (in priority order):
 //   1. ?id=UNIT_HOPLITE      — pin one card forever (testing, or a static badge)
-//   2. BroadcastChannel + localStorage — works when /streamer runs as an OBS
+//   2. ?session=CODE          — subscribe to the free ntfy.sh pub/sub relay.
+//      This is what makes the natural setup work: control panel in a normal
+//      desktop browser, /obs as an OBS Browser Source (a SEPARATE browser —
+//      localStorage never crosses that gap). Each panel generates its own
+//      random code, so any number of streamers coexist without a backend of
+//      ours. Native EventSource, no library.
+//   3. BroadcastChannel + localStorage — when /streamer runs as an OBS
 //      Custom Browser Dock (dock and browser source share one CEF profile)
-//   3. ?server               — also poll the optional local state server
-//      (scripts/overlay_state_server.cjs) so a normal desktop browser can drive
-//      the overlay. Not polled unless asked: silent failed fetches every 400ms
-//      would be noise.
+//   4. ?server               — also poll the optional local state server
+//      (scripts/overlay_state_server.cjs) for offline/LAN use. Not polled
+//      unless asked: silent failed fetches every 400ms would be noise.
 import '../styles/theme.css';
 import '../styles/overlay-card.css';
 ---
@@ -31,6 +36,7 @@ import '../styles/overlay-card.css';
     const el = document.getElementById('card')!;
     const params = new URLSearchParams(location.search);
     const pinned = params.get('id');
+    const session = params.get('session');
     const useServer = params.has('server');
 
     let cards: Record<string, any> | null = null;
@@ -44,8 +50,9 @@ import '../styles/overlay-card.css';
         const [, a, b] = id.split('|');
         return cards[a] && cards[b] ? matchupHTML(cards[a], cards[b], base) : null;
       }
-      return cards[id] ? cardHTML(cards[id], base) : null;
+      return cards[id] ? cardHTML(cards[id], base, { noSpoilers: spoilerFree }) : null;
     }
+    let spoilerFree = false;
 
     function hide() {
       shownTs = 0;
@@ -56,11 +63,12 @@ import '../styles/overlay-card.css';
     // State = {id, ts, ttl}. `ts` distinguishes every push, so re-showing the
     // same card restarts the auto-hide countdown; ttl (seconds, 0 = stay)
     // rides along from the panel — the overlay itself has no settings.
-    function apply(state: { id?: string; ts?: number; ttl?: number } | null) {
+    function apply(state: { id?: string; ts?: number; ttl?: number; sp?: number } | null) {
       const id = state?.id || '';
       const ts = state?.ts || 0;
       if (!id) { if (shownTs) hide(); return; }
       if (ts === shownTs) return;
+      spoilerFree = !!state?.sp;
       const html = renderState(id);
       if (!html) { hide(); return; }
       shownTs = ts;
@@ -90,6 +98,17 @@ import '../styles/overlay-card.css';
       } catch { /* server not running — stay on last state */ }
     }
 
+    // Free public pub/sub (ntfy.sh): the panel POSTs state to a random
+    // per-user topic; we listen here. EventSource reconnects on its own.
+    function subscribeSession(code: string) {
+      // since=5m replays the recent state on (re)connect, so refreshing the
+      // browser source in OBS re-shows whatever is currently live
+      const es = new EventSource(`https://ntfy.sh/owref-${encodeURIComponent(code)}/sse?since=5m`);
+      es.addEventListener('message', (e) => {
+        try { apply(JSON.parse(JSON.parse(e.data).message)); } catch { /* not ours */ }
+      });
+    }
+
     fetch(`${base}data/overlay-cards.json`)
       .then((r) => r.json())
       .then((d) => {
@@ -102,6 +121,7 @@ import '../styles/overlay-card.css';
         }
         apply(readLocal());
         setInterval(() => apply(readLocal()), 500);
+        if (session) subscribeSession(session);
         if (useServer) setInterval(pollServer, 400);
       });
   </script>

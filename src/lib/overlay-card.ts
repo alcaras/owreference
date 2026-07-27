@@ -60,8 +60,14 @@ const MAX_LINES = 7;
 const MAX_OPTIONS = 4;
 const MAX_REWARDS_PER_OPTION = 2;
 
+export interface RenderOpts {
+  /** hide chain membership and per-option follow-ups — for casters who don't
+   *  want to reveal why an event fired or what comes next in a series */
+  noSpoilers?: boolean;
+}
+
 /** innerHTML for a card body; `base` is the site base URL for icon paths. */
-export function cardHTML(card: OverlayCard, base: string): string {
+export function cardHTML(card: OverlayCard, base: string, opts: RenderOpts = {}): string {
   const ic = (s: string) => iconize(esc(s), base);
   const parts: string[] = [];
 
@@ -81,7 +87,7 @@ export function cardHTML(card: OverlayCard, base: string): string {
   if (card.event) {
     if (card.event.trigger) chips.push(card.event.trigger);
     if (card.event.category) chips.push(card.event.category);
-    if (card.event.chain) chips.push(`Chain: ${card.event.chain.title} (${card.event.chain.size})`);
+    if (card.event.chain && !opts.noSpoilers) chips.push(`Chain: ${card.event.chain.title} (${card.event.chain.size})`);
     if (card.event.dlc) chips.push(card.event.dlc);
   }
   chips = [...new Set(chips)];  // trigger and category are often the same word
@@ -128,7 +134,8 @@ export function cardHTML(card: OverlayCard, base: string): string {
         parts.push(`<div class="ocard__optreward ocard__more">+${extraRewards} more</div>`);
       }
       // naming the chain itself adds nothing — only show distinct follow-ups
-      const next = (o.leadsTo || []).filter((n) => n !== card.event!.chain?.title);
+      const next = opts.noSpoilers ? []
+        : (o.leadsTo || []).filter((n) => n !== card.event!.chain?.title);
       if (next.length) {
         parts.push(`<div class="ocard__optnext">continues: ${esc(next.join(', '))}</div>`);
       }
