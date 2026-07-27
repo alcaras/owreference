@@ -1,0 +1,392 @@
+---
+import Base from '../layouts/Base.astro';
+import D from '../data/hurry.json';
+
+const base = import.meta.env.BASE_URL;
+
+// Everything the client needs to replay City.cs integer arithmetic exactly.
+const payload = {
+  globals: D.globals,
+  ym: D.yieldsMultiplier,
+  hurryMod: D.yieldHurryModifier,
+  units: D.units,
+  projects: D.projects,
+};
+
+const stdUnits = D.units.filter((u: any) => !u.nation && u.productionType === 'YIELD_TRAINING');
+const growthUnits = D.units.filter((u: any) => !u.nation && u.productionType === 'YIELD_GROWTH');
+const uniqueUnits = D.units.filter((u: any) => u.nation);
+
+// Channels in the order the engine defines them. `always` marks the one that
+// needs no unlock — see /hurrying for the full availability matrix.
+const channels = [
+  { key: 'civics', label: 'Civics', always: true, note: 'always available' },
+  { key: 'training', label: 'Training', note: 'Zealot leader · Cathedral+Redemption' },
+  { key: 'money', label: 'Money', note: 'Holy War law · Judge governor' },
+  { key: 'orders', label: 'Orders', note: 'Orthodoxy law' },
+  { key: 'growth', label: 'Citizens', note: 'Volunteers law' },
+];
+---
+
+<Base
+  title="Rush Calculator"
+  active="hurry-calculator"
+  pageMark="⏩"
+  pageStats={[
+    { label: 'channels', value: channels.length },
+    { label: 'builds', value: D.units.length + D.projects.length },
+  ]}
+>
+  <p class="lede">
+    What a <strong>Hurry</strong> costs, replaying the engine's own integer maths. Only four things
+    move the number: the <b>production still missing</b>, how many times you have already hurried
+    <b>that same channel in that city</b> (+10% each, and it never resets), whether the build is
+    <b>under 50% done</b> (up to +50%), and whether it is produced with
+    <b>Growth</b> rather than Training or Civics (+50%). The unit's identity never enters the
+    formula — only its production cost and production type — so the picker is a convenience over a
+    plain cost number. See <a href={`${base}hurrying`}>Hurrying Production</a> for which channels
+    you can actually unlock.
+  </p>
+
+  <section class="asm">
+    <div class="asm__row">
+      <span class="asm__tag">Building</span>
+      <div class="asm__fields">
+        <label class="f f--wide"><span>What you're rushing</span>
+          <select id="h-pick">
+            <optgroup label="Training units">
+              {stdUnits.map((u: any) => (
+                <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity}>
+                  {u.name} — {u.production}{u.strength ? ` · str ${u.strength}` : ''}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Growth units — +50% hurry cost">
+              {growthUnits.map((u: any) => (
+                <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity}>
+                  {u.name} — {u.production}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Unique units">
+              {uniqueUnits.map((u: any) => (
+                <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity}>
+                  {u.name} — {u.production} · {u.nation.replace('NATION_', '').toLowerCase()}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Projects">
+              {D.projects.map((p: any) => (
+                <option value={p.id} data-cost={p.production} data-pt={p.productionType} data-pc="0" data-nohurry={p.noHurry ? '1' : ''}>
+                  {p.name} — {p.production}{p.noHurry ? ' · cannot hurry' : ''}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </label>
+        <label class="f"><span>Production cost <i>edit for custom</i></span>
+          <input type="number" id="h-cost" value="80" min="1" max="2000" step="1" /></label>
+        <label class="f"><span>Already built here <i>+cost per copy</i></span>
+          <input type="number" id="h-copies" value="0" min="0" max="20" step="1" /></label>
+        <label class="f--chk"><input type="checkbox" id="h-growth" />
+          <span>Growth production <i>+50% hurry</i></span></label>
+      </div>
+    </div>
+
+    <div class="asm__row">
+      <span class="asm__tag">Progress</span>
+      <div class="asm__fields">
+        <label class="f"><span>Production done</span>
+          <input type="number" id="h-done" value="0" min="0" max="2000" step="1" /></label>
+        <label class="f f--slide"><span>&nbsp;</span>
+          <input type="range" id="h-slide" value="0" min="0" max="100" step="1" /></label>
+      </div>
+    </div>
+  </section>
+
+  <div id="h-sum" class="sum"></div>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl hc">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">Hurries already<br />made here</th>
+            <th class="nhdr nhdr--num">Multiplier</th>
+            {channels.map(c => (
+              <th class="nhdr nhdr--num">
+                <span class="hc__hd">
+                  <img src={`${base}img/icons/yields/${c.key}.png`} alt="" width="14" height="14" />
+                  {c.label}
+                </span>
+                <span class="hc__hdnote">{c.note}</span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody id="h-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <section class="rates">
+    <h2 class="rates__h">What the code says</h2>
+    <div class="rates__cols">
+      <div>
+        <h3>The escalation <span class="tag">per city, per channel</span></h3>
+        <ul>
+          <li>Every hurry does <code>iCost *= (10 + count); iCost /= 10</code> — so the
+            <b>n</b>th repeat costs <b>(10+n)/10</b> of base. Ten prior Civics hurries in a city
+            means the eleventh costs double.</li>
+          <li>The counters are per <b>city</b> and per <b>channel</b>
+            (<code>miHurryCivicsCount</code>, <code>miHurryTrainingCount</code>, …). Hurrying with
+            Money never raises your Civics price.</li>
+          <li>Nothing in the code resets them — they are set to 0 when the city is created and only
+            ever incremented (<code>City.cs:283</code>, <code>incrementHurry*Count</code>).</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Base cost per channel</h3>
+        <ul>
+          <li><b>Civics / Training</b> — <code>1.5 × missing + 100</code>, rounded up to a
+            multiple of 10.</li>
+          <li><b>Money</b> — <code>5 × missing + 10</code>, rounded up to 10.</li>
+          <li><b>Orders</b> — <code>missing/10 + 2</code>, not rounded.</li>
+          <li><b>Citizens</b> — the escalation hits the <i>missing production first</i>, then
+            <code>missing/80 + 1</code>. That base citizen is the one thing the repeat penalty
+            never touches — and because the division is integer, the escalation is usually
+            swallowed whole: Citizens is often the same price at nine prior hurries as at none.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>The two multipliers on top</h3>
+        <ul>
+          <li><b>Under 50% done</b> — <code>getModifiedHurryCost</code> adds
+            <code>(50 − percent)%</code>. At 0% progress that is +50%; at 25% it is +25%; from 50%
+            up it is nothing. Rushing something barely started is the expensive case.</li>
+          <li><b>Growth builds</b> — <code>YIELD_GROWTH</code> is the only yield carrying
+            <code>iHurryModifier</code> (+50). Workers, Settlers, Scouts and Disciples all rush
+            half again dearer than a soldier of identical cost.</li>
+          <li>Both are applied <i>after</i> the repeat escalation, in that order.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Discontent, and the gates</h3>
+        <ul>
+          <li>Every hurry adds <code>missing/100 + 10</code> Discontent regardless of channel, and
+            it does <b>not</b> escalate with the hurry count — but it does take both multipliers
+            above. <b>Monetary Reform</b> zeroes it (<code>iHurryDiscontentModifier −100</code>).
+            In practice that is a near-flat 10–18, not something that scales with the build.</li>
+          <li class="muted">The community <i>Rush Buy Rules Summary Table</i> in the official
+            manual (p.220) gives this one as <code>10 + mp/10</code>. That converts the base to
+            displayed Discontent but not the <code>mp</code> term: the engine holds Discontent in
+            tenths and the UI divides by 10 (<code>HelpText.cs:1316</code>), so the missing-production
+            term is <code>mp/100</code>. Every other row of that table matches the code exactly.</li>
+          <li>You cannot hurry when the build would finish next turn anyway
+            (<code>getBuildTurnsLeft == 1</code>), and the city needs Developing culture.</li>
+          <li>Workers, Settlers and Disciples also cost <b>+10 production per copy already built
+            in that city</b> (<code>iProductionCity</code>) — a second, separate escalation that
+            feeds the missing-production figure above.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">
+      Formulas from <b>City.cs</b> <code>getHurryCivicsCost</code>, <code>getHurryTrainingCost</code>,
+      <code>getHurryMoneyCost</code>, <code>getHurryOrdersCost</code>,
+      <code>getHurryPopulationCost</code> and <code>getModifiedHurryCost</code>; constants from
+      <code>globalsInt.xml</code>. Costs are charged with
+      <code>changeYieldStockpileWhole</code>, so every figure here is in whole displayed yield.
+      Integer truncation is reproduced exactly — the numbers should match the in-game tooltip.
+    </p>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ D: payload }}>
+  (() => {
+    const G = D.globals, YM = D.ym;
+    const $ = (id) => document.getElementById(id);
+
+    // ── Utils.cs ────────────────────────────────────────────────────────────
+    const modify = (v, m) => {
+      if (v === 0 || m === 0) return v;
+      const mult = Math.max(0, m + 100);
+      return Math.trunc((v * mult) / 100);
+    };
+    const roundUp = (v, mod) => { const r = v % mod; return r === 0 ? v : v + (mod - r); };
+    // City.cs: iCost *= (10 + count); iCost /= 10
+    const escalate = (v, n) => Math.trunc((v * (10 + n)) / 10);
+
+    // City.cs getModifiedHurryCost — under-50% penalty, then the build's yield
+    // hurry modifier, then an optional round up to a whole multiple of 10.
+    function modified(cost, total, done, growth, round) {
+      if (total > 0) {
+        const pct = Math.trunc((done * 100) / total);
+        if (pct < 50) cost = modify(cost, 50 - pct);
+      }
+      cost = modify(cost, growth ? (D.hurryMod.YIELD_GROWTH || 0) : 0);
+      if (round) cost = roundUp(cost, YM);
+      return Math.max(0, cost);
+    }
+
+    const CH = {
+      civics: (mp, n, t, d, g) =>
+        modified(escalate(modify(mp, G.HURRY_CIVICS_COST_MODIFIER) + G.HURRY_CIVICS_COST_BASE, n), t, d, g, true),
+      training: (mp, n, t, d, g) =>
+        modified(escalate(modify(mp, G.HURRY_TRAINING_COST_MODIFIER) + G.HURRY_TRAINING_COST_BASE, n), t, d, g, true),
+      money: (mp, n, t, d, g) =>
+        modified(escalate(mp * G.HURRY_MONEY_COST_PER + G.HURRY_MONEY_COST_BASE, n), t, d, g, true),
+      orders: (mp, n, t, d, g) =>
+        modified(escalate(modify(mp, G.HURRY_ORDERS_COST_MODIFIER) + G.HURRY_ORDERS_COST_BASE, n), t, d, g, false),
+      // Population escalates the missing production BEFORE dividing, so the
+      // base citizen is never multiplied.
+      growth: (mp, n, t, d, g) =>
+        modified(Math.trunc(escalate(mp, n) / G.HURRY_POPULATION_COST_PER) + G.HURRY_POPULATION_COST_BASE, t, d, g, false),
+    };
+    const ORDER = ['civics', 'training', 'money', 'orders', 'growth'];
+
+    function discontent(mp, t, d, g) {
+      const c = Math.trunc(mp / G.HURRY_DISCONTENT_COST_PER) + G.HURRY_DISCONTENT_COST_BASE;
+      return modified(c, t, d, g, true) / YM;   // stored in tenths
+    }
+
+    // ── state ───────────────────────────────────────────────────────────────
+    let custom = false;
+
+    function readPick() {
+      const opt = $('h-pick').selectedOptions[0];
+      return opt ? {
+        cost: +opt.dataset.cost, growth: opt.dataset.pt === 'YIELD_GROWTH',
+        perCopy: +(opt.dataset.pc || 0), noHurry: !!opt.dataset.nohurry,
+      } : null;
+    }
+
+    function applyPick() {
+      const p = readPick();
+      if (!p) return;
+      custom = false;
+      $('h-copies').value = 0;
+      $('h-cost').value = p.cost;
+      $('h-growth').checked = p.growth;
+      render();
+    }
+
+    function render() {
+      const p = readPick();
+      const perCopy = custom ? 0 : (p ? p.perCopy : 0);
+      const copies = Math.max(0, +$('h-copies').value || 0);
+      const total = Math.max(1, (+$('h-cost').value || 0) + perCopy * copies);
+      let done = Math.max(0, Math.min(total, +$('h-done').value || 0));
+      $('h-done').max = total;
+      $('h-slide').value = Math.round((done / total) * 100);
+      const growth = $('h-growth').checked;
+      const mp = Math.max(0, total - done);
+      const pct = Math.trunc((done * 100) / total);
+      const penalty = pct < 50 ? 50 - pct : 0;
+
+      const bits = [
+        `<span><b>${mp}</b> production missing<i>of ${total}${perCopy && copies ? ` — incl. +${perCopy * copies} for ${copies} built here` : ''}</i></span>`,
+        `<span><b>${pct}%</b> done<i>${penalty ? `under half — +${penalty}% cost` : 'at or past half — no penalty'}</i></span>`,
+        `<span><b>${growth ? '+50%' : 'none'}</b> production-type surcharge<i>${growth ? 'Growth build' : 'Training / Civics build'}</i></span>`,
+        `<span><b>${discontent(mp, total, done, growth)}</b> Discontent<i>same for every channel and count</i></span>`,
+      ];
+      if (p && p.noHurry) bits.unshift('<span class="sum__warn"><b>Cannot be hurried</b><i>bNoHurry is set on this build</i></span>');
+      $('h-sum').innerHTML = bits.join('');
+
+      const rows = [];
+      for (let n = 0; n <= 9; n++) {
+        const cells = ORDER.map((k) => {
+          const v = CH[k](mp, n, total, done, growth);
+          const base = CH[k](mp, 0, total, done, growth);
+          const up = n && base ? Math.round(((v - base) / base) * 100) : 0;
+          return `<td class="cell cell--num">${v}${up ? `<span class="natnote">+${up}%</span>` : ''}</td>`;
+        }).join('');
+        rows.push(
+          `<tr${n === 0 ? ' class="hc--first"' : ''}>` +
+          `<td class="rowlabel hc__n">${n === 0 ? 'none yet' : n + (n === 1 ? ' time' : ' times')}</td>` +
+          `<td class="cell cell--num hc__mul">×${((10 + n) / 10).toFixed(1)}</td>` +
+          cells + '</tr>');
+      }
+      $('h-body').innerHTML = rows.join('');
+    }
+
+    $('h-pick').addEventListener('change', applyPick);
+    $('h-cost').addEventListener('input', () => { custom = true; render(); });
+    $('h-copies').addEventListener('input', render);
+    $('h-growth').addEventListener('change', render);
+    $('h-done').addEventListener('input', render);
+    $('h-slide').addEventListener('input', () => {
+      const p = readPick();
+      const perCopy = custom ? 0 : (p ? p.perCopy : 0);
+      const total = Math.max(1, (+$('h-cost').value || 0) + perCopy * (+$('h-copies').value || 0));
+      $('h-done').value = Math.round((total * +$('h-slide').value) / 100);
+      render();
+    });
+
+    // Default to a Spearman-ish mid unit rather than the first option.
+    const pref = [...$('h-pick').options].find((o) => +o.dataset.cost === 80 && o.parentElement.label === 'Training units');
+    if (pref) pref.selected = true;
+    applyPick();
+  })();
+</script>
+
+<style>
+  .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
+  .lede a { color: var(--accent); }
+  .lede b, .lede strong { color: var(--text); }
+  .lede code, .fine code, .rates code { font-family: var(--font-mono); font-size: 0.82em;
+    background: var(--bg-elev-2); padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
+
+  .asm { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elev);
+    padding: 0.2rem 0.9rem 0.6rem; margin: 0 0 1.1rem; }
+  .asm__row { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.55rem 0; }
+  .asm__row + .asm__row { border-top: 1px solid var(--border); }
+  .asm__tag { flex: none; width: 7rem; padding-top: 0.95rem; font-family: var(--font-mono);
+    font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
+  .asm__fields { display: flex; flex-wrap: wrap; gap: 0.5rem 1.3rem; align-items: flex-end; flex: 1; }
+  .f { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.74rem; color: var(--text-dim); }
+  .f i { color: var(--text-faint); font-size: 0.9em; font-style: italic; }
+  .f input, .f select { width: 7rem; background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: 6px; padding: 0.25rem 0.4rem; font-family: var(--font-mono); font-size: 0.78rem; }
+  .f--wide select { width: 22rem; font-family: var(--font-body); }
+  .f--slide input { width: 14rem; padding: 0; accent-color: var(--accent); }
+  .f--chk { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.74rem;
+    color: var(--text-dim); cursor: pointer; padding-bottom: 0.32rem; }
+  .f--chk input { accent-color: var(--accent); }
+  .f--chk i { color: var(--text-faint); font-style: italic; }
+
+  .sum { display: flex; flex-wrap: wrap; gap: 0.4rem 2rem; margin: 0 0 0.9rem; padding: 0 0.2rem; }
+  .sum :global(span) { display: flex; flex-direction: column; font-size: 0.74rem; color: var(--text-dim); }
+  .sum :global(b) { font-family: var(--font-mono); font-size: 1rem; color: var(--accent); }
+  .sum :global(i) { font-style: italic; font-size: 0.66rem; color: var(--text-faint); }
+  .sum :global(.sum__warn b) { color: #d9603c; }
+
+  .hc__hd { display: inline-flex; align-items: center; gap: 0.3rem; justify-content: flex-end; }
+  .hc__hd img { image-rendering: auto; opacity: 0.95; }
+  .hc__hdnote { display: block; font-family: var(--font-body); font-weight: 400; text-transform: none;
+    letter-spacing: 0; font-size: 0.58rem; color: var(--text-faint); margin-top: 0.15rem; }
+  .nhdr--num, .hc :global(.cell--num) { text-align: right; }
+  .hc :global(.cell--num) { font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 0.86rem; vertical-align: top; }
+  .hc :global(.rowlabel) { text-align: left; width: 9rem; }
+  .hc :global(.hc__n) { font-size: 0.76rem; color: var(--text-dim); }
+  .hc :global(.hc__mul) { color: var(--text-faint); font-size: 0.74rem; }
+  .hc :global(.hc--first) { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+  .hc :global(.hc--first .hc__n) { color: var(--text); }
+  .hc :global(.natnote) { display: block; font-size: 0.58rem; color: var(--text-faint);
+    font-family: var(--font-body); font-weight: 400; }
+
+  .rates { margin-top: 1.6rem; }
+  .rates__h { font-family: var(--font-display); font-size: 1rem; color: var(--accent); margin: 0 0 0.6rem; }
+  .rates__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0.9rem 1.6rem; }
+  .rates h3 { font-family: var(--font-display); font-size: 0.82rem; color: var(--text); margin: 0 0 0.3rem; }
+  .rates ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.22rem; font-size: 0.75rem;
+    color: var(--text-dim); line-height: 1.45; }
+  .rates b { color: var(--text); }
+  .rates .muted { color: var(--text-faint); }
+  .rates .muted i { font-style: italic; }
+  .tag { font-family: var(--font-mono); font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 3px; padding: 0 0.25rem; }
+  .fine { font-size: 0.73rem; color: var(--text-faint); line-height: 1.55; max-width: 95ch; margin: 0.9rem 0 0; }
+  .fine b { color: var(--text-dim); }
+</style>

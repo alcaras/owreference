@@ -435,6 +435,16 @@ export const TABS: Tab[] = [
     ],
   },
   {
+    slug: 'hurry-calculator', icon: '⏩', label: 'Rush Calculator', section: 'Tools',
+    status: 'built', sourceSheet: '',
+    summary: 'What a Hurry costs — by channel, progress, and how often you have rushed in that city',
+    willContain: [
+      'Cost per hurry channel against prior-hurry count 0-9 (the +10%/repeat escalation)',
+      'Under-50%-progress penalty and the Growth production +50% surcharge',
+      'Discontent per hurry, and the gates that block hurrying',
+    ],
+  },
+  {
     slug: 'cognomens-tracker', icon: '🧮', label: 'Cognomens Tracker', section: 'Tools',
     status: 'built', sourceSheet: '👑Cognomens (Tracker)',
     summary: 'Interactive calculator: which title your leader earns',
