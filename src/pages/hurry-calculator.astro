@@ -4,19 +4,19 @@ import D from '../data/hurry.json';
 
 const base = import.meta.env.BASE_URL;
 
-// Anything the engine refuses to hurry is dead weight in a rush picker.
-const rushable = (x: any) => !x.noHurry;
+// Anything the engine refuses to hurry is dead weight in the picker.
+const hurryable = (x: any) => !x.noHurry;
 
-const stdUnits = D.units.filter((u: any) => rushable(u) && !u.nation && u.productionType === 'YIELD_TRAINING');
+const stdUnits = D.units.filter((u: any) => hurryable(u) && !u.nation && u.productionType === 'YIELD_TRAINING');
 // Steppe Rider is Yuezhi-unique but Growth-produced and priced on its own, so
 // it belongs here by name rather than in a collapsed unique-unit bucket.
-const growthUnits = D.units.filter((u: any) => rushable(u) && u.productionType === 'YIELD_GROWTH');
-const rushableProjects = D.projects.filter(rushable);
+const growthUnits = D.units.filter((u: any) => hurryable(u) && u.productionType === 'YIELD_GROWTH');
+const hurryableProjects = D.projects.filter(hurryable);
 
 // Every str-6 unique costs 120 and every str-8 unique 160, so one row each
 // beats thirteen identical ones. Verify per patch instead of hardcoding it:
 // a strength band that stops being uniform falls back to listing its members.
-const uniqueTraining = D.units.filter((u: any) => rushable(u) && u.nation && u.productionType === 'YIELD_TRAINING');
+const uniqueTraining = D.units.filter((u: any) => hurryable(u) && u.nation && u.productionType === 'YIELD_TRAINING');
 const uniqueBands = [...new Set(uniqueTraining.map((u: any) => u.strength))]
   .sort((a: any, b: any) => a - b)
   .map((strength: any) => {
@@ -49,16 +49,16 @@ const payload = {
 ---
 
 <Base
-  title="Rush Calculator"
+  title="Hurry Production Calculator"
   active="hurry-calculator"
   pageMark="⏩"
   pageStats={[
     { label: 'channels', value: channels.length },
-    { label: 'rushable', value: stdUnits.length + growthUnits.length + uniqueTraining.length + rushableProjects.length },
+    { label: 'builds', value: stdUnits.length + growthUnits.length + uniqueTraining.length + hurryableProjects.length },
   ]}
 >
   <p class="lede">
-    What a <strong>Hurry</strong> costs, replaying the engine's own integer maths. Only four things
+    What <strong>Hurry Production</strong> costs, replaying the engine's own integer maths. Only four things
     move the number: the <b>production still missing</b>, how many times you have already hurried
     <b>that same channel in that city</b> (+10% each, and it never resets), whether the build is
     <b>under 50% done</b> (up to +50%), and whether it is produced with
@@ -72,7 +72,7 @@ const payload = {
     <div class="asm__row">
       <span class="asm__tag">Building</span>
       <div class="asm__fields">
-        <label class="f f--wide"><span>What you're rushing</span>
+        <label class="f f--wide"><span>What you're hurrying</span>
           <select id="h-pick">
             <optgroup label="Training units">
               {stdUnits.map((u: any) => (
@@ -102,7 +102,7 @@ const payload = {
               ))}
             </optgroup>
             <optgroup label="Projects">
-              {rushableProjects.map((p: any) => (
+              {hurryableProjects.map((p: any) => (
                 <option value={p.id} data-cost={p.production} data-pt={p.productionType} data-pc="0" data-kind="project">
                   {p.name} — {p.production}
                 </option>
@@ -137,7 +137,7 @@ const payload = {
       <table class="ntbl hc">
         <thead>
           <tr>
-            <th class="rowlabel rowlabel--corner">Hurries already<br />made here</th>
+            <th class="rowlabel rowlabel--corner">Previously done<br /><span class="hc__hdnote">this channel, this city</span></th>
             <th class="nhdr nhdr--num">Multiplier</th>
             {channels.map(c => (
               <th class="nhdr nhdr--num">
@@ -196,9 +196,9 @@ const payload = {
         <ul>
           <li><b>Under 50% done</b> — <code>getModifiedHurryCost</code> adds
             <code>(50 − percent)%</code>. At 0% progress that is +50%; at 25% it is +25%; from 50%
-            up it is nothing. Rushing something barely started is the expensive case.</li>
+            up it is nothing. Hurrying something barely started is the expensive case.</li>
           <li><b>Growth builds</b> — <code>YIELD_GROWTH</code> is the only yield carrying
-            <code>iHurryModifier</code> (+50). Workers, Settlers, Scouts and Disciples all rush
+            <code>iHurryModifier</code> (+50). Workers, Settlers, Scouts and Disciples all hurry
             half again dearer than a soldier of identical cost.</li>
           <li>Both are applied <i>after</i> the repeat escalation, in that order.</li>
         </ul>
@@ -219,8 +219,12 @@ const payload = {
             term is <code>mp/100</code>. The same table's note that “Discontent … increases by 10%
             base too” is also wrong — <code>getHurryDiscontent</code> has no count term, and all five
             <code>hurry*Build</code> functions call it identically. Every other row matches the code.</li>
-          <li>You cannot hurry when the build would finish next turn anyway
-            (<code>getBuildTurnsLeft == 1</code>), and the city needs Developing culture.</li>
+          <li><code>canHurry</code> refuses outright when the city is <b>Damaged</b>, when the
+            build would finish next turn anyway (<code>getBuildTurnsLeft == 1</code>), or below
+            <b>Developing</b> culture (<code>HURRY_CULTURE</code>).</li>
+          <li>Three city effects switch hurrying off entirely: a <b>Furious family</b>
+            (<code>EFFECTCITY_OPINIONFAMILY_FURIOUS</code>), <b>Autonomous Rule</b> and
+            <b>Shared Power</b>. Anger your family and the whole lever disappears.</li>
           <li>Workers, Settlers and Disciples also cost <b>+10 production per copy already built
             in that city</b> (<code>iProductionCity</code>) — a second, separate escalation that
             feeds the missing-production figure above.</li>

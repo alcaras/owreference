@@ -435,9 +435,9 @@ export const TABS: Tab[] = [
     ],
   },
   {
-    slug: 'hurry-calculator', icon: '⏩', label: 'Rush Calculator', section: 'Tools',
+    slug: 'hurry-calculator', icon: '⏩', label: 'Hurry Production Calculator', section: 'Tools',
     status: 'built', sourceSheet: '',
-    summary: 'What a Hurry costs — by channel, progress, and how often you have rushed in that city',
+    summary: 'What Hurry Production costs — by channel, progress, and how often you have hurried in that city',
     willContain: [
       'Cost per hurry channel against prior-hurry count 0-9 (the +10%/repeat escalation)',
       'Under-50%-progress penalty and the Growth production +50% surcharge',
