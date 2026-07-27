@@ -1,0 +1,327 @@
+---
+import '../styles/theme.css';
+const base = import.meta.env.BASE_URL;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBS Overlay - Old World Reference</title>
+  <style>
+    /* Force completely transparent body for OBS browser source */
+    html, body {
+      background: transparent !important;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 20px;
+      scrollbar-gutter: auto;
+    }
+
+    .obs-card-container {
+      width: 380px;
+      background: rgba(14, 15, 18, 0.95);
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(201, 160, 74, 0.15);
+      padding: 1.25rem;
+      backdrop-filter: blur(10px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(30px);
+      opacity: 0;
+      color: var(--text);
+      font-family: var(--font-ui);
+    }
+
+    .obs-card-container.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .card-icon-container {
+      width: 54px;
+      height: 54px;
+      background: rgba(201, 160, 74, 0.08);
+      border: 1px solid var(--gold-soft);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-icon-container img {
+      max-width: 42px;
+      max-height: 42px;
+      object-fit: contain;
+    }
+
+    .card-header-text {
+      min-width: 0;
+    }
+
+    .card-type {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--gold-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.15rem;
+    }
+
+    .card-name {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      color: var(--text);
+      margin: 0;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 0.5rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 0;
+      margin: 0.8rem 0;
+      text-align: center;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .stat-value {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .card-costs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .cost-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-soft);
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.18rem 0.45rem;
+    }
+
+    .card-body {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-soft);
+    }
+
+    .card-effects-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .card-effects-list li {
+      position: relative;
+      padding-left: 0.85rem;
+    }
+
+    .card-effects-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="obs-card" class="obs-card-container">
+    <div class="card-inner">
+      <div class="card-header">
+        <div class="card-icon-container">
+          <img id="card-icon" src={`${base}img/icons/effects/event.png`} alt="" />
+        </div>
+        <div class="card-header-text">
+          <div id="card-type" class="card-type">—</div>
+          <h2 id="card-name" class="card-name">—</h2>
+        </div>
+      </div>
+      
+      <div id="card-stats-row" class="card-stats-row"></div>
+      <div id="card-costs" class="card-costs"></div>
+      
+      <div class="card-body">
+        <ul id="card-effects-list" class="card-effects-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ base }}>
+    const obsCard = document.getElementById('obs-card');
+    const cardIcon = document.getElementById('card-icon');
+    const cardType = document.getElementById('card-type');
+    const cardName = document.getElementById('card-name');
+    const cardStatsRow = document.getElementById('card-stats-row');
+    const cardCosts = document.getElementById('card-costs');
+    const cardEffectsList = document.getElementById('card-effects-list');
+
+    let obsData = null;
+
+    // Load overlay data
+    async function loadData() {
+      try {
+        const res = await fetch(`${base}data/obs-data.json`);
+        obsData = await res.json();
+        console.log('OBS Overlay data loaded successfully:', Object.keys(obsData).length, 'cards');
+        // Handle initial render in case value is already set
+        updateOverlay();
+      } catch (err) {
+        console.error('Failed to load OBS Overlay data:', err);
+      }
+    }
+
+    // Update overlay contents
+    function updateOverlay() {
+      if (!obsData) return;
+
+      const activeId = localStorage.getItem('obs_active_entity');
+      if (!activeId) {
+        obsCard.classList.remove('visible');
+        return;
+      }
+
+      const card = obsData[activeId];
+      if (!card) {
+        console.warn('Unknown entity ID:', activeId);
+        obsCard.classList.remove('visible');
+        return;
+      }
+
+      // Populate card fields
+      cardIcon.src = `${base}${card.icon}`;
+      cardType.textContent = card.type;
+      cardName.textContent = card.name;
+
+      // Stats row
+      cardStatsRow.innerHTML = '';
+      const statKeys = Object.keys(card.stats);
+      if (statKeys.length > 0) {
+        cardStatsRow.style.display = 'grid';
+        statKeys.forEach(k => {
+          const item = document.createElement('div');
+          item.className = 'stat-item';
+          item.innerHTML = `<span class="stat-label">${k}</span><span class="stat-value">${card.stats[k]}</span>`;
+          cardStatsRow.appendChild(item);
+        });
+      } else {
+        cardStatsRow.style.display = 'none';
+      }
+
+      // Costs row
+      cardCosts.innerHTML = '';
+      if (card.cost && card.cost.length > 0) {
+        cardCosts.style.display = 'flex';
+        card.cost.forEach(c => {
+          const tag = document.createElement('span');
+          tag.className = 'cost-tag';
+          tag.textContent = c;
+          cardCosts.appendChild(tag);
+        });
+      } else {
+        cardCosts.style.display = 'none';
+      }
+
+      // Effects list
+      cardEffectsList.innerHTML = '';
+      if (card.effects && card.effects.length > 0) {
+        card.effects.forEach(eff => {
+          const li = document.createElement('li');
+          li.textContent = eff;
+          cardEffectsList.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.textContent = 'No additional effects.';
+        cardEffectsList.appendChild(li);
+      }
+
+      // Transition card visible
+      obsCard.classList.add('visible');
+    }
+
+    let lastActiveId = null;
+
+    // Poll the state server or check localStorage as fallback
+    async function checkState() {
+      try {
+        const res = await fetch('http://127.0.0.1:43210/get');
+        const data = await res.json();
+        if (data.id !== lastActiveId) {
+          lastActiveId = data.id;
+          localStorage.setItem('obs_active_entity', data.id);
+          updateOverlay();
+        }
+      } catch (err) {
+        // Fallback to localStorage if state server is not running
+        const currentLocal = localStorage.getItem('obs_active_entity') || '';
+        if (currentLocal !== lastActiveId) {
+          lastActiveId = currentLocal;
+          updateOverlay();
+        }
+      }
+    }
+
+    // Poll every 350ms
+    setInterval(checkState, 350);
+
+    // Also support storage events in case tabs are running in same browser profile
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'obs_active_entity') {
+        const val = e.newValue || '';
+        if (val !== lastActiveId) {
+          lastActiveId = val;
+          updateOverlay();
+        }
+      }
+    });
+
+    // Start loading
+    loadData();
+  </script>
+</body>
+</html>

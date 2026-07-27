@@ -1,0 +1,569 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+---
+
+<Base title="Streamer Control Panel" active="streamer">
+  <div class="streamer-layout">
+    <div class="control-panel">
+      <h2 class="panel-title">OBS Overlay Controls</h2>
+      <p class="panel-desc">
+        Search and select any reference card below to display it instantly on your OBS stream.
+      </p>
+
+      <div class="quick-actions">
+        <button id="btn-clear" class="btn btn-clear">Clear Overlay</button>
+      </div>
+
+      <div class="search-section">
+        <input 
+          type="text" 
+          id="search-input" 
+          class="search-input" 
+          placeholder="Search units, techs, traits, wonders, families..." 
+          autocomplete="off"
+        />
+        <div id="search-results" class="search-results">
+          <!-- Dynamic search results list -->
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-panel">
+      <h3 class="preview-title">Live Stream Preview</h3>
+      
+      <!-- The card replica box -->
+      <div class="preview-card-container">
+        <div id="preview-card" class="preview-card">
+          <div class="card-inner">
+            <div class="card-header">
+              <div class="card-icon-container">
+                <img id="prev-icon" src={`${base}img/icons/effects/event.png`} alt="" />
+              </div>
+              <div class="card-header-text">
+                <div id="prev-type" class="card-type">SELECT A CARD</div>
+                <h2 id="prev-name" class="card-name">No Card Selected</h2>
+              </div>
+            </div>
+            
+            <div id="prev-stats-row" class="card-stats-row" style="display:none;"></div>
+            <div id="prev-costs" class="card-costs" style="display:none;"></div>
+            
+            <div class="card-body">
+              <ul id="prev-effects-list" class="card-effects-list">
+                <li>Search on the left and select an item to preview and push it to the stream.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar" id="action-bar" style="display:none;">
+          <button id="btn-send" class="btn btn-send">Show on Stream</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .streamer-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2rem;
+      margin: 1.5rem 0;
+      align-items: start;
+    }
+
+    @media (max-width: 800px) {
+      .streamer-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-panel {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    .panel-desc {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin: 0 0 1.25rem;
+      line-height: 1.45;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: 1px solid var(--border-strong);
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.1s, border-color 0.1s;
+    }
+
+    .btn-clear {
+      background: #7a2222;
+      color: #ffcccc;
+      border-color: #993333;
+      width: 100%;
+    }
+
+    .btn-clear:hover {
+      background: #943333;
+    }
+
+    .btn-send {
+      background: var(--gold);
+      color: var(--bg);
+      border-color: var(--gold-soft);
+      width: 100%;
+      font-size: 0.85rem;
+      padding: 0.6rem;
+    }
+
+    .btn-send:hover {
+      background: var(--gold-soft);
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      padding: 0.7rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .search-input:focus {
+      outline: 1px solid var(--gold);
+      border-color: var(--gold);
+    }
+
+    .search-results {
+      max-height: 450px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      border: 1px solid var(--border-faint);
+      border-radius: 6px;
+      background: var(--bg);
+      padding: 0.4rem;
+    }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0.75rem;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: border-color 0.1s, background 0.1s;
+    }
+
+    .result-item:hover {
+      border-color: var(--gold-soft);
+      background: var(--bg-elev-2);
+    }
+
+    .result-item.active {
+      border-color: var(--gold);
+      background: var(--bg-elev-3);
+    }
+
+    .result-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+    }
+
+    .result-name {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.95rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .result-meta {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--gold-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-panel {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .preview-title {
+      font-family: var(--font-display);
+      margin: 0;
+      font-size: 1.1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+      color: var(--text-soft);
+    }
+
+    .preview-card-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      background: var(--bg);
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px dashed var(--border-strong);
+    }
+
+    /* Shared Card Styling (exact duplicate of obs.astro styling) */
+    .preview-card {
+      width: 100%;
+      background: rgba(14, 15, 18, 0.95);
+      border: 2px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      color: var(--text);
+      font-family: var(--font-ui);
+    }
+
+    .preview-card.has-selection {
+      border-color: var(--gold);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(201, 160, 74, 0.1);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .card-icon-container {
+      width: 54px;
+      height: 54px;
+      background: rgba(201, 160, 74, 0.08);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .preview-card.has-selection .card-icon-container {
+      border-color: var(--gold-soft);
+    }
+
+    .card-icon-container img {
+      max-width: 42px;
+      max-height: 42px;
+      object-fit: contain;
+    }
+
+    .card-header-text {
+      min-width: 0;
+    }
+
+    .card-type {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.15rem;
+    }
+
+    .preview-card.has-selection .card-type {
+      color: var(--gold-soft);
+    }
+
+    .card-name {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      color: var(--text);
+      margin: 0;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 0.5rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 0;
+      margin: 0.8rem 0;
+      text-align: center;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .stat-value {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .card-costs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .cost-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-soft);
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.18rem 0.45rem;
+    }
+
+    .card-body {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-soft);
+    }
+
+    .card-effects-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .card-effects-list li {
+      position: relative;
+      padding-left: 0.85rem;
+    }
+
+    .card-effects-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    .action-bar {
+      width: 100%;
+    }
+  </style>
+
+  <script is:inline define:vars={{ base }}>
+    let obsData = null;
+    let selectedId = null;
+
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    
+    // Preview nodes
+    const previewCard = document.getElementById('preview-card');
+    const prevIcon = document.getElementById('prev-icon');
+    const prevType = document.getElementById('prev-type');
+    const prevName = document.getElementById('prev-name');
+    const prevStatsRow = document.getElementById('prev-stats-row');
+    const prevCosts = document.getElementById('prev-costs');
+    const prevEffectsList = document.getElementById('prev-effects-list');
+    const actionBar = document.getElementById('action-bar');
+
+    const btnSend = document.getElementById('btn-send');
+    const btnClear = document.getElementById('btn-clear');
+
+    // Load data
+    async function init() {
+      try {
+        const res = await fetch(`${base}data/obs-data.json`);
+        obsData = await res.json();
+        console.log('Streamer Panel loaded:', Object.keys(obsData).length, 'cards');
+        renderResults('');
+      } catch (err) {
+        console.error('Failed to load OBS Overlay data:', err);
+      }
+    }
+
+    // Filter and render list items
+    function renderResults(q) {
+      if (!obsData) return;
+      searchResults.innerHTML = '';
+      const query = q.toLowerCase().trim();
+
+      const items = Object.values(obsData).filter(item => {
+        const inEffects = (item.effects || []).some(eff => {
+          return typeof eff === 'string' && eff.toLowerCase().includes(query);
+        });
+        return (item.name && item.name.toLowerCase().includes(query)) || 
+               (item.type && item.type.toLowerCase().includes(query)) ||
+               (item.id && item.id.toLowerCase().includes(query)) ||
+               inEffects;
+      });
+
+      // Limit results list length for UI performance
+      const maxResults = items.slice(0, 100);
+
+      if (maxResults.length === 0) {
+        searchResults.innerHTML = '<div style="padding: 10px; color: var(--text-dim); text-align: center;">No matches found.</div>';
+        return;
+      }
+
+      maxResults.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `result-item ${selectedId === item.id ? 'active' : ''}`;
+        div.onclick = () => selectItem(item.id);
+        
+        div.innerHTML = `
+          <div class="result-details">
+            <span class="result-name">${item.name}</span>
+            <span class="result-meta">${item.type}</span>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--gold-soft);">➔</span>
+        `;
+        searchResults.appendChild(div);
+      });
+    }
+
+    // Select and preview an item
+    function selectItem(id) {
+      selectedId = id;
+      const card = obsData[id];
+      if (!card) return;
+
+      // Update active highlight class
+      const items = searchResults.querySelectorAll('.result-item');
+      // Simple re-render keeps classes clean
+      renderResults(searchInput.value);
+
+      // Populate preview card
+      prevIcon.src = `${base}${card.icon}`;
+      prevType.textContent = card.type;
+      prevName.textContent = card.name;
+
+      // Stats row
+      prevStatsRow.innerHTML = '';
+      const statKeys = Object.keys(card.stats);
+      if (statKeys.length > 0) {
+        prevStatsRow.style.display = 'grid';
+        statKeys.forEach(k => {
+          const div = document.createElement('div');
+          div.className = 'stat-item';
+          div.innerHTML = `<span class="stat-label">${k}</span><span class="stat-value">${card.stats[k]}</span>`;
+          prevStatsRow.appendChild(div);
+        });
+      } else {
+        prevStatsRow.style.display = 'none';
+      }
+
+      // Costs row
+      prevCosts.innerHTML = '';
+      if (card.cost && card.cost.length > 0) {
+        prevCosts.style.display = 'flex';
+        card.cost.forEach(c => {
+          const tag = document.createElement('span');
+          tag.className = 'cost-tag';
+          tag.textContent = c;
+          prevCosts.appendChild(tag);
+        });
+      } else {
+        prevCosts.style.display = 'none';
+      }
+
+      // Effects list
+      prevEffectsList.innerHTML = '';
+      if (card.effects && card.effects.length > 0) {
+        card.effects.forEach(eff => {
+          const li = document.createElement('li');
+          li.textContent = eff;
+          prevEffectsList.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.textContent = 'No additional effects.';
+        prevEffectsList.appendChild(li);
+      }
+
+      previewCard.classList.add('has-selection');
+      actionBar.style.display = 'block';
+    }
+
+    // Search events
+    searchInput.addEventListener('input', (e) => {
+      renderResults(e.target.value);
+    });
+
+    // Control button events
+    btnSend.addEventListener('click', async () => {
+      if (selectedId) {
+        localStorage.setItem('obs_active_entity', selectedId);
+        console.log('Overlay pushed:', selectedId);
+        try {
+          await fetch(`http://127.0.0.1:43210/set?id=${selectedId}`, { method: 'POST' });
+        } catch (err) {
+          console.log('State server not running, fell back to local-only storage state.');
+        }
+      }
+    });
+
+    btnClear.addEventListener('click', async () => {
+      localStorage.removeItem('obs_active_entity');
+      console.log('Overlay cleared');
+      try {
+        await fetch('http://127.0.0.1:43210/set?id=', { method: 'POST' });
+      } catch (err) {
+        console.log('State server not running, fell back to local-only storage state.');
+      }
+    });
+
+    init();
+  </script>
+</Base>

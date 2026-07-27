@@ -464,6 +464,16 @@ export const TABS: Tab[] = [
     status: 'built', sourceSheet: '',
     summary: "Mohawk's official build notes per release, plus the XML changes we detected",
   },
+  {
+    slug: 'streamer', icon: '🎙️', label: 'OBS Streamer Panel', section: 'Streaming Tools',
+    status: 'built', sourceSheet: '',
+    summary: "Control overlay card displays on stream for OBS overlays",
+  },
+  {
+    slug: 'obs', icon: '📺', label: 'OBS Browser Overlay', section: 'Streaming Tools',
+    status: 'built', sourceSheet: '',
+    summary: "OBS Browser Source page (load directly as transparent background)",
+  },
 ];
 
 export const SECTIONS = [
@@ -481,5 +491,6 @@ export const SECTIONS = [
   'Combat',
   'Events',
   'Concepts',
+  'Streaming Tools',
   'Tools',
 ] as const;
