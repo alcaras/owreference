@@ -340,12 +340,62 @@ def main() -> int:
         cards[pid] = c
 
     # ── events: story parts + harvest + study ────────────────────────────────
+    def trait_summary(t) -> str:
+        bits = [f"{r['value']:+d} {r['rating']}" for r in t.get("ratings") or []
+                if r.get("rating") and not r.get("fallback")]
+        for field in ("leaderEffects", "governorEffects", "generalEffects", "modifiers"):
+            bits += [str(x) for x in t.get(field) or []]
+        return "; ".join(bits[:2])
+
+    trait_names = {t["name"]: t for t in traits.values()}
+
+    def resolve_grants(opt) -> list[tuple[str, str]]:
+        """One level deeper: what a granted project/improvement/trait DOES.
+        Only grant-shaped raw fields are read (aeAddProjects, AddImprovement,
+        SetImprovement, aeAddTraits) — conditions never resolve."""
+        found: list[tuple[str, str]] = []
+        seen = set()
+        for b in (opt.get("raw") or {}).get("bonuses") or []:
+            for f in b.get("fields") or []:
+                f = str(f)
+                for rex, kind in ((r"aeAddProjects[: ]+\s*(PROJECT_[A-Z0-9_]+)", "project"),
+                                  (r"(?:AddImprovement|SetImprovement)[: ]+\s*(IMPROVEMENT_[A-Z0-9_]+)", "improvement"),
+                                  (r"aeAddTraits[: ]+\s*(TRAIT_[A-Z0-9_]+)", "trait")):
+                    for tok in re.findall(rex, f):
+                        if tok in seen:
+                            continue
+                        seen.add(tok)
+                        if kind == "project" and tok in projects:
+                            pr = projects[tok]
+                            eff = "; ".join((pr.get("effects") or [])[:2])
+                            if eff:
+                                found.append((pr["name"], eff))
+                        elif kind == "improvement":
+                            imp = wonders.get(tok) or urban.get(tok) or rural.get(tok) or shrines.get(tok)
+                            if imp:
+                                eff = "; ".join([x for x in (imp.get("effects") or imp.get("outputs") or [])][:2])
+                                if eff:
+                                    found.append((imp.get("name") or imp.get("fullName") or tok, eff))
+                        elif kind == "trait" and tok in traits:
+                            t = traits[tok]
+                            eff = trait_summary(t)
+                            if eff:
+                                found.append((t["name"], eff))
+        return found
+
     def opt_rewards(opt) -> list[str]:
         out = []
         # harvest/study events carry rewards on the option; story events nest
-        # them under outcomes[].rewards
+        # them under outcomes[].rewards. Harvest trait rewards ship their
+        # effect lines as `tip` — that IS the one-level-deeper description.
         for r in opt.get("rewards") or []:
-            t = r.get("text") if isinstance(r, dict) else str(r)
+            if isinstance(r, dict):
+                t = r.get("text") or ""
+                tips = [str(x) for x in r.get("tip") or []][:2]
+                if t and tips:
+                    t = f"{t} — {'; '.join(tips)}"
+            else:
+                t = str(r)
             if t:
                 out.append(t)
         for oc in opt.get("outcomes") or []:
@@ -385,16 +435,32 @@ def main() -> int:
             cond = clean(str(cond))
             if cond:
                 c["chips"].append(cond)
-        # rewards every option gets, before any choice
-        c["event"]["guaranteed"] = [g["text"] for g in ev.get("guaranteed") or []
-                                    if isinstance(g, dict) and g.get("text")]
+        # rewards every option gets, before any choice — tips are the trait's
+        # effect lines, same one-level-deeper treatment as option rewards
+        gs = []
+        for g in ev.get("guaranteed") or []:
+            if not (isinstance(g, dict) and g.get("text")):
+                continue
+            t = g["text"]
+            tips = [str(x) for x in g.get("tip") or []][:2]
+            gs.append(f"{t} — {'; '.join(tips)}" if tips else t)
+        c["event"]["guaranteed"] = gs
         if ev.get("prob"):
             c["chips"].append(f"{ev['prob']}% · w{ev.get('weight') or 1}")
         seen_opts = {}
         for opt in ev.get("options") or []:
+            rewards = opt_rewards(opt)
+            for name, detail in resolve_grants(opt):
+                # attach to the reward line that grants it; else its own line
+                for i, r in enumerate(rewards):
+                    if name in r and detail not in r:
+                        rewards[i] = f"{r} — {detail}"
+                        break
+                else:
+                    rewards.append(f"{name} — {detail}")
             o = {
                 "text": clean(opt.get("text") or ""),
-                "rewards": opt_rewards(opt),
+                "rewards": rewards,
                 "reqs": [str(r) for r in opt.get("requirements") or []],
                 "leadsTo": [],
             }
