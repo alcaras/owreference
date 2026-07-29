@@ -185,10 +185,10 @@ const updatedLabel = updatedAt
         <label class="hdr__search">
           <span class="hdr__search-ico" aria-hidden="true">⌕</span>
           <input
-            id="site-search"
+            id="global-search"
             type="search"
             placeholder="Search…"
-            aria-label="Search the whole site; also filters rows on the current page"
+            aria-label="Search the whole site"
             autocomplete="off"
           />
           <kbd>/</kbd>
@@ -200,16 +200,17 @@ const updatedLabel = updatedAt
             if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
             const t = e.target;
             if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-            const s = document.getElementById('site-search');
+            const s = document.getElementById('global-search');
             if (s) { e.preventDefault(); s.focus(); }
           });
 
           // Site-wide search (same approach as the streamer panel's): a light
           // index of pages + entities + events, lazy-fetched on first focus.
-          // The box ALSO still filters rows on pages that hook it — the
-          // dropdown rides on top, it doesn't replace that.
+          // Search only — the old per-page row filtering is retired (the id
+          // rename orphans those pages' null-guarded hooks); Ctrl-F covers
+          // in-page text hunting.
           (() => {
-            const input = document.getElementById('site-search');
+            const input = document.getElementById('global-search');
             const panel = document.getElementById('site-search-results');
             if (!input || !panel) return;
             let idx = null, sel = -1, rows = [];
@@ -259,9 +260,9 @@ const updatedLabel = updatedAt
                 sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + rows.length) % rows.length;
                 panel.querySelectorAll('.hdr__sres').forEach((el, i) =>
                   el.classList.toggle('is-sel', i === sel));
-              } else if (e.key === 'Enter' && sel >= 0) {
+              } else if (e.key === 'Enter' && rows.length) {
                 e.preventDefault();
-                location.href = `${base}${rows[sel].u}`;
+                location.href = `${base}${rows[sel >= 0 ? sel : 0].u}`;
               } else if (e.key === 'Escape') {
                 panel.hidden = true;
               }
