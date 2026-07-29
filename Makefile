@@ -71,6 +71,7 @@ data:
 	@python3 scripts/build_entities.py
 	@python3 scripts/build_backlinks.py
 	@python3 scripts/build_overlay_cards.py
+	@python3 scripts/build_search_index.py
 
 changelog:
 	@python3 scripts/changelog.py

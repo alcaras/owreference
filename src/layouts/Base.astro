@@ -187,14 +187,15 @@ const updatedLabel = updatedAt
           <input
             id="site-search"
             type="search"
-            placeholder="Filter page…"
-            aria-label="Filter rows on the current page"
+            placeholder="Search…"
+            aria-label="Search the whole site; also filters rows on the current page"
             autocomplete="off"
           />
           <kbd>/</kbd>
+          <div id="site-search-results" class="hdr__sresults" hidden></div>
         </label>
-        <script is:inline>
-          // "/" focuses the page filter (unless already typing somewhere)
+        <script is:inline define:vars={{ base }}>
+          // "/" focuses the search (unless already typing somewhere)
           document.addEventListener('keydown', (e) => {
             if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
             const t = e.target;
@@ -202,6 +203,73 @@ const updatedLabel = updatedAt
             const s = document.getElementById('site-search');
             if (s) { e.preventDefault(); s.focus(); }
           });
+
+          // Site-wide search (same approach as the streamer panel's): a light
+          // index of pages + entities + events, lazy-fetched on first focus.
+          // The box ALSO still filters rows on pages that hook it — the
+          // dropdown rides on top, it doesn't replace that.
+          (() => {
+            const input = document.getElementById('site-search');
+            const panel = document.getElementById('site-search-results');
+            if (!input || !panel) return;
+            let idx = null, sel = -1, rows = [];
+
+            function load() {
+              if (idx) return;
+              idx = [];
+              fetch(`${base}data/search-index.json`)
+                .then((r) => r.json())
+                .then((d) => { idx = d; update(); })
+                .catch(() => {});
+            }
+
+            const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+            function update() {
+              const q = input.value.trim().toLowerCase();
+              sel = -1;
+              if (!q || !idx || !idx.length) { panel.hidden = true; return; }
+              const starts = [], words = [], contains = [];
+              for (const e of idx) {
+                const n = e.n.toLowerCase();
+                if (n.startsWith(q)) starts.push(e);
+                else if (n.includes(q)) (n.includes(' ' + q) ? words : contains).push(e);
+                else if (e.a && e.a.includes(q)) contains.push(e);
+                if (starts.length > 40) break;
+              }
+              // shortest name first within each tier — "Hoplite" beats
+              // "Hoplite Bonus" for the query "hopl"
+              const byLen = (a, b) => a.n.length - b.n.length;
+              rows = starts.sort(byLen).concat(words.sort(byLen), contains.sort(byLen)).slice(0, 10);
+              if (!rows.length) { panel.hidden = true; return; }
+              panel.innerHTML = rows.map((e, i) => `
+                <a class="hdr__sres${i === sel ? ' is-sel' : ''}" href="${base}${e.u}">
+                  ${e.c ? `<img src="${base}${e.c}" alt="" loading="lazy" />` : '<span class="hdr__sres-blank"></span>'}
+                  <span class="hdr__sres-txt"><b>${escapeHtml(e.n)}</b><i>${escapeHtml(e.g ? `${e.t} · ${e.g}` : e.t)}</i></span>
+                </a>`).join('');
+              panel.hidden = false;
+            }
+
+            input.addEventListener('focus', load);
+            input.addEventListener('input', update);
+            input.addEventListener('keydown', (e) => {
+              if (panel.hidden) return;
+              if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + rows.length) % rows.length;
+                panel.querySelectorAll('.hdr__sres').forEach((el, i) =>
+                  el.classList.toggle('is-sel', i === sel));
+              } else if (e.key === 'Enter' && sel >= 0) {
+                e.preventDefault();
+                location.href = `${base}${rows[sel].u}`;
+              } else if (e.key === 'Escape') {
+                panel.hidden = true;
+              }
+            });
+            document.addEventListener('click', (e) => {
+              if (!panel.contains(e.target) && e.target !== input) panel.hidden = true;
+            });
+          })();
         </script>
       </div>
     </header>
