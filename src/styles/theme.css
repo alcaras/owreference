@@ -292,6 +292,9 @@ h1, h2, h3 {
   min-width: 280px;
   position: relative;  /* anchors the site-wide results dropdown */
 }
+/* display:flex would override the hidden attribute's UA display:none —
+   restate it, or the empty panel renders as a stray strip under the box */
+.hdr__sresults[hidden] { display: none; }
 .hdr__sresults {
   position: absolute; top: calc(100% + 6px); right: 0; left: 0;
   z-index: 70;
