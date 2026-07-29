@@ -249,9 +249,7 @@ const payload = {
             why = `flat +${R.riders} from the seat`;
           } else if (c === 'FAMILYCLASS_HUNTERS') {
             v = A.hu * campPerCity * R.campUp;
-            why = hasTrap
-              ? `camps pay double: ${A.camp}/city × ${A.hu} cities × ${R.camp}`
-              : 'camps — needs Trapping';
+            why = `camps pay double: ${A.camp}/city × ${A.hu} cities × ${R.camp}`;
           } else if (c === 'FAMILYCLASS_CLERICS') {
             // Clerics double the temple's whole Orders output, so Revelation
             // double-dips: +0.5 base becomes +1.0, doubled again by Clerics.
@@ -287,13 +285,10 @@ const payload = {
         const horse = hasHusb ? cities * A.horse * R.horse : 0;
         const camps = cities * campPerCity;
         const tiles = horse + camps;
+        // note only what pays — absent techs already show as a smaller number
         const tileBits = [];
-        if (A.horse > 0) tileBits.push(hasHusb
-          ? `${r1(horse)} Horse pastures — ${A.horse}/city × ${cities} × ${R.horse}`
-          : 'Horse pastures — needs Husbandry');
-        if (A.camp > 0) tileBits.push(hasTrap
-          ? `${r1(camps)} Camel/Elephant camps — ${A.camp}/city × ${cities} × ${R.camp}`
-          : 'camps — needs Trapping');
+        if (horse > 0) tileBits.push(`${r1(horse)} Horse pastures — ${A.horse}/city × ${cities} × ${R.horse}`);
+        if (camps > 0) tileBits.push(`${r1(camps)} Camel/Elephant camps — ${A.camp}/city × ${cities} × ${R.camp}`);
         const tileNote = tileBits.join(' · ');
         const famNote = (combos[0] || [])
           .map((o) => `${nice(o.c)}: ${o.why}`).join(' · ');
