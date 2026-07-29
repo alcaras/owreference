@@ -240,17 +240,26 @@ const payload = {
         const campPerCity = hasTrap ? A.camp * R.camp : 0;
         const opts = [];
         for (const c of n.classes) {
-          let v = 0;
-          if (c === 'FAMILYCLASS_STATESMEN') v = A.st * R.statesmen;
-          else if (c === 'FAMILYCLASS_RIDERS') v = R.riders;
-          else if (c === 'FAMILYCLASS_HUNTERS') v = A.hu * campPerCity * R.campUp;
-          else if (c === 'FAMILYCLASS_CLERICS') {
+          let v = 0, why = '';
+          if (c === 'FAMILYCLASS_STATESMEN') {
+            v = A.st * R.statesmen;
+            why = `+${R.statesmen}/city × ${A.st} cities`;
+          } else if (c === 'FAMILYCLASS_RIDERS') {
+            v = R.riders;
+            why = `flat +${R.riders} from the seat`;
+          } else if (c === 'FAMILYCLASS_HUNTERS') {
+            v = A.hu * campPerCity * R.campUp;
+            why = hasTrap
+              ? `camps pay double: ${A.camp}/city × ${A.hu} cities × ${R.camp}`
+              : 'camps — needs Trapping';
+          } else if (c === 'FAMILYCLASS_CLERICS') {
             // Clerics double the temple's whole Orders output, so Revelation
             // double-dips: +0.5 base becomes +1.0, doubled again by Clerics.
             const perTemple = R.temple + (A.rev ? R.revelation : 0);
             v = A.cl * A.temple * perTemple * R.templeUp;
+            why = `temples pay double: ${A.temple}/city × ${A.cl} cities × ${r1(perTemple)}`;
           }
-          if (v > 0) opts.push({ c, v });
+          if (v > 0) opts.push({ c, v, why });
         }
         opts.sort((a, b) => b.v - a.v || nice(a.c).localeCompare(nice(b.c)));
 
@@ -278,6 +287,16 @@ const payload = {
         const horse = hasHusb ? cities * A.horse * R.horse : 0;
         const camps = cities * campPerCity;
         const tiles = horse + camps;
+        const tileBits = [];
+        if (A.horse > 0) tileBits.push(hasHusb
+          ? `${r1(horse)} Horse pastures — ${A.horse}/city × ${cities} × ${R.horse}`
+          : 'Horse pastures — needs Husbandry');
+        if (A.camp > 0) tileBits.push(hasTrap
+          ? `${r1(camps)} Camel/Elephant camps — ${A.camp}/city × ${cities} × ${R.camp}`
+          : 'camps — needs Trapping');
+        const tileNote = tileBits.join(' · ');
+        const famNote = (combos[0] || [])
+          .map((o) => `${nice(o.c)}: ${o.why}`).join(' · ');
 
         let national = 0; const notes = [];
         for (const s of n.specials) {
@@ -358,7 +377,7 @@ const payload = {
         const legitOrders = A.legitPer > 0 ? legit / A.legitPer : 0;
         if (legit) legitBits.push(`÷${A.legitPer} → ${Math.round(legitOrders * 10) / 10} Orders`);
 
-        return { cities, combos, opts, famOrders, tiles, national, notes, shrine, shrineNote,
+        return { cities, combos, opts, famOrders, tiles, tileNote, famNote, national, notes, shrine, shrineNote,
                  legit, legitOrders, legitNote: legitBits.join(' · '),
                  total: famOrders + tiles + national + shrine + legitOrders,
                  techs: { hasTrap, hasHusb, hasDiv } };
@@ -409,8 +428,8 @@ const payload = {
               <span class="oe__sub">${n.familyCount} families available</span>
             </th>
             <td class="cell tchcell">${techChips}</td>
-            <td class="cell cell--num">${r1(r.famOrders)}</td>
-            <td class="cell cell--num">${r.tiles ? r1(r.tiles) : '<span class="dash">—</span>'}</td>
+            <td class="cell cell--num">${r1(r.famOrders)}${r.famNote ? `<span class="natnote">${r.famNote}</span>` : ''}</td>
+            <td class="cell cell--num">${r.tiles ? r1(r.tiles) : '<span class="dash">—</span>'}${r.tileNote ? `<span class="natnote">${r.tileNote}</span>` : ''}</td>
             <td class="cell cell--num">${r.shrine ? r2(r.shrine) : '<span class="dash">—</span>'}${r.shrineNote ? `<span class="natnote">${r.shrineNote}</span>` : ''}</td>
             <td class="cell cell--num">${r.national ? r1(r.national) : '<span class="dash">—</span>'}${note}</td>
             <td class="cell cell--num">${r.legitOrders ? r1(r.legitOrders) : '<span class="dash">—</span>'}${r.legitNote ? `<span class="natnote">${r.legitNote}</span>` : ''}</td>
