@@ -250,13 +250,16 @@ Add new fields to the humanizer as you encounter them. Always test against the s
 - **Mods folder (`reference/XML/Mods/`) is excluded from the repo** to keep size down. The pipeline only reads from `reference/XML/Infos/`.
 - **`reference/Graphics/` and `reference/Source/`** are excluded too (binary game assets, Unity controllers).
 - **Cognomen tracker OCR — the OCR is reliable; don't blame Tesseract.** On a real F5 capture Tesseract.js read **every digit correctly** (17/17 scoring stats, zero number errors). What looks "garbled" is *gutter noise*, not bad text: bullet glyphs (●) become `e`/`eo`/`®`/`¢`, the left UI rail bleeds in as `J{`/`U`/`|` prefixes, and right-edge game-world text appends junk like `54 C`, `5 in`, `1 Is`. The fix was always in the **parser**, never the image. Don't add OpenCV.js / heavier preprocessing on a hunch — diagnose against a real screenshot first.
-- **"National Wealth" (Stats screen) = the goods bar's "Total Value"**: Money + Σ over
-  market goods of stockpile × current sell price — nothing else (no non-goods yields,
-  cities, or units), so it swings with market prices. Label keys
-  `TEXT_UI_STATS_RESOURCE_VALUE` / `TEXT_UI_STATS_TOTAL_VALUE`; the computing class
-  (StatsPopup) is NOT in the shipped source — confirmed empirically in-game
-  (Persia: 3,844 money + 12,893.9 food + 2,485.6 iron + 200.8 stone + 509.1 wood
-  ≈ 19,931 on both the tooltip and the Stats graph; per-good lines display-rounded).
+- **"National Wealth" (Stats screen) = the goods bar's "Total Value"**: Money + the
+  SIMULATED liquidation of each goods stockpile — `Game.calculateYieldTransaction`
+  (Game.cs:15359) sells unit by unit, dropping the price each sale via
+  `calculateGoodPriceChange`, clamped to the yield's miMinPrice. NOT stockpile ×
+  current price: a huge stockpile is worth much less per unit than the ticker says
+  (in-game check: 7,035 Food valued 12,893.9 = 1.833/unit avg — not any flat price
+  step). Nothing else counts (no non-goods yields, cities, units). Label keys
+  `TEXT_UI_STATS_RESOURCE_VALUE` / `TEXT_UI_STATS_TOTAL_VALUE`; the binding class
+  (StatsPopup) is not in the shipped source, but the tooltip and Stats graph showed
+  the identical 19,931, and the per-good averages match the simulated walk-down.
 - **F5 panel ≠ all cognomen stats.** The panel lists ~50 lifetime stats but only **47 feed cognomen scoring** (`calculator.inputStats`). `Worker Turns`, `Children Had`, `Trees Removed` etc. are real panel rows that score nothing — the parser's `ignored` bucket counting them is **correct behaviour, not a miss**. Verify against `inputStats` before "fixing" an ignored stat.
 
 ---
