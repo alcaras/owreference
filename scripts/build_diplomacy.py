@@ -7,6 +7,9 @@ Sources (reference/XML/Infos):
   diplomacy.xml    — the 4 diplomatic states (War/Truce/Peace/Team) with their
                      opinion side-effects (iOpinion, iOpinionEnemy,
                      iOpinionEthnicity, iOpinionReligion, iWarModifier)
+  knowledge.xml    — tech-comparison words (Primitive…Erudite), iPercent bands
+  power.xml        — military-comparison words (Much Weaker…Much Stronger)
+  proximity.xml    — distance bands (Very Close…Far) + their AI modifiers
   warState.xml     — the 5 war-score bands (Routed…Triumphant) with iThreshold,
                      iTruceModifier, iDiplomacyMoneyPercent
   mission.xml      — the diplomacy missions (Declare War, Truce, Peace,
@@ -169,6 +172,64 @@ def build_states(text: dict[str, str]) -> list[dict]:
             "helpTribe": text.get(STATE_HELP_TRIBE_KEY.get(z, ""), "") or None,
         })
     return out
+
+
+# ── Rival assessment scales ─────────────────────────────────────────────────
+# knowledge.xml / power.xml / proximity.xml — the fuzzy words the diplomacy
+# screen shows instead of numbers ("Erudite", "Much Stronger", "Near").
+#
+# knowledge + power are RATIO bands: InfoHelpers.getBestPercentValue computes
+# theirValue*100/ourValue and picks the entry with the smallest iPercent that
+# is >= it, so iPercent is an inclusive UPPER bound and the last band (no
+# iPercent — InfoPercentBase defaults it to int.MaxValue) is the catch-all.
+#   knowledge: their lifetime SCIENCE total vs ours (Player.calculateKnowledgeOf)
+#   power:     their total unit strength vs ours  (Player.calculatePowerOf)
+# proximity is a DISTANCE band (InfoHelpers.getProximity, same smallest-that-
+# fits rule over iDistance).
+
+def build_scales(text: dict[str, str]) -> dict:
+    def bands(fname: str, field: str, fmt) -> list[dict]:
+        entries = [e for e in parse(fname).findall("Entry") if e.findtext("zType")]
+        out, prev = [], None
+        for order, e in enumerate(entries):
+            z = e.findtext("zType")
+            raw = e.findtext(field)
+            cut = int(raw) if raw not in (None, "") else None
+            out.append({
+                "id": z,
+                "order": order,
+                "name": text.get(e.findtext("Name") or "", z),
+                "cut": cut,
+                "range": fmt(prev, cut),
+                "truceModifier": gi(e, "iTruceModifier"),
+                "warModifier": gi(e, "iWarModifier"),
+                "playerOpinion": gi(e, "iPlayerOpinion"),
+                "declareWar": (e.findtext("bDeclareWar") or "0") == "1",
+                "noTribePeace": (e.findtext("bNoTribePeace") or "0") == "1",
+                "noTribeWar": (e.findtext("bNoTribeWar") or "0") == "1",
+            })
+            prev = cut
+        return out
+
+    def pct(prev, cut):
+        if cut is None:
+            return f"above {prev}%"
+        if prev is None:
+            return f"up to {cut}%"
+        return f"{prev + 1}–{cut}%"
+
+    def dist(prev, cut):
+        if cut is None:
+            return f"beyond {prev} tiles"
+        if prev is None:
+            return f"within {cut} tiles"
+        return f"{prev + 1}–{cut} tiles"
+
+    return {
+        "knowledge": bands("knowledge.xml", "iPercent", pct),
+        "power": bands("power.xml", "iPercent", pct),
+        "proximity": bands("proximity.xml", "iDistance", dist),
+    }
 
 
 # ── War states ──────────────────────────────────────────────────────────────
@@ -553,12 +614,14 @@ def main() -> int:
     war_states = build_war_states(text)
     action_groups, n_actions = build_actions(missions, text, indexes)
     constants = build_constants()
+    scales = build_scales(text)
     n_variants = sum(a["variantCount"] for g in action_groups for a in g["actions"])
 
     data = {
         "states": states,
         "warStates": war_states,
         "warScore": WAR_SCORE,
+        "scales": scales,
         "actionGroups": action_groups,
         "constants": constants,
         "counts": {
@@ -567,6 +630,7 @@ def main() -> int:
             "actions": n_actions,
             "variants": n_variants,
             "constants": len(constants),
+            "scaleBands": sum(len(v) for v in scales.values()),
         },
     }
 
@@ -574,7 +638,8 @@ def main() -> int:
                    encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)}: {len(states)} states, "
           f"{len(war_states)} war states, {n_actions} actions "
-          f"(+{n_variants} internal variants), {len(constants)} constants")
+          f"(+{n_variants} internal variants), {len(constants)} constants, "
+          f"{sum(len(v) for v in scales.values())} rival-scale bands")
     return 0
 
 

@@ -693,9 +693,213 @@
   "counts": {
     "actions": 21,
     "constants": 6,
+    "scaleBands": 15,
     "states": 4,
     "variants": 12,
     "warStates": 5
+  },
+  "scales": {
+    "knowledge": [
+      {
+        "cut": 67,
+        "declareWar": false,
+        "id": "KNOWLEDGE_PRIMITIVE",
+        "name": "Primitive",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 0,
+        "playerOpinion": 0,
+        "range": "up to 67%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 83,
+        "declareWar": false,
+        "id": "KNOWLEDGE_NAIVE",
+        "name": "Naive",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 1,
+        "playerOpinion": 0,
+        "range": "68\u201383%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 120,
+        "declareWar": false,
+        "id": "KNOWLEDGE_COMPETENT",
+        "name": "Competent",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 2,
+        "playerOpinion": 0,
+        "range": "84\u2013120%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 150,
+        "declareWar": false,
+        "id": "KNOWLEDGE_LEARNED",
+        "name": "Learned",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 3,
+        "playerOpinion": 0,
+        "range": "121\u2013150%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": null,
+        "declareWar": false,
+        "id": "KNOWLEDGE_ERUDITE",
+        "name": "Erudite",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 4,
+        "playerOpinion": 0,
+        "range": "above 150%",
+        "truceModifier": 0,
+        "warModifier": 0
+      }
+    ],
+    "power": [
+      {
+        "cut": 40,
+        "declareWar": false,
+        "id": "POWER_MUCH_WEAKER",
+        "name": "Much Weaker",
+        "noTribePeace": true,
+        "noTribeWar": false,
+        "order": 0,
+        "playerOpinion": 0,
+        "range": "up to 40%",
+        "truceModifier": 50,
+        "warModifier": -50
+      },
+      {
+        "cut": 75,
+        "declareWar": false,
+        "id": "POWER_WEAKER",
+        "name": "Weaker",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 1,
+        "playerOpinion": 0,
+        "range": "41\u201375%",
+        "truceModifier": 25,
+        "warModifier": -25
+      },
+      {
+        "cut": 133,
+        "declareWar": true,
+        "id": "POWER_SIMILAR",
+        "name": "Similar",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 2,
+        "playerOpinion": 0,
+        "range": "76\u2013133%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 250,
+        "declareWar": true,
+        "id": "POWER_STRONGER",
+        "name": "Stronger",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 3,
+        "playerOpinion": 0,
+        "range": "134\u2013250%",
+        "truceModifier": -25,
+        "warModifier": 25
+      },
+      {
+        "cut": null,
+        "declareWar": true,
+        "id": "POWER_MUCH_STRONGER",
+        "name": "Much Stronger",
+        "noTribePeace": true,
+        "noTribeWar": false,
+        "order": 4,
+        "playerOpinion": 0,
+        "range": "above 250%",
+        "truceModifier": -50,
+        "warModifier": 50
+      }
+    ],
+    "proximity": [
+      {
+        "cut": 12,
+        "declareWar": true,
+        "id": "PROXIMITY_VERY_CLOSE",
+        "name": "Very Close",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 0,
+        "playerOpinion": -60,
+        "range": "within 12 tiles",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 20,
+        "declareWar": true,
+        "id": "PROXIMITY_CLOSE",
+        "name": "Close",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 1,
+        "playerOpinion": -40,
+        "range": "13\u201320 tiles",
+        "truceModifier": 0,
+        "warModifier": -10
+      },
+      {
+        "cut": 28,
+        "declareWar": true,
+        "id": "PROXIMITY_NEAR",
+        "name": "Near",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 2,
+        "playerOpinion": -20,
+        "range": "21\u201328 tiles",
+        "truceModifier": 10,
+        "warModifier": -20
+      },
+      {
+        "cut": 36,
+        "declareWar": false,
+        "id": "PROXIMITY_DISTANT",
+        "name": "Distant",
+        "noTribePeace": false,
+        "noTribeWar": true,
+        "order": 3,
+        "playerOpinion": 0,
+        "range": "29\u201336 tiles",
+        "truceModifier": 20,
+        "warModifier": -40
+      },
+      {
+        "cut": null,
+        "declareWar": false,
+        "id": "PROXIMITY_FAR",
+        "name": "Far",
+        "noTribePeace": false,
+        "noTribeWar": true,
+        "order": 4,
+        "playerOpinion": 0,
+        "range": "beyond 36 tiles",
+        "truceModifier": 30,
+        "warModifier": -80
+      }
+    ]
   },
   "states": [
     {

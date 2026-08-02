@@ -5,7 +5,7 @@ import diplomacy from '../data/diplomacy.json';
 
 const base = import.meta.env.BASE_URL;
 
-const { states, warStates, warScore, actionGroups, constants, counts } = diplomacy;
+const { states, warStates, warScore, scales, actionGroups, constants, counts } = diplomacy;
 
 // Opinion side-effect rows per state — label + how to read the number.
 // Semantics from PlayerOpinion.cs / PlayerAI.cs (see build_diplomacy.py).
@@ -54,6 +54,7 @@ for (const g of actionGroups) {
     { label: 'states', value: counts.states },
     { label: 'war states', value: counts.warStates },
     { label: 'actions', value: counts.actions },
+    { label: 'rival bands', value: counts.scaleBands },
     { label: 'internal variants', value: counts.variants },
   ]}
 >
@@ -149,6 +150,100 @@ for (const g of actionGroups) {
           </table>
         </div>
       </div>
+    </section>
+
+    <!-- ── Rival assessment scales ───────────────────────────────── -->
+    <section class="dip__sec" id="rivals">
+      <h2 class="dip__h">How Rivals Are Described</h2>
+      <p class="dip__intro">
+        The diplomacy screen never shows a rival's science or army size — it shows a word.
+        Each word is a band, and both comparisons are <b>ratios of them to you</b>, so the same
+        rival changes description when <em>you</em> grow. Distance bands and the war-chance
+        modifiers below are what the AI actually acts on.
+      </p>
+
+      <div class="warwrap">
+        <div class="warcol">
+          <h3 class="dip__sub">Technology <span class="dip__subnote">(their lifetime Science ÷ yours)</span></h3>
+          <table class="dtbl">
+            <thead><tr><th>Word</th><th>Their science, as % of yours</th></tr></thead>
+            <tbody>
+              {scales.knowledge.map((k: any) => (
+                <tr>
+                  <td class="dtbl__name">{k.name}</td>
+                  <td class="dtbl__mono">{k.range}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="dip__note">
+            Counts <b>all Science ever earned</b> (the running total, not techs known and not
+            your current rate), so it moves slowly and never falls.
+            <code>Player.calculateKnowledgeOf</code>. Purely informational — no AI modifiers
+            hang off it.
+          </p>
+        </div>
+
+        <div class="warcol">
+          <h3 class="dip__sub">Military <span class="dip__subnote">(their army strength ÷ yours)</span></h3>
+          <table class="dtbl">
+            <thead>
+              <tr>
+                <th>Word</th>
+                <th>Their army, as % of yours</th>
+                <th title="Modifier on the AI's chance to declare war on you">AI war chance</th>
+                <th title="Modifier on the chance of offering or accepting a truce">Truce chance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scales.power.map((p: any) => (
+                <tr>
+                  <td class="dtbl__name">{p.name}</td>
+                  <td class="dtbl__mono">{p.range}</td>
+                  <td class={`dtbl__mono ${p.warModifier > 0 ? 'is-neg' : p.warModifier < 0 ? 'is-pos' : ''}`}>
+                    {p.warModifier ? `${fmt(p.warModifier)}%` : '—'}
+                  </td>
+                  <td class="dtbl__mono">{p.truceModifier ? `${fmt(p.truceModifier)}%` : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="dip__note">
+            Strength is the sum of every unit's base strength (<code>Unit.getStrengthRating</code>) —
+            damaged units still count full, and ships count for less on low-water maps. An AI
+            will only consider declaring war from <b>Similar</b> upward, and a
+            <b>Much Weaker</b> tribe will never accept peace.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="dip__sub">Distance <span class="dip__subnote">(nearest cities, in tiles)</span></h3>
+      <table class="dtbl dtbl--wide">
+        <thead>
+          <tr>
+            <th>Word</th><th>Distance</th>
+            <th title="Modifier on the AI's chance to declare war on you">AI war chance</th>
+            <th title="Modifier on the chance of offering or accepting a truce">Truce chance</th>
+            <th title="Standing opinion penalty simply for being this close">Their opinion of you</th>
+          </tr>
+        </thead>
+        <tbody>
+          {scales.proximity.map((p: any) => (
+            <tr>
+              <td class="dtbl__name">{p.name}</td>
+              <td class="dtbl__mono">{p.range}</td>
+              <td class={`dtbl__mono ${p.warModifier < 0 ? 'is-pos' : ''}`}>{p.warModifier ? `${fmt(p.warModifier)}%` : '—'}</td>
+              <td class="dtbl__mono">{p.truceModifier ? `${fmt(p.truceModifier)}%` : '—'}</td>
+              <td class={`dtbl__mono ${p.playerOpinion < 0 ? 'is-neg' : ''}`}>{p.playerOpinion ? fmt(p.playerOpinion) : '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="dip__note">
+        Proximity is the harshest of the three: a <b>Very Close</b> neighbour takes a standing
+        <b>−60</b> opinion of you for nothing but existing nearby, and only the two farthest
+        bands stop tribes declaring war outright.
+      </p>
     </section>
 
     <!-- ── Actions ───────────────────────────────────────────────── -->
@@ -415,6 +510,10 @@ for (const g of actionGroups) {
   .dtbl td { padding: 0.42rem 0.55rem; border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent); vertical-align: top; }
   .dtbl__subhead th { border-top: 1px solid var(--border); }
   .dtbl tbody tr:last-child td { border-bottom: 0; }
+  .dtbl--wide { width: 100%; }
+  .dip__note { font-size: 0.76rem; color: var(--text-faint); line-height: 1.55; margin: 0.5rem 0 0; max-width: 70ch; }
+  .dip__note b { color: var(--text-dim); }
+  .dip__note code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 4px; padding: 0.03rem 0.28rem; }
   .dtbl__name { font-family: var(--font-display); font-weight: 600; color: var(--text); white-space: nowrap; }
   .dtbl__mono { font-family: var(--font-mono); font-size: 0.72rem; }
   .dtbl__num { text-align: right; }
