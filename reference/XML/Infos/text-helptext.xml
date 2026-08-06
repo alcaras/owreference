@@ -2355,16 +2355,16 @@ Se você completar nove outras ambições, uma ambição nacional sempre será o
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_TOTALS</zType>
-		<en-US>Totals:</en-US>
-		<es>Total:</es>
-		<de>Insgesamt:</de>
-		<fr>Total :</fr>
+		<en-US>{singular_0:Total:Totals}:</en-US>
+		<es>{singular_0:Total:Totales}:</es>
+		<de>{singular_0:Gesamtbetrag:Gesamtbeträge}:</de>
+		<fr>{singular_0:Total:Totaux} :</fr>
 		<ja>合計：</ja>
-		<zh-TW>總計：</zh-TW>
+		<zh-TW>{singular_0:總計:總計}：</zh-TW>
 		<ru>Всего:</ru>
-		<zh-CN>总计：</zh-CN>
-		<pt-BR>Total:</pt-BR>
-		<ko>총합:</ko>
+		<zh-CN>{singular_0:总计:总计}：</zh-CN>
+		<pt-BR>{singular_0:Total:Totais}:</pt-BR>
+		<ko>{singular_0:합계:합계}:</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_UNIT_RANGE_FIXED</zType>
@@ -2720,185 +2720,198 @@ Se você completar nove outras ambições, uma ambição nacional sempre será o
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_TERRAIN</zType>
-		<en-US>has {0_terrain} terrain</en-US>
-		<es>cuenta con terreno de tipo {0_terrain}</es>
-		<de>hat {0_terrain}-Gelände</de>
-		<fr>a : terrain {0_terrainType}</fr>
-		<ja>{0_terrain}地形がある</ja>
-		<zh-TW>擁有{0_terrain}地形</zh-TW>
-		<ru>нужен ландшафт «{0_terrain}»</ru>
-		<zh-CN>拥有{0_terrain}地形</zh-CN>
-		<pt-BR>tem terreno {0_terrain}</pt-BR>
-		<ko>{0_terrain} 지형 있음</ko>
+		<en-US>{true_1:doesn't have:has} {0_terrain} terrain</en-US>
+		<es>{true_1:no tiene:tiene} terreno {0_terrain}</es>
+		<de>{true_1:hat nicht:hat} Gelände „{0_terrain}“</de>
+		<fr>{true_1:n'a pas:a} un terrain de type {0_terrain}</fr>
+		<ja>{0_terrain}地形上{true_1:にない:にある}</ja>
+		<zh-TW>{true_1:沒有:有}{0_terrain}terrain</zh-TW>
+		<ru>{true_1:не имеет:имеет} ландшафт «{0_terrain}»</ru>
+		<zh-CN>{true_1:没有:有}{0_terrain}terrain</zh-CN>
+		<pt-BR>{true_1:não tem:tem} terreno {0_terrain}</pt-BR>
+		<ko>{0_terrain} 지형이 {true_1:없음:있음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_VEGETATION</zType>
-		<en-US>has {0_vegetation}</en-US>
-		<es>tiene {0_vegetation}</es>
-		<de>hat {0_vegetation}</de>
-		<fr>a {0_vegetation}</fr>
-		<ja>：{0_vegetation}所持</ja>
-		<zh-TW>具有{0_vegetation}</zh-TW>
-		<ru>растительность: {0_vegetation}</ru>
-		<zh-CN>具有{0_vegetation}</zh-CN>
-		<pt-BR>tem {0_vegetation}</pt-BR>
-		<ko>{0_vegetation} 있음</ko>
+		<en-US>{true_1:doesn't have:has} {0_vegetation}</en-US>
+		<es>{true_1:no tiene:tiene} {0_vegetation}</es>
+		<de>{true_1:hat nicht:hat} {0_vegetation}</de>
+		<fr>{true_1:n'a pas:a} {0_vegetation}</fr>
+		<ja>{0_vegetation}{true_1:ではない:である}</ja>
+		<zh-TW>{true_1:沒有:有}{0_vegetation}</zh-TW>
+		<ru>{true_1:не обладает:обладает} {0,4_vegetation}</ru>
+		<zh-CN>{true_1:没有:有}{0_vegetation}</zh-CN>
+		<pt-BR>{true_1:não tem:tem} {0_vegetation}</pt-BR>
+		<ko>{0_vegetation}이 {true_1:없음:있음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_NO_ONE</zType>
-		<en-US>no one is {0_trait}</en-US>
-		<es>nadie es/está {0}</es>
-		<de>niemand ist {0}</de>
-		<fr>personne n'est {0}</fr>
-		<ja>誰も{0}でない</ja>
-		<zh-TW>沒有人{0}</zh-TW>
-		<ru>никто не является {0,4}</ru>
-		<zh-CN>没有人{0}</zh-CN>
-		<pt-BR>ninguém é/está {0_trait}</pt-BR>
-		<ko>{0_trait} 특성 없음</ko>
+		<en-US>{true_1:someone:no one} is {0_trait}</en-US>
+		<es>{true_1:alguien:nadie} es/está {0_trait}</es>
+		<de>{true_1:jemand:niemand} ist {0_trait}</de>
+		<fr>{true_1:quelqu'un :personne n'}a le trait {0_trait}</fr>
+		<ja>{0}が{true_1:いる:いない}</ja>
+		<zh-TW>{true_1:有人:無人}是{0_trait}</zh-TW>
+		<ru>{true_1:кто-то:никто не} обладает чертой «{0_trait}»</ru>
+		<zh-CN>{true_1:有人:无人}是{0_trait}</zh-CN>
+		<pt-BR>{true_1:alguém:ninguém} é/está {0_trait}</pt-BR>
+		<ko>{0_trait} 특성이 {true_1:누군가는 있음:아무도 없음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_NOT_X</zType>
-		<en-US>{0_character}: Not {1_traitListOrRelationship}</en-US>
-		<es>{0}: no {1}</es>
-		<de>{0}: Nicht {1}</de>
-		<fr>{0} : pas {1}</fr>
-		<ja>{0}：{1}ではない</ja>
-		<zh-TW>{0}：而非{1}</zh-TW>
-		<ru>{0}: не {1}</ru>
-		<zh-CN>{0}：而非{1}</zh-CN>
-		<pt-BR>{0_character}: não {1_traitListOrRelationship}</pt-BR>
-		<ko>{0_character}: {1_traitListOrRelationship} 아님</ko>
+		<en-US>{0_character} {true_2:is not:is} {1_traitListOrRelationship}</en-US>
+		<es>{0_character} {true_2:no es/está:es/está} {1_traitListOrRelationship}</es>
+		<de>{0_character} {true_2:ist nicht:ist} {1_traitListOrRelationship}</de>
+		<fr>{0_character} {true_2:n'est pas:est} {1_traitListOrRelationship}</fr>
+		<ja>{0_character}は{1_traitListOrRelationship}{true_2:ではない:である} </ja>
+		<zh-TW>{0_character}{true_2:不是:是}{1_traitListOrRelationship}</zh-TW>
+		<ru>{0_character} {true_2:не :}{1_traitListOrRelationship}</ru>
+		<zh-CN>{0_character}{true_2:不是:是}{1_traitListOrRelationship}</zh-CN>
+		<pt-BR>{0_character} {true_2:não é:é} {1_traitListOrRelationship}</pt-BR>
+		<ko>{0_character}의 특성이 {1_traitListOrRelationship}(이)가 {true_2:아님:맞음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_ARCHETYPE_SAME</zType>
-		<en-US>{0_character} and {1_character} are same Archetype</en-US>
-		<es>{0_character} y {1_character} comparten el mismo arquetipo</es>
-		<de>{0_character} und {1_character} haben denselben Archetyp</de>
-		<fr>{0_character} et {1_character} ont le même Archétype</fr>
-		<ja>{0_character}と{1_character}は同じアーキタイプ</ja>
-		<zh-TW>{0_character}和{1_character}為同一原型</zh-TW>
-		<ru>{0_character} и {1_character} относятся к одному архетипу</ru>
-		<zh-CN>{0_character}和{1_character}为同一原型</zh-CN>
-		<pt-BR>{0_character} e {1_character} tem o mesmo arquétipo</pt-BR>
-		<ko>{0_character}(과)와 {1_character}의 성향이 같음</ko>
+		<en-US>{0_character} and {1_character} are {true_2:not :}same Archetype</en-US>
+		<es>{0_character} y {1_character} {true_2:no comparten:comparten :}el mismo arquetipo</es>
+		<de>{0_character} und {1_character} haben {true_2:nicht :}denselben Archetyp</de>
+		<fr>{0_character} et {1_character} {true_2:n'ont pas:ont} le même Archétype</fr>
+		<ja>{0_character}と{1_character}は同じアーキタイプ{true_2:ではない:}</ja>
+		<zh-TW>{0_character}和{1_character}{true_2:不:}是相同原型</zh-TW>
+		<ru>{0_character} и {1_character} {true_2:не :}относятся к одному архетипу</ru>
+		<zh-CN>{0_character}和{1_character}{true_2:不:}是相同原型</zh-CN>
+		<pt-BR>{0_character} e {1_character} {true_2:not :}são do mesmo arquétipo</pt-BR>
+		<ko>{0_character}(과)와 {1_character}의 성향이 {true_2:같지 않음:같음}</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_EVENT_ACTIVE_LAW</zType>
+		<en-US>Active Law: {0_law}</en-US>
+		<es>Ley activa: {0_law}</es>
+		<de>Aktives Gesetz: {0_law}</de>
+		<fr>Loi active : {0_law}</fr>
+		<ja>法律を有効化：{0_law}</ja>
+		<zh-TW>生效的律法：{0_law}</zh-TW>
+		<ru>Действующий закон: {0_law}</ru>
+		<zh-CN>起效的律法：{0_law}</zh-CN>
+		<pt-BR>Lei ativa: {0_law}</pt-BR>
+		<ko>시행 중인 법률: {0_law}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MEMORY</zType>
-		<en-US>Memory: {0_memory}</en-US>
-		<es>Recuerdo "{0}"</es>
-		<de>Speicher: {0}</de>
-		<fr>Souvenir : {0}</fr>
-		<ja>出来事：{0}</ja>
-		<zh-TW>記憶：{0}</zh-TW>
-		<ru>Память: {0}</ru>
-		<zh-CN>记忆：{0}</zh-CN>
-		<pt-BR>Memória: {0_memory}</pt-BR>
-		<ko>기억: {0_memory}</ko>
+		<en-US>{true_1:No :}Memory: {0_memory}</en-US>
+		<es>{true_1:Sin :}recuerdo: {0_memory}</es>
+		<de>{true_1:Keine :}Erinnerung: {0_memory}</de>
+		<fr>{true_1:Aucun:} souvenir : {0_memory}</fr>
+		<ja>出来事：{0_memory}{true_1:ではない:}</ja>
+		<zh-TW>{true_1:不:}記憶：{0_memory}</zh-TW>
+		<ru>{true_1:Нет памяти:Память}: {0_memory}</ru>
+		<zh-CN>{true_1:不:}记忆：{0_memory}</zh-CN>
+		<pt-BR>{true_1:Sem :}Memória: {0_memory}</pt-BR>
+		<ko>메모리 {true_1:없음:}: {0_memory}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_HAS</zType>
-		<en-US>Has {0_law}</en-US>
-		<es>tiene {0}</es>
-		<de>Hat {0}</de>
-		<fr>A {0}</fr>
-		<ja>{0}を保有</ja>
-		<zh-TW>具有{0}</zh-TW>
-		<ru>имеет {0,3}</ru>
-		<zh-CN>具有{0}</zh-CN>
-		<pt-BR>Tem {0_law}</pt-BR>
-		<ko>{0_law} 법률 시행 중</ko>
+		<en-US>{true_1:Doesn't have:Has} {0_law}</en-US>
+		<es>{true_1:No tiene:Tiene} {0_law}</es>
+		<de>{true_1:Hat nicht:Hat} {0_law}</de>
+		<fr>{true_1:n'a pas:a} la loi {0_law}</fr>
+		<ja>{0_law}を保有{true_1:していない:している}</ja>
+		<zh-TW>{true_1:沒有:有}{0_law}</zh-TW>
+		<ru>{true_1:Не использует:Использует} {0,3_law}</ru>
+		<zh-CN>{true_1:没有:有}{0_law}</zh-CN>
+		<pt-BR>{true_1:Não tem:Tem} {0_law}</pt-BR>
+		<ko>{0_law} 법률이 {true_1:없음:있음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_IS_X</zType>
-		<en-US>{0} is {1}</en-US>
-		<es>{0} es/está {1}</es>
-		<de>{0} ist {1}</de>
-		<fr>{0} est {1}</fr>
-		<ja>{0}は{1}</ja>
-		<zh-TW>{0}是{1}</zh-TW>
-		<ru>{0} — {1}</ru>
-		<zh-CN>{0}是{1}</zh-CN>
-		<pt-BR>{0} é/está {1}</pt-BR>
-		<ko>{0}: {1}</ko>
+		<en-US>{0} is {true_2:not :}{1}</en-US>
+		<es>{0} {true_2:no está:está :}{1}</es>
+		<de>{0} ist {true_2:nicht :}{1}</de>
+		<fr>{0} {true_2:n'est pas:est} {1}</fr>
+		<ja>{0}は{1}{true_2:ではない:}</ja>
+		<zh-TW>{0}{true_2:不:}是{1}</zh-TW>
+		<ru>{0} {true_2:не :}{1}</ru>
+		<zh-CN>{0}{true_2:不:}是{1}</zh-CN>
+		<pt-BR>{0} {true_2:não :} é/está {1}</pt-BR>
+		<ko>{0}(은)는 {1}{true_2:이(가) 아니다:이다}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_OWNS_X</zType>
-		<en-US>{0} owns {1}</en-US>
-		<es>{0} posee {1}</es>
-		<de>{0} besitzt {1}</de>
-		<fr>{0} possède {1}</fr>
-		<ja>{0}は{1}を所有</ja>
-		<zh-TW>{0}擁有{1}</zh-TW>
-		<ru>У {0,1} есть {1}</ru>
-		<zh-CN>{0}拥有{1}</zh-CN>
-		<pt-BR>{0} possui {1}</pt-BR>
-		<ko>{0}이(가) {1} 소유</ko>
+		<en-US>{0} {true_2:doesn't own:owns} {1}</en-US>
+		<es>{0} {true_2:no posee:posee} {1}</es>
+		<de>{0} {true_2:besitzt nicht:besitzt} {1}</de>
+		<fr>{0} {true_2:ne possède pas:possède} {1}</fr>
+		<ja>{0}は{1}を{true_2:持たない:持つ}</ja>
+		<zh-TW>{0}{true_2:沒有:有}{1}</zh-TW>
+		<ru>{0} {true_2:не владеет:владеет} {1}</ru>
+		<zh-CN>{0}{true_2:没有:有}{1}</zh-CN>
+		<pt-BR>{0} {true_2:não tem:tem} {1}</pt-BR>
+		<ko>{0}(이)가 {1}(을)를 {true_2:소유하지 않음:소유함}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_HAS_X</zType>
-		<en-US>{0} has {1}</en-US>
-		<es>{0} tiene {1}</es>
-		<de>{0} hat {1}</de>
-		<fr>{0} a {1}</fr>
-		<ja>{0}は{1}を所有</ja>
-		<zh-TW>{0}具有{1}</zh-TW>
-		<ru>У {0,1} есть {1}</ru>
-		<zh-CN>{0}具有{1}</zh-CN>
-		<pt-BR>{0} tem {1}</pt-BR>
-		<ko>{0}이(가) {1} 보유</ko>
+		<en-US>{0} {true_2:does not have:has} {1}</en-US>
+		<es>{0} {true_2:no tiene:tiene} {1}</es>
+		<de>{0} {true_2:hat nicht:hat} {1}</de>
+		<fr>{0} {true_2:n'a pas:a} {1}</fr>
+		<ja>{0}が{1}{true_2:ではない:である}</ja>
+		<zh-TW>{0}{true_2:沒有:有}{1}</zh-TW>
+		<ru>{0} {true_2:не имеет:имеет} {1}</ru>
+		<zh-CN>{0}{true_2:没有:有}{1}</zh-CN>
+		<pt-BR>{0} {true_2:não tem:tem} {1}</pt-BR>
+		<ko>{0}(은)는 {1}(을)를 보유하고 {true_2:있지 않음:있음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_OCCURRENCE_ACTIVE</zType>
-		<en-US>{0} is active</en-US>
-		<es>{0} está activo</es>
-		<de>{0} ist aktiv</de>
-		<fr>{0} est actif</fr>
-		<ja>{0}がアクティブ</ja>
-		<zh-TW>{0}已生效</zh-TW>
-		<ru>Активно: {0}</ru>
-		<zh-CN>{0}已生效</zh-CN>
-		<pt-BR>{0} está em curso</pt-BR>
-		<ko>{0} 활성화</ko>
+		<en-US>{0} is {true_1:not :}active</en-US>
+		<es>{0} {true_1:no está:está :}activo</es>
+		<de>{0} ist {true_1:nicht :}aktiv</de>
+		<fr>{0} {true_1:n'est pas:est} active/active</fr>
+		<ja>{0}がアクティブ{true_1:ではない:}</ja>
+		<zh-TW>{0}{true_1:未:}生效</zh-TW>
+		<ru>{0} {true_1:не :}действует</ru>
+		<zh-CN>{0}{true_1:未:}生效</zh-CN>
+		<pt-BR>{0} {true_1:não :}está acontecendo</pt-BR>
+		<ko>{0}(이)가 활성화돼 {true_1:있지 않음:있음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_ARE_X</zType>
-		<en-US>{0_tribeOrFamily} are {1}</en-US>
-		<es>{0}: {1}</es>
-		<de>{0} sind {1}</de>
-		<fr>{0} sont {1}</fr>
-		<ja>{0}は{1}</ja>
-		<zh-TW>{0}是{1}</zh-TW>
-		<ru>{0} — {1}</ru>
-		<zh-CN>{0}是{1}</zh-CN>
-		<pt-BR>{0_tribeOrFamily}: {1}</pt-BR>
-		<ko>{0_tribeOrFamily}: {1}</ko>
+		<en-US>{0_tribeOrFamily} are {true_2:not :}{1}</en-US>
+		<es>{0_tribeOrFamily} {true_2:no está:está :}{1}</es>
+		<de>{0_tribeOrFamily} sind {true_2:nicht :}{1}</de>
+		<fr>{0_tribeOrFamily} {true_2:ne sont pas:sont} {1}</fr>
+		<ja>{0_tribeOrFamily}と{1}{true_2:ではない:}</ja>
+		<zh-TW>{0_tribeOrFamily}{true_2:不:}是{1}</zh-TW>
+		<ru>{0_tribeOrFamily} {true_2:не :}{1}</ru>
+		<zh-CN>{0_tribeOrFamily}{true_2:不:}是{1}</zh-CN>
+		<pt-BR>{0_tribeOrFamily} {true_2:não :}estão {1}</pt-BR>
+		<ko>{0_tribeOrFamily} 가문은 {1} 상태{true_2:가 아님:임}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_IN_X</zType>
-		<en-US>{0_tribeOrPlayer} in {1_alliance}</en-US>
-		<es>{0} en {1}</es>
-		<de>{0} in {1}</de>
-		<fr>{0} dans {1}</fr>
-		<ja>{0}と{1}</ja>
-		<zh-TW>{0}在{1}</zh-TW>
-		<ru>{0} в {1,5}</ru>
-		<zh-CN>{0}在{1}</zh-CN>
-		<pt-BR>{0_tribeOrPlayer} em {1_alliance}</pt-BR>
-		<ko>{0_tribeOrPlayer}: {1_alliance} 상태</ko>
+		<en-US>{0_tribeOrPlayer} {true_2:not :}in {1_alliance}</en-US>
+		<es>{0_tribeOrPlayer} {true_2:no está :}en {1_alliance}</es>
+		<de>{0_tribeOrPlayer} {true_2:nicht :}in {1_alliance}</de>
+		<fr>{0_tribeOrPlayer} {true_2:n'est pas:est} en {1_alliance}</fr>
+		<ja>{0_tribeOrPlayer}と{1_alliance}{true_2:ではない:}</ja>
+		<zh-TW>{0_tribeOrPlayer}{true_2:不:}在{1_alliance}中</zh-TW>
+		<ru>{0_tribeOrPlayer} {true_2:не :}в {1,5_alliance}</ru>
+		<zh-CN>{0_tribeOrPlayer}{true_2:不:}在{1_alliance}中</zh-CN>
+		<pt-BR>{0_tribeOrPlayer} {true_2:não :}tem {1_alliance}</pt-BR>
+		<ko>{0_tribeOrPlayer}(과)와 {1_alliance} 상태{true_2:가 아님:임}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_AT_X</zType>
-		<en-US>{0_tribeOrPlayer} at {1_diplomacyState}</en-US>
-		<es>{0} en {1}</es>
-		<de>{0} im {1}</de>
-		<fr>{0} à {1}</fr>
-		<ja>{0}と{1}状態</ja>
-		<zh-TW>{0}在{1}</zh-TW>
-		<ru>{0} в состоянии {1,1}</ru>
-		<zh-CN>{0}在{1}</zh-CN>
-		<pt-BR>{0_tribeOrPlayer} em {1_diplomacyState}</pt-BR>
-		<ko>{0_tribeOrPlayer}: {1_diplomacyState} 상태</ko>
+		<en-US>{0_tribeOrPlayer} {true_2:not :}at {1_diplomacyState}</en-US>
+		<es>{0_tribeOrPlayer} {true_2:no está :}en {1_diplomacyState}</es>
+		<de>{0_tribeOrPlayer}: {true_2:Kein :} {1_diplomacyState}</de>
+		<fr>{0_tribeOrPlayer} {true_2:n'est pas:est} en {1_diplomacyState}</fr>
+		<ja>{0_tribeOrPlayer}と{1_diplomacyState}状態{true_2:ではない:}</ja>
+		<zh-TW>{0_tribeOrPlayer}{true_2:不:}在{1_diplomacyState}</zh-TW>
+		<ru>{0_tribeOrPlayer} {true_2:не :}в состоянии {1,1_diplomacyState}</ru>
+		<zh-CN>{0_tribeOrPlayer}{true_2:不:}在{1_diplomacyState}</zh-CN>
+		<pt-BR>{0_tribeOrPlayer} {true_2:não :}estão em {1_diplomacyState}</pt-BR>
+		<ko>{0_tribeOrPlayer}(과)와 {1_diplomacyState} 상태{true_2:가 아님:임}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_GT_LT</zType>
@@ -2954,29 +2967,29 @@ Se você completar nove outras ambições, uma ambição nacional sempre será o
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_GT</zType>
-		<en-US>{0} {true_2:is:are} icon(GreaterThan) {1}</en-US>
-		<es>{0} icon(GreaterThan) {1}</es>
-		<de>{0} {true_2:ist:sind} icon(GreaterThan) {1}</de>
-		<fr>{0} {true_2:est:sont} icon(GreaterThan) {1}</fr>
-		<ja>{0}{true_2:は:は}icon(GreaterThan){1}</ja>
-		<zh-TW>{0}{true_2:是:是}icon(GreaterThan){1}</zh-TW>
-		<ru>{0} icon(GreaterThan) {1}</ru>
-		<zh-CN>{0}{true_2:是:是}icon(GreaterThan){1}</zh-CN>
-		<pt-BR>{0} {true_2:é:são} icon(GreaterThan) {1}</pt-BR>
-		<ko>{0}: icon(GreaterThan) {1}</ko>
+		<en-US>{0} {true_2:is:are} {true_3:not :}icon(GreaterThan) {1}</en-US>
+		<es>{0} {true_2:es:son} {true_3:no es:no son :}icon(GreaterThan) {1}</es>
+		<de>{0} {true_2:ist:sind} {true_3:nicht :}icon(GreaterThan) {1}</de>
+		<fr>{0} {true_2:{true_3:n'est pas:est}:{true_3:ne sont pas:sont}} icon(GreaterThan) {1}</fr>
+		<ja>{0}はicon(GreaterThan){1}{true_3:ではない:}</ja>
+		<zh-TW>{0}{true_2:是:是}{true_3:不是:}icon(GreaterThan){1}</zh-TW>
+		<ru>{0} {true_3:не :}icon(GreaterThan) {1}</ru>
+		<zh-CN>{0}{true_2:是:是}{true_3:不是:}icon(GreaterThan){1}</zh-CN>
+		<pt-BR>{0} {true_3:não :}{true_2:é:são} icon(GreaterThan) {1}</pt-BR>
+		<ko>{0}은(는) {1}보다 {true_3:크지 않음:큼}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_LT</zType>
-		<en-US>{0} {true_2:is:are} icon(LessThan) {1}</en-US>
-		<es>{0} icon(LessThan) {1}</es>
-		<de>{0} {true_2:ist:sind} icon(LessThan) {1}</de>
-		<fr>{0} {true_2:est:sont} icon(LessThan) {1}</fr>
-		<ja>{0}{true_2:は:は}icon(LessThan){1}</ja>
-		<zh-TW>{0}{true_2:是:是}icon(LessThan){1}</zh-TW>
-		<ru>{0} icon(LessThan) {1}</ru>
-		<zh-CN>{0}{true_2:是:是}icon(LessThan){1}</zh-CN>
-		<pt-BR>{0} {true_2:é:são} icon(LessThan) {1}</pt-BR>
-		<ko>{0}: icon(LessThan) {1}</ko>
+		<en-US>{0} {true_2:is:are} {true_3:not :}icon(LessThan) {1}</en-US>
+		<es>{0} {true_2:es:son} {true_3:no es:no son :}icon(LessThan) {1}</es>
+		<de>{0} {true_2:ist:sind} {true_3:nicht :}icon(LessThan) {1}</de>
+		<fr>{0} {true_2:{true_3:n'est pas:est}:{true_3:ne sont pas:sont}} icon(LessThan) {1}</fr>
+		<ja>{0}はicon(LessThan){1}{true_3:ではない:}</ja>
+		<zh-TW>{0}{true_2:是:是}{true_3:不是:}icon(LessThan){1}</zh-TW>
+		<ru>{0} {true_3:не :}icon(LessThan) {1}</ru>
+		<zh-CN>{0}{true_2:是:是}{true_3:不是:}icon(LessThan){1}</zh-CN>
+		<pt-BR>{0} {true_3:não :}{true_2:é:são} icon(LessThan) {1}</pt-BR>
+		<ko>{0}은(는) {1}보다 {true_3:작지 않음:작음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_GT_TWO</zType>
@@ -3006,211 +3019,211 @@ Se você completar nove outras ambições, uma ambição nacional sempre será o
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_OF_STATE_RELIGION</zType>
-		<en-US>{0_character} is of link(CONCEPT_STATE_RELIGION)</en-US>
-		<es>{0_character} pertenece a la link(CONCEPT_STATE_RELIGION)</es>
-		<de>{0_character} gehört der link(CONCEPT_STATE_RELIGION) an</de>
-		<fr>{0_character} est de link(CONCEPT_STATE_RELIGION)</fr>
-		<ja>{0_character}はlink(CONCEPT_STATE_RELIGION)教徒</ja>
-		<zh-TW>{0_character}屬於link(CONCEPT_STATE_RELIGION)</zh-TW>
-		<ru>{0_character} исповедует {lowercase:link(CONCEPT_STATE_RELIGION,3)}</ru>
-		<zh-CN>{0_character}属于link(CONCEPT_STATE_RELIGION)</zh-CN>
-		<pt-BR>{0_character} é da link(CONCEPT_STATE_RELIGION)</pt-BR>
-		<ko>{0_character}(이)가 link(CONCEPT_STATE_RELIGION)를 믿음</ko>
+		<en-US>{0_character} is {true_1:not :}of link(CONCEPT_STATE_RELIGION)</en-US>
+		<es>{0_character} {true_1:no profesa:profesa :}la {lowercase:link(CONCEPT_STATE_RELIGION)}</es>
+		<de>{0_character} gehört {true_1:nicht :}der link(CONCEPT_STATE_RELIGION) an</de>
+		<fr>{0_character} {true_1:n'est pas:est} membre de la link(CONCEPT_STATE_RELIGION)</fr>
+		<ja>{0_character}はlink(CONCEPT_STATE_RELIGION)教徒{true_1:ではない:}</ja>
+		<zh-TW>{0_character}{true_1:不:}屬於link(CONCEPT_STATE_RELIGION)</zh-TW>
+		<ru>{0_character} {true_1:не :}придерживается {lowercase:link(CONCEPT_STATE_RELIGION,1)}</ru>
+		<zh-CN>{0_character}{true_1:不:}属于link(CONCEPT_STATE_RELIGION)</zh-CN>
+		<pt-BR>{0_character} {true_1:não :} pertence à link(CONCEPT_STATE_RELIGION)</pt-BR>
+		<ko>{0_character}(은)는 link(CONCEPT_STATE_RELIGION)도가 {true_1:아님:맞음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_SUBJECT_REQUIRES_STATE_RELIGION</zType>
-		<en-US>link(CONCEPT_STATE_RELIGION) ({0_religion})</en-US>
-		<es>link(CONCEPT_STATE_RELIGION) ({0_religion})</es>
-		<de>link(CONCEPT_STATE_RELIGION) ({0_religion})</de>
-		<fr>link(CONCEPT_STATE_RELIGION) ({0_religion})</fr>
-		<ja>link(CONCEPT_STATE_RELIGION) （{0_religion}）</ja>
-		<zh-TW>link(CONCEPT_STATE_RELIGION) ({0_religion})</zh-TW>
-		<ru>link(CONCEPT_STATE_RELIGION) ({0_religion})</ru>
-		<zh-CN>link(CONCEPT_STATE_RELIGION) ({0_religion})</zh-CN>
-		<pt-BR>link(CONCEPT_STATE_RELIGION) ({0_religion})</pt-BR>
-		<ko>link(CONCEPT_STATE_RELIGION) ({0_religion})</ko>
+		<en-US>{true_1:No :}link(CONCEPT_STATE_RELIGION) ({0_religion})</en-US>
+		<es>{true_1:Sin :}link(CONCEPT_STATE_RELIGION) ({0_religion})</es>
+		<de>{true_1:Keine :}link(CONCEPT_STATE_RELIGION) ({0_religion})</de>
+		<fr>{true_1:Aucune:} link(CONCEPT_STATE_RELIGION) ({0_religion})</fr>
+		<ja>link(CONCEPT_STATE_RELIGION) ({0_religion}){true_1:ではない:}</ja>
+		<zh-TW>{true_1:不:}link(CONCEPT_STATE_RELIGION)({0_religion})</zh-TW>
+		<ru>{true_1:Не :}link(CONCEPT_STATE_RELIGION) ({0_religion})</ru>
+		<zh-CN>{true_1:不:}link(CONCEPT_STATE_RELIGION)({0_religion})</zh-CN>
+		<pt-BR>{true_1:Sem :}link(CONCEPT_STATE_RELIGION) ({0_religion})</pt-BR>
+		<ko>link(CONCEPT_STATE_RELIGION) {true_1:없음 :}({0_religion})</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_AGE_RANGE</zType>
-		<en-US>{0_character} is Age icon(GreaterThan) {1_minAge} and icon(LessThan) {2_maxAge}</en-US>
-		<es>la edad de {0} icon(GreaterThan) {1} y icon(LessThan) {2}</es>
-		<de>{0} ist icon(GreaterThan) {1} und icon(LessThan) {2} Jahre alt</de>
-		<fr>{0} a un âge icon(GreaterThan) {1} et icon(LessThan) {2}</fr>
-		<ja>{0}の年齢はicon(GreaterThan){1}でicon(LessThan){2}</ja>
-		<zh-TW>{0}的年齡icon(GreaterThan){1}且icon(LessThan){2}</zh-TW>
-		<ru>Возраст {0,1} icon(GreaterThan) {1} и icon(LessThan) {2}</ru>
-		<zh-CN>{0}的年龄icon(GreaterThan){1}且icon(LessThan){2}</zh-CN>
-		<pt-BR>A idade de {0_character} é icon(GreaterThan) {1_minAge} e icon(LessThan) {2_maxAge}</pt-BR>
-		<ko>{0_character}의 나이: icon(GreaterThan) {1_minAge}이고 icon(LessThan) {2_maxAge}</ko>
+		<en-US>{0_character} is {true_3:not :}Age icon(GreaterThan) {1_minAge} and icon(LessThan) {2_maxAge}</en-US>
+		<es>la edad de {0} {true_3:no es:es :}icon(GreaterThan) {1_minAge} y icon(LessThan) {2_maxAge}</es>
+		<de>{0_character} ist {true_3:nicht :}icon(GreaterThan) {1} und icon(LessThan) {2} Jahre alt</de>
+		<fr>{0_character} {true_3:n'a pas:a} entre {1_minAge} et {2_maxAge} ans.</fr>
+		<ja>{0_character}の年齢はicon(GreaterThan) {1}かつicon(LessThan) {2_maxAge}{true_3:ではない:}</ja>
+		<zh-TW>{0_character}的年齡{true_3:不:}是icon(GreaterThan){1_minAge}和icon(LessThan){2_maxAge}</zh-TW>
+		<ru>Возраст {0,1_character} {true_3:не :}icon(GreaterThan) {1_minAge} и icon(LessThan) {2_maxAge}</ru>
+		<zh-CN>{0_character}的年龄{true_3:不:}是icon(GreaterThan){1_minAge}和icon(LessThan){2_maxAge}</zh-CN>
+		<pt-BR>{0_character} {true_3:não :}tem idade icon(GreaterThan) {1_minAge} e icon(LessThan) {2_maxAge}</pt-BR>
+		<ko>{0_character}의 나이는 {1_minAge}보다 {true_3:크지 않고:크고} {2_maxAge}보다 작음</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_AGE_GT</zType>
 		<en-US>{0_character} is Age icon(GreaterThan) {1_minAge}</en-US>
-		<es>la edad de {0} icon(GreaterThan) {1}</es>
+		<es>la edad de {0} icon(GreaterThan) {1_minAge}</es>
 		<de>{0} ist icon(GreaterThan) {1} Jahre alt</de>
 		<fr>{0} a un âge icon(GreaterThan) {1}</fr>
 		<ja>{0}の年齢はicon(GreaterThan){1}</ja>
 		<zh-TW>{0}的年齡icon(GreaterThan){1}</zh-TW>
-		<ru>Возраст {0,1} icon(GreaterThan) {1}</ru>
+		<ru>Возраст {0,1_character} icon(GreaterThan) {1_minAge}</ru>
 		<zh-CN>{0}的年龄icon(GreaterThan){1}</zh-CN>
-		<pt-BR>A idade de {0_character} é icon(GreaterThan) {1_minAge}</pt-BR>
+		<pt-BR>{0_character} tem idade icon(GreaterThan) {1_minAge}</pt-BR>
 		<ko>{0_character}의 나이: icon(GreaterThan) {1_minAge}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_AGE_LT</zType>
 		<en-US>{0_character} is Age icon(LessThan) {1_maxAge}</en-US>
-		<es>la edad de {0} icon(LessThan) {1}</es>
+		<es>la edad de {0} icon(LessThan) {1_maxAge}</es>
 		<de>{0} ist icon(LessThan) {1} Jahre alt</de>
 		<fr>{0} a un âge icon(LessThan) {1}</fr>
 		<ja>{0}の年齢はicon(LessThan){1}</ja>
 		<zh-TW>{0}的年齡icon(LessThan){1}</zh-TW>
-		<ru>Возраст {0,1} icon(LessThan) {1}</ru>
+		<ru>Возраст {0,1_character} icon(LessThan) {1_maxAge}</ru>
 		<zh-CN>{0}的年龄icon(LessThan){1}</zh-CN>
-		<pt-BR>A idade de {0_character} é icon(LessThan) {1_maxAge}</pt-BR>
+		<pt-BR>{0_character} tem idade icon(LessThan) {1_maxAge}</pt-BR>
 		<ko>{0_character}의 나이: icon(LessThan) {1_maxAge}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MIN_HAPPINESS</zType>
-		<en-US>{0_city} has icon(GreaterThan) {1} {2_happiness} Level</en-US>
-		<es>{0} icon(GreaterThan) {1} de nivel de {2_happiness}</es>
-		<de>{0} hat icon(GreaterThan) {1} {2_happiness}-Stufe</de>
-		<fr>{0} a un niveau icon(GreaterThan) {1} {2_happiness}</fr>
-		<ja>{0}はicon(GreaterThan){1} {2_happiness}レベル</ja>
-		<zh-TW>{0}的icon(GreaterThan){1}{2_happiness}等級</zh-TW>
-		<ru>Уровень {0,1} icon(GreaterThan) {1} {2_happiness}</ru>
-		<zh-CN>{0}的icon(GreaterThan){1}{2_happiness}等级</zh-CN>
-		<pt-BR>{0_city} tem nível icon(GreaterThan) {1} de {2_happiness}</pt-BR>
-		<ko>{0_city}의 {2_happiness}: icon(GreaterThan) {1}단계</ko>
+		<en-US>{0_city} {true_3:does not have:has} icon(GreaterThan) {1} {2_happiness} Level</en-US>
+		<es>{0_city} {true_3:no tiene:tiene} un nivel de {2_happiness} icon(GreaterThan) {1}</es>
+		<de>{0} {true_3:hat nicht:hat} icon(GreaterThan) {1} {2_happiness}-Stufe</de>
+		<fr>{0_city} {true_3:n'a pas:a} un niveau de {2_happiness} icon(GreaterThan) à {1}</fr>
+		<ja>{0}はicon(GreaterThan){1} {2_happiness}レベル{true_3:ではない:である}</ja>
+		<zh-TW>{0_city}{true_3:沒有:有}icon(GreaterThan){1}{2_happiness}等級</zh-TW>
+		<ru>{0_city} {true_3:не имеет:имеет} icon(GreaterThan) {1} уровня {2,1_happiness}</ru>
+		<zh-CN>{0_city}{true_3:没有:有}icon(GreaterThan){1}{2_happiness}等级</zh-CN>
+		<pt-BR>{0_city} {true_3:não tem:tem} icon(GreaterThan) {1} de nível de {2_happiness}</pt-BR>
+		<ko>{0_city}의 {2_happiness}가 {1}보다 {true_3:높지 않음:높음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MAX_HAPPINESS</zType>
-		<en-US>{0_city} has icon(LessThan) {1} {2_happiness} Level</en-US>
-		<es>{0} icon(LessThan) {1} de nivel de {2_happiness}</es>
-		<de>{0} hat icon(LessThan) {1} {2_happiness}-Stufe</de>
-		<fr>{0} a un niveau icon(LessThan) {1} {2_happiness}</fr>
-		<ja>{0}はicon(LessThan){1} {2_happiness}レベル</ja>
-		<zh-TW>{0}的icon(LessThan){1}{2_happiness}等級</zh-TW>
-		<ru>Уровень {0,1} icon(LessThan) {1} {2_happiness}</ru>
-		<zh-CN>{0}的icon(LessThan){1}{2_happiness}等级</zh-CN>
-		<pt-BR>{0_city} tem nível icon(LessThan) {1} de {2_happiness}</pt-BR>
-		<ko>{0_city}의 {2_happiness}: icon(LessThan) {1}단계</ko>
+		<en-US>{0_city} {true_3:does not have:has} icon(LessThan) {1} {2_happiness} Level</en-US>
+		<es>{0_city} {true_3:no tiene:tiene} un nivel de {2_happiness} icon(LessThan) {1}</es>
+		<de>{0} {true_3:hat nicht:hat} icon(LessThan) {1} {2_happiness}-Stufe</de>
+		<fr>{0_city} {true_3:n'a pas:a} un niveau de {2_happiness} icon(LessThan) à {1}</fr>
+		<ja>{0}はicon(LessThan){1} {2_happiness}レベル{true_3:ではない:である}</ja>
+		<zh-TW>{0_city}{true_3:沒有:有}icon(LessThan){1}{2_happiness}等級</zh-TW>
+		<ru>{0_city} {true_3:не имеет:имеет} icon(LessThan) {1} уровня {2,1_happiness}</ru>
+		<zh-CN>{0_city}{true_3:没有:有}icon(LessThan){1}{2_happiness}等级</zh-CN>
+		<pt-BR>{0_city} {true_3:não tem:tem} icon(LessThan) {1} de nível de {2_happiness}</pt-BR>
+		<ko>{0_city}의 {2_happiness}가 {1}보다 {true_3:적지 않음:적음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MIN_DISCONTENT</zType>
-		<en-US>{0_city} has icon(GreaterThan) {1} {2_discontent} Level</en-US>
-		<es>{0_city} tiene icon(LessThan) {1} de nivel de {2_discontent}</es>
-		<de>{0_city} hat icon(LessThan) {1} Stufe {2_discontent}</de>
-		<fr>{0_city} a un niveau de {2_discontent} icon(LessThan) {1}</fr>
-		<ja>{0_city}に{2_discontent}レベル {1} icon(LessThan)がつく</ja>
-		<zh-TW>{0_city}{2_discontent}等級icon(LessThan){1}</zh-TW>
-		<ru>{0_city}: уровень {2_discontent} icon(LessThan) {1}</ru>
-		<zh-CN>{0_city}{2_discontent}等级icon(LessThan){1}</zh-CN>
-		<pt-BR>{0_city} tem nível icon(LessThan) {1} de {2_discontent}</pt-BR>
-		<ko>{0_city}의 {2_discontent}: icon(GreaterThan) {1}단계</ko>
+		<en-US>{0_city} {true_3:does not have:has} icon(GreaterThan) {1} {2_discontent} Level</en-US>
+		<es>{0_city} {true_3:no tiene:tiene} un nivel de {2_discontent} icon(GreaterThan) {1}</es>
+		<de>{0_city} {true_3:hat nicht:hat} icon(LessThan) {1} Stufe {2_discontent}</de>
+		<fr>{0_city} {true_3:n'a pas:a} un niveau de {2_discontent} icon(GreaterThan) à {1}</fr>
+		<ja>{0}はicon(GreaterThan){1} {2_discontent}レベル{true_3:ではない:である}</ja>
+		<zh-TW>{0_city}{true_3:沒有:有}icon(GreaterThan){1}{2_discontent}等級</zh-TW>
+		<ru>{0_city} {true_3:не имеет:имеет} icon(GreaterThan) {1} уровня {2,1_discontent}</ru>
+		<zh-CN>{0_city}{true_3:没有:有}icon(GreaterThan){1}{2_discontent}等级</zh-CN>
+		<pt-BR>{0_city} {true_3:não tem:tem} icon(GreaterThan) {1} de nível de {2_discontent}</pt-BR>
+		<ko>{0_city}의 {2_discontent}가 {1}보다 {true_3:높지 않음:높음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MAX_DISCONTENT</zType>
-		<en-US>{0_city} has icon(LessThan) {1} {2_discontent} Level</en-US>
-		<es>{0_city} tiene icon(LessThan) {1} de nivel de {2_discontent}</es>
-		<de>{0_city} hat icon(LessThan) {1} Stufe {2_discontent}</de>
-		<fr>{0_city} a un niveau de {2_discontent} icon(LessThan) {1}</fr>
-		<ja>{0_city}に{2_discontent}レベル {1} icon(LessThan)がつく</ja>
-		<zh-TW>{0_city}{2_discontent}等級icon(LessThan){1}</zh-TW>
-		<ru>{0_city}: уровень {2_discontent} icon(LessThan) {1}</ru>
-		<zh-CN>{0_city}{2_discontent}等级icon(LessThan){1}</zh-CN>
-		<pt-BR>{0_city} tem nível icon(LessThan) {1} de {2_discontent}</pt-BR>
-		<ko>{0_city}의 {2_discontent}: icon(LessThan) {1}단계</ko>
+		<en-US>{0_city} {true_3:does not have:has} icon(LessThan) {1} {2_discontent} Level</en-US>
+		<es>{0_city} {true_3:no tiene:tiene} un nivel de {2_discontent} icon(LessThan) {1}</es>
+		<de>{0_city} {true_3:hat nicht:hat} icon(LessThan) {1} Stufe {2_discontent}</de>
+		<fr>{0_city} {true_3:n'a pas:a} un niveau de {2_discontent} icon(LessThan) à {1}</fr>
+		<ja>{0}はicon(LessThan){1} {2_discontent}レベル{true_3:ではない:である}</ja>
+		<zh-TW>{0_city}{true_3:沒有:有}icon(LessThan){1}{2_discontent}等級</zh-TW>
+		<ru>{0_city} {true_3:не имеет:имеет} icon(LessThan) {1} уровня {2,1_discontent}</ru>
+		<zh-CN>{0_city}{true_3:没有:有}icon(LessThan){1}{2_discontent}等级</zh-CN>
+		<pt-BR>{0_city} {true_3:não tem:tem} icon(LessThan) {1} de nível de {2_discontent}</pt-BR>
+		<ko>{0_city}의 {2_discontent}가 {1}보다 {true_3:적지 않음:적음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MIN_YIELD_LEVEL</zType>
-		<en-US>{0_city} has icon(GreaterThan) {1} {2_yield} Level</en-US>
-		<es>{0} icon(GreaterThan) {1} de nivel de {2_yield}</es>
-		<de>{0} hat icon(GreaterThan) {1} {2_yield}-Stufe</de>
-		<fr>{0} a un niveau icon(GreaterThan) {1} {2_yield}</fr>
-		<ja>{0}はicon(GreaterThan){1} {2_yield}レベル</ja>
-		<zh-TW>{0}的icon(GreaterThan){1}{2_yield}等級</zh-TW>
-		<ru>Уровень {0,1} icon(GreaterThan) {1} {2_yield}</ru>
-		<zh-CN>{0}的icon(GreaterThan){1}{2_yield}等级</zh-CN>
-		<pt-BR>{0_city} tem nível icon(GreaterThan) {1} de {2_yield}</pt-BR>
-		<ko>{0_city}의 {2_yield}: icon(GreaterThan) {1}단계</ko>
+		<en-US>{0_city} {true_3:does not have:has} icon(GreaterThan) {1} {2_yield} Level</en-US>
+		<es>{0_city} {true_3:no tiene:tiene} un nivel de {2_yield} icon(GreaterThan) {1}</es>
+		<de>{0} {true_3:hat nicht:hat} icon(GreaterThan) {1} {2_yield}-Stufe</de>
+		<fr>{0_city} {true_3:n'a pas:a} un niveau de {2_yield} icon(GreaterThan) à {1}</fr>
+		<ja>{0}はicon(GreaterThan){1} {2_yield}レベル{true_3:ではない:である}</ja>
+		<zh-TW>{0_city}{true_3:沒有:有}icon(GreaterThan){1}{2_yield}等級</zh-TW>
+		<ru>{0_city} {true_3:не имеет:имеет} icon(GreaterThan) {1} уровня {2,1_yield}</ru>
+		<zh-CN>{0_city}{true_3:没有:有}icon(GreaterThan){1}{2_yield}等级</zh-CN>
+		<pt-BR>{0_city} {true_3:não tem:tem} icon(GreaterThan) {1} de nível de {2_yield}</pt-BR>
+		<ko>{0_city}의 {2_yield}이 {1}보다 {true_3:높지 않음:높음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MAX_YIELD_LEVEL</zType>
-		<en-US>{0_city} has icon(LessThan) {1} {2_yield} Level</en-US>
-		<es>{0} icon(LessThan) {1} de nivel de {2_yield}</es>
-		<de>{0} hat icon(LessThan) {1} {2_yield}-Stufe</de>
-		<fr>{0} a un niveau icon(LessThan) {1} {2_yield}</fr>
-		<ja>{0}はicon(LessThan){1} {2_yield}レベル</ja>
-		<zh-TW>{0}的icon(LessThan){1}{2_yield}等級</zh-TW>
-		<ru>Уровень {0,1} icon(LessThan) {1} {2_yield}</ru>
-		<zh-CN>{0}的icon(LessThan){1}{2_yield}等级</zh-CN>
-		<pt-BR>{0_city} tem nível icon(LessThan) {1} de {2_yield}</pt-BR>
-		<ko>{0_city}의 {2_yield}: icon(LessThan) {1}단계</ko>
+		<en-US>{0_city} {true_3:does not have:has} icon(LessThan) {1} {2_yield} Level</en-US>
+		<es>{0_city} {true_3:no tiene:tiene} un nivel de {2_yield} icon(LessThan) {1}</es>
+		<de>{0} {true_3:hat nicht:hat} icon(LessThan) {1} {2_yield}-Stufe</de>
+		<fr>{0_city} {true_3:n'a pas:a} un niveau de {2_yield} icon(LessThan) à {1}</fr>
+		<ja>{0}はicon(LessThan){1} {2_yield}レベル{true_3:ではない:である}</ja>
+		<zh-TW>{0_city}{true_3:沒有:有}icon(LessThan){1}{2_yield}等級</zh-TW>
+		<ru>{0_city} {true_3:не имеет:имеет} icon(LessThan) {1} уровня {2,1_yield}</ru>
+		<zh-CN>{0_city}{true_3:没有:有}icon(LessThan){1}{2_yield}等级</zh-CN>
+		<pt-BR>{0_city} {true_3:não tem:tem} icon(LessThan) {1} de nível de {2_yield}</pt-BR>
+		<ko>{0_city}의 {2_yield}이 {1}보다 {true_3:적지 않음:적음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MIN_EFFECT_CITY</zType>
-		<en-US>{0_city} has icon(GreaterThan) {1} {2_effectCity}</en-US>
-		<es>{0_city} tiene icon(GreaterThan) {1} {2_effectCity}</es>
-		<de>{0_city} hat icon(GreaterThan) {1} {2_effectCity}</de>
-		<fr>{0_city} a icon(GreaterThan) {1} {2_effectCity}</fr>
-		<ja>{0_city}にはicon(GreaterThan) {1} {2_effectCity}がある</ja>
-		<zh-TW>{0_city} 有 icon(GreaterThan) {1} {2_effectCity}</zh-TW>
-		<ru>{0_city}: уровень {2,1_effectCity} icon(GreaterThan) {1}</ru>
-		<zh-CN>{0_city}拥有icon(GreaterThan) {1} {2_effectCity}</zh-CN>
-		<pt-BR>{0_city} tem icon(GreaterThan) {1} {2_effectCity}</pt-BR>
-		<ko>{0_city}의 {2_effectCity} icon(GreaterThan) {1}</ko>
+		<en-US>{0_city} {true_3:does not have:has} icon(GreaterThan) {1} {2_effectCity}</en-US>
+		<es>{0_city} {true_3:no tiene:tiene} un {2_effectCity} icon(GreaterThan) {1}</es>
+		<de>{0_city} {true_3:hat nicht:hat} icon(GreaterThan) {1} {2_effectCity}</de>
+		<fr>{0_city} {true_3:n'a pas:a} un {2_effectCity} icon(GreaterThan) à {1}</fr>
+		<ja>{0}はicon(GreaterThan){1} {2_effectCity}{true_3:ではない:である}</ja>
+		<zh-TW>{0_city}{true_3:沒有:有}icon(GreaterThan){1}{2_effectCity}</zh-TW>
+		<ru>{0_city} {true_3:не имеет:имеет} icon(GreaterThan) {1} {2,1_effectCity}</ru>
+		<zh-CN>{0_city}{true_3:没有:有}icon(GreaterThan){1}{2_effectCity}</zh-CN>
+		<pt-BR>{0_city} {true_3:não tem:tem} icon(GreaterThan) {1} de {2_effectCity}</pt-BR>
+		<ko>{0_city}의 {2_effectCity}이 {1}보다 {true_3:높지 않음:높음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MIN_CULTURE</zType>
-		<en-US>{0_city} has icon(GreaterThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</en-US>
-		<es>{0_city} tiene un link(CONCEPT_CULTURE_LEVEL) icon(GreaterThan) {1_culture}</es>
-		<de>{0_city} hat icon(GreaterThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</de>
-		<fr>{0_city} a icon(GreaterThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</fr>
-		<ja>{0_city}が{1_culture} link(CONCEPT_CULTURE_LEVEL) icon(GreaterThan)</ja>
-		<zh-TW>{0_city}link(CONCEPT_CULTURE_LEVEL)icon(GreaterThan){1_culture}</zh-TW>
-		<ru>icon(GreaterThan) {1_culture} link(CONCEPT_CULTURE_LEVEL,1) у {0,1_city}</ru>
-		<zh-CN>{0_city}link(CONCEPT_CULTURE_LEVEL)icon(GreaterThan){1_culture}</zh-CN>
-		<pt-BR>{0_city} tem link(CONCEPT_CULTURE_LEVEL) icon(GreaterThan) {1_culture}</pt-BR>
-		<ko>{0_city}의 link(CONCEPT_CULTURE_LEVEL): icon(GreaterThan) {1_culture}</ko>
+		<en-US>{0_city} {true_2:does not have:has} icon(GreaterThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</en-US>
+		<es>{0_city} {true_2:no tiene:tiene} un link(CONCEPT_CULTURE_LEVEL) icon(GreaterThan) {1_culture}</es>
+		<de>{0_city} {true_2:hat nicht:hat} icon(GreaterThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</de>
+		<fr>{0_city} {true_2:n'as pas:a} un link(CONCEPT_CULTURE_LEVEL) icon(GreaterThan) à {1_culture} </fr>
+		<ja>{0_city}が{1_culture} link(CONCEPT_CULTURE_LEVEL) icon(GreaterThan){true_2:ではない:である}</ja>
+		<zh-TW>{0_city}{true_2:沒有:有}icon(GreaterThan){1_culture}link(CONCEPT_CULTURE_LEVEL)</zh-TW>
+		<ru>{0_city} {true_2:не имеет:имеет} icon(GreaterThan) {1_culture} {lowercase:link(CONCEPT_CULTURE_LEVEL,1)}</ru>
+		<zh-CN>{0_city}{true_2:没有:有}icon(GreaterThan){1_culture}link(CONCEPT_CULTURE_LEVEL)</zh-CN>
+		<pt-BR>{0_city} {true_2:não tem:tem} icon(GreaterThan) link(CONCEPT_CULTURE_LEVEL) {1_culture}</pt-BR>
+		<ko>{0_city}의 link(CONCEPT_CULTURE_LEVEL)이(가) {1_culture}보다 {true_2:높지 않음:높음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MAX_CULTURE</zType>
-		<en-US>{0_city} has icon(LessThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</en-US>
-		<es>{0_city} tiene un link(CONCEPT_CULTURE_LEVEL) icon(LessThan) {1_culture}</es>
-		<de>{0_city} hat icon(LessThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</de>
-		<fr>{0_city} a icon(LessThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</fr>
-		<ja>{0_city}が{1_culture} link(CONCEPT_CULTURE_LEVEL) icon(LessThan)</ja>
-		<zh-TW>{0_city}link(CONCEPT_CULTURE_LEVEL)icon(LessThan){1_culture}</zh-TW>
-		<ru>icon(LessThan) {1_culture} link(CONCEPT_CULTURE_LEVEL,1) у {0,1_city}</ru>
-		<zh-CN>{0_city}link(CONCEPT_CULTURE_LEVEL)icon(LessThan){1_culture}</zh-CN>
-		<pt-BR>{0_city} tem link(CONCEPT_CULTURE_LEVEL) icon(LessThan) {1_culture}</pt-BR>
-		<ko>{0_city}의 link(CONCEPT_CULTURE_LEVEL): icon(LessThan) {1_culture}</ko>
+		<en-US>{0_city} {true_2:does not have:has} icon(LessThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</en-US>
+		<es>{0_city} {true_2:no tiene:tiene} un link(CONCEPT_CULTURE_LEVEL) icon(LessThan) {1_culture}</es>
+		<de>{0_city} {true_2:hat nicht:hat} icon(LessThan) {1_culture} link(CONCEPT_CULTURE_LEVEL)</de>
+		<fr>{0_city} {true_2:n'as pas:a} un link(CONCEPT_CULTURE_LEVEL) icon(LessThan) à {1_culture} </fr>
+		<ja>{0_city}が{1_culture} link(CONCEPT_CULTURE_LEVEL) icon(LessThan){true_2:ではない:である}</ja>
+		<zh-TW>{0_city}{true_2:沒有:有}icon(LessThan){1_culture}link(CONCEPT_CULTURE_LEVEL)</zh-TW>
+		<ru>{0_city} {true_2:не имеет:имеет} icon(LessThan) {1_culture} {lowercase:link(CONCEPT_CULTURE_LEVEL,1)}</ru>
+		<zh-CN>{0_city}{true_2:没有:有}icon(LessThan){1_culture}link(CONCEPT_CULTURE_LEVEL)</zh-CN>
+		<pt-BR>{0_city} {true_2:não tem:tem} icon(LessThan) link(CONCEPT_CULTURE_LEVEL) {1_culture}</pt-BR>
+		<ko>{0_city}의 link(CONCEPT_CULTURE_LEVEL)이(가) {1_culture}보다 {true_2:적지 않음:적음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MIN_NATION_IMPROVEMENT_COUNT</zType>
-		<en-US>icon(GreaterThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} in the Nation</en-US>
-		<es>icon(GreaterThan) {0} {1_improvement}{singular_1:desarrollo:desarrollos} en la nación</es>
-		<de>icon(GreaterThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} in der Nation</de>
-		<fr>icon(GreaterThan) {0} {1_improvement} dans la nation</fr>
-		<ja>icon(GreaterThan) {0} {1_improvement}：全国</ja>
-		<zh-TW>國內的{1_improvement}icon(GreaterThan){0}</zh-TW>
-		<ru>icon(GreaterThan) {0} {1,7_improvement} в стране</ru>
-		<zh-CN>国内的{1_improvement}icon(GreaterThan){0}</zh-CN>
-		<pt-BR>icon(GreaterThan) {0} {1_improvement} na nação</pt-BR>
-		<ko>icon(GreaterThan) 국가에 {1_improvement} {0}개</ko>
+		<en-US>{true_1:Not :}icon(GreaterThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} in the Nation</en-US>
+		<es>{true_1:No hay :}icon(GreaterThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} en la nación</es>
+		<de>{true_1:Nicht :}icon(GreaterThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} in der Nation</de>
+		<fr>{true_1:Pas:} icon(GreaterThan) de {0} {singular_0:{1_improvement}:{1,2_improvement}} dans la nation</fr>
+		<ja>国内の{1_improvement}がicon(GreaterThan) {0}{true_1:ではない:}</ja>
+		<zh-TW>國內的{true_1:不:}icon(GreaterThan){0}{singular_0:{1_improvement}:{1,2_improvement}}</zh-TW>
+		<ru>{true_1:Не :}icon(GreaterThan) {0} {singular_0:{1,1_improvement}:{1,7_improvement}} в стране</ru>
+		<zh-CN>国内的{true_1:不:}icon(GreaterThan){0}{singular_0:{1_improvement}:{1,2_improvement}}</zh-CN>
+		<pt-BR>{true_1:Não :}icon(GreaterThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} na nação</pt-BR>
+		<ko>국가 내 {1_improvement}이 {0}개보다 {true_1:많지 않음:많음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_MAX_NATION_IMPROVEMENT_COUNT</zType>
-		<en-US>icon(LessThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} in the Nation</en-US>
-		<es>icon(LessThan) {0} {1_improvement}{singular_1:desarrollo:desarrollos} en la nación</es>
-		<de>icon(LessThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} in der Nation</de>
-		<fr>icon(LessThan) {0} {1_improvement} dans la nation</fr>
-		<ja>icon(LessThan) {0} {1_improvement}：国内</ja>
-		<zh-TW>國內的{1_improvement}icon(LessThan){0}</zh-TW>
-		<ru>icon(LessThan) {0} {1,7_improvement} в стране</ru>
-		<zh-CN>国内的{1_improvement}icon(LessThan){0}</zh-CN>
-		<pt-BR>icon(LessThan) {0} {1_improvement} na nação</pt-BR>
-		<ko>icon(LessThan) 국가에 {1_improvement} {0}개</ko>
+		<en-US>{true_1:Not :}icon(LessThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} in the Nation</en-US>
+		<es>{true_1:No hay :}icon(LessThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} en la nación</es>
+		<de>{true_1:Nicht :}icon(LessThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} in der Nation</de>
+		<fr>{true_1:Pas:} icon(LessThan) de {0} {singular_0:{1_improvement}:{1,2_improvement}} dans la nation</fr>
+		<ja>国内の{1_improvement}がicon(LessThan) {0}{true_1:ではない:}</ja>
+		<zh-TW>國內的{true_1:不:}icon(LessThan){0}{singular_0:{1_improvement}:{1,2_improvement}}</zh-TW>
+		<ru>{true_1:Не :}icon(LessThan) {0} {singular_0:{1,1_improvement}:{1,7_improvement}} в стране</ru>
+		<zh-CN>国内的{true_1:不:}icon(LessThan){0}{singular_0:{1_improvement}:{1,2_improvement}}</zh-CN>
+		<pt-BR>{true_1:Não :}icon(LessThan) {0} {singular_0:{1_improvement}:{1,2_improvement}} na nação</pt-BR>
+		<ko>국가 내 {1_improvement}이 {0}개보다 {true_1:적지 않음:적음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIREMENT_MARRIED</zType>
@@ -6488,16 +6501,16 @@ Se você completar nove outras ambições, uma ambição nacional sempre será o
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EVENT_REQUIRES_UNIT_TERRAIN</zType>
-		<en-US>{0_unit} is on {1_terrain}</en-US>
-		<es>{0_unit} está en {1_terrain}</es>
-		<de>{0_unit} befindet sich auf {1_terrain}</de>
-		<fr>{0_unit} est sur{1_terrain}</fr>
-		<ja>{0_unit}は{1_terrain}上にある</ja>
-		<zh-TW>{0_unit}位於{1_terrain}上</zh-TW>
-		<ru>{0_unit} находится на местности: {1_terrain}.</ru>
-		<zh-CN>{0_unit}位于{1_terrain}上</zh-CN>
-		<pt-BR>{0_unit} está sobre {1_terrain}</pt-BR>
-		<ko>{0_unit}이(가) {1_terrain}에 있음</ko>
+		<en-US>{0_unit} is {true_2:not :}on {1_terrain}</en-US>
+		<es>{0_unit} {true_2:no está:está :}en {1_terrain}</es>
+		<de>{0_unit} befindet sich {true_2:nicht :}auf {1_terrain}</de>
+		<fr>{0_unit} {true_2:n'est pas:est} sur un terrain de type {1_terrain}</fr>
+		<ja>{0_unit}は{1_terrain}上に{true_2:ない:ある}</ja>
+		<zh-TW>{0_unit}{true_2:不:}在{1_terrain}上</zh-TW>
+		<ru>{0_unit} {true_2:не :}на {1,5_terrain}</ru>
+		<zh-CN>{0_unit}{true_2:不:}在{1_terrain}上</zh-CN>
+		<pt-BR>{0_unit} {true_2:não :}está em {1_terrain}</pt-BR>
+		<ko>{0_unit} 유닛이 {1_terrain} 지형 위에 {true_2:있지 않음:있음}</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_WIDGET_MAKE_DECISION_EVENT_STORY_DISABLE_TUTORIAL</zType>
@@ -10592,16 +10605,16 @@ Os navios não podem parar em casas de canal, eles devem iniciar e terminar seu 
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_LINK_HELP_TRIBE_INVASION</zType>
-		<en-US>A wave of Units from a link(CONCEPT_TRIBE) sets out to attack in a massive invasion.</en-US>
-		<es>Una oleada de unidades de una link(CONCEPT_TRIBE) se dispone a atacar en una invasión a gran escala.</es>
-		<de>Eine Horde von link(CONCEPT_TRIBE)einheiten will eine massive Invasion durchführen.</de>
-		<fr>Une vague d'unités appartenant à une link(CONCEPT_TRIBE) se lance dans une invasion massive.</fr>
-		<ja>link(CONCEPT_TRIBE)ユニットの大群が、大規模な侵攻に乗り出しました。</ja>
-		<zh-TW>一大批link(CONCEPT_TRIBE)單位會開始發動大規模入侵。</zh-TW>
-		<ru>Орда племенных юнитов планирует совершить массовое вторжение.</ru>
-		<zh-CN>一大批link(CONCEPT_TRIBE)单位会开始发动大规模入侵。</zh-CN>
-		<pt-BR>Uma onda de unidades de uma link(CONCEPT_TRIBE) começa a atacar, fazendo assim uma grande invasão.</pt-BR>
-		<ko>수많은 link(CONCEPT_TRIBE) 유닛이 대규모 침략을 일으킵니다.</ko>
+		<en-US>A link(CONCEPT_TRIBE) declares link(DIPLOMACY_WAR) and sends out a wave of Units to attack in a massive invasion.</en-US>
+		<es>Una link(CONCEPT_TRIBE) declara la link(DIPLOMACY_WAR) y envía una oleada de unidades para atacar en una invasión a gran escala.</es>
+		<de>Ein link(CONCEPT_TRIBE) erklärt den link(DIPLOMACY_WAR) und sendet eine Horde Einheiten aus, um eine massive Invasion durchzuführen.</de>
+		<fr>Une link(CONCEPT_TRIBE) a déclaré la link(DIPLOMACY_WAR) et a envoyé une vague d'unités dans le cadre d'une invasion massive.</fr>
+		<ja>link(CONCEPT_TRIBE)がlink(DIPLOMACY_WAR)を宣言し、大規模な侵攻に乗り出した。</ja>
+		<zh-TW>一個link(CONCEPT_TRIBE)宣佈發動link(DIPLOMACY_WAR)，派出大批單位發起大規模入侵。</zh-TW>
+		<ru>link(CONCEPT_TRIBE) объявляют {lowercase:link(DIPLOMACY_WAR,3)}, и орда племенных отрядов готовится совершить массовое вторжение.</ru>
+		<zh-CN>一个link(CONCEPT_TRIBE)宣布发动link(DIPLOMACY_WAR)，派出大批单位发起大规模入侵。</zh-CN>
+		<pt-BR>Uma link(CONCEPT_TRIBE) declara link(DIPLOMACY_WAR) e envia uma onda de unidades para atacar, em uma invasão em massa.</pt-BR>
+		<ko>link(CONCEPT_TRIBE)이 link(DIPLOMACY_WAR)을 선포하면서 수많은 유닛이 대규모 침략을 일으킵니다.</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_LINK_HELP_TUTOR</zType>
@@ -12890,154 +12903,54 @@ UU - Unique Unit: link(CONCEPT_NATION)의 고유 유닛. link(IMPROVEMENT_GARRIS
 		
 link(CONCEPT_FAMILY_CLASS,2) all have two specific Luxuries which give them a higher link(CONCEPT_OPINION_FAMILY,3) boost. (For example, link(FAMILYCLASS_CLERICS,2) prefer link(RESOURCE_INCENSE) and link(RESOURCE_LAVENDER).)
 
-Luxuries come from the following Resources:
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</en-US>
+Luxuries come from the following Resources:</en-US>
 		<es>Los lujos pueden comerciarse a una ciudad para reducir el link(YIELD_DISCONTENT). También pueden comerciarse con otras link(CONCEPT_NATION,2), link(CONCEPT_TRIBE,2) y link(CONCEPT_FAMILY,2) para mejorar la opinión que tienen de ti.
 
 Las link(CONCEPT_FAMILY_CLASS,2) tienen dos lujos específicos que les dan mayor impulso a la link(CONCEPT_OPINION_FAMILY,3). (Por ejemplo, los link(FAMILYCLASS_CLERICS,2) prefieren link(RESOURCE_INCENSE) y link(RESOURCE_LAVENDER)).
 
-Los lujos provienen de los siguientes recursos:
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</es>
+Los lujos provienen de los siguientes recursos:</es>
 		<de>link(CONCEPT_LUXURY,2) können mit einer Stadt gehandelt werden, um die dortige link(YIELD_HAPPINESS) zu erhöhen. Sie können außerdem mit anderen link(CONCEPT_NATION,2), link(CONCEPT_FAMILY,2) oder link(CONCEPT_TRIBE,4) gehandelt werden, damit sich das Ansehen Eurer Nation verbessert.
 		
 Alle link(CONCEPT_FAMILY_CLASS,2) haben zwei bestimmte Luxusgüter, die Euer link(CONCEPT_OPINION_FAMILY,3) noch weiter verbessern. (link(FAMILYCLASS_CLERICS,2) beispielsweise mögen link(RESOURCE_INCENSE) und link(RESOURCE_LAVENDER).)
 
-Luxusgüter stammen von folgenden Rohstoffen:
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</de>
+Luxusgüter stammen von folgenden Rohstoffen:</de>
 		<fr>Les ressources de luxe peuvent être vendues à une cité pour augmenter le link(YIELD_HAPPINESS). Vous pouvez aussi les vendre à d'autres link(CONCEPT_NATION,2), à des link(CONCEPT_TRIBE,2), et des link(CONCEPT_FAMILY,2) pour améliorer leur opinion de vous.
 		
 Les link(CONCEPT_FAMILY_CLASS,2) ont toutes deux ressources de luxe spécifiques leur offrant une amélioration de leur link(CONCEPT_OPINION_FAMILY,3). (Par exemple, les link(FAMILYCLASS_CLERICS,2) préfèrent l'link(RESOURCE_INCENSE) et la link(RESOURCE_LAVENDER).)
 
-Les ressources de luxe sont les suivantes :
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</fr>
+Les ressources de luxe sont les suivantes :</fr>
 		<ja>贅沢品を都市と交換することで、link(YIELD_HAPPINESS)が増加します。また、ほかにもlink(CONCEPT_NATION,2)や、link(CONCEPT_TRIBE,2)、link(CONCEPT_FAMILY,2)とも交換することができ、実行すると、あなたに対する評価が向上します。
 		
 各link(CONCEPT_FAMILY_CLASS,2)には、与えると、あなたへの評価をより多く高められる特別な贅沢品が2つずつあります。たとえば、link(FAMILYCLASS_CLERICS,2)はlink(RESOURCE_INCENSE)とlink(RESOURCE_LAVENDER)を好みます。
 
-贅沢品は下記の資源から獲得できます：
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</ja>
+贅沢品は下記の資源から獲得できます：</ja>
 		<zh-TW>與城市進行奢侈品貿易可增加link(YIELD_HAPPINESS)。與其他link(CONCEPT_NATION,2)、link(CONCEPT_TRIBE,2)或link(CONCEPT_FAMILY,2)進行奢侈品貿易，也可以提升他們對你的好感度。
 		
 每個link(CONCEPT_FAMILY_CLASS,2)都偏愛兩種特定奢侈品，進行此類奢侈品貿易可帶來較高的link(CONCEPT_OPINION_FAMILY,3)加成。 （例如，link(FAMILYCLASS_CLERICS,2)偏愛link(RESOURCE_INCENSE)和link(RESOURCE_LAVENDER)。）
 
-奢侈品包括：
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</zh-TW>
+奢侈品包括：</zh-TW>
 		<ru>Предметы роскоши можно продавать городу, чтобы повысить уровень {lowercase:link(YIELD_HAPPINESS,1)}. Также их можно продавать другим {lowercase:link(CONCEPT_NATION,8)}, {lowercase:link(CONCEPT_TRIBE,8)} и {lowercase:link(CONCEPT_FAMILY,8)}, чтобы повышать их мнение о вашей нации.
 
 У каждого {lowercase:link(CONCEPT_FAMILY_CLASS,1)} есть два особых предмета роскоши, которые повышают их {lowercase:link(CONCEPT_OPINION_FAMILY,12)}. Например, {lowercase:link(FAMILYCLASS_CLERICS)} предпочитают {lowercase:link(RESOURCE_INCENSE,3)} и {lowercase:link(RESOURCE_LAVENDER,3)}.
 
-Предметы роскоши можно получить из следующих ресурсов:
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</ru>
+Предметы роскоши можно получить из следующих ресурсов:</ru>
 		<zh-CN>与城市进行奢侈品贸易可增加link(YIELD_HAPPINESS)。与其他link(CONCEPT_NATION,2)、link(CONCEPT_TRIBE,2)或link(CONCEPT_FAMILY,2)进行奢侈品贸易，也可以提升他们对你的好感度。
 		
 每个link(CONCEPT_FAMILY_CLASS,2)都偏爱两种特定奢侈品，进行此类奢侈品贸易可带来较高的link(CONCEPT_OPINION_FAMILY,3)加成。（例如，link(FAMILYCLASS_CLERICS,2)偏爱link(RESOURCE_INCENSE)和link(RESOURCE_LAVENDER)。）
 
-奢侈品包括：
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</zh-CN>
+奢侈品包括：</zh-CN>
 		<pt-BR>Os luxos podem ser enviados a uma cidade para aumentar a link(YIELD_HAPPINESS). Eles também podem ser enviados com outras link(CONCEPT_NATION,2), link(CONCEPT_TRIBE,2) e link(CONCEPT_FAMILY,2) para melhorar a opinião deles sobre você.
 		
 Todas as link(CONCEPT_FAMILY_CLASS,2) têm dois luxos específicos que fará com que melhorem sua link(CONCEPT_OPINION_FAMILY,3). Por exemplo, link(FAMILYCLASS_CLERICS,2) preferem link(RESOURCE_INCENSE) e link(RESOURCE_LAVENDER).
 
-Luxos provém dos seguintes recursos:
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</pt-BR>
+Luxos provém dos seguintes recursos:</pt-BR>
 		<ko>사치품을 교역해 도시의 link(YIELD_HAPPINESS)를 높일 수 있습니다. 다른 link(CONCEPT_NATION,2), link(CONCEPT_TRIBE,2), link(CONCEPT_FAMILY,2)에게 보내 이들의 태도를 개선하는 데 사용할 수도 있습니다.
 
 
 
 모든 link(CONCEPT_FAMILY_CLASS,2)은 특별히 선호하는 사치품 두 종류가 있어 해당 사치품을 선물하면 link(CONCEPT_OPINION_FAMILY,3)가 더 큰 폭으로 개선됩니다. 예를 들어 link(FAMILYCLASS_CLERICS,2) 가문은 link(RESOURCE_INCENSE)와 link(RESOURCE_LAVENDER)를 선호합니다.
 
-사치품은 다음 자원에서 수급할 수 있습니다.
-{bullet}link(RESOURCE_SALT)
-{bullet}link(RESOURCE_GEM)
-{bullet}link(RESOURCE_FUR)
-{bullet}link(RESOURCE_HONEY)
-{bullet}link(RESOURCE_INCENSE)
-{bullet}link(RESOURCE_LAVENDER)
-{bullet}link(RESOURCE_OLIVE)
-{bullet}link(RESOURCE_WINE)
-{bullet}link(RESOURCE_DYE)
-{bullet}link(RESOURCE_PEARL)</ko>
+사치품은 다음 자원에서 수급할 수 있습니다.</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_LINK_HELP_MERCENARY</zType>
@@ -14948,6 +14861,19 @@ Unidades que se movam com transporte naval normalmente não podem parar em casas
 		<zh-CN>处于冷却中的单位不能再移动，也不能采取行动。造成冷却的原因包括攻击、任命将军、建造改良设施或升级单位。</zh-CN>
 		<pt-BR>As unidades que estejam em recarga não podem se mover ou realizar ações. As causas de uma recarga incluem ataques, nomear um general, construir melhorias ou melhorar a unidade.</pt-BR>
 		<ko>재활성 대기 중인 유닛은 이동하거나 행동을 취할 수 없습니다. 공격 중이거나 장군을 배정 중이거나 시설을 건설 중이거나 유닛을 강화 중일 때 유닛이 재활성 대기 상태가 됩니다.</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_LINK_HELP_CONCEPT_COMPETITIVE_AI</zType>
+		<en-US>Steals Cities and Sites actively targeted by other players; aggressively races to build Wonders, found Religions, and settle contested land; refuses Truces on the verge of capturing a City; and generally pulls no punches to gain the upper hand.</en-US>
+		<es>Roba ciudades y emplazamientos que otros jugadores tienen en su punto de mira. Compite por construir maravillas, fundar religiones y colonizar tierras en disputa. Rechaza los trueques cuando estés a punto de capturar una ciudad. Básicamente, no hay que andarse con rodeos para conseguir una ventaja.</es>
+		<de>Stiehlt Städte und Standorte, die von anderen Spielern aktiv ins Visier genommen werden. Treibt mit Hochdruck den Bau von Weltwundern, das Gründen von Religionen und das Besiedeln umkämpfter Gefilde voran. Verweigert sich Waffenstillständen, wenn Städte am Rande einer Kapitulation stehen, und hält sich insgesamt nicht zurück, um die Oberhand zu gewinnen.</de>
+		<fr>Vole les cités et les sites activement pris pour cible par les autres joueurs et joueuses. Construit des Merveilles le plus vite possible, fonde des religions et s'installe sur des territoires contestés. Refuse les trêves quand est sur le point de capturer une cité et ne recule généralement devant rien pour prendre l'avantage.</fr>
+		<ja>他のプレイヤーが狙っている都市拠点および都市の奪取、遺産の建設、宗教の設立、土地の奪い合いを積極的に行います。攻略寸前の都市がある状況では和平を拒否し、優位に立つためであれば手段を選びません。</ja>
+		<zh-TW>積極搶奪其他玩家重點攻擊的城市和據點；全力加速建造奇觀、創立宗教並佔領爭議領土；在即將攻佔城市時拒絕停戰協議；總體上毫不留情，力求掌握主動權。</zh-TW>
+		<ru>Захватывает города и поселения, уже атакованные другими игроками; пытается первым строить чудеса света, основывать религии и заселять спорные земли; отклоняет предложения о перемирии накануне захвата города и в целом не стесняется пользоваться своим преимуществом.</ru>
+		<zh-CN>积极抢夺其他玩家重点攻击的城市和据点；全力加速建造奇观、创立宗教并占领争议领土；在即将攻占城市时拒绝停战协议；总体上毫不留情，力求掌握主动权。</zh-CN>
+		<pt-BR>Rouba cidades e assentamentos que são alvos ativos de outros jogadores. Corre agressivamente para construir maravilhas, fundar religiões e assentar terras contestadas. Recusa tréguas se estiver prestes a tomar cidades. No geral, não se corta para ter a vantagem.</pt-BR>
+		<ko>다른 플레이어가 표적으로 삼고 있는 도시와 부지를 훔치고, 불가사의 건설, 종교 설립, 경쟁 중인 땅에 대한 정착을 위해 공격적으로 경쟁하고, 도시를 점령할 무렵에는 휴전을 거부하고, 우위를 점하기 위해 거침없이 나서는 편입니다.</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_LINK_HELP_ASSIMILATION</zType>
@@ -17096,6 +17022,19 @@ Segure [{0_key}] para ver as ZDC das unidades.</pt-BR>
 		<ko>link(CONCEPT_FORTIFY) 가능</ko>
 	</Entry>
 	<Entry>
+		<zType>TEXT_HELPTEXT_UNIT_TYPE_CAN_CHOP_TERRITORY</zType>
+		<en-US>Can {0_chop} inside City Territory</en-US>
+		<es>Puede {0_chop} dentro del territorio de la ciudad</es>
+		<de>Kann in Stadtterritorium {0_chop}</de>
+		<fr>Peut {0_chop} dans le territoire de la cité</fr>
+		<ja>都市圏内で{0_chop}可能</ja>
+		<zh-TW>可以在城市領土內{0_chop}</zh-TW>
+		<ru>Можно {0_chop} на территории города</ru>
+		<zh-CN>可以在城市领土内{0_chop}</zh-CN>
+		<pt-BR>Pode {0_chop} dentro de território de cidade</pt-BR>
+		<ko>도시 영토 내에서 {0_chop} 가능</ko>
+	</Entry>
+	<Entry>
 		<zType>TEXT_HELPTEXT_UNIT_TYPE_START_LEVELS</zType>
 		<en-US>{0_value} {singular_0:Level:Levels}</en-US>
 		<es>{0} {singular_0:nivel:niveles}</es>
@@ -17408,6 +17347,19 @@ Segure [{0_key}] para ver as ZDC das unidades.</pt-BR>
 		<zh-CN>link(CONCEPT_RANGE)：{0_value} icon(RANGE)（已修复）</zh-CN>
 		<pt-BR>link(CONCEPT_RANGE): {0_value}  icon(RANGE) (fixo)</pt-BR>
 		<ko>link(CONCEPT_RANGE): {0_value} icon(RANGE) (고정)</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_RANGE_FIXED</zType>
+		<en-US>Fixed link(CONCEPT_RANGE)</en-US>
+		<es>link(CONCEPT_RANGE) fijo</es>
+		<de>Festgelegte link(CONCEPT_RANGE)</de>
+		<fr>{sentencecase:link(CONCEPT_RANGE)} fixe</fr>
+		<ja>固定のlink(CONCEPT_RANGE)</ja>
+		<zh-TW>已修復link(CONCEPT_RANGE)</zh-TW>
+		<ru>Фикс. {lowercase:link(CONCEPT_RANGE)}</ru>
+		<zh-CN>已修复link(CONCEPT_RANGE)</zh-CN>
+		<pt-BR>link(CONCEPT_RANGE) fixado</pt-BR>
+		<ko>link(CONCEPT_RANGE) 고정</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_UNIT_BASE_STAT</zType>
@@ -18220,29 +18172,29 @@ Segure [{0_key}] para ver as ZDC das unidades.</pt-BR>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EFFECT_UNIT_HELP_PUSH_WATER</zType>
-		<en-US>Target attempts to link(CONCEPT_RETREAT) or else link(EFFECTUNIT_DISARMED) (Water Only)</en-US>
-		<es>El objetivo intenta emprender la link(CONCEPT_RETREAT) y si no puede, quedará link(EFFECTUNIT_DISARMED) (solo en agua)</es>
-		<de>Ziel versucht link(CONCEPT_RETREAT), ansonsten link(EFFECTUNIT_DISARMED) (Nur Marine)</de>
-		<fr>La cible tente de link(CONCEPT_RETREAT) ou est link(EFFECTUNIT_DISARMED) (eau uniquement)</fr>
-		<ja>対象の退却中またはlink(EFFECTUNIT_DISARMED)中（水域のみ）</ja>
-		<zh-TW>目標試圖link(CONCEPT_RETREAT)或是link(EFFECTUNIT_DISARMED) (僅限水域)</zh-TW>
-		<ru>Цель пытается {lowercase:link(CONCEPT_RETREAT)}, иначе будет наложен эффект «link(CONCEPT_STUN)» (только на воде)</ru>
-		<zh-CN>目标试图link(CONCEPT_RETREAT)或是link(EFFECTUNIT_DISARMED) (仅限水域)</zh-CN>
-		<pt-BR>O alvo tenta bater em link(CONCEPT_RETREAT) ou será link(EFFECTUNIT_DISARMED) (apenas em água)</pt-BR>
-		<ko>목표물이 link(CONCEPT_RETREAT)하려 하거나 link(EFFECTUNIT_DISARMED)함 (수상 한정)</ko>
+		<en-US>Target attempts to link(CONCEPT_RETREAT) (Water Only)</en-US>
+		<es>El objetivo intenta emprender la link[retirada](CONCEPT_RETREAT) (solo en agua)</es>
+		<de>Ziel versucht link(CONCEPT_RETREAT) (Nur Marine)</de>
+		<fr>La cible tente de battre en link(CONCEPT_RETREAT) (eau uniquement)</fr>
+		<ja>対象はlink(CONCEPT_RETREAT)中（水域のみ）</ja>
+		<zh-TW>目標試圖link(CONCEPT_RETREAT)（僅限水域）</zh-TW>
+		<ru>Цель пытается {lowercase:link(CONCEPT_RETREAT)} (только на воде)</ru>
+		<zh-CN>目标试图link(CONCEPT_RETREAT)（仅限水域）</zh-CN>
+		<pt-BR>O alvo tenta bater em link(CONCEPT_RETREAT) (apenas em água)</pt-BR>
+		<ko>대상이 link(CONCEPT_RETREAT)를 시도함 (수상 한정)</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EFFECT_UNIT_HELP_PUSH</zType>
-		<en-US>Target attempts to link(CONCEPT_RETREAT) or else link(EFFECTUNIT_DISARMED)</en-US>
-		<es>El objetivo intenta link(CONCEPT_RETREAT) y si no puede, quedará link(EFFECTUNIT_DISARMED)</es>
-		<de>Ziel versucht link(CONCEPT_RETREAT), ansonsten link(EFFECTUNIT_DISARMED)</de>
-		<fr>La cible tente de link(CONCEPT_RETREAT) ou est link(EFFECTUNIT_DISARMED)</fr>
-		<ja>対象の退却中またはlink(EFFECTUNIT_DISARMED)中</ja>
-		<zh-TW>目標試圖link(CONCEPT_RETREAT)或是link(EFFECTUNIT_DISARMED)</zh-TW>
-		<ru>Цель пытается {lowercase:link(CONCEPT_RETREAT)}, иначе будет наложен эффект «link(EFFECTUNIT_DISARMED)»</ru>
-		<zh-CN>目标试图link(CONCEPT_RETREAT)或是link(EFFECTUNIT_DISARMED)</zh-CN>
-		<pt-BR>O alvo tenta bater em link(CONCEPT_RETREAT), se não puder será link(EFFECTUNIT_DISARMED)</pt-BR>
-		<ko>목표물이 link(CONCEPT_RETREAT)하려 하거나 link(EFFECTUNIT_DISARMED)함</ko>
+		<en-US>Target attempts to link(CONCEPT_RETREAT)</en-US>
+		<es>El objetivo intenta emprender la link(CONCEPT_RETREAT)</es>
+		<de>Ziel versucht link(CONCEPT_RETREAT)</de>
+		<fr>La cible tente de battre en link(CONCEPT_RETREAT)</fr>
+		<ja>対象はlink(CONCEPT_RETREAT)中</ja>
+		<zh-TW>目標試圖link(CONCEPT_RETREAT)</zh-TW>
+		<ru>Цель пытается {lowercase:link(CONCEPT_RETREAT)}</ru>
+		<zh-CN>目标试图link(CONCEPT_RETREAT)</zh-CN>
+		<pt-BR>O alvo tenta bater em link(CONCEPT_RETREAT)</pt-BR>
+		<ko>대상이 link(CONCEPT_RETREAT)를 시도함</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_EFFECT_UNIT_HELP_STUN</zType>
@@ -26103,6 +26055,19 @@ link(CONCEPT_WEAKNESS)</zh-TW>
 		<zh-CN>{0_opinion}：你的联盟太过强大</zh-CN>
 		<pt-BR>{0_opinion}: sua aliança é poderosa demais</pt-BR>
 		<ko>{0_opinion}: 동맹이 너무 강력합니다</ko>
+	</Entry>
+	<Entry>
+		<zType>TEXT_HELPTEXT_PLAYER_OPINION_PLAY_TO_WIN_OWN_ALLIANCE</zType>
+		<en-US>{0_opinion}: We regret our alliance</en-US>
+		<es>{0_opinion}: nos arrepentimos de forjar nuestra alianza</es>
+		<de>{0_opinion}: Wir bedauern unser Bündnis.</de>
+		<fr>{0_opinion} : Nous regrettons notre alliance</fr>
+		<ja>{0_opinion}：我々は同盟を結んだことを後悔している</ja>
+		<zh-TW>{0_opinion}：我們本就不該結盟</zh-TW>
+		<ru>{0_opinion}: Мы сожалеем о нашем союзе</ru>
+		<zh-CN>{0_opinion}：我们就不该结盟</zh-CN>
+		<pt-BR>{0_opinion}: Nós nos arrependemos de nossa aliança</pt-BR>
+		<ko>{0_opinion}: 우리의 동맹을 후회한다</ko>
 	</Entry>
 	<Entry>
 		<zType>TEXT_HELPTEXT_PLAYER_OPINION_PLAY_TO_WIN</zType>

@@ -1,0 +1,432 @@
+[
+  {
+    "adjacency": [],
+    "buildTurns": 5,
+    "class": "Estates",
+    "classId": "IMPROVEMENTCLASS_ESTATES",
+    "cost": [
+      "100 Stone",
+      "100 Wood"
+    ],
+    "icon": "img/icons/improvements/estates.png",
+    "id": "IMPROVEMENT_ESTATES",
+    "name": "Estates",
+    "output": [],
+    "restrictions": [
+      "Max 1/City"
+    ],
+    "slug": "estates",
+    "specialist": null,
+    "tech": null,
+    "terrainMods": [],
+    "terrains": [
+      "Fertile"
+    ],
+    "upkeep": []
+  },
+  {
+    "adjacency": [
+      "+10% Adjacent Farm"
+    ],
+    "buildTurns": 3,
+    "class": "Farm",
+    "classId": "IMPROVEMENTCLASS_FARM",
+    "cost": [
+      "20 Wood"
+    ],
+    "icon": "img/icons/improvements/farm.png",
+    "id": "IMPROVEMENT_FARM",
+    "name": "Farm",
+    "output": [
+      "+5 Food"
+    ],
+    "restrictions": [
+      "Aqueduct endpoint"
+    ],
+    "slug": "farm",
+    "specialist": {
+      "id": "SPECIALIST_FARMER",
+      "name": "Farmer",
+      "slug": "farmer"
+    },
+    "tech": null,
+    "terrainMods": [
+      "+2 Wood on Terrain Marsh",
+      "+40% Food on Terrain Lush",
+      "-40% Food on Terrain Arid",
+      "+20% Food on Fresh Water",
+      "+40% Food adjacent to Height Volcano"
+    ],
+    "terrains": [
+      "Fertile"
+    ],
+    "upkeep": []
+  },
+  {
+    "adjacency": [
+      "+10% Adjacent Mine"
+    ],
+    "buildTurns": 3,
+    "class": "Mine",
+    "classId": "IMPROVEMENTCLASS_MINE",
+    "cost": [
+      "20 Wood"
+    ],
+    "icon": "img/icons/improvements/mine.png",
+    "id": "IMPROVEMENT_MINE",
+    "name": "Mine",
+    "output": [
+      "+5 Iron"
+    ],
+    "restrictions": [],
+    "slug": "mine",
+    "specialist": {
+      "id": "SPECIALIST_MINER",
+      "name": "Miner",
+      "slug": "miner"
+    },
+    "tech": null,
+    "terrainMods": [],
+    "terrains": [
+      "Fertile",
+      "Hill"
+    ],
+    "upkeep": []
+  },
+  {
+    "adjacency": [],
+    "buildTurns": 3,
+    "class": "Nets",
+    "classId": "IMPROVEMENTCLASS_NETS",
+    "cost": [
+      "20 Wood"
+    ],
+    "icon": "img/icons/improvements/nets.png",
+    "id": "IMPROVEMENT_NETS",
+    "name": "Nets",
+    "output": [],
+    "restrictions": [],
+    "slug": "nets",
+    "specialist": {
+      "id": "SPECIALIST_FISHER",
+      "name": "Fisher",
+      "slug": "fisher"
+    },
+    "tech": null,
+    "terrainMods": [],
+    "terrains": [],
+    "upkeep": []
+  },
+  {
+    "adjacency": [],
+    "buildTurns": 1,
+    "class": "Fort",
+    "classId": "IMPROVEMENTCLASS_FORT",
+    "cost": [
+      "40 Stone"
+    ],
+    "icon": "img/icons/improvements/fort.png",
+    "id": "IMPROVEMENT_FORT",
+    "name": "Fort",
+    "output": [],
+    "restrictions": [],
+    "slug": "fort",
+    "specialist": null,
+    "tech": {
+      "id": "TECH_STONECUTTING",
+      "name": "Stonecutting",
+      "slug": "stonecutting"
+    },
+    "terrainMods": [],
+    "terrains": [
+      "Fertile"
+    ],
+    "upkeep": []
+  },
+  {
+    "adjacency": [
+      "+10% Adjacent Quarry"
+    ],
+    "buildTurns": 3,
+    "class": "Quarry",
+    "classId": "IMPROVEMENTCLASS_QUARRY",
+    "cost": [
+      "20 Iron"
+    ],
+    "icon": "img/icons/improvements/quarry.png",
+    "id": "IMPROVEMENT_QUARRY",
+    "name": "Quarry",
+    "output": [
+      "+5 Stone"
+    ],
+    "restrictions": [],
+    "slug": "quarry",
+    "specialist": {
+      "id": "SPECIALIST_STONECUTTER",
+      "name": "Stonecutter",
+      "slug": "stonecutter"
+    },
+    "tech": {
+      "id": "TECH_STONECUTTING",
+      "name": "Stonecutting",
+      "slug": "stonecutting"
+    },
+    "terrainMods": [
+      "+20% Stone on Terrain Arid",
+      "+40% Stone adjacent to Height Mountain",
+      "+40% Stone adjacent to Height Volcano"
+    ],
+    "terrains": [
+      "Fertile",
+      "Adjacent Volcano Mountain"
+    ],
+    "upkeep": []
+  },
+  {
+    "adjacency": [
+      "+20% Adjacent Lumbermill"
+    ],
+    "buildTurns": 3,
+    "class": "Camp",
+    "classId": "IMPROVEMENTCLASS_CAMP",
+    "cost": [
+      "20 Wood"
+    ],
+    "icon": "img/icons/improvements/camp.png",
+    "id": "IMPROVEMENT_CAMP",
+    "name": "Camp",
+    "output": [],
+    "restrictions": [],
+    "slug": "camp",
+    "specialist": {
+      "id": "SPECIALIST_TRAPPER",
+      "name": "Trapper",
+      "slug": "trapper"
+    },
+    "tech": {
+      "id": "TECH_TRAPPING",
+      "name": "Trapping",
+      "slug": "trapping"
+    },
+    "terrainMods": [],
+    "terrains": [],
+    "upkeep": []
+  },
+  {
+    "adjacency": [
+      "+60% Adjacent Farm"
+    ],
+    "buildTurns": 4,
+    "class": "Granary",
+    "classId": "IMPROVEMENTCLASS_GRANARY",
+    "cost": [
+      "40 Wood"
+    ],
+    "icon": "img/icons/improvements/granary.png",
+    "id": "IMPROVEMENT_GRANARY",
+    "name": "Granary",
+    "output": [
+      "+2 Growth"
+    ],
+    "restrictions": [],
+    "slug": "granary",
+    "specialist": null,
+    "tech": {
+      "id": "TECH_ADMINISTRATION",
+      "name": "Administration",
+      "slug": "administration"
+    },
+    "terrainMods": [],
+    "terrains": [
+      "Fertile"
+    ],
+    "upkeep": [
+      "1 Wood/turn"
+    ]
+  },
+  {
+    "adjacency": [
+      "+40% Adjacent Farm"
+    ],
+    "buildTurns": 3,
+    "class": "Pasture",
+    "classId": "IMPROVEMENTCLASS_PASTURE",
+    "cost": [
+      "20 Wood"
+    ],
+    "icon": "img/icons/improvements/pasture.png",
+    "id": "IMPROVEMENT_PASTURE",
+    "name": "Pasture",
+    "output": [],
+    "restrictions": [],
+    "slug": "pasture",
+    "specialist": {
+      "id": "SPECIALIST_RANCHER",
+      "name": "Rancher",
+      "slug": "rancher"
+    },
+    "tech": {
+      "id": "TECH_HUSBANDRY",
+      "name": "Husbandry",
+      "slug": "husbandry"
+    },
+    "terrainMods": [],
+    "terrains": [],
+    "upkeep": []
+  },
+  {
+    "adjacency": [
+      "+10% Adjacent Lumbermill"
+    ],
+    "buildTurns": 3,
+    "class": "Lumbermill",
+    "classId": "IMPROVEMENTCLASS_LUMBERMILL",
+    "cost": [
+      "20 Iron"
+    ],
+    "icon": "img/icons/improvements/lumbermill.png",
+    "id": "IMPROVEMENT_LUMBERMILL",
+    "name": "Lumbermill",
+    "output": [
+      "+5 Wood"
+    ],
+    "restrictions": [],
+    "slug": "lumbermill",
+    "specialist": {
+      "id": "SPECIALIST_WOODCUTTER",
+      "name": "Woodcutter",
+      "slug": "woodcutter"
+    },
+    "tech": {
+      "id": "TECH_FORESTRY",
+      "name": "Forestry",
+      "slug": "forestry"
+    },
+    "terrainMods": [],
+    "terrains": [
+      "Trees"
+    ],
+    "upkeep": []
+  },
+  {
+    "adjacency": [],
+    "buildTurns": 3,
+    "class": "Grove",
+    "classId": "IMPROVEMENTCLASS_GROVE",
+    "cost": [
+      "20 Wood"
+    ],
+    "icon": "img/icons/improvements/grove.png",
+    "id": "IMPROVEMENT_GROVE",
+    "name": "Grove",
+    "output": [],
+    "restrictions": [],
+    "slug": "grove",
+    "specialist": {
+      "id": "SPECIALIST_GARDENER",
+      "name": "Gardener",
+      "slug": "gardener"
+    },
+    "tech": {
+      "id": "TECH_LAND_CONSOLIDATION",
+      "name": "Land Consolidation",
+      "slug": "land_consolidation"
+    },
+    "terrainMods": [],
+    "terrains": [],
+    "upkeep": []
+  },
+  {
+    "adjacency": [],
+    "buildTurns": 2,
+    "class": "Watermill",
+    "classId": "IMPROVEMENTCLASS_WATERMILL",
+    "cost": [
+      "40 Wood"
+    ],
+    "icon": "img/icons/improvements/watermill.png",
+    "id": "IMPROVEMENT_WATERMILL",
+    "name": "Watermill",
+    "output": [
+      "+2 Science"
+    ],
+    "restrictions": [],
+    "slug": "watermill",
+    "specialist": null,
+    "tech": {
+      "id": "TECH_HYDRAULICS",
+      "name": "Hydraulics",
+      "slug": "hydraulics"
+    },
+    "terrainMods": [],
+    "terrains": [
+      "River",
+      "not Hill"
+    ],
+    "upkeep": [
+      "1 Wood/turn"
+    ]
+  },
+  {
+    "adjacency": [
+      "+100% Adjacent Nets"
+    ],
+    "buildTurns": 4,
+    "class": "Harbor",
+    "classId": "IMPROVEMENTCLASS_HARBOR",
+    "cost": [
+      "40 Wood"
+    ],
+    "icon": "img/icons/improvements/harbor.png",
+    "id": "IMPROVEMENT_HARBOR",
+    "name": "Harbor",
+    "output": [
+      "+10 Money"
+    ],
+    "restrictions": [],
+    "slug": "harbor",
+    "specialist": null,
+    "tech": {
+      "id": "TECH_CARTOGRAPHY",
+      "name": "Cartography",
+      "slug": "cartography"
+    },
+    "terrainMods": [],
+    "terrains": [
+      "Coast"
+    ],
+    "upkeep": [
+      "1 Stone/turn"
+    ]
+  },
+  {
+    "adjacency": [],
+    "buildTurns": 2,
+    "class": "Windmill",
+    "classId": "IMPROVEMENTCLASS_WINDMILL",
+    "cost": [
+      "40 Stone"
+    ],
+    "icon": "img/icons/improvements/windmill.png",
+    "id": "IMPROVEMENT_WINDMILL",
+    "name": "Windmill",
+    "output": [
+      "+2 Science"
+    ],
+    "restrictions": [],
+    "slug": "windmill",
+    "specialist": null,
+    "tech": {
+      "id": "TECH_WINDLASS",
+      "name": "Windlass",
+      "slug": "windlass"
+    },
+    "terrainMods": [],
+    "terrains": [
+      "Hill"
+    ],
+    "upkeep": [
+      "1 Stone/turn"
+    ]
+  }
+]

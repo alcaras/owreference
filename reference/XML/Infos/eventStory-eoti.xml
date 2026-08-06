@@ -1286,6 +1286,32 @@
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bIgnoreTriggerProb>1</bIgnoreTriggerProb>
 	</Entry>
+	<Entry>
+		<zType>EVENTSTORY_HOLY_SITE_BUDDHISM</zType>
+		<Name>TEXT_EVENTSTORY_HOLY_SITE_BUDDHISM_TITLE</Name>
+		<Text>TEXT_EVENTSTORY_HOLY_SITE_BUDDHISM</Text>
+		<zBackgroundName>Buddhist_Pilgrims</zBackgroundName>
+		<zFrameType>FRAME_INDIA</zFrameType>
+		<zEventURL>https://en.wikipedia.org/wiki/Mahabodhi_Temple</zEventURL>
+		<zAudioTrigger>AUDIO_UI_EVENT_ANCIENT_TRIBE</zAudioTrigger>
+		<zAuthor>Josh Unsworth</zAuthor>
+		<aeSubjects>
+			<zValue>SUBJECT_CITY_US</zValue>
+		</aeSubjects>
+		<aeOptions>
+			<zValue>EVENTOPTION_HOLY_SITE_FINISHED</zValue>
+		</aeOptions>
+		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
+		<TriggerData>IMPROVEMENT_HOLY_SITE_BUDDHISM</TriggerData>
+		<iTriggerSubject>0</iTriggerSubject>
+		<iImageSubject>-1</iImageSubject>
+		<iLookAtSubject>0</iLookAtSubject>
+		<iPriority>2</iPriority>
+		<iWeight>1</iWeight>
+		<iRepeatTurns>0</iRepeatTurns>
+		<bIgnoreTriggerProb>1</bIgnoreTriggerProb>
+		<bMultiples>1</bMultiples>
+	</Entry>
 	<!-- UNIQUE UNIT SALES -->
 	<Entry> 
 	    <zType>EVENTSTORY_UNIQUE_UNIT_SALE_MAURYA</zType>
@@ -1690,9 +1716,14 @@
 	    <Class>EVENTCLASS_HUN_EVENTS</Class>
 	    <iImageSubject>1</iImageSubject>
 		<MinTribeLevel>TRIBELEVEL_STRONG</MinTribeLevel>
+		<iMinTurns>20</iMinTurns>
 	    <iWeight>1</iWeight>
 	    <iProb>100</iProb>
 	    <iRepeatTurns>15</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_AN_ENEMY_TO_FEAR</zValue>
+			<zValue>EVENTSTORY_TESTING_THE_TREATY_ALLIANCE</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_TESTING_THE_TREATY_PEACE_NORMAL</zType>
@@ -1772,9 +1803,14 @@
 		<iImageSubject>1</iImageSubject>
 		<MinTribeLevel>TRIBELEVEL_NORMAL</MinTribeLevel>
 		<MaxTribeLevel>TRIBELEVEL_NORMAL</MaxTribeLevel>
+		<iMinTurns>20</iMinTurns>
 		<iWeight>1</iWeight>
 		<iProb>100</iProb>
 		<iRepeatTurns>15</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_AN_ENEMY_TO_FEAR</zValue>
+			<zValue>EVENTSTORY_TESTING_THE_TREATY_ALLIANCE_NORMAL</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_TESTING_THE_TREATY_PEACE_WEAK</zType>
@@ -1853,9 +1889,14 @@
 		<Class>EVENTCLASS_HUN_EVENTS</Class>
 		<iImageSubject>1</iImageSubject>
 		<MaxTribeLevel>TRIBELEVEL_WEAK</MaxTribeLevel>
+		<iMinTurns>20</iMinTurns>
 		<iWeight>1</iWeight>
 		<iProb>100</iProb>
 		<iRepeatTurns>15</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_AN_ENEMY_TO_FEAR</zValue>
+			<zValue>EVENTSTORY_TESTING_THE_TREATY_ALLIANCE_WEAK</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_TESTING_THE_TREATY_ALLIANCE</zType>
@@ -1938,9 +1979,14 @@
 	    <Class>EVENTCLASS_HUN_EVENTS</Class>
 		<iImageSubject>1</iImageSubject>
 		<MinTribeLevel>TRIBELEVEL_STRONG</MinTribeLevel>
+		<iMinTurns>20</iMinTurns>
 		<iWeight>1</iWeight>
 		<iProb>100</iProb>
 		<iRepeatTurns>10</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_AN_ENEMY_TO_FEAR</zValue>
+			<zValue>EVENTSTORY_TESTING_THE_TREATY_PEACE</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_TESTING_THE_TREATY_ALLIANCE_NORMAL</zType>
@@ -2024,9 +2070,14 @@
 		<iImageSubject>1</iImageSubject>
 		<MinTribeLevel>TRIBELEVEL_NORMAL</MinTribeLevel>
 		<MaxTribeLevel>TRIBELEVEL_NORMAL</MaxTribeLevel>
+		<iMinTurns>20</iMinTurns>
 		<iWeight>1</iWeight>
 		<iProb>100</iProb>
 		<iRepeatTurns>10</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_AN_ENEMY_TO_FEAR</zValue>
+			<zValue>EVENTSTORY_TESTING_THE_TREATY_PEACE_NORMAL</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_TESTING_THE_TREATY_ALLIANCE_WEAK</zType>
@@ -2109,9 +2160,14 @@
 		<Class>EVENTCLASS_HUN_EVENTS</Class>
 		<iImageSubject>1</iImageSubject>
 		<MaxTribeLevel>TRIBELEVEL_WEAK</MaxTribeLevel>
+		<iMinTurns>20</iMinTurns>
 		<iWeight>1</iWeight>
 		<iProb>100</iProb>
 		<iRepeatTurns>10</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_AN_ENEMY_TO_FEAR</zValue>
+			<zValue>EVENTSTORY_TESTING_THE_TREATY_PEACE_WEAK</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry> 
 	    <zType>EVENTSTORY_FEIGNED_RETREAT</zType>
