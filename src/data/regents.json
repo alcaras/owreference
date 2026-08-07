@@ -1,0 +1,119 @@
+{
+  "counts": {
+    "events": 7
+  },
+  "events": [
+    {
+      "abdication": false,
+      "candidate": "Parent of the new leader",
+      "candidateFilters": [
+        "healthy"
+      ],
+      "id": "EVENTSTORY_CONSORT_REGENT",
+      "leaderFilters": [
+        "aged 6\u201317"
+      ],
+      "name": "Dowager Regent",
+      "optional": true,
+      "priority": 6
+    },
+    {
+      "abdication": false,
+      "candidate": "Aunt/Uncle of the new leader",
+      "candidateFilters": [
+        "aged 18 or older",
+        "royal family",
+        "healthy"
+      ],
+      "id": "EVENTSTORY_AUNT_UNCLE_REGENT",
+      "leaderFilters": [
+        "aged 6\u201317"
+      ],
+      "name": "Lawful Regent",
+      "optional": true,
+      "priority": 5
+    },
+    {
+      "abdication": false,
+      "candidate": "Grandparent of the new leader",
+      "candidateFilters": [
+        "healthy",
+        "royal family"
+      ],
+      "id": "EVENTSTORY_GRANDPARENT_REGENT",
+      "leaderFilters": [
+        "aged 6\u201317"
+      ],
+      "name": "Regent",
+      "optional": true,
+      "priority": 5
+    },
+    {
+      "abdication": true,
+      "candidate": "any character in your court",
+      "candidateFilters": [
+        "aged 30 or older",
+        "healthy"
+      ],
+      "id": "EVENTSTORY_ABDICATION_REGENT_MANDATORY",
+      "leaderFilters": [],
+      "name": "Too Young to Rule",
+      "optional": false,
+      "priority": 4
+    },
+    {
+      "abdication": false,
+      "candidate": "any character in your court",
+      "candidateFilters": [
+        "aged 30 or older",
+        "healthy"
+      ],
+      "id": "EVENTSTORY_REGENT_MANDATORY",
+      "leaderFilters": [
+        "aged 6 or younger"
+      ],
+      "name": "Too Young to Rule",
+      "optional": false,
+      "priority": 4
+    },
+    {
+      "abdication": true,
+      "candidate": "a family head",
+      "candidateFilters": [],
+      "id": "EVENTSTORY_ABDICATION_REGENT_FALLBACK",
+      "leaderFilters": [],
+      "name": "Power Play",
+      "optional": false,
+      "priority": 3
+    },
+    {
+      "abdication": false,
+      "candidate": "a family head",
+      "candidateFilters": [
+        "healthy"
+      ],
+      "id": "EVENTSTORY_REGENT_FALLBACK",
+      "leaderFilters": [
+        "aged 17 or younger"
+      ],
+      "name": "Power Play",
+      "optional": false,
+      "priority": 3
+    }
+  ],
+  "formerRegentTrait": {
+    "familyOpinion": 0,
+    "id": "TRAIT_FORMER_REGENT",
+    "name": "Former Regent",
+    "ratings": [
+      "1 Wisdom"
+    ]
+  },
+  "regentTrait": {
+    "familyOpinion": 40,
+    "id": "TRAIT_REGENT",
+    "name": "Regent",
+    "ratings": []
+  },
+  "title": "Regent"
+}

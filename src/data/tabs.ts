@@ -87,6 +87,16 @@ export const TABS: Tab[] = [
     willContain: ['All 4 stats, rating −3..+15, Leader/Governor/Agent/General, both modes'],
   },
   {
+    slug: 'regents', icon: '👶', label: 'Regents', section: 'Characters',
+    status: 'built', sourceSheet: '',
+    summary: 'Who rules when the heir is a child — the regent candidate ladder and what regency does',
+    willContain: [
+      'The priority ladder: parent, grandparent, aunt/uncle, elder courtier, family head',
+      'Age gates that trigger a regency, and which rungs you may decline',
+      'Regent vs Former Regent traits, and how the rightful heir returns',
+    ],
+  },
+  {
     slug: 'opinion', icon: '❤️', label: 'Opinion', section: 'Characters',
     status: 'built', sourceSheet: '❤️ Opinion',
     summary: 'How character opinion is calculated',

@@ -1,0 +1,169 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import regents from '../data/regents.json';
+
+// Mechanic transcribed from Character.makeRegent / isSuccessionSkipRegent,
+// Player.setLeader (the handover) and PlayerBonus.cs (miRegentOfSubject, the
+// bonus that actually crowns one). The candidate ladder is data: eventStory.xml
+// iPriority + SubjectExtras, resolved in build_regents.py.
+const base = import.meta.env.BASE_URL;
+
+// death and abdication run the same ladder with different flavour events —
+// collapse to one rung per (priority, candidate) for the table
+const rungs: any[] = [];
+for (const e of regents.events as any[]) {
+  const prev = rungs.find(r => r.priority === e.priority && r.candidate === e.candidate);
+  if (prev) { prev.abdication = prev.abdication || e.abdication; continue; }
+  rungs.push({ ...e });
+}
+---
+
+<Base
+  title="Regents"
+  active="regents"
+  pageMark="👶"
+  description="How regency works in Old World and who is picked: the candidate ladder (parent, grandparent, aunt/uncle, any elder courtier, then a family head), the age gates that trigger it, what the Regent trait does, and how the rightful heir takes the throne back."
+  pageStats={[
+    { label: 'candidate rungs', value: rungs.length },
+    { label: 'family opinion', value: `+${regents.regentTrait.familyOpinion}` },
+  ]}
+>
+  <p class="lede">
+    When a leader dies and the crown falls to a child, someone rules in their name. Regency is
+    not a job you assign — it is decided at the moment of succession by a <b>priority ladder</b>
+    of candidates, and the game takes the first rung it can fill. The regent genuinely becomes
+    your leader, plays as your leader, and is expected to hand the throne back.
+    Transcribed from <code>Character.makeRegent</code>, <code>Player.setLeader</code> and
+    <code>isSuccessionSkipRegent</code> in the game source; the ladder itself is
+    <code>eventStory.xml</code> priority + subject filters.
+  </p>
+
+  <section class="rg">
+    <h2 class="rg__h">When a regency happens</h2>
+    <p class="rg__intro">
+      On succession (a leader dying <em>or</em> abdicating), if the incoming leader is a minor
+      the regent events fire. The age gate differs by rung — a toddler under 7 gets a regent
+      whether you like it or not, while a 6–17 leader only gets one if a suitable relative
+      exists. From <b>18</b> the new leader simply rules.
+    </p>
+
+    <h2 class="rg__h">Who is picked</h2>
+    <p class="rg__intro">
+      Highest priority first. Each rung is an event whose subject filters must all be
+      satisfiable by someone in your court; if nobody fits, the game drops to the next rung.
+      The first three offer a <b>choice</b> — you may decline that candidate — while the last
+      two are forced.
+    </p>
+
+    <ol class="rg__ladder">
+      {rungs.map((r: any) => (
+        <li class="rg__rung">
+          <div class="rg__rungtop">
+            <span class="rg__prio">priority {r.priority}</span>
+            <span class="rg__who">{r.candidate}</span>
+            {r.optional
+              ? <span class="rg__tag rg__tag--opt">you may decline</span>
+              : <span class="rg__tag rg__tag--forced">forced</span>}
+          </div>
+          <div class="rg__meta">
+            <span class="rg__ev">“{r.name}”</span>
+            {r.candidateFilters.length > 0 && (
+              <span class="rg__req">must be {r.candidateFilters.join(', ')}</span>
+            )}
+            {r.leaderFilters.length > 0 && (
+              <span class="rg__req">new leader {r.leaderFilters.join(', ')}</span>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+    <p class="rg__note">
+      “Healthy” excludes characters the game considers unfit at that moment. Note the bottom
+      rung: if no relative qualifies, a <b>family head</b> takes the regency — an outsider with
+      their own family's interests, which is why the event is called “Power Play”.
+    </p>
+
+    <h2 class="rg__h">What being regent does</h2>
+    <div class="rg__cols">
+      <div>
+        <h3 class="rg__sub">While regent</h3>
+        <ul class="rg__list">
+          <li>They are your <b>leader</b> in every mechanical sense — their ratings, traits and
+            archetype drive your empire, and they take the <b>{regents.title}</b> title.</li>
+          <li>They carry the <b>{regents.regentTrait.name}</b> trait, worth
+            <b>{regents.regentTrait.familyOpinion > 0 ? `+${regents.regentTrait.familyOpinion}` : regents.regentTrait.familyOpinion} opinion</b>
+            with their own family — regency is a family-politics prize.</li>
+          <li>Their reign counts as a reign: cognomen stats accrue to them, and the
+            <code>STAT_YEARS_REGENT</code> counter tracks the time.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="rg__sub">Giving the throne back</h3>
+        <ul class="rg__list">
+          <li>The rightful heir is remembered separately (the <b>Rightful Heir</b> trait), and
+            regents are <b>skipped by the succession list</b> —
+            <code>isSuccessionSkipRegent</code> removes them and their descendants as a
+            dynastic root, so a regency does not re-found your line through the regent's branch.</li>
+          <li>When the throne passes on, a regent who still holds the trait converts to
+            <b>{regents.formerRegentTrait.name}</b>
+            {regents.formerRegentTrait.ratings.length > 0 && (
+              <> — <b>{regents.formerRegentTrait.ratings.map((r: string) => `+${r}`).join(', ')}</b></>
+            )} for the rest of their life.</li>
+          <li>If the regent dies while still holding power, a dedicated event returns the
+            rightful heir to the throne.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="rg__note">
+      Regency can also arrive by event outside succession entirely — any event bonus carrying
+      <code>iRegentOfSubject</code> installs a regent over the named player, which is how some
+      story chains put a foreign character in charge.
+    </p>
+
+    <p class="rg__see">
+      See also <a href={`${base}family-heads`}>Family Head Selection</a> — the other “who gets
+      picked” question, decided by a different rule entirely.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1.4rem; }
+  .lede b { color: var(--text); }
+  .lede code, .rg code { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 4px; padding: 0.03rem 0.3rem; color: var(--text-soft); }
+
+  .rg__h { font-family: var(--font-display); font-size: 1.1rem; color: var(--accent);
+    margin: 1.6rem 0 0.5rem; }
+  .rg__h:first-of-type { margin-top: 0; }
+  .rg__intro { max-width: 88ch; font-size: 0.84rem; color: var(--text-dim); line-height: 1.6; margin: 0 0 0.9rem; }
+  .rg__intro b, .rg__note b { color: var(--text); }
+
+  .rg__ladder { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;
+    counter-reset: rung; max-width: 80ch; }
+  .rg__rung { border: 1px solid var(--border); border-left: 3px solid var(--gold-deep);
+    border-radius: var(--radius); background: var(--bg-elev); padding: 0.6rem 0.8rem; }
+  .rg__rungtop { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+  .rg__prio { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-faint); }
+  .rg__who { font-family: var(--font-display); font-size: 1rem; color: var(--text); }
+  .rg__tag { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.05em;
+    text-transform: uppercase; border-radius: 3px; padding: 0.05rem 0.35rem; border: 1px solid var(--border); }
+  .rg__tag--opt { color: var(--gold-soft); border-color: color-mix(in srgb, var(--gold) 40%, transparent); }
+  .rg__tag--forced { color: #d9603c; border-color: color-mix(in srgb, #d9603c 40%, transparent); }
+  .rg__meta { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; margin-top: 0.3rem; }
+  .rg__ev { font-size: 0.76rem; color: var(--text-dim); font-style: italic; }
+  .rg__req { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint); }
+
+  .rg__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 0.8rem 2rem; }
+  .rg__sub { font-family: var(--font-display); font-size: 0.9rem; color: var(--text); margin: 0 0 0.35rem; }
+  .rg__list { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.4rem;
+    font-size: 0.82rem; color: var(--text-dim); line-height: 1.55; }
+  .rg__list b { color: var(--text); }
+
+  .rg__note { max-width: 88ch; font-size: 0.78rem; color: var(--text-faint); line-height: 1.6; margin: 0.9rem 0 0; }
+  .rg__see { margin-top: 1.4rem; font-size: 0.82rem; color: var(--text-dim); }
+  .rg__see a { color: var(--accent); }
+</style>
