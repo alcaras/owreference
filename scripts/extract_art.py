@@ -68,10 +68,19 @@ ROUTES: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"^UNIT_(?!ACTION_|TARGET_|TARGETING_|MOVE_|ATTACK_)([A-Z_0-9]+?)()$"), "icons/units"),
 ]
 
+# Some sprite names ship TWICE at different sizes: a large illustrated portrait
+# and a small white silhouette glyph (the one drawn inside the unit's map
+# marker — a sling for Slinger, a bow for Archer). Keeping only the largest
+# per name silently threw the glyph away, so these routes are extracted by
+# SMALLEST instead, into a parallel directory.
+SMALLEST_ROUTES = [
+    (re.compile(r"^UNIT_(?!ACTION_|TARGET_|TARGETING_|MOVE_|ATTACK_)([A-Z_0-9]+?)()$"), "icons/unit_glyphs"),
+]
 
-def route(name: str) -> tuple[str, str, bool] | None:
+
+def route(name: str, table=None) -> tuple[str, str, bool] | None:
     """Return (output_dir, slug, is_seat) or None."""
-    for pat, out_dir in ROUTES:
+    for pat, out_dir in (table if table is not None else ROUTES):
         m = pat.match(name)
         if m:
             # Sanitize: lower-case, any non [a-z0-9_] → _ (collapse runs).
@@ -103,6 +112,7 @@ def asset_files(install: Path) -> list[Path]:
 def extract(install: Path, verbose: bool = False) -> dict[str, int]:
     # Track best (largest area) PIL image we've seen per (out_dir, slug, seat)
     best: dict[tuple[str, str, bool], Image.Image] = {}
+    smallest: dict[tuple[str, str, bool], Image.Image] = {}
 
     files = asset_files(install)
     print(f"→ scanning {len(files)} asset files")
@@ -139,9 +149,17 @@ def extract(install: Path, verbose: bool = False) -> dict[str, int]:
             if cur is None or (cur.size[0] * cur.size[1]) < area:
                 best[key] = img
 
+            # same sprite, opposite selection rule → the silhouette glyph
+            rs = route(name, SMALLEST_ROUTES)
+            if rs:
+                gkey = (rs[0], rs[1], rs[2])
+                gcur = smallest.get(gkey)
+                if gcur is None or (gcur.size[0] * gcur.size[1]) > area:
+                    smallest[gkey] = img
+
     # Save best images
     counts: dict[str, int] = {}
-    for (out_dir, slug, is_seat), img in best.items():
+    for (out_dir, slug, is_seat), img in list(best.items()) + list(smallest.items()):
         d = IMG / out_dir
         d.mkdir(parents=True, exist_ok=True)
         suffix = "-seat" if is_seat else ""

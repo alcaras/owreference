@@ -17,6 +17,8 @@ const { units, heading, noun = 'units' } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
 const unitArt = (slug: string) => `${base}img/icons/units/${slug}.png`;
+// the small white silhouette the game draws inside a unit's map marker
+const unitGlyph = (slug: string) => `${base}img/icons/unit_glyphs/${slug}.png`;
 const traitIcon = (key: string) => `${base}img/icons/unit_traits/${key}.png`;
 const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
 
@@ -165,7 +167,10 @@ const FACETS: Facet[] = [
             <tr data-unit={u.slug} data-class={cls.label} data-source={u.source} id={u.slug}>
               <th class="rowlabel rowlabel--unit" scope="row" data-sortval={u.name}>
                 <div class="uname">
-                  <img class="uname__art" src={unitArt(u.iconSlug)} alt="" loading="lazy" onerror="this.style.display='none'" />
+                  <span class="uname__pic">
+                    <img class="uname__art" src={unitArt(u.iconSlug)} alt="" loading="lazy" onerror="this.style.display='none'" />
+                    <img class="uname__glyph" src={unitGlyph(u.iconSlug)} alt="" loading="lazy" title={`${u.name} map icon`} onerror="this.style.display='none'" />
+                  </span>
                   <div class="uname__text">
                     <span class="uname__name">{u.name}</span>
                     {u.source !== 'Base game' && (
@@ -441,9 +446,19 @@ const FACETS: Facet[] = [
   /* Unit name cell: art + name + chips */
   .rowlabel--unit { padding: 0.4rem 0.6rem; text-align: left; background: var(--bg-elev); }
   .uname { display: flex; gap: 0.5rem; align-items: center; }
+  .uname__pic { position: relative; flex-shrink: 0; line-height: 0; }
   .uname__art {
-    width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;
+    width: 44px; height: 44px; object-fit: contain; display: block;
     border-radius: 6px; background: rgba(0,0,0,0.25);
+  }
+  /* the map glyph, tucked into the portrait's corner — the game draws it
+     white-on-player-colour, so give it a dark disc to read against */
+  .uname__glyph {
+    position: absolute; right: -5px; bottom: -4px;
+    width: 22px; height: 22px; object-fit: contain;
+    background: rgba(14, 15, 18, 0.92);
+    border: 1px solid var(--border-strong); border-radius: 50%;
+    padding: 1px;
   }
   .uname__text { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
   .uname__name { font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--text); letter-spacing: 0.02em; }
