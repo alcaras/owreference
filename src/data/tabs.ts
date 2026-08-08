@@ -31,6 +31,16 @@ export const TABS: Tab[] = [
     summary: 'Barbarian tribes — levels, units, sites, diplomacy',
   },
   {
+    slug: 'tribe-conversion', icon: '🏕️', label: 'Barbarian Site Conversion', section: 'Nations & Tribes',
+    status: 'built', sourceSheet: '',
+    summary: 'When barbarian sites are adopted by a real tribe — start turns, per-turn odds, and what blocks it',
+    willContain: [
+      'The per-turn roll and its start turn by tribe level',
+      'The 12-tile pathfound search for an adopting tribe',
+      'Why a nearby player unit or a wounded defender cancels it',
+    ],
+  },
+  {
     slug: 'camp-spawning', icon: '⏳', label: 'Camp Unit Spawning', section: 'Nations & Tribes',
     status: 'built', sourceSheet: '',
     summary: 'When tribal camps spawn units and when the timer freezes',
