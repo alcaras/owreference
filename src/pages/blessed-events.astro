@@ -1,0 +1,14 @@
+---
+import EventGroupPage from '../components/EventGroupPage.astro';
+const base = import.meta.env.BASE_URL;
+---
+<EventGroupPage sectionKey="blessed" title="Blessed Events" active="blessed-events" pageMark="✨">
+  Everything the <strong>Blessed</strong> <a href={`${base}traits`}>trait</a> touches. The first group
+  <strong>requires</strong> it — these stories can only fire for a character who is already Blessed,
+  which is what makes the trait worth having: a steady drip of favourable harvests, trades, births and
+  truces. The rest <strong>grant</strong> it, from the Oracle and a pilgrimage to surviving a wildfire.
+  Blessed and <a href={`${base}cursed-events`}>Cursed</a> replace one another, so gaining one clears
+  the other. This is a <strong>cross-cut view</strong>: each story also appears under its own event
+  class or trigger on <a href={`${base}events`}>Story Events</a>. Weights are the XML knob, not real
+  in-game odds — character and empire conditions filter what's eligible.
+</EventGroupPage>

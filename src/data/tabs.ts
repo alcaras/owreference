@@ -392,6 +392,16 @@ export const TABS: Tab[] = [
     willContain: ['Every building-completion decision event and its option rewards'],
   },
   {
+    slug: 'blessed-events', icon: '✨', label: 'Blessed Events', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Stories that require, grant or remove the Blessed trait',
+  },
+  {
+    slug: 'cursed-events', icon: '🐈‍⬛', label: 'Cursed Events', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Stories that require, grant or remove the Cursed trait — including the four that lift it',
+  },
+  {
     slug: 'family-events', icon: '👪', label: 'Family Events', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Stories tied to a specific family class (Champions, Clerics, Hunters…)',

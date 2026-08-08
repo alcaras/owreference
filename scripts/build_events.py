@@ -42,6 +42,7 @@ import wonder_events_util as weu  # noqa: E402  shared wonder-event definition
 import project_events_util as peu  # noqa: E402  shared project-event definition
 import building_events_util as beu  # noqa: E402  shared building-event definition
 import family_events_util as feu  # noqa: E402  shared family-event definition
+import blessing_events_util as bcu  # noqa: E402  shared blessed/cursed definition
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "events.json"
@@ -432,6 +433,34 @@ def main() -> int:
         family_events.append(ev)
     family_events.sort(key=lambda e: (e["family"]["names"][0] if e["family"]["names"] else "", -e["weight"], e["name"]))
 
+    # Blessed / Cursed: the two divine-favour traits. Like family events these
+    # are a NON-exclusive cross-cut (the stories keep their own class on Story
+    # Events), so build_story_events does not drop them. Each event records
+    # whether it needs the trait, grants it, or removes it.
+    blessing_sections = {}
+    for key in ("BLESSED", "CURSED"):
+        spec = bcu.TRAITS[key]
+        evs = []
+        for st in story_idx.values():
+            rel = bcu.relation(st, key, eopt_idx, bonus_idx)
+            if not rel:
+                continue
+            ev = build_event(st, 0, eopt_idx, bonus_idx, text)
+            ev["blessing"] = rel
+            ev["share"] = None
+            bits = []
+            if rel["needs"]:
+                bits.append(f"Requires {spec['label']}")
+            if rel["grants"]:
+                bits.append(f"Can grant {spec['label']}")
+            if rel["removes"]:
+                bits.append(f"Can remove {spec['label']}")
+            ev["trigger"] = " · ".join(bits)
+            evs.append(ev)
+        # gateway stories first (they need it), then the ones that hand it out
+        evs.sort(key=lambda e: (not e["blessing"]["needs"], -e["weight"], e["name"]))
+        blessing_sections[key] = evs
+
     sections = [
         group(ruins, "ruins", "Ruins",
               "Fires when one of your units explores a Ruins tile. One story is "
@@ -453,6 +482,12 @@ def main() -> int:
         {"key": "family", "label": "Family", "totalWeight": 0,
          "blurb": "Stories tied to a specific family class.",
          "events": family_events},
+        {"key": "blessed", "label": "Blessed", "totalWeight": 0,
+         "blurb": "Stories that require, grant or remove the Blessed trait.",
+         "events": blessing_sections["BLESSED"]},
+        {"key": "cursed", "label": "Cursed", "totalWeight": 0,
+         "blurb": "Stories that require, grant or remove the Cursed trait.",
+         "events": blessing_sections["CURSED"]},
     ]
 
     # ── Locate any story by id ──────────────────────────────────────────────

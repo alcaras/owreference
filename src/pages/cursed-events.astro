@@ -1,0 +1,15 @@
+---
+import EventGroupPage from '../components/EventGroupPage.astro';
+const base = import.meta.env.BASE_URL;
+---
+<EventGroupPage sectionKey="cursed" title="Cursed Events" active="cursed-events" pageMark="🐈‍⬛">
+  Everything the <strong>Cursed</strong> <a href={`${base}traits`}>trait</a> touches — and there is
+  more of it than there is Blessing. The first group <strong>requires</strong> it: crop failures,
+  fires, earthquakes, poor iron and royal tragedies that can only befall a character already Cursed.
+  Others <strong>grant</strong> it. A few do both, and those are the ones to look for — Altruism,
+  Asceticism, Carnivorism and Come to Collect can <strong>remove</strong> the curse from the character
+  who is suffering it. Cursed and <a href={`${base}blessed-events`}>Blessed</a> replace one another,
+  so gaining one clears the other. This is a <strong>cross-cut view</strong>: each story also appears
+  under its own event class or trigger on <a href={`${base}events`}>Story Events</a>. Weights are the
+  XML knob, not real in-game odds.
+</EventGroupPage>

@@ -39051,5 +39051,5843 @@
     "key": "family",
     "label": "Family",
     "totalWeight": 0
+  },
+  {
+    "blurb": "Stories that require, grant or remove the Blessed trait.",
+    "events": [
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Courtier Merchant",
+          "Blessed",
+          "Max 2 Strengths",
+          "Max 2 Weakness"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_GP_LEFT_BEHIND",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Left Behind",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Gracious",
+                    "tip": [
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Gracious — trait"
+                  },
+                  {
+                    "eachCity": 80,
+                    "text": "+80 Happiness (city)",
+                    "yield": "happiness"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_GRACIOUS",
+                    "aeBonuses: BONUS_HAPPINESS_GAIN_AVERAGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_GP_LEFT_BEHIND_OPTION_0_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Sell it and give the proceeds to the poor."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Inspiring",
+                    "tip": [
+                      "As leader: +1 Culture/Culture Level",
+                      "As governor: +2 Culture/Culture Level",
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Inspiring — trait"
+                  },
+                  {
+                    "base": 80,
+                    "per": 20,
+                    "text": "+80 Civics (+20/city)",
+                    "yield": "civics"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_INSPIRING",
+                    "aeBonuses: BONUS_CIVICS_GAIN_LARGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_GP_LEFT_BEHIND_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Commission an inspiring public obelisk."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+4 Legitimacy"
+                  },
+                  {
+                    "text": "Gain trait: Extravagant",
+                    "tip": [
+                      "As leader: -10% Money",
+                      "As governor: -20% Money",
+                      "-1 Discipline",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Extravagant — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy 4",
+                    "aeAddTraits: TRAIT_EXTRAVAGANT"
+                  ],
+                  "id": "BONUS_EVENTOPTION_GP_LEFT_BEHIND_OPTION_2_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Use it to decorate the royal estates."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 8
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Blessed",
+          "Ambassador"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "base": 50,
+            "per": 15,
+            "text": "+50 Wood (+15/city)",
+            "yield": "wood"
+          },
+          {
+            "base": 50,
+            "per": 15,
+            "text": "+50 Stone (+15/city)",
+            "yield": "stone"
+          },
+          {
+            "base": 50,
+            "per": 15,
+            "text": "+50 Iron (+15/city)",
+            "yield": "iron"
+          }
+        ],
+        "id": "EVENTSTORY_BLESSED_TRADE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Blessed Trade",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Remarkable!"
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 6
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "City Min Strong",
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_CULTURE_THRIVING",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "[city] Thriving",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bRandomTech 1"
+                  ],
+                  "id": "BONUS_RANDOM_TECH",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "[city] will change the world."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "eachCity": 200,
+                    "text": "+200 Growth (city)",
+                    "yield": "growth"
+                  },
+                  {
+                    "text": "+1 Happiness level"
+                  },
+                  {
+                    "base": 80,
+                    "per": 20,
+                    "text": "+80 Civics (+20/city)",
+                    "yield": "civics"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_GROWTH_GAIN_GIGANTIC, BONUS_HAPPINESS_UP"
+                  ],
+                  "id": "BONUS_EVENTOPTION_CULTURE_THRIVING_OPTION_1",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_CIVICS=80",
+                    "aiGlobalYieldsPer: YIELD_CIVICS=20"
+                  ],
+                  "id": "BONUS_CIVICS_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "[city] will be the beacon for a golden age of [rival]."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 3
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Player Max Angry",
+          "Dog Owner",
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LOYAL_COMPANION",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Loyal Companion",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Loyal",
+                    "tip": [
+                      "+1 Discipline",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Loyal — trait"
+                  },
+                  {
+                    "text": "+20 XP to the character"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_LOYAL",
+                    "aeBonuses: BONUS_XP_CHARACTER_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LOYAL_COMPANION_OPTION_0_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Good dog."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 2
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TRAIT_TEST_OF_FAITH",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Test of Faith",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bFoundReligionCity 1"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_TEST_OF_FAITH_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "We shall honor the God of this ancient scroll."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Progress ambition: Monotheism"
+                  },
+                  {
+                    "memory": "MEMORYPLAYER_RECENT_AMBITION",
+                    "text": "Remembered: Recent Ambition (7 turns)"
+                  },
+                  {
+                    "text": "Gain trait: Righteous",
+                    "tip": [
+                      "As leader: +2 Happiness/City",
+                      "As governor: +4 Happiness/City",
+                      "+1 Discipline",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Righteous — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_AMBITION_LAW_MONOTHEISM, BONUS_GIVE_TRAIT_RIGHTEOUS, BONUS_SET_ZEALOT_ARCHETYPE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_TEST_OF_FAITH_OPTION_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Crack down on all cults and heathen beliefs."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 2
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_BLESSED_BUSINESS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "A Sound Investment",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 240,
+                    "per": 60,
+                    "text": "+240 Money (+60/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_MONEY=240",
+                    "aiGlobalYieldsPer: YIELD_MONEY=60"
+                  ],
+                  "id": "BONUS_MONEY_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I invest in people!"
+          }
+        ],
+        "prob": 50,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Player Min Similar",
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TRUCE_RESPONSE_BLESSED",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Blessed Truce",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYPLAYER_OFFER",
+                    "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "text": "+20 XP to the character"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "DiplomacyPlayerFrom DIPLOMACY_TRUCE",
+                    "aeBonuses: BONUS_PLAYER_OFFER"
+                  ],
+                  "id": "BONUS_PLAYER_TRUCE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iXPCharacter 20"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_SMALL",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I’ll not question the fates on this one."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 80 turns"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_BLESSED_LAW_FOOD",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Bountiful Harvest",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 75,
+                    "per": 25,
+                    "text": "+75 Food (+25/city)",
+                    "yield": "food"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_FOOD=75",
+                    "aiGlobalYieldsPer: YIELD_FOOD=25"
+                  ],
+                  "id": "BONUS_FOOD_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Behold the fruits of prosperity."
+          }
+        ],
+        "prob": 50,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_BLESSED_LAW",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Code Clarifications",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 80,
+                    "per": 20,
+                    "text": "+80 Civics (+20/city)",
+                    "yield": "civics"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_CIVICS=80",
+                    "aiGlobalYieldsPer: YIELD_CIVICS=20"
+                  ],
+                  "id": "BONUS_CIVICS_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Simplify, simplify."
+          }
+        ],
+        "prob": 50,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Endeared To Leader",
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_RELATIONSHIP_GIFT_OF_LAND",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Gift of Land",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iBorderGrowth 4"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RELATIONSHIP_GIFT_OF_LAND_OPTION_0_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "[rival] needs to extend its reach."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 30,
+                    "per": 10,
+                    "text": "+30 Wood (+10/city)",
+                    "yield": "wood"
+                  },
+                  {
+                    "base": 120,
+                    "per": 30,
+                    "text": "+120 Money (+30/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_WOOD_GAIN_SMALL, BONUS_MONEY_GAIN_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RELATIONSHIP_GIFT_OF_LAND_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Sell the parcel to the highest bidders."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Citizen",
+                    "yield": "growth"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iCitizens 1",
+                    "iBorderGrowth 8"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RELATIONSHIP_GIFT_OF_LAND_OPTION_2_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_ENGINEER"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Survey the land to determine its true potential."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Blessed",
+          "No Children",
+          "Infertile",
+          "In Love With Leader",
+          "Old"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_MIRACLE_BIRTH",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Miracle Birth",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -75,
+                    "per": -25,
+                    "text": "-75 Food (-25/city)",
+                    "yield": "food"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_FOOD=-75",
+                    "aiGlobalYieldsPer: YIELD_FOOD=-25"
+                  ],
+                  "id": "BONUS_FOOD_LOSS_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Throw a feast! The world shall remember this day!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -240,
+                    "per": -60,
+                    "text": "-240 Money (-60/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_MONEY=-240",
+                    "aiGlobalYieldsPer: YIELD_MONEY=-60"
+                  ],
+                  "id": "BONUS_MONEY_LOSS_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Prepare thanksgiving offerings to the gods!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Doomed"
+                  },
+                  {
+                    "text": "Gain trait: Doomed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_DOOMED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_DOOMED",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_DOOMED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_DOOMED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Even the gods themselves cannot stop us!"
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Blessed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_BLESSED_STONE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Surplus Stone",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 75,
+                    "per": 25,
+                    "text": "+75 Stone (+25/city)",
+                    "yield": "stone"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_STONE=75",
+                    "aiGlobalYieldsPer: YIELD_STONE=25"
+                  ],
+                  "id": "BONUS_STONE_GAIN_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I’ll put it to good use!"
+          }
+        ],
+        "prob": 50,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Min Pleased",
+          "Religion Pagan",
+          "Religion"
+        ],
+        "dlc": "Religion event pack",
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_AMULETS_AND_CHARMS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Amulets and Charms",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  },
+                  {
+                    "text": "Gain trait: Superstitious",
+                    "tip": [
+                      "-1 Wisdom",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Superstitious — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED, TRAIT_SUPERSTITIOUS"
+                  ],
+                  "id": "BONUS_EVENTOPTION_AMULETS_AND_CHARMS_OPTION_0_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Gladly take the amulet!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYCHARACTER_REFUSED_MY_AMULET",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Refused my amulet (-20 opinion for 40 turns)"
+                  },
+                  {
+                    "text": "+60 XP to the character"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYCHARACTER_REFUSED_MY_AMULET"
+                  ],
+                  "id": "BONUS_EVENTOPTION_AMULETS_AND_CHARMS_OPTION_1_CHARACTER_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iXPCharacter 60"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Refuse such superstitions."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Can grant Blessed",
+        "url": "https://en.wikipedia.org/wiki/Amulet",
+        "weight": 2
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TRAIT_BRIGHT_OUTLOOK",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_ENTRAILS_PREDICTION",
+        "name": "Bright Outlook",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_BLESSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I await whatever may come."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 2
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_A_REMARKABLE_DISCOVERY",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "A Remarkable Discovery",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Wisdom"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_WISDOM=1"
+                  ],
+                  "id": "BONUS_GAIN_WISDOM_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I shall keep them for myself and study their wisdom."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Science (+10/city)",
+                    "yield": "science"
+                  },
+                  {
+                    "text": "+40 XP to the character"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_SCIENCE=40",
+                    "aiGlobalYieldsPer: YIELD_SCIENCE=10"
+                  ],
+                  "id": "BONUS_SCIENCE_GAIN_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iXPCharacter 40"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "These scrolls should be turned over to my scholars to see if they can use the knowledge they contain to further our current research."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  },
+                  {
+                    "text": "Begin project: Literature"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_BLESSED",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddProjects: PROJECT_GIVE_LITERATURE"
+                  ],
+                  "id": "BONUS_ADD_LITERATURE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "We should create a traveling display so that they can be shared within our realm."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": false,
+        "conditions": [
+          "Carnal",
+          "Adult"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_ERA_OF_THE_GODS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Era of the Gods",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -150,
+                    "per": -50,
+                    "text": "-150 Food (-50/city)",
+                    "yield": "food"
+                  },
+                  {
+                    "text": "+1 Happiness level"
+                  },
+                  {
+                    "text": "Leader relationship: In Love With"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_FOOD=-150",
+                    "aiGlobalYieldsPer: YIELD_FOOD=-50"
+                  ],
+                  "id": "BONUS_FOOD_LOSS_GIGANTIC",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iHappinessLevels 1"
+                  ],
+                  "id": "BONUS_HAPPINESS_UP",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_IN_LOVE_WITH"
+                  ],
+                  "id": "BONUS_LEADER_IN_LOVE_WITH",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "We shall offer sacrifices and secure the favor of the gods and their servants."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Romantic",
+                    "tip": [
+                      "+1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Romantic — trait"
+                  },
+                  {
+                    "text": "Leader relationship: Influenced By"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_ROMANTIC"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_ROMANTIC",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "bHaveBastard 1"
+                  ],
+                  "id": "BONUS_HAVE_BASTARD",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_LEADER_INFLUENCED_BY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Bring a sacred lover to me. I have need of an successor blessed by the gods."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  },
+                  {
+                    "eachCity": 80,
+                    "text": "+80 Happiness (city)",
+                    "yield": "happiness"
+                  },
+                  {
+                    "text": "Leader relationship: Endeared To"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_BLESSED",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_HAPPINESS=80"
+                  ],
+                  "id": "BONUS_HAPPINESS_GAIN_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_ENDEARED_TO"
+                  ],
+                  "id": "BONUS_LEADER_ENDEARED_TO",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I shall consult with a priestess to find the will of the gods."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "law": "Polytheism",
+          "minTurns": 10,
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Zoroastrianism",
+          "Of State Religion"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_RIVER_REVELATION",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "River Revelation",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  },
+                  {
+                    "text": "Leader relationship: Estranged From"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_BLESSED",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_ESTRANGED_FROM"
+                  ],
+                  "id": "BONUS_LEADER_ESTRANGED_FROM",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "What an amazing story! [character] is surely blessed."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Leader relationship: Disappointed With"
+                  },
+                  {
+                    "text": "Gain trait: Vigilant",
+                    "tip": [
+                      "+1 Discipline",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Vigilant — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_DISAPPOINTED_WITH"
+                  ],
+                  "id": "BONUS_LEADER_DISAPPOINTED_WITH",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_VIGILANT"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_VIGILANT",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Don’t waste my time with such lies."
+          },
+          {
+            "leadsTo": [
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_RELIGIOUS_INTRIGUE_THREAT",
+                "name": "[religion] Intrigue"
+              },
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_RELIGIOUS_INTRIGUE_ENDED",
+                "name": "[religion] Intrigue"
+              },
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_RELIGIOUS_INTRIGUE_SUPPORT",
+                "name": "[religion] Intrigue"
+              },
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_RELIGIOUS_INTRIGUE_INFILTRATION",
+                "name": "[religion] Intrigue"
+              },
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_RELIGIOUS_INTRIGUE_OPPORTUNITY",
+                "name": "[religion] Intrigue"
+              },
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_RELIGIOUS_INTRIGUE_DISCOVERED",
+                "name": "[religion] Intrigue"
+              },
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_RELIGIOUS_INTRIGUE_BACKFIRE",
+                "name": "[religion] Intrigue"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_CHANGE_RELIGION_HEAD"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Leader relationship: Influenced By"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_LEADER_INFLUENCED_BY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "[character] has been called. He should be the new head of [religion]."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "minTurns": 10,
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Leader Us Reigned 25"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_SILVER_JUBILEE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Silver Jubilee",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -30,
+                    "per": -10,
+                    "text": "-30 Food (-10/city)",
+                    "yield": "food"
+                  },
+                  {
+                    "eachCity": 60,
+                    "text": "+60 Growth (city)",
+                    "yield": "growth"
+                  },
+                  {
+                    "eachCity": 60,
+                    "text": "+60 Happiness (city)",
+                    "yield": "happiness"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_FOOD=-30",
+                    "aiGlobalYieldsPer: YIELD_FOOD=-10"
+                  ],
+                  "id": "BONUS_FOOD_LOSS_SMALL",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aiCityYields: YIELD_GROWTH=60, YIELD_HAPPINESS=60"
+                  ],
+                  "id": "BONUS_PROJECT_FESTIVAL_3",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Prepare a royal spectacle for the people that they will not soon forget!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_BLESSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "We shall thank the gods for their kindness, and pray for their continued blessing."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Leader relationship: Disappointed With"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iPolyMarrySubject 0"
+                  ],
+                  "id": "BONUS_EVENTOPTION_SILVER_JUBILEE_OPTION_2_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_DISAPPOINTED_WITH"
+                  ],
+                  "id": "BONUS_LEADER_DISAPPOINTED_WITH",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I shall take another husband! We shall enjoy song, wine, and companionship!"
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 80 turns"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_AN_UNLIKELY_SCENARIO_BLESSED",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_UNLIKELY_SCENARIO_OUTCOME",
+        "name": "Some Time Later",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_BLESSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "What a nice man!"
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Player Trees",
+          "Not Player Trees Cut"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_CALAMITIES_WILDFIRE_END_BLESSED",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Spared from the Flames",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_BLESSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Maybe they are right."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Charisma"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_CHARISMA=1"
+                  ],
+                  "id": "BONUS_GAIN_CHARISMA_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "It is [rival] that is blessed."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "On Pilgrimage"
+        ],
+        "dlc": "Religion event pack",
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "text": "Steam achievement: Sacred Profane Pilgrimage"
+          }
+        ],
+        "id": "EVENTSTORY_PILGRIMAGE_FINISHED_1",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Blessed Pilgrim",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  },
+                  {
+                    "text": "Loses trait: On Pilgrimage"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED",
+                    "aeRemoveTraits: TRAIT_ON_PILGRIMAGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_PILGRIMAGE_7_OPTION_0_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Welcome home, [character]."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_ORACLE_2",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Oracle of [city]",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+1 Discipline"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_DISCIPLINE=1"
+                  ],
+                  "id": "BONUS_GAIN_DISCIPLINE_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The high priestess has lost her mind."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Vigilant",
+                    "tip": [
+                      "+1 Discipline",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Vigilant — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_VIGILANT"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_VIGILANT",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "It is vague. We should proceed with caution."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Blessed"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLESSED",
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_ORACLE_PLEASED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The gods favor us! Pay the Oracle handsomely."
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Can grant Blessed",
+        "url": null,
+        "weight": 1
+      }
+    ],
+    "key": "blessed",
+    "label": "Blessed",
+    "totalWeight": 0
+  },
+  {
+    "blurb": "Stories that require, grant or remove the Cursed trait.",
+    "events": [
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Max Upset",
+          "Cursed",
+          "Different Family To Leader"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_INFLUENCE_A_DEADLY_REQUEST",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "A Deadly Request",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Fugitive",
+                    "tip": [
+                      "Cannot hold a job"
+                    ],
+                    "tipTitle": "Fugitive — trait"
+                  },
+                  {
+                    "text": "The character is killed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_FUGITIVE"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_FUGITIVE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "bKillCharacter 1"
+                  ],
+                  "id": "BONUS_KILL_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I would rather die than give in to your threats."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Council COUNCIL_CHANCELLOR"
+                  ],
+                  "id": "BONUS_EVENTOPTION_INFLUENCE_A_DEADLY_REQUEST_OPTION_1_CHARACTER_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Council COUNCIL_AMBASSADOR"
+                  ],
+                  "id": "BONUS_EVENTOPTION_INFLUENCE_A_DEADLY_REQUEST_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectNotAny",
+                  "values": [
+                    "SUBJECT_PROUD"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Fine, I will elevate the [family] to a place of power."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Imprisoned",
+                    "tip": [
+                      "-100 base opinion of this character",
+                      "Cannot hold a job"
+                    ],
+                    "tipTitle": "Imprisoned — trait"
+                  },
+                  {
+                    "text": "+4 Legitimacy"
+                  },
+                  {
+                    "text": "+20 XP to the character"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_IMPRISONED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_IMPRISONED",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "iLegitimacy 4",
+                    "aeBonuses: BONUS_XP_CHARACTER_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_INFLUENCE_A_DEADLY_REQUEST_OPTION_2_CHARACTER_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_CHARACTER_ARCHETYPE_MARTIAL"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Disarming [character] will be easy."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 12
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Governor",
+          "Healthy",
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "text": "Leader relationship: Plotting Against"
+          }
+        ],
+        "id": "EVENTSTORY_INFLUENCE_LOCAL_AUTHORITY",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Local Authority",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+40 XP to the character"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iXPCharacter 40"
+                  ],
+                  "id": "BONUS_XP_CHARACTER_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "This was an unexpected failure."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 12
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed",
+          "Vengeful Against Leader"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_REJECTION_OF_INFLUENCE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Rejection of Influence",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "The character is killed"
+                  },
+                  {
+                    "text": "Leader relationship: Assassinated By"
+                  },
+                  {
+                    "memory": "MEMORYPLAYER_ASSASSINATION_EXPOSED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Assassination exposed (-80 opinion for 40 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_ASSASSINATED_BY",
+                    "bKillCharacter 1",
+                    "aeBonuses: BONUS_ASSASSINATION_EXPOSED"
+                  ],
+                  "id": "BONUS_KILL_CHARACTER_MURDERED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_HIGH_COURAGE"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "To arms! Kill the intruders!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Leader relationship: Suspicious Of"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_SUSPICIOUS_OF"
+                  ],
+                  "id": "BONUS_LEADER_SUSPICIOUS_OF",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Allow [character] to leave. He has made his point."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Cunning",
+                    "tip": [
+                      "As leader: +20 Foreign/Tribal Leader Opinions",
+                      "As governor: +2 Orders / Estates",
+                      "+1 Wisdom",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Cunning — trait"
+                  },
+                  {
+                    "text": "Leader relationship: Influenced By"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_CUNNING"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_CUNNING",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                  ],
+                  "id": "BONUS_LEADER_INFLUENCED_BY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_PLAYER_DIPLOMAT"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "I hear you, and I apologize for my part in it."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 12
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": true
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_ASCETICISM",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Asceticism",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Insane"
+                  },
+                  {
+                    "text": "Gain trait: Ascetic",
+                    "tip": [
+                      "Cannot hold a job"
+                    ],
+                    "tipTitle": "Ascetic — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_INSANE"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_INSANE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_ASCETIC"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_ASCETIC",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "It is good to be the [title]."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Loses trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeRemoveTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_REMOVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_HIGH_COURAGE"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "No. I'm not allowed to go crazy. Stop it."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Cursed · Can remove Cursed",
+        "url": "https://en.wikipedia.org/wiki/Asceticism",
+        "weight": 10
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed",
+          "Courtier",
+          "Max Upset"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TRAIT_PUSHED_TOO_FAR",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Pushed Too Far",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": "Trait Pushed Too Far Option 0 Bitter",
+                "probability": 0.3333333333333333,
+                "rewards": [
+                  {
+                    "text": "-2 Legitimacy"
+                  },
+                  {
+                    "text": "Loses trait: Bitter",
+                    "tip": [
+                      "-1 Charisma",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Bitter — trait"
+                  }
+                ],
+                "weight": 1000
+              },
+              {
+                "label": "Trait Pushed Too Far Option 0 Cruel",
+                "probability": 0.3333333333333333,
+                "rewards": [
+                  {
+                    "text": "-2 Legitimacy"
+                  },
+                  {
+                    "text": "Loses trait: Cruel",
+                    "tip": [
+                      "As leader: -10% Growth",
+                      "As governor: -20% Growth",
+                      "-1 Charisma",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Cruel — trait"
+                  }
+                ],
+                "weight": 1000
+              },
+              {
+                "label": "Trait Pushed Too Far Option 0 Intolerant",
+                "probability": 0.3333333333333333,
+                "rewards": [
+                  {
+                    "text": "-2 Legitimacy"
+                  },
+                  {
+                    "text": "Loses trait: Intolerant",
+                    "tip": [
+                      "As leader: -10% Civics",
+                      "As governor: -20% Civics",
+                      "-1 Charisma",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Intolerant — trait"
+                  }
+                ],
+                "weight": 1000
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy -2"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_PUSHED_TOO_FAR_OPTION_0_CHARACTER_0",
+                  "pct": 0.3333333333333333,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "aeRemoveTraits: TRAIT_BITTER"
+                  ],
+                  "id": "BONUS_REMOVE_TRAIT_BITTER",
+                  "pct": 0.3333333333333333,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "iLegitimacy -2"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_PUSHED_TOO_FAR_OPTION_0_CHARACTER_0",
+                  "pct": 0.3333333333333333,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "aeRemoveTraits: TRAIT_CRUEL"
+                  ],
+                  "id": "BONUS_REMOVE_TRAIT_CRUEL",
+                  "pct": 0.3333333333333333,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "iLegitimacy -2"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_PUSHED_TOO_FAR_OPTION_0_CHARACTER_0",
+                  "pct": 0.3333333333333333,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "aeRemoveTraits: TRAIT_INTOLERANT"
+                  ],
+                  "id": "BONUS_REMOVE_TRAIT_INTOLERANT",
+                  "pct": 0.3333333333333333,
+                  "weight": 1000
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": ""
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "+2 Legitimacy"
+                  },
+                  {
+                    "text": "Gain trait: Imprisoned",
+                    "tip": [
+                      "-100 base opinion of this character",
+                      "Cannot hold a job"
+                    ],
+                    "tipTitle": "Imprisoned — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy 2"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_PUSHED_TOO_FAR_OPTION_1_CHARACTER_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_IMPRISONED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_PUSHED_TOO_FAR_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "We cannot tolerate such nefarious actions."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 8
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Child Or Teenager",
+          "Courtier",
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TUTOR_UNHEALTHY_INTERESTS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Unhealthy Interests",
+        "options": [
+          {
+            "leadsTo": [
+              {
+                "cat": "on-new-turn-1",
+                "id": "EVENTSTORY_TRAIT_A_FUNNY_FEELING",
+                "name": "A Funny Feeling"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_TRAIT_UNHEALTHY_INTERESTS"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Leader relationship: Endeared To"
+                  },
+                  {
+                    "memory": "MEMORYCHARACTER_WATCH_CLOSELY",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Watching me closely (-20 opinion for 20 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_ENDEARED_TO"
+                  ],
+                  "id": "BONUS_LEADER_ENDEARED_TO",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYCHARACTER_WATCH_CLOSELY"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TUTOR_UNHEALTHY_INTERESTS_OPTION_0_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I will take [character] under my wing."
+          },
+          {
+            "leadsTo": [
+              {
+                "cat": "on-new-turn-1",
+                "id": "EVENTSTORY_TRAIT_A_FUNNY_FEELING",
+                "name": "A Funny Feeling"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_TRAIT_UNHEALTHY_INTERESTS"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Leader relationship: Suspicious Of"
+                  },
+                  {
+                    "memory": "MEMORYCHARACTER_AGREED_TO_KEEP_EYE",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Agreed to keep an eye on a dangerous student (+20 opinion for 20 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_SUSPICIOUS_OF"
+                  ],
+                  "id": "BONUS_LEADER_SUSPICIOUS_OF",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYCHARACTER_AGREED_TO_KEEP_EYE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TUTOR_UNHEALTHY_INTERESTS_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Agree with [character] to keep an eye on [character]."
+          },
+          {
+            "leadsTo": [
+              {
+                "cat": "on-new-turn-1",
+                "id": "EVENTSTORY_TRAIT_A_FUNNY_FEELING",
+                "name": "A Funny Feeling"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_TRAIT_UNHEALTHY_INTERESTS"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "We should let children be children."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYCHARACTER_CONVINCE_TO_CHANGE",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Convinced to give up questionable interests (+40 opinion for 20 turns)"
+                  },
+                  {
+                    "memory": "MEMORYCHARACTER_CONVINCE_TO_CHANGE",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Convinced to give up questionable interests (+40 opinion for 20 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYCHARACTER_CONVINCE_TO_CHANGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TUTOR_UNHEALTHY_INTERESTS_OPTION_3_CHARACTER_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "Memory MEMORYCHARACTER_CONVINCE_TO_CHANGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TUTOR_UNHEALTHY_INTERESTS_OPTION_3_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_CHARACTER_SEVEN_VIRTUES"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Convince [character] to find other interests."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 6
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed",
+          "Scholar"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_TRAIT_BURNED_LIBRARY",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Up in Smoke",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_MONEY_LOSS_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_BURNED_LIBRARY_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Rebuild the library in its original state."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -40,
+                    "per": -10,
+                    "text": "-40 Civics (-10/city)",
+                    "yield": "civics"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_CIVICS_LOSS_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_BURNED_LIBRARY_OPTION_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Enlist scribes to replace the lost scrolls."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Slothful",
+                    "tip": [
+                      "As leader: -10% Training",
+                      "As governor: -20% Training",
+                      "-1 Courage",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Slothful — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_GIVE_TRAIT_SLOTHFUL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_TRAIT_BURNED_LIBRARY_OPTION_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Give the sage permission to rebuild however he desires."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Cursed",
+        "url": "https://en.wikipedia.org/wiki/Library_of_Ashurbanipal",
+        "weight": 6
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": true
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_CARNIVORISM",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Carnivorism",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Insane"
+                  },
+                  {
+                    "text": "Gain trait: Bloodthirsty",
+                    "tip": [
+                      "As leader: +5% Damaged Them Modifier",
+                      "As general: +10% Damaged Them Modifier",
+                      "+1 Courage",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Bloodthirsty — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_INSANE"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_INSANE",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_BLOODTHIRSTY"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_BLOODTHIRSTY",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "This is the life! Bow before me, mortals!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Loses trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeRemoveTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_REMOVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_HIGH_WISDOM"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Just think about how all that meat comes out during latrine visits."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Cursed · Can remove Cursed",
+        "url": null,
+        "weight": 2
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": true
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed",
+          "Religion",
+          "Religion Leader"
+        ],
+        "dlc": "Religion event pack",
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_COME_TO_COLLECT",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Come to Collect",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Doomed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_DOOMED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_DOOMED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Lament your role in this tragedy."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Loses trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeRemoveTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_REMOVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_IMPIOUS"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "It must be a trick of the light."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "-1 Courage"
+                  },
+                  {
+                    "text": "Gain trait: Humble",
+                    "tip": [
+                      "+1 Wisdom",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Humble — trait"
+                  },
+                  {
+                    "text": "Loses trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiRatings: RATING_COURAGE=-1",
+                    "aeAddTraits: TRAIT_HUMBLE",
+                    "aeRemoveTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_COME_TO_COLLECT_OPTION_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Throw yourself at the feet of."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Cursed · Can remove Cursed",
+        "url": null,
+        "weight": 2
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "text": "Gain trait: Romantic",
+            "tip": [
+              "+1 Charisma",
+              "+20 opinion with same-trait characters"
+            ],
+            "tipTitle": "Romantic — trait"
+          }
+        ],
+        "id": "EVENTSTORY_HEDONISM",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Hedonism",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Wanton",
+                    "tip": [
+                      "+1 Charisma",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Wanton — trait"
+                  },
+                  {
+                    "text": "Gain trait: Debauched",
+                    "tip": [
+                      "As leader: +2 Discontent/City",
+                      "As governor: +4 Discontent/City",
+                      "-1 Discipline",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Debauched — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_WANTON"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_WANTON",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_DEBAUCHED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_DEBAUCHED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Everybody just have a good time!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_HIGH_DISCIPLINE"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Stop and consider this - hangovers."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": "https://en.wikipedia.org/wiki/Hedonism",
+        "weight": 2
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_CURSED_IRON",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Poor Quality Iron",
+        "options": [
+          {
+            "leadsTo": [
+              {
+                "cat": "on-new-turn-1",
+                "id": "EVENTSTORY_LEADER_CURSED_IRON_TRAIN",
+                "name": "A Sharp Reprimand"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_IRON_TRAIN"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -80,
+                    "per": -20,
+                    "text": "-80 Training (-20/city)",
+                    "yield": "training"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_TRAINING=-80",
+                    "aiGlobalYieldsPer: YIELD_TRAINING=-20"
+                  ],
+                  "id": "BONUS_TRAINING_LOSS_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The soldiers will need to train harder to compensate."
+          },
+          {
+            "leadsTo": [
+              {
+                "cat": "on-new-turn-1",
+                "id": "EVENTSTORY_LEADER_CURSED_IRON_BUY",
+                "name": "A Piercing Insight"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_IRON_BUY"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -75,
+                    "per": -25,
+                    "text": "-75 Iron (-25/city)",
+                    "yield": "iron"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_IRON=-75",
+                    "aiGlobalYieldsPer: YIELD_IRON=-25"
+                  ],
+                  "id": "BONUS_IRON_LOSS_LARGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Commission new weapons."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "-5 Legitimacy"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy -5"
+                  ],
+                  "id": "BONUS_LEGITIMACY_LOSS_FIVE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I cannot help."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 60 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 2
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [
+          {
+            "cat": "special-traits",
+            "id": "EVENTSTORY_LEADER_CURSED_IRON",
+            "name": "Poor Quality Iron"
+          }
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_CURSED_IRON_BUY",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_IRON_BUY",
+        "name": "A Piercing Insight",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Wounded",
+                    "tip": [
+                      "Removed as leader"
+                    ],
+                    "tipTitle": "Wounded — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_WOUNDED"
+                  ],
+                  "id": "BONUS_CHARACTER_WOUNDED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Argh!"
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 1 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_CURSED_INVEST",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "A Poor Investment",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -160,
+                    "per": -40,
+                    "text": "-160 Money (-40/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_MONEY=-160",
+                    "aiGlobalYieldsPer: YIELD_MONEY=-40"
+                  ],
+                  "id": "BONUS_MONEY_LOSS_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "He may lack honor, but I do not."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "-2 Legitimacy"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy -2"
+                  ],
+                  "id": "BONUS_LOSE_LEGITIMACY_DEBT",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I cannot afford that!"
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 60 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [
+          {
+            "cat": "special-traits",
+            "id": "EVENTSTORY_LEADER_CURSED_IRON",
+            "name": "Poor Quality Iron"
+          }
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_CURSED_IRON_TRAIN",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_IRON_TRAIN",
+        "name": "A Sharp Reprimand",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Wounded",
+                    "tip": [
+                      "Removed as leader"
+                    ],
+                    "tipTitle": "Wounded — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_WOUNDED"
+                  ],
+                  "id": "BONUS_CHARACTER_WOUNDED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Argh!"
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Every 1 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": true
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "text": "Gain trait: Pious",
+            "tip": [
+              "As leader: +5% State Religion Spread Chance",
+              "+1 Charisma",
+              "+40 opinion with same-trait characters"
+            ],
+            "tipTitle": "Pious — trait"
+          }
+        ],
+        "id": "EVENTSTORY_ALTRUISM",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Altruism",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Foolish",
+                    "tip": [
+                      "As leader: -10% Science",
+                      "As governor: -20% Science",
+                      "-1 Wisdom",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Foolish — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_FOOLISH"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_FOOLISH",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Yes, we must save everyone."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Loses trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeRemoveTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_REMOVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_HIGH_DISCIPLINE"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Are you mad? We can't save them all."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Cursed · Can remove Cursed",
+        "url": "https://en.wikipedia.org/wiki/Altruism",
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_CURSED_CROPS",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Crop Failure",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -150,
+                    "per": -50,
+                    "text": "-150 Food (-50/city)",
+                    "yield": "food"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_FOOD=-150",
+                    "aiGlobalYieldsPer: YIELD_FOOD=-50"
+                  ],
+                  "id": "BONUS_FOOD_LOSS_GIGANTIC",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Hand out the grain!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "-5 Legitimacy"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy -5"
+                  ],
+                  "id": "BONUS_LEGITIMACY_LOSS_FIVE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I cannot help."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 60 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_CURSED_QUAKE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Earthquake!",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -150,
+                    "per": -50,
+                    "text": "-150 Stone (-50/city)",
+                    "yield": "stone"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_STONE=-150",
+                    "aiGlobalYieldsPer: YIELD_STONE=-50"
+                  ],
+                  "id": "BONUS_STONE_LOSS_GIGANTIC",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Provide stone to help with the repairs."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "-5 Legitimacy"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy -5"
+                  ],
+                  "id": "BONUS_LEGITIMACY_LOSS_FIVE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I cannot help."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 60 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "text": "The character is killed"
+          },
+          {
+            "text": "Gain trait: Severely Ill",
+            "tip": [
+              "Removed as leader"
+            ],
+            "tipTitle": "Severely Ill — trait"
+          }
+        ],
+        "id": "EVENTSTORY_TRAIT_ROYAL_TRAGEDIES",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Royal Tragedies",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": 40,
+                    "per": 10,
+                    "text": "+40 Science (+10/city)",
+                    "yield": "science"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_SCIENCE=40",
+                    "aiGlobalYieldsPer: YIELD_SCIENCE=10"
+                  ],
+                  "id": "BONUS_SCIENCE_GAIN_AVERAGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "We must pursue practical solutions."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Pious",
+                    "tip": [
+                      "As leader: +5% State Religion Spread Chance",
+                      "+1 Charisma",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Pious — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_PIOUS"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_PIOUS",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Truly, we are cursed. Prayer for us."
+          }
+        ],
+        "prob": 25,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Max Angry",
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "text": "The character is killed"
+          }
+        ],
+        "id": "EVENTSTORY_SNAKE_CHARMER",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Snake Charmer",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": "Snake Charmer Option 0 Truce",
+                "probability": 0.999000999000999,
+                "rewards": [
+                  {
+                    "memory": "MEMORYTRIBE_OFFER",
+                    "text": "Remembered: Tribe Offer (5 turns)"
+                  },
+                  {
+                    "text": "-2 Legitimacy"
+                  }
+                ],
+                "weight": 1000
+              },
+              {
+                "label": "Snake Charmer Option 0 Peace",
+                "probability": 0.000999000999000999,
+                "rewards": [
+                  {
+                    "memory": "MEMORYTRIBE_OFFER",
+                    "text": "Remembered: Tribe Offer (5 turns)"
+                  },
+                  {
+                    "text": "-2 Legitimacy"
+                  }
+                ],
+                "weight": 1
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "DiplomacyTribe DIPLOMACY_TRUCE",
+                    "aeBonuses: BONUS_TRIBE_OFFER"
+                  ],
+                  "id": "BONUS_TRIBE_TRUCE",
+                  "pct": 0.999000999000999,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "iLegitimacy -2"
+                  ],
+                  "id": "BONUS_EVENTOPTION_SNAKE_CHARMER_OPTION_0_CHARACTER_1",
+                  "pct": 0.999000999000999,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "DiplomacyTribe DIPLOMACY_PEACE",
+                    "aeBonuses: BONUS_TRIBE_OFFER"
+                  ],
+                  "id": "BONUS_TRIBE_PEACE",
+                  "pct": 0.000999000999000999,
+                  "weight": 1
+                },
+                {
+                  "fields": [
+                    "iLegitimacy -2"
+                  ],
+                  "id": "BONUS_EVENTOPTION_SNAKE_CHARMER_OPTION_0_CHARACTER_1",
+                  "pct": 0.000999000999000999,
+                  "weight": 1
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": ""
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Mission MISSION_ASSASSINATE_ANY",
+                    "iMissionSubject 0",
+                    "aeBonuses: BONUS_SET_SCHEMER_ARCHETYPE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_SNAKE_CHARMER_OPTION_1_CHARACTER_2",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "A life for a life. Bring me the head of [character]."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYTRIBE_OFFER",
+                    "text": "Remembered: Tribe Offer (5 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bTribeInvade 1",
+                    "aeBonuses: BONUS_TRIBE_OFFER"
+                  ],
+                  "id": "BONUS_TRIBAL_INVASION",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Revenge is not enough. All the [tribe] must pay."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_CURSED_FIRE",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Great Fire of [city]",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -100,
+                    "per": -35,
+                    "text": "-100 Wood (-35/city)",
+                    "yield": "wood"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_WOOD=-100",
+                    "aiGlobalYieldsPer: YIELD_WOOD=-35"
+                  ],
+                  "id": "BONUS_WOOD_LOSS_HUGE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Provide wood to rebuild with!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -150,
+                    "per": -50,
+                    "text": "-150 Stone (-50/city)",
+                    "yield": "stone"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_STONE=-150",
+                    "aiGlobalYieldsPer: YIELD_STONE=-50"
+                  ],
+                  "id": "BONUS_STONE_LOSS_GIGANTIC",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Perhaps stone is a better choice."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "-5 Legitimacy"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy -5"
+                  ],
+                  "id": "BONUS_LEGITIMACY_LOSS_FIVE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I cannot help."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 60 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Cursed"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEADER_CURSED_LAW",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Letter of the Law",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -160,
+                    "per": -40,
+                    "text": "-160 Civics (-40/city)",
+                    "yield": "civics"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aiGlobalYieldsBase: YIELD_CIVICS=-160",
+                    "aiGlobalYieldsPer: YIELD_CIVICS=-40"
+                  ],
+                  "id": "BONUS_CIVICS_LOSS_GIGANTIC",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I must close this loophole!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "-5 Legitimacy"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "iLegitimacy -5"
+                  ],
+                  "id": "BONUS_LEGITIMACY_LOSS_FIVE",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I cannot help."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Requires Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": false,
+          "needs": true,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Governor",
+          "Cursed",
+          "Not Any Descendant Of Leader Us",
+          "Not Parent Of Leader Us",
+          "Not Spouse Of Leader Us",
+          "Not Loyal"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_THE_MAP_AND_THE_DAGGER",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "The Map and the Dagger",
+        "options": [
+          {
+            "leadsTo": [
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_NO_ESCAPE",
+                "name": "No Escape"
+              },
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_STUNNING_BLOWS",
+                "name": "Stunning Blows"
+              },
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_TALKING_HIM_DOWN",
+                "name": "Talking Him Down"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_THE_MAP_AND_DAGGER_EVADE"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Attempt to evade his blows."
+          },
+          {
+            "leadsTo": [
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_FORSAKEN",
+                "name": "Forsaken"
+              },
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_LOYALTY_REWARDED",
+                "name": "Loyalty Rewarded"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_THE_MAP_AND_DAGGER_GUARDS"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Rely on your loyal guards."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Requires Cursed",
+        "url": "https://en.wikipedia.org/wiki/Jing_Ke",
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Religion Pagan",
+          "Vengeful Against Leader",
+          "Plotting Against Leader"
+        ],
+        "dlc": "Religion event pack",
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_CURSED",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "Cursed",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "All is lost!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Impious",
+                    "tip": [
+                      "As leader: -40 Opinion with all Religions",
+                      "-1 Charisma",
+                      "+20 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Impious — trait"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_IMPIOUS"
+                  ],
+                  "id": "BONUS_EVENTOPTION_CURSED_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubjectNotAny",
+                  "values": [
+                    "SUBJECT_SUPERSTITIOUS"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "Ignore the ‘curse’."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": "Cursed Option 2 Vengeful",
+                "probability": 0.5,
+                "rewards": [
+                  {
+                    "text": "-6 Legitimacy"
+                  }
+                ],
+                "weight": 1000
+              },
+              {
+                "label": "Cursed Option 2 Plotting",
+                "probability": 0.5,
+                "rewards": [
+                  {
+                    "text": "-6 Legitimacy"
+                  }
+                ],
+                "weight": 1000
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "RemoveLeaderRelationship RELATIONSHIP_VENGEFUL_AGAINST"
+                  ],
+                  "id": "BONUS_LEADER_VENGEFUL_AGAINST_REMOVE",
+                  "pct": 0.5,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "iLegitimacy -6"
+                  ],
+                  "id": "BONUS_EVENTOPTION_CURSED_OPTION_2_CHARACTER_1",
+                  "pct": 0.5,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "RemoveLeaderRelationship RELATIONSHIP_PLOTTING_AGAINST"
+                  ],
+                  "id": "BONUS_LEADER_PLOTTING_AGAINST_REMOVE",
+                  "pct": 0.5,
+                  "weight": 1000
+                },
+                {
+                  "fields": [
+                    "iLegitimacy -6"
+                  ],
+                  "id": "BONUS_EVENTOPTION_CURSED_OPTION_2_CHARACTER_1",
+                  "pct": 0.5,
+                  "weight": 1000
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": ""
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Every 40 turns"
+        },
+        "trigger": "Can grant Cursed",
+        "url": null,
+        "weight": 6
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Adult",
+          "Archetype Thoughtful"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_FROM_ON_HIGH",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "From on High",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Free law: Legal Code"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "FreeLaw LAW_LEGAL_CODE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_FROM_ON_HIGH_OPTION_0_CHARACTER_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "[character] is right. I have been blinded by power."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Cursed"
+                  },
+                  {
+                    "text": "Leader relationship: Vengeful Against"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_VENGEFUL_AGAINST",
+                    "aeAddTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_EVENTOPTION_FROM_ON_HIGH_OPTION_1_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "You have angered me, and so, the gods."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Leader relationship: Endeared To"
+                  },
+                  {
+                    "text": "Law-based opinion shift"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_ENDEARED_TO",
+                    "aiLawOpinion: LAW_DIVINE_RULE=40"
+                  ],
+                  "id": "BONUS_EVENTOPTION_FROM_ON_HIGH_OPTION_2_CHARACTER_1",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_GRACIOUS"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "I will teach him how to rule from on high."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "law": "Divine Rule",
+          "repeat": "Every 80 turns"
+        },
+        "trigger": "Can grant Cursed",
+        "url": null,
+        "weight": 6
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Adult Under 30",
+          "Adult Under 40"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "text": "The character is killed"
+          }
+        ],
+        "id": "EVENTSTORY_CLASSIC_TRAGEDY",
+        "isFollowup": false,
+        "linkPrereq": null,
+        "name": "A Classic Tragedy",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "The character is killed"
+                  },
+                  {
+                    "text": "Leader relationship: Assassinated By"
+                  },
+                  {
+                    "memory": "MEMORYPLAYER_ASSASSINATION_EXPOSED",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Assassination exposed (-80 opinion for 40 turns)"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "AddLeaderRelationship RELATIONSHIP_ASSASSINATED_BY",
+                    "bKillCharacter 1",
+                    "aeBonuses: BONUS_ASSASSINATION_EXPOSED"
+                  ],
+                  "id": "BONUS_KILL_CHARACTER_MURDERED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "The final wishes of my husband shall be respected."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "[character] shall be cursed for defiling [character]."
+          },
+          {
+            "leadsTo": [
+              {
+                "cat": "follow-ups",
+                "id": "EVENTSTORY_CLASSIC_TRAGEDY_INVESTIGATION",
+                "name": "Investigation of a Tragedy"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_CLASSIC_TRAGEDY_INVESTIGATE"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [],
+              "gates": [
+                {
+                  "tag": "LeaderSubject",
+                  "values": [
+                    "SUBJECT_HIGH_WISDOM"
+                  ]
+                }
+              ]
+            },
+            "requirements": [],
+            "text": "We must investigate this matter before acting."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "minTurns": 10,
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Cursed",
+        "url": "https://en.wikipedia.org/wiki/Hippolytus_(son_of_Theseus)",
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_STRANGE_ENCOUNTER_CURIOUS_ARTIFACT",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_STRANGER_ENCOUNTER_CURSED_TREASURE",
+        "name": "Curious Artifact",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "base": -4,
+                    "per": 0,
+                    "text": "-4 Orders",
+                    "yield": "orders"
+                  },
+                  {
+                    "base": -120,
+                    "per": -30,
+                    "text": "-120 Money (-30/city)",
+                    "yield": "money"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeBonuses: BONUS_ORDERS_LOSS_SMALL, BONUS_MONEY_LOSS_SMALL"
+                  ],
+                  "id": "BONUS_EVENTOPTION_STRANGE_ENCOUNTER_CURIOUS_ARTIFACT_RETURN_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Return it at once."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "We shall not be swayed by superstition."
+          }
+        ],
+        "prob": 15,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Can grant Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [
+          "Monkey Paw Owner",
+          "Child Or Teenager"
+        ],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_LEGACY_OF_THE_PAW",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_MONKEY_PAW_ACCIDENT",
+        "name": "Legacy of the Paw",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Severely Ill",
+                    "tip": [
+                      "Removed as leader"
+                    ],
+                    "tipTitle": "Severely Ill — trait"
+                  },
+                  {
+                    "text": "Gain trait: Crippled",
+                    "tip": [
+                      "As general: -1 Fatigue Limit"
+                    ],
+                    "tipTitle": "Crippled — trait"
+                  },
+                  {
+                    "text": "Loses trait: Monkey Paw"
+                  },
+                  {
+                    "text": "Gain trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "bAbdicate 1",
+                    "aeAddTraits: TRAIT_SEVERELY_ILL, TRAIT_CRIPPLED",
+                    "aeRemoveTraits: TRAIT_MONKEY_PAW"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEGACY_OF_THE_PAW_OPTION_0_CHARACTER_0",
+                  "pct": null,
+                  "weight": null
+                },
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Curse that monkey's paw."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [
+          {
+            "anchor": "EVENTSTORY_RUINS_ELDERLY_COUPLE",
+            "ext": "ruin-events",
+            "id": "EVENTSTORY_RUINS_ELDERLY_COUPLE",
+            "name": "Elderly Couple"
+          }
+        ],
+        "guaranteed": [],
+        "id": "EVENTSTORY_RUINS_ELDERLY_COUPLE_WITCH",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_RUINS_ELDERLY_COUPLE_ABDUCTED",
+        "name": "Mad Priestess",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Superstitious",
+                    "tip": [
+                      "-1 Wisdom",
+                      "+40 opinion with same-trait characters"
+                    ],
+                    "tipTitle": "Superstitious — trait"
+                  },
+                  {
+                    "base": -50,
+                    "per": -15,
+                    "text": "-50 Food (-15/city)",
+                    "yield": "food"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_SUPERSTITIOUS",
+                    "aeBonuses: BONUS_FOOD_LOSS_AVERAGE"
+                  ],
+                  "id": "BONUS_EVENTOPTION_RUINS_ELDERLY_COUPLE_WITCH_SACRIFICE_CHARACTER",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Sacrifice whatever is necessary to appease the fears of the people and to please the gods!"
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "I reject her words. She was a mad woman, and I never was a fan of theatrics."
+          }
+        ],
+        "prob": 10,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [
+          {
+            "text": "Gain trait: Doomed"
+          }
+        ],
+        "id": "EVENTSTORY_LEADER_THE_HEIRS_CUP_POISONED",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_THE_HEIRS_CUP_START",
+        "name": "Poisoned!",
+        "options": [
+          {
+            "leadsTo": [
+              {
+                "cat": "on-new-turn-2",
+                "id": "EVENTSTORY_LEADER_THE_HEIRS_CUP_PAYOFF",
+                "name": "The Heir's Cup: Payoff"
+              }
+            ],
+            "linkAdds": [
+              "EVENTLINK_THE_HEIRS_CUP_END"
+            ],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "memory": "MEMORYCHARACTER_POISONED_MY_PREDECESSOR",
+                    "note": "no event currently keys off this",
+                    "text": "Remembered: Poisoned my predecessor"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "Memory MEMORYCHARACTER_POISONED_MY_PREDECESSOR"
+                  ],
+                  "id": "BONUS_EVENTOPTION_LEADER_THE_HEIRS_CUP_POISONED_OPTION_0",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Revenge will not save me."
+          },
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Regicide is not acceptable."
+          }
+        ],
+        "prob": 50,
+        "share": null,
+        "timing": {
+          "repeat": "Every 0 turns"
+        },
+        "trigger": "Can grant Cursed",
+        "url": null,
+        "weight": 1
+      },
+      {
+        "blessing": {
+          "grants": true,
+          "needs": false,
+          "removes": false
+        },
+        "cmEligible": null,
+        "conditions": [],
+        "dlc": null,
+        "followsFrom": [],
+        "guaranteed": [],
+        "id": "EVENTSTORY_AN_UNLIKELY_SCENARIO_CURSED",
+        "isFollowup": true,
+        "linkPrereq": "EVENTLINK_UNLIKELY_SCENARIO_OUTCOME",
+        "name": "Some Time Later",
+        "options": [
+          {
+            "linkAdds": [],
+            "outcomes": [
+              {
+                "label": null,
+                "probability": 1.0,
+                "rewards": [
+                  {
+                    "text": "Gain trait: Cursed"
+                  }
+                ],
+                "weight": null
+              }
+            ],
+            "raw": {
+              "bonuses": [
+                {
+                  "fields": [
+                    "aeAddTraits: TRAIT_CURSED"
+                  ],
+                  "id": "BONUS_GIVE_TRAIT_CURSED",
+                  "pct": null,
+                  "weight": null
+                }
+              ],
+              "gates": []
+            },
+            "requirements": [],
+            "text": "Worrisome."
+          }
+        ],
+        "prob": null,
+        "share": null,
+        "timing": {
+          "repeat": "Once per game"
+        },
+        "trigger": "Can grant Cursed",
+        "url": null,
+        "weight": 1
+      }
+    ],
+    "key": "cursed",
+    "label": "Cursed",
+    "totalWeight": 0
   }
 ]
