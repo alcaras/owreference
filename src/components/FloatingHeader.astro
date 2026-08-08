@@ -1,0 +1,118 @@
+---
+// Floating column labels for .ntbl tables.
+//
+// Why this can't be pure CSS: .grid__scroll sets overflow-x:auto for wide
+// tables, which makes it a scroll container — so a `position: sticky` header
+// inside resolves against THAT box, not the viewport, and the box never
+// scrolls vertically. The header therefore rides up out of view with the page.
+// (Bounding the box's height instead makes it scroll vertically, but then page
+// scrolling slides the whole box under the sticky site nav, clipping the very
+// header we pinned — how far depends on how much content sits below the table,
+// so no max-height value fixes it.)
+//
+// So: clone the header row into a fixed bar docked under the site header,
+// shown only while the real header is off-screen and the table is still in
+// view. Column widths and horizontal scroll are mirrored from the real table,
+// so it stays aligned when the table scrolls sideways or the window resizes.
+//
+// Drop this once into a page that renders .grid__scroll tables; it wires up
+// every such table on the page.
+---
+
+<script>
+  (() => {
+    const tables = document.querySelectorAll('.grid__scroll > table.ntbl');
+    if (!tables.length) return;
+
+    const siteHeader = document.querySelector('.hdr') as HTMLElement | null;
+    const navHeight = () => (siteHeader?.getBoundingClientRect().height ?? 0);
+
+    for (const table of Array.from(tables) as HTMLTableElement[]) {
+      const scroller = table.parentElement as HTMLElement;
+      const thead = table.tHead;
+      if (!thead || !scroller) continue;
+
+      // The clone lives outside the scroller so it can be position:fixed
+      // without being clipped by the scroller's overflow.
+      const bar = document.createElement('div');
+      bar.className = 'fhdr';
+      bar.setAttribute('aria-hidden', 'true');   // the real header stays the a11y one
+      const inner = document.createElement('div');
+      inner.className = 'fhdr__inner';
+      const clone = document.createElement('table');
+      clone.className = table.className + ' fhdr__table';
+      inner.appendChild(clone);
+      bar.appendChild(inner);
+      document.body.appendChild(bar);
+
+      let headClone: HTMLElement | null = null;
+      const rebuild = () => {
+        headClone = thead.cloneNode(true) as HTMLElement;
+        clone.replaceChildren(headClone);
+      };
+      rebuild();
+
+      // Mirror the real table's geometry: total width, per-column widths, and
+      // the scroller's horizontal offset.
+      const sync = () => {
+        const cells = thead.querySelectorAll('tr:first-child > *');
+        const cloneCells = headClone?.querySelectorAll('tr:first-child > *') ?? [];
+        clone.style.width = `${table.offsetWidth}px`;
+        cells.forEach((c, i) => {
+          const w = (c as HTMLElement).getBoundingClientRect().width;
+          const target = cloneCells[i] as HTMLElement | undefined;
+          if (target) { target.style.width = `${w}px`; target.style.minWidth = `${w}px`; }
+        });
+        inner.scrollLeft = scroller.scrollLeft;
+        const r = scroller.getBoundingClientRect();
+        bar.style.left = `${r.left}px`;
+        bar.style.width = `${r.width}px`;
+        bar.style.top = `${navHeight()}px`;
+      };
+
+      const update = () => {
+        const headRect = thead.getBoundingClientRect();
+        const tableRect = table.getBoundingClientRect();
+        const dock = navHeight();
+        // show once the real header has gone under the nav, and only while
+        // some of the table body is still on screen
+        const show = headRect.bottom < dock + 1 && tableRect.bottom > dock + 40;
+        if (show) sync();
+        bar.classList.toggle('is-on', show);
+      };
+
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', () => { rebuild(); update(); }, { passive: true });
+      scroller.addEventListener('scroll', () => { inner.scrollLeft = scroller.scrollLeft; }, { passive: true });
+      // rows can be filtered/sorted at runtime — column widths shift with them
+      new MutationObserver(() => { rebuild(); update(); }).observe(table, {
+        childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'],
+      });
+      update();
+    }
+  })();
+</script>
+
+<style is:global>
+  .fhdr {
+    position: fixed;
+    z-index: 15;                 /* under .hdr (20), over the table */
+    overflow: hidden;
+    pointer-events: none;        /* purely a label strip */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    border-bottom: 1px solid var(--border-strong);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+    background: var(--bg);
+  }
+  .fhdr.is-on { opacity: 1; visibility: visible; transform: none; }
+  .fhdr__inner { overflow: hidden; }
+  .fhdr__table { border-collapse: collapse; }
+  /* the clone's cells are already .nhdr/.rowlabel — just unstick them, since
+     the bar itself is what's doing the floating now */
+  .fhdr__table .nhdr,
+  .fhdr__table .rowlabel,
+  .fhdr__table .rowlabel--corner { position: static; }
+</style>

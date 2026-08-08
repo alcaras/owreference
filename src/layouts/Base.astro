@@ -3,6 +3,7 @@ import '../styles/theme.css';
 import '../styles/nation-tokens.css';
 import patch from '../../data/patch.json';
 import { TABS, SECTIONS } from '../data/tabs';
+import FloatingHeader from '../components/FloatingHeader.astro';
 
 interface Props {
   title: string;
@@ -294,6 +295,8 @@ const updatedLabel = updatedAt
       )}
 
       <slot />
+
+      <FloatingHeader />
 
       <footer class="foot">
         <div class="foot__col">
