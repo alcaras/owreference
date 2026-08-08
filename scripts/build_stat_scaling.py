@@ -64,8 +64,11 @@ OUT = ROOT / "src" / "data" / "stat-scaling.json"
 # RATING_EQUIVALENT_LOWER_CHARACTER_YIELDS).
 RATING_EQUIVALENT = 5
 
-# Rating value range shown on the page (the in-game character rating band).
-RATING_MIN, RATING_MAX = -3, 15
+# Rating value range shown on the page. Character.setRating applies no clamp,
+# so ratings are unbounded in the engine and the formulas below stay valid past
+# the band you normally see — the table runs to 25 to cover stacked-trait and
+# late-game leaders.
+RATING_MIN, RATING_MAX = -5, 25
 
 # Stat → (slug, display name, signature yield, the General/combat field + how
 # to label & format it). The General effect is the only role that changes
@@ -214,7 +217,8 @@ def main() -> int:
         hexv = (c.findtext("zHexValue") or "").strip()
         return hexv.lower() if hexv.startswith("#") else "#c9a04a"
 
-    ratings = list(range(RATING_MIN, RATING_MAX + 1))
+    # highest rating first — the interesting end of the table reads at the top
+    ratings = list(range(RATING_MAX, RATING_MIN - 1, -1))
     stats_out: list[dict] = []
 
     for rid, slug, name, ykey, combat_field, combat_label, combat_fmt in STATS:
