@@ -1,0 +1,136 @@
+---
+import Base from '../../layouts/Base.astro';
+import data from '../../data/trait_removal.json';
+
+export function getStaticPaths() {
+  return (data as any).traits.map((t: any) => ({ params: { slug: t.slug }, props: { trait: t } }));
+}
+
+const { trait } = Astro.props as any;
+const base = import.meta.env.BASE_URL;
+const partHref = (part: string | null, id: string) =>
+  part ? `${base}events/${part}#${id}` : `${base}events#${id}`;
+
+// the trait's own catalogue page, for the "what does it do" link
+const traitSlug = trait.slug;
+const all = (data as any).traits;
+const i = all.findIndex((t: any) => t.slug === traitSlug);
+const prev = i > 0 ? all[i - 1] : null;
+const next = i < all.length - 1 ? all[i + 1] : null;
+
+// which traits, when granted, displace this one — the shopping list
+const grantors = [...new Set(trait.via.flatMap((r: any) => r.via))].sort();
+---
+
+<Base
+  title={`Removing ${trait.name}`}
+  active="trait-removal"
+  pageMark="🧹"
+  description={`Every Old World event that can remove the ${trait.name} trait from a character — ${trait.direct.length} that remove it outright and ${trait.via.length} that displace it by granting an opposing trait.`}
+  pageStats={[
+    { label: 'remove outright', value: trait.direct.length },
+    { label: 'by replacement', value: trait.via.length },
+  ]}
+>
+  <p class="lede">
+    Every event that can take <b>{trait.name}</b> off a character.
+    {trait.direct.length === 0 && (
+      <> There is <b>no event that removes it outright</b> — the only way is to gain an opposing
+      trait, below.</>
+    )}
+    {trait.direct.length > 0 && (
+      <> {trait.direct.length === 1 ? 'One event removes' : `${trait.direct.length} events remove`} it
+      directly; the rest displace it by granting the opposite.</>
+    )}
+    {grantors.length > 0 && (
+      <> Gaining <b>{grantors.join(' or ')}</b> clears it.</>
+    )}
+    {' '}See <a href={`${base}traits#${traitSlug}`}>{trait.name}</a> for what the trait does, or
+    <a href={`${base}trait-removal`}> all traits</a>.
+  </p>
+
+  {trait.direct.length > 0 && (
+    <section class="trp">
+      <h2 class="trp__h">Removal events <span class="trp__n">{trait.direct.length}</span></h2>
+      <p class="trp__note">
+        These take {trait.name} off directly (the option's bonus lists it in
+        <code>aeRemoveTraits</code>).
+      </p>
+      <ul class="trp__rows">
+        {trait.direct.map((r: any) => (
+          <li class="trp__row">
+            <a class="trp__ev" href={partHref(r.part, r.id)}>{r.name}</a>
+            {r.variant && <span class="trp__v" title="Hidden inside a single on-screen choice that expands into per-trait variants">rolled variant</span>}
+            {r.dlc && <span class="trp__dlc">{r.dlc}</span>}
+            <span class="trp__w">weight {r.weight}</span>
+          </li>
+        ))}
+      </ul>
+      {trait.direct.some((r: any) => r.variant) && (
+        <p class="trp__note">
+          A <b>rolled variant</b> is not a gamble: the game only offers the variant matching a trait
+          the character actually has (<code>PlayerBonus.canDoBonusSingle</code> rejects the others),
+          so for a character whose only such trait is {trait.name}, it is a targeted cure.
+        </p>
+      )}
+    </section>
+  )}
+
+  {trait.via.length > 0 && (
+    <section class="trp">
+      <h2 class="trp__h">Replacement events <span class="trp__n">{trait.via.length}</span></h2>
+      <p class="trp__note">
+        These grant a trait that displaces {trait.name} (<code>aeTraitReplaces</code>). The arrow
+        names the trait gained.
+      </p>
+      <ul class="trp__rows">
+        {trait.via.map((r: any) => (
+          <li class="trp__row">
+            <a class="trp__ev" href={partHref(r.part, r.id)}>{r.name}</a>
+            <span class="trp__via">→ {r.via.join(' / ')}</span>
+            {r.variant && <span class="trp__v">rolled variant</span>}
+            {r.dlc && <span class="trp__dlc">{r.dlc}</span>}
+            <span class="trp__w">weight {r.weight}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <nav class="trp__nav">
+    {prev && <a href={`${base}trait-removal/${prev.slug}`}>← {prev.name}</a>}
+    <a href={`${base}trait-removal`}>All traits</a>
+    {next && <a href={`${base}trait-removal/${next.slug}`}>{next.name} →</a>}
+  </nav>
+</Base>
+
+<style>
+  .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1.4rem; }
+  .lede b { color: var(--text); }
+  .lede a { color: var(--accent); }
+
+  .trp { margin: 0 0 1.6rem; }
+  .trp__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--accent);
+    margin: 0 0 0.3rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;
+    display: flex; align-items: baseline; gap: 0.5rem; }
+  .trp__n { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); }
+  .trp__note { max-width: 84ch; font-size: 0.76rem; color: var(--text-faint); line-height: 1.55; margin: 0.35rem 0 0.6rem; }
+  .trp__note b { color: var(--text-dim); }
+  .trp__note code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 4px; padding: 0.02rem 0.28rem; }
+
+  .trp__rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.18rem; }
+  .trp__row { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; font-size: 0.84rem; }
+  .trp__ev { color: var(--accent-2); text-decoration: none; }
+  .trp__ev:hover { text-decoration: underline; }
+  .trp__via { font-size: 0.76rem; color: var(--gold-soft); }
+  .trp__v, .trp__dlc { font-family: var(--font-mono); font-size: 0.58rem; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--text-faint); border: 1px solid var(--border);
+    border-radius: 3px; padding: 0 0.28rem; }
+  .trp__w { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint); margin-left: auto; }
+
+  .trp__nav { display: flex; gap: 1rem; justify-content: space-between; margin-top: 1.6rem;
+    padding-top: 0.7rem; border-top: 1px solid var(--border); font-size: 0.8rem; }
+  .trp__nav a { color: var(--accent); text-decoration: none; }
+  .trp__nav a:hover { text-decoration: underline; }
+</style>

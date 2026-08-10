@@ -4,97 +4,71 @@ import data from '../data/trait_removal.json';
 
 const base = import.meta.env.BASE_URL;
 const { traits, counts } = data as any;
-// story-events part slug → the page that renders it
-const partHref = (part: string | null, id: string) =>
-  part ? `${base}events/${part}#${id}` : `${base}events#${id}`;
+const withDirect = traits.filter((t: any) => t.direct.length > 0);
+const noDirect = traits.filter((t: any) => t.direct.length === 0);
 ---
 
 <Base
   title="Trait Removal"
   active="trait-removal"
   pageMark="🧹"
-  description="Every Old World event that can take a trait off a character, grouped by the trait removed — both direct removals (aeRemoveTraits) and the far more common route of granting the opposing trait, which displaces it via aeTraitReplaces."
+  description="How to get a trait off a character in Old World — every trait with the events that remove it outright and the events that displace it by granting an opposing trait. One page per trait."
   pageStats={[
     { label: 'traits', value: counts.traits },
-    { label: 'direct removals', value: counts.direct },
+    { label: 'remove outright', value: counts.direct },
     { label: 'by replacement', value: counts.via },
   ]}
 >
   <p class="lede">
-    How to get a trait <em>off</em> a character. Two routes, and the second is far more common:
-    an option can <b>remove the trait outright</b>, or it can <b>grant the opposing trait</b>, which
-    displaces it. Both are listed per trait below. Note that many removals hide inside a single
-    on-screen choice that expands into per-trait variants — those are marked <span class="tr__v">rolled
-    variant</span>, and the game only offers the variant matching a trait the character actually has
-    (<code>PlayerBonus.canDoBonusSingle</code> rejects the rest), so it is a targeted cure, not a
-    gamble. Weights are the XML knob, not in-game odds.
+    How to get a trait <em>off</em> a character. Two routes: an event can <b>remove it outright</b>,
+    or it can <b>grant an opposing trait</b>, which displaces it — the second is far more common, and
+    for most traits it is the only option. Pick a trait for its removal events and its replacement
+    events, listed separately.
   </p>
 
-  <nav class="tr__index" aria-label="Jump to trait">
-    {traits.map((t: any) => (
-      <a class="tr__jump" href={`#${t.id}`}>{t.name}<i>{t.direct.length + t.via.length}</i></a>
-    ))}
-  </nav>
+  <input id="tri-filter" class="tri__filter" type="search" placeholder="Filter traits…" autocomplete="off" />
 
-  <input id="tr-filter" class="tr__filter" type="search" placeholder="Filter traits and events…" autocomplete="off" />
+  <section class="tri">
+    <h2 class="tri__h">Traits with a direct cure <span class="tri__n">{withDirect.length}</span></h2>
+    <p class="tri__note">
+      At least one event takes the trait off outright. The rarest and most useful column on this page.
+    </p>
+    <div class="tri__grid">
+      {withDirect.map((t: any) => (
+        <a class="tri__card tri__card--direct" href={`${base}trait-removal/${t.slug}`} data-name={t.name.toLowerCase()}>
+          <span class="tri__name">{t.name}</span>
+          <span class="tri__counts"><b>{t.direct.length}</b> direct · {t.via.length} replacement</span>
+        </a>
+      ))}
+    </div>
+  </section>
 
-  <div id="tr-list">
-    {traits.map((t: any) => (
-      <section class="tr__trait" id={t.id} data-name={t.name.toLowerCase()}>
-        <h2 class="tr__h">
-          {t.name}
-          <span class="tr__count">{t.direct.length} direct · {t.via.length} by replacement</span>
-        </h2>
-
-        {t.direct.length > 0 && (
-          <div class="tr__block">
-            <h3 class="tr__sub">Removes it outright</h3>
-            <ul class="tr__rows">
-              {t.direct.map((r: any) => (
-                <li class="tr__row" data-blob={`${r.name} ${t.name}`.toLowerCase()}>
-                  <a class="tr__ev" href={partHref(r.part, r.id)}>{r.name}</a>
-                  {r.variant && <span class="tr__v">rolled variant</span>}
-                  {r.dlc && <span class="tr__dlc">{r.dlc}</span>}
-                  <span class="tr__w">weight {r.weight}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {t.via.length > 0 && (
-          <div class="tr__block">
-            <h3 class="tr__sub">Displaces it by granting the opposite</h3>
-            <ul class="tr__rows">
-              {t.via.map((r: any) => (
-                <li class="tr__row" data-blob={`${r.name} ${t.name} ${r.via.join(' ')}`.toLowerCase()}>
-                  <a class="tr__ev" href={partHref(r.part, r.id)}>{r.name}</a>
-                  <span class="tr__via">→ {r.via.join(' / ')}</span>
-                  {r.variant && <span class="tr__v">rolled variant</span>}
-                  {r.dlc && <span class="tr__dlc">{r.dlc}</span>}
-                  <span class="tr__w">weight {r.weight}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </section>
-    ))}
-  </div>
+  <section class="tri">
+    <h2 class="tri__h">Replacement only <span class="tri__n">{noDirect.length}</span></h2>
+    <p class="tri__note">
+      No event removes these outright — the only way out is to gain the opposing trait.
+    </p>
+    <div class="tri__grid">
+      {noDirect.map((t: any) => (
+        <a class="tri__card" href={`${base}trait-removal/${t.slug}`} data-name={t.name.toLowerCase()}>
+          <span class="tri__name">{t.name}</span>
+          <span class="tri__counts">{t.via.length} replacement</span>
+        </a>
+      ))}
+    </div>
+  </section>
 </Base>
 
 <script>
-  const input = document.getElementById('tr-filter') as HTMLInputElement | null;
+  const input = document.getElementById('tri-filter') as HTMLInputElement | null;
   if (input) {
     input.addEventListener('input', () => {
       const q = input.value.trim().toLowerCase();
-      for (const sec of Array.from(document.querySelectorAll('.tr__trait')) as HTMLElement[]) {
-        if (!q) { sec.hidden = false; sec.querySelectorAll<HTMLElement>('.tr__row').forEach(r => (r.hidden = false)); continue; }
-        const traitHit = (sec.dataset.name || '').includes(q);
-        let any = traitHit;
-        for (const row of Array.from(sec.querySelectorAll('.tr__row')) as HTMLElement[]) {
-          const hit = traitHit || (row.dataset.blob || '').includes(q);
-          row.hidden = !hit;
+      for (const sec of Array.from(document.querySelectorAll('.tri')) as HTMLElement[]) {
+        let any = false;
+        for (const card of Array.from(sec.querySelectorAll('.tri__card')) as HTMLElement[]) {
+          const hit = !q || (card.dataset.name || '').includes(q);
+          card.hidden = !hit;
           any = any || hit;
         }
         sec.hidden = !any;
@@ -104,44 +78,27 @@ const partHref = (part: string | null, id: string) =>
 </script>
 
 <style>
-  .lede { max-width: 90ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
+  .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
   .lede b { color: var(--text); }
-  .lede code { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-elev);
-    border: 1px solid var(--border); border-radius: 4px; padding: 0.03rem 0.3rem; }
 
-  .tr__index { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0 0 0.9rem;
-    max-height: 9rem; overflow-y: auto; padding: 0.5rem; background: var(--bg-elev);
-    border: 1px solid var(--border); border-radius: var(--radius); }
-  .tr__jump { font-size: 0.72rem; color: var(--text-dim); background: var(--bg);
-    border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.4rem; text-decoration: none; }
-  .tr__jump:hover { color: var(--text); border-color: var(--gold-deep); text-decoration: none; }
-  .tr__jump i { font-style: normal; font-family: var(--font-mono); font-size: 0.85em;
-    color: var(--text-faint); margin-left: 0.3rem; }
-
-  .tr__filter { width: 100%; max-width: 34rem; background: var(--bg); color: var(--text);
+  .tri__filter { width: 100%; max-width: 30rem; background: var(--bg); color: var(--text);
     border: 1px solid var(--border-strong); border-radius: 6px; padding: 0.45rem 0.7rem;
-    font: inherit; font-size: 0.86rem; margin: 0 0 1.2rem; }
-  .tr__filter:focus { outline: 0; border-color: var(--gold-deep); box-shadow: 0 0 0 2px var(--gold-glow); }
+    font: inherit; font-size: 0.86rem; margin: 0 0 1.4rem; }
+  .tri__filter:focus { outline: 0; border-color: var(--gold-deep); box-shadow: 0 0 0 2px var(--gold-glow); }
 
-  .tr__trait { margin: 0 0 1.4rem; scroll-margin-top: 7rem; }
-  .tr__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--accent);
-    margin: 0 0 0.4rem; display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap;
-    border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; }
-  .tr__count { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint);
-    letter-spacing: 0.04em; text-transform: uppercase; }
-  .tr__block { margin: 0 0 0.6rem; }
-  .tr__sub { font-size: 0.7rem; font-weight: 600; color: var(--text-dim); margin: 0.4rem 0 0.25rem;
-    text-transform: uppercase; letter-spacing: 0.08em; }
-  .tr__rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
-  .tr__row { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
-    font-size: 0.82rem; padding: 0.12rem 0; }
-  .tr__ev { color: var(--accent-2); text-decoration: none; }
-  .tr__ev:hover { text-decoration: underline; }
-  .tr__via { font-size: 0.74rem; color: var(--gold-soft); }
-  .tr__v { font-family: var(--font-mono); font-size: 0.58rem; text-transform: uppercase;
-    letter-spacing: 0.05em; color: var(--text-faint); border: 1px solid var(--border);
-    border-radius: 3px; padding: 0 0.28rem; }
-  .tr__dlc { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-faint);
-    border: 1px solid var(--border); border-radius: 3px; padding: 0 0.28rem; }
-  .tr__w { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint); margin-left: auto; }
+  .tri { margin: 0 0 1.8rem; }
+  .tri__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--accent);
+    margin: 0 0 0.25rem; display: flex; align-items: baseline; gap: 0.5rem; }
+  .tri__n { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); }
+  .tri__note { max-width: 84ch; font-size: 0.78rem; color: var(--text-faint); line-height: 1.55; margin: 0 0 0.7rem; }
+
+  .tri__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 0.4rem; }
+  .tri__card { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.65rem;
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius);
+    text-decoration: none; color: var(--text); }
+  .tri__card:hover { border-color: var(--gold-deep); text-decoration: none; }
+  .tri__card--direct { border-left: 3px solid var(--gold-deep); }
+  .tri__name { font-family: var(--font-display); font-size: 0.92rem; }
+  .tri__counts { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-faint); }
+  .tri__counts b { color: var(--gold-soft); }
 </style>

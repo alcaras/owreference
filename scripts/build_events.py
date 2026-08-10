@@ -528,7 +528,11 @@ def main() -> int:
         sid = ev["id"].split("::")[0]
         r = ev["removes"]
         grp = tr_groups.setdefault(r["id"], {
-            "id": r["id"], "name": r["name"], "direct": [], "via": [],
+            "id": r["id"], "name": r["name"],
+            # same convention as traits.json, so /trait-removal/<slug> lines up
+            # with the trait's own slug elsewhere on the site
+            "slug": r["id"].replace("TRAIT_", "").lower().replace("_", "-"),
+            "direct": [], "via": [],
         })
         row = {
             "id": sid, "name": ev["name"], "weight": ev["weight"],
