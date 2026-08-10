@@ -43,6 +43,7 @@ import project_events_util as peu  # noqa: E402  shared project-event definition
 import building_events_util as beu  # noqa: E402  shared building-event definition
 import family_events_util as feu  # noqa: E402  shared family-event definition
 import blessing_events_util as bcu  # noqa: E402  shared blessed/cursed definition
+import trait_removal_util as tru  # noqa: E402  shared trait-removal definition
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "events.json"
@@ -460,6 +461,95 @@ def main() -> int:
         # gateway stories first (they need it), then the ones that hand it out
         evs.sort(key=lambda e: (not e["blessing"]["needs"], -e["weight"], e["name"]))
         blessing_sections[key] = evs
+
+    # Trait removal: every story that can take a trait OFF a character, grouped
+    # by the trait removed. Two paths (see trait_removal_util): a bonus listing
+    # the trait in aeRemoveTraits, or one ADDING a trait whose aeTraitReplaces
+    # names it. Both walk one level into aiEventOptionProb, where several
+    # stories hide their per-trait variants.
+    trait_roots = [m.parse(f) for f in ("trait.xml", "trait-btt.xml", "trait-eoti.xml",
+                                        "trait-sap.xml", "trait-wd.xml", "trait-wog.xml")
+                   if (m.XML_DIR / f).exists()]
+    replaces = tru.replacement_map(trait_roots)
+    # trait display names: GenderedName points at a GENDERED_TEXT_* key whose
+    # masculine variant is the real TEXT_* key
+    gendered: dict[str, str] = {}
+    for gf in sorted(m.XML_DIR.glob("genderedText*.xml")):
+        for e in ET.parse(gf).getroot().findall("Entry"):
+            zid = e.findtext("zType") or ""
+            for pair in e.findall("Texts/Pair"):
+                if (pair.findtext("zIndex") or "").endswith("MASCULINE"):
+                    gendered[zid] = pair.findtext("zValue") or ""
+                    break
+    trait_name = {}
+    for root in trait_roots:
+        for e in root.findall("Entry"):
+            z = e.findtext("zType")
+            if z:
+                key = e.findtext("GenderedName") or e.findtext("Name") or ""
+                trait_name[z] = m.clean_text(text.get(gendered.get(key, key), "")) or \
+                    z.replace("TRAIT_", "").replace("_", " ").title()
+
+    removal_events = []
+    for st in story_idx.values():
+        rem = tru.removals(st, eopt_idx, bonus_idx, replaces)
+        if not rem:
+            continue
+        for trait_id, how in sorted(rem.items(), key=lambda kv: trait_name.get(kv[0], kv[0])):
+            ev = build_event(st, 0, eopt_idx, bonus_idx, text)
+            tname = trait_name.get(trait_id, trait_id)
+            ev["removes"] = {
+                "id": trait_id, "name": tname,
+                "direct": how["direct"], "variant": how["variant"],
+                "via": [trait_name.get(v, v) for v in how["via"]],
+            }
+            ev["share"] = None
+            bits = [f"Removes {tname}"]
+            if how["via"]:
+                bits.append("by granting " + " / ".join(ev["removes"]["via"]))
+            if how["variant"] and not how["direct"]:
+                pass
+            ev["trigger"] = " · ".join(bits)
+            # the same story can clear several traits — keep ids unique per row
+            ev["id"] = f"{ev['id']}::{trait_id}"
+            removal_events.append(ev)
+    removal_events.sort(key=lambda e: (e["removes"]["name"], not e["removes"]["direct"],
+                                       -e["weight"], e["name"]))
+
+    # Compact, trait-grouped projection — 2,000+ full event cards would be
+    # unreadable, so this page links each story to where it already renders.
+    tr_search = ROOT / "src" / "data" / "story-events" / "search.json"
+    tr_part = {}
+    if tr_search.exists():
+        for row in json.loads(tr_search.read_text()):
+            tr_part[row["i"]] = row["s"]
+    tr_groups: dict[str, dict] = {}
+    for ev in removal_events:
+        sid = ev["id"].split("::")[0]
+        r = ev["removes"]
+        grp = tr_groups.setdefault(r["id"], {
+            "id": r["id"], "name": r["name"], "direct": [], "via": [],
+        })
+        row = {
+            "id": sid, "name": ev["name"], "weight": ev["weight"],
+            "dlc": ev["dlc"], "variant": r["variant"], "via": r["via"],
+            "part": tr_part.get(sid),
+        }
+        (grp["direct"] if r["direct"] else grp["via"]).append(row)
+    tr_out = sorted(tr_groups.values(), key=lambda g: g["name"])
+    (ROOT / "src" / "data" / "trait_removal.json").write_text(
+        json.dumps({
+            "traits": tr_out,
+            "counts": {
+                "traits": len(tr_out),
+                "direct": sum(len(g["direct"]) for g in tr_out),
+                "via": sum(len(g["via"]) for g in tr_out),
+            },
+        }, indent=2, sort_keys=True) + "\n")
+    print(f"  · Trait removal  {len(tr_out)} traits · "
+          f"{sum(len(g['direct']) for g in tr_out)} direct · "
+          f"{sum(len(g['via']) for g in tr_out)} via replacement"
+          "  → src/data/trait_removal.json")
 
     sections = [
         group(ruins, "ruins", "Ruins",

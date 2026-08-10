@@ -392,6 +392,11 @@ export const TABS: Tab[] = [
     willContain: ['Every building-completion decision event and its option rewards'],
   },
   {
+    slug: 'trait-removal', icon: '🧹', label: 'Trait Removal', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Every event that can take a trait off a character, grouped by trait',
+  },
+  {
     slug: 'blessed-events', icon: '✨', label: 'Blessed Events', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Stories that require, grant or remove the Blessed trait',
