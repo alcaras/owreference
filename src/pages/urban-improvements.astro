@@ -78,28 +78,58 @@ const TIERS = ['Weak', 'Developing', 'Strong', 'Legendary'] as const;
 type Tier = typeof TIERS[number];
 
 const byName = new Map(buildings.map(b => [b.name, b]));
+const byId = new Map(buildings.map(b => [b.id, b]));
 const upgradeTargets = new Set(buildings.map(b => b.upgradesTo).filter(Boolean));
 
-// Chain bases: don't replace anything we know about, and aren't another
-// building's upgrade target.
-const chainBases = buildings.filter(b =>
-  !(b.replaces && byName.has(b.replaces)) && !upgradeTargets.has(b.name));
+// Two kinds of successor: culture-gated *upgrades* the player builds over the
+// old tier (Market → Grocer → Fair), and *develops*, where the tile ripens on
+// its own after N turns (Hamlet → Village → Town). Both continue a line.
+function successor(b: Building): Building | undefined {
+  if (b.upgradesTo) return byName.get(b.upgradesTo);
+  if (b.developsInto) return byId.get(b.developsInto.id);
+  return undefined;
+}
 
-type Chain = { label: string; tiers: Record<Tier, Building[]> };
+// Chain bases: don't replace anything we know about, aren't another building's
+// upgrade target, and — for develop chains — are either worker-built or have no
+// predecessor at all. That keeps Hamlet the head of its line (Slums, the DLC
+// tier that ripens *into* a Hamlet, gets its own row rather than swallowing it).
+const chainBases = buildings.filter(b =>
+  !(b.replaces && byName.has(b.replaces)) && !upgradeTargets.has(b.name)
+  && (b.buildable !== false || !(b.developsFrom || []).length));
+
+type Member = { b: Building; developAfter: Building['developsInto'] | null };
+type Chain = { label: string; tiers: Record<Tier, Member[]>; leadsTo: Member | null };
 const chains: Chain[] = chainBases.map(start => {
-  const tiers: Record<Tier, Building[]> = { Weak: [], Developing: [], Strong: [], Legendary: [] };
+  const tiers: Record<Tier, Member[]> = { Weak: [], Developing: [], Strong: [], Legendary: [] };
   const seen = new Set<string>();
   let cur: Building | undefined = start;
+  let developAfter: Building['developsInto'] | null = null;
+  let leadsTo: Member | null = null;
   while (cur && !seen.has(cur.name)) {
     seen.add(cur.name);
     // No culture prereq = buildable from the start → Weak column.
     const tier: Tier = (TIERS as readonly string[]).includes(cur.culturePrereq)
       ? cur.culturePrereq as Tier : 'Weak';
-    tiers[tier].push(cur);
-    cur = cur.upgradesTo ? byName.get(cur.upgradesTo) : undefined;
+    tiers[tier].push({ b: cur, developAfter });
+    const next: Building | undefined = successor(cur);
+    // A successor that heads its own line (Slums → Hamlet) is shown as a
+    // pointer, not pulled in — it already has a row of its own.
+    if (next && chainBases.includes(next)) {
+      leadsTo = { b: next, developAfter: cur.developsInto || null };
+      break;
+    }
+    developAfter = cur.upgradesTo ? null : (cur.developsInto || null);
+    cur = next;
   }
-  return { label: start.class.replace(/_/g, ' '), tiers };
+  return { label: start.class.replace(/_/g, ' '), tiers, leadsTo };
 }).sort((a, b) => a.label.localeCompare(b.label));
+
+// "in 20 turns" / "in 15 - 35 turns" (iDevelopRand widens the window).
+function developWindow(d: NonNullable<Building['developsInto']>): string {
+  return d.minTurns && d.minTurns !== d.turns
+    ? `${d.minTurns}–${d.turns} turns` : `${d.turns} turns`;
+}
 ---
 
 <Base title="Urban Improvements" active="urban-improvements" pageMark="🏡" pageStats={[
@@ -109,7 +139,7 @@ const chains: Chain[] = chainBases.map(start => {
 ]}>
   <section class="lines">
     <h2 class="lines__title">Building Lines</h2>
-    <p class="lines__sub">Each line upgrades as the city's culture level rises — names link to the full details below.</p>
+    <p class="lines__sub">Most lines upgrade as the city's culture level rises; the Hamlet line develops on its own after a set number of turns. Names link to the full details below.</p>
     <div class="grid__scroll">
       <table class="ntbl">
         <thead>
@@ -131,21 +161,29 @@ const chains: Chain[] = chainBases.map(start => {
           {chains.map(ch => (
             <tr>
               <th class="rowlabel rowlabel--line" scope="row">{ch.label}</th>
-              {TIERS.map(t => {
+              {TIERS.map((t, ti) => {
                 const members = ch.tiers[t];
+                // The "develops into <other line>" pointer hangs off the last
+                // populated tier of this line.
+                const lastFilled = TIERS.map(x => ch.tiers[x].length > 0).lastIndexOf(true);
                 return members.length > 0 ? (
                   <td class="cell cell--tier">
-                    {members.map(b => (
+                    {members.map(m => (
                       <div class="tier">
-                        <a class="tier__name" href={`#${b.slug}`}>
-                          {b.icon ? (
-                            <img class="tier__art" src={`${base}${b.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />
+                        {m.developAfter && (
+                          <div class="tier__develop" title="Ripens on its own — no worker, no build cost">
+                            ↓ develops after {developWindow(m.developAfter)}
+                          </div>
+                        )}
+                        <a class="tier__name" href={`#${m.b.slug}`}>
+                          {m.b.icon ? (
+                            <img class="tier__art" src={`${base}${m.b.icon}`} alt="" loading="lazy" onerror="this.style.display='none'" />
                           ) : null}
-                          <span>{b.name}</span>
+                          <span>{m.b.name}</span>
                         </a>
-                        {b.effects && b.effects.length > 0 && (
+                        {m.b.effects && m.b.effects.length > 0 && (
                           <div class="tier__chips">
-                            {b.effects.map(line => {
+                            {m.b.effects.map(line => {
                               const yk = classifyYield(line)?.toLowerCase() || 'misc';
                               return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
                             })}
@@ -153,6 +191,12 @@ const chains: Chain[] = chainBases.map(start => {
                         )}
                       </div>
                     ))}
+                    {ch.leadsTo && ti === lastFilled && (
+                      <div class="tier__develop tier__develop--out">
+                        ↓ develops after {ch.leadsTo.developAfter ? developWindow(ch.leadsTo.developAfter) : ''} into{' '}
+                        <a href={`#${ch.leadsTo.b.slug}`}>{ch.leadsTo.b.name}</a>
+                      </div>
+                    )}
                   </td>
                 ) : (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
@@ -195,7 +239,7 @@ const chains: Chain[] = chainBases.map(start => {
                     )}
                     <div class="item__txt">
                       <div class="item__name">{b.name}</div>
-                      <div class="item__sub">{b.class}</div>
+                      <div class="item__sub">{b.class}{b.dlc ? ` · ${b.dlc}` : ''}</div>
                     </div>
                   </div>
                 </th>
@@ -212,8 +256,10 @@ const chains: Chain[] = chainBases.map(start => {
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
                 )}
 
-                {/* Other prereqs — culture level shown as its emblem */}
-                {b.culturePrereq || prereqs.length > 0 ? (
+                {/* Other prereqs — culture level shown as its emblem. For the
+                    Hamlet line the "prereq" is time: the tile ripens out of the
+                    tier below on its own. */}
+                {b.culturePrereq || prereqs.length > 0 || (b.developsFrom || []).length > 0 ? (
                   <td class="cell cell--list yield-misc">
                     {b.culturePrereq && (
                       <div class="listitem culture-req" title={`${b.culturePrereq} Culture`}>
@@ -221,6 +267,11 @@ const chains: Chain[] = chainBases.map(start => {
                         <span>{b.culturePrereq}</span>
                       </div>
                     )}
+                    {(b.developsFrom || []).map(d => (
+                      <div class="listitem develop-req">
+                        Develops from <a href={`#${d.slug}`}>{d.name}</a> after {developWindow(d)}
+                      </div>
+                    ))}
                     {prereqs.map(p => <div class="listitem"><LinkedText text={p} /></div>)}
                   </td>
                 ) : (
@@ -239,10 +290,14 @@ const chains: Chain[] = chainBases.map(start => {
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
                 )}
 
-                {/* Build time (turns) */}
+                {/* Build time (turns) — blank for tiers no worker ever builds */}
                 {b.buildTurns && b.buildTurns > 0 ? (
                   <td class="cell cell--center yield-misc" data-sortval={b.buildTurns}>
                     {b.buildTurns} {b.buildTurns === 1 ? 'turn' : 'turns'}
+                  </td>
+                ) : b.buildable === false ? (
+                  <td class="cell cell--center yield-misc" data-sortval={0}>
+                    <span class="nobuild">not built</span>
                   </td>
                 ) : (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
@@ -293,10 +348,15 @@ const chains: Chain[] = chainBases.map(start => {
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
                 )}
 
-                {/* Restrictions */}
-                {b.restrictions && b.restrictions.length > 0 ? (
+                {/* Restrictions (+ what this tile turns into on its own) */}
+                {(b.restrictions && b.restrictions.length > 0) || b.developsInto ? (
                   <td class="cell yield-misc">
                     {b.restrictions.map(r => <div class="listitem">{r}</div>)}
+                    {b.developsInto && (
+                      <div class="listitem develop-req">
+                        Develops into <a href={`#${b.developsInto.slug}`}>{b.developsInto.name}</a> after {developWindow(b.developsInto)}
+                      </div>
+                    )}
                   </td>
                 ) : (
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
@@ -417,6 +477,17 @@ const chains: Chain[] = chainBases.map(start => {
   .tier__name:hover span { text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 2px; }
   .tier__art { width: 22px; height: 22px; object-fit: contain; flex: none; }
   .tier__chips { margin-top: 0.2rem; }
+  /* Time-gated step in a line (Hamlet → Village → Town): no build, just turns */
+  .tier__develop {
+    font-size: 0.66rem;
+    font-style: italic;
+    color: var(--text-dim);
+    letter-spacing: 0.01em;
+    margin: 0.18rem 0 0.12rem;
+  }
+  .tier__develop--out { margin-top: 0.35rem; }
+  .tier__develop a { color: var(--gold); text-decoration: none; }
+  .tier__develop a:hover { text-decoration: underline; }
   .tier__chips .effect {
     padding: 0.18rem 0.45rem;
     margin: 0.12rem 0;
@@ -515,6 +586,10 @@ const chains: Chain[] = chainBases.map(start => {
     padding: 0.06rem 0;
   }
   .culture-req { display: flex; align-items: center; gap: 0.3rem; }
+  .develop-req { font-style: italic; color: var(--text-dim); }
+  .develop-req a { color: var(--gold); text-decoration: none; }
+  .develop-req a:hover { text-decoration: underline; }
+  .nobuild { font-size: 0.7rem; font-style: italic; color: var(--text-dim); }
   .culture-ico { width: 16px; height: 16px; object-fit: contain; flex: none; }
 
   /* Sortable column headers */

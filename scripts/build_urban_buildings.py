@@ -32,16 +32,24 @@ IMG_DIR = ROOT / "public" / "img" / "icons" / "improvements"
 # patch those by hand.
 ICON_ALIASES = {"ministry": "ministries"}
 
+# GameContentRequired token → content-pack display name (same table as
+# build_events.py / build_occurrences.py).
+DLC_LABELS = {
+    "EVENTPACK_SCANDAL": "Behind the Throne",
+}
+
 
 def slugify(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", (s or "").lower()).strip("_")
 
 
-def resolve_icon(name: str, ztype: str) -> str:
-    """name-slug → id-slug → alias. Returns site path or '' if no art."""
+def resolve_icon(name: str, ztype: str, icon_name: str = "") -> str:
+    """name-slug → id-slug → alias → zIconName. Returns site path or '' if no art."""
     name_slug = slugify(name)
     id_slug = ztype.replace("IMPROVEMENT_", "").lower()
-    for cand in (name_slug, id_slug, ICON_ALIASES.get(name_slug, "")):
+    # zIconName redirects shared art (Slums reuses the Camp sprite).
+    shared_slug = (icon_name or "").replace("IMPROVEMENT_", "").lower()
+    for cand in (name_slug, id_slug, ICON_ALIASES.get(name_slug, ""), shared_slug):
         if cand and (IMG_DIR / f"{cand}.png").exists():
             return f"img/icons/improvements/{cand}.png"
     return ""
@@ -87,7 +95,10 @@ def fmt_terrain(token: str) -> str:
 
 
 def main() -> int:
-    text_imp = load_text("text-improvement.xml", "text-improvementClass.xml", "text-infos.xml")
+    # text-misc-btt.xml carries the Behind the Throne strings (Slums' name
+    # lives there, not in text-improvement.xml).
+    text_imp = load_text("text-improvement.xml", "text-improvementClass.xml",
+                         "text-infos.xml", "text-misc-btt.xml")
     text_specialist = load_text("text-infos.xml")
     indexes = load_xml_indexes(XML_DIR)
 
@@ -98,6 +109,40 @@ def main() -> int:
     }
 
     imp_root = parse("improvement.xml")
+
+    # Develop chain: Slums →(35) Hamlet →(20) Village →(20) Town. These tiers
+    # aren't built by a worker (only Hamlet has bBuild) — the tile ripens on
+    # its own, +1 develop turn every turn (Tile.doTurn → canDevelopImprovement
+    # → incrementImprovementDevelopTurns), then swaps to DevelopImprovement.
+    # Without this index the bBuild filter below silently dropped Village,
+    # Town and Slums from the page.
+    develops_to: dict[str, tuple[str, int, int]] = {}   # from → (to, turns, rand)
+    develops_from: dict[str, list[tuple[str, int, int]]] = {}
+    for e in imp_root.findall("Entry"):
+        src = e.findtext("zType") or ""
+        dst = e.findtext("DevelopImprovement") or ""
+        if not src or not dst:
+            continue
+        turns = int(e.findtext("iDevelopTurns") or "0")
+        rand = int(e.findtext("iDevelopRand") or "0")
+        develops_to[src] = (dst, turns, rand)
+        develops_from.setdefault(dst, []).append((src, turns, rand))
+
+    def develop_ref(ztype: str, turns: int, rand: int) -> dict:
+        ent = next((x for x in imp_root.findall("Entry") if x.findtext("zType") == ztype), None)
+        nm = ztype.replace("IMPROVEMENT_", "").replace("_", " ").title()
+        if ent is not None:
+            nm = text_imp.get(ent.findtext("Name") or "", nm)
+        return {
+            "id": ztype,
+            "slug": ztype.replace("IMPROVEMENT_", "").lower(),
+            "name": nm,
+            "turns": turns,
+            # iDevelopRand widens it to a [turns-rand, turns] window
+            # (HelpText.Improvement.cs:1542).
+            "minTurns": turns - rand if rand else turns,
+        }
+
     items: list[dict] = []
 
     for e in imp_root.findall("Entry"):
@@ -117,9 +162,11 @@ def main() -> int:
         # Exclude permanent / map-only placeholders
         if (e.findtext("bWonder") or "0") == "1":
             continue
-        # Skip stuff like IMPROVEMENT_ANCIENT_RUINS, IMPROVEMENT_VILLAGE/TOWN (no bBuild, just upgrades)
-        if (e.findtext("bBuild") or "0") != "1":
-            # Permit village/town/hamlet upgrade chain only if they have Specialist slots — they do
+        # Keep worker-buildable improvements plus anything on a develop chain
+        # (Village/Town/Slums are never built, they ripen out of a Hamlet).
+        # Everything else with no bBuild is a map placeholder (Ancient Ruins,
+        # Minor City).
+        if (e.findtext("bBuild") or "0") != "1" and zt not in develops_to and zt not in develops_from:
             continue
 
         name = text_imp.get(e.findtext("Name") or "", zt.replace("IMPROVEMENT_", "").replace("_", " ").title())
@@ -140,6 +187,12 @@ def main() -> int:
         # Build cost (yields) and build time (own field/column, not
         # mixed into the cost list).
         cost_lines: list[str] = render_yield_pairs(e, "aiYieldCost", as_cost=True)
+        # Village/Town carry a dormant aiYieldCost (20 Stone) that is never
+        # charged: the tile cost is only stamped when a unit starts a build
+        # (Unit.cs:12076/12363), and these tiers only ever arrive by developing
+        # out of a Hamlet. Don't show a price nobody pays.
+        if (e.findtext("bBuild") or "0") != "1":
+            cost_lines = []
         bt = e.findtext("iBuildTurns")
         build_turns = int(bt) if bt and bt != "0" else 0
 
@@ -259,7 +312,7 @@ def main() -> int:
             "id": zt,
             "slug": slug,
             "name": name,
-            "icon": resolve_icon(name, zt),
+            "icon": resolve_icon(name, zt, e.findtext("zIconName") or ""),
             "class": cls.replace("IMPROVEMENTCLASS_", "").title() if cls else "",
             "classId": cls,
             "tech": {
@@ -273,6 +326,9 @@ def main() -> int:
             "lawPrereq": law_prereq.replace("LAW_", "").replace("_", " ").title() if law_prereq else "",
             "cost": cost_lines,
             "buildTurns": build_turns,
+            # Village/Town/Slums have no bBuild — they only ever appear by
+            # developing out of the tier below.
+            "buildable": (e.findtext("bBuild") or "0") == "1",
             "upkeep": upkeep,
             "specialist": {
                 "id": specialist_id,
@@ -284,6 +340,9 @@ def main() -> int:
             "restrictions": restrictions,
             "upgradesTo": upgrade_name,
             "replaces": prereq_imp_name,
+            "developsInto": develop_ref(*((develops_to[zt][0],) + develops_to[zt][1:])) if zt in develops_to else None,
+            "developsFrom": [develop_ref(src, t, r) for src, t, r in develops_from.get(zt, [])],
+            "dlc": DLC_LABELS.get(e.findtext("GameContentRequired") or "", e.findtext("GameContentRequired") or ""),
         })
 
     # Sort by class, then name

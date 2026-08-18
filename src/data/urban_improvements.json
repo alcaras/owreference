@@ -1,12 +1,16 @@
 [
   {
     "buildTurns": 6,
+    "buildable": true,
     "class": "Garrison",
     "classId": "IMPROVEMENTCLASS_GARRISON",
     "cost": [
       "100 Stone"
     ],
     "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+0.5 Orders",
       "-10% Maintenance"
@@ -35,12 +39,16 @@
   },
   {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Garrison",
     "classId": "IMPROVEMENTCLASS_GARRISON",
     "cost": [
       "60 Stone"
     ],
     "culturePrereq": "",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+0.5 Orders"
     ],
@@ -68,12 +76,16 @@
   },
   {
     "buildTurns": 5,
+    "buildable": true,
     "class": "Garrison",
     "classId": "IMPROVEMENTCLASS_GARRISON",
     "cost": [
       "80 Stone"
     ],
     "culturePrereq": "Developing",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+0.5 Orders"
     ],
@@ -101,12 +113,16 @@
   },
   {
     "buildTurns": 1,
+    "buildable": true,
     "class": "Pillar_Edicts",
     "classId": "IMPROVEMENTCLASS_PILLAR_EDICTS",
     "cost": [
       "10 Stone"
     ],
     "culturePrereq": "",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "EMPIRES_OF_THE_INDUS",
     "effects": [
       "+2 Civics",
       "+2 Legitimacy"
@@ -132,13 +148,58 @@
     "upkeep": []
   },
   {
+    "buildTurns": 0,
+    "buildable": false,
+    "class": "Slums",
+    "classId": "IMPROVEMENTCLASS_SLUMS",
+    "cost": [],
+    "culturePrereq": "",
+    "developsFrom": [],
+    "developsInto": {
+      "id": "IMPROVEMENT_HAMLET",
+      "minTurns": 15,
+      "name": "Hamlet",
+      "slug": "hamlet",
+      "turns": 35
+    },
+    "dlc": "Behind the Throne",
+    "effects": [
+      "+5% Rebel Chance",
+      "-40% Unit Train Modifier / Militia"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/camp.png",
+    "id": "IMPROVEMENT_SLUMS",
+    "lawPrereq": "",
+    "name": "Slums",
+    "nationPrereq": "",
+    "replaces": "",
+    "restrictions": [
+      "Urban tile only"
+    ],
+    "slug": "slums",
+    "specialist": null,
+    "tech": null,
+    "terrains": [
+      "Habitable"
+    ],
+    "upgradesTo": "",
+    "upkeep": [
+      "1 Food/turn"
+    ]
+  },
+  {
     "buildTurns": 6,
+    "buildable": true,
     "class": "Odeon",
     "classId": "IMPROVEMENTCLASS_ODEON",
     "cost": [
       "80 Stone"
     ],
     "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+5 Culture",
       "+2 Happiness"
@@ -175,12 +236,16 @@
   },
   {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Odeon",
     "classId": "IMPROVEMENTCLASS_ODEON",
     "cost": [
       "40 Stone"
     ],
     "culturePrereq": "",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+3 Culture"
     ],
@@ -216,12 +281,16 @@
   },
   {
     "buildTurns": 5,
+    "buildable": true,
     "class": "Odeon",
     "classId": "IMPROVEMENTCLASS_ODEON",
     "cost": [
       "60 Stone"
     ],
     "culturePrereq": "Developing",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+4 Culture",
       "+1 Happiness"
@@ -258,12 +327,30 @@
   },
   {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Hamlet",
     "classId": "IMPROVEMENTCLASS_HAMLET",
     "cost": [
       "20 Stone"
     ],
     "culturePrereq": "",
+    "developsFrom": [
+      {
+        "id": "IMPROVEMENT_SLUMS",
+        "minTurns": 15,
+        "name": "Slums",
+        "slug": "slums",
+        "turns": 35
+      }
+    ],
+    "developsInto": {
+      "id": "IMPROVEMENT_VILLAGE",
+      "minTurns": 20,
+      "name": "Village",
+      "slug": "village",
+      "turns": 20
+    },
+    "dlc": "",
     "effects": [
       "+10 Money"
     ],
@@ -293,13 +380,116 @@
     ]
   },
   {
+    "buildTurns": 0,
+    "buildable": false,
+    "class": "Hamlet",
+    "classId": "IMPROVEMENTCLASS_HAMLET",
+    "cost": [],
+    "culturePrereq": "",
+    "developsFrom": [
+      {
+        "id": "IMPROVEMENT_VILLAGE",
+        "minTurns": 20,
+        "name": "Village",
+        "slug": "village",
+        "turns": 20
+      }
+    ],
+    "developsInto": null,
+    "dlc": "",
+    "effects": [
+      "+1 Growth",
+      "+20 Money"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/town.png",
+    "id": "IMPROVEMENT_TOWN",
+    "lawPrereq": "",
+    "name": "Town",
+    "nationPrereq": "",
+    "replaces": "",
+    "restrictions": [
+      "Urban tile only"
+    ],
+    "slug": "town",
+    "specialist": null,
+    "tech": {
+      "id": "TECH_POLIS",
+      "name": "Polis",
+      "slug": "polis"
+    },
+    "terrains": [
+      "Habitable"
+    ],
+    "upgradesTo": "",
+    "upkeep": [
+      "3 Food/turn"
+    ]
+  },
+  {
+    "buildTurns": 0,
+    "buildable": false,
+    "class": "Hamlet",
+    "classId": "IMPROVEMENTCLASS_HAMLET",
+    "cost": [],
+    "culturePrereq": "",
+    "developsFrom": [
+      {
+        "id": "IMPROVEMENT_HAMLET",
+        "minTurns": 20,
+        "name": "Hamlet",
+        "slug": "hamlet",
+        "turns": 20
+      }
+    ],
+    "developsInto": {
+      "id": "IMPROVEMENT_TOWN",
+      "minTurns": 20,
+      "name": "Town",
+      "slug": "town",
+      "turns": 20
+    },
+    "dlc": "",
+    "effects": [
+      "+15 Money"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/village.png",
+    "id": "IMPROVEMENT_VILLAGE",
+    "lawPrereq": "",
+    "name": "Village",
+    "nationPrereq": "",
+    "replaces": "",
+    "restrictions": [
+      "Urban tile only"
+    ],
+    "slug": "village",
+    "specialist": null,
+    "tech": {
+      "id": "TECH_POLIS",
+      "name": "Polis",
+      "slug": "polis"
+    },
+    "terrains": [
+      "Habitable"
+    ],
+    "upgradesTo": "",
+    "upkeep": [
+      "2 Food/turn"
+    ]
+  },
+  {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Barracks",
     "classId": "IMPROVEMENTCLASS_BARRACKS",
     "cost": [
       "40 Stone"
     ],
     "culturePrereq": "",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+20% Training",
       "+20% Adjacent Garrison",
@@ -337,12 +527,16 @@
   },
   {
     "buildTurns": 6,
+    "buildable": true,
     "class": "Market",
     "classId": "IMPROVEMENTCLASS_MARKET",
     "cost": [
       "100 Wood"
     ],
     "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+50% Money"
     ],
@@ -376,12 +570,16 @@
   },
   {
     "buildTurns": 5,
+    "buildable": true,
     "class": "Market",
     "classId": "IMPROVEMENTCLASS_MARKET",
     "cost": [
       "80 Wood"
     ],
     "culturePrereq": "Developing",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+40% Money"
     ],
@@ -415,12 +613,16 @@
   },
   {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Market",
     "classId": "IMPROVEMENTCLASS_MARKET",
     "cost": [
       "60 Wood"
     ],
     "culturePrereq": "Weak",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+30% Money"
     ],
@@ -454,12 +656,16 @@
   },
   {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Courthouse",
     "classId": "IMPROVEMENTCLASS_COURTHOUSE",
     "cost": [
       "80 Stone"
     ],
     "culturePrereq": "Developing",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+20% Civics"
     ],
@@ -495,12 +701,16 @@
   },
   {
     "buildTurns": 5,
+    "buildable": true,
     "class": "Courthouse",
     "classId": "IMPROVEMENTCLASS_COURTHOUSE",
     "cost": [
       "100 Stone"
     ],
     "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+30% Civics"
     ],
@@ -536,12 +746,16 @@
   },
   {
     "buildTurns": 6,
+    "buildable": true,
     "class": "Courthouse",
     "classId": "IMPROVEMENTCLASS_COURTHOUSE",
     "cost": [
       "120 Stone"
     ],
     "culturePrereq": "Legendary",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+40% Civics",
       "-10% Maintenance"
@@ -578,12 +792,16 @@
   },
   {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Range",
     "classId": "IMPROVEMENTCLASS_RANGE",
     "cost": [
       "40 Wood"
     ],
     "culturePrereq": "",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+20% Training",
       "+20% Adjacent Garrison",
@@ -621,12 +839,16 @@
   },
   {
     "buildTurns": 5,
+    "buildable": true,
     "class": "Library",
     "classId": "IMPROVEMENTCLASS_LIBRARY",
     "cost": [
       "100 Stone"
     ],
     "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+20% Science"
     ],
@@ -662,12 +884,16 @@
   },
   {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Library",
     "classId": "IMPROVEMENTCLASS_LIBRARY",
     "cost": [
       "80 Stone"
     ],
     "culturePrereq": "Developing",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+10% Science"
     ],
@@ -703,12 +929,16 @@
   },
   {
     "buildTurns": 6,
+    "buildable": true,
     "class": "Library",
     "classId": "IMPROVEMENTCLASS_LIBRARY",
     "cost": [
       "120 Stone"
     ],
     "culturePrereq": "Legendary",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+10% Civics",
       "+30% Science"
@@ -745,12 +975,16 @@
   },
   {
     "buildTurns": 4,
+    "buildable": true,
     "class": "Baths",
     "classId": "IMPROVEMENTCLASS_BATHS",
     "cost": [
       "40 Stone"
     ],
     "culturePrereq": "Developing",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+2 Happiness"
     ],
@@ -786,12 +1020,16 @@
   },
   {
     "buildTurns": 6,
+    "buildable": true,
     "class": "Baths",
     "classId": "IMPROVEMENTCLASS_BATHS",
     "cost": [
       "80 Stone"
     ],
     "culturePrereq": "Legendary",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+4 Happiness",
       "+10% Growth"
@@ -828,12 +1066,16 @@
   },
   {
     "buildTurns": 5,
+    "buildable": true,
     "class": "Baths",
     "classId": "IMPROVEMENTCLASS_BATHS",
     "cost": [
       "60 Stone"
     ],
     "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
     "effects": [
       "+3 Happiness"
     ],
