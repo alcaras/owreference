@@ -198,7 +198,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
                             {(m.b.tradeNetwork || []).map(line => {
                               const yk = classifyYield(line)?.toLowerCase() || 'misc';
                               return (
-                                <div class={`effect effect--conditional yield-${yk}`} title="Only while the tile is connected to the capital's trade network">
+                                <div class={`effect yield-${yk}`} title="Only while the tile is connected to the capital's trade network">
                                   <LinkedText text={line} iconsForYields={true} /> <span class="effect__when">on trade network</span>
                                 </div>
                               );
@@ -354,7 +354,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
                     {(b.tradeNetwork || []).map(line => {
                       const yk = classifyYield(line)?.toLowerCase() || 'misc';
                       return (
-                        <div class={`effect effect--conditional yield-${yk}`} title="Only while the tile is connected to the capital's trade network">
+                        <div class={`effect yield-${yk}`} title="Only while the tile is connected to the capital's trade network">
                           <LinkedText text={line} iconsForYields={true} /> <span class="effect__when">on trade network</span>
                         </div>
                       );
@@ -612,8 +612,8 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
   }
   .culture-req { display: flex; align-items: center; gap: 0.3rem; }
   .develop-req { font-style: italic; color: var(--text-dim); }
-  /* Conditional output — only paid while the tile is on the trade network */
-  .effect--conditional { border-style: dashed !important; }
+  /* Conditional output — only paid while the tile is on the trade network.
+     The italic "on trade network" tag carries it; no border treatment. */
   .effect__when { font-style: italic; opacity: 0.75; font-size: 0.9em; }
   .develop-req a { color: var(--gold); text-decoration: none; }
   .develop-req a:hover { text-decoration: underline; }
