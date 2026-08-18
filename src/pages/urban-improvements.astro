@@ -45,6 +45,7 @@ const cultureIcon: Record<string, string> = {
 
 function otherPrereq(b: Building): string[] {
   const out: string[] = [];
+  if (b.effectCityPrereq) out.push(`${b.effectCityPrereq} in city`);
   if (b.familyPrereq)  out.push(`${b.familyPrereq} Family`);
   if (b.nationPrereq)  out.push(`${b.nationPrereq} only`);
   if (b.lawPrereq)     out.push(`Law: ${b.lawPrereq}`);
@@ -125,6 +126,13 @@ const chains: Chain[] = chainBases.map(start => {
   return { label: start.class.replace(/_/g, ' '), tiers, leadsTo };
 }).sort((a, b) => a.label.localeCompare(b.label));
 
+// A worker-built tier (Hamlet) is not "gated" on the tier below it, even
+// though Slums ripen into one — only show develop provenance as a prereq for
+// tiers that can't be built at all.
+function developOrigins(b: Building) {
+  return b.buildable === false ? (b.developsFrom || []) : [];
+}
+
 // "in 20 turns" / "in 15 - 35 turns" (iDevelopRand widens the window).
 function developWindow(d: NonNullable<Building['developsInto']>): string {
   return d.minTurns && d.minTurns !== d.turns
@@ -181,11 +189,19 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
                           ) : null}
                           <span>{m.b.name}</span>
                         </a>
-                        {m.b.effects && m.b.effects.length > 0 && (
+                        {((m.b.effects && m.b.effects.length > 0) || (m.b.tradeNetwork || []).length > 0) && (
                           <div class="tier__chips">
                             {m.b.effects.map(line => {
                               const yk = classifyYield(line)?.toLowerCase() || 'misc';
                               return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                            })}
+                            {(m.b.tradeNetwork || []).map(line => {
+                              const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                              return (
+                                <div class={`effect effect--conditional yield-${yk}`} title="Only while the tile is connected to the capital's trade network">
+                                  <LinkedText text={line} iconsForYields={true} /> <span class="effect__when">on trade network</span>
+                                </div>
+                              );
                             })}
                           </div>
                         )}
@@ -259,7 +275,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
                 {/* Other prereqs — culture level shown as its emblem. For the
                     Hamlet line the "prereq" is time: the tile ripens out of the
                     tier below on its own. */}
-                {b.culturePrereq || prereqs.length > 0 || (b.developsFrom || []).length > 0 ? (
+                {b.culturePrereq || prereqs.length > 0 || developOrigins(b).length > 0 ? (
                   <td class="cell cell--list yield-misc">
                     {b.culturePrereq && (
                       <div class="listitem culture-req" title={`${b.culturePrereq} Culture`}>
@@ -267,7 +283,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
                         <span>{b.culturePrereq}</span>
                       </div>
                     )}
-                    {(b.developsFrom || []).map(d => (
+                    {developOrigins(b).map(d => (
                       <div class="listitem develop-req">
                         Develops from <a href={`#${d.slug}`}>{d.name}</a> after {developWindow(d)}
                       </div>
@@ -327,12 +343,21 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
                   <td class="cell is-empty"><span class="cell__dash">—</span></td>
                 )}
 
-                {/* Effects */}
-                {b.effects && b.effects.length > 0 ? (
+                {/* Effects — plus what the tile adds once it's on the
+                    capital's trade network (stacks on the base output) */}
+                {(b.effects && b.effects.length > 0) || (b.tradeNetwork || []).length > 0 ? (
                   <td class="cell cell--effects">
                     {b.effects.map(line => {
                       const yk = classifyYield(line)?.toLowerCase() || 'misc';
                       return <div class={`effect yield-${yk}`}><LinkedText text={line} iconsForYields={true} /></div>;
+                    })}
+                    {(b.tradeNetwork || []).map(line => {
+                      const yk = classifyYield(line)?.toLowerCase() || 'misc';
+                      return (
+                        <div class={`effect effect--conditional yield-${yk}`} title="Only while the tile is connected to the capital's trade network">
+                          <LinkedText text={line} iconsForYields={true} /> <span class="effect__when">on trade network</span>
+                        </div>
+                      );
                     })}
                   </td>
                 ) : (
@@ -587,6 +612,9 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
   }
   .culture-req { display: flex; align-items: center; gap: 0.3rem; }
   .develop-req { font-style: italic; color: var(--text-dim); }
+  /* Conditional output — only paid while the tile is on the trade network */
+  .effect--conditional { border-style: dashed !important; }
+  .effect__when { font-style: italic; opacity: 0.75; font-size: 0.9em; }
   .develop-req a { color: var(--gold); text-decoration: none; }
   .develop-req a:hover { text-decoration: underline; }
   .nobuild { font-size: 0.7rem; font-style: italic; color: var(--text-dim); }

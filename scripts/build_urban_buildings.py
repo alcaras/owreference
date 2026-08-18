@@ -35,7 +35,11 @@ ICON_ALIASES = {"ministry": "ministries"}
 # GameContentRequired token → content-pack display name (same table as
 # build_events.py / build_occurrences.py).
 DLC_LABELS = {
-    "EVENTPACK_SCANDAL": "Behind the Throne",
+    "CALAMITIES":           "Wrath of Gods",
+    "EVENTPACK_SCANDAL":    "Behind the Throne",
+    "BEHIND_THE_THRONE":    "Behind the Throne",
+    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
+    "WONDERS_AND_DYNASTIES": "Wonders & Dynasties",
 }
 
 
@@ -179,6 +183,15 @@ def main() -> int:
         # Per-entry tech prereq overrides (rare)
         tech_id = e.findtext("TechPrereq") or tech_id
 
+        # A city-effect prereq (Pillar Edict needs a Stupa in the city). The
+        # EffectCity's Name points at the source building's text key.
+        ec_prereq_name = ""
+        ec_prereq_id = e.findtext("EffectCityPrereq") or ""
+        if ec_prereq_id:
+            ecp = indexes.get("effectCity.xml", {}).get(ec_prereq_id)
+            key = ecp.findtext("Name") if ecp is not None else ""
+            ec_prereq_name = text_imp.get(key or "", ec_prereq_id.replace("EFFECTCITY_", "").replace("_", " ").title())
+
         culture_prereq = e.findtext("CulturePrereq") or ""
         family_prereq = e.findtext("FamilyPrereq") or ""
         nation_prereq = e.findtext("NationPrereq") or ""
@@ -193,6 +206,12 @@ def main() -> int:
         # out of a Hamlet. Don't show a price nobody pays.
         if (e.findtext("bBuild") or "0") != "1":
             cost_lines = []
+        # iBuildCost is the Orders the worker spends starting the build
+        # (Unit.getBuildCost, Unit.cs:12200 — plus the vegetation's own cost if
+        # the tile has to be cleared first).
+        bc = e.findtext("iBuildCost")
+        if bc and bc != "0":
+            cost_lines.append(f"{int(bc)} Orders")
         bt = e.findtext("iBuildTurns")
         build_turns = int(bt) if bt and bt != "0" else 0
 
@@ -219,6 +238,22 @@ def main() -> int:
         # Direct yield output on the improvement itself (e.g., Hamlet → +10 Money)
         effects: list[str] = []
         effects.extend(render_yield_pairs(e, "aiYieldOutput"))
+
+        # Trade-network output — added on top of the base output whenever the
+        # tile is connected to the capital's trade network
+        # (Tile.getYieldOutput → tradeNetworkTestImprovement, Tile.cs:13670).
+        # For the Hamlet line this doubles the Money, so dropping it understated
+        # the tile badly.
+        trade_network: list[str] = render_yield_pairs(e, "aiTradeNetworkYieldOutput")
+
+        # Defense bonus for units standing on the tile in friendly territory
+        # (Unit.cs:9045 — "{value} (if Friendly Territory)").
+        dmf = e.findtext("iDefenseModifierFriendly")
+        if dmf and dmf != "0":
+            effects.append(f"{fmt_decimal(int(dmf))}% Defense in Friendly Territory")
+        dm = e.findtext("iDefenseModifier")
+        if dm and dm != "0":
+            effects.append(f"{fmt_decimal(int(dm))}% Defense in Friendly/Neutral Territory")
 
         # Yield output (ongoing) — from EffectCity if any
         ec_id = e.findtext("EffectCity") or ""
@@ -268,6 +303,10 @@ def main() -> int:
             restrictions.append("Urban tile only")
         elif (e.findtext("bTerritoryOnly") or "0") == "1":
             restrictions.append("Anywhere in own territory")
+        req_laws = e.findtext("iPrereqLaws")
+        if req_laws and req_laws != "0":
+            n = int(req_laws)
+            restrictions.append(f"Requires {n} active {'Law' if n == 1 else 'Laws'}")
         max_city = e.findtext("iMaxCityCount")
         if max_city and max_city != "0":
             restrictions.append(f"Max {max_city}/City")
@@ -313,7 +352,7 @@ def main() -> int:
             "slug": slug,
             "name": name,
             "icon": resolve_icon(name, zt, e.findtext("zIconName") or ""),
-            "class": cls.replace("IMPROVEMENTCLASS_", "").title() if cls else "",
+            "class": cls.replace("IMPROVEMENTCLASS_", "").replace("_", " ").title() if cls else "",
             "classId": cls,
             "tech": {
                 "id": tech_id,
@@ -324,6 +363,7 @@ def main() -> int:
             "familyPrereq": family_prereq.replace("FAMILY_", "").replace("_", " ").title() if family_prereq else "",
             "nationPrereq": nation_prereq.replace("NATION_", "").title() if nation_prereq else "",
             "lawPrereq": law_prereq.replace("LAW_", "").replace("_", " ").title() if law_prereq else "",
+            "effectCityPrereq": ec_prereq_name,
             "cost": cost_lines,
             "buildTurns": build_turns,
             # Village/Town/Slums have no bBuild — they only ever appear by
@@ -336,6 +376,7 @@ def main() -> int:
                 "name": specialist_name,
             } if specialist_id else None,
             "effects": effects,
+            "tradeNetwork": trade_network,
             "terrains": terrains,
             "restrictions": restrictions,
             "upgradesTo": upgrade_name,
@@ -353,9 +394,34 @@ def main() -> int:
         for i, t in enumerate(parse("tech.xml").findall("Entry"))
         if t.findtext("zType")
     }
+    # Within a line, sort by where the tier sits in the chain, not
+    # alphabetically — Hamlet → Village → Town, never Hamlet → Town → Village.
+    # Successors are UpgradeImprovement (culture tiers) or DevelopImprovement
+    # (the Hamlet line, which ripens on its own).
+    by_id = {x["id"]: x for x in items}
+    successor_of: dict[str, str] = {}
+    for x in items:
+        nxt = ""
+        if x["upgradesTo"]:
+            nxt = next((y["id"] for y in items if y["name"] == x["upgradesTo"]), "")
+        elif x["developsInto"]:
+            nxt = x["developsInto"]["id"]
+        if nxt in by_id:
+            successor_of[x["id"]] = nxt
+    has_pred = set(successor_of.values())
+    chain_pos: dict[str, int] = {}
+    for x in items:
+        if x["id"] in has_pred:
+            continue
+        pos, cur = 0, x["id"]
+        while cur and cur not in chain_pos:
+            chain_pos[cur] = pos
+            pos += 1
+            cur = successor_of.get(cur, "")
+
     items.sort(key=lambda x: (
         tech_order.get((x.get("tech") or {}).get("id"), -1),
-        x["class"], x["name"],
+        x["class"], chain_pos.get(x["id"], 0), x["name"],
     ))
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

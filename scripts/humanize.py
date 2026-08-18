@@ -280,6 +280,7 @@ HANDLED_FIELDS: dict[str, set[str]] = {
         "SpecialistNoPrereq", "aiUnitTraitLevel", "iCityHP", "iUnitHealAlways",
         "iUnitLevel", "iSpecialistUrbanTrainTimeModifier",
         "iImprovementCostModifier", "iRebelProb", "iRandomPromotions",
+        "aiUnitTrainModifier",
         "iHurryDiscontentModifier", "bHurryOrders", "bHurryPopulation",
         "bNoReligionSpread",
         # Deliberately phrased by build_families.py (City Defense / Specialist
@@ -397,6 +398,13 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | 
         unit = (pair.findtext("zIndex") or "").replace("UNIT_", "").title()
         v = int(pair.findtext("iValue") or "0")
         out.append(f"{fmt_decimal(v)}% {unit} Cost")
+
+    # Per-unit training-time modifier (Slums: -40% Militia production time).
+    # Game phrasing: "{value} production time for {unit}".
+    for pair in e.findall("aiUnitTrainModifier/Pair"):
+        unit = (pair.findtext("zIndex") or "").replace("UNIT_", "").title()
+        v = int(pair.findtext("iValue") or "0")
+        out.append(f"{fmt_decimal(v)}% {unit} Production Time")
 
     # Improvement-class cost modifiers (Egypt extra: -20% Cost for Adjacent Imps)
     iacm = e.findtext("iAdjacentClassCostModifier")

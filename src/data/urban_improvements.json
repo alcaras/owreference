@@ -1,56 +1,21 @@
 [
   {
-    "buildTurns": 6,
-    "buildable": true,
-    "class": "Garrison",
-    "classId": "IMPROVEMENTCLASS_GARRISON",
-    "cost": [
-      "100 Stone"
-    ],
-    "culturePrereq": "Strong",
-    "developsFrom": [],
-    "developsInto": null,
-    "dlc": "",
-    "effects": [
-      "+0.5 Orders",
-      "-10% Maintenance"
-    ],
-    "familyPrereq": "",
-    "icon": "img/icons/improvements/garrison_3.png",
-    "id": "IMPROVEMENT_GARRISON_3",
-    "lawPrereq": "",
-    "name": "Citadel",
-    "nationPrereq": "",
-    "replaces": "Stronghold",
-    "restrictions": [
-      "Urban tile only",
-      "Max 1/City"
-    ],
-    "slug": "garrison_3",
-    "specialist": null,
-    "tech": null,
-    "terrains": [
-      "Habitable"
-    ],
-    "upgradesTo": "",
-    "upkeep": [
-      "4 Stone/turn"
-    ]
-  },
-  {
     "buildTurns": 4,
     "buildable": true,
     "class": "Garrison",
     "classId": "IMPROVEMENTCLASS_GARRISON",
     "cost": [
-      "60 Stone"
+      "60 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
-      "+0.5 Orders"
+      "+0.5 Orders",
+      "+20% Defense in Friendly Territory"
     ],
     "familyPrereq": "",
     "icon": "img/icons/improvements/garrison_1.png",
@@ -61,6 +26,7 @@
     "replaces": "",
     "restrictions": [
       "Urban tile only",
+      "Requires 1 active Law",
       "Max 1/City"
     ],
     "slug": "garrison_1",
@@ -69,6 +35,7 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Stronghold",
     "upkeep": [
       "2 Stone/turn"
@@ -80,14 +47,17 @@
     "class": "Garrison",
     "classId": "IMPROVEMENTCLASS_GARRISON",
     "cost": [
-      "80 Stone"
+      "80 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Developing",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
-      "+0.5 Orders"
+      "+0.5 Orders",
+      "+30% Defense in Friendly Territory"
     ],
     "familyPrereq": "",
     "icon": "img/icons/improvements/garrison_2.png",
@@ -98,6 +68,7 @@
     "replaces": "Garrison",
     "restrictions": [
       "Urban tile only",
+      "Requires 4 active Laws",
       "Max 1/City"
     ],
     "slug": "garrison_2",
@@ -106,23 +77,69 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Citadel",
     "upkeep": [
       "3 Stone/turn"
     ]
   },
   {
+    "buildTurns": 6,
+    "buildable": true,
+    "class": "Garrison",
+    "classId": "IMPROVEMENTCLASS_GARRISON",
+    "cost": [
+      "100 Stone",
+      "1 Orders"
+    ],
+    "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
+    "effectCityPrereq": "",
+    "effects": [
+      "+0.5 Orders",
+      "+40% Defense in Friendly Territory",
+      "-10% Maintenance"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/garrison_3.png",
+    "id": "IMPROVEMENT_GARRISON_3",
+    "lawPrereq": "",
+    "name": "Citadel",
+    "nationPrereq": "",
+    "replaces": "Stronghold",
+    "restrictions": [
+      "Urban tile only",
+      "Requires 7 active Laws",
+      "Max 1/City"
+    ],
+    "slug": "garrison_3",
+    "specialist": null,
+    "tech": null,
+    "terrains": [
+      "Habitable"
+    ],
+    "tradeNetwork": [],
+    "upgradesTo": "",
+    "upkeep": [
+      "4 Stone/turn"
+    ]
+  },
+  {
     "buildTurns": 1,
     "buildable": true,
-    "class": "Pillar_Edicts",
+    "class": "Pillar Edicts",
     "classId": "IMPROVEMENTCLASS_PILLAR_EDICTS",
     "cost": [
-      "10 Stone"
+      "10 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "",
     "developsFrom": [],
     "developsInto": null,
-    "dlc": "EMPIRES_OF_THE_INDUS",
+    "dlc": "Empires of the Indus",
+    "effectCityPrereq": "Stupa",
     "effects": [
       "+2 Civics",
       "+2 Legitimacy"
@@ -144,6 +161,7 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "",
     "upkeep": []
   },
@@ -163,9 +181,10 @@
       "turns": 35
     },
     "dlc": "Behind the Throne",
+    "effectCityPrereq": "",
     "effects": [
-      "+5% Rebel Chance",
-      "-40% Unit Train Modifier / Militia"
+      "-40% Militia Production Time",
+      "+5% Rebel Chance"
     ],
     "familyPrereq": "",
     "icon": "img/icons/improvements/camp.png",
@@ -183,55 +202,12 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [
+      "+5 Money"
+    ],
     "upgradesTo": "",
     "upkeep": [
       "1 Food/turn"
-    ]
-  },
-  {
-    "buildTurns": 6,
-    "buildable": true,
-    "class": "Odeon",
-    "classId": "IMPROVEMENTCLASS_ODEON",
-    "cost": [
-      "80 Stone"
-    ],
-    "culturePrereq": "Strong",
-    "developsFrom": [],
-    "developsInto": null,
-    "dlc": "",
-    "effects": [
-      "+5 Culture",
-      "+2 Happiness"
-    ],
-    "familyPrereq": "",
-    "icon": "img/icons/improvements/amphitheater.png",
-    "id": "IMPROVEMENT_THEATER_3",
-    "lawPrereq": "",
-    "name": "Amphitheater",
-    "nationPrereq": "",
-    "replaces": "Theater",
-    "restrictions": [
-      "Urban tile only",
-      "Max 1/City"
-    ],
-    "slug": "theater_3",
-    "specialist": {
-      "id": "SPECIALIST_POET_3",
-      "name": "Elder Poet",
-      "slug": "poet"
-    },
-    "tech": {
-      "id": "TECH_DRAMA",
-      "name": "Drama",
-      "slug": "drama"
-    },
-    "terrains": [
-      "Habitable"
-    ],
-    "upgradesTo": "",
-    "upkeep": [
-      "4 Stone/turn"
     ]
   },
   {
@@ -240,12 +216,14 @@
     "class": "Odeon",
     "classId": "IMPROVEMENTCLASS_ODEON",
     "cost": [
-      "40 Stone"
+      "40 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+3 Culture"
     ],
@@ -274,6 +252,7 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Theater",
     "upkeep": [
       "2 Stone/turn"
@@ -285,12 +264,14 @@
     "class": "Odeon",
     "classId": "IMPROVEMENTCLASS_ODEON",
     "cost": [
-      "60 Stone"
+      "60 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Developing",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+4 Culture",
       "+1 Happiness"
@@ -320,9 +301,59 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Amphitheater",
     "upkeep": [
       "3 Stone/turn"
+    ]
+  },
+  {
+    "buildTurns": 6,
+    "buildable": true,
+    "class": "Odeon",
+    "classId": "IMPROVEMENTCLASS_ODEON",
+    "cost": [
+      "80 Stone",
+      "1 Orders"
+    ],
+    "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
+    "effectCityPrereq": "",
+    "effects": [
+      "+5 Culture",
+      "+2 Happiness"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/amphitheater.png",
+    "id": "IMPROVEMENT_THEATER_3",
+    "lawPrereq": "",
+    "name": "Amphitheater",
+    "nationPrereq": "",
+    "replaces": "Theater",
+    "restrictions": [
+      "Urban tile only",
+      "Max 1/City"
+    ],
+    "slug": "theater_3",
+    "specialist": {
+      "id": "SPECIALIST_POET_3",
+      "name": "Elder Poet",
+      "slug": "poet"
+    },
+    "tech": {
+      "id": "TECH_DRAMA",
+      "name": "Drama",
+      "slug": "drama"
+    },
+    "terrains": [
+      "Habitable"
+    ],
+    "tradeNetwork": [],
+    "upgradesTo": "",
+    "upkeep": [
+      "4 Stone/turn"
     ]
   },
   {
@@ -331,7 +362,8 @@
     "class": "Hamlet",
     "classId": "IMPROVEMENTCLASS_HAMLET",
     "cost": [
-      "20 Stone"
+      "20 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "",
     "developsFrom": [
@@ -351,6 +383,7 @@
       "turns": 20
     },
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+10 Money"
     ],
@@ -374,56 +407,12 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [
+      "+10 Money"
+    ],
     "upgradesTo": "",
     "upkeep": [
       "1 Food/turn"
-    ]
-  },
-  {
-    "buildTurns": 0,
-    "buildable": false,
-    "class": "Hamlet",
-    "classId": "IMPROVEMENTCLASS_HAMLET",
-    "cost": [],
-    "culturePrereq": "",
-    "developsFrom": [
-      {
-        "id": "IMPROVEMENT_VILLAGE",
-        "minTurns": 20,
-        "name": "Village",
-        "slug": "village",
-        "turns": 20
-      }
-    ],
-    "developsInto": null,
-    "dlc": "",
-    "effects": [
-      "+1 Growth",
-      "+20 Money"
-    ],
-    "familyPrereq": "",
-    "icon": "img/icons/improvements/town.png",
-    "id": "IMPROVEMENT_TOWN",
-    "lawPrereq": "",
-    "name": "Town",
-    "nationPrereq": "",
-    "replaces": "",
-    "restrictions": [
-      "Urban tile only"
-    ],
-    "slug": "town",
-    "specialist": null,
-    "tech": {
-      "id": "TECH_POLIS",
-      "name": "Polis",
-      "slug": "polis"
-    },
-    "terrains": [
-      "Habitable"
-    ],
-    "upgradesTo": "",
-    "upkeep": [
-      "3 Food/turn"
     ]
   },
   {
@@ -450,6 +439,7 @@
       "turns": 20
     },
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+15 Money"
     ],
@@ -473,9 +463,64 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [
+      "+15 Money"
+    ],
     "upgradesTo": "",
     "upkeep": [
       "2 Food/turn"
+    ]
+  },
+  {
+    "buildTurns": 0,
+    "buildable": false,
+    "class": "Hamlet",
+    "classId": "IMPROVEMENTCLASS_HAMLET",
+    "cost": [],
+    "culturePrereq": "",
+    "developsFrom": [
+      {
+        "id": "IMPROVEMENT_VILLAGE",
+        "minTurns": 20,
+        "name": "Village",
+        "slug": "village",
+        "turns": 20
+      }
+    ],
+    "developsInto": null,
+    "dlc": "",
+    "effectCityPrereq": "",
+    "effects": [
+      "+1 Growth",
+      "+20 Money",
+      "+10% Defense in Friendly Territory"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/town.png",
+    "id": "IMPROVEMENT_TOWN",
+    "lawPrereq": "",
+    "name": "Town",
+    "nationPrereq": "",
+    "replaces": "",
+    "restrictions": [
+      "Urban tile only"
+    ],
+    "slug": "town",
+    "specialist": null,
+    "tech": {
+      "id": "TECH_POLIS",
+      "name": "Polis",
+      "slug": "polis"
+    },
+    "terrains": [
+      "Habitable"
+    ],
+    "tradeNetwork": [
+      "+20 Money"
+    ],
+    "upgradesTo": "",
+    "upkeep": [
+      "3 Food/turn"
     ]
   },
   {
@@ -484,12 +529,14 @@
     "class": "Barracks",
     "classId": "IMPROVEMENTCLASS_BARRACKS",
     "cost": [
-      "40 Stone"
+      "40 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+20% Training",
       "+20% Adjacent Garrison",
@@ -520,96 +567,11 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "",
     "upkeep": [
       "2 Iron/turn"
     ]
-  },
-  {
-    "buildTurns": 6,
-    "buildable": true,
-    "class": "Market",
-    "classId": "IMPROVEMENTCLASS_MARKET",
-    "cost": [
-      "100 Wood"
-    ],
-    "culturePrereq": "Strong",
-    "developsFrom": [],
-    "developsInto": null,
-    "dlc": "",
-    "effects": [
-      "+50% Money"
-    ],
-    "familyPrereq": "",
-    "icon": "img/icons/improvements/fair.png",
-    "id": "IMPROVEMENT_MARKET_3",
-    "lawPrereq": "",
-    "name": "Fair",
-    "nationPrereq": "",
-    "replaces": "Grocer",
-    "restrictions": [
-      "Urban tile only",
-      "Max 1/City"
-    ],
-    "slug": "market_3",
-    "specialist": {
-      "id": "SPECIALIST_SHOPKEEPER_3",
-      "name": "Elder Shopkeeper",
-      "slug": "shopkeeper"
-    },
-    "tech": {
-      "id": "TECH_COINAGE",
-      "name": "Coinage",
-      "slug": "coinage"
-    },
-    "terrains": [
-      "Habitable"
-    ],
-    "upgradesTo": "",
-    "upkeep": []
-  },
-  {
-    "buildTurns": 5,
-    "buildable": true,
-    "class": "Market",
-    "classId": "IMPROVEMENTCLASS_MARKET",
-    "cost": [
-      "80 Wood"
-    ],
-    "culturePrereq": "Developing",
-    "developsFrom": [],
-    "developsInto": null,
-    "dlc": "",
-    "effects": [
-      "+40% Money"
-    ],
-    "familyPrereq": "",
-    "icon": "img/icons/improvements/grocer.png",
-    "id": "IMPROVEMENT_MARKET_2",
-    "lawPrereq": "",
-    "name": "Grocer",
-    "nationPrereq": "",
-    "replaces": "Market",
-    "restrictions": [
-      "Urban tile only",
-      "Max 1/City"
-    ],
-    "slug": "market_2",
-    "specialist": {
-      "id": "SPECIALIST_SHOPKEEPER_2",
-      "name": "Master Shopkeeper",
-      "slug": "shopkeeper"
-    },
-    "tech": {
-      "id": "TECH_COINAGE",
-      "name": "Coinage",
-      "slug": "coinage"
-    },
-    "terrains": [
-      "Habitable"
-    ],
-    "upgradesTo": "Fair",
-    "upkeep": []
   },
   {
     "buildTurns": 4,
@@ -617,12 +579,14 @@
     "class": "Market",
     "classId": "IMPROVEMENTCLASS_MARKET",
     "cost": [
-      "60 Wood"
+      "60 Wood",
+      "1 Orders"
     ],
     "culturePrereq": "Weak",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+30% Money"
     ],
@@ -651,7 +615,100 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Grocer",
+    "upkeep": []
+  },
+  {
+    "buildTurns": 5,
+    "buildable": true,
+    "class": "Market",
+    "classId": "IMPROVEMENTCLASS_MARKET",
+    "cost": [
+      "80 Wood",
+      "1 Orders"
+    ],
+    "culturePrereq": "Developing",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
+    "effectCityPrereq": "",
+    "effects": [
+      "+40% Money"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/grocer.png",
+    "id": "IMPROVEMENT_MARKET_2",
+    "lawPrereq": "",
+    "name": "Grocer",
+    "nationPrereq": "",
+    "replaces": "Market",
+    "restrictions": [
+      "Urban tile only",
+      "Max 1/City"
+    ],
+    "slug": "market_2",
+    "specialist": {
+      "id": "SPECIALIST_SHOPKEEPER_2",
+      "name": "Master Shopkeeper",
+      "slug": "shopkeeper"
+    },
+    "tech": {
+      "id": "TECH_COINAGE",
+      "name": "Coinage",
+      "slug": "coinage"
+    },
+    "terrains": [
+      "Habitable"
+    ],
+    "tradeNetwork": [],
+    "upgradesTo": "Fair",
+    "upkeep": []
+  },
+  {
+    "buildTurns": 6,
+    "buildable": true,
+    "class": "Market",
+    "classId": "IMPROVEMENTCLASS_MARKET",
+    "cost": [
+      "100 Wood",
+      "1 Orders"
+    ],
+    "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
+    "effectCityPrereq": "",
+    "effects": [
+      "+50% Money"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/fair.png",
+    "id": "IMPROVEMENT_MARKET_3",
+    "lawPrereq": "",
+    "name": "Fair",
+    "nationPrereq": "",
+    "replaces": "Grocer",
+    "restrictions": [
+      "Urban tile only",
+      "Max 1/City"
+    ],
+    "slug": "market_3",
+    "specialist": {
+      "id": "SPECIALIST_SHOPKEEPER_3",
+      "name": "Elder Shopkeeper",
+      "slug": "shopkeeper"
+    },
+    "tech": {
+      "id": "TECH_COINAGE",
+      "name": "Coinage",
+      "slug": "coinage"
+    },
+    "terrains": [
+      "Habitable"
+    ],
+    "tradeNetwork": [],
+    "upgradesTo": "",
     "upkeep": []
   },
   {
@@ -660,12 +717,14 @@
     "class": "Courthouse",
     "classId": "IMPROVEMENTCLASS_COURTHOUSE",
     "cost": [
-      "80 Stone"
+      "80 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Developing",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+20% Civics"
     ],
@@ -694,6 +753,7 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Ministry",
     "upkeep": [
       "2 Stone/turn"
@@ -705,12 +765,14 @@
     "class": "Courthouse",
     "classId": "IMPROVEMENTCLASS_COURTHOUSE",
     "cost": [
-      "100 Stone"
+      "100 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Strong",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+30% Civics"
     ],
@@ -739,6 +801,7 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Palace",
     "upkeep": [
       "3 Stone/turn"
@@ -750,12 +813,14 @@
     "class": "Courthouse",
     "classId": "IMPROVEMENTCLASS_COURTHOUSE",
     "cost": [
-      "120 Stone"
+      "120 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Legendary",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+40% Civics",
       "-10% Maintenance"
@@ -785,6 +850,7 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "",
     "upkeep": [
       "4 Stone/turn"
@@ -796,12 +862,14 @@
     "class": "Range",
     "classId": "IMPROVEMENTCLASS_RANGE",
     "cost": [
-      "40 Wood"
+      "40 Wood",
+      "1 Orders"
     ],
     "culturePrereq": "",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+20% Training",
       "+20% Adjacent Garrison",
@@ -832,54 +900,10 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "",
     "upkeep": [
       "2 Wood/turn"
-    ]
-  },
-  {
-    "buildTurns": 5,
-    "buildable": true,
-    "class": "Library",
-    "classId": "IMPROVEMENTCLASS_LIBRARY",
-    "cost": [
-      "100 Stone"
-    ],
-    "culturePrereq": "Strong",
-    "developsFrom": [],
-    "developsInto": null,
-    "dlc": "",
-    "effects": [
-      "+20% Science"
-    ],
-    "familyPrereq": "",
-    "icon": "img/icons/improvements/academy.png",
-    "id": "IMPROVEMENT_LIBRARY_2",
-    "lawPrereq": "",
-    "name": "Academy",
-    "nationPrereq": "",
-    "replaces": "Library",
-    "restrictions": [
-      "Urban tile only",
-      "Max 1/City"
-    ],
-    "slug": "library_2",
-    "specialist": {
-      "id": "SPECIALIST_PHILOSOPHER_2",
-      "name": "Master Philosopher",
-      "slug": "philosopher"
-    },
-    "tech": {
-      "id": "TECH_SCHOLARSHIP",
-      "name": "Scholarship",
-      "slug": "scholarship"
-    },
-    "terrains": [
-      "Habitable"
-    ],
-    "upgradesTo": "University",
-    "upkeep": [
-      "3 Stone/turn"
     ]
   },
   {
@@ -888,12 +912,14 @@
     "class": "Library",
     "classId": "IMPROVEMENTCLASS_LIBRARY",
     "cost": [
-      "80 Stone"
+      "80 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Developing",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+10% Science"
     ],
@@ -922,9 +948,58 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Academy",
     "upkeep": [
       "2 Stone/turn"
+    ]
+  },
+  {
+    "buildTurns": 5,
+    "buildable": true,
+    "class": "Library",
+    "classId": "IMPROVEMENTCLASS_LIBRARY",
+    "cost": [
+      "100 Stone",
+      "1 Orders"
+    ],
+    "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
+    "effectCityPrereq": "",
+    "effects": [
+      "+20% Science"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/academy.png",
+    "id": "IMPROVEMENT_LIBRARY_2",
+    "lawPrereq": "",
+    "name": "Academy",
+    "nationPrereq": "",
+    "replaces": "Library",
+    "restrictions": [
+      "Urban tile only",
+      "Max 1/City"
+    ],
+    "slug": "library_2",
+    "specialist": {
+      "id": "SPECIALIST_PHILOSOPHER_2",
+      "name": "Master Philosopher",
+      "slug": "philosopher"
+    },
+    "tech": {
+      "id": "TECH_SCHOLARSHIP",
+      "name": "Scholarship",
+      "slug": "scholarship"
+    },
+    "terrains": [
+      "Habitable"
+    ],
+    "tradeNetwork": [],
+    "upgradesTo": "University",
+    "upkeep": [
+      "3 Stone/turn"
     ]
   },
   {
@@ -933,12 +1008,14 @@
     "class": "Library",
     "classId": "IMPROVEMENTCLASS_LIBRARY",
     "cost": [
-      "120 Stone"
+      "120 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Legendary",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+10% Civics",
       "+30% Science"
@@ -968,6 +1045,7 @@
     "terrains": [
       "Habitable"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "",
     "upkeep": [
       "4 Stone/turn"
@@ -979,12 +1057,14 @@
     "class": "Baths",
     "classId": "IMPROVEMENTCLASS_BATHS",
     "cost": [
-      "40 Stone"
+      "40 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Developing",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+2 Happiness"
     ],
@@ -1013,9 +1093,58 @@
     "terrains": [
       "Habitable Fresh"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "Warm Baths",
     "upkeep": [
       "2 Stone/turn"
+    ]
+  },
+  {
+    "buildTurns": 5,
+    "buildable": true,
+    "class": "Baths",
+    "classId": "IMPROVEMENTCLASS_BATHS",
+    "cost": [
+      "60 Stone",
+      "1 Orders"
+    ],
+    "culturePrereq": "Strong",
+    "developsFrom": [],
+    "developsInto": null,
+    "dlc": "",
+    "effectCityPrereq": "",
+    "effects": [
+      "+3 Happiness"
+    ],
+    "familyPrereq": "",
+    "icon": "img/icons/improvements/warm_baths.png",
+    "id": "IMPROVEMENT_BATHS_2",
+    "lawPrereq": "",
+    "name": "Warm Baths",
+    "nationPrereq": "",
+    "replaces": "Cold Baths",
+    "restrictions": [
+      "Urban tile only",
+      "Max 1/City"
+    ],
+    "slug": "baths_2",
+    "specialist": {
+      "id": "SPECIALIST_DOCTOR_2",
+      "name": "Master Doctor",
+      "slug": "doctor"
+    },
+    "tech": {
+      "id": "TECH_ARCHITECTURE",
+      "name": "Architecture",
+      "slug": "architecture"
+    },
+    "terrains": [
+      "Habitable Fresh"
+    ],
+    "tradeNetwork": [],
+    "upgradesTo": "Heated Baths",
+    "upkeep": [
+      "3 Stone/turn"
     ]
   },
   {
@@ -1024,12 +1153,14 @@
     "class": "Baths",
     "classId": "IMPROVEMENTCLASS_BATHS",
     "cost": [
-      "80 Stone"
+      "80 Stone",
+      "1 Orders"
     ],
     "culturePrereq": "Legendary",
     "developsFrom": [],
     "developsInto": null,
     "dlc": "",
+    "effectCityPrereq": "",
     "effects": [
       "+4 Happiness",
       "+10% Growth"
@@ -1059,54 +1190,10 @@
     "terrains": [
       "Habitable Fresh"
     ],
+    "tradeNetwork": [],
     "upgradesTo": "",
     "upkeep": [
       "4 Stone/turn"
-    ]
-  },
-  {
-    "buildTurns": 5,
-    "buildable": true,
-    "class": "Baths",
-    "classId": "IMPROVEMENTCLASS_BATHS",
-    "cost": [
-      "60 Stone"
-    ],
-    "culturePrereq": "Strong",
-    "developsFrom": [],
-    "developsInto": null,
-    "dlc": "",
-    "effects": [
-      "+3 Happiness"
-    ],
-    "familyPrereq": "",
-    "icon": "img/icons/improvements/warm_baths.png",
-    "id": "IMPROVEMENT_BATHS_2",
-    "lawPrereq": "",
-    "name": "Warm Baths",
-    "nationPrereq": "",
-    "replaces": "Cold Baths",
-    "restrictions": [
-      "Urban tile only",
-      "Max 1/City"
-    ],
-    "slug": "baths_2",
-    "specialist": {
-      "id": "SPECIALIST_DOCTOR_2",
-      "name": "Master Doctor",
-      "slug": "doctor"
-    },
-    "tech": {
-      "id": "TECH_ARCHITECTURE",
-      "name": "Architecture",
-      "slug": "architecture"
-    },
-    "terrains": [
-      "Habitable Fresh"
-    ],
-    "upgradesTo": "Heated Baths",
-    "upkeep": [
-      "3 Stone/turn"
     ]
   }
 ]
