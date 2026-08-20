@@ -1,0 +1,231 @@
+---
+// One page per trait: every route onto a character, ordered by how much
+// control you have over it. Mirror of /trait-removal/[slug].
+import Base from '../../layouts/Base.astro';
+import data from '../../data/trait_gain.json';
+import removal from '../../data/trait_removal.json';
+
+export function getStaticPaths() {
+  return (data as any).traits.map((t: any) => ({ params: { slug: t.slug }, props: { trait: t } }));
+}
+const { trait } = Astro.props as any;
+const base = import.meta.env.BASE_URL;
+
+const all = (data as any).traits;
+const i = all.findIndex((t: any) => t.slug === trait.slug);
+const prev = i > 0 ? all[i - 1] : null;
+const next = i < all.length - 1 ? all[i + 1] : null;
+
+// Only 94 traits have a removal page; the rest cannot be taken off by any event,
+// so there is nothing to link to.
+const removable = new Set((removal as any).traits.map((t: any) => t.slug));
+const evHref = (r: any) => r.href ? `${base}${r.href}` : null;
+const WHO: Record<string, string> = { you: 'your court', them: "a rival's court", any: 'either side' };
+
+// Event routes, most controllable first. Each is a genuinely different amount
+// of agency, so they never get merged into one number.
+const ROUTES = [
+  { key: 'choose', title: 'Pick this option',
+    note: "The option's bonus lists the trait in aeAddTraits — choose it and the character gains it." },
+  { key: 'religion', title: 'Pick this option, if the character follows the right religion',
+    note: 'aeAddTraitReligion — the same click grants a different trait depending on the faith.' },
+  { key: 'chance', title: 'Pick this option, then roll for it',
+    note: 'aiTraitProbDelay — the roll resolves on a later turn, not when you click.' },
+  { key: 'random', title: 'Pick this option, draw from a pool',
+    note: 'aeRandomTrait / aeRandomTraitDelay — one trait is drawn from the pool. Character.doRandomTrait rolls for every pool member that currently passes canAddTrait and keeps the best, so the odds are one in the number still VALID, not one in the pool size — they improve as the character collects the rest of the pool.' },
+  { key: 'automatic', title: 'The event does it to you',
+    note: "Granted by the story's own aeBonuses — no option involved, so there is nothing to choose." },
+];
+
+const rows = (k: string) => (trait.routes[k] || []);
+const yoursIn = (k: string) => rows(k).filter((r: any) => r.who !== 'them');
+const hasAnyEvent = ROUTES.some(r => rows(r.key).length > 0);
+const chooseYours = yoursIn('choose').filter((r: any) => !r.draw).length;
+const rollYours = yoursIn('chance').length + yoursIn('random').length
+  + yoursIn('choose').filter((r: any) => r.draw).length
+  + trait.routes.fromTrait.length + trait.routes.occurrence.length;
+
+const p = trait.prereqs || {};
+const gates: string[] = [];
+if (p.minAge) gates.push(`the character must be at least ${p.minAge}`);
+if (p.livingOnly) gates.push('the character must be alive');
+if (p.noSpouse) gates.push('the character must have no living spouse');
+if (p.dlc) gates.push(`requires ${p.dlc}`);
+---
+
+<Base title={`Getting ${trait.name}`} active="trait-acquisition" pageMark="🌱"
+  description={`Every way to put the ${trait.name} trait on a character in Old World — the event options that grant it, the rolls that can produce it, and the limits that block it.`}
+  pageStats={[
+    { label: 'to choose', value: chooseYours },
+    { label: 'by roll', value: rollYours },
+    { label: 'events in all', value: trait.counts.cmEvents },
+  ]}>
+
+  <p class="lede">
+    Every way to put <b>{trait.name}</b> on a character.
+    {chooseYours === 0 && hasAnyEvent && <> <b>No option grants it to your own court outright</b> — everything below is a roll, or lands on someone else.</>}
+    {chooseYours > 0 && <> {chooseYours === 1 ? 'One option grants' : `${chooseYours} options grant`} it to your own court outright{rollYours > 0 && <>, and {rollYours} more can roll it up</>}.</>}
+    {!hasAnyEvent && <> <b>No event grants it at all</b> — it comes from character setup, the childhood roll or inheritance.</>}
+    {' '}See <a href={`${base}traits#${trait.slug}`}>{trait.name}</a> for what it does,
+    {removable.has(trait.slug) && <><a href={`${base}trait-removal/${trait.slug}`}> how to remove it</a>,</>}
+    <a href={`${base}trait-acquisition`}> all traits</a>.
+  </p>
+
+  {(gates.length > 0 || p.blockedBy) && (
+    <section class="gate">
+      <h2 class="gate__h">Before any of this can land</h2>
+      <p class="gate__note">
+        Game.canAddTrait (<code>Game.cs:10506</code>) is checked first, and
+        PlayerBonus rejects the whole bonus if it fails — the option simply will not
+        appear.
+      </p>
+      <ul class="gate__list">
+        {gates.map(g => <li>{g}</li>)}
+        {p.blockedBy && (
+          <li>
+            blocked while the character has {p.blockedBy.length === 1 ? '' : 'any of '}
+            {p.blockedBy.map((b: string, n: number) => (
+              <><>{n > 0 ? ', ' : ''}</><b>{b}</b></>
+            ))}
+          </li>
+        )}
+      </ul>
+    </section>
+  )}
+
+  {trait.innate.length > 0 && (
+    <section class="innate">
+      <h2 class="innate__h">Born with it</h2>
+      <ul class="innate__list">{trait.innate.map((a: string) => <li>{a}</li>)}</ul>
+      <p class="innate__note">
+        Children can also inherit it — see <a href={`${base}trait-inheritance`}>Trait Inheritance</a>.
+      </p>
+    </section>
+  )}
+
+  {ROUTES.map(route => rows(route.key).length > 0 && (
+    <section class="rt">
+      <h2 class="rt__h">{route.title} <span class="rt__n">{rows(route.key).length}</span></h2>
+      <p class="rt__note">{route.note}</p>
+      <ul class="rt__rows">
+        {rows(route.key).map((r: any) => (
+          <li class={`rt__row ${r.who === 'them' ? 'is-rival' : ''}`}>
+            <div class="rt__hd">
+              {evHref(r) ? <a class="rt__ev" href={evHref(r)}>{r.name}</a>
+                         : <span class="rt__ev">{r.name}</span>}
+              <span class={`tag tag--who tag--${r.who}`} title="Which side's character receives the trait — decided by the bonus's position in aeBonuses">{WHO[r.who]}</span>
+              {r.pct && <span class="tag tag--pct">{r.pct}%</span>}
+              {r.pool && <span class="tag tag--pool" title={`Pool: ${r.pool.join(', ')}`}>1 of {r.pool.length}</span>}
+              {r.draw && (
+                <span class="tag tag--pct"
+                  title={`aiEventOptionProb: this branch carries ${r.draw[0]} of ${r.draw[1]} weight. One button, one branch fires. The real odds are better than this — PlayerBonus.canDoBonusSingle drops any branch whose trait the character cannot take (already has it, blocked, too young), so the weight is renormalised over the branches still valid.`}>
+                  {(r.draw[0] * 100 / r.draw[1]).toFixed(r.draw[0] * 100 / r.draw[1] < 10 ? 1 : 0)}% draw
+                </span>
+              )}
+              {r.religion && <span class="tag tag--rel">{r.religion}</span>}
+              <span class="tag tag--w" title="iWeight — relative selection weight in the event pool">w{r.weight}</span>
+              {!r.cm && <span class="tag tag--nocm">not in CM</span>}
+              {r.dlc && <span class="tag tag--dlc">{r.dlc}</span>}
+            </div>
+            {r.text && <div class="rt__text">“{r.text}”</div>}
+            {r.pool && <div class="rt__pool">pool: {r.pool.join(' · ')}</div>}
+            {r.rewards && r.rewards.length > 0 && (
+              <div class="rt__rw">
+                <span class="rt__rwl">{r.draw ? 'this branch:' : 'the option does:'}</span>
+                {r.rewards.map((x: string) => <span class="rw">{x}</span>)}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  {trait.routes.fromTrait.length > 0 && (
+    <section class="rt">
+      <h2 class="rt__h">From another trait <span class="rt__n">{trait.routes.fromTrait.length}</span></h2>
+      <p class="rt__note">
+        <code>aiTraitProb</code> on the source trait — holding it gives a per-check
+        chance of developing {trait.name}.
+      </p>
+      <ul class="rt__rows">
+        {trait.routes.fromTrait.map((r: any) => (
+          <li class="rt__row">
+            <div class="rt__hd">
+              <a class="rt__ev" href={`${base}traits#${r.slug}`}>{r.name}</a>
+              <span class="tag tag--pct">{r.pct}%</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {trait.routes.occurrence.length > 0 && (
+    <section class="rt">
+      <h2 class="rt__h">From an occurrence <span class="rt__n">{trait.routes.occurrence.length}</span></h2>
+      <p class="rt__note"><code>aiTraitProb</code> on the occurrence — a map event rolls for it.</p>
+      <ul class="rt__rows">
+        {trait.routes.occurrence.map((r: any) => (
+          <li class="rt__row">
+            <div class="rt__hd">
+              <a class="rt__ev" href={`${base}occurrences`}>{r.name}</a>
+              <span class="tag tag--pct">{r.pct}%</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <nav class="pn">
+    {prev && <a class="pn__l" href={`${base}trait-acquisition/${prev.slug}`}>← {prev.name}</a>}
+    {next && <a class="pn__r" href={`${base}trait-acquisition/${next.slug}`}>{next.name} →</a>}
+  </nav>
+</Base>
+
+<style>
+  .lede { max-width: 72ch; color: var(--text-dim); line-height: 1.6; margin-bottom: 1.4rem; }
+  .lede b { color: var(--text); }
+
+  .gate, .innate {
+    background: var(--bg-elev); border: 1px solid var(--bg-elev-3);
+    border-radius: var(--radius-lg); padding: 0.75rem 1rem; margin-bottom: 1.4rem;
+  }
+  .gate { border-color: oklch(0.45 0.09 30); }
+  .gate__h, .innate__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 0 0 0.2rem; }
+  .gate__note, .innate__note { font-size: 0.76rem; color: var(--text-faint); margin: 0.2rem 0 0; }
+  .gate__list, .innate__list { margin: 0.4rem 0 0; padding-left: 1.1rem; font-size: 0.86rem; color: var(--text-dim); }
+  .gate__list b { color: var(--text); }
+
+  .rt { margin: 1.8rem 0; }
+  .rt__h { font-family: var(--font-display); font-size: 1.2rem; color: var(--gold); margin-bottom: 0.15rem; }
+  .rt__n { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-faint); }
+  .rt__note { font-size: 0.79rem; color: var(--text-faint); margin-bottom: 0.7rem; max-width: 70ch; line-height: 1.55; }
+  .rt__rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  .rt__row {
+    border-left: 2px solid var(--gold-deep); padding: 0.15rem 0 0.15rem 0.6rem;
+  }
+  .rt__row.is-rival { border-left-color: var(--bg-elev-3); opacity: 0.72; }
+  .rt__hd { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: baseline; }
+  .rt__ev { color: var(--text); font-size: 0.9rem; }
+  .rt__text { color: var(--text-dim); font-size: 0.86rem; line-height: 1.4; }
+  .rt__pool { font-size: 0.74rem; color: var(--text-faint); font-family: var(--font-mono); margin-top: 0.15rem; }
+  .rt__rw { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem; align-items: baseline; }
+  .rt__rwl { font-size: 0.68rem; color: var(--text-faint); font-family: var(--font-mono); margin-right: 0.1rem; }
+  .rw { font-size: 0.72rem; color: var(--gold-soft); background: var(--bg-elev-2); border-radius: var(--radius-sm); padding: 0.05rem 0.35rem; }
+
+  .tag {
+    font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint);
+    border: 1px solid var(--bg-elev-3); border-radius: 3px; padding: 0 0.28rem; white-space: nowrap;
+  }
+  .tag--you { color: var(--gold); border-color: var(--gold-deep); }
+  .tag--them { color: oklch(0.68 0.13 30); border-color: oklch(0.45 0.09 30); }
+  .tag--pct, .tag--pool { color: var(--gold-soft); border-color: var(--gold-deep); }
+  .tag--w { opacity: 0.7; }
+  .tag--nocm { color: oklch(0.68 0.13 30); border-color: oklch(0.45 0.09 30); }
+  .tag--dlc, .tag--rel { color: oklch(0.72 0.10 300); border-color: oklch(0.45 0.08 300); }
+
+  .pn { display: flex; justify-content: space-between; margin-top: 2.5rem; font-size: 0.85rem; }
+  .pn__r { margin-left: auto; }
+</style>

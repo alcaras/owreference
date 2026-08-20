@@ -1,0 +1,138 @@
+---
+// Trait Acquisition — the index. Mirror of /trait-removal.
+//
+// Sorted into the three answers a player actually gets when they ask "how do I
+// put this trait on a character": you can pick it, you can only roll for it, or
+// you cannot make it happen at all.
+import Base from '../layouts/Base.astro';
+import data from '../data/trait_gain.json';
+const base = import.meta.env.BASE_URL;
+
+type Trait = typeof data.traits[number];
+const traits = data.traits as Trait[];
+
+// "Yours" excludes grants aimed at a rival's court — an option that hands the
+// trait to the AI leader is not a way for YOU to get it.
+// A `draw` row is one arm of a weighted aiEventOptionProb branch — you pick the
+// option but the game picks the arm, so it belongs with the rolls, not here.
+const yoursChoose = (t: Trait) =>
+  t.routes.choose.filter((r: any) => r.cm && r.who !== 'them' && !r.draw).length;
+const yoursRoll = (t: Trait) =>
+  ['chance', 'random', 'religion', 'automatic'].reduce(
+    (n, k) => n + (t.routes as any)[k].filter((r: any) => r.cm && r.who !== 'them').length, 0)
+  + t.routes.choose.filter((r: any) => r.cm && r.who !== 'them' && r.draw).length
+  + t.routes.fromTrait.length + t.routes.occurrence.length;
+
+const pick    = traits.filter(t => yoursChoose(t) > 0);
+const roll    = traits.filter(t => yoursChoose(t) === 0 && yoursRoll(t) > 0);
+const neither = traits.filter(t => yoursChoose(t) === 0 && yoursRoll(t) === 0);
+
+const SECTIONS = [
+  { rows: pick, id: 'choose', title: 'You can choose it',
+    note: 'At least one event option grants the trait outright to your own court. The list you want when you are shopping for a trait.' },
+  { rows: roll, id: 'roll', title: 'Only by roll or circumstance',
+    note: 'No option hands it to you directly. It arrives on a percentage roll, out of a random pool, from another trait, or the event simply does it to you.' },
+  { rows: neither, id: 'innate', title: 'Born with it, or not at all',
+    note: 'Nothing in the event system grants these. They come from the childhood roll, character setup, inheritance or an archetype.' },
+];
+---
+
+<Base title="Trait Acquisition" active="trait-acquisition" pageMark="🌱"
+  description="How to get a trait onto a character in Old World — every event option that grants it, every percentage roll and random pool that can produce it, and the age and blocking-trait limits that stop it. One page per trait."
+  pageStats={[
+    { label: 'traits', value: data.counts.traits },
+    { label: 'you can choose', value: pick.length },
+    { label: 'events involved', value: data.counts.events },
+  ]}>
+
+  <p class="lede">
+    How to get a trait <em>onto</em> a character — the inverse of
+    <a href={`${base}trait-removal`}>Trait Removal</a>. Pick a trait for every event
+    that can grant it, split by how much control you have: an option you click, a
+    percentage roll resolved later, a draw from a random pool, or something the event
+    just does to you. Grants aimed at a <strong>rival's</strong> court are marked, since
+    those are not a route for you.
+  </p>
+
+  <input id="tg-filter" class="tg__filter" type="search" placeholder="Filter traits…" autocomplete="off" />
+
+  {SECTIONS.map(sec => (
+    <section class="tg">
+      <h2 class="tg__h" id={sec.id}>{sec.title} <span class="tg__n">{sec.rows.length}</span></h2>
+      <p class="tg__note">{sec.note}</p>
+      <div class="tg__grid">
+        {sec.rows.map(t => (
+          <a class={`tg__card tg__card--${sec.id}`} href={`${base}trait-acquisition/${t.slug}`}
+            data-name={t.name.toLowerCase()}>
+            <span class="tg__name">{t.name}</span>
+            <span class="tg__counts">
+              {yoursChoose(t) > 0 && <><b>{yoursChoose(t)}</b> to choose</>}
+              {yoursChoose(t) > 0 && yoursRoll(t) > 0 && ' · '}
+              {yoursRoll(t) > 0 && <>{yoursRoll(t)} by roll</>}
+              {yoursChoose(t) === 0 && yoursRoll(t) === 0 && <span class="tg__none">no event route</span>}
+            </span>
+            {t.prereqs.minAge && <span class="tg__gate">age {t.prereqs.minAge}+</span>}
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <p class="tg__foot">
+    Grants are read from each option's bonus payload — <code>aeAddTraits</code>,
+    <code>aiTraitProbDelay</code>, <code>aeRandomTrait</code>/<code>aeRandomTraitDelay</code>,
+    <code>aeAddTraitReligion</code> — following nested <code>aeBonuses</code> and one
+    level of <code>aiEventOptionProb</code> variants. Who receives the trait is decided
+    by the bonus's <em>position</em>: <code>maeBonuses[iSubjectIndex]</code>
+    (<code>PlayerEvent.cs:6710</code>) pairs slot <var>i</var> with the story's subject
+    <var>i</var>, which is why one click can grant one trait to you and a different one
+    to your rival.
+  </p>
+</Base>
+
+<script is:inline>
+  (function () {
+    var input = document.getElementById('tg-filter');
+    input.addEventListener('input', function () {
+      var q = input.value.trim().toLowerCase();
+      document.querySelectorAll('.tg__card').forEach(function (c) {
+        c.hidden = q !== '' && c.getAttribute('data-name').indexOf(q) === -1;
+      });
+      document.querySelectorAll('.tg').forEach(function (s) {
+        s.hidden = s.querySelectorAll('.tg__card:not([hidden])').length === 0;
+      });
+    });
+  })();
+</script>
+
+<style>
+  .lede { max-width: 72ch; color: var(--text-dim); line-height: 1.6; margin-bottom: 1.2rem; }
+  .lede strong { color: var(--text); }
+  .tg__filter {
+    background: var(--bg-elev); border: 1px solid var(--border-strong, var(--bg-elev-3));
+    border-radius: 6px; padding: 0.45rem 0.7rem; color: var(--text); font: inherit;
+    font-size: 0.88rem; width: min(100%, 22rem); margin-bottom: 1.5rem;
+  }
+  .tg__filter:focus { outline: none; border-color: var(--gold-deep); }
+
+  .tg { margin: 2rem 0; }
+  .tg__h { font-family: var(--font-display); font-size: 1.3rem; color: var(--gold); margin-bottom: 0.15rem; }
+  .tg__n { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-faint); }
+  .tg__note { color: var(--text-faint); font-size: 0.85rem; margin-bottom: 0.9rem; max-width: 66ch; }
+
+  .tg__grid { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); }
+  .tg__card {
+    display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.65rem;
+    background: var(--bg-elev); border: 1px solid var(--bg-elev-3);
+    border-left: 3px solid var(--bg-elev-3); border-radius: var(--radius);
+  }
+  .tg__card:hover { border-color: var(--gold-deep); text-decoration: none; }
+  .tg__card--choose { border-left-color: var(--gold); }
+  .tg__card--roll { border-left-color: var(--gold-deep); }
+  .tg__name { font-family: var(--font-display); font-size: 1rem; color: var(--text); }
+  .tg__counts { font-size: 0.76rem; color: var(--text-faint); }
+  .tg__counts b { color: var(--gold-soft); font-family: var(--font-mono); font-weight: 500; }
+  .tg__none { font-style: italic; }
+  .tg__gate { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint); }
+  .tg__foot { margin-top: 2.5rem; font-size: 0.78rem; color: var(--text-faint); max-width: 72ch; line-height: 1.6; }
+</style>

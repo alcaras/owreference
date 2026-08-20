@@ -402,6 +402,11 @@ export const TABS: Tab[] = [
     summary: 'The named trait groups events gate on — Charming, Honorable, Terrifying and the rest',
   },
   {
+    slug: 'trait-acquisition', icon: '🌱', label: 'Trait Acquisition', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'How to get a trait onto a character — the options that grant it, the rolls that might',
+  },
+  {
     slug: 'trait-removal', icon: '🧹', label: 'Trait Removal', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Every event that can take a trait off a character, grouped by trait',
