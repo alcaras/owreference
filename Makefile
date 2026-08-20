@@ -58,6 +58,7 @@ data:
 	@python3 scripts/build_events.py
 	@python3 scripts/build_event_search.py  # global index — needs the four above
 	@python3 scripts/build_event_chains.py  # chain graphs — needs event-search.json
+	@python3 scripts/build_trait_events.py  # trait/cluster gates — needs event-search.json
 	@python3 scripts/build_occurrences.py
 	@python3 scripts/build_diplomacy.py
 	@python3 scripts/build_regents.py

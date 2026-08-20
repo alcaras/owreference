@@ -392,6 +392,16 @@ export const TABS: Tab[] = [
     willContain: ['Every building-completion decision event and its option rewards'],
   },
   {
+    slug: 'trait-events', icon: '🔓', label: 'Trait Events', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'Look up a trait — the events only it opens, plus what it reaches through its clusters',
+  },
+  {
+    slug: 'trait-clusters', icon: '🧩', label: 'Trait Clusters', section: 'Events',
+    status: 'built', sourceSheet: '',
+    summary: 'The named trait groups events gate on — Charming, Honorable, Terrifying and the rest',
+  },
+  {
     slug: 'trait-removal', icon: '🧹', label: 'Trait Removal', section: 'Events',
     status: 'built', sourceSheet: '',
     summary: 'Every event that can take a trait off a character, grouped by trait',

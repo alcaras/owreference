@@ -1,0 +1,347 @@
+---
+// Trait Clusters — the named trait groups events gate on.
+//
+// A cluster is not our abstraction. subject.xml carries aeTraitAny lists, each
+// with its own GenderedName, and the game prints that name straight into the
+// option tooltip (HelpText.Game.cs getGenderedSubjectNameVariable →
+// TEXT_HELPTEXT_REQUIRES, "Requires {0_singleOrList}"). A player reading an
+// Old World event sees "Requires Honorable", never the four member traits.
+//
+// Counts are CM-eligible by default (the toggle reveals the rest) and events
+// are deduped per cluster: one story can slot the same cluster twice.
+import Base from '../layouts/Base.astro';
+import data from '../data/trait_events.json';
+const base = import.meta.env.BASE_URL;
+
+type Story = { n: string; h: string; w: number; cm: number; dlc: string; trg: string };
+const stories = data.stories as Record<string, Story>;
+
+const OWNER_LABEL: Record<string, string> = {
+  you: 'your court', them: 'a rival', any: 'either side',
+};
+
+// One row per (cluster, story): a story that slots the cluster in two places
+// is still one event you can see. Keep the strongest framing — if any slot is
+// the trigger subject, the cluster is what fires the event.
+function gateRows(c: typeof data.clusters[number]) {
+  const byStory = new Map<string, { s: string; owner: string; trigger: boolean }>();
+  for (const g of c.gates) {
+    const prev = byStory.get(g.s);
+    if (prev) {
+      prev.trigger = prev.trigger || g.trigger;
+      if (prev.owner !== g.owner) prev.owner = 'any';
+    } else byStory.set(g.s, { s: g.s, owner: g.owner, trigger: g.trigger });
+  }
+  return [...byStory.values()].sort((a, b) =>
+    (stories[b.s].w - stories[a.s].w) || stories[a.s].n.localeCompare(stories[b.s].n));
+}
+
+const clusters = data.clusters.map(c => {
+  const gates = gateRows(c);
+  const opts = [...c.options].sort((a, b) =>
+    (stories[b.s].w - stories[a.s].w) || stories[a.s].n.localeCompare(stories[b.s].n));
+  return {
+    ...c, gates, opts,
+    cmGates: gates.filter(g => stories[g.s].cm).length,
+    cmOpts: opts.filter(o => stories[o.s].cm).length,
+  };
+});
+clusters.sort((a, b) =>
+  Number(a.kind !== 'personality') - Number(b.kind !== 'personality') ||
+  (b.cmGates + b.cmOpts) - (a.cmGates + a.cmOpts) ||
+  a.name.localeCompare(b.name));
+
+const personality = clusters.filter(c => c.kind === 'personality');
+const role = clusters.filter(c => c.kind === 'role');
+const totalMembers = new Set(clusters.flatMap(c => c.members.map(m => m.id))).size;
+const evHref = (s: string) => stories[s].h ? `${base}${stories[s].h}` : null;
+
+// Some option strings ship already quoted; don't double up the quote marks.
+const quoted = (t: string) => !t ? '—' : /^[“"'‘]/.test(t) ? t : `“${t}”`;
+---
+
+<Base title="Trait Clusters" active="trait-clusters" pageMark="🧩" pageStats={[
+  { label: 'clusters', value: personality.length + role.length },
+  { label: 'traits covered', value: totalMembers },
+  { label: 'events gated', value: clusters.reduce((n, c) => n + c.cmGates, 0) },
+  { label: 'options unlocked', value: clusters.reduce((n, c) => n + c.cmOpts, 0) },
+]}
+  description="Every named trait cluster in Old World's event system — Charming, Honorable, Terrifying and the rest — with the traits that satisfy each one and every event and choice it unlocks.">
+
+  <p class="lede">
+    Events almost never gate on a single trait. They gate on a <strong>cluster</strong>:
+    a named group of traits where <em>any one member</em> satisfies the requirement.
+    These are the game's own names, not ours — each cluster is an <code>aeTraitAny</code>
+    subject in <code>subject.xml</code> with its own label, and Old World prints it
+    verbatim in the choice tooltip as <span class="req">Requires Charming</span>.
+    That is why an option can be locked to you and to four other traits at once.
+  </p>
+
+  <div class="ctrl">
+    <button type="button" class="dyn-toggle" id="cm-toggle" aria-pressed="true"
+      title="Competitive Mode turns on the Competitive Events option, which removes stories tagged GAMEOPTION_COMPETITIVE_EVENTS in aeGameOptionInvalid.">
+      <span class="dyn-toggle__box" aria-hidden="true"></span>
+      Competitive Mode events only
+    </button>
+    <input type="search" id="cfilter" class="cfilter" placeholder="Filter clusters or traits…"
+      autocomplete="off" spellcheck="false" aria-label="Filter clusters" />
+  </div>
+
+  {[{ rows: personality, title: 'Personality & archetype', blurb: 'The clusters a leveling character can actually buy into.' },
+    { rows: role, title: 'Role & condition', blurb: 'Clusters built from statuses rather than personality — clergy, studies, wounds. Listed for completeness; you do not pick these.' },
+   ].map(section => (
+    <section class="csec">
+      <h2 class="csec__h" id={section.title === 'Personality & archetype' ? 'personality' : 'role'}>{section.title}</h2>
+      <p class="csec__blurb">{section.blurb}</p>
+      <div class="cgrid">
+        {section.rows.map(c => (
+          <article class="ccard" id={c.slug} data-q={[c.name, ...c.alsoCalled, ...c.members.map(m => m.name)].join(' ').toLowerCase()}>
+            <header class="ccard__hd">
+              <h3 class="ccard__name">{c.name}</h3>
+              {c.alsoCalled.length > 0 && (
+                <span class="ccard__also" title="A second subject with an identical member list ships under this name too">
+                  also “{c.alsoCalled.join('”, “')}”
+                </span>
+              )}
+              {c.unnamed && (
+                <span class="ccard__also" title="This cluster has no GenderedName — the game never shows the player a Requires line for it. Label derived from the subject id.">
+                  no in-game label
+                </span>
+              )}
+              <div class="ccard__nums">
+                <span class="num" data-num="gates" data-cm={c.cmGates} data-all={c.gates.length}>
+                  <b>{c.cmGates}</b> events
+                </span>
+                <span class="num" data-num="opts" data-cm={c.cmOpts} data-all={c.opts.length}>
+                  <b>{c.cmOpts}</b> choices
+                </span>
+              </div>
+            </header>
+
+            <div class="ccard__members">
+              <span class="ccard__any">any of</span>
+              {c.members.map(mem => (
+                <a class="tchip" href={`${base}traits#${mem.slug}`}>{mem.name}</a>
+              ))}
+            </div>
+
+            {c.extra.length > 0 && (
+              <p class="ccard__extra">
+                and the character must also satisfy {c.extra.map((x, i) => (
+                  <><>{i > 0 ? ', ' : ''}</><code>{x}</code></>
+                ))} on the same subject
+              </p>
+            )}
+
+            {c.gates.length > 0 && (
+              <details class="cdet">
+                <summary>Events that only happen with this cluster <span class="cdet__n">{c.cmGates}</span></summary>
+                <ul class="elist">
+                  {c.gates.map(g => (
+                    <li class="erow" data-cm={stories[g.s].cm}>
+                      {evHref(g.s)
+                        ? <a class="erow__name" href={evHref(g.s)}>{stories[g.s].n}</a>
+                        : <span class="erow__name">{stories[g.s].n}</span>}
+                      <span class="erow__meta">
+                        {g.trigger && <span class="tag tag--trig" title="This cluster is the event's trigger subject — it is what fires the event">trigger</span>}
+                        <span class="tag" title="Whose character has to be in the cluster">{OWNER_LABEL[g.owner]}</span>
+                        {stories[g.s].trg && <span class="tag tag--q">{stories[g.s].trg}</span>}
+                        <span class="tag tag--w" title="iWeight — relative selection weight in the event pool">w{stories[g.s].w}</span>
+                        {!stories[g.s].cm && <span class="tag tag--nocm">not in CM</span>}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+
+            {c.opts.length > 0 && (
+              <details class="cdet">
+                <summary>Extra choices this cluster unlocks <span class="cdet__n">{c.cmOpts}</span></summary>
+                <ul class="olist">
+                  {c.opts.map(o => (
+                    <li class="orow" data-cm={stories[o.s].cm}>
+                      <div class="orow__hd">
+                        {evHref(o.s)
+                          ? <a class="orow__ev" href={evHref(o.s)}>{stories[o.s].n}</a>
+                          : <span class="orow__ev">{stories[o.s].n}</span>}
+                        {o.hid && <span class="tag tag--hid" title="bHidePrereqs / bHideInvalid — the game hides this choice when you do not qualify, so you never learn you missed it">hidden when locked</span>}
+                        {!stories[o.s].cm && <span class="tag tag--nocm">not in CM</span>}
+                      </div>
+                      <div class="orow__text">{quoted(o.t)}</div>
+                      {o.r.length > 0 && (
+                        <div class="orow__rw">{o.r.map(r => <span class="rw">{r}</span>)}</div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+
+            {c.gates.length === 0 && c.opts.length === 0 && (
+              <p class="ccard__none">Defined but unused — no event in this patch gates on it.</p>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <p class="foot">
+    Cluster membership, names and every gate come from <code>subject.xml</code>
+    (<code>aeTraitAny</code>), <code>eventStory.xml</code>
+    (<code>aeSubjects</code> + <code>SubjectExtras</code>) and
+    <code>eventOption.xml</code> (<code>LeaderSubject</code>). Duplicate subjects with
+    an identical member list — the <code>bHidden</code> twins, and the martial four
+    shipping as both “Martial” and “Military” — are merged so an event is listed once.
+  </p>
+</Base>
+
+<style>
+  .lede { max-width: 68ch; color: var(--text-dim); line-height: 1.6; margin-bottom: 1.2rem; }
+  .lede strong { color: var(--text); }
+  .req {
+    font-family: var(--font-mono); font-size: 0.86em; color: var(--gold);
+    border: 1px solid var(--gold-deep); border-radius: var(--radius-sm);
+    padding: 0.05em 0.4em; white-space: nowrap;
+  }
+
+  .ctrl { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem; }
+  .dyn-toggle {
+    display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
+    background: var(--bg-elev); border: 1px solid var(--line, var(--bg-elev-3));
+    color: var(--text-dim); border-radius: var(--radius); padding: 0.4rem 0.7rem;
+    font: inherit; font-size: 0.86rem;
+  }
+  .dyn-toggle[aria-pressed="true"] { color: var(--text); border-color: var(--gold-deep); }
+  .dyn-toggle__box {
+    width: 0.85rem; height: 0.85rem; border: 1px solid var(--border-strong);
+    border-radius: 4px; background: var(--bg); position: relative; flex: none;
+  }
+  .dyn-toggle[aria-pressed="true"] .dyn-toggle__box { background: var(--accent); border-color: var(--accent); }
+  .dyn-toggle[aria-pressed="true"] .dyn-toggle__box::after {
+    content: '✓'; position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 0.62rem; color: var(--bg); font-weight: 700;
+  }
+  .cfilter {
+    flex: 1 1 14rem; max-width: 22rem; background: var(--bg-elev);
+    border: 1px solid var(--bg-elev-3); border-radius: var(--radius);
+    padding: 0.4rem 0.7rem; color: var(--text); font: inherit; font-size: 0.86rem;
+  }
+  .cfilter:focus { outline: none; border-color: var(--gold-deep); }
+
+  .csec { margin: 2rem 0 0; }
+  .csec__h { font-family: var(--font-display); font-size: 1.35rem; color: var(--gold); margin-bottom: 0.15rem; }
+  .csec__blurb { color: var(--text-faint); font-size: 0.88rem; margin-bottom: 1rem; max-width: 62ch; }
+
+  .cgrid {
+    display: grid; gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 25rem), 1fr));
+  }
+  .ccard {
+    background: var(--bg-elev); border: 1px solid var(--bg-elev-3);
+    border-radius: var(--radius-lg); padding: 0.9rem 1rem 0.75rem;
+    display: flex; flex-direction: column; gap: 0.55rem;
+    scroll-margin-top: 5rem;
+  }
+  .ccard:target { border-color: var(--gold-deep); box-shadow: 0 0 0 3px var(--gold-glow); }
+  .ccard__hd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.6rem; }
+  .ccard__name { font-family: var(--font-display); font-size: 1.2rem; color: var(--text); margin: 0; }
+  .ccard__also { font-size: 0.72rem; color: var(--text-faint); font-style: italic; }
+  .ccard__nums { margin-left: auto; display: flex; gap: 0.6rem; font-size: 0.78rem; color: var(--text-faint); }
+  .num b { color: var(--gold); font-size: 1.05rem; font-family: var(--font-mono); font-weight: 500; }
+
+  .ccard__members { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+  .ccard__any { font-size: 0.72rem; color: var(--text-faint); text-transform: lowercase; margin-right: 0.15rem; }
+  .tchip {
+    font-size: 0.78rem; padding: 0.12rem 0.45rem; border-radius: var(--radius-sm);
+    background: var(--bg-elev-2); border: 1px solid var(--bg-elev-3); color: var(--text-dim);
+  }
+  .tchip:hover { color: var(--gold); border-color: var(--gold-deep); text-decoration: none; }
+  .ccard__extra { font-size: 0.74rem; color: var(--text-faint); margin: 0; }
+  .ccard__none { font-size: 0.8rem; color: var(--text-faint); font-style: italic; margin: 0; }
+
+  .cdet { border-top: 1px solid var(--bg-elev-3); padding-top: 0.45rem; }
+  .cdet > summary {
+    cursor: pointer; font-size: 0.82rem; color: var(--text-dim);
+    list-style-position: outside; padding: 0.1rem 0;
+  }
+  .cdet > summary:hover { color: var(--gold); }
+  .cdet__n { font-family: var(--font-mono); color: var(--gold-soft); font-size: 0.9em; }
+
+  .elist, .olist { list-style: none; margin: 0.5rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+  .erow { display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem; align-items: baseline; font-size: 0.84rem; }
+  .erow__name, .orow__ev {
+    color: var(--text); text-decoration: underline;
+    text-decoration-color: var(--bg-elev-3); text-underline-offset: 2px;
+  }
+  .erow__name:hover, .orow__ev:hover { color: var(--gold); text-decoration-color: var(--gold-deep); }
+  .erow__meta { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-left: auto; }
+  .tag {
+    font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint);
+    border: 1px solid var(--bg-elev-3); border-radius: 3px; padding: 0 0.28rem; white-space: nowrap;
+  }
+  .tag--trig { color: var(--gold); border-color: var(--gold-deep); }
+  .tag--w { opacity: 0.7; }
+  .tag--nocm { color: oklch(0.68 0.13 30); border-color: oklch(0.45 0.09 30); }
+  .tag--hid { color: oklch(0.72 0.10 300); border-color: oklch(0.45 0.08 300); }
+  .tag--q { max-width: 11rem; overflow: hidden; text-overflow: ellipsis; }
+
+  .orow { border-left: 2px solid var(--bg-elev-3); padding-left: 0.55rem; font-size: 0.84rem; }
+  .orow__hd { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: baseline; }
+  .orow__ev { font-size: 0.8rem; }
+  .orow__text { color: var(--text); line-height: 1.4; }
+  .orow__rw { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; }
+  .rw {
+    font-size: 0.72rem; color: var(--gold-soft); background: var(--bg-elev-2);
+    border-radius: var(--radius-sm); padding: 0.05rem 0.35rem;
+  }
+
+  .foot { margin-top: 2.5rem; font-size: 0.78rem; color: var(--text-faint); max-width: 70ch; line-height: 1.6; }
+  @media (max-width: 640px) {
+    .erow__meta { margin-left: 0; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var cm = true;
+    var toggle = document.getElementById('cm-toggle');
+    var filter = document.getElementById('cfilter');
+
+    function applyCM() {
+      document.querySelectorAll('[data-cm]').forEach(function (el) {
+        if (el.hasAttribute('data-num')) return;
+        el.hidden = cm && el.getAttribute('data-cm') === '0';
+      });
+      document.querySelectorAll('[data-num]').forEach(function (el) {
+        var n = el.getAttribute(cm ? 'data-cm' : 'data-all');
+        el.querySelector('b').textContent = n;
+      });
+      document.querySelectorAll('.cdet').forEach(function (d) {
+        var n = d.querySelectorAll('li:not([hidden])').length;
+        var badge = d.querySelector('.cdet__n');
+        if (badge) badge.textContent = n;
+        d.hidden = n === 0;
+      });
+    }
+
+    toggle.addEventListener('click', function () {
+      cm = !cm;
+      toggle.setAttribute('aria-pressed', String(cm));
+      applyCM();
+    });
+
+    filter.addEventListener('input', function () {
+      var q = filter.value.trim().toLowerCase();
+      document.querySelectorAll('.ccard').forEach(function (card) {
+        card.hidden = q !== '' && card.getAttribute('data-q').indexOf(q) === -1;
+      });
+      document.querySelectorAll('.csec').forEach(function (s) {
+        s.hidden = s.querySelectorAll('.ccard:not([hidden])').length === 0;
+      });
+    });
+
+    applyCM();
+  })();
+</script>

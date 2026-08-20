@@ -1,0 +1,515 @@
+---
+// Trait Events — pick a trait, see exactly what story content it opens.
+//
+// Split into the two things that are mechanically different and priced
+// differently when you are choosing a trait:
+//
+//   solo    a subject with TraitPrereq = this trait. Nothing else satisfies it.
+//   shared  a cluster (aeTraitAny) this trait belongs to. Any member satisfies
+//           it, so the value is only real if the character has no other member.
+//
+// The headline number is the UNION, never the sum: 53 of the 104 clustered
+// traits sit in two or more clusters, and one story can be reachable through
+// several of them.
+import Base from '../layouts/Base.astro';
+import data from '../data/trait_events.json';
+const base = import.meta.env.BASE_URL;
+
+const CAT_LABEL: Record<string, string> = {
+  strength: 'Strength', weakness: 'Weakness', archetype: 'Archetype',
+  affliction: 'Affliction', item: 'Item', status: 'Status',
+};
+const CAT_ORDER = ['strength', 'weakness', 'archetype', 'status', 'affliction', 'item'];
+
+// Only traits that actually reach story content are worth listing; a trait no
+// subject filters on has nothing to show and would be dead weight in the picker.
+const listed = data.traits.filter(t =>
+  t.gates.length + t.options.length > 0 || t.clusters.length > 0);
+
+const catCounts = new Map<string, number>();
+for (const t of listed) catCounts.set(t.cat, (catCounts.get(t.cat) || 0) + 1);
+const cats = CAT_ORDER.filter(c => catCounts.has(c));
+
+const sorted = [...listed].sort((a, b) =>
+  CAT_ORDER.indexOf(a.cat) - CAT_ORDER.indexOf(b.cat) || a.name.localeCompare(b.name));
+
+// Payload for the client: the whole model, since any trait can be picked and a
+// cluster's rows are shared by every member. ~130 KB gzipped.
+const payload = {
+  stories: data.stories,
+  clusters: data.clusters,
+  traits: listed,
+  base,
+};
+---
+
+<Base title="Trait Events" active="trait-events" pageMark="🔓" pageStats={[
+  { label: 'traits', value: listed.length },
+  { label: 'clusters', value: data.meta.clusters + data.meta.roleClusters },
+  { label: 'events reachable', value: data.meta.storiesCM },
+]}
+  description="Look up any Old World trait and see the events it unlocks — the stories only that trait opens, plus every event and extra choice it reaches through the trait clusters it belongs to.">
+
+  <p class="lede">
+    Pick a trait to see what story content it buys you. <strong>Solo</strong> content
+    is gated on that trait alone — nothing else in the game satisfies it.
+    <strong>Shared</strong> content comes through a
+    <a href={`${base}trait-clusters`}>cluster</a> the trait belongs to, where any
+    member qualifies, so it is only worth something if the character has none of the
+    others. Compare two traits by looking each one up in turn.
+  </p>
+
+  <div class="ctrl">
+    <button type="button" class="dyn-toggle" id="cm-toggle" aria-pressed="true"
+      title="Competitive Mode turns on the Competitive Events option, which removes stories tagged GAMEOPTION_COMPETITIVE_EVENTS in aeGameOptionInvalid.">
+      <span class="dyn-toggle__box" aria-hidden="true"></span>
+      Competitive Mode events only
+    </button>
+  </div>
+
+  <div class="tlayout">
+    <aside class="picker">
+      <input type="search" id="tsearch" class="picker__search" placeholder="Search traits…"
+        autocomplete="off" spellcheck="false" aria-label="Search traits" />
+      <div class="picker__cats">
+        {cats.map(c => (
+          <button type="button" class="fchip is-on" data-cat={c} aria-pressed="true">
+            {CAT_LABEL[c]}<span class="fchip__n">{catCounts.get(c)}</span>
+          </button>
+        ))}
+      </div>
+      <p class="picker__key"><span>trait</span><span>events / choices</span></p>
+      <ul class="picker__list" id="tlist">
+        {sorted.map(t => (
+          <li>
+            <button type="button" class="prow" data-slug={t.slug} data-cat={t.cat}
+              data-q={t.name.toLowerCase()}>
+              <span class="prow__name">{t.name}</span>
+              <span class="prow__n" data-count-for={t.slug}></span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </aside>
+
+    <section class="detail" id="detail" aria-live="polite">
+      <p class="detail__empty">Choose a trait on the left.</p>
+    </section>
+  </div>
+
+  <p class="foot">
+    Gates come from <code>subject.xml</code> (<code>TraitPrereq</code> /
+    <code>aeTraitAny</code>) applied through <code>eventStory.xml</code>
+    (<code>aeSubjects</code> + <code>SubjectExtras</code>, a hard AND — see
+    <code>PlayerEvent.cs:1000</code>) and <code>eventOption.xml</code>
+    (<code>LeaderSubject</code> / <code>LeaderSubjectAny</code>). Counts are
+    distinct events, unioned across every subject a trait satisfies — a trait in
+    two clusters does not get the same story counted twice. Trait ratings,
+    opinions and effects live on the <a href={`${base}traits`}>Traits</a> page;
+    this page is only about story access.
+  </p>
+
+  <script type="application/json" id="te-data" set:html={JSON.stringify(payload)}></script>
+</Base>
+
+<style>
+  .lede { max-width: 70ch; color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem; }
+  .lede strong { color: var(--text); }
+
+  .ctrl { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1.2rem; }
+  .dyn-toggle {
+    display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
+    background: var(--bg-elev); border: 1px solid var(--bg-elev-3);
+    color: var(--text-dim); border-radius: var(--radius); padding: 0.4rem 0.7rem;
+    font: inherit; font-size: 0.86rem;
+  }
+  .dyn-toggle[aria-pressed="true"] { color: var(--text); border-color: var(--gold-deep); }
+  .dyn-toggle__box {
+    width: 0.85rem; height: 0.85rem; border: 1px solid var(--border-strong);
+    border-radius: 4px; background: var(--bg); position: relative; flex: none;
+  }
+  .dyn-toggle[aria-pressed="true"] .dyn-toggle__box { background: var(--accent); border-color: var(--accent); }
+  .dyn-toggle[aria-pressed="true"] .dyn-toggle__box::after {
+    content: '✓'; position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 0.62rem; color: var(--bg); font-weight: 700;
+  }
+
+  .tlayout { display: grid; grid-template-columns: minmax(13rem, 17rem) 1fr; gap: 1.5rem; align-items: start; }
+  @media (max-width: 780px) { .tlayout { grid-template-columns: 1fr; } }
+
+  .picker { position: sticky; top: 4.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  @media (max-width: 780px) { .picker { position: static; } }
+  .picker__search {
+    background: var(--bg-elev); border: 1px solid var(--bg-elev-3); border-radius: var(--radius);
+    padding: 0.45rem 0.7rem; color: var(--text); font: inherit; font-size: 0.88rem;
+  }
+  .picker__search:focus { outline: none; border-color: var(--gold-deep); }
+  .picker__cats { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+  .fchip {
+    font: inherit; font-size: 0.72rem; cursor: pointer; padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-sm); background: var(--bg-elev);
+    border: 1px solid var(--bg-elev-3); color: var(--text-faint);
+  }
+  .fchip[aria-pressed="true"] { color: var(--text); border-color: var(--gold-deep); }
+  .fchip__n { font-family: var(--font-mono); opacity: 0.6; margin-left: 0.25rem; }
+
+  .picker__key {
+    display: flex; justify-content: space-between; font-family: var(--font-mono);
+    font-size: 0.66rem; color: var(--text-faint); margin: 0.1rem 0.2rem -0.2rem;
+  }
+  .picker__list {
+    list-style: none; margin: 0; padding: 0; max-height: 70vh; overflow-y: auto;
+    border: 1px solid var(--bg-elev-3); border-radius: var(--radius); background: var(--bg-elev);
+  }
+  @media (max-width: 780px) { .picker__list { max-height: 18rem; } }
+  .prow {
+    width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem;
+    background: none; border: 0; border-bottom: 1px solid var(--bg-elev-2); cursor: pointer;
+    color: var(--text-dim); font: inherit; font-size: 0.85rem; text-align: left;
+    padding: 0.32rem 0.6rem;
+  }
+  .prow:hover { background: var(--bg-elev-2); color: var(--text); }
+  .prow.is-on { background: var(--gold-glow); color: var(--text); }
+  .prow__n { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-faint); }
+
+  .detail { min-height: 20rem; }
+  .detail__empty { color: var(--text-faint); font-style: italic; }
+
+  .foot { margin-top: 2.5rem; font-size: 0.78rem; color: var(--text-faint); max-width: 70ch; line-height: 1.6; }
+</style>
+
+<style is:global>
+  #detail .dhd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.75rem; margin-bottom: 0.15rem; }
+  #detail .dhd__name { font-family: var(--font-display); font-size: 1.9rem; color: var(--text); margin: 0; }
+  #detail .dhd__cat {
+    font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-faint);
+    border: 1px solid var(--bg-elev-3); border-radius: 3px; padding: 0 0.3rem;
+  }
+  #detail .dhd__link { font-size: 0.8rem; margin-left: auto; }
+
+  #detail .dclusters { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.45rem; margin-top: 0.5rem; }
+  #detail .dclusters__l { font-size: 0.76rem; color: var(--text-faint); margin-right: 0.15rem; }
+  #detail .dclusters__l--none { font-style: italic; }
+  #detail .cchip {
+    font: inherit; font-size: 0.78rem; cursor: pointer; padding: 0.1rem 0.45rem;
+    border-radius: var(--radius-sm); background: var(--bg-elev-2);
+    border: 1px solid var(--bg-elev-3); color: var(--text-dim);
+    display: inline-flex; align-items: baseline; gap: 0.25rem;
+  }
+  #detail .cchip:hover { color: var(--gold); border-color: var(--gold-deep); }
+  #detail .cchip__n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint); }
+  #detail .dclusters__all { font-size: 0.72rem; margin-left: 0.2rem; }
+  #detail .grp { scroll-margin-top: 5rem; }
+
+  #detail .metrics { display: flex; flex-wrap: wrap; gap: 1.25rem 2.5rem; margin: 1rem 0 1.4rem; }
+  #detail .metric { flex: 1 1 20rem; max-width: 30rem; }
+  #detail .metric__hd { display: flex; align-items: baseline; gap: 0.5rem; }
+  #detail .metric__n { font-family: var(--font-mono); font-size: 1.7rem; color: var(--gold); line-height: 1; }
+  #detail .metric__n--zero { color: var(--text-faint); }
+  #detail .metric__l { font-size: 0.82rem; color: var(--text-dim); line-height: 1.3; }
+
+  #detail .bar { display: flex; height: 0.55rem; border-radius: 4px; overflow: hidden; background: var(--bg-elev-2); margin: 0.45rem 0 0.35rem; }
+  #detail .bar__seg { min-width: 2px; }
+  #detail .bar__seg--solo { background: var(--gold); }
+  #detail .bar__seg--shared {
+    background: repeating-linear-gradient(135deg,
+      var(--gold-deep) 0 4px, transparent 4px 8px), var(--bg-elev-3);
+  }
+  #detail .barkey { display: flex; flex-wrap: wrap; gap: 0.15rem 1rem; font-size: 0.74rem; color: var(--text-faint); }
+  #detail .barkey b { color: var(--text-dim); font-family: var(--font-mono); font-weight: 500; }
+  #detail .barkey__sw { display: inline-block; width: 0.8rem; height: 0.5rem; border-radius: 2px; vertical-align: middle; margin-right: 0.3rem; }
+  #detail .barkey__sw--solo { background: var(--gold); }
+
+  #detail .grp { margin: 1.4rem 0; border: 1px solid var(--bg-elev-3); border-radius: var(--radius-lg); background: var(--bg-elev); }
+  #detail .grp--solo { border-color: var(--gold-deep); }
+  #detail .grp__hd { padding: 0.7rem 0.9rem 0.5rem; }
+  #detail .grp__t { font-family: var(--font-display); font-size: 1.1rem; color: var(--text); margin: 0; }
+  #detail .grp--solo .grp__t { color: var(--gold); }
+  #detail .grp__sub { font-size: 0.78rem; color: var(--text-faint); margin-top: 0.15rem; line-height: 1.5; }
+  #detail .grp__sub a { color: var(--text-dim); }
+  #detail .grp__body { padding: 0 0.9rem 0.7rem; }
+  #detail .grp__none { font-size: 0.82rem; color: var(--text-faint); font-style: italic; padding: 0 0.9rem 0.7rem; }
+
+  #detail .sub { font-size: 0.74rem; color: var(--text-faint); font-family: var(--font-mono);
+         margin: 0.6rem 0 0.3rem; text-transform: lowercase; letter-spacing: 0.02em; }
+
+  #detail .elist, #detail .olist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+  #detail .erow { display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem; align-items: baseline; font-size: 0.85rem; }
+  #detail .erow__name { color: var(--text); }
+  #detail .erow__meta { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-left: auto; }
+  #detail .tag { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint);
+         border: 1px solid var(--bg-elev-3); border-radius: 3px; padding: 0 0.28rem; white-space: nowrap; }
+  #detail .tag--trig { color: var(--gold); border-color: var(--gold-deep); }
+  #detail .tag--nocm { color: oklch(0.68 0.13 30); border-color: oklch(0.45 0.09 30); }
+  #detail .tag--hid { color: oklch(0.72 0.10 300); border-color: oklch(0.45 0.08 300); }
+
+  #detail .orow { border-left: 2px solid var(--bg-elev-3); padding-left: 0.55rem; font-size: 0.85rem; }
+  #detail .grp--solo .orow { border-left-color: var(--gold-deep); }
+  #detail .orow__hd { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: baseline; }
+  #detail .orow__ev { color: var(--text-dim); font-size: 0.8rem; }
+  #detail .orow__text { color: var(--text); line-height: 1.4; }
+  #detail .orow__rw { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; }
+  #detail .rw { font-size: 0.72rem; color: var(--gold-soft); background: var(--bg-elev-2);
+        border-radius: var(--radius-sm); padding: 0.05rem 0.35rem; }
+
+  #detail .erow__name, #detail .orow__ev {
+    text-decoration: underline; text-decoration-color: var(--bg-elev-3);
+    text-underline-offset: 2px;
+  }
+  #detail .erow__name:hover, #detail .orow__ev:hover { color: var(--gold); text-decoration-color: var(--gold-deep); }
+</style>
+
+<script is:inline>
+  (function () {
+    var D = JSON.parse(document.getElementById('te-data').textContent);
+    var S = D.stories, BASE = D.base;
+    var byCluster = {}, byTrait = {};
+    D.clusters.forEach(function (c) { byCluster[c.slug] = c; });
+    D.traits.forEach(function (t) { byTrait[t.slug] = t; });
+
+    var cm = true, current = null;
+    var detail = document.getElementById('detail');
+    var list = document.getElementById('tlist');
+
+    function keep(sid) { return !cm || S[sid].cm === 1; }
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"]/g, function (ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
+      });
+    }
+    var OWNER = { you: 'your court', them: 'a rival', any: 'either side' };
+    function quoted(t) {
+      if (!t) return '—';
+      var q = esc(t);
+      return /^[“"'‘]/.test(t) ? q : '&ldquo;' + q + '&rdquo;';
+    }
+
+    // One row per story: a cluster can be slotted twice in the same event.
+    function dedupeGates(gates) {
+      var out = [], seen = {};
+      gates.forEach(function (g) {
+        if (!keep(g.s)) return;
+        if (seen[g.s]) {
+          seen[g.s].trigger = seen[g.s].trigger || g.trigger;
+          if (seen[g.s].owner !== g.owner) seen[g.s].owner = 'any';
+          return;
+        }
+        seen[g.s] = { s: g.s, owner: g.owner, trigger: g.trigger };
+        out.push(seen[g.s]);
+      });
+      out.sort(function (a, b) { return S[b.s].w - S[a.s].w || S[a.s].n.localeCompare(S[b.s].n); });
+      return out;
+    }
+    function keepOpts(opts) {
+      return opts.filter(function (o) { return keep(o.s); })
+        .sort(function (a, b) { return S[b.s].w - S[a.s].w || S[a.s].n.localeCompare(S[b.s].n); });
+    }
+
+    function evLink(sid) {
+      var s = S[sid];
+      return s.h ? '<a class="erow__name" href="' + BASE + esc(s.h) + '">' + esc(s.n) + '</a>'
+                 : '<span class="erow__name">' + esc(s.n) + '</span>';
+    }
+    function gateHTML(rows) {
+      return '<ul class="elist">' + rows.map(function (g) {
+        var s = S[g.s];
+        return '<li class="erow">' + evLink(g.s) + '<span class="erow__meta">'
+          + (g.trigger ? '<span class="tag tag--trig" title="This is the event\'s trigger subject">trigger</span>' : '')
+          + '<span class="tag" title="Whose character needs the trait">' + OWNER[g.owner] + '</span>'
+          + '<span class="tag" title="iWeight — relative selection weight">w' + s.w + '</span>'
+          + (s.cm ? '' : '<span class="tag tag--nocm">not in CM</span>')
+          + '</span></li>';
+      }).join('') + '</ul>';
+    }
+    function optHTML(rows) {
+      return '<ul class="olist">' + rows.map(function (o) {
+        var s = S[o.s];
+        return '<li class="orow"><div class="orow__hd">'
+          + (s.h ? '<a class="orow__ev" href="' + BASE + esc(s.h) + '">' + esc(s.n) + '</a>'
+                 : '<span class="orow__ev">' + esc(s.n) + '</span>')
+          + (o.hid ? '<span class="tag tag--hid" title="The game hides this choice when you do not qualify">hidden when locked</span>' : '')
+          + (s.cm ? '' : '<span class="tag tag--nocm">not in CM</span>')
+          + '</div><div class="orow__text">' + quoted(o.t) + '</div>'
+          + (o.r.length ? '<div class="orow__rw">' + o.r.map(function (r) {
+              return '<span class="rw">' + esc(r) + '</span>'; }).join('') + '</div>' : '')
+          + '</li>';
+      }).join('') + '</ul>';
+    }
+
+    function block(cls, title, sub, gates, opts, id) {
+      var body = '';
+      if (gates.length) body += '<p class="sub">events that only happen for this</p>' + gateHTML(gates);
+      if (opts.length) body += '<p class="sub">extra choices in events you get anyway</p>' + optHTML(opts);
+      return '<section class="grp ' + cls + '"' + (id ? ' id="' + id + '"' : '')
+        + '><div class="grp__hd"><h3 class="grp__t">' + title + '</h3>'
+        + (sub ? '<div class="grp__sub">' + sub + '</div>' : '') + '</div>'
+        + (body ? '<div class="grp__body">' + body + '</div>'
+                : '<p class="grp__none">Nothing in this patch.</p>') + '</section>';
+    }
+
+    function render(slug) {
+      var t = byTrait[slug];
+      if (!t) { detail.innerHTML = '<p class="detail__empty">Choose a trait on the left.</p>'; return; }
+      current = slug;
+
+      var soloG = dedupeGates(t.gates), soloO = keepOpts(t.options);
+      var groups = t.clusters.map(function (cs) {
+        var c = byCluster[cs];
+        return { c: c, g: dedupeGates(c.gates), o: keepOpts(c.options) };
+      }).sort(function (a, b) { return (b.g.length + b.o.length) - (a.g.length + a.o.length); });
+
+      // Union, never sum — a trait in two clusters can reach one story twice.
+      var evSet = {}, opSet = {};
+      soloG.forEach(function (g) { evSet[g.s] = 1; });
+      soloO.forEach(function (o) { opSet[o.s + '|' + o.o] = 1; });
+      groups.forEach(function (grp) {
+        grp.g.forEach(function (g) { evSet[g.s] = 1; });
+        grp.o.forEach(function (o) { opSet[o.s + '|' + o.o] = 1; });
+      });
+      var evN = Object.keys(evSet).length, opN = Object.keys(opSet).length;
+
+      var html = '<div class="dhd"><h2 class="dhd__name">' + esc(t.name) + '</h2>'
+        + '<span class="dhd__cat">' + esc(t.cat) + '</span>'
+        + '<a class="dhd__link" href="' + BASE + 'traits#' + esc(t.slug) + '">ratings &amp; effects &rarr;</a></div>';
+
+      // Two metrics, never merged into one figure: an unlocked EVENT and an
+      // unlocked CHOICE are different units, and summing them (or drawing one
+      // bar across both) produces a number that means nothing. Within a bar,
+      // solid = this trait is the only key, hatched = a cluster-mate opens the
+      // same content, so it is not exclusively yours.
+      function metric(label, solo, total) {
+        var shared = total - solo;
+        if (!total) {
+          return '<div class="metric"><div class="metric__hd">'
+            + '<span class="metric__n metric__n--zero">0</span>'
+            + '<span class="metric__l">' + label + '</span></div></div>';
+        }
+        return '<div class="metric"><div class="metric__hd">'
+          + '<span class="metric__n">' + total + '</span>'
+          + '<span class="metric__l">' + label + '</span></div>'
+          + '<div class="bar">'
+          + (solo ? '<div class="bar__seg bar__seg--solo" style="flex:' + solo + '"></div>' : '')
+          + (shared ? '<div class="bar__seg bar__seg--shared" style="flex:' + shared + '"></div>' : '')
+          + '</div><div class="barkey">'
+          + '<span><span class="barkey__sw barkey__sw--solo"></span><b>' + solo
+          + '</b> only ' + esc(t.name) + ' opens</span>'
+          + (shared ? '<span><span class="barkey__sw bar__seg--shared"></span><b>' + shared
+              + '</b> a cluster-mate opens too</span>' : '')
+          + '</div></div>';
+      }
+
+      html += '<div class="dclusters">'
+        + (groups.length
+            ? '<span class="dclusters__l">in ' + groups.length + ' cluster'
+              + (groups.length > 1 ? 's' : '') + '</span>'
+              + groups.map(function (grp) {
+                  var n = grp.c.members.length - 1;
+                  return '<button type="button" class="cchip" data-goto="via-' + esc(grp.c.slug) + '"'
+                    + ' title="' + esc(grp.c.name) + ' — ' + grp.c.members.length
+                    + ' traits qualify, so ' + n + ' other' + (n === 1 ? '' : 's')
+                    + ' unlock the same content. Click to jump to it.">'
+                    + esc(grp.c.name) + '<span class="cchip__n">+' + n + '</span></button>';
+                }).join('')
+              + '<a class="dclusters__all" href="' + BASE + 'trait-clusters">all clusters &rarr;</a>'
+            : '<span class="dclusters__l dclusters__l--none">in no cluster'
+              + ' &mdash; everything below is exclusive to ' + esc(t.name) + '</span>')
+        + '</div>';
+
+      html += '<div class="metrics">'
+        + metric('events that only happen with this trait', soloG.length, evN)
+        + metric('extra choices in events you get anyway', soloO.length, opN)
+        + '</div>';
+
+      html += block('grp--solo', 'Only ' + esc(t.name),
+        'Gated on this trait and nothing else — no other trait substitutes.',
+        soloG, soloO);
+
+      groups.forEach(function (grp) {
+        var mates = grp.c.members.filter(function (m) { return m.id !== t.id; });
+        var sub = 'Any of these also unlocks it: '
+          + mates.map(function (m) {
+              return '<a href="' + BASE + 'trait-events#' + esc(m.slug) + '">' + esc(m.name) + '</a>';
+            }).join(', ')
+          + '. <a href="' + BASE + 'trait-clusters#' + esc(grp.c.slug) + '">See the cluster &rarr;</a>';
+        html += block('', 'via ' + esc(grp.c.name), mates.length ? sub : 'This trait is the cluster\'s only member.',
+          grp.g, grp.o, 'via-' + grp.c.slug);
+      });
+
+      if (!t.clusters.length) {
+        html += '<p class="grp__none">In no cluster — everything above is exclusive to '
+          + esc(t.name) + '.</p>';
+      }
+
+      detail.innerHTML = html;
+      [].forEach.call(list.querySelectorAll('.prow'), function (b) {
+        b.classList.toggle('is-on', b.getAttribute('data-slug') === slug);
+      });
+    }
+
+    // Picker counts use the same union rule as the detail panel.
+    function refreshCounts() {
+      D.traits.forEach(function (t) {
+        var ev = {}, op = {};
+        t.gates.forEach(function (g) { if (keep(g.s)) ev[g.s] = 1; });
+        t.options.forEach(function (o) { if (keep(o.s)) op[o.s + '|' + o.o] = 1; });
+        t.clusters.forEach(function (cs) {
+          byCluster[cs].gates.forEach(function (g) { if (keep(g.s)) ev[g.s] = 1; });
+          byCluster[cs].options.forEach(function (o) { if (keep(o.s)) op[o.s + '|' + o.o] = 1; });
+        });
+        var el = list.querySelector('[data-count-for="' + t.slug + '"]');
+        if (el) el.textContent = Object.keys(ev).length + '/' + Object.keys(op).length;
+      });
+    }
+
+    detail.addEventListener('click', function (e) {
+      var chip = e.target.closest('.cchip');
+      if (!chip) return;
+      var target = document.getElementById(chip.getAttribute('data-goto'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    list.addEventListener('click', function (e) {
+      var b = e.target.closest('.prow');
+      if (!b) return;
+      var slug = b.getAttribute('data-slug');
+      history.replaceState(null, '', '#' + slug);
+      render(slug);
+    });
+
+    document.getElementById('cm-toggle').addEventListener('click', function () {
+      cm = !cm;
+      this.setAttribute('aria-pressed', String(cm));
+      refreshCounts();
+      if (current) render(current);
+    });
+
+    var search = document.getElementById('tsearch');
+    var offCats = {};
+    function applyFilter() {
+      var q = search.value.trim().toLowerCase();
+      [].forEach.call(list.querySelectorAll('.prow'), function (b) {
+        var okQ = !q || b.getAttribute('data-q').indexOf(q) !== -1;
+        var okC = !offCats[b.getAttribute('data-cat')];
+        b.parentNode.hidden = !(okQ && okC);
+      });
+    }
+    search.addEventListener('input', applyFilter);
+    [].forEach.call(document.querySelectorAll('.fchip[data-cat]'), function (chip) {
+      chip.addEventListener('click', function () {
+        var c = chip.getAttribute('data-cat');
+        offCats[c] = !offCats[c];
+        chip.setAttribute('aria-pressed', String(!offCats[c]));
+        applyFilter();
+      });
+    });
+
+    window.addEventListener('hashchange', function () {
+      var s = location.hash.slice(1);
+      if (s && byTrait[s]) render(s);
+    });
+
+    refreshCounts();
+    var initial = location.hash.slice(1);
+    render(byTrait[initial] ? initial : 'compassionate');
+  })();
+</script>
