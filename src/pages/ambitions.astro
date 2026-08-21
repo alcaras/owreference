@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import ambitionData from '../data/ambitions.json';
 import { classifyYield } from '../lib/entities';
+import TableTools from '../components/TableTools.astro';
 
 const { globals, groups, meta, victories, victoryPointOptions } = ambitionData;
 type Goal = typeof groups[number]['goals'][number];
@@ -21,6 +22,52 @@ function tierLabel(g: Goal): string {
 const searchBlobs: Record<string, string> = {};
 for (const grp of groups) {
   for (const g of grp.goals) searchBlobs[g.slug] = JSON.stringify(g).toLowerCase();
+}
+
+// Family-class facet. A class's ambitions are scattered across 17 of the 39
+// group tables (Statesmen: 50 goals, 17 groups), so sorting inside one table
+// cannot gather them — the filter has to cut across every group at once.
+const familyClassCounts = new Map<string, number>();
+for (const grp of groups) {
+  for (const g of grp.goals) {
+    for (const f of g.familyClasses) {
+      familyClassCounts.set(f.name, (familyClassCounts.get(f.name) || 0) + 1);
+    }
+  }
+}
+const familyClasses = [...familyClassCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+// Which family classes each goal is offered to, for the filter's row test.
+const goalFamilies: Record<string, string[]> = {};
+for (const grp of groups) {
+  for (const g of grp.goals) goalFamilies[g.slug] = g.familyClasses.map(f => f.name);
+}
+
+// CSV rows come from the data, not the DOM: scraping the table would fold the
+// requirement list and the chips into one blob of text.
+const CSV_HEADER = ['Group', 'Ambition', 'Tier', 'National', 'Requirements',
+  'Needs tech', 'Obsolete at', 'Nation only', 'Family classes', 'Religions',
+  'DLC', 'Excluded with', 'Notes', 'Offer weight'];
+const csvRows: Record<string, (string | number)[]> = {};
+for (const grp of groups) {
+  for (const g of grp.goals) {
+    csvRows[g.slug] = [
+      grp.label,
+      g.name,
+      tierLabel(g),
+      g.national ? 'yes' : '',
+      g.requirements.join('; '),
+      g.techPrereq ? g.techPrereq.name : '',
+      g.techObsolete ? g.techObsolete.name : '',
+      g.nationPrereq ? g.nationPrereq.name : '',
+      g.familyClasses.map(f => f.name).join('; '),
+      g.religions.map(r => r.name).join('; '),
+      g.dlc ? fmtDlc(g.dlc) : '',
+      g.notDlc ? fmtDlc(g.notDlc) : '',
+      g.notes.join('; '),
+      g.weight,
+    ];
+  }
 }
 
 const GROUP_GLYPH: Record<string, string> = {
@@ -54,7 +101,7 @@ const GROUP_GLYPH: Record<string, string> = {
   <section class="amb-victory" id="victories">
     <h2 class="amb-group__title"><span class="amb-group__mark">🏁</span>Victory Types</h2>
     <div class="grid"><div class="grid__scroll">
-      <table class="ntbl">
+      <table class="ntbl" data-sortable>
         <thead>
           <tr>
             <th class="rowlabel rowlabel--corner">
@@ -101,6 +148,19 @@ const GROUP_GLYPH: Record<string, string> = {
     </p>
   </section>
 
+  <div class="amb-tools">
+    <TableTools csvId="ambitions" csvName="old-world-ambitions" csvLabel="Download CSV" />
+    <div class="amb-facet">
+      <span class="amb-facet__l">Offered to</span>
+      {familyClasses.map(([name, n]) => (
+        <button type="button" class="fam-chip" data-family={name} aria-pressed="false">
+          {name}<span class="fam-chip__n">{n}</span>
+        </button>
+      ))}
+      <button type="button" class="fam-chip fam-chip--clear" id="fam-clear" hidden>clear</button>
+    </div>
+  </div>
+
   <nav class="amb-toc">
     {groups.map(grp => (
       <a class="chip chip--neutral" href={`#group-${grp.key}`}>{grp.label}</a>
@@ -120,7 +180,7 @@ const GROUP_GLYPH: Record<string, string> = {
         {grp.blurb ? <p class="amb-group__blurb">{grp.blurb}</p> : null}
 
         <div class="grid"><div class="grid__scroll">
-          <table class="ntbl">
+          <table class="ntbl" data-sortable>
             <thead>
               <tr>
                 <th class="rowlabel rowlabel--corner">
@@ -137,17 +197,19 @@ const GROUP_GLYPH: Record<string, string> = {
             <tbody>
               {grp.goals.map((g: Goal) => (
                 <tr data-goal={g.slug}>
-                  <th class="rowlabel" scope="row" id={g.slug}>
+                  <th class="rowlabel" scope="row" id={g.slug} data-sort={g.name}>
                     <span class="amb__name"><LinkedText text={g.name} showIcons={false} /></span>
                     {g.helpText ? <span class="amb__help">{g.helpText}</span> : null}
                   </th>
-                  <td class={`cell ${tierLabel(g) === '—' ? 'is-empty' : 'yield-misc'}`}>
+                  <td class={`cell ${tierLabel(g) === '—' ? 'is-empty' : 'yield-misc'}`}
+                    data-sort={tierLabel(g) === '—' ? '' : String(g.minTier)}>
                     {tierLabel(g) === '—'
                       ? <span class="cell__dash">—</span>
                       : <span class="amb__num">{tierLabel(g)}</span>}
                     {g.national ? <div class="amb__flag">National</div> : null}
                   </td>
-                  <td class={`cell ${g.requirements.length ? 'yield-misc' : 'is-empty'} cell--reqs`}>
+                  <td class={`cell ${g.requirements.length ? 'yield-misc' : 'is-empty'} cell--reqs`}
+                    data-sort={g.requirements.join(' ')}>
                     {g.requirements.length ? (
                       <ul class="amb-reqs">
                         {g.requirements.map(text => {
@@ -161,13 +223,15 @@ const GROUP_GLYPH: Record<string, string> = {
                       </ul>
                     ) : <span class="cell__dash">—</span>}
                   </td>
-                  <td class={`cell ${(g.techPrereq || g.techObsolete || g.nationPrereq) ? 'yield-science' : 'is-empty'}`}>
+                  <td class={`cell ${(g.techPrereq || g.techObsolete || g.nationPrereq) ? 'yield-science' : 'is-empty'}`}
+                    data-sort={[g.techPrereq?.name, g.techObsolete?.name, g.nationPrereq?.name].filter(Boolean).join(' ')}>
                     {g.techPrereq ? <div class="amb__note">after <LinkedText text={g.techPrereq.name} showIcons={false} /></div> : null}
                     {g.techObsolete ? <div class="amb__note">until <LinkedText text={g.techObsolete.name} showIcons={false} /></div> : null}
                     {g.nationPrereq ? <div class="amb__note"><LinkedText text={g.nationPrereq.name} showIcons={false} /> only</div> : null}
                     {!(g.techPrereq || g.techObsolete || g.nationPrereq) ? <span class="cell__dash">—</span> : null}
                   </td>
-                  <td class={`cell ${(g.familyClasses.length || g.religions.length || g.dlc || g.notDlc) ? 'yield-misc' : 'is-empty'}`}>
+                  <td class={`cell ${(g.familyClasses.length || g.religions.length || g.dlc || g.notDlc) ? 'yield-misc' : 'is-empty'}`}
+                    data-sort={[...g.familyClasses.map(f => f.name), ...g.religions.map(r => r.name)].join(' ')}>
                     {g.familyClasses.length ? (
                       <div class="amb__note">{g.familyClasses.map(f => f.name).join(', ')} families</div>
                     ) : null}
@@ -178,7 +242,8 @@ const GROUP_GLYPH: Record<string, string> = {
                     {g.notDlc ? <div class="amb__dlc">not with {fmtDlc(g.notDlc)}</div> : null}
                     {!(g.familyClasses.length || g.religions.length || g.dlc || g.notDlc) ? <span class="cell__dash">—</span> : null}
                   </td>
-                  <td class={`cell ${(g.notes.length || g.weight !== 1000) ? 'yield-misc' : 'is-empty'}`}>
+                  <td class={`cell ${(g.notes.length || g.weight !== 1000) ? 'yield-misc' : 'is-empty'}`}
+                    data-sort={g.notes.join(' ')}>
                     {g.notes.map(n => <div class="amb__note"><LinkedText text={n} showIcons={false} /></div>)}
                     {g.weight !== 1000 ? <div class="amb__weight">offer weight {g.weight.toLocaleString()}</div> : null}
                     {!(g.notes.length || g.weight !== 1000) ? <span class="cell__dash">—</span> : null}
@@ -193,18 +258,42 @@ const GROUP_GLYPH: Record<string, string> = {
   </div>
 
   <script type="application/json" id="amb-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
+  <script type="application/json" id="amb-families" set:html={JSON.stringify(goalFamilies)}></script>
+  <script type="application/json" id="amb-csv" set:html={JSON.stringify({ header: CSV_HEADER, rows: csvRows })}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      // The header input is #global-search; #site-search is the pre-rename id
+      // still referenced by ~33 pages, which is why their filters do nothing.
+      // Tolerate its absence rather than returning early — the family facet
+      // and the CSV export must work with or without a search box.
+      const input = document.getElementById('global-search')
+        || document.getElementById('site-search');
       const blobNode = document.getElementById('amb-search-blobs');
+      const famNode = document.getElementById('amb-families');
+      const csvNode = document.getElementById('amb-csv');
       const grid = document.getElementById('amb-groups');
-      if (!input || !blobNode || !grid) return;
-      let blobs;
+      if (!blobNode || !grid) return;
+      let blobs, fams = {}, csv = { header: [], rows: {} };
       try { blobs = JSON.parse(blobNode.textContent || '{}'); } catch { return; }
+      try { fams = JSON.parse(famNode.textContent || '{}'); } catch {}
+      try { csv = JSON.parse(csvNode.textContent || '{}'); } catch {}
+
+      // Selected family classes, OR'd: picking Statesmen + Clerics shows goals
+      // offered to either. A goal offered to nobody in particular is dropped
+      // while a filter is on — it is not "a Statesmen ambition".
+      const picked = new Set();
+      const clear = document.getElementById('fam-clear');
+      const visible = new Set();
+
       function apply() {
-        const q = (input.value || '').trim().toLowerCase();
+        const q = ((input && input.value) || '').trim().toLowerCase();
+        visible.clear();
         for (const slug of Object.keys(blobs)) {
-          const match = !q || blobs[slug].includes(q);
+          const hitQ = !q || blobs[slug].includes(q);
+          const hitF = picked.size === 0
+            || (fams[slug] || []).some(f => picked.has(f));
+          const match = hitQ && hitF;
+          if (match) visible.add(slug);
           for (const el of grid.querySelectorAll('[data-goal="' + slug + '"]')) {
             el.classList.toggle('is-hidden', !match);
           }
@@ -214,8 +303,40 @@ const GROUP_GLYPH: Record<string, string> = {
           const any = section.querySelector('tbody tr:not(.is-hidden)');
           section.classList.toggle('is-hidden', !any);
         }
+        if (clear) clear.hidden = picked.size === 0;
       }
-      input.addEventListener('input', apply);
+
+      for (const chip of document.querySelectorAll('.fam-chip[data-family]')) {
+        chip.addEventListener('click', () => {
+          const name = chip.getAttribute('data-family');
+          if (picked.has(name)) picked.delete(name); else picked.add(name);
+          chip.setAttribute('aria-pressed', String(picked.has(name)));
+          apply();
+        });
+      }
+      if (clear) clear.addEventListener('click', () => {
+        picked.clear();
+        for (const c of document.querySelectorAll('.fam-chip[data-family]')) {
+          c.setAttribute('aria-pressed', 'false');
+        }
+        apply();
+      });
+
+      // The CSV mirrors what is on screen — filter to Statesmen, get the 50
+      // Statesmen goals, not all 400.
+      window.owCsv = window.owCsv || {};
+      window.owCsv.ambitions = function () {
+        const rows = [];
+        for (const section of grid.querySelectorAll('.amb-group')) {
+          for (const tr of section.querySelectorAll('tbody tr')) {
+            const slug = tr.getAttribute('data-goal');
+            if (slug && visible.has(slug) && csv.rows[slug]) rows.push(csv.rows[slug]);
+          }
+        }
+        return { header: csv.header, rows };
+      };
+
+      if (input) input.addEventListener('input', apply);
       apply();
     })();
   </script>
@@ -235,6 +356,24 @@ const GROUP_GLYPH: Record<string, string> = {
     border-radius: 3px;
     border: 1px solid var(--border);
   }
+
+  .amb-tools {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem;
+    margin: 0 0 0.9rem;
+  }
+  .amb-facet { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+  .amb-facet__l { font-size: 0.74rem; color: var(--text-faint); margin-right: 0.1rem; }
+  .fam-chip {
+    font: inherit; font-size: 0.78rem; cursor: pointer; padding: 0.12rem 0.45rem;
+    border-radius: var(--radius-sm); background: var(--bg-elev);
+    border: 1px solid var(--border-strong, var(--bg-elev-3)); color: var(--text-faint);
+  }
+  .fam-chip:hover { color: var(--text); }
+  .fam-chip[aria-pressed="true"] {
+    color: var(--bg); background: var(--gold); border-color: var(--gold);
+  }
+  .fam-chip__n { font-family: var(--font-mono); font-size: 0.68rem; opacity: 0.65; margin-left: 0.3rem; }
+  .fam-chip--clear { font-style: italic; }
 
   .amb-victory { margin-bottom: 1.4rem; }
   .amb-vpnote {

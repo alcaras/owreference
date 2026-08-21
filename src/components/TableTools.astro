@@ -1,0 +1,187 @@
+---
+// Sortable column headers for any .ntbl, plus CSV export.
+//
+// Drop this component once on a page; it wires up EVERY table marked
+// `data-sortable` on that page, so a page with 39 tables costs one script.
+//
+// Opting a table in:
+//   <table class="ntbl" data-sortable> … </table>
+//
+// Sort keys, in priority order:
+//   1. `data-sort` on the cell — use this whenever the rendered text sorts
+//      badly (a tier of "10–10", a list of chips, an em-dash for empty).
+//   2. the cell's text content, collapsed.
+// A column sorts numerically when every non-empty key in it parses as a
+// number; empty cells always sink to the bottom in both directions, because
+// "no requirement" is never the interesting end of a sort.
+//
+// Clicking a header cycles asc → desc → original order. Original order is
+// recorded once on first sort, so the third click genuinely restores the
+// XML/build order rather than an alphabetical approximation.
+interface Props {
+  /** Adds a CSV button; the page supplies rows via window.owCsv[csvId]. */
+  csvId?: string;
+  /** Download filename stem, e.g. "old-world-ambitions". */
+  csvName?: string;
+  /** Button label. */
+  csvLabel?: string;
+  /** Set false to render the tools bar hidden (sorting still works). */
+  showBar?: boolean;
+}
+const { csvId, csvName = 'export', csvLabel = 'Download CSV', showBar = true } = Astro.props;
+---
+
+{showBar && (
+  <div class="tt">
+    <span class="tt__hint">Click a column header to sort</span>
+    {csvId && (
+      <button type="button" class="tt__csv" data-csv-id={csvId} data-csv-name={csvName}>
+        <span aria-hidden="true">⤓</span> {csvLabel}
+      </button>
+    )}
+  </div>
+)}
+
+<script is:inline>
+  (function () {
+    if (window.__owTableTools) return;
+    window.__owTableTools = true;
+
+    var COLLAPSE = /\s+/g;
+    function keyOf(cell) {
+      if (!cell) return '';
+      var explicit = cell.getAttribute('data-sort');
+      if (explicit !== null) return explicit;
+      var t = (cell.textContent || '').replace(COLLAPSE, ' ').trim();
+      return t === '—' ? '' : t;
+    }
+    function numeric(values) {
+      var seen = false;
+      for (var i = 0; i < values.length; i++) {
+        if (values[i] === '') continue;
+        if (isNaN(Number(values[i]))) return false;
+        seen = true;
+      }
+      return seen;
+    }
+
+    function wire(table) {
+      var head = table.tHead, body = table.tBodies[0];
+      if (!head || !body) return;
+      var headers = head.rows.length ? [].slice.call(head.rows[head.rows.length - 1].cells) : [];
+
+      headers.forEach(function (th, col) {
+        if (th.hasAttribute('data-nosort')) return;
+        th.classList.add('is-sortable');
+        th.setAttribute('tabindex', '0');
+        th.setAttribute('role', 'button');
+        th.setAttribute('aria-sort', 'none');
+
+        function run() {
+          var rows = [].slice.call(body.rows);
+          // Freeze the build order once, so the third click can restore it.
+          rows.forEach(function (r, i) {
+            if (r.getAttribute('data-tt-i') === null) r.setAttribute('data-tt-i', String(i));
+          });
+
+          var state = th.getAttribute('aria-sort');
+          var next = state === 'none' ? 'ascending' : state === 'ascending' ? 'descending' : 'none';
+          headers.forEach(function (o) { o.setAttribute('aria-sort', 'none'); });
+          th.setAttribute('aria-sort', next);
+
+          if (next === 'none') {
+            rows.sort(function (a, b) {
+              return Number(a.getAttribute('data-tt-i')) - Number(b.getAttribute('data-tt-i'));
+            });
+          } else {
+            var keys = rows.map(function (r) { return keyOf(r.cells[col]); });
+            var asNum = numeric(keys);
+            var dir = next === 'ascending' ? 1 : -1;
+            var pairs = rows.map(function (r, i) { return { r: r, k: keys[i], i: i }; });
+            pairs.sort(function (a, b) {
+              // Blanks sink in both directions — an empty cell is never the
+              // answer someone is sorting toward.
+              if (a.k === '' && b.k === '') return a.i - b.i;
+              if (a.k === '') return 1;
+              if (b.k === '') return -1;
+              var c = asNum ? Number(a.k) - Number(b.k)
+                            : a.k.localeCompare(b.k, undefined, { numeric: true, sensitivity: 'base' });
+              return c !== 0 ? c * dir : a.i - b.i;
+            });
+            rows = pairs.map(function (p) { return p.r; });
+          }
+          var frag = document.createDocumentFragment();
+          rows.forEach(function (r) { frag.appendChild(r); });
+          body.appendChild(frag);
+        }
+
+        th.addEventListener('click', run);
+        th.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); run(); }
+        });
+      });
+    }
+
+    function csvCell(v) {
+      var s = v == null ? '' : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+
+    function download(btn) {
+      var src = (window.owCsv || {})[btn.getAttribute('data-csv-id')];
+      if (typeof src !== 'function') return;
+      var data = src();
+      if (!data || !data.rows.length) return;
+      // BOM so Excel opens UTF-8 (× and é in ambition text) correctly.
+      var csv = '﻿' + [data.header].concat(data.rows)
+        .map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
+      var url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = btn.getAttribute('data-csv-name') + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    function init() {
+      [].forEach.call(document.querySelectorAll('table[data-sortable]'), wire);
+      [].forEach.call(document.querySelectorAll('.tt__csv'), function (b) {
+        b.addEventListener('click', function () { download(b); });
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
+
+<style is:global>
+  .tt {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem;
+    margin: 0 0 0.75rem;
+  }
+  .tt__hint { font-size: 0.74rem; color: var(--text-faint); }
+  .tt__csv {
+    font: inherit; font-size: 0.8rem; cursor: pointer;
+    background: var(--bg-elev); border: 1px solid var(--border-strong, var(--bg-elev-3));
+    color: var(--text-dim); border-radius: var(--radius); padding: 0.32rem 0.7rem;
+  }
+  .tt__csv:hover { color: var(--gold); border-color: var(--gold-deep); }
+  .tt__csv > span { margin-right: 0.35em; opacity: 0.75; }
+
+  .ntbl th.is-sortable { cursor: pointer; position: relative; user-select: none; }
+  .ntbl th.is-sortable:hover .nhdr__name,
+  .ntbl th.is-sortable:focus-visible .nhdr__name { color: var(--gold); }
+  /* The caret sits in the header's own flow so it cannot collide with the
+     sticky-header stacking used by .nhdr__inner. */
+  .ntbl th.is-sortable::after {
+    content: '⇅'; font-size: 0.7em; opacity: 0.28; margin-left: 0.35em;
+    font-family: var(--font-mono);
+  }
+  .ntbl th.is-sortable[aria-sort="ascending"]::after { content: '↑'; opacity: 1; color: var(--gold); }
+  .ntbl th.is-sortable[aria-sort="descending"]::after { content: '↓'; opacity: 1; color: var(--gold); }
+</style>
