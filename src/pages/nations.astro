@@ -103,7 +103,7 @@ for (const n of nations) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Nations"
   active="nations"
   description="All 13 Old World nations side-by-side: starting bonuses, shrines, unique units, families, starting techs, and leader/royal lineup. Pulled XML-canonical from the game's own files."
@@ -293,7 +293,7 @@ for (const n of nations) {
   <script type="application/json" id="nation-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('nation-search-blobs');
       const grid = document.getElementById('nations-grid');
       const note = document.getElementById('grid-searchnote');

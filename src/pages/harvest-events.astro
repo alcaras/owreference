@@ -49,7 +49,7 @@ for (const e of events) searchBlobs[e.slug] = JSON.stringify(e).toLowerCase();
 const resourceCount = sections.filter(s => s.icon).length;
 ---
 
-<Base title="Harvest Events" active="harvest-events" pageMark="🌾" pageStats={[
+<Base pageFilter title="Harvest Events" active="harvest-events" pageMark="🌾" pageStats={[
   { label: 'events', value: events.length },
   { label: 'resources', value: resourceCount },
 ]}>
@@ -135,7 +135,7 @@ const resourceCount = sections.filter(s => s.icon).length;
   <script type="application/json" id="he-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('he-search-blobs');
       const root = document.getElementById('he-root');
       const empty = document.getElementById('he-empty');

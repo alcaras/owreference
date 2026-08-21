@@ -16,7 +16,7 @@ for (const v of vegetations) searchBlobs[`v-${v.slug}`] = JSON.stringify(v).toLo
 for (const h of heights) searchBlobs[`h-${h.slug}`] = JSON.stringify(h).toLowerCase();
 ---
 
-<Base title="Terrain" active="terrain" pageMark="⛰️" pageStats={[
+<Base pageFilter title="Terrain" active="terrain" pageMark="⛰️" pageStats={[
   { label: 'terrains', value: terrains.length },
   { label: 'vegetations', value: vegetations.length },
   { label: 'heights', value: heights.length },
@@ -304,7 +304,7 @@ for (const h of heights) searchBlobs[`h-${h.slug}`] = JSON.stringify(h).toLowerC
   <script type="application/json" id="terrain-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('terrain-search-blobs');
       const grid = document.getElementById('terrain-grid');
       if (!input || !blobNode || !grid) return;

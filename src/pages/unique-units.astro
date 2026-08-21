@@ -134,7 +134,7 @@ const FACETS: Facet[] = [
 ];
 ---
 
-<Base
+<Base pageFilter
   title="Unique Units"
   active="unique-units"
   pageMark="⭐"
@@ -357,7 +357,7 @@ const FACETS: Facet[] = [
   <script type="application/json" id="unit-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline define:vars={{ FACET_ATTR_JSON: JSON.stringify({ nation: 'data-nation', class: 'data-class' }) }}>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('unit-search-blobs');
       const grid = document.getElementById('units-grid');
       const note = document.getElementById('grid-searchnote');

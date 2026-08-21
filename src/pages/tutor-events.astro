@@ -33,7 +33,7 @@ for (const e of events) searchBlobs[e.slug] = JSON.stringify(e).toLowerCase();
 const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
 ---
 
-<Base title="Tutor Events" active="tutor-events" pageMark="🎓" pageStats={[
+<Base pageFilter title="Tutor Events" active="tutor-events" pageMark="🎓" pageStats={[
   { label: 'events', value: events.length },
   { label: 'courses', value: courseCount },
 ]}>
@@ -139,7 +139,7 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
   <script type="application/json" id="te-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('te-search-blobs');
       const grid = document.getElementById('te-grid');
       if (!input || !blobNode || !grid) return;

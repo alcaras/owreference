@@ -20,7 +20,7 @@ const searchBlobs: Record<string, string> = {};
 for (const s of rural) searchBlobs[s.classSlug] = JSON.stringify(s).toLowerCase();
 ---
 
-<Base title="Rural Specialists" active="rural-specialists" pageMark="🌾" pageStats={[
+<Base pageFilter title="Rural Specialists" active="rural-specialists" pageMark="🌾" pageStats={[
   { label: 'specialists', value: rural.length },
 ]}>
   <div class="grid" id="rs-grid">
@@ -86,7 +86,7 @@ for (const s of rural) searchBlobs[s.classSlug] = JSON.stringify(s).toLowerCase(
   <script type="application/json" id="rs-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('rs-search-blobs');
       const grid = document.getElementById('rs-grid');
       if (!input || !blobNode || !grid) return;

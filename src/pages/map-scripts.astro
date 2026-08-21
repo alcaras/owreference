@@ -42,7 +42,7 @@ for (const s of scripts) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Map Scripts"
   active="map-scripts"
   pageMark="🗺️"
@@ -158,7 +158,7 @@ for (const s of scripts) {
     (function () {
       const root = document.getElementById('ms-root');
       const blobNode = document.getElementById('ms-blobs');
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const note = document.getElementById('ms-searchnote');
       if (!root || !blobNode) return;
       let blobs;

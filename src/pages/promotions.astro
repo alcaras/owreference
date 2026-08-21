@@ -70,7 +70,7 @@ const prereqSlug = (p: Promotion) => p.prereqId.replace('PROMOTION_', '').toLowe
 const condPromos = promotions.filter(p => p.requiresAttack.length > 0);
 ---
 
-<Base
+<Base pageFilter
   title="Promotions"
   active="promotions"
   pageMark="🎖️"
@@ -227,7 +227,7 @@ const condPromos = promotions.filter(p => p.requiresAttack.length > 0);
   <script type="application/json" id="prom-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const grid = document.getElementById('prom-grid');
       const blobNode = document.getElementById('prom-search-blobs');
       if (!input || !grid || !blobNode) return;

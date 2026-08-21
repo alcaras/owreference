@@ -64,7 +64,7 @@ for (const o of eras) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Occurrences"
   active="occurrences"
   pageMark="🌋"
@@ -331,7 +331,7 @@ for (const o of eras) {
   <script is:inline>
     // Highlights matching cards, dims the rest. Mirrors laws.astro.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('occ-search-blobs');
       const grid = document.getElementById('occ-grid');
       if (!input || !blobNode || !grid) return;

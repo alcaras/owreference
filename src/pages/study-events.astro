@@ -17,7 +17,7 @@ for (const e of events) searchBlobs[e.slug] = JSON.stringify(e).toLowerCase();
 const authors = Array.from(new Set(events.map(e => e.author).filter(Boolean))).sort();
 ---
 
-<Base title="Study Events" active="study-events" pageMark="🎓" pageStats={[
+<Base pageFilter title="Study Events" active="study-events" pageMark="🎓" pageStats={[
   { label: 'events', value: events.length },
   { label: 'authors', value: authors.length },
 ]}>
@@ -113,7 +113,7 @@ const authors = Array.from(new Set(events.map(e => e.author).filter(Boolean))).s
   <script type="application/json" id="se-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('se-search-blobs');
       const grid = document.getElementById('se-grid');
       if (!input || !blobNode || !grid) return;

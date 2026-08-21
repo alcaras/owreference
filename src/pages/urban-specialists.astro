@@ -30,7 +30,7 @@ const searchBlobs: Record<string, string> = {};
 for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowerCase();
 ---
 
-<Base title="Urban Specialists" active="urban-specialists" pageMark="🏺" pageStats={[
+<Base pageFilter title="Urban Specialists" active="urban-specialists" pageMark="🏺" pageStats={[
   { label: 'specialists', value: groups.length },
   { label: 'tiers', value: 3 },
 ]}>
@@ -115,7 +115,7 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
   <script type="application/json" id="us-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('us-search-blobs');
       const grid = document.getElementById('us-grid');
       if (!input || !blobNode || !grid) return;

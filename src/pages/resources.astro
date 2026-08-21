@@ -26,7 +26,7 @@ for (const r of resources) {
 }
 ---
 
-<Base title="Resources" active="resources" pageMark="💎" pageStats={[
+<Base pageFilter title="Resources" active="resources" pageMark="💎" pageStats={[
   { label: 'resources', value: resources.length },
   { label: 'luxuries', value: luxuries },
   { label: 'strategic', value: strategic },
@@ -142,7 +142,7 @@ for (const r of resources) {
   <script type="application/json" id="res-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('res-search-blobs');
       const grid = document.getElementById('res-grid');
       if (!input || !blobNode || !grid) return;

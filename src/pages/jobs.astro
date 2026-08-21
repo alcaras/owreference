@@ -111,7 +111,7 @@ const mxCols = 1 + ratingCols.length + archRows.length;
 const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-${statBySlug[slug].yield}`]));
 ---
 
-<Base title="Jobs" active="jobs" pageMark="💼" pageStats={[
+<Base pageFilter title="Jobs" active="jobs" pageMark="💼" pageStats={[
   { label: 'jobs', value: jobs.length },
   { label: 'council seats', value: grouped['Council']?.length ?? 0 },
   { label: 'archetypes', value: archRows.length },
@@ -375,7 +375,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
   <script type="application/json" id="job-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('job-search-blobs');
       const grid = document.getElementById('jobs-grid');
       if (!input || !blobNode || !grid) return;

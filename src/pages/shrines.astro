@@ -101,7 +101,7 @@ const SHRINE_GLYPH: Record<string, string> = {
 
 ---
 
-<Base
+<Base pageFilter
   title="Shrines"
   active="shrines"
   pageMark="🔱"
@@ -235,7 +235,7 @@ const SHRINE_GLYPH: Record<string, string> = {
   <script is:inline>
     // Filter the type-reference cards by the global search input.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const grid = document.getElementById('shrines-grid');
       if (!input || !grid) return;
       const cards = Array.from(grid.querySelectorAll('.tref'));

@@ -17,7 +17,7 @@ for (const g of laws.groups) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Laws"
   active="laws"
   pageMark="⚖️"
@@ -127,7 +127,7 @@ for (const g of laws.groups) {
   <script is:inline>
     // Highlights matching law cards, dims the rest. Mirrors families.astro.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('law-search-blobs');
       const grid = document.getElementById('laws-grid');
       if (!input || !blobNode || !grid) return;

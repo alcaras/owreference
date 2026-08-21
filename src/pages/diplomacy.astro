@@ -45,7 +45,7 @@ for (const g of actionGroups) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Diplomacy"
   active="diplomacy"
   pageMark="🕊️"
@@ -414,7 +414,7 @@ for (const g of actionGroups) {
   <script is:inline>
     // Dims non-matching action rows on header search. Mirrors laws.astro.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('dip-search-blobs');
       if (!input || !blobNode) return;
       let blobs;

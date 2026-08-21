@@ -64,7 +64,7 @@ for (const n of ordered) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Archetype Tendencies"
   active="archetype-tendencies"
   pageMark="🎓"
@@ -193,7 +193,7 @@ for (const n of ordered) {
     // Combined column-picker + search, mirroring the Nations page
     // (state of the art), keyed by data-nation.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('nation-search-blobs');
       const grid = document.getElementById('tendencies-grid');
       const note = document.getElementById('grid-searchnote');

@@ -59,7 +59,7 @@ const lawTiers = [
 const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filter(Boolean))].sort();
 ---
 
-<Base
+<Base pageFilter
   title="Total Science to Unlock"
   active="science-to-unlock"
   pageMark="🔬"
@@ -217,7 +217,7 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
   <script is:inline>
     // Header search filters rows by tech name or any unit name in the row.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       if (!input) return;
       function apply() {
         const q = (input.value || '').trim().toLowerCase();

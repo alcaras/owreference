@@ -79,7 +79,7 @@ for (const m of catalog) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Missions"
   active="missions"
   pageMark="📜"
@@ -234,7 +234,7 @@ for (const m of catalog) {
     (function () {
       const root = document.getElementById('missions-root');
       const blobNode = document.getElementById('m-search-blobs');
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const showInternal = document.getElementById('show-internal');
       const note = document.getElementById('m-searchnote');
       const costFilter = document.getElementById('m-costfilter');

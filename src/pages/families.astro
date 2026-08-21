@@ -59,7 +59,7 @@ for (const f of families) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Families"
   active="families"
   pageMark="👪"
@@ -253,7 +253,7 @@ for (const f of families) {
     // Combined column-picker + search, mirroring the Nations page
     // (state of the art), keyed by data-family.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('family-search-blobs');
       const grid = document.getElementById('families-grid');
       const note = document.getElementById('grid-searchnote');

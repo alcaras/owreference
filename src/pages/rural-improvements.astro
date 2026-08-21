@@ -51,7 +51,7 @@ for (const it of improvements) {
 }
 ---
 
-<Base title="Rural Improvements" active="rural-improvements" pageMark="⛏️" pageStats={[
+<Base pageFilter title="Rural Improvements" active="rural-improvements" pageMark="⛏️" pageStats={[
   { label: 'improvements', value: improvements.length },
 ]}>
   <div class="grid" id="ri-grid">
@@ -196,7 +196,7 @@ for (const it of improvements) {
   <script type="application/json" id="ri-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('ri-search-blobs');
       const grid = document.getElementById('ri-grid');
       if (!input || !blobNode || !grid) return;

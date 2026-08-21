@@ -82,7 +82,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
 ];
 ---
 
-<Base title="Traits" active="traits" pageMark="🎭" pageStats={[
+<Base pageFilter title="Traits" active="traits" pageMark="🎭" pageStats={[
   { label: 'traits',     value: allTraits.length },
   { label: 'strengths',  value: traitData.strength.length },
   { label: 'weaknesses', value: traitData.weakness.length },
@@ -301,7 +301,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
   <script type="application/json" id="traits-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const grid = document.getElementById('traits-grid');
       const blobNode = document.getElementById('traits-search-blobs');
       const dynBtn = document.getElementById('dyn-toggle');

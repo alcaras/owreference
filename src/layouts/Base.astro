@@ -9,13 +9,20 @@ interface Props {
   title: string;
   active?: string;
   pageStats?: { label: string; value: string | number }[];
+  // Opt in to a per-page row filter. The header box is global search only
+  // (b31cb35 retired the header-driven row filter on purpose), so pages that
+  // want to narrow their own tables get their own input, with a stable
+  // #page-filter id for the page's handler to hook. Pass a string to override
+  // the placeholder.
+  pageFilter?: boolean | string;
   pageMark?: string;
   // Editorial eyebrow line above the page title (small caps, gold).
   eyebrow?: string;
   description?: string;
   ogImage?: string;
 }
-const { title, active, pageStats, pageMark, eyebrow, description, ogImage } = Astro.props;
+const { title, active, pageStats, pageMark, eyebrow, description, ogImage, pageFilter } = Astro.props;
+const filterPlaceholder = typeof pageFilter === 'string' ? pageFilter : 'Filter this page…';
 const base = import.meta.env.BASE_URL;
 
 const SITE_NAME = "Old World Reference";
@@ -277,7 +284,7 @@ const updatedLabel = updatedAt
     </header>
 
     <main class="main">
-      {pageStats && (
+      {(pageStats || pageFilter) && (
         <div class="page-meta">
           <div>
             {eyebrow && <div class="page-eyebrow">{eyebrow}</div>}
@@ -286,10 +293,21 @@ const updatedLabel = updatedAt
               {title}
             </h1>
           </div>
-          <div class="page-stats">
-            {pageStats.map(s => (
-              <span class="stat"><b>{s.value}</b> {s.label}</span>
-            ))}
+          <div class="page-meta__right">
+            {pageFilter && (
+              <label class="page-filter">
+                <span class="page-filter__ico" aria-hidden="true">⌕</span>
+                <input id="page-filter" type="search" autocomplete="off" spellcheck="false"
+                  placeholder={filterPlaceholder} aria-label={filterPlaceholder} />
+              </label>
+            )}
+            {pageStats && (
+              <div class="page-stats">
+                {pageStats.map(s => (
+                  <span class="stat"><b>{s.value}</b> {s.label}</span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

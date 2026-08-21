@@ -73,7 +73,7 @@ const searchBlobs: Record<string, string> = {};
 for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase();
 ---
 
-<Base
+<Base pageFilter
   title="Archetypes"
   active="archetypes"
   description="The ten character archetypes of Old World — each one's rating contribution (Wisdom/Charisma/Courage/Discipline), favored law, polar opposite (a strong -60 opinion modifier), and the bonuses that fire as leader, general, or governor."
@@ -282,7 +282,7 @@ for (const a of archetypes) searchBlobs[a.slug] = JSON.stringify(a).toLowerCase(
     // Combined column-picker + search, mirroring the Nations page
     // (state of the art), keyed by data-archetype.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('arc-search-blobs');
       const grid = document.getElementById('arc-grid');
       const note = document.getElementById('grid-searchnote');

@@ -140,7 +140,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
 }
 ---
 
-<Base title="Urban Improvements" active="urban-improvements" pageMark="🏡" pageStats={[
+<Base pageFilter title="Urban Improvements" active="urban-improvements" pageMark="🏡" pageStats={[
   { label: 'improvements', value: buildings.length },
   { label: 'classes',      value: classCount },
   { label: 'lines',        value: chains.length },
@@ -397,7 +397,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
   <script type="application/json" id="ub-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('ub-search-blobs');
       const grid = document.getElementById('ub-grid');
       if (!input || !blobNode || !grid) return;

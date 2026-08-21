@@ -31,7 +31,7 @@ for (const s of seats) searchBlobs[`seat-${s.slug}`] = JSON.stringify(s).toLower
 for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c).toLowerCase();
 ---
 
-<Base title="Council & Courtiers" active="council" pageMark="🏛️" pageStats={[
+<Base pageFilter title="Council & Courtiers" active="council" pageMark="🏛️" pageStats={[
   { label: 'council seats', value: seats.length },
   { label: 'courtier types', value: courtiers.length },
 ]}>
@@ -291,7 +291,7 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
   <script type="application/json" id="council-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('council-search-blobs');
       const grid = document.getElementById('council-grid');
       const note = document.getElementById('grid-searchnote');

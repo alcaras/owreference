@@ -29,7 +29,7 @@ const letters = [...groups.keys()].sort();
 const dlcCount = concepts.filter(c => c.dlc).length;
 ---
 
-<Base
+<Base pageFilter
   title="Concepts"
   active="concepts"
   pageMark="📖"
@@ -98,7 +98,7 @@ const dlcCount = concepts.filter(c => c.dlc).length;
     // the site header search alike (mirrors laws.astro's pattern).
     (function () {
       const local = document.getElementById('concept-filter');
-      const site = document.getElementById('site-search');
+      const site = document.getElementById('page-filter');
       const root = document.getElementById('glossary');
       const empty = document.getElementById('glossary-empty');
       if (!root) return;

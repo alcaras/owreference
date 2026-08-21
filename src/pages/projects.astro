@@ -31,7 +31,7 @@ const PREREQ_KIND_TITLE: Record<string, string> = {
 };
 ---
 
-<Base
+<Base pageFilter
   title="Projects"
   active="projects"
   pageMark="🏗️"
@@ -160,7 +160,7 @@ const PREREQ_KIND_TITLE: Record<string, string> = {
     // Availability filter chips + header search, composed. Mirrors the
     // wonders page's filter wiring, with one single-choice facet.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('project-search-blobs');
       const grid = document.getElementById('projects-grid');
       const note = document.getElementById('grid-searchnote');

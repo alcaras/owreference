@@ -27,7 +27,7 @@ for (const t of traits) searchBlobs[t.slug] = JSON.stringify(t).toLowerCase();
 for (const r of inheritance) searchBlobs[`inh-${r.parent.slug}`] = JSON.stringify(r).toLowerCase();
 ---
 
-<Base title="Trait Inheritance" active="trait-inheritance" pageMark="🧬" pageStats={[
+<Base pageFilter title="Trait Inheritance" active="trait-inheritance" pageMark="🧬" pageStats={[
   { label: 'inheritance events', value: inheritance.length },
   { label: 'personality traits', value: traits.length },
   { label: 'strengths', value: strengths.length },
@@ -233,7 +233,7 @@ for (const r of inheritance) searchBlobs[`inh-${r.parent.slug}`] = JSON.stringif
   <script type="application/json" id="trait-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('trait-search-blobs');
       if (!input || !blobNode) return;
       let blobs;

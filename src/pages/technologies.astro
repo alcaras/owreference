@@ -28,7 +28,7 @@ for (const t of technologies) {
 }
 ---
 
-<Base
+<Base pageFilter
   title="Technologies"
   active="techs"
   pageMark="🔮"
@@ -106,7 +106,7 @@ for (const t of technologies) {
   <script is:inline>
     // Search-filter the tech cards: hide any card whose JSON blob doesn't match.
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const grid = document.getElementById('tech-grid');
       const blobNode = document.getElementById('tech-search-blobs');
       if (!input || !grid || !blobNode) return;

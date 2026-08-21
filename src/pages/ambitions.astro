@@ -76,7 +76,7 @@ const GROUP_GLYPH: Record<string, string> = {
 };
 ---
 
-<Base title="Ambitions" active="ambitions" pageMark="🏆" pageStats={[
+<Base pageFilter title="Ambitions" active="ambitions" pageMark="🏆" pageStats={[
   { label: 'ambitions', value: meta.ambitionGoals },
   { label: 'national', value: meta.nationalAmbitions },
   { label: 'event goals', value: meta.eventGoals },
@@ -262,12 +262,10 @@ const GROUP_GLYPH: Record<string, string> = {
   <script type="application/json" id="amb-csv" set:html={JSON.stringify({ header: CSV_HEADER, rows: csvRows })}></script>
   <script is:inline>
     (function () {
-      // The header input is #global-search; #site-search is the pre-rename id
-      // still referenced by ~33 pages, which is why their filters do nothing.
-      // Tolerate its absence rather than returning early — the family facet
-      // and the CSV export must work with or without a search box.
-      const input = document.getElementById('global-search')
-        || document.getElementById('site-search');
+      // #page-filter is the page's own box (Base pageFilter). Tolerate its
+      // absence rather than returning early — the family facet and the CSV
+      // export must work with or without a search box.
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('amb-search-blobs');
       const famNode = document.getElementById('amb-families');
       const csvNode = document.getElementById('amb-csv');

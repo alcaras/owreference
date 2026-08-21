@@ -33,7 +33,7 @@ const searchBlobs: Record<string, string> = {};
 for (const c of cognomens) searchBlobs[c.slug] = JSON.stringify(c).toLowerCase();
 ---
 
-<Base title="Cognomens" active="cognomens" pageMark="👑" pageStats={[
+<Base pageFilter title="Cognomens" active="cognomens" pageMark="👑" pageStats={[
   { label: 'cognomens', value: cognomens.length },
   { label: 'tracks', value: tracks.length },
 ]}>
@@ -124,7 +124,7 @@ for (const c of cognomens) searchBlobs[c.slug] = JSON.stringify(c).toLowerCase()
   <script type="application/json" id="cog-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
   <script is:inline>
     (function () {
-      const input = document.getElementById('site-search');
+      const input = document.getElementById('page-filter');
       const blobNode = document.getElementById('cog-search-blobs');
       const grid = document.getElementById('cog-tracks');
       if (!input || !blobNode || !grid) return;

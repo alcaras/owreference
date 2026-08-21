@@ -374,7 +374,25 @@ h1, h2, h3 {
   display: inline-flex; align-items: baseline; gap: 0.5rem;
 }
 .page-title__mark { display: none; }
+.page-meta__right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
 .page-stats { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end; }
+
+/* Per-page row filter. Deliberately NOT the header box — that is global
+   navigation search; this narrows the rows of the page you are on. */
+.page-filter {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: var(--bg-elev); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.25rem 0.55rem;
+  min-width: min(20rem, 60vw);
+}
+.page-filter:focus-within { border-color: var(--gold-deep); }
+.page-filter__ico { color: var(--text-faint); font-size: 0.95rem; line-height: 1; }
+.page-filter input {
+  flex: 1; background: none; border: 0; outline: none;
+  color: var(--text); font: inherit; font-size: 0.82rem; padding: 0.12rem 0;
+  min-width: 0;
+}
+.page-filter input::placeholder { color: var(--text-faint); }
 .stat {
   font-size: 0.72rem; color: var(--text-soft);
   background: var(--bg-elev);
@@ -907,4 +925,6 @@ a.shrine__head:hover .shrine__type { text-decoration: underline; text-underline-
   .page-title { font-size: 1.35rem; }
   .main { padding-left: 0.75rem; padding-right: 0.75rem; }
   .page-meta { flex-direction: column; align-items: flex-start; }
+  .page-meta__right { align-items: flex-start; width: 100%; }
+  .page-filter { width: 100%; min-width: 0; }
 }
