@@ -1,5 +1,6 @@
 ---
 import EventGroupPage from '../components/EventGroupPage.astro';
+import ExpeditionMechanics from '../components/ExpeditionMechanics.astro';
 const base = import.meta.env.BASE_URL;
 ---
 <EventGroupPage sectionKey="expeditions" title="Expedition Events" active="expedition-events" pageMark="🧭">
@@ -9,4 +10,5 @@ const base = import.meta.env.BASE_URL;
   <a href={`${base}ruin-events`}>Ruin Events</a> and the mission events on
   <a href={`${base}rally`}>Rally Troops</a> / <a href={`${base}hold-court`}>Hold Court</a> /
   <a href={`${base}steal-research`}>Steal Research</a>.
+  <ExpeditionMechanics slot="mechanics" />
 </EventGroupPage>

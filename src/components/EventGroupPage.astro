@@ -71,6 +71,8 @@ const followups = sec.events.filter(e => e.isFollowup).length;
 ]}>
   <p class="lede"><slot /></p>
 
+  <slot name="mechanics" />
+
   <ScaleHelp />
 
   <div class="evt-filter">

@@ -1,0 +1,144 @@
+---
+// "How expedition events fire" — the header explainer on /expedition-events.
+// Numbers come from src/data/events.json (section `expeditions`.mechanics,
+// built by scripts/build_events.py straight off eventClass.xml / eventLevel.xml
+// and the stories themselves), so a patch that retunes the class shows up in
+// the changelog instead of going stale here. The turn ordering described is
+// from PlayerEvent.cs / Character.cs — see the source note at the bottom.
+import Term from './Term.astro';
+import sections from '../data/events.json';
+
+const mech = (sections.find(s => s.key === 'expeditions') as any).mechanics;
+const returns = mech.returns as { id: string; name: string; prob: number; travellers: number; gates: string[] }[];
+const solo = returns.filter(r => r.travellers <= 1);
+const pair = returns.filter(r => r.travellers > 1);
+// What a one-traveller variant demands on top of what the two-traveller one does —
+// i.e. the price of being the only person abroad.
+const pairGates = new Set(pair.flatMap(r => r.gates));
+const soloExtra = [...new Set(solo.flatMap(r => r.gates).filter(g => !pairGates.has(g)))];
+---
+
+<details class="mech" open>
+  <summary>How expedition events fire <span class="mech__tag">1 roll / turn</span></summary>
+  <div class="mech__body">
+    <p>Expeditions are the <code>{mech.class}</code> event class. The game rolls it
+    <b>once per player per turn</b> — <b>not</b> once per travelling character. The chance is the class's
+    <code>iLevelProb {mech.levelProb}</code> scaled by the game's event-level setting:</p>
+
+    <ul class="mech__levels">
+      {mech.levels.map((l: any) => (
+        <li><span class="mech__lvl">{l.label}</span><span class="mech__pct">{l.chance}%</span></li>
+      ))}
+    </ul>
+
+    <p>Whatever the roll, <b>at least {mech.minRepeat} turns must pass between any two Exploring-class
+    events</b> (<code>iMinRepeat {mech.minRepeat}</code>), and a turn stops handing out events once you hit its
+    decision cap ({mech.levels.map((l: any) => l.maxDecisions).filter((v: number, i: number, a: number[]) => a.indexOf(v) === i).join(' / ')} decisions).</p>
+
+    <h3 class="mech__h">Does having more travellers help?</h3>
+    <p>It does not add rolls. What the number of characters with <b>Travelling Afar</b> changes:</p>
+    <ul>
+      <li><b>You need at least one.</b> {mech.pool.needTraveller} of the {mech.pool.stories} stories in the
+      per-turn pool require the starring character to be travelling — with nobody abroad the roll finds
+      nothing eligible and is simply wasted.</li>
+      <li><b>The star is picked uniformly at random</b> among eligible travellers, so with three abroad each
+      has a ~⅓ chance of being the one in the story.</li>
+      <li><b>A varied roster widens the pool slightly</b> — individual stories add gates on top of travelling
+      (adult or teenager, at most two strengths, religious-but-unconverted, a specific character), and only
+      travellers who pass them count.</li>
+    </ul>
+
+    <h3 class="mech__h">Coming home — and why it can cost you events</h3>
+    <p>The return stories are the exception: they are rolled <b>per character, every turn</b>
+    (<code>EVENTTRIGGER_NEW_TURN_CHARACTER</code>), so they <em>do</em> scale with how many people you have abroad.</p>
+    <ul class="mech__returns">
+      {returns.map(r => (
+        <li>
+          <a href={`#${r.id}`}>{r.name}</a>
+          <span class="mech__pct">{r.prob}%/turn</span>
+          <span class="mech__need">needs {r.travellers} traveller{r.travellers === 1 ? '' : 's'}</span>
+          {r.gates.map(g => <span class="mech__gate">{g}</span>)}
+        </li>
+      ))}
+    </ul>
+    {pair.length > 0 && (
+      <p>Note the subject count: <b>{pair[0].name}</b> fills {pair[0].travellers} subject slots that both
+      require Travelling Afar, so it can only fire while <b>two</b> characters are abroad at once.
+      {solo.length > 0 && (
+        <>{' '}The one-traveller variant additionally requires the character to be
+        {' '}<b>{soloExtra.join(' + ')}</b> ({solo.map(r => `${r.prob}%`).join(' / ')}), so a single
+        {' '}younger traveller has no way home from this class at all — they stay abroad until some other
+        {' '}event recalls them.</>
+      )}</p>
+    )}
+    <p>Because character turns resolve <b>before</b> the player's event roll, and because every fired story
+    stamps the class cooldown, a return event consumes that turn's expedition slot and blocks the class for
+    the next {mech.minRepeat} turns. A crowd of travellers therefore generates more return prompts and, with
+    them, fewer of the stories below.</p>
+
+    <h3 class="mech__h">Why it feels like a rotation</h3>
+    <p>{mech.pool.onceOnly} of the {mech.pool.stories} pool stories are <code>iRepeatTurns -1</code> — fired once,
+    then removed from the pool permanently for that game
+    {mech.pool.repeatable > 0 && <> (only {mech.pool.repeatable} repeats)</>}. The pool drains as the game goes on.
+    A further {mech.followups} stories are follow-ups that fire only once an earlier choice sets their event link.</p>
+
+    {mech.lawGates.map((g: any) => (
+      <p>The <Term id={g.id} /> law is an <b>option</b> gate, not an event gate:
+      {` ${g.options} option${g.options === 1 ? '' : 's'} across ${g.stories} ${g.stories === 1 ? 'story' : 'stories'} `}
+      require you to have already adopted it — and those are the options that set the event link into the
+      follow-up.</p>
+    ))}
+
+    <p class="mech__src">Source: <code>eventClass.xml</code> (<code>iLevelProb</code>, <code>iMinRepeat</code>),
+    <code>eventLevel.xml</code> (<code>iPercent</code>, <code>iMaxEventDecisions</code>),
+    <code>eventStory.xml</code> (subjects, <code>iProb</code>, <code>iRepeatTurns</code>);
+    ordering and subject selection from <code>PlayerEvent.cs</code>
+    (<code>doEventTriggers</code>, <code>isValidEventClass</code>, <code>findBestSubjectsLink</code>) and
+    <code>Character.cs</code> (<code>doTurn</code>).</p>
+  </div>
+</details>
+
+<style>
+  .mech {
+    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+    background: var(--bg-elev); margin: 0 0 1.2rem; max-width: 80ch; overflow: hidden;
+  }
+  .mech > summary {
+    cursor: pointer; padding: 0.5rem 0.8rem; font-family: var(--font-display); font-size: 0.86rem;
+    color: var(--text); list-style: none; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .mech > summary::-webkit-details-marker { display: none; }
+  .mech > summary::before { content: '▸'; color: var(--text-faint); font-size: 0.8rem; }
+  .mech[open] > summary::before { content: '▾'; }
+  .mech__tag {
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, var(--bg-elev));
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 5px; padding: 0.04rem 0.4rem;
+  }
+  .mech__body { padding: 0 0.9rem 0.7rem; color: var(--text-dim); font-size: 0.83rem; line-height: 1.55; }
+  .mech__body p { margin: 0 0 0.55rem; }
+  .mech__body ul { margin: 0 0 0.6rem; padding-left: 1.1rem; }
+  .mech__body li { margin: 0 0 0.25rem; }
+  .mech__body b { color: var(--text); }
+  .mech__body code { font-family: var(--font-mono); font-size: 0.82em; color: var(--text-faint); }
+  .mech__h {
+    font-family: var(--font-display); font-size: 0.84rem; color: var(--text);
+    margin: 0.9rem 0 0.4rem; font-weight: 600;
+  }
+  .mech__levels, .mech__returns { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .mech__levels li, .mech__returns li {
+    display: flex; align-items: center; gap: 0.4rem; margin: 0;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--bg); padding: 0.15rem 0.5rem;
+  }
+  .mech__returns li { flex-wrap: wrap; }
+  .mech__returns a { color: var(--accent); text-decoration: none; }
+  .mech__returns a:hover { text-decoration: underline; }
+  .mech__lvl { color: var(--text); }
+  .mech__pct { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); }
+  .mech__need, .mech__gate {
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint);
+    border-left: 1px solid var(--border); padding-left: 0.4rem;
+  }
+  .mech__src { font-size: 0.76rem; color: var(--text-faint); margin-top: 0.8rem; }
+</style>

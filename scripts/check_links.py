@@ -24,6 +24,9 @@ BASE = "/owreference/"
 ATTR_RE = re.compile(r'\b(?:href|src)="([^"#]*)(?:#[^"]*)?"')
 UNKNOWN_RE = re.compile(r'term--unknown[^>]*>([^<]*)<')
 SCRIPT_RE = re.compile(r"<script\b[^>]*>.*?</script>", re.S | re.I)
+# Inlined CSS carries the .term--unknown rule itself; scanning it would
+# match the stylesheet instead of markup (false positive).
+STYLE_RE = re.compile(r"<style\b[^>]*>.*?</style>", re.S | re.I)
 
 
 def resolves(target: str, page_dir: Path) -> bool:
@@ -54,6 +57,7 @@ def main() -> int:
     for page in pages:
         html = page.read_text(errors="replace")
         html = SCRIPT_RE.sub("", html)  # JS string literals aren't links
+        html = STYLE_RE.sub("", html)   # nor are CSS selectors
         rel_page = str(page.relative_to(DIST))
         for m in ATTR_RE.finditer(html):
             url = m.group(1).strip()

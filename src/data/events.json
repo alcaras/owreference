@@ -15582,6 +15582,80 @@
     ],
     "key": "expeditions",
     "label": "Expeditions",
+    "mechanics": {
+      "class": "EVENTCLASS_EXPLORING",
+      "followups": 6,
+      "lawGates": [
+        {
+          "id": "LAW_EXPLORATION",
+          "name": "Exploration",
+          "options": 5,
+          "stories": 5
+        }
+      ],
+      "levelProb": 40,
+      "levels": [
+        {
+          "chance": 0,
+          "id": "EVENTLEVEL_MINIMAL",
+          "label": "Minimal",
+          "maxDecisions": 5,
+          "percent": 0
+        },
+        {
+          "chance": 20,
+          "id": "EVENTLEVEL_LOW",
+          "label": "Low",
+          "maxDecisions": 5,
+          "percent": 50
+        },
+        {
+          "chance": 30,
+          "id": "EVENTLEVEL_MODERATE",
+          "label": "Moderate",
+          "maxDecisions": 5,
+          "percent": 75
+        },
+        {
+          "chance": 40,
+          "id": "EVENTLEVEL_HIGH",
+          "label": "High",
+          "maxDecisions": 10,
+          "percent": 100
+        }
+      ],
+      "minRepeat": 2,
+      "minTurns": 0,
+      "pool": {
+        "needTraveller": 17,
+        "onceOnly": 17,
+        "repeatable": 1,
+        "stories": 18
+      },
+      "returns": [
+        {
+          "gates": [
+            "Adult",
+            "Not Started Explore Recently"
+          ],
+          "id": "EVENTSTORY_EXPLORING_ENDS",
+          "name": "Exploration Ends?",
+          "prob": 25,
+          "travellers": 2
+        },
+        {
+          "gates": [
+            "Adult",
+            "Old",
+            "Not Started Explore Recently"
+          ],
+          "id": "EVENTSTORY_EXPLORING_ENDS_OLD",
+          "name": "Exploration Ends?",
+          "prob": 10,
+          "travellers": 1
+        }
+      ]
+    },
     "totalWeight": 71
   },
   {

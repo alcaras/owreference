@@ -260,6 +260,134 @@ def build_event(s: ET.Element, group_weight: int, eopt_idx: dict,
     }
 
 
+# ── Expedition trigger mechanics ──────────────────────────────────────────
+# How the EXPLORING class actually fires, rendered in the page header. Every
+# number comes from XML so a patch that retunes the class trips the changelog
+# instead of rotting inside hand-written page prose. The ordering the page
+# describes is from the source: Character.doTurn() (which rolls the per-
+# character stories) runs BEFORE Player.doEventTriggers() (which rolls the
+# class's iLevelProb), and every fired story stamps its class cooldown via
+# setEventClassTurn — so a return event can eat the turn's expedition slot.
+EXPLORING_CLASS = "EVENTCLASS_EXPLORING"
+
+
+def expedition_mechanics(stories: list[ET.Element], eopt_idx: dict, name_of) -> dict:
+    info_text = m.load_text("text-infos.xml", "text-law.xml")
+    law_idx = m.index("law.xml")
+    subj_idx = m.index("subject.xml")
+
+    def ival(e: ET.Element | None, tag: str) -> int:
+        v = ((e.findtext(tag) if e is not None else "") or "").strip()
+        return int(v) if v.lstrip("-").isdigit() else 0
+
+    cls = m.index("eventClass.xml").get(EXPLORING_CLASS)
+    level_prob = ival(cls, "iLevelProb")
+
+    # One iLevelProb roll per player per turn, scaled by the game's event-level
+    # setting (eventLevel.xml iPercent). "None" switches events off entirely.
+    levels = []
+    for e in m.parse("eventLevel.xml").findall("Entry"):
+        z = e.findtext("zType")
+        if not z or (e.findtext("bNoEvents") or "").strip() == "1":
+            continue
+        pct = ival(e, "iPercent")
+        levels.append({
+            "id": z,
+            "label": m.clean_text(info_text.get(e.findtext("Name") or "",
+                                                m._tok(z, "EVENTLEVEL_"))),
+            "percent": pct,
+            "chance": (level_prob * pct) // 100,
+            "maxDecisions": ival(e, "iMaxEventDecisions"),
+        })
+
+    def explorer_slots(s: ET.Element) -> set[str]:
+        """Subject slots that must be a character who is currently Travelling."""
+        return {p.findtext("First") or "" for p in s.findall("SubjectExtras/Pair")
+                if p.findtext("Second") == "SUBJECT_EXPLORING"}
+
+    def slot_gates(s: ET.Element, slot: str) -> list[str]:
+        """Everything else that slot's character must (not) be."""
+        out = [m.subject_label(p.findtext("Second") or "")
+               for p in s.findall("SubjectExtras/Pair")
+               if (p.findtext("First") or "") == slot
+               and p.findtext("Second") != "SUBJECT_EXPLORING"]
+        out += ["Not " + m.subject_label(p.findtext("Second") or "")
+                for p in s.findall("SubjectNotExtras/Pair")
+                if (p.findtext("First") or "") == slot]
+        return out
+
+    # Three sub-pools: the per-character rolls (EVENTTRIGGER_NEW_TURN_CHARACTER
+    # — the "come home?" stories), the event-link follow-ups (which wait on an
+    # earlier choice, matching the page's follow-up count) and everything else,
+    # which is what the class's once-per-turn level roll draws from.
+    pool = {"stories": 0, "needTraveller": 0, "onceOnly": 0, "repeatable": 0}
+    followups = 0
+    returns: list[dict] = []
+    for s in stories:
+        trig = (s.findtext("Trigger") or "").strip()
+        link = (s.findtext("EventLinkPrereq") or "").strip()
+        if trig == "EVENTTRIGGER_NEW_TURN_CHARACTER":
+            slot = (s.findtext("iTriggerSubject") or "0").strip()
+            returns.append({
+                "id": s.findtext("zType") or "",
+                "name": name_of(s),
+                "prob": ival(s, "iProb"),
+                "travellers": len(explorer_slots(s)),
+                "gates": slot_gates(s, slot),
+            })
+            continue
+        if link and link != "NONE":
+            followups += 1
+            continue
+        pool["stories"] += 1
+        if explorer_slots(s):
+            pool["needTraveller"] += 1
+        if ival(s, "iRepeatTurns") == -1:
+            pool["onceOnly"] += 1
+        else:
+            pool["repeatable"] += 1
+    returns.sort(key=lambda r: (-r["prob"], r["name"]))
+
+    # Options gated on a law the player must already have (PlayerSubject →
+    # subject.xml LawPrereq) — on this page that is Exploration, on the options
+    # that set the event link into the follow-up.
+    def player_subject_law(ps: str | None) -> str | None:
+        sub = subj_idx.get(ps or "")
+        law = sub.findtext("LawPrereq") if sub is not None else None
+        return law if law and law != "NONE" else None
+
+    law_stories: dict[str, set[str]] = {}
+    law_options: dict[str, int] = {}
+    for s in stories:
+        subjects = [eopt_idx.get(oz.text or "") for oz in s.findall("aeOptions/zValue")]
+        subjects = [o.findtext("PlayerSubject") for o in subjects if o is not None]
+        subjects += [o.findtext("PlayerSubject") for o in s.findall("EventOptions/EventOption")]
+        for law in filter(None, (player_subject_law(ps) for ps in subjects)):
+            law_stories.setdefault(law, set()).add(s.findtext("zType") or "")
+            law_options[law] = law_options.get(law, 0) + 1
+
+    def law_label(law: str) -> str:
+        e = law_idx.get(law)
+        return m.clean_text(info_text.get((e.findtext("Name") if e is not None else "") or "",
+                                          m._tok(law, "LAW_")))
+
+    law_gates = [{"id": law, "name": law_label(law),
+                  "options": law_options[law], "stories": len(law_stories[law])}
+                 for law in sorted(law_stories)]
+
+    return {
+        "class": EXPLORING_CLASS,
+        "levelProb": level_prob,
+        "minRepeat": ival(cls, "iMinRepeat"),
+        "minTurns": ival(cls, "iMinTurns"),
+        "levels": levels,
+        "pool": pool,
+        "followups": followups,
+        "returns": returns,
+        "lawGates": law_gates,
+    }
+
+
 def main() -> int:
     text = m.load_text(*TEXT_FILES)
     story_idx = m.index_many(*STORY_FILES)
@@ -324,12 +452,16 @@ def main() -> int:
         if lp and lp != "NONE":
             prereq_targets.setdefault(lp, []).append({"id": s.findtext("zType") or "", "name": story_name(s)})
 
-    def group(stories: list[ET.Element], key: str, label: str, blurb: str) -> dict:
+    def group(stories: list[ET.Element], key: str, label: str, blurb: str,
+              mechanics: dict | None = None) -> dict:
         total = sum(int(s.findtext("iWeight") or "0") for s in stories) or 1
         events = [build_event(s, total, eopt_idx, bonus_idx, text) for s in stories]
         events.sort(key=lambda e: (e["isFollowup"], -e["weight"], e["name"]))
-        return {"key": key, "label": label, "blurb": blurb,
-                "totalWeight": total, "events": events}
+        out = {"key": key, "label": label, "blurb": blurb,
+               "totalWeight": total, "events": events}
+        if mechanics:
+            out["mechanics"] = mechanics
+        return out
 
     # Wonder decision events: the choose-one pop-ups that can fire when a
     # wonder completes. Weighted-pool shares are meaningless here (each wonder's
@@ -563,7 +695,8 @@ def main() -> int:
         group(expeditions, "expeditions", "Expeditions",
               "The scripted “send a character off to explore distant lands” chains. "
               "Some entries are follow-ups that only fire after an earlier expedition "
-              "via an event link."),
+              "via an event link.",
+              mechanics=expedition_mechanics(expeditions, eopt_idx, story_name)),
         {"key": "wonders", "label": "Wonders", "totalWeight": 0,
          "blurb": "Decision events that can fire when a wonder is completed.",
          "events": wonder_events},
