@@ -235,20 +235,52 @@ def build() -> dict:
         "STELE":       ["Stele", "Steles"],
     }
     PUBLIC_IMPROVEMENTS = ROOT / "public" / "img" / "icons" / "improvements"
+    # These keys are ICON names, not XML ids, so the page an improvement links
+    # to has to be resolved against the pages that actually render it. Three
+    # tables document improvements and they use different row slugs (the urban
+    # table keys rows by upgrade tier — Citadel is garrison_3), so match on the
+    # displayed name and take the row's own slug as the deep-link anchor. The
+    # Makefile builds all three before this script runs.
+    IMPROVEMENT_PAGES = (
+        ("rural_improvements.json", "rural-improvements", None),
+        ("urban_improvements.json", "urban-improvements", None),
+        ("world_religion_buildings.json", "world-religion-buildings", "rows"),
+    )
+    # Improvements no table covers — named where the site does document them.
+    IMPROVEMENT_ELSEWHERE = {
+        "STELE": ("nations/aksum", "stele"),   # Aksum's unique, on its nation page
+    }
+    improvement_target: dict[str, tuple[str, str]] = {}
+    for filename, page, rows_key in IMPROVEMENT_PAGES:
+        path = ROOT / "src" / "data" / filename
+        if not path.exists():
+            continue
+        data = json.loads(path.read_text())
+        for row in (data[rows_key] if rows_key else data):
+            row_name = row.get("name") or row.get("label") or ""
+            row_slug = row.get("slug") or ""
+            if row_name and row_slug:
+                improvement_target.setdefault(re.sub(r"[^a-z]", "", row_name.lower()),
+                                              (page, row_slug))
     for key, aliases in IMPROVEMENT_ALIASES.items():
         filename = key.lower() + ".png"
         if not (PUBLIC_IMPROVEMENTS / filename).exists():
             continue  # icon wasn't extracted, skip
         # Use the first alias as the canonical display name
         name = aliases[0]
-        slug = key.lower().replace("_", "-")
+        target = IMPROVEMENT_ELSEWHERE.get(key) or improvement_target.get(
+            re.sub(r"[^a-z]", "", name.lower()))
+        if target is None:
+            print(f"  ! improvement {name} is on no improvement page — linking it "
+                  f"would dead-end, so it stays plain text")
+        page, slug = target or ("", key.lower().replace("_", "-"))
         entities.append({
             "id": f"IMPROVEMENT_{key}",
             "slug": slug,
             "type": "improvement",
             "name": name,
             "aliases": aliases,
-            "page": "urban-improvements",   # most improvements live here; LM/Farm/etc. would route to rural-improvements
+            "page": page,
             "icon": f"img/icons/improvements/{filename}",
         })
 

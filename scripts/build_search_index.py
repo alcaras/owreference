@@ -51,7 +51,11 @@ def main() -> int:
         page = e.get("page") or ""
         if not name or not page:
             continue
-        entry = {"n": name, "t": TYPE_LABEL.get(e["type"], e["type"].title()), "u": page}
+        # Deep-link the same way Term.astro does — the entity's slug is the
+        # anchor on its page, except where the page IS its detail route.
+        slug = e.get("slug") or ""
+        url = page if (not slug or page.endswith("/" + slug)) else f"{page}#{slug}"
+        entry = {"n": name, "t": TYPE_LABEL.get(e["type"], e["type"].title()), "u": url}
         aliases = " ".join(sorted({clean(a).lower() for a in e.get("aliases") or []
                                    if clean(a) and clean(a).lower() != name.lower()}))
         if aliases:

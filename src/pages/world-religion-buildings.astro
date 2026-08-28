@@ -76,7 +76,7 @@ function cellYield(cell: any): string {
         </thead>
         <tbody>
           {rows.map(row => (
-            <tr>
+            <tr id={row.slug}>
               <th class="rowlabel" scope="row">
                 {row.label}
                 {(row as any).buildTurns > 0 && (
