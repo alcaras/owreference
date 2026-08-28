@@ -38,6 +38,7 @@ data:
 	@python3 scripts/build_world_religion_buildings.py
 	@python3 scripts/build_shrines.py
 	@python3 scripts/build_technologies.py
+	@python3 scripts/build_discoveries.py
 	@python3 scripts/build_promotions.py
 	@python3 scripts/build_unit_damage.py
 	@python3 scripts/build_abilities.py

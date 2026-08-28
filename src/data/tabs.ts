@@ -278,6 +278,12 @@ export const TABS: Tab[] = [
     willContain: ['Each tech: era, cost, prerequisites, unlocks'],
   },
   {
+    slug: 'discoveries', icon: '🎴', label: 'Discoveries', section: 'Techs',
+    status: 'built', sourceSheet: '',
+    summary: 'Bonus cards drawn on finishing a tech',
+    willContain: ['Each discovery: what it grants, cost, offering tech, nation/culture gate'],
+  },
+  {
     slug: 'science-to-unlock', icon: '🔬', label: 'Total Science to Unlock', section: 'Techs',
     status: 'built', sourceSheet: '',
     summary: 'Cumulative research to field each unit',

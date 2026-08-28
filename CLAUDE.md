@@ -326,6 +326,19 @@ is the fastest regression check (see git history of commit `5c37ecd`).
 - **Don't hardcode lists of nations or family classes** — they come from XML. The DLC may add more (e.g., Maurya, Tamil, Yuezhi are DLC).
 - **Don't add yield aliases for mechanic words** ("Pillage", "Ranged", "Mercs") — those are unit/combat mechanics, not yields. They were tried and produced wrong colors. See `YIELD_ALIASES` in `build_entities.py`.
 - **Don't override the cell color via row defaults** unless the row is truly about that yield (e.g., a "Cost" row in iron). Honest "misc" slate is better than wrong color.
+- **Never re-derive an entity's slug from its XML id.** `build_entities.py`
+  resolves `page` + `slug` from the generated page datasets (`homes`): the anchor
+  a page renders is *its dataset's* slug, which is usually underscored
+  (`coin_debasement`, `african_elephant`, `garrison_3` for Citadel) and often on
+  a page you wouldn't guess (uniques are on `/unique-units`, tribal units on
+  `/tribes`, cathedrals on `/world-religion-buildings`, named royal families on
+  `/families/<class>`). Hyphenating the id instead is how ~200 entities ended up
+  linking to page-top or to a page that never rendered them. If a new entity type
+  has no matching dataset row, give it a real home or leave `page` empty (Term
+  renders it as plain text) — never point it at a page that doesn't list it.
+- **Every entity's anchor must exist in `dist/`.** The audit is a one-liner: for
+  each entity, `id="<slug>"` in `dist/<page>/index.html`. Adding rows to a page
+  means giving each row that `id`.
 - **Don't write new CSS classes when existing ones work.** Reuse `.cell`, `.rowlabel`, `.nhdr`, `.shrine__*`, `.fam__*`, `.effect`, `.chip` first.
 
 ---

@@ -224,7 +224,9 @@ const familyBoostRows = (g: any) =>
         <h2 class="np-sec__title">Unique Improvements &amp; Projects</h2>
         <div class="kit-grid">
           {uniqueProjects.map((g: any) => (
-            <article class="kit yield-money">
+            /* id: this card is where the nation's unique project/improvement is
+               documented, so it carries the anchor Term + search link to. */
+            <article class="kit yield-money" id={g.slug || undefined}>
               <header class="kit__head">
                 <img class="kit__icon" src={`${base}${g.icon}`} alt="" onerror="this.style.display='none'" />
                 <span class="kit__name">{g.name}</span>
@@ -250,7 +252,7 @@ const familyBoostRows = (g: any) =>
             </article>
           ))}
           {uniqueImprovements.map((g: any) => (
-            <article class={`kit yield-civics ${g.eventGranted ? 'kit--event' : ''}`}>
+            <article class={`kit yield-civics ${g.eventGranted ? 'kit--event' : ''}`} id={g.slug || undefined}>
               <header class="kit__head">
                 <img class="kit__icon" src={`${base}${g.icon}`} alt="" onerror="this.style.display='none'" />
                 <span class="kit__name">{g.name}</span>

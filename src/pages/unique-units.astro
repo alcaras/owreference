@@ -240,7 +240,11 @@ const FACETS: Facet[] = [
                     <div class="uname__text">
                       <span class="uname__name">
                         {chain.map((u: any, i: number) => (
-                          <span class="uname__line">{u.name}{i < chain.length - 1 ? ' →' : ''}</span>
+                          /* Each tier gets its own anchor — the row id is the base
+                             unit's slug, so the elite tier would otherwise have no
+                             link target for Term / site search. */
+                          <span class="uname__line" id={u.slug === l.key ? undefined : u.slug}
+                                data-entity-id={u.id}>{u.name}{i < chain.length - 1 ? ' →' : ''}</span>
                         ))}
                       </span>
                       {bu.source !== 'Base game' && (

@@ -44,6 +44,7 @@ const dislikes = opinions.filter(o => o.value < 0);
 // supremacy bonus. nations.json already carries families[].name/ingameColor/...
 type Seat = {
   slug: string; name: string; nationColorBg: string; nationColorFg: string;
+  familyId: string; familySlug: string;
   familyName: string; ingameColor?: string; ingameFg?: string;
   supremacy?: { name: string; effects: string[] };
 };
@@ -53,7 +54,9 @@ for (const n of nations as any[]) {
     if (nf.classKey !== f.slug) continue;
     seats.push({
       slug: n.slug, name: n.name,
-      nationColorBg: n.color?.bg, nationColorFg: n.color?.fg,
+      // The named family's own id/slug — this row IS its page entry, so it
+      // carries the anchor Term/search deep-link to (families/<class>#<family>).
+      familyId: nf.id, familySlug: String(nf.id || '').replace('FAMILY_', '').toLowerCase(),
       familyName: nf.name, ingameColor: nf.ingameColor, ingameFg: nf.ingameFg,
       supremacy: nf.supremacy,
     });
@@ -296,7 +299,8 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
       <h2 class="np-sec__title">Nations &amp; their families <span class="np-count">{seats.length}</span></h2>
       <ul class="fam-nations">
         {seats.map(s => (
-          <li class="fam-nation" style={s.ingameColor ? `--fam-stripe: ${s.ingameColor}` : undefined}>
+          <li class="fam-nation" id={s.familySlug || undefined} data-entity-id={s.familyId}
+              style={s.ingameColor ? `--fam-stripe: ${s.ingameColor}` : undefined}>
             <a class="fam-nation__crest" href={`${base}nations/${s.slug}`}
                style={`--nation-bg: ${s.nationColorBg}; --nation-fg: ${s.nationColorFg};`}>
               <img src={`${base}img/crests/${s.slug}.png`} alt="" />

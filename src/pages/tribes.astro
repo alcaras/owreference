@@ -36,6 +36,17 @@ const generic = tribes
 // if at least one tribe fields a unit there. Strengths span 3–6.
 // Mounted is an attribute (shown as a badge), not a branch — mounted
 // units are still Melee or Ranged.
+// Each tribal unit gets an anchor the first time it appears in the matrix, so
+// Term links and site search can deep-link it (a unit can be fielded by several
+// tribes — only the first cell claims the id).
+const anchored = new Set<string>();
+const unitAnchor = (u: { id: string }) => {
+  const slug = String(u.id || '').replace('UNIT_', '').toLowerCase();
+  if (!slug || anchored.has(slug)) return undefined;
+  anchored.add(slug);
+  return slug;
+};
+
 const BRANCHES = ['Melee', 'Ranged'];
 const STRENGTHS = [3, 4, 5, 6];
 
@@ -147,7 +158,8 @@ const specialCount = combat.reduce(
                         data-tribe={t.slug}
                       >
                         {sorted.map(u => (
-                          <div class={`tunit ${u.special ? 'tunit--special' : ''}`}>
+                          <div class={`tunit ${u.special ? 'tunit--special' : ''}`}
+                               id={unitAnchor(u)} data-entity-id={u.id}>
                             <span class="tunit__glyphwrap">
                               {unitIconSrc(u.icon) && (
                                 <img

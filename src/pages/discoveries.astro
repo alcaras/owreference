@@ -1,0 +1,178 @@
+---
+// Discoveries — the hidden "bonus card" techs (tech.xml bHide=1). They never
+// appear in the tech tree, so /technologies rightly skips them; this page is
+// their home (and what search lands on). Data: scripts/build_discoveries.py.
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import Term from '../components/Term.astro';
+import discoveries from '../data/discoveries.json';
+
+const base = import.meta.env.BASE_URL;
+type Discovery = typeof discoveries[number];
+
+const offered = (discoveries as any[]).filter(d => d.techs.length > 0);
+const special = (discoveries as any[]).filter(d => d.techs.length === 0);
+const nationLocked = (discoveries as any[]).filter(d => d.nations.length > 0).length;
+
+function blob(d: any): string {
+  return [d.name, ...d.grants.map((g: any) => g.text), ...d.techs.map((t: any) => t.name),
+          ...d.nations.map((n: any) => n.name), d.culture, d.dlc, d.advice]
+    .filter(Boolean).join(' ').toLowerCase();
+}
+---
+
+<Base
+  title="Discoveries"
+  active="discoveries"
+  pageMark="🎴"
+  description="Every discovery (bonus card) in Old World — the one-shot cards drawn on finishing a tech: what each grants, what it costs, which tech offers it, and which are locked to a nation, culture level or DLC. Pulled from tech.xml's hidden entries and their bonuses."
+  pageStats={[
+    { label: 'discoveries', value: discoveries.length },
+    { label: 'from a tech', value: offered.length },
+    { label: 'nation-locked', value: nationLocked },
+  ]}
+>
+  <p class="lede">
+    <b>Discoveries</b> are the bonus cards you draw when a tech completes — free units, yield boosts,
+    a courtier, an imported luxury. In the XML they are techs flagged hidden, which is why they never
+    show up in the <a href={`${base}technologies`}>tech tree</a>: you can't research one, you're offered
+    it. Every card is single-use and goes back in the deck if you pass on it. Cost is what the card
+    itself costs to take.
+  </p>
+
+  <input id="disc-filter" class="disc__filter" type="search" autocomplete="off"
+         placeholder="Filter discoveries — name, reward, tech, nation…" aria-label="Filter discoveries" />
+
+  <section class="disc">
+    <h2 class="disc__h">Offered by a tech <span class="disc__n">{offered.length}</span></h2>
+    <p class="disc__note">
+      The card is drawn from the deck when its tech finishes. The offering tech comes from
+      <code>abTechPrereq</code>, not the card's name — those disagree (Forestry's Scientist card
+      actually requires Metaphysics).
+    </p>
+    <div class="grid__scroll">
+      <table class="ntbl disc__tbl">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">Discovery</th>
+            <th class="nhdr">Grants</th>
+            <th class="nhdr">Cost</th>
+            <th class="nhdr">Offered by</th>
+            <th class="nhdr">Only for</th>
+          </tr>
+        </thead>
+        <tbody>
+          {offered.map((d: any) => (
+            <tr id={d.slug} data-search={blob(d)}>
+              <th class="rowlabel" scope="row">{d.name}</th>
+              <td class="cell">
+                {d.grants.map((g: any) => (
+                  <div class="disc__grant"><LinkedText text={g.text} /></div>
+                ))}
+                {d.advice && <span class="disc__advice">{d.advice}</span>}
+              </td>
+              <td class="cell disc__cost">{d.cost}</td>
+              <td class="cell">
+                {d.techs.map((t: any, i: number) => (
+                  <>{i > 0 ? ' · ' : ''}<Term id={t.id} /></>
+                ))}
+              </td>
+              <td class={`cell ${d.nations.length || d.culture || d.dlc ? '' : 'is-empty'}`}>
+                {d.nations.map((n: any) => <><Term id={n.id} />{' '}</>)}
+                {d.culture && <span class="chip--cond">{d.culture} culture</span>}
+                {d.dlc && <span class="chip--dlc">{d.dlc}</span>}
+                {!d.nations.length && !d.culture && !d.dlc && <span class="cell__dash">—</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="disc">
+    <h2 class="disc__h">Not tied to a tech <span class="disc__n">{special.length}</span></h2>
+    <p class="disc__note">
+      No <code>abTechPrereq</code> — these enter the deck another way: a nation's unique unit card
+      (gated by nation and culture level) or an event that adds the card directly.
+    </p>
+    <div class="grid__scroll">
+      <table class="ntbl disc__tbl">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">Discovery</th>
+            <th class="nhdr">Grants</th>
+            <th class="nhdr">Cost</th>
+            <th class="nhdr">Only for</th>
+          </tr>
+        </thead>
+        <tbody>
+          {special.map((d: any) => (
+            <tr id={d.slug} data-search={blob(d)}>
+              <th class="rowlabel" scope="row">{d.name}</th>
+              <td class="cell">
+                {d.grants.map((g: any) => (
+                  <div class="disc__grant"><LinkedText text={g.text} /></div>
+                ))}
+                {d.advice && <span class="disc__advice">{d.advice}</span>}
+              </td>
+              <td class="cell disc__cost">{d.cost}</td>
+              <td class={`cell ${d.nations.length || d.culture || d.dlc ? '' : 'is-empty'}`}>
+                {d.nations.map((n: any) => <><Term id={n.id} />{' '}</>)}
+                {d.culture && <span class="chip--cond">{d.culture} culture</span>}
+                {d.dlc && <span class="chip--dlc">{d.dlc}</span>}
+                {!d.nations.length && !d.culture && !d.dlc && <span class="cell__dash">—</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const input = document.getElementById('disc-filter') as HTMLInputElement | null;
+  if (input) {
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      for (const sec of Array.from(document.querySelectorAll('.disc')) as HTMLElement[]) {
+        let any = false;
+        for (const row of Array.from(sec.querySelectorAll('tbody tr')) as HTMLElement[]) {
+          const hit = !q || (row.dataset.search || '').includes(q);
+          row.hidden = !hit;
+          any = any || hit;
+        }
+        sec.hidden = !any;
+      }
+    });
+  }
+</script>
+
+<style>
+  .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
+  .lede b { color: var(--text); }
+  .lede a { color: var(--accent); }
+
+  .disc__filter { width: 100%; max-width: 30rem; background: var(--bg); color: var(--text);
+    border: 1px solid var(--border-strong); border-radius: 6px; padding: 0.45rem 0.7rem;
+    font: inherit; font-size: 0.86rem; margin: 0 0 1.4rem; }
+  .disc__filter:focus { outline: 0; border-color: var(--gold-deep); box-shadow: 0 0 0 2px var(--gold-glow); }
+
+  .disc { margin: 0 0 2rem; }
+  .disc__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--accent);
+    margin: 0 0 0.25rem; display: flex; align-items: baseline; gap: 0.5rem; }
+  .disc__n { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); }
+  .disc__note { max-width: 84ch; font-size: 0.78rem; color: var(--text-faint); line-height: 1.55; margin: 0 0 0.7rem; }
+  .disc__note code { font-family: var(--font-mono); font-size: 0.9em; }
+
+  .disc__tbl { table-layout: auto; }
+  .disc__tbl .rowlabel { text-align: left; font-family: var(--font-display); font-size: 0.88rem;
+    width: 13rem; vertical-align: top; }
+  .disc__tbl .cell { vertical-align: top; }
+  .disc__advice { display: block; font-family: var(--font-body); font-size: 0.72rem;
+    color: var(--text-faint); font-weight: 400; line-height: 1.45; margin-top: 0.15rem;
+    max-width: 72ch; }
+  .disc__grant { font-size: 0.82rem; }
+  .disc__cost { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); text-align: right; }
+</style>

@@ -9,6 +9,10 @@ import allUnits from '../data/units.json';
 // Both draw from the same units.json `normal` category. Note these can still
 // carry a Strength stat (Scouts/Disciples defend) — they're civilian by role.
 const units = (allUnits as any[]).filter(u => u.category === 'normal' && !u.isMilitary && u.production > 0);
+// Civilians you can't train: the Explorer arrives with Hanno the Navigator's
+// dynasty, so it has no production cost and no place in the buildable roster —
+// but it is a real unit, and this is the only page that documents it.
+const granted = (allUnits as any[]).filter(u => u.category === 'normal' && !u.isMilitary && !u.production);
 ---
 
 <Base pageFilter
@@ -18,4 +22,8 @@ const units = (allUnits as any[]).filter(u => u.category === 'normal' && !u.isMi
   description={`The ${units.length} civilian and support units of Old World any nation can build — Workers, Settlers, Scouts, Caravans and the religion Disciples. Each row shows Movement, Range, training cost, material cost, upkeep, tech prerequisite and special abilities, all derived from the game's unit.xml. Fighting units are listed separately.`}
 >
   <UnitsTable units={units} heading="Civilian Units" noun="civilian units" />
+
+  {granted.length > 0 && (
+    <UnitsTable units={granted} heading="Granted, not trained" noun="granted units" />
+  )}
 </Base>

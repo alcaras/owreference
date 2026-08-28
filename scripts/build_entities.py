@@ -160,6 +160,54 @@ def build() -> dict:
             "icon": icon_url(f"crests/{slug}.png"),
         })
 
+    # ── Where each page actually renders a thing ────────────────────────────
+    # Entity slugs used to be re-derived from the XML id and hyphenated, while
+    # every page anchors its rows with the slug ITS dataset carries — usually
+    # underscored (law "coin_debasement", unit "african_elephant") and sometimes
+    # on a different page than the obvious one (unique units aren't on /units).
+    # Reading the generated datasets keeps link target and anchor in step; the
+    # Makefile builds all of them before this script runs.
+    DATA = ROOT / "src" / "data"
+
+    def load_data(name: str):
+        path = DATA / name
+        return json.loads(path.read_text()) if path.exists() else None
+
+    homes: dict[str, tuple[str, str]] = {}
+
+    def claim(rows, page, id_key: str = "id", slug_key: str = "slug") -> None:
+        for row in rows or []:
+            rid, rslug = row.get(id_key), row.get(slug_key)
+            if rid and rslug:
+                homes.setdefault(rid, (page, rslug))
+
+    claim(load_data("technologies.json"), "technologies")
+    claim(load_data("discoveries.json"), "discoveries")
+    # Discovery cards carry a real in-game name ("Free Worker"); tech.xml's own
+    # Name text for them is full of link() markup, so take the built one.
+    discovery_names = {d["id"]: d["name"] for d in (load_data("discoveries.json") or [])
+                       if d.get("id") and d.get("name")}
+    # Units split across four pages by category; /units is the normal roster
+    # (and drops the unbuildable Explorer, which then has no table of its own).
+    UNIT_PAGES = {"normal": "units", "unique": "unique-units", "tribal": "tribes"}
+    for row in load_data("units.json") or []:
+        page = UNIT_PAGES.get(row.get("category") or "", "units")
+        if row.get("category") == "normal" and not row.get("production"):
+            # Not trainable (the Explorer comes with Hanno's dynasty), so it's
+            # absent from the buildable roster — /civilian-units lists it apart.
+            page = "civilian-units"
+        if row.get("id") and row.get("slug"):
+            homes.setdefault(row["id"], (page, row["slug"]))
+    for group in (load_data("laws.json") or {}).get("groups", []):
+        for cls in group.get("classes", []):
+            claim(cls.get("laws"), "laws")
+    # Named royal families live on their family CLASS page, one row per nation.
+    for nation in load_data("nations.json") or []:
+        for fam in nation.get("families") or []:
+            if fam.get("id") and fam.get("classKey"):
+                homes.setdefault(fam["id"], (f"families/{fam['classKey']}",
+                                             fam["id"].replace("FAMILY_", "").lower()))
+
     # Families (just the names; class colors come from family.xml)
     for entry in parse("family.xml").findall("Entry"):
         zt = entry.findtext("zType") or ""
@@ -167,16 +215,16 @@ def build() -> dict:
             continue
         name = text_family.get(entry.findtext("Name") or "", zt.replace("FAMILY_", "").title())
         slug = zt.replace("FAMILY_", "").lower()
+        # Named royal families (Achaemenid, Pandya, …) have no page of their
+        # own — they are a row on their family CLASS page (added below).
+        page, slug = homes.get(zt, ("families", slug))
         entities.append({
             "id": zt,
             "slug": slug,
             "type": "family",
             "name": name,
             "aliases": [name],
-            # Named royal families (Achaemenid, Pandya, …) have no detail page of
-            # their own — only the 10 family CLASSES do (added below). Land on the
-            # Families overview.
-            "page": "families",
+            "page": page,
             "icon": icon_url(f"families/{slug}.png"),
         })
 
@@ -188,14 +236,17 @@ def build() -> dict:
                 continue
             name_key = entry.findtext("Name") or ""
             name = text_tech.get(name_key, zt.replace("TECH_", "").replace("_", " ").title())
-            slug = zt.replace("TECH_", "").lower().replace("_", "-")
+            # Hidden (bHide) techs are discovery cards and live on /discoveries,
+            # which also carries their real name ("Free Worker", not the zType).
+            page, slug = homes.get(zt, ("technologies", zt[5:].lower()))
+            name = discovery_names.get(zt, name)
             entities.append({
                 "id": zt,
                 "slug": slug,
                 "type": "tech",
                 "name": name,
                 "aliases": [name],
-                "page": "technologies",
+                "page": page,
                 "icon": icon_url(f"icons/techs/{zt[5:].lower()}.png"),
             })
 
@@ -353,14 +404,14 @@ def build() -> dict:
             if not zt.startswith("UNIT_"):
                 continue
             name = text_unit.get(entry.findtext("Name") or "", zt.replace("UNIT_", "").replace("_", " ").title())
-            slug = zt.replace("UNIT_", "").lower().replace("_", "-")
+            page, slug = homes.get(zt, ("units", zt[5:].lower()))
             entities.append({
                 "id": zt,
                 "slug": slug,
                 "type": "unit",
                 "name": name,
                 "aliases": [name],
-                "page": "units",   # roster overview (no per-unit detail page)
+                "page": page,   # units / unique-units / tribes, per its category
             })
 
     # Laws
@@ -370,22 +421,19 @@ def build() -> dict:
             if not zt.startswith("LAW_"):
                 continue
             name = text_law.get(entry.findtext("Name") or "", zt.replace("LAW_", "").replace("_", " ").title())
-            slug = zt.replace("LAW_", "").lower().replace("_", "-")
+            page, slug = homes.get(zt, ("laws", zt[4:].lower()))
             entities.append({
                 "id": zt,
                 "slug": slug,
                 "type": "law",
                 "name": name,
                 "aliases": [name],
-                "page": "laws",
+                "page": page,
             })
 
     # ── Richer entity types, sourced from the generated src/data JSON (which
     # already carries the exact slugs the pages render), so links land on the
     # right anchor. build_entities runs LAST in the data target, so these exist.
-    def load_data(name: str):
-        p = ROOT / "src" / "data" / name
-        return json.loads(p.read_text()) if p.exists() else None
 
     # Shrines → the Shrines overview, anchored to the deity's shrine-type
     # section (#type-war …). Aliased by deity name (specific; safe to scan).

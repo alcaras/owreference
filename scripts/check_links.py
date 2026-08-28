@@ -12,6 +12,7 @@ Exit code 1 on broken internal links (unknown terms are warnings only).
 """
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -77,6 +78,36 @@ def main() -> int:
         if len(unknown) > 20:
             print(f"  … and {len(unknown) - 20} more pages")
 
+    # Every entity must land on a row, not just on the right page: its `slug` is
+    # the anchor Term.astro and the site search append. A dead anchor silently
+    # dumps the reader at the top of a long table, which is how Cathedral ended
+    # up "linking" to a page that never listed it. Entities with no page at all
+    # are deliberate (Term renders them as plain text) and skipped.
+    dead: list[str] = []
+    reg = ROOT / "src" / "data" / "entities.json"
+    if reg.exists():
+        anchors: dict[str, set[str]] = {}
+        for e in json.loads(reg.read_text())["entities"]:
+            page, slug = e.get("page") or "", e.get("slug") or ""
+            if not page or not slug or page.endswith("/" + slug):
+                continue
+            if page not in anchors:
+                f = DIST / page / "index.html"
+                anchors[page] = set(re.findall(r'\bid="([^"]+)"', f.read_text(errors="replace"))) \
+                    if f.is_file() else set()
+            if slug not in anchors[page]:
+                dead.append(f"{e['id']} → {page}#{slug}")
+
+    if dead:
+        print(f"✗ {len(dead)} entity link(s) with no anchor on the target page:")
+        for line in dead[:40]:
+            print(f"  {line}")
+        if len(dead) > 40:
+            print(f"  … and {len(dead) - 40} more")
+        print("  (give the row an id, route the entity to the page that renders it,")
+        print("   or clear its `page` so Term renders it as plain text)")
+        return 1
+
     if broken:
         print(f"✗ {len(broken)} broken internal link(s):")
         for page, url in broken[:50]:
@@ -85,7 +116,8 @@ def main() -> int:
             print(f"  … and {len(broken) - 50} more")
         return 1
 
-    print(f"✓ link check: {len(pages)} pages, 0 broken internal links")
+    print(f"✓ link check: {len(pages)} pages, 0 broken internal links, "
+          f"every entity anchor resolves")
     return 0
 
 
