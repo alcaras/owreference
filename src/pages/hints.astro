@@ -1,0 +1,312 @@
+---
+// Hints — the one-liners the game cycles through on the loading screen
+// (the in-game wiki lists the same set under "Hints").
+// Data: src/data/hints.json (scripts/build_hints.py ← text-hint*.xml,
+// text-eoti.xml, improvement.xml <Hint>).
+import Base from '../layouts/Base.astro';
+import Term from '../components/Term.astro';
+import data from '../data/hints.json';
+import concepts from '../data/concepts.json';
+import { getEntity } from '../lib/entities';
+
+const base = import.meta.env.BASE_URL;
+
+type Segment = { text: string; ref?: string };
+const hints = data.hints as { id: string; num: number; dlc: string; slug: string; segments: Segment[] }[];
+const improvementHints = data.improvementHints as
+  { id: string; name: string; slug: string; segments: Segment[] }[];
+
+// The hints are written in the game's link() markup, so the game itself says
+// which words are references and what they point at. We link exactly those —
+// entity registry first, then the concepts page's own anchors, else plain text.
+// No LinkedText pass over the prose: alias matching mislinks the words the
+// game deliberately left unlinked ("each game" → the Game resource).
+const conceptSlug = new Map(concepts.concepts.map(c => [c.id, c.slug]));
+
+// Group by where the hint ships from — base game first, then each DLC.
+const groups: { source: string; label: string; hints: typeof hints }[] = [];
+for (const h of hints) {
+  const label = h.dlc || 'Base game';
+  let g = groups.find(x => x.label === label);
+  if (!g) groups.push((g = { source: h.dlc, label, hints: [] }));
+  g.hints.push(h);
+}
+---
+
+<Base pageFilter="Filter hints…"
+  title="Hints"
+  active="hints"
+  pageMark="💡"
+  description="Every loading-screen hint in Old World, with each mention linked to the thing it names."
+  pageStats={[
+    { label: 'hints', value: hints.length },
+    { label: 'sources', value: groups.length },
+    { label: 'improvement hints', value: improvementHints.length },
+  ]}
+>
+  <div class="hints" id="hints">
+    <!-- Loading-screen spotlight: one hint at a time, the way the game shows them. -->
+    <section class="spotlight">
+      <div class="spotlight__mark">💡</div>
+      <div class="spotlight__body">
+        <p class="spotlight__text" id="spotlight-text">Pick a hint…</p>
+        <div class="spotlight__foot">
+          <span class="spotlight__id" id="spotlight-id"></span>
+          <button class="spotlight__btn" id="spotlight-next" type="button">Another hint</button>
+        </div>
+      </div>
+    </section>
+
+    <nav class="hints__rail" aria-label="Jump to source">
+      {groups.map(g => (
+        <a class="hints__railitem" href={`#source-${g.source ? g.source.toLowerCase().replace(/[^a-z]+/g, '-') : 'base'}`}>
+          {g.label} <span class="hints__railcount">{g.hints.length}</span>
+        </a>
+      ))}
+      <a class="hints__railitem" href="#improvement-hints">Improvements <span class="hints__railcount">{improvementHints.length}</span></a>
+    </nav>
+
+    {groups.map(g => (
+      <section class="hints__group" id={`source-${g.source ? g.source.toLowerCase().replace(/[^a-z]+/g, '-') : 'base'}`}>
+        <h2 class="hints__grouplabel">{g.label}</h2>
+        <ol class="hints__list">
+          {g.hints.map(h => (
+            <li class="hint" id={h.slug} data-hint data-source={g.label}>
+              <a class="hint__num" href={`#${h.slug}`}>{h.num}</a>
+              <p class="hint__text">
+                {h.segments.map(s => {
+                  if (!s.ref) return s.text;
+                  if (getEntity(s.ref)) return <Term id={s.ref} label={s.text} showIcon={false} />;
+                  const cs = conceptSlug.get(s.ref);
+                  if (cs) return <a class="hint__concept" href={`${base}concepts#${cs}`}>{s.text}</a>;
+                  return s.text;
+                })}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+
+    <section class="hints__group" id="improvement-hints">
+      <h2 class="hints__grouplabel">Improvement hints</h2>
+      <p class="hints__note">
+        Shown on the improvement's own tooltip in-game (<code>improvement.xml</code> → <code>Hint</code>),
+        not on the loading screen.
+      </p>
+      <ol class="hints__list">
+        {improvementHints.map(i => (
+          <li class="hint hint--imp" id={`hint-${i.slug}`} data-hint data-source="Improvement hints">
+            <span class="hint__impname"><Term id={i.id} /></span>
+            <p class="hint__text">
+              {i.segments.map(s => {
+                if (!s.ref) return s.text;
+                if (getEntity(s.ref)) return <Term id={s.ref} label={s.text} showIcon={false} />;
+                const cs = conceptSlug.get(s.ref);
+                if (cs) return <a class="hint__concept" href={`${base}concepts#${cs}`}>{s.text}</a>;
+                return s.text;
+              })}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <p class="hints__empty" id="hints-empty" hidden>No hints match.</p>
+  </div>
+
+  <script is:inline>
+    (function () {
+      const root = document.getElementById('hints');
+      if (!root) return;
+      const items = Array.from(root.querySelectorAll('[data-hint]'));
+      const blobs = items.map(el => (el.textContent || '').toLowerCase());
+      const empty = document.getElementById('hints-empty');
+
+      // Spotlight: clone a random hint's rendered text (cloneNode keeps the
+      // scoped-style attributes that innerHTML would drop).
+      const out = document.getElementById('spotlight-text');
+      const idOut = document.getElementById('spotlight-id');
+      const btn = document.getElementById('spotlight-next');
+      let last = -1;
+      function shuffle() {
+        const pool = items.filter(el => !el.hidden);
+        if (!pool.length || !out) return;
+        let i = Math.floor(Math.random() * pool.length);
+        if (pool.length > 1 && pool[i] === items[last]) i = (i + 1) % pool.length;
+        last = items.indexOf(pool[i]);
+        const src = pool[i].querySelector('.hint__text');
+        if (!src) return;
+        out.replaceChildren(...Array.from(src.cloneNode(true).childNodes));
+        if (idOut) {
+          const num = pool[i].querySelector('.hint__num');
+          idOut.textContent = (pool[i].getAttribute('data-source') || '') + (num ? ' · hint ' + num.textContent : '');
+        }
+      }
+      if (btn) btn.addEventListener('click', shuffle);
+      shuffle();
+
+      function apply(q) {
+        q = (q || '').trim().toLowerCase();
+        let any = false;
+        items.forEach((el, i) => {
+          const show = !q || blobs[i].includes(q);
+          el.hidden = !show;
+          if (show) any = true;
+        });
+        for (const section of root.querySelectorAll('.hints__group')) {
+          section.hidden = !section.querySelector('[data-hint]:not([hidden])');
+        }
+        if (empty) empty.hidden = any;
+      }
+
+      const filter = document.getElementById('page-filter');
+      if (filter) filter.addEventListener('input', () => apply(filter.value));
+    })();
+  </script>
+</Base>
+
+<style>
+  .hints {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+  }
+
+  /* Spotlight card — the loading-screen framing */
+  .spotlight {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    background: linear-gradient(180deg, var(--bg-elev-2), var(--bg-elev));
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border) 65%);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.1rem;
+  }
+  .spotlight__mark { font-size: 1.5rem; line-height: 1.2; }
+  .spotlight__body { flex: 1; min-width: 0; }
+  .spotlight__text {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .spotlight__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .spotlight__id {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--text-faint);
+  }
+  .spotlight__btn {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-dim);
+    font: inherit;
+    font-size: 0.72rem;
+    padding: 0.22rem 0.7rem;
+    cursor: pointer;
+  }
+  .spotlight__btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Source rail */
+  .hints__rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+  .hints__railitem {
+    font-family: var(--font-display);
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+  }
+  .hints__railitem:hover { color: var(--accent); border-color: var(--accent); }
+  .hints__railcount { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint); }
+
+  .hints__group { margin-bottom: 1.4rem; }
+  .hints__grouplabel {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin: 0 0 0.4rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    scroll-margin-top: 4rem;
+  }
+  .hints__note {
+    margin: 0 0 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-faint);
+  }
+  .hints__note code { font-family: var(--font-mono); font-size: 0.92em; }
+
+  .hints__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+
+  .hint {
+    display: grid;
+    grid-template-columns: 2.4rem 1fr;
+    gap: 0.6rem;
+    align-items: baseline;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    scroll-margin-top: 4rem;
+  }
+  .hint:target { border-color: var(--accent); }
+  .hint--imp { grid-template-columns: 9rem 1fr; }
+  .hint__num {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    text-align: right;
+    text-decoration: none;
+  }
+  .hint__num:hover { color: var(--accent); }
+  .hint__impname {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+  .hint__text {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+
+  .hint__text :global(a),
+  .spotlight__text :global(a) {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  .hint__text :global(a:hover),
+  .spotlight__text :global(a:hover) { color: var(--accent); }
+
+  .hints__empty {
+    color: var(--text-faint);
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  @media (max-width: 560px) {
+    .hint, .hint--imp { grid-template-columns: 1fr; gap: 0.15rem; }
+    .hint__num { text-align: left; }
+  }
+</style>

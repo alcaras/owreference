@@ -469,6 +469,11 @@ export const TABS: Tab[] = [
     summary: 'Game-mechanics glossary — every in-game encyclopedia entry, auto-linked',
   },
   {
+    slug: 'hints', icon: '💡', label: 'Hints', section: 'Concepts',
+    status: 'built', sourceSheet: '',
+    summary: 'Every loading-screen hint the game ships, with each mention linked',
+  },
+  {
     slug: 'turn-order', icon: '🔄', label: 'Turn Order', section: 'Concepts',
     status: 'built', sourceSheet: '',
     summary: 'Exact order of operations at turn start — rollover and per-player, from the game code',

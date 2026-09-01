@@ -247,6 +247,16 @@ Add new fields to the humanizer as you encounter them. Always test against the s
 - **DLC event text lives in oddly named files**: Wonders & Dynasties → `text-wonders-dynasties-events.xml`, Wrath of Gods → `text-calamities-events.xml` (there is no `text-eventStory-wd/-wog.xml`). ~16 eventStory entries legitimately have no `Name` (hidden setup events); ~372 have no class/trigger (engine-invoked).
 - **Occurrences aren't all WoG** — badge by `GameContentRequired`, not by file. `occurrenceEffect.xml` is cosmetic only.
 - **Unit combat modifiers live in TWO places**: the unit's own `aeEffectUnit` AND the EffectUnit attached to each of its traits (`Unit.cs getEffectUnits` adds one per `UnitTrait`). `UNITTRAIT_MOUNTED → EFFECTUNIT_MOUNTED` carries +50% melee vs Siege; `UNITTRAIT_CAMEL` +50% vs Horse. Any effect walk that skips trait effects silently drops these (that bug shipped once — horses didn't counter onagers). Use `unit_effect_ids()` in `build_unit_damage.py`, not the raw `aeEffectUnit` list. The four vs-trait arrays map to kinds: `aiUnitTraitModifier`=both ways, `…Attack`=attacking only, `…Melee`=when the *attacker* is melee (both sides), `…Defense`=defending only (`Unit.cs attackUnitStrength`/`defendUnitStrength`).
+- **Hints have no info XML — they are text keys only**: the loading-screen
+  hints live as `TEXT_HINT_*` (`text-hint.xml`), `TEXT_BTT_HINT_*`,
+  `TEXT_SAP_HINT_*` and `TEXT_INDIA_HINT_*` (in `text-eoti.xml`, not a
+  `text-hint-eoti.xml`). Retired hints are XML *comments*, so `ElementTree`
+  drops them for free. `improvement.xml`'s `<Hint>` is a different feature —
+  the improvement tooltip's build advice. Because hints are written in
+  `link(TOKEN)` markup, `build_hints.py` keeps each mention as a segment with
+  its token, and `hints.astro` links exactly those (entity registry →
+  `/concepts#slug`) with no `LinkedText` alias pass — alias matching mislinks
+  words the game deliberately left plain ("each game" → the Game resource).
 - **Mods folder (`reference/XML/Mods/`) is excluded from the repo** to keep size down. The pipeline only reads from `reference/XML/Infos/`.
 - **`reference/Graphics/` and `reference/Source/`** are excluded too (binary game assets, Unity controllers).
 - **Cognomen tracker OCR — the OCR is reliable; don't blame Tesseract.** On a real F5 capture Tesseract.js read **every digit correctly** (17/17 scoring stats, zero number errors). What looks "garbled" is *gutter noise*, not bad text: bullet glyphs (●) become `e`/`eo`/`®`/`¢`, the left UI rail bleeds in as `J{`/`U`/`|` prefixes, and right-edge game-world text appends junk like `54 C`, `5 in`, `1 Is`. The fix was always in the **parser**, never the image. Don't add OpenCV.js / heavier preprocessing on a hunch — diagnose against a real screenshot first.

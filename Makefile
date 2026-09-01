@@ -70,6 +70,7 @@ data:
 	@python3 scripts/build_turn_order.py
 	@python3 scripts/build_conversion.py
 	@python3 scripts/build_concepts.py
+	@python3 scripts/build_hints.py
 	@python3 scripts/build_terrain.py
 	@python3 scripts/build_resources.py
 	@python3 scripts/build_culture.py

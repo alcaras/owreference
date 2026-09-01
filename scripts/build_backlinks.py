@@ -128,6 +128,28 @@ CONTENT_FILES = [
 ]
 
 
+def scan_hints(hints_payload: dict, reg: dict, backlinks) -> None:
+    """Hints carry the game's own link() targets in `refs`, so their backlinks
+    are exact — no alias matching needed."""
+    if not hints_payload:
+        return
+    for h in hints_payload.get("hints", []):
+        label = f"Hint {h['num']}" + (f" · {h['dlc']}" if h["dlc"] else "")
+        for tid in h.get("refs", []):
+            if tid in reg:
+                backlinks[tid].append({
+                    "page": "hints", "anchor": h["slug"],
+                    "context": label, "text": h["text"],
+                })
+    for i in hints_payload.get("improvementHints", []):
+        for tid in i.get("refs", []):
+            if tid in reg and tid != i["id"]:
+                backlinks[tid].append({
+                    "page": "hints", "anchor": f"hint-{i['slug']}",
+                    "context": f"{i['name']} hint", "text": i["text"],
+                })
+
+
 def walk_and_scan(node, reg: dict, pat, alias_to_id, backlinks) -> None:
     """Recursively find registry-id records; scan each for OTHER entity aliases
     and record a backlink to that record's overview page."""
@@ -172,6 +194,8 @@ def main() -> int:
         data = load(fname)
         if data is not None:
             walk_and_scan(data, reg, pat, alias_to_id, backlinks)
+
+    scan_hints(load("hints.json"), reg, backlinks)
 
     # Dedupe (same page, context, text)
     deduped: dict[str, list[dict]] = {}
