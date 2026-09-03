@@ -1,0 +1,442 @@
+---
+import Base from '../layouts/Base.astro';
+import D from '../data/victory_points.json';
+
+const base = import.meta.env.BASE_URL;
+
+const wonders = D.improvements.filter((i: any) => i.wonder);
+const holySites = D.improvements.filter((i: any) => i.holyCity);
+const otherImps = D.improvements.filter((i: any) => !i.wonder && !i.holyCity);
+const contents = Object.entries(D.contents) as [string, any][];
+const contentCounts = (c: string) => ({
+  wonders: wonders.filter((i: any) => i.content === c).length,
+  holy: holySites.filter((i: any) => i.content === c).length,
+  projects: D.projects.filter((p: any) => p.content === c).length,
+});
+// Multiplayer tournament setup: duel, High (+25%), all content. The game's own
+// single-player default is Normal.
+const TOURNAMENT = { players: 2, teams: 2, option: 'VICTORYPOINT_MEDIUM_HIGH', sites: 16 };
+const culturesTotalVP = D.cultures.reduce((s: number, c: any) => s + c.vp, 0);
+---
+
+<Base
+  title="Victory Point Target"
+  active="victory-points"
+  pageMark="🏆"
+  pageStats={[
+    { label: 'holy sites', value: holySites.length },
+    { label: 'VP options', value: D.victoryPointOptions.length },
+  ]}
+>
+  <p class="lede">
+    How many <strong>Victory Points</strong> a game takes to win, replaying
+    <code>Game.cs&nbsp;·&nbsp;getVPToWin()</code>. The target is not a setting — the engine
+    sizes it from the <b>number of city sites on the map</b>, then trims it for the
+    player and team count and shifts it by the <b>Victory Point</b> setup option. Nothing
+    about who is playing enters it: every map with the same site count and setup has the
+    same target. Set up the game below (defaults are the tournament's — duel, High) and read
+    the row for your map; the breakdown shows where each point of the pool comes from.
+  </p>
+
+  <section class="asm">
+    <div class="asm__row">
+      <span class="asm__tag">Game</span>
+      <div class="asm__fields">
+        <label class="f"><span>Players <i>humans + AI</i></span>
+          <input type="number" id="v-players" value={TOURNAMENT.players} min="1" max="12" step="1" /></label>
+        <label class="f"><span>Teams</span>
+          <input type="number" id="v-teams" value={TOURNAMENT.teams} min="1" max="12" step="1" /></label>
+        <label class="f f--sel"><span>Victory Points <i>game setup</i></span>
+          <select id="v-option">
+            {D.victoryPointOptions.map((o: any) => (
+              <option value={o.id} selected={o.id === TOURNAMENT.option}>
+                {o.name} ({o.modifier >= 0 ? '+' : ''}{o.modifier}%)
+              </option>
+            ))}
+          </select>
+        </label>
+        <label class="f--chk"><input type="checkbox" id="v-characters" checked />
+          <span>Characters <i>off = No Characters mode</i></span></label>
+      </div>
+    </div>
+    <div class="asm__row">
+      <span class="asm__tag">Content</span>
+      <div class="asm__fields">
+        {contents.map(([c, info]) => {
+          const n = contentCounts(c);
+          const bits = [
+            n.wonders ? `${n.wonders} wonders` : '',
+            n.holy ? `${n.holy} holy site${n.holy > 1 ? 's' : ''}` : '',
+            n.projects ? `${n.projects} project${n.projects > 1 ? 's' : ''}` : '',
+          ].filter(Boolean).join(' · ');
+          return (
+            <label class="f--chk"><input type="checkbox" class="v-content" data-content={c} checked />
+              <span>{info.dlcName} <i>{bits}</i></span></label>
+          );
+        })}
+      </div>
+    </div>
+    <div class="asm__row">
+      <span class="asm__tag">Your map</span>
+      <div class="asm__fields">
+        <label class="f"><span>City sites <i>whole map, all nations</i></span>
+          <input type="number" id="v-sites" value={TOURNAMENT.sites} min="1" max="80" step="1" /></label>
+        <button type="button" class="asm__reset" id="v-reset">Tournament defaults</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="v-sum" class="sum"></div>
+
+  <section class="brk" id="v-brk"></section>
+
+  <div class="grid">
+    <div class="grid__scroll">
+      <table class="ntbl vp">
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">City sites</th>
+            <th class="nhdr nhdr--num">Pool<span class="vp__hdnote">before scaling</span></th>
+            <th class="nhdr nhdr--num">Base<span class="vp__hdnote">teams &amp; players</span></th>
+            {D.victoryPointOptions.map((o: any) => (
+              <th class="nhdr nhdr--num vp__opt" data-option={o.id}>
+                {o.name}<span class="vp__hdnote">{o.modifier >= 0 ? '+' : ''}{o.modifier}%</span>
+              </th>
+            ))}
+            <th class="nhdr nhdr--num vp__dcol">Double<span class="vp__hdnote">½ of target</span></th>
+          </tr>
+        </thead>
+        <tbody id="v-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <section class="rates">
+    <h2 class="rates__h">What the code says</h2>
+    <div class="rates__cols">
+      <div>
+        <h3>The pool <span class="tag">per map</span></h3>
+        <ul>
+          <li><b>Culture</b> — for each of the {D.cultures.length} culture levels,
+            <code>sites × VP ÷ {D.cultures.length}</code>, each rounded down separately
+            ({D.cultures.map((c: any) => `${c.name} ${c.vp}`).join(', ')}). That is roughly
+            {culturesTotalVP}/{D.cultures.length} VP per site, but because each level truncates on
+            its own the total is not a clean multiple — 13 sites give 31, not 30. With
+            <b>No Characters</b> the divisor is {D.cultures.length + 1} instead.</li>
+          <li><b>Wonders</b> — every buildable wonder is worth its <code>EffectPlayer.iVP</code>
+            ({wonders[0].vp}) once, capped at one copy. But only
+            <code>AVAILABLE_WONDERS</code> = <b>{D.globals.AVAILABLE_WONDERS}</b> of the
+            {wonders.length} content-enabled wonders survive map placement
+            (<code>finishMapPlacement</code> disables the rest, and <code>getVPToWin</code> skips
+            disabled improvements) — so it is {D.globals.AVAILABLE_WONDERS} × {wonders[0].vp} whatever
+            DLC you own, unless a DLC-less install drops the enabled count below the cap.</li>
+          <li><b>Holy sites</b> — each religion's holy site
+            ({holySites.map((h: any) => h.name).join(', ')}) counts once: the improvement has a religion
+            prereq, so <code>iMaxCities</code> is 1 and <code>iMaxPlayerCount</code> = 1 closes it at one.</li>
+          <li><b>Projects</b> — a VP project counts <code>sites ÷ 4</code> times
+            (once per player if unique). Today that is only <b>{D.projects.map((p: any) => p.name).join(', ')}</b>
+            ({D.projects.map((p: any) => `${p.vp} VP, ${D.contents[p.content]?.dlcName}`).join('; ')}) — the “+1 per
+            four sites” bump people notice when Behind the Throne is on.</li>
+          {otherImps.length ? <li><b>Other improvements</b> — {otherImps.map((i: any) => i.name).join(', ')} also
+            carry VP and pass the gates; they are counted with their per-city/family/player caps.</li> : null}
+        </ul>
+      </div>
+      <div>
+        <h3>The scaling</h3>
+        <ul>
+          <li><b>Teams</b> — <code>pool × 6 ÷ (3 + teams)</code>. Two teams keep 6/5 of the pool;
+            three keep exactly it; six keep two-thirds.</li>
+          <li><b>Players</b> — <code>× 2 ÷ 5</code> when there are <b>exactly two players</b>,
+            otherwise <code>÷ 2</code>. A duel is asked for 40% of its scaled pool, everyone else 50%.</li>
+          <li><b>Victory Point option</b> — <code>utils().modify(vp, iModifier)</code>:
+            {D.victoryPointOptions.map((o: any, i: number) => (
+              <span>{o.name} {o.modifier >= 0 ? '+' : ''}{o.modifier}%{i < D.victoryPointOptions.length - 1 ? ', ' : ''}</span>
+            ))} (<code>victoryPoint.xml</code>). Applied last, on the already-truncated number.</li>
+          <li>All four divisions are C# integer divisions — the order matters, and the table
+            reproduces it step by step (Pool → Base → option).</li>
+        </ul>
+      </div>
+      <div>
+        <h3>What it doesn't count</h3>
+        <ul>
+          <li><b>Tech VPs</b> — the VP techs at the end of the tree feed your score
+            (<code>meSourceTech</code>) but never the target.</li>
+          <li><b>Legendary steps</b> — each culture step past Legendary is +1 VP for the city, but the
+            pool only ever sees one Legendary per site. That is why “max available VP” is not the
+            right way to think about it: the target is a fixed share of a nominal pool, and the
+            real ceiling is higher.</li>
+          <li><b>Nation and dynasty wonders</b> — anything with a <code>NationPrereq</code> or
+            <code>DynastyPrereq</code> is skipped; none of the current wonders have one.</li>
+          {D.skippedImprovements.map((i: any) => (
+            <li><b>{i.name}</b> — carries {i.vp} VP but is {i.reason}
+              (<code>{i.id}</code>), so it is out.</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3>Reading the result</h3>
+        <ul>
+          <li><b>Points victory</b> — the first team to reach the target wins
+            (<code>VICTORY_POINTS</code>, 100% of it).</li>
+          <li><b>Double victory</b> — half the target <i>and</i> twice every opponent's VP
+            (<code>VICTORY_DOUBLE</code>: <code>iPercentVP</code> 50, <code>iOpponentMaxPointPercent</code> 200), rounded
+            half-up. The last column is the first half; the second half moves every turn.</li>
+          <li>City sites are the map's total — occupied and free, every nation's — not yours alone.
+            The tooltip on the score panel shows the live target, so a mismatch against this page
+            means a different site count or setting than you assumed.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">
+      Formula from <b>Game.cs</b> <code>getVPToWin</code> and <code>getVPToWinByVictory</code>; the
+      wonder cap from <code>finishMapPlacement</code>; constants from <code>globalsInt.xml</code>,
+      <code>culture.xml</code>, <code>victoryPoint.xml</code>, <code>victory.xml</code>; the VP-bearing
+      improvements and projects from <code>improvement.xml</code> / <code>project.xml</code> via their
+      <code>EffectPlayer.iVP</code>. Integer truncation is reproduced exactly. See
+      <a href={`${base}ambitions`}>Ambitions</a> for the victory conditions themselves.
+    </p>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ D, TOURNAMENT }}>
+  (() => {
+    const $ = (id) => document.getElementById(id);
+    const G = D.globals;
+    const idiv = (a, b) => Math.trunc(a / b);
+
+    // Utils.cs modify — integer, floors toward zero like C#.
+    const modify = (v, m) => {
+      if (v === 0 || m === 0) return v;
+      const mult = Math.max(0, m + 100);
+      return idiv(v * mult, 100);
+    };
+
+    function setup() {
+      const players = Math.max(1, +$('v-players').value || 1);
+      const teams = Math.max(1, Math.min(players, +$('v-teams').value || 1));
+      if (+$('v-teams').value !== teams) $('v-teams').value = teams;
+      const enabled = new Set([...document.querySelectorAll('.v-content')]
+        .filter((c) => c.checked).map((c) => c.dataset.content));
+      const opt = D.victoryPointOptions.find((o) => o.id === $('v-option').value) || D.victoryPointOptions[0];
+      return { players, teams, characters: $('v-characters').checked, enabled, opt };
+    }
+    const hasContent = (s, c) => !c || s.enabled.has(c);
+
+    // Game.cs getVPToWin, up to (not including) the victoryPoint modifier.
+    // Returns the pool and the scaled base plus a per-source breakdown.
+    function pool(sites, s) {
+      const parts = [];
+      let culture = 0;
+      const div = D.cultures.length + (s.characters ? 0 : 1);
+      for (const c of D.cultures) {
+        const v = idiv(sites * c.vp, div);
+        culture += v;
+        parts.push({ kind: 'culture', name: c.name, n: v, vp: 1, total: v, note: `${sites} × ${c.vp} ÷ ${div}` });
+      }
+
+      // finishMapPlacement: only AVAILABLE_WONDERS of the content-enabled
+      // wonders stay buildable; getVPToWin skips the disabled ones.
+      const wondersOn = D.improvements.filter((i) => i.wonder && hasContent(s, i.content));
+      const wonderSlots = G.NO_WONDERS === 1 ? 0 : Math.min(wondersOn.length, G.AVAILABLE_WONDERS);
+      let imps = 0;
+      const wonderVP = wondersOn.length ? wondersOn[0].vp : 0;
+      // Every wonder is worth the same today; if a patch differentiates them
+      // the cap picks by random draw, so sum a representative value.
+      const perWonder = wondersOn.length ? Math.round(wondersOn.reduce((a, i) => a + i.vp, 0) / wondersOn.length) : 0;
+      const wonderTotal = wonderSlots * perWonder;
+      imps += wonderTotal;
+      parts.push({ kind: 'wonders', name: 'Wonders', n: wonderSlots, vp: perWonder, total: wonderTotal,
+        note: `${wondersOn.length} enabled, cap ${G.AVAILABLE_WONDERS}` });
+
+      for (const i of D.improvements) {
+        if (i.wonder || !hasContent(s, i.content)) continue;
+        let maxNumber = sites * 12;
+        let maxCities = sites;
+        let maxPlayers = s.players;
+        let maxFamilies = s.players * G.MAX_FAMILIES;
+        if (i.holyCity) {
+          maxCities = i.religionPrereq ? 1 : D.religionsNum;
+          maxPlayers = Math.min(maxCities, maxPlayers);
+          maxFamilies = Math.min(maxCities, maxFamilies);
+        }
+        if (i.maxPlayerCount > 0) maxNumber = Math.min(maxNumber, i.maxPlayerCount * maxPlayers);
+        if (i.maxFamilyCount > 0) maxNumber = Math.min(maxNumber, i.maxFamilyCount * maxFamilies);
+        if (i.maxCityCount > 0) maxNumber = Math.min(maxNumber, i.maxCityCount * maxCities);
+        if (i.classMaxCityCount > 0) maxNumber = Math.min(maxNumber, i.classMaxCityCount * maxCities);
+        if (i.classMaxCultureCount > 0) maxNumber = Math.min(maxNumber, idiv(i.classMaxCultureCount * maxCities * D.cultures.length, 2));
+        imps += maxNumber * i.vp;
+        parts.push({ kind: i.holyCity ? 'holy' : 'imp', name: i.name, n: maxNumber, vp: i.vp, total: maxNumber * i.vp });
+      }
+
+      let projects = 0;
+      for (const p of D.projects) {
+        if (!hasContent(s, p.content)) continue;
+        let maxProjects = idiv(sites, 4);
+        if (p.unique) maxProjects = Math.min(maxProjects, s.players);
+        projects += maxProjects * p.vp;
+        parts.push({ kind: 'project', name: p.name, n: maxProjects, vp: p.vp, total: maxProjects * p.vp,
+          note: p.unique ? `${sites} ÷ 4, at most one per player` : `${sites} ÷ 4` });
+      }
+
+      const total = culture + imps + projects;
+      let vp = idiv(total * (3 + 3), 3 + s.teams);
+      const teamScaled = vp;
+      if (s.players === 2) vp = idiv(vp * 2, 5); else vp = idiv(vp, 2);
+      return { parts, culture, imps, projects, total, teamScaled, base: vp };
+    }
+
+    const target = (basev, opt) => modify(basev, opt.modifier);
+    // getVPToWinByVictory: (vp × percent + 50) ÷ 100
+    const byVictory = (vp, v) => idiv(vp * v.percentVP + 50, 100);
+    const doubleV = D.victories.find((v) => v.id === 'VICTORY_DOUBLE');
+
+    function render() {
+      const s = setup();
+      const sites = Math.max(1, +$('v-sites').value || 1);
+      const r = pool(sites, s);
+      const vp = target(r.base, s.opt);
+
+      document.querySelectorAll('.vp__opt').forEach((th) => th.classList.toggle('is-on', th.dataset.option === s.opt.id));
+
+      $('v-sum').innerHTML = [
+        `<span><b>${vp}</b> VP to win<i>${sites} city sites · ${s.players} players · ${s.teams} team${s.teams > 1 ? 's' : ''} · ${s.opt.name}</i></span>`,
+        `<span><b>${r.total}</b> in the pool<i>${r.culture} culture · ${r.imps} improvements · ${r.projects} projects</i></span>`,
+        `<span><b>${r.base}</b> after scaling<i>× 6 ÷ ${3 + s.teams} teams = ${r.teamScaled}, then ${s.players === 2 ? '× 2 ÷ 5 (duel)' : '÷ 2'}</i></span>`,
+        doubleV ? `<span><b>${byVictory(vp, doubleV)}</b> for a Double victory<i>and ${doubleV.opponentMaxPointPercent}% of any opponent</i></span>` : '',
+      ].join('');
+
+      const groups = [
+        ['culture', 'Culture', 'one of each level per site'],
+        ['wonders', 'Wonders', ''],
+        ['holy', 'Holy sites', 'one each'],
+        ['imp', 'Improvements', ''],
+        ['project', 'Projects', ''],
+      ];
+      $('v-brk').innerHTML = groups.map(([k, label, hint]) => {
+        const ps = r.parts.filter((p) => p.kind === k);
+        if (!ps.length) return '';
+        const sum = ps.reduce((a, p) => a + p.total, 0);
+        return `<div class="brk__g"><div class="brk__h"><span>${label}</span><b>${sum}</b></div>` +
+          `<ul>${ps.map((p) => `<li><span class="brk__n">${p.name}</span>` +
+            `<span class="brk__m">${p.kind === 'culture' ? p.note : `${p.n} × ${p.vp}${p.note ? ` <i>· ${p.note}</i>` : ''}`}</span>` +
+            `<b>${p.total}</b></li>`).join('')}</ul>` +
+          (hint ? `<div class="brk__hint">${hint}</div>` : '') + `</div>`;
+      }).join('');
+
+      // Maps scale with the player count (~4–16 sites each), so the table does too.
+      const lo = s.players * 4, hi = s.players * 16;
+      const rows = [];
+      for (let n = lo; n <= hi; n++) {
+        const rr = pool(n, s);
+        const opts = D.victoryPointOptions.map((o) =>
+          `<td class="cell cell--num vp__opt${o.id === s.opt.id ? ' is-on' : ''}">${target(rr.base, o)}</td>`).join('');
+        const t = target(rr.base, s.opt);
+        rows.push(`<tr${n === sites ? ' class="vp--here"' : ''}>` +
+          `<td class="rowlabel vp__n">${n}</td>` +
+          `<td class="cell cell--num vp__dim">${rr.total}</td>` +
+          `<td class="cell cell--num vp__dim">${rr.base}</td>` + opts +
+          `<td class="cell cell--num vp__dcol">${doubleV ? byVictory(t, doubleV) : '—'}</td></tr>`);
+      }
+      $('v-body').innerHTML = rows.join('');
+    }
+
+    for (const id of ['v-players', 'v-teams', 'v-sites']) $(id).addEventListener('input', render);
+    $('v-option').addEventListener('change', render);
+    $('v-characters').addEventListener('change', render);
+    document.querySelectorAll('.v-content').forEach((c) => c.addEventListener('change', render));
+    $('v-reset').addEventListener('click', () => {
+      $('v-players').value = TOURNAMENT.players;
+      $('v-teams').value = TOURNAMENT.teams;
+      $('v-option').value = TOURNAMENT.option;
+      $('v-characters').checked = true;
+      document.querySelectorAll('.v-content').forEach((c) => { c.checked = true; });
+      render();
+    });
+    render();
+  })();
+</script>
+
+<style>
+  .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
+  .lede a { color: var(--accent); }
+  .lede b, .lede strong { color: var(--text); }
+  .lede code, .fine code, .rates code { font-family: var(--font-mono); font-size: 0.82em;
+    background: var(--bg-elev-2); padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
+
+  .asm { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elev);
+    padding: 0.2rem 0.9rem 0.6rem; margin: 0 0 1.1rem; }
+  .asm__row { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.55rem 0; }
+  .asm__row + .asm__row { border-top: 1px solid var(--border); }
+  .asm__tag { flex: none; width: 7rem; padding-top: 0.95rem; font-family: var(--font-mono);
+    font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
+  .asm__fields { display: flex; flex-wrap: wrap; gap: 0.5rem 1.3rem; align-items: flex-end; flex: 1; }
+  .asm__reset { align-self: flex-end; background: transparent; color: var(--accent); border: 1px solid
+    color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 6px; padding: 0.3rem 0.6rem;
+    font-family: var(--font-body); font-size: 0.72rem; cursor: pointer; margin-bottom: 0.05rem; }
+  .asm__reset:hover { border-color: var(--accent); }
+  .f { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.74rem; color: var(--text-dim); }
+  .f i { color: var(--text-faint); font-size: 0.9em; font-style: italic; }
+  .f input, .f select { width: 7rem; background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: 6px; padding: 0.25rem 0.4rem; font-family: var(--font-mono); font-size: 0.78rem; }
+  .f--sel select { width: 11rem; font-family: var(--font-body); }
+  .f--chk { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.74rem;
+    color: var(--text-dim); cursor: pointer; padding-bottom: 0.32rem; }
+  .f--chk input { accent-color: var(--accent); }
+  .f--chk i { color: var(--text-faint); font-style: italic; }
+
+  .sum { display: flex; flex-wrap: wrap; gap: 0.4rem 2rem; margin: 0 0 0.9rem; padding: 0 0.2rem; }
+  .sum :global(span) { display: flex; flex-direction: column; font-size: 0.74rem; color: var(--text-dim); }
+  .sum :global(b) { font-family: var(--font-mono); font-size: 1rem; color: var(--accent); }
+  .sum :global(span:first-child b) { font-size: 1.5rem; }
+  .sum :global(i) { font-style: italic; font-size: 0.66rem; color: var(--text-faint); }
+
+  /* The pool breakdown: one column per source, rows are name · maths · points. */
+  .brk { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.6rem;
+    margin: 0 0 1.1rem; }
+  .brk :global(.brk__g) { border: 1px solid var(--border); border-radius: var(--radius-lg);
+    background: var(--bg-elev); padding: 0.45rem 0.7rem 0.5rem; }
+  .brk :global(.brk__h) { display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--font-display); font-size: 0.82rem; color: var(--text); margin: 0 0 0.3rem; }
+  .brk :global(.brk__h b) { font-family: var(--font-mono); color: var(--accent); font-size: 0.95rem; }
+  .brk :global(ul) { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.12rem; }
+  .brk :global(li) { display: grid; grid-template-columns: minmax(0, 1fr) auto 2.2rem; gap: 0.5rem;
+    font-size: 0.72rem; color: var(--text-dim); align-items: baseline; }
+  .brk :global(.brk__n) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brk :global(.brk__m) { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint);
+    white-space: nowrap; }
+  .brk :global(.brk__m i) { font-family: var(--font-body); font-style: italic; }
+  .brk :global(li b) { font-family: var(--font-mono); color: var(--text); text-align: right;
+    font-variant-numeric: tabular-nums; }
+  .brk :global(.brk__hint) { font-size: 0.62rem; color: var(--text-faint); font-style: italic; margin-top: 0.3rem; }
+
+  .vp__hdnote { display: block; font-family: var(--font-body); font-weight: 400; text-transform: none;
+    letter-spacing: 0; font-size: 0.58rem; color: var(--text-faint); margin-top: 0.15rem; }
+  .vp { width: auto; min-width: 36rem; max-width: 52rem; }
+  .nhdr--num, .vp :global(.cell--num) { text-align: right; }
+  .vp :global(.cell--num) { font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 0.86rem; vertical-align: top; }
+  .vp :global(.rowlabel) { text-align: left; width: 6rem; }
+  .vp :global(.vp__n) { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-dim); }
+  .vp :global(.vp__dim) { color: var(--text-faint); font-size: 0.76rem; }
+  .vp :global(.vp__dcol) { border-left: 1px solid var(--border-strong); color: var(--text-dim); width: 5.5rem; }
+  .vp :global(.vp__opt.is-on) { color: var(--accent); }
+  .vp :global(th.vp__opt.is-on) { color: var(--accent); }
+  .vp :global(.vp--here) { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .vp :global(.vp--here .vp__n) { color: var(--text); font-weight: 600; }
+  .vp :global(.vp--here .vp__opt.is-on) { font-weight: 700; }
+
+  .rates { margin-top: 1.6rem; }
+  .rates__h { font-family: var(--font-display); font-size: 1rem; color: var(--accent); margin: 0 0 0.6rem; }
+  .rates__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0.9rem 1.6rem; }
+  .rates h3 { font-family: var(--font-display); font-size: 0.82rem; color: var(--text); margin: 0 0 0.3rem; }
+  .rates ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.22rem; font-size: 0.75rem;
+    color: var(--text-dim); line-height: 1.45; }
+  .rates b { color: var(--text); }
+  .rates i { font-style: italic; }
+  .tag { font-family: var(--font-mono); font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 3px; padding: 0 0.25rem; }
+  .fine { font-size: 0.73rem; color: var(--text-faint); line-height: 1.55; max-width: 95ch; margin: 0.9rem 0 0; }
+  .fine b { color: var(--text-dim); }
+  .fine a { color: var(--accent); }
+</style>

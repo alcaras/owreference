@@ -516,6 +516,16 @@ export const TABS: Tab[] = [
     ],
   },
   {
+    slug: 'victory-points', icon: '🏆', label: 'Victory Point Target', section: 'Tools',
+    status: 'built', sourceSheet: '',
+    summary: 'How many VP a game takes to win — by city sites, players, teams and the setup option',
+    willContain: [
+      'The engine\'s own routine (Game.cs getVPToWin) replayed for any setup',
+      'Sites → target table for all four Victory Point options, tournament defaults',
+      'Pool breakdown: culture levels, the 13-wonder cap, holy sites, projects',
+    ],
+  },
+  {
     slug: 'cognomens-tracker', icon: '🧮', label: 'Cognomens Tracker', section: 'Tools',
     status: 'built', sourceSheet: '👑Cognomens (Tracker)',
     summary: 'Interactive calculator: which title your leader earns',

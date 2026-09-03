@@ -53,6 +53,7 @@ data:
 	@python3 scripts/build_archetypes.py
 	@python3 scripts/build_cognomens.py
 	@python3 scripts/build_hurry.py
+	@python3 scripts/build_victory_points.py
 	@python3 scripts/build_missions.py
 	@python3 scripts/build_mission_catalog.py
 	@python3 scripts/build_story_events.py
