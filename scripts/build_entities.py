@@ -524,6 +524,69 @@ def build() -> dict:
                 "page": "traits", "scan": False,
             })
 
+    # ── every other row the reference pages actually render ─────────────────
+    # The blocks above register entities from curated tables (the icon/alias
+    # maps) and XML walks. Anything a page renders that no curated block names
+    # was invisible to <Term>, the backlink graph and the header search:
+    # Garrison and Stronghold sat on /urban-improvements with anchors and could
+    # not be found (only Citadel had a curated icon alias), and the same held
+    # for 200+ projects, every promotion but the three Focus tiers, and every
+    # specialist. Register straight from the datasets that render them.
+    #
+    # Keyed by the row's own (page, slug) so a curated entry always wins and no
+    # existing id churns; the row's slug is the anchor its page emits, per the
+    # "never re-derive a slug" rule above.
+    #
+    # scan=False throughout: these never join the free-text alias scan. Half
+    # the names are ordinary English words in game prose — "Town", "Range",
+    # "Fair", "Estates", "Brave", "Literature" — and scanning for them mislinks
+    # (same reason traits are scan=False). They link via explicit <Term id=…>,
+    # and they are searchable, which is what was actually missing.
+    taken = {(e.get("page"), e.get("slug")) for e in entities}
+
+    def register_rows(rows, page: str, etype: str) -> None:
+        for row in rows or []:
+            rid, slug, name = row.get("id"), row.get("slug"), row.get("name")
+            if not (rid and slug and name) or (page, slug) in taken:
+                continue
+            taken.add((page, slug))
+            entity = {
+                "id": rid, "slug": slug, "type": etype, "name": name,
+                "aliases": [name], "page": page, "scan": False,
+            }
+            if row.get("icon"):
+                entity["icon"] = row["icon"]
+            entities.append(entity)
+
+    for filename, page, etype in (
+        ("urban_improvements.json", "urban-improvements", "improvement"),
+        ("rural_improvements.json", "rural-improvements", "improvement"),
+        ("promotions.json", "promotions", "promotion"),
+        ("projects.json", "projects", "project"),
+    ):
+        register_rows(load_data(filename), page, etype)
+
+    # World-religion buildings are tabled one row per building CLASS with a
+    # column per religion, so the row label is the entity (the per-religion
+    # improvement ids live in its cells).
+    register_rows(
+        [{"id": f"IMPROVEMENT_{r['slug'].upper()}", "slug": r["slug"], "name": r.get("label")}
+         for r in (load_data("world_religion_buildings.json") or {}).get("rows") or []
+         if r.get("slug")],
+        "world-religion-buildings", "improvement")
+
+    # Specialists are tabled one row per CLASS (the three tiers side by side),
+    # so the class is the entity and classSlug is the anchor both pages emit.
+    # Tiered classes are the urban table; untiered ones the rural table.
+    for row in load_data("specialists.json") or []:
+        cslug, cname = row.get("classSlug"), row.get("class")
+        if not (cslug and cname):
+            continue
+        register_rows([{"id": row.get("classId") or f"SPECIALIST_{cslug.upper()}",
+                        "slug": cslug, "name": cname, "icon": row.get("icon")}],
+                      "urban-specialists" if (row.get("tier") or 0) > 0 else "rural-specialists",
+                      "specialist")
+
     # De-duplicate by id
     seen: set[str] = set()
     deduped: list[dict] = []

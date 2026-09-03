@@ -23,7 +23,7 @@ TYPE_LABEL = {
     "family": "Family", "shrine": "Shrine", "resource": "Resource", "law": "Law",
     "wonder": "Wonder", "improvement": "Improvement", "yield": "Yield",
     "nation": "Nation", "tribe": "Tribe", "theology": "Theology",
-    "promotion": "Promotion", "project": "Project",
+    "promotion": "Promotion", "project": "Project", "specialist": "Specialist",
 }
 
 

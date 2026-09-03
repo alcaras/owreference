@@ -26,7 +26,7 @@ const base = import.meta.env.BASE_URL;
 const NAV_TYPES = new Set([
   'nation', 'family', 'yield', 'tech', 'unit', 'law',
   'resource', 'improvement', 'project', 'promotion',
-  'shrine', 'wonder', 'theology', 'tribe', 'archetype', 'trait',
+  'shrine', 'wonder', 'theology', 'tribe', 'archetype', 'trait', 'specialist',
 ]);
 const isLinkable = e && NAV_TYPES.has(e.type) && !!e.page;
 // Append the #slug deep-link anchor unless the page IS the item's detail route
