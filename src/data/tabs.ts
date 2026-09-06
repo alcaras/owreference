@@ -58,6 +58,11 @@ export const TABS: Tab[] = [
     ],
   },
   {
+    slug: 'family-envy', icon: '😠', label: 'Envy & the City Split', section: 'Families',
+    status: 'built', sourceSheet: '',
+    summary: 'Most Cities, Fewest Cities and Envy — how a split of cities moves family opinion',
+  },
+  {
     slug: 'family-heads', icon: '👑', label: 'Family Head Selection', section: 'Families',
     status: 'built', sourceSheet: '',
     summary: 'How the game picks a family head — succession priority, then a weighted roll',

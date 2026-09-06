@@ -47,6 +47,7 @@ data:
 	@python3 scripts/build_council.py
 	@python3 scripts/build_difficulty.py
 	@python3 scripts/build_opinion.py
+	@python3 scripts/build_family_city_opinion.py
 	@python3 scripts/build_trait_inheritance.py
 	@python3 scripts/build_traits.py
 	@python3 scripts/build_study_events.py
