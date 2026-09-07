@@ -27,7 +27,8 @@ Also exported:
     (isDefensiveCityEffect: effect iCityHP>0 or iStrengthModifier>0);
   • projects with bRequiresGovernor (buildable under an acting governor — City.canBuildProject
     tests isGoverned(), which counts the default governor);
-  • traits with a <GovernorEffectCity> (the Vizier's own traits apply in every city he runs);
+  • the count of traits with a <GovernorEffectCity> (the Vizier's own traits apply in every
+    city he runs; the Traits page lists them, so only the count is exported);
   • the Autonomous Rule event lifecycle (grant / end) with option outcomes.
 """
 from __future__ import annotations
@@ -224,15 +225,9 @@ def main() -> None:
             gov_required.append(r)
     gov_required.sort(key=lambda p: p["name"])
 
-    # ── traits with a governor effect ──────────────────────────────────────
-    gov_traits = []
-    for tid, e in traits.items():
-        gec = e.findtext("GovernorEffectCity") or ""
-        if gec and gec in effect_city:
-            lines = render_effect_city(effect_city[gec], indexes=indexes)
-            gov_traits.append({"id": tid, "name": trait_name(tid), "effectCity": gec,
-                               "archetype": tid.endswith("_ARCHETYPE"), "effects": lines})
-    gov_traits.sort(key=lambda t: (not t["archetype"], t["name"]))
+    # ── traits with a governor effect (count only — the Traits page lists them) ──
+    governor_trait_count = sum(1 for e in traits.values()
+                               if (e.findtext("GovernorEffectCity") or "") in effect_city)
 
     # ── Autonomous Rule lifecycle ──────────────────────────────────────────
     def describe_bonus(bid: str, depth: int = 0) -> list[str]:
@@ -373,7 +368,7 @@ def main() -> None:
         "unitBuildModifierTraits": ubm,
         "defensiveProjects": defensive_projects,
         "governorRequiredProjects": gov_required,
-        "governorTraitEffects": gov_traits,
+        "governorTraitCount": governor_trait_count,
         "autonomy": {"project": autonomy_project, "events": autonomy_events},
         "examples": {
             "opulence": project_ref("PROJECT_LAVISH_LIFESTYLE"),
@@ -386,7 +381,7 @@ def main() -> None:
     OUT.write_text(json.dumps(out, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"wrote {OUT.relative_to(ROOT)}: {len(carriers)} carriers, {len(ubm)} build-modifier traits, "
           f"{len(defensive_projects)} defensive projects, {len(gov_required)} governor-gated projects, "
-          f"{len(gov_traits)} governor traits, {len(autonomy_events)} events")
+          f"{governor_trait_count} governor traits, {len(autonomy_events)} events")
 
 
 if __name__ == "__main__":

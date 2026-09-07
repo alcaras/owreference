@@ -12,7 +12,7 @@ import autobuild from '../data/autobuild.json';
 // with tunables from globalsAI.xml via scripts/build_autobuild.py.
 const base = import.meta.env.BASE_URL;
 const { constants: C, vizier, unitBuildModifierTraits, defensiveProjects,
-        governorRequiredProjects, governorTraitEffects } = autobuild;
+        governorRequiredProjects, governorTraitCount } = autobuild;
 const shared = autobuild.carriers.find(c => c.id === vizier.noGovernorEffectCity)!;
 
 // getBuildValue(base, rate, cost, min, half):
@@ -35,8 +35,6 @@ const exCost = 60, exRate = 6;
 const exTurns = Math.ceil(exCost / exRate);
 const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE_PROJECT_BUILD_TURNS);
 
-const archetypeGov = governorTraitEffects.filter(t => t.archetype);
-const otherGov = governorTraitEffects.filter(t => !t.archetype);
 ---
 
 <Base
@@ -137,8 +135,9 @@ const otherGov = governorTraitEffects.filter(t => !t.archetype);
       <li>
         <b>Trait Governor effects apply.</b> Every trait with a <code>GovernorEffectCity</code>
         that the Vizier has fires in <i>every</i> city he runs
-        (<code>Character.resetAllTraitGovernorEffectCity</code>). {governorTraitEffects.length} traits
-        carry one — the archetypes and the common adjectives are listed below.
+        (<code>Character.resetAllTraitGovernorEffectCity</code>). {governorTraitCount} traits
+        carry one; the <a href={`${base}traits`}>Traits</a> page lists each trait's Governor effect,
+        so a Builder Vizier speeds improvements everywhere he rules, a Warlike one adds Training.
       </li>
       <li>
         <b>Governor-opinion yields apply.</b> <code>calculateGovernorOpinionYield</code> turns the
@@ -157,27 +156,6 @@ const otherGov = governorTraitEffects.filter(t => !t.archetype);
         (<code>isGovernorLeader</code> is false) and rating yields (the seat defines none).
       </li>
     </ul>
-
-    <h3 class="cc-h3">Governor trait effects the Vizier may bring</h3>
-    <div class="cc-scroll">
-      <table class="cc-table cc-table--wide">
-        <thead><tr><th>Trait</th><th>Effect in each city he governs</th></tr></thead>
-        <tbody>
-          {archetypeGov.map(t => (
-            <tr>
-              <td><Term id={t.id} /> <span class="cc-dim">archetype</span></td>
-              <td>{t.effects.length ? t.effects.map(x => <div><LinkedText text={x} /></div>) : <span class="cc-dim">—</span>}</td>
-            </tr>
-          ))}
-          {otherGov.map(t => (
-            <tr>
-              <td><Term id={t.id} /></td>
-              <td>{t.effects.length ? t.effects.map(x => <div><LinkedText text={x} /></div>) : <span class="cc-dim">—</span>}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
 
     <h3 class="cc-h3">Governor-gated projects that open up</h3>
     <table class="cc-table">
