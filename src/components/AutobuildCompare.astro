@@ -1,13 +1,10 @@
 ---
-// Four ways a city's production queue gets decided, side by side. Shared by
+// Three ways a city's production queue gets decided, side by side. Shared by
 // the Grand Vizier and Autonomous Rule pages. Facts:
 //  - Game.cs action handlers (BUILD_PROJECT / BUILD_SPECIALIST / BUILD_UNIT /
-//    BUILD_QUEUE) refuse when City.isAutoBuild() — but NOT when merely
-//    isAutomated() (the "Start City Automation" button).
+//    BUILD_QUEUE) refuse when City.isAutoBuild().
 //  - City.canHurry → isNoHurry(); both autobuild carriers set bNoHurry.
-//  - PlayerAI.doAutomatedCityBuilds plans for isAutoBuild || isAutomated cities,
-//    but the "make sure every city builds something" fallback (chooseBuild)
-//    only covers isAutoBuild cities.
+//  - PlayerAI.doAutomatedCityBuilds plans for isAutoBuild cities with buying off.
 //  - EFFECTCITY_PROJECT_AUTONOMOUS_RULE sets bNoBuildUnits; Shared Power does not.
 import autobuild from '../data/autobuild.json';
 const base = import.meta.env.BASE_URL;
@@ -17,22 +14,20 @@ const yields = ar?.yields.join(', ') ?? '';
 
 const cols = [
   { key: 'manual',  label: 'Manual',                 href: '' },
-  { key: 'auto',    label: 'City Automation button', href: '' },
   { key: 'vizier',  label: 'Grand Vizier',           href: `${base}grand-vizier` },
   { key: 'autonomy',label: 'Autonomous Rule',        href: `${base}autonomous-rule` },
 ];
-const rows: { label: string; manual: string; auto: string; vizier: string; autonomy: string }[] = [
-  { label: 'Who picks the build',     manual: 'You',               auto: 'AI planner (you can override)', vizier: 'AI planner',        autonomy: 'AI planner' },
-  { label: 'Scope',                   manual: 'Per city',          auto: 'Per city (toggle)',            vizier: 'Every city without a Governor', autonomy: 'That one city' },
-  { label: 'Your queue edits',        manual: 'Allowed',           auto: 'Allowed',                      vizier: 'Refused',            autonomy: 'Refused' },
-  { label: 'Hurrying',                manual: 'Allowed',           auto: 'Allowed',                      vizier: 'Blocked',            autonomy: 'Blocked' },
-  { label: 'Units',                   manual: 'Yes',               auto: 'Yes',                          vizier: 'Yes',                autonomy: 'None at all' },
-  { label: 'Projects & specialists',  manual: 'Yes',               auto: 'Yes',                          vizier: 'Yes',                autonomy: 'Yes' },
-  { label: 'Buys missing goods',      manual: 'If you choose',     auto: 'Never',                        vizier: 'Never',              autonomy: 'Never' },
-  { label: 'Idle-city fallback',      manual: '—',                 auto: 'None (can sit idle)',          vizier: 'Always picks something', autonomy: 'Always picks something' },
-  { label: 'Acting Governor',         manual: '—',                 auto: '—',                            vizier: 'The Vizier',         autonomy: '— (event usually installs one)' },
-  { label: 'Extra yields',            manual: '—',                 auto: '—',                            vizier: '—',                  autonomy: yields },
-  { label: 'How to end it',           manual: '—',                 auto: 'Toggle off',                   vizier: 'Assign a Governor, or dismiss the Vizier', autonomy: 'Event choice, or lose the city' },
+const rows: { label: string; manual: string; vizier: string; autonomy: string }[] = [
+  { label: 'Who picks the build',     manual: 'You',               vizier: 'AI planner',        autonomy: 'AI planner' },
+  { label: 'Scope',                   manual: 'Per city',          vizier: 'Every city without a Governor', autonomy: 'That one city' },
+  { label: 'Your queue edits',        manual: 'Allowed',           vizier: 'Refused',            autonomy: 'Refused' },
+  { label: 'Hurrying',                manual: 'Allowed',           vizier: 'Blocked',            autonomy: 'Blocked' },
+  { label: 'Units',                   manual: 'Yes',               vizier: 'Yes',                autonomy: 'None at all' },
+  { label: 'Projects & specialists',  manual: 'Yes',               vizier: 'Yes',                autonomy: 'Yes' },
+  { label: 'Buys missing goods',      manual: 'If you choose',     vizier: 'Never',              autonomy: 'Never' },
+  { label: 'Acting Governor',         manual: '—',                 vizier: 'The Vizier',         autonomy: '— (event usually installs one)' },
+  { label: 'Extra yields',            manual: '—',                 vizier: '—',                  autonomy: yields },
+  { label: 'How to end it',           manual: '—',                 vizier: 'Assign a Governor; or reassign or dismiss the Vizier', autonomy: 'Event choice, or lose the city' },
 ];
 ---
 <div class="ab-scroll">
@@ -66,7 +61,7 @@ const rows: { label: string; manual: string; auto: string; vizier: string; auton
   .ab-scroll { overflow-x: auto; max-width: 100%; margin: 0.6rem 0 0.9rem; }
   .ab-table {
     width: 100%;
-    min-width: 58rem;
+    min-width: 46rem;
     table-layout: fixed;
     border-collapse: collapse;
     font-size: 0.8rem;

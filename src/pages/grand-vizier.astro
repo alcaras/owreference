@@ -56,8 +56,8 @@ const otherGov = governorTraitEffects.filter(t => !t.archetype);
     <LinkedText text="Governor" /> gets the <b>{shared.name}</b> effect: the Vizier
     becomes its <b>acting Governor</b>, its production queue is handed to the
     game's own <b>AI city planner</b>, and you can no longer choose or hurry what it
-    builds. This page is that planner, function by function. Autonomous cities use
-    the same planner with one extra rule — see <a href={`${base}autonomous-rule`}>Autonomous Rule</a>.
+    builds. This page is that planner, function by function. Autonomous cities run a
+    similar planner without units — see <a href={`${base}autonomous-rule`}>Autonomous Rule</a>.
   </p>
 
   <section class="cc-section">
@@ -107,6 +107,11 @@ const otherGov = governorTraitEffects.filter(t => !t.archetype);
           <td>Manual control of <b>all</b> cities</td>
           <td>Dismiss the Vizier (or leave the seat empty)</td>
           <td>The player effect goes away with the seat, and with it every Shared Power instance.</td>
+        </tr>
+        <tr>
+          <td>All cities back, <b>without</b> the dismissal</td>
+          <td>Reassign the Vizier to another job — Governor of one city, or General</td>
+          <td>A character holds one job at a time (<code>Character.clearJobs</code>): taking the new post vacates the council seat, so the effect ends without a dismissal and you keep the character working for you.</td>
         </tr>
         <tr>
           <td>Keep it that way</td>
@@ -408,13 +413,8 @@ const otherGov = governorTraitEffects.filter(t => !t.archetype);
   </section>
 
   <section class="cc-section">
-    <h2 class="cc-h2">Compared with the other ways a queue gets decided</h2>
+    <h2 class="cc-h2">Compared with manual control and Autonomous Rule</h2>
     <AutobuildCompare current="vizier" />
-    <p class="cc-fineprint">
-      The plain “{vizier.help.automateButton.replace('{true_0:Cancel:Start}', 'Start')}” button on the
-      city panel uses the same planner, but the <code>Game.cs</code> gates only test
-      <code>isAutoBuild()</code>, so you can still edit and hurry — and it has no idle fallback.
-    </p>
   </section>
 
   <p class="cc-source">

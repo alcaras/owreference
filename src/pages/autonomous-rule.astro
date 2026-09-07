@@ -77,7 +77,8 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
     <Term id={project.id} /> in one city. That city then pays you
     {carrier.yields.map((y, i) => (<>{i > 0 && ' and '}<b><LinkedText text={y} /></b></>))},
     but <b>cannot build units</b>, <b>cannot hurry</b>, and hands its production queue to the
-    game's AI planner — the same one the <a href={`${base}grand-vizier`}>Grand Vizier</a> uses.
+    game's AI planner — similar to the one the <a href={`${base}grand-vizier`}>Grand Vizier</a> uses,
+    but with the unit pool removed, so it behaves quite differently in practice.
     You keep everything outside the queue: tiles, workers, laws, the Governor.
   </p>
 
@@ -153,9 +154,11 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
     <h2 class="cc-h2">How it decides</h2>
     <p>
       At the start of your turn <code>AI.doAutomatedCityBuilds</code> runs the AI's city planner for
-      the autonomous city alongside any Vizier-run cities. The full breakdown — filters, value
-      formulas, the build-time discount — is on the
-      <a href={`${base}grand-vizier`}>Grand Vizier Rulership</a> page. The short version:
+      the autonomous city. It shares its code with the Grand Vizier's planner, but because units are
+      off the table here the outcomes differ: projects and specialists only, and in danger only
+      defensive projects. The full breakdown of the shared parts — filters, value formulas, the
+      build-time discount — is on the <a href={`${base}grand-vizier`}>Grand Vizier Rulership</a> page.
+      The short version for an autonomous city:
     </p>
     <ol class="cc-steps">
       <li><b>Repair first</b> if the city is damaged beyond its passive healing.</li>
@@ -281,7 +284,7 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
   </section>
 
   <section class="cc-section">
-    <h2 class="cc-h2">Compared with the other ways a queue gets decided</h2>
+    <h2 class="cc-h2">Compared with manual control and the Grand Vizier</h2>
     <AutobuildCompare current="autonomy" />
   </section>
 
