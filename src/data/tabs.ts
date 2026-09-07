@@ -57,6 +57,12 @@ export const TABS: Tab[] = [
       'Per-family opinion modifiers',
     ],
   },
+  { slug: 'family-pairs', icon: '🤝', label: 'Family Pairs', section: 'Families',
+    status: 'built', sourceSheet: '',
+    summary: 'Every pair of family classes and which nations field both' },
+  { slug: 'family-trios', icon: '🤝', label: 'Family Trios', section: 'Families',
+    status: 'built', sourceSheet: '',
+    summary: 'Every trio of family classes and which nations can play all three (max 3 families per game)' },
   {
     slug: 'family-envy', icon: '😠', label: 'Envy & the City Split', section: 'Families',
     status: 'built', sourceSheet: '',

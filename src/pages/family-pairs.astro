@@ -1,0 +1,26 @@
+---
+// Family Pairs — every unordered pair of family classes and the nations whose
+// family.xml roster fields both. Body lives in FamilyComboTable (shared with
+// /family-trios); data in family_pairings.json.
+import Base from '../layouts/Base.astro';
+import FamilyComboTable from '../components/FamilyComboTable.astro';
+import data from '../data/family_pairings.json';
+
+const fielded = data.pairs.filter(p => p.nations.length).length;
+---
+
+<Base
+  title="Family Pairs"
+  active="family-pairs"
+  pageMark="👪"
+  pageFilter="Filter by nation or class…"
+  description="Every pair of Old World family classes (Champions, Hunters, Riders, Statesmen, Sages, Patrons, Artisans, Landowners, Clerics, Traders) and which nations field both, from family.xml."
+  pageStats={[
+    { label: 'classes', value: data.classes.length },
+    { label: 'pairs', value: data.pairs.length },
+    { label: 'fielded', value: fielded },
+    { label: 'no nation', value: data.pairs.length - fielded },
+  ]}
+>
+  <FamilyComboTable kind="pairs" />
+</Base>

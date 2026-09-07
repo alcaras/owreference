@@ -26,6 +26,7 @@ data:
 	@python3 scripts/build_data.py
 	@python3 scripts/build_tribes.py
 	@python3 scripts/build_families.py
+	@python3 scripts/build_family_pairings.py
 	@python3 scripts/build_wonders.py
 	@python3 scripts/build_projects.py
 	@python3 scripts/build_ambitions.py

@@ -1,0 +1,273 @@
+---
+// FamilyComboTable — the shared body of /family-pairs and /family-trios.
+//
+// One row per unordered combination of family classes (all C(10,k) of them,
+// fielded or not), listing the nations whose family.xml roster carries at
+// least one family of every class in the combo. Data: family_pairings.json
+// (scripts/build_family_pairings.py). The page supplies <Base>; this
+// component renders the intro, the class facet, and the sortable table.
+import LinkedText from './LinkedText.astro';
+import TableTools from './TableTools.astro';
+import data from '../data/family_pairings.json';
+
+interface Props {
+  kind: 'pairs' | 'trios';
+}
+const { kind } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+type Combo = { classes: string[]; nations: string[] };
+const classes = data.classes;
+const classBySlug = Object.fromEntries(classes.map(c => [c.slug, c]));
+const classIndex = Object.fromEntries(classes.map((c, i) => [c.slug, i]));
+const nationBySlug = Object.fromEntries(data.nations.map(n => [n.slug, n]));
+const combos: Combo[] = kind === 'pairs' ? data.pairs : data.trios;
+const sibling = kind === 'pairs'
+  ? { slug: 'family-trios', label: 'Family Trios' }
+  : { slug: 'family-pairs', label: 'Family Pairs' };
+
+// Default order: most nations first, then familyClass.xml order (the combos
+// are emitted in itertools.combinations order over that list, so comparing
+// class indexes position by position reproduces it).
+const rows = [...combos].sort((a, b) => {
+  if (b.nations.length !== a.nations.length) return b.nations.length - a.nations.length;
+  for (let i = 0; i < a.classes.length; i++) {
+    const d = classIndex[a.classes[i]] - classIndex[b.classes[i]];
+    if (d) return d;
+  }
+  return 0;
+});
+
+// Facet counts: fielded combos containing each class.
+const facetCount: Record<string, number> = {};
+for (const c of classes) {
+  facetCount[c.slug] = combos.filter(x => x.nations.length && x.classes.includes(c.slug)).length;
+}
+
+// Intro numbers fall out of the rosters: the common roster size and the
+// nations that differ from it.
+const bySize = new Map<number, string[]>();
+for (const n of data.nations) {
+  const k = n.classSlugs.length;
+  bySize.set(k, [...(bySize.get(k) || []), n.name]);
+}
+const commonSize = [...bySize.entries()].sort((a, b) => b[1].length - a[1].length)[0][0];
+const exceptions = [...bySize.entries()]
+  .filter(([k]) => k !== commonSize)
+  .sort((a, b) => b[0] - a[0])
+  .flatMap(([k, names]) => names.map(name => `${name} ${k}`))
+  .join(', ');
+const max = data.maxFamilies;
+
+// Intro prose goes through LinkedText; the identifiers do not (the alias
+// matcher would turn "Game.setupNew" and "game option" into the Game
+// resource — the same trap hints.astro documents).
+const introA = `Most nations list ${commonSize} families (${exceptions}), but a player can start at most ${max}:`;
+const introB = `so from ${commonSize} families you play ${max}.`;
+const introC = kind === 'pairs'
+  ? `Each row is a pair of family classes and the nations whose rosters hold both; the sets you actually play are on`
+  : `Each row is a trio of family classes and the nations whose rosters hold all ${max}; every pair, fielded or not, is on`;
+const introD = `Both pages assume default setup: the Randomize Families setup option`;
+const introE = `reassigns each family's class at random.`;
+
+function blob(r: Combo): string {
+  return [
+    ...r.classes.map(s => classBySlug[s].name),
+    ...r.nations.flatMap(s => [nationBySlug[s].name, s, nationBySlug[s].gameContentName]),
+  ].filter(Boolean).join(' ').toLowerCase();
+}
+---
+
+<p class="fc-lede">
+  <LinkedText text={introA} />
+  {' '}<code>MAX_FAMILIES</code> in <code>globalsInt.xml</code>, enforced by
+  <code>Player.canFoundCityFamily</code> and shown on the found-city widget as
+  <q>Max Families: 0/{max}</q>, <LinkedText text={introB} />
+  {' '}<LinkedText text={introC} />
+  {' '}<a href={`${base}${sibling.slug}`}>{sibling.label}</a>.
+  {' '}<LinkedText text={introD} />
+  {' '}(<code>GAMEOPTION_RANDOMIZE_FAMILIES</code>, <code>Game.setupNew</code>)
+  <LinkedText text={introE} />
+</p>
+
+<div class="fc-tools">
+  <TableTools />
+  <div class="fc-facet">
+    <span class="fc-facet__l">Classes</span>
+    {classes.map(c => (
+      <button type="button" class="fam-chip" data-class={c.slug} aria-pressed="false" title={`${facetCount[c.slug]} fielded ${kind} include ${c.name}`}>
+        <img class="fam-chip__icon" src={`${base}${c.icon}`} alt="" />
+        {c.name}<span class="fam-chip__n">{facetCount[c.slug]}</span>
+      </button>
+    ))}
+    <button type="button" class="fam-chip fam-chip--clear" id="fc-clear" hidden>clear</button>
+  </div>
+</div>
+
+<div class="grid__scroll">
+  <table class="ntbl fc-tbl" data-sortable data-kind={kind} id="fc-table">
+    <colgroup>
+      <col class="fc-col-classes" />
+      <col class="fc-col-nations" />
+      <col class="fc-col-n" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="rowlabel rowlabel--corner fc-corner">Classes</th>
+        <th class="nhdr fc-hdr"><span class="nhdr__name">Nations</span></th>
+        <th class="nhdr fc-hdr"><span class="nhdr__name">#</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map(r => (
+        <tr id={r.classes.join('+')} data-classes={r.classes.join(' ')} data-search={blob(r)}>
+          <th class="rowlabel fc-classes" scope="row" data-sort={r.classes.map(s => classBySlug[s].name).join(' + ')}>
+            {r.classes.map((s, i) => (
+              <>
+                {i > 0 && <span class="fc-plus" aria-hidden="true">+</span>}
+                <a class="chip fc-chip" href={`${base}families/${s}`}>
+                  <img class="chip__icon" src={`${base}${classBySlug[s].icon}`} alt="" />
+                  <span>{classBySlug[s].name}</span>
+                </a>
+              </>
+            ))}
+          </th>
+          {/* data-sort: the count, blank when no nation so TableTools sinks the
+              empties in both directions instead of leading with 0 ascending. */}
+          <td class={`cell yield-misc fc-nations ${r.nations.length ? '' : 'is-empty'}`} data-sort={r.nations.length ? String(r.nations.length) : ''}>
+            {r.nations.length ? (
+              <div class="nation-tags">
+                {r.nations.map(s => {
+                  const n = nationBySlug[s];
+                  return (
+                    <a class={`nation-tag n-${n.slug}`} href={`${base}nations#${n.slug}`} title={n.gameContentName ? `${n.name} · ${n.gameContentName}` : n.name}>
+                      <img src={`${base}img/crests/${n.slug}.png`} alt="" class="nation-tag__crest" />
+                      <span class="nation-tag__name">{n.name}</span>
+                      {n.gameContentName && <span class="nation-tag__dlc" title={n.gameContentName}>dlc</span>}
+                    </a>
+                  );
+                })}
+              </div>
+            ) : (
+              <span class="cell__dash">—</span>
+            )}
+          </td>
+          <td class={`cell yield-misc fc-n ${r.nations.length ? '' : 'is-empty'}`}>{r.nations.length}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<script is:inline>
+  (function () {
+    // Class facet (AND across picked classes) composed with the page's own
+    // #page-filter box (Base pageFilter). Tolerate a missing box.
+    var table = document.getElementById('fc-table');
+    if (!table || !table.tBodies.length) return;
+    var input = document.getElementById('page-filter');
+    var clear = document.getElementById('fc-clear');
+    var chips = [].slice.call(document.querySelectorAll('.fam-chip[data-class]'));
+    var rows = [].slice.call(table.tBodies[0].rows);
+    var picked = [];
+
+    function apply() {
+      var q = ((input && input.value) || '').trim().toLowerCase();
+      rows.forEach(function (tr) {
+        var cls = (tr.getAttribute('data-classes') || '').split(' ');
+        var hitF = picked.every(function (p) { return cls.indexOf(p) >= 0; });
+        var hitQ = !q || (tr.getAttribute('data-search') || '').indexOf(q) >= 0;
+        tr.classList.toggle('is-hidden', !(hitF && hitQ));
+      });
+      if (clear) clear.hidden = picked.length === 0;
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var slug = chip.getAttribute('data-class');
+        var i = picked.indexOf(slug);
+        if (i >= 0) picked.splice(i, 1); else picked.push(slug);
+        chip.setAttribute('aria-pressed', String(i < 0));
+        apply();
+      });
+    });
+    if (clear) clear.addEventListener('click', function () {
+      picked = [];
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+      apply();
+    });
+    if (input) input.addEventListener('input', apply);
+  })();
+</script>
+
+<style>
+  .fc-lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
+
+  .fc-tools {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem;
+    margin: 0 0 0.9rem;
+  }
+  .fc-facet { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+  .fc-facet__l { font-size: 0.74rem; color: var(--text-faint); margin-right: 0.1rem; }
+  /* Facet chips — same as ambitions.astro's fam-chip, plus a class icon. */
+  .fam-chip {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font: inherit; font-size: 0.78rem; cursor: pointer; padding: 0.12rem 0.45rem;
+    border-radius: var(--radius-sm); background: var(--bg-elev);
+    border: 1px solid var(--border-strong, var(--bg-elev-3)); color: var(--text-faint);
+  }
+  .fam-chip:hover { color: var(--text); }
+  .fam-chip[aria-pressed="true"] {
+    color: var(--bg); background: var(--gold); border-color: var(--gold);
+  }
+  .fam-chip__icon { width: 1.1em; height: 1.1em; object-fit: contain; }
+  .fam-chip__n { font-family: var(--font-mono); font-size: 0.68rem; opacity: 0.65; }
+  .fam-chip--clear { font-style: italic; }
+
+  /* Fixed layout needs explicit column widths or the classes column crushes
+     on narrow screens; the table then scrolls inside .grid__scroll. */
+  .fc-tbl { min-width: 40rem; }
+  .fc-tbl[data-kind="trios"] { min-width: 46rem; }
+  .fc-col-classes { width: 15rem; }
+  .fc-tbl[data-kind="trios"] .fc-col-classes { width: 21rem; }
+  .fc-col-nations { width: 22rem; }
+  .fc-col-n { width: 3rem; }
+
+  .fc-corner { text-align: left; padding-left: 0.6rem; }
+  .fc-hdr { padding-bottom: 0.5rem; }
+  .fc-classes {
+    text-align: left; padding: 0.3rem 0.6rem;
+    border-bottom: 1px solid var(--border-faint);
+    white-space: nowrap;
+  }
+  .fc-chip { font-size: 0.8rem; color: var(--text); padding-right: 0; }
+  .fc-chip .chip__icon { width: 1.2em; height: 1.2em; }
+  .fc-chip:hover span { color: var(--gold); }
+  .fc-plus { color: var(--text-faint); font-family: var(--font-mono); margin: 0 0.35rem; }
+
+  .fc-nations { padding: 0.3rem 0.6rem; }
+  .fc-n { text-align: right; color: var(--text-soft); font-family: var(--font-mono); }
+  .fc-n.is-empty { color: var(--text-faint); }
+
+  .nation-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+  .nation-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem 0.15rem 0.3rem;
+    background: var(--nation-bg, var(--bg-elev));
+    color: var(--nation-fg, var(--text));
+    border: 1px solid color-mix(in srgb, var(--nation-bg) 60%, #000 40%);
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2));
+  }
+  .nation-tag:hover { text-decoration: none; filter: brightness(1.12); }
+  .nation-tag__crest { width: 14px; height: 14px; object-fit: contain; }
+  .nation-tag__dlc {
+    font-family: var(--font-mono); font-size: 0.58rem; opacity: 0.75;
+    border: 1px solid currentColor; border-radius: 3px; padding: 0 0.25em; line-height: 1.3;
+  }
+</style>

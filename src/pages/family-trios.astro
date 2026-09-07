@@ -1,0 +1,27 @@
+---
+// Family Trios — every unordered trio of family classes and the nations whose
+// family.xml roster can play all three (MAX_FAMILIES = 3 caps a game at three
+// families). Body lives in FamilyComboTable (shared with /family-pairs).
+import Base from '../layouts/Base.astro';
+import FamilyComboTable from '../components/FamilyComboTable.astro';
+import data from '../data/family_pairings.json';
+
+const fielded = data.trios.filter(t => t.nations.length).length;
+---
+
+<Base
+  title="Family Trios"
+  active="family-trios"
+  pageMark="👪"
+  pageFilter="Filter by nation or class…"
+  description={`Every trio of Old World family classes and which nations can play all three — a player starts at most ${data.maxFamilies} families (MAX_FAMILIES), so this is the set you actually play. From family.xml and globalsInt.xml.`}
+  pageStats={[
+    { label: 'classes', value: data.classes.length },
+    { label: 'trios', value: data.trios.length },
+    { label: 'fielded', value: fielded },
+    { label: 'no nation', value: data.trios.length - fielded },
+    { label: 'max families', value: data.maxFamilies },
+  ]}
+>
+  <FamilyComboTable kind="trios" />
+</Base>
