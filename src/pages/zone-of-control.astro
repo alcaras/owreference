@@ -1,0 +1,458 @@
+---
+// Zone of Control — how the movement code decides which step is refused.
+// Data: src/data/zoc.json (scripts/build_zoc.py: unit/effect XML + a port
+// of Tile.isHostileZOC / Unit.isValidMovementDirection that computes every
+// board below). Nothing on a board is hand-marked.
+import Base from '../layouts/Base.astro';
+import Term from '../components/Term.astro';
+import HexBoard from '../components/HexBoard.astro';
+import data from '../data/zoc.json';
+
+const base = import.meta.env.BASE_URL;
+const { units, grants, constants, texts, quadrants } = data;
+const sc = Object.fromEntries(data.scenarios.map(s => [s.id, s])) as Record<string, (typeof data.scenarios)[number]>;
+const boards = data.scenarios.filter(s => s.render);
+const zocColor = constants.colors.hostile;
+const hk = constants.hotkeys;
+
+// Representatives for the four cards. Membership comes from the data: each
+// pick lands in whatever quadrant build_zoc.py computed for it.
+const PICKS = [
+  'UNIT_WARRIOR', 'UNIT_SPEARMAN', 'UNIT_AXEMAN', 'UNIT_ARCHER', 'UNIT_LEGIONARY', 'UNIT_TRIREME',
+  'UNIT_HORSEMAN', 'UNIT_CHARIOT', 'UNIT_CAMEL_ARCHER', 'UNIT_CATAPHRACT', 'UNIT_HORSE_ARCHER',
+  'UNIT_WAR_ELEPHANT', 'UNIT_ONAGER', 'UNIT_BATTERING_RAM', 'UNIT_SETTLER', 'UNIT_WORKER', 'UNIT_CARAVAN',
+  'UNIT_SCOUT', 'UNIT_SCOUT_HANNO_NAVIGATOR',
+];
+const byId = new Map(units.map(u => [u.id, u]));
+const QUADRANT_ORDER = ['exerts', 'ignores-mounted', 'neither', 'ignores-all'] as const;
+const cards = QUADRANT_ORDER.map(q => {
+  const all = units.filter(u => u.quadrant === q);
+  const picks = PICKS.map(id => byId.get(id)!).filter(u => u && u.quadrant === q);
+  return { q, label: quadrants[q], all, picks, more: all.length - picks.length };
+});
+const CARD_HINT: Record<string, string> = {
+  exerts: 'Every infantry unit, melee or ranged, tribal or unique, plus the three ships.',
+  'ignores-mounted': 'Horse, camel and chariot units: only Polearm infantry holds them.',
+  neither: 'Elephants, siege engines, Settlers, Workers, Caravans and disciples.',
+  'ignores-all': 'Scouts carry the ignore flag without the Mounted trait, so nothing pins them.',
+};
+
+const polearm = grants.find(g => g.id === 'EFFECTUNIT_POLEARM')!;
+const maneuvers = grants.find(g => g.id === 'EFFECTUNIT_MANEUVERS')!;
+const mahout = grants.find(g => g.id === 'EFFECTUNIT_TRAIT_MAHOUT')!;
+
+const SOURCES = [
+  ['Unit.isValidMovementDirection', 'Unit.cs:7670-7695', 'the one rule: refused iff both tiles are in hostile ZOC; current tile tested with bIgnoreRiver = the step crosses a river (7689). Called from PathFinder.cs:914.'],
+  ['Unit.canBeSwapped / canSwapUnits', 'Unit.cs:8252, 8287', 'swap refused when both tiles are in hostile ZOC. No other caller of isHostileZOC exists.'],
+  ['Unit.hasZOC / hasIgnoreZOC', 'Unit.cs:6983, 7008', 'unit type flag or any held effect.'],
+  ['Unit.isUnitZoc', 'Unit.cs:4550', 'aeUnitTraitZOC: Polearm effects list Mounted.'],
+  ['Tile.isDirectionHostileZOC', 'Tile.cs:9991-10058', 'same medium only; hostile cities on land; hidden exerters and hidden movers; embarked units cannot ignore ship ZOC; ignore test, then the trait test.'],
+  ['Tile.isHostileZOC', 'Tile.cs:10061-10096', 'impassable and city tiles never in ZOC; improvement bIgnoreZOC (unset everywhere); river edges skipped unless bIgnoreRiver.'],
+  ['Tile.isInUnitZOC', 'Tile.cs:9974', 'the selected-unit overlay test: no river check.'],
+  ['Game.isHostile', 'Game.cs:14753', 'diplomacy.xml bHostile: only DIPLOMACY_WAR.'],
+  ['ClientRenderer', 'ClientRenderer.cs:1641, 1854, 1880', 'Hold-X overlay calls isHostileZOC with bIgnoreRiver: true; the selected-unit overlay uses isInUnitZOC.'],
+  ['PlayerAI', 'PlayerAI.cs:9358-9365, 10679-10686, 10953', `AI_UNIT_ZOC_VALUE ${constants.ai.zocValue}: ignore-ZOC worth ${constants.ai.ignoreZocValue}, each trait-ZOC ${constants.ai.traitZocValue}.`],
+  ['XML', 'unit.xml, effectUnit.xml, unitTrait.xml, promotion.xml, trait.xml, diplomacy.xml, hotkeys.xml, color.xml, globalsAI.xml', 'flags, grants, hotkeys, colours and the quoted strings.'],
+];
+const stats = [
+  { label: 'units exert', value: data._meta.exerting },
+  { label: 'units ignore', value: data._meta.ignoring },
+  { label: 'boards', value: boards.length },
+];
+---
+
+<Base
+  title="Zone of Control"
+  active="zone-of-control"
+  pageMark="🛑"
+  pageStats={stats}
+  description="How Old World's zone of control works: the one movement rule, who pins whom, and computed hex boards for walls, rivers, cities and water."
+>
+  <p class="lede">
+    Zone of control (ZOC) is one movement rule in the game's pathfinder. Every
+    zone and arrow below is computed by a port of that code, not drawn by hand.
+  </p>
+
+  <div class="legend zc-legend">
+    <span class="legend__label">Legend</span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--you"></i> your unit (white ring = the one moving)</span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--enemy"></i> enemy unit</span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--zoc" style={`background:${zocColor}`}></i> enemy zone for that unit</span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--ok"></i> legal step</span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--no">×</i> refused step</span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--dot"></i> reachable with unlimited moves</span>
+  </div>
+
+  <section class="zc-section" id="rule">
+    <h2 class="zc-h">The rule</h2>
+    <p class="zc-rule">A step is refused only when the tile you leave <em>and</em> the tile you enter are both inside an enemy zone.</p>
+    <p>
+      Entering a zone costs nothing and does not stop you. Leaving a zone for a
+      free tile is always allowed.
+    </p>
+    <blockquote class="zc-quote">
+      <p>{texts.help}</p>
+      <footer>In-game concept text, <code>{texts.conceptLong}</code></footer>
+    </blockquote>
+  </section>
+
+  <section class="zc-section zc-section--wide" id="who">
+    <h2 class="zc-h">Who pins whom</h2>
+    <div class="zc-cards">
+      {cards.map(c => (
+        <article class={`zc-card zc-card--${c.q}`} id={`q-${c.q}`}>
+          <h3 class="zc-card__title">{c.label}</h3>
+          <p class="zc-card__hint">{CARD_HINT[c.q]}</p>
+          <ul class="zc-card__units">
+            {c.picks.map(u => (
+              <li>
+                <img class="zc-uicon" src={`${base}img/icons/units/${u.iconSlug}.png`} alt="" loading="lazy" />
+                <Term id={u.id} showIcon={false} label={u.name} />
+              </li>
+            ))}
+            {c.more > 0 && <li class="zc-card__more"><a href="#appendix">+{c.more} more</a></li>}
+          </ul>
+        </article>
+      ))}
+    </div>
+    <p class="zc-note">
+      Quoted from the Spearman tutorial: “{texts.spearman.split('. ').filter(s => s.includes('Only Polearm'))[0]}.”
+      That is the whole Polearm exception: {polearm.carriers.join(', ')} pin Mounted units that ignore everyone else.
+    </p>
+  </section>
+
+  <section class="zc-section zc-section--wide" id="movement">
+    <h2 class="zc-h">Moving through a zone</h2>
+    <div class="zc-boards zc-boards--3">
+      <HexBoard scenario={sc.zone} zocColor={zocColor} />
+      <HexBoard scenario={sc.enter} zocColor={zocColor} />
+      <HexBoard scenario={sc.slip} zocColor={zocColor} />
+    </div>
+  </section>
+
+  <section class="zc-section zc-section--wide" id="walls">
+    <h2 class="zc-h">Walls</h2>
+    <p>
+      Dots mark every tile the search could reach with unlimited movement.
+    </p>
+    <div class="zc-boards zc-boards--2">
+      <HexBoard scenario={sc.wall2} zocColor={zocColor}
+        note="Every northward step is zone to zone." />
+      <HexBoard scenario={sc.wall3} zocColor={zocColor}
+        note="The drawn route is the one the search found." />
+    </div>
+  </section>
+
+  <section class="zc-section zc-section--wide" id="exceptions">
+    <h2 class="zc-h">Exceptions</h2>
+    <div class="zc-boards zc-boards--3">
+      <HexBoard scenario={sc.cavalry} zocColor={zocColor}
+        note="Only the spearman's tiles are washed for the Horseman." />
+      <HexBoard scenario={sc.elephant_pinned} zocColor={zocColor}
+        note="Elephants and siege carry neither flag: pinned by everyone, pinning no one." />
+      <HexBoard scenario={sc.elephant_pins_nothing} zocColor={zocColor}
+        note={`A ${mahout.dlc} general with the ${mahout.name} trait is the one thing that gives an elephant a zone.`} />
+      <HexBoard scenario={sc.river} zocColor={zocColor}
+        note="The dashed tile is what the in-game overlay paints anyway (see Reading the overlay)." />
+      <HexBoard scenario={sc.city} zocColor={zocColor}
+        note="Blue: your city. Red: an enemy city and its zone." />
+      <HexBoard scenario={sc.ships} zocColor={zocColor}
+        note="Land and water never share a zone." />
+      <HexBoard scenario={sc.embarked} zocColor={zocColor}
+        note="A land unit afloat cannot ignore ship zones even with the flag, and exerts nothing itself." />
+      <HexBoard scenario={sc.hidden} zocColor={zocColor}
+        note="Hiding effects: Scout Stealth, a Tactician leader's ranged units in trees or jungle, an Ambusher general in uncut trees or scrub." />
+    </div>
+  </section>
+
+  <section class="zc-section" id="not">
+    <h2 class="zc-h">What a zone does not do</h2>
+    <ul class="zc-list">
+      <li><strong>No extra cost.</strong> Entering or leaving a zone costs normal movement.</li>
+      <li><strong>No stop.</strong> Entering a zone does not end the move; only the zone-to-zone step is refused.</li>
+      <li><strong>No effect on combat.</strong> Attacks, rout retreats and pushes never consult it.</li>
+      <li><strong>Nothing at peace or truce.</strong> Only war is hostile; tribes at war count.</li>
+      <li><strong>No swap</strong> between two friendly units when both of their tiles are pinned.</li>
+      <li><strong>No terrain exemption.</strong> An improvement flag exists for it, but no improvement sets it.</li>
+    </ul>
+  </section>
+
+  <section class="zc-section" id="overlay">
+    <h2 class="zc-h">Reading the overlay</h2>
+    <p>
+      Hold <kbd>{hk.show.key}</kbd> to paint every tile in a hostile zone for the
+      selected unit; <kbd>{hk.lock.key}</kbd> locks it on. The game also tints
+      the zones around each visible enemy while a unit is selected.
+    </p>
+    <div class="zc-callout">
+      <strong>The overlay overstates rivers.</strong> The hold-{hk.show.key}
+      overlay tells the ZOC test to ignore river edges, and the selected-unit
+      tint uses a variant with no river test at all, so a river-shielded tile
+      shows red although stepping onto it is legal. The river board above draws
+      such a tile with a dashed outline.
+    </div>
+  </section>
+
+  <section class="zc-section" id="play">
+    <h2 class="zc-h">See it in play</h2>
+    <p>
+      Two owpuzzle puzzles are built on this rule:
+      <a href="https://owpuzzle.fly.dev/#the-gatekeeper" rel="noopener">The Gatekeeper</a> (one arrow on the
+      watchman opens the road) and
+      <a href="https://owpuzzle.fly.dev/#the-two-fords" rel="noopener">The Two Fords</a> (a chain of pickets across
+      two river crossings).
+    </p>
+  </section>
+
+  <section class="zc-section zc-section--wide" id="appendix">
+    <h2 class="zc-h">Appendix</h2>
+
+    <h3 class="zc-h3">Every unit</h3>
+    <div class="zc-table">
+      <table>
+        <thead>
+          <tr><th>Unit</th><th>Traits</th><th>Exerts</th><th>Ignores</th><th>Pinned by Polearm</th><th>Medium</th><th>Group</th></tr>
+        </thead>
+        <tbody>
+          {units.map(u => (
+            <tr id={`zoc-${u.slug}`}>
+              <td class="zc-unitcell">
+                <img class="zc-uicon" src={`${base}img/icons/units/${u.iconSlug}.png`} alt="" loading="lazy" />
+                <Term id={u.id} showIcon={false} label={u.name} />
+              </td>
+              <td class="zc-dim">{u.traits.join(', ')}</td>
+              <td class={u.exerts ? 'zc-yes' : 'zc-no'}>{u.exerts ? 'yes' : '—'}</td>
+              <td class={u.ignores ? 'zc-yes' : 'zc-no'}>{u.ignores ? 'yes' : '—'}</td>
+              <td class={u.pinnedByPolearm ? 'zc-yes' : 'zc-no'}>{u.pinnedByPolearm ? 'yes' : '—'}</td>
+              <td class="zc-dim">{u.water ? 'water' : 'land'}</td>
+              <td class="zc-dim"><a href={`#q-${u.quadrant}`}>{quadrants[u.quadrant]}</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="zc-h3">Grants</h3>
+    <div class="zc-table">
+      <table>
+        <thead><tr><th>Effect</th><th>Does</th><th>Valid for</th><th>Comes from</th><th>Carried by</th></tr></thead>
+        <tbody>
+          {grants.map(g => (
+            <tr id={`grant-${g.id.toLowerCase()}`}>
+              <td>{g.name}{g.dlc && <span class="chip chip--dlc">{g.dlc}</span>}</td>
+              <td>
+                {[
+                  g.grantsZOC && 'exerts a zone',
+                  g.grantsIgnoreZOC && 'ignores zones',
+                  g.traitZOC.length > 0 && `pins ${g.traitZOC.join(', ')} units even if they ignore zones`,
+                  g.fatigueExtra > 0 && `+${g.fatigueExtra} fatigue`,
+                ].filter(Boolean).join('; ')}
+              </td>
+              <td class="zc-dim">{g.validFor.length ? g.validFor.join(', ') : 'any'}</td>
+              <td class="zc-dim">
+                {g.sources.map((s, i) => (
+                  <>{i > 0 && ', '}{s.kind === 'promotion' || s.kind === 'trait' ? <Term id={s.id} showIcon={false} /> : s.name}{s.kind === 'bonus' && ' (unreferenced)'}</>
+                ))}
+              </td>
+              <td class="zc-dim">{g.carriers.length ? g.carriers.join(', ') : '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="zc-note">
+      {maneuvers.name} is a promotion for ships only. {mahout.name} is a
+      general trait from {mahout.dlc}. Hiding effects that silence a zone:
+      {constants.hiding.map((h, i) => (
+        <>{i > 0 && '; '}<em>{h.name}</em> ({h.targets.join(', ')}) from {h.sources.map(s => s.name).join(', ')}</>
+      ))}.
+    </p>
+
+    <h3 class="zc-h3">Constants</h3>
+    <div class="zc-table">
+      <table>
+        <tbody>
+          <tr><td>Hostile zone colour</td><td><code>{constants.colors.hostile}</code> (COLOR_HOSTILE_ZOC, used for the wash on this page)</td></tr>
+          <tr><td>Neutral zone colour</td><td><code>{constants.colors.neutral}</code> (COLOR_NEUTRAL_ZOC, defined but unused by the source)</td></tr>
+          <tr><td>Hotkeys</td><td><kbd>{hk.show.key}</kbd> hold: {hk.show.name}; <kbd>{hk.lock.key}</kbd>: {hk.lock.name}</td></tr>
+          <tr><td>Loading hint</td><td>“{texts.hint}”</td></tr>
+          <tr><td>Hostile diplomacy states</td><td>{constants.hostileStates.join(', ')}</td></tr>
+          <tr><td>AI valuation</td><td>exerting {constants.ai.zocValue}, ignoring {constants.ai.ignoreZocValue}, each trait-ZOC {constants.ai.traitZocValue} (AI_UNIT_ZOC_VALUE)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="zc-h3">Sources</h3>
+    <ul class="zc-list zc-sources">
+      {SOURCES.map(([fn, loc, what]) => (
+        <li><code>{fn}</code> <span class="zc-loc">{loc}</span> — {what}</li>
+      ))}
+      <li><code>scripts/build_zoc.py</code> — the port that computed every board above, with the assertions that fail the build if a rule drifts.</li>
+    </ul>
+  </section>
+
+  <style>
+    .lede {
+      color: var(--text-dim);
+      max-width: 72ch;
+      margin: 0 0 1rem;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .zc-legend { margin: 0 0 1.4rem; row-gap: 0.45rem; }
+    .zc-key { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .zc-swatch {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 0.95em; height: 0.95em; border-radius: 50%;
+      font-style: normal; font-size: 0.7em; font-weight: 700;
+    }
+    .zc-swatch--you { background: rgb(110,160,210); }
+    .zc-swatch--enemy { background: rgb(150,60,60); }
+    .zc-swatch--zoc { border-radius: 2px; border: 1px solid rgba(255,0,0,.6); background: rgba(255,0,0,.2); }
+    .zc-swatch--ok { border-radius: 2px; height: 0.3em; width: 1.4em; background: var(--gold); }
+    .zc-swatch--no { border-radius: 2px; height: 0.3em; width: 1.4em; background: #e5484d; color: #e5484d; line-height: 0; }
+    .zc-swatch--dot { width: 0.6em; height: 0.6em; background: #fff; }
+
+    .zc-section { margin: 1.6rem 0; max-width: 78ch; }
+    .zc-section--wide { max-width: none; }
+    .zc-h {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin: 0 0 0.6rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+      padding-bottom: 0.35rem;
+      color: var(--text);
+    }
+    .zc-h3 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 1.1rem 0 0.4rem;
+      color: var(--text);
+    }
+    .zc-section p {
+      color: var(--text);
+      font-size: 0.86rem;
+      line-height: 1.55;
+      margin: 0 0 0.6rem;
+      max-width: 78ch;
+    }
+    .zc-section p em { color: var(--accent); font-style: normal; }
+    .zc-rule {
+      font-size: 1.02rem !important;
+      font-weight: 600;
+      line-height: 1.45 !important;
+      border-left: 3px solid var(--accent);
+      padding: 0.4rem 0.8rem;
+      background: var(--bg-elev);
+      border-radius: var(--radius);
+    }
+    .zc-quote {
+      margin: 0.6rem 0 0;
+      padding: 0.6rem 0.9rem;
+      border-left: 3px solid var(--border-strong);
+      background: var(--bg-elev);
+      border-radius: var(--radius);
+    }
+    .zc-quote p { font-style: italic; color: var(--text-soft); margin: 0 0 0.3rem; }
+    .zc-quote footer { font-size: 0.72rem; color: var(--text-faint); }
+    .zc-section code, .zc-section kbd {
+      background: var(--bg-elev-2);
+      padding: 0.05rem 0.35rem;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      font-size: 0.85em;
+      font-family: var(--font-mono);
+    }
+    .zc-note { font-size: 0.78rem !important; color: var(--text-dim) !important; margin-top: 0.6rem !important; }
+    .zc-list {
+      margin: 0.3rem 0 0.8rem 0;
+      padding-left: 1.1rem;
+      color: var(--text);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    .zc-list li { margin: 0.2rem 0; }
+    .zc-list strong { color: var(--text); font-weight: 600; }
+    .zc-callout {
+      font-size: 0.84rem;
+      line-height: 1.5;
+      color: var(--text);
+      border: 1px solid rgba(229,72,77,.45);
+      border-left: 3px solid #e5484d;
+      background: rgba(229,72,77,.07);
+      border-radius: var(--radius);
+      padding: 0.6rem 0.9rem;
+      max-width: 78ch;
+    }
+
+    .zc-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.8rem;
+    }
+    .zc-card {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 0.7rem 0.85rem;
+      min-width: 0;
+    }
+    .zc-card--exerts { border-top-color: rgb(150,60,60); }
+    .zc-card--ignores-mounted { border-top-color: var(--gold); }
+    .zc-card--neither { border-top-color: oklch(0.55 0.02 80); }
+    .zc-card--ignores-all { border-top-color: var(--accent-2); }
+    .zc-card__title {
+      font-family: var(--font-display);
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin: 0 0 0.25rem;
+      color: var(--text);
+    }
+    .zc-card__hint { font-size: 0.76rem !important; color: var(--text-dim) !important; margin: 0 0 0.5rem !important; }
+    .zc-card__units {
+      list-style: none; margin: 0; padding: 0;
+      display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem;
+      font-size: 0.82rem;
+    }
+    .zc-card__units li { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .zc-card__more { color: var(--text-dim); font-size: 0.76rem; }
+    .zc-uicon {
+      width: 1.35em; height: 1.35em; border-radius: 50%;
+      object-fit: cover; border: 1px solid var(--border-strong);
+      background: var(--bg-elev-2);
+      flex-shrink: 0;
+    }
+
+    .zc-boards {
+      display: grid;
+      gap: 1rem 1.2rem;
+      align-items: start;
+    }
+    .zc-boards--3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); max-width: 1400px; }
+    .zc-boards--2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width: 1200px; }
+
+    .zc-table { margin: 0.4rem 0 0.9rem; overflow-x: auto; max-width: 1200px; }
+    .zc-table table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 40rem; }
+    .zc-table th, .zc-table td {
+      text-align: left; padding: 0.3rem 0.55rem;
+      border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    .zc-table th {
+      font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-faint); font-weight: 500; background: var(--bg-elev);
+    }
+    .zc-unitcell { white-space: nowrap; }
+    .zc-unitcell .zc-uicon { vertical-align: middle; margin-right: 0.3rem; }
+    .zc-dim { color: var(--text-dim); }
+    .zc-yes { color: var(--gold); font-weight: 600; }
+    .zc-no { color: var(--text-faint); }
+    .zc-sources { font-size: 0.8rem; }
+    .zc-loc { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-2); }
+    .chip--dlc { margin-left: 0.4rem; border-color: oklch(0.5 0.1 60); color: oklch(0.8 0.1 60); font-size: 0.66rem; }
+    .zc-section a { color: var(--accent-2); }
+  </style>
+</Base>

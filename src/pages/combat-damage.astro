@@ -159,7 +159,7 @@ const lookup = STR_AXIS.map(a => ({
       damage to bring it to 0.
     </p>
     <ul class="cd-list">
-      <li>Units that can't retreat (surrounded, water, ZoC) are destroyed instead.</li>
+      <li>Units that can't retreat (surrounded, water) are destroyed instead. <a href={`${base}zone-of-control`}>Zone of control</a> is never consulted by attacks, routs or pushes.</li>
       <li>A routed unit at 0 HP heals at the active-heal rate next turn (5 HP/turn) once safe.</li>
     </ul>
   </section>

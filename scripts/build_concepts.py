@@ -158,7 +158,20 @@ class Cleaner:
         return out
 
 
+def load_hotkeys() -> dict[str, str]:
+    out: dict[str, str] = {}
+    for e in ET.parse(XML_DIR / "hotkeys.xml").getroot().findall("Entry"):
+        k, v = e.findtext("zType") or "", (e.findtext("Keys") or "").split(",")[0].strip()
+        if k and v:
+            out[k] = v
+    return out
+
+
+KEY_PLACEHOLDERS: dict[str, str] = {}
+
+
 def main() -> int:
+    KEY_PLACEHOLDERS["CONCEPT_ZOC"] = load_hotkeys().get("HOTKEY_SHOW_ZOC", "X")
     text = load_full_text_index()
     gendered = load_gendered_names()
     globals_int = load_globals_int()
@@ -186,7 +199,17 @@ def main() -> int:
 
         # Help text: zHelpText → en-US, cleaned, split into paragraphs
         help_key = e.findtext("zHelpText") or ""
-        paras = cleaner.paragraphs(text[help_key]) if help_key in text else []
+        # Some concepts (ZOC, Ignores ZOC, Capital, Luxury…) carry no zHelpText
+        # and point at a HELP_* link instead; the game renders those through
+        # TEXT_HELPTEXT_LINK_<zLink>, so read that when it exists.
+        if not help_key and (e.findtext("zLink") or "").strip():
+            help_key = f"TEXT_HELPTEXT_LINK_{(e.findtext('zLink') or '').strip()}"
+        raw_help = text.get(help_key, "")
+        # {0_key} is the hotkey the game substitutes at runtime; the only
+        # concept using it (ZOC) means HOTKEY_SHOW_ZOC.
+        if "{0_key}" in raw_help:
+            raw_help = raw_help.replace("{0_key}", KEY_PLACEHOLDERS.get(zt, "?"))
+        paras = cleaner.paragraphs(raw_help) if raw_help else []
         if not paras:
             skipped.append({"id": zt, "reason": f"no help text (zHelpText={help_key or '—'})"})
             continue

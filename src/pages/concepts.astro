@@ -26,6 +26,12 @@ for (const c of concepts) {
 }
 const letters = [...groups.keys()].sort();
 
+// Concepts with a dedicated explainer page on this site.
+const EXPLAINERS: Record<string, string> = {
+  CONCEPT_ZOC: 'zone-of-control',
+  CONCEPT_IGNORES_ZOC: 'zone-of-control',
+};
+
 const dlcCount = concepts.filter(c => c.dlc).length;
 ---
 
@@ -63,6 +69,7 @@ const dlcCount = concepts.filter(c => c.dlc).length;
         <div class="glossary__entries">
           {groups.get(letter)!.map(c => {
             const ext = entityByName.get(c.name.toLowerCase());
+            const explainer = EXPLAINERS[c.id];
             return (
               <article class="concept" id={c.slug} data-concept>
                 <h3 class="concept__name">
@@ -70,6 +77,9 @@ const dlcCount = concepts.filter(c => c.dlc).length;
                   {c.dlc && <span class="chip chip--neutral concept__dlc">{c.dlc}</span>}
                   {ext && ext.page && (
                     <a class="concept__ext" href={`${base}${ext.page}`}>full page →</a>
+                  )}
+                  {explainer && (
+                    <a class="concept__ext" href={`${base}${explainer}`}>full explainer →</a>
                   )}
                 </h3>
                 {c.help.map(p =>

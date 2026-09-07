@@ -1,0 +1,248 @@
+---
+// Static SVG hex board for the Zone of Control explainer. Server-rendered,
+// no runtime script. The visual language is ported from owpuzzle's board
+// (web/app.js:405-700 — pointy-top axial hexes, its terrain palette, banded
+// hills, procedural trees, owner-coloured unit tokens with the in-game icon).
+// Everything drawn on top — the ZOC wash, step arrows, reach dots — comes
+// from a scenario object computed by scripts/build_zoc.py, never from props
+// written by hand: this component only draws what the port decided.
+interface Tile {
+  q: number; r: number; terrain: string; height: string;
+  vegetation: string | null; improvement: string | null;
+  river: number[]; city: number | null; owner: number | null;
+}
+interface UnitOnBoard {
+  type: string; owner: number; q: number; r: number; iconSlug: string;
+  name: string; mover: boolean; hidden: boolean;
+}
+interface Step { from: number[]; to: number[]; legal: boolean; crossesRiver: boolean }
+export interface Scenario {
+  id: string; title: string; caption: string;
+  tiles: Tile[]; units: UnitOnBoard[];
+  zoc: number[][]; overlayZoc: number[][]; steps: Step[]; reach: number[][];
+}
+interface Props {
+  scenario: Scenario;
+  caption?: string;      // overrides scenario.caption
+  note?: string;         // second line under the caption
+  zocColor: string;      // the game's COLOR_HOSTILE_ZOC (#rrggbbaa)
+}
+const { scenario: sc, caption, note, zocColor } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+// ---- geometry (owpuzzle app.js:406-417) ----
+const SIZE = 46;
+const SQ3 = Math.sqrt(3);
+const cx = (t: { q: number; r: number }) => SIZE * SQ3 * (t.q + t.r / 2);
+const cy = (t: { q: number; r: number }) => SIZE * 1.5 * t.r;
+const f = (n: number) => n.toFixed(1);
+function hexPoints(x: number, y: number, scale = 1): string {
+  const pts: string[] = [];
+  const rad = SIZE * scale;
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI / 180) * (60 * i - 30);
+    pts.push(`${f(x + rad * Math.cos(a))},${f(y + rad * Math.sin(a))}`);
+  }
+  return pts.join(' ');
+}
+
+// ---- palette (owpuzzle app.js:422-445) ----
+const BOARD_BG = '#0b0c0f';
+const TERRAIN_FILL: Record<string, string> = {
+  TERRAIN_TEMPERATE: 'rgb(104,138,74)', TERRAIN_LUSH: 'rgb(74,110,56)',
+  TERRAIN_ARID: 'rgb(170,148,95)', TERRAIN_SAND: 'rgb(206,184,120)',
+  TERRAIN_TUNDRA: 'rgb(200,205,210)', TERRAIN_MARSH: 'rgb(96,110,80)',
+  TERRAIN_WATER: 'rgb(26,52,92)', TERRAIN_URBAN: 'rgb(150,128,116)',
+};
+const VEG_WASH: Record<string, string> = {
+  VEGETATION_TREES: 'rgba(18,64,22,.36)', VEGETATION_JUNGLE: 'rgba(6,44,10,.5)', VEGETATION_SCRUB: 'rgba(126,116,52,.26)',
+};
+const VEG_RIM: Record<string, string> = {
+  VEGETATION_TREES: 'rgba(30,86,34,.85)', VEGETATION_JUNGLE: 'rgba(10,58,14,.9)', VEGETATION_SCRUB: 'rgba(146,134,64,.75)',
+};
+const PCOL: Record<number, string> = { 0: 'rgb(110,160,210)', 1: 'rgb(150,60,60)' };
+const GOLD = 'var(--gold, #c9a04a)';
+const REFUSED = '#e5484d';
+
+// The game stores COLOR_HOSTILE_ZOC as #RRGGBBAA; split it so the wash uses
+// exactly that colour and alpha.
+const zocRgb = zocColor.slice(0, 7);
+const zocAlpha = zocColor.length === 9 ? parseInt(zocColor.slice(7, 9), 16) / 255 : 0.2;
+
+const tiles = sc.tiles;
+const key = (q: number, r: number) => `${q},${r}`;
+const tileAt = new Map(tiles.map(t => [key(t.q, t.r), t]));
+const zocSet = new Set(sc.zoc.map(([q, r]) => key(q, r)));
+const overlaySet = new Set(sc.overlayZoc.map(([q, r]) => key(q, r)));
+const reachSet = new Set(sc.reach.map(([q, r]) => key(q, r)));
+const mover = sc.units.find(u => u.mover);
+if (mover) reachSet.delete(key(mover.q, mover.r));
+
+let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+for (const t of tiles) {
+  minX = Math.min(minX, cx(t) - SIZE); maxX = Math.max(maxX, cx(t) + SIZE);
+  minY = Math.min(minY, cy(t) - SIZE); maxY = Math.max(maxY, cy(t) + SIZE);
+}
+const pad = 6;
+const vbW = maxX - minX + 2 * pad, vbH = maxY - minY + 2 * pad;
+const vb = `${f(minX - pad)} ${f(minY - pad)} ${f(vbW)} ${f(vbH)}`;
+const uid = (s: string) => `zb-${sc.id}-${s}`;
+
+const S: string[] = [];
+const clips: string[] = [];
+
+// procedural trees / scrub (app.js:1225-1250)
+function drawScrub(x: number, y: number, onHill: boolean) {
+  const yb = y + (onHill ? -SIZE * 0.05 : SIZE * 0.3);
+  for (const [sx, sy] of [[-0.34, 0], [0, 0.12], [0.34, -0.02], [0.16, -0.3]]) {
+    S.push(`<ellipse cx="${f(x + SIZE * sx)}" cy="${f(yb + SIZE * sy)}" rx="${f(SIZE * 0.14)}" ry="${f(SIZE * 0.09)}" fill="rgba(110,122,63,.95)" stroke="rgba(50,56,26,.6)" stroke-width="1"/>`);
+  }
+}
+function drawTrees(x: number, y: number, n: number, onHill: boolean, color: string) {
+  const tw = SIZE * 0.26, th = SIZE * 0.62;
+  const yb = y + (onHill ? -SIZE * 0.12 : SIZE * 0.24);
+  for (let k = 0; k < n; k++) {
+    const X = x + (k - (n - 1) / 2) * (tw * 1.25);
+    S.push(`<rect x="${f(X - tw * 0.16)}" y="${f(yb - th * 0.18)}" width="${f(tw * 0.32)}" height="${f(th * 0.34)}" fill="rgba(60,40,20,.9)"/>`);
+    S.push(`<path d="M ${f(X)} ${f(yb - th)} L ${f(X - tw)} ${f(yb)} L ${f(X + tw)} ${f(yb)} Z" fill="${color}"/>`);
+  }
+}
+
+// ground
+S.push(`<rect x="${f(minX - pad)}" y="${f(minY - pad)}" width="${f(vbW)}" height="${f(vbH)}" rx="10" fill="${BOARD_BG}"/>`);
+
+// terrain
+for (const t of tiles) {
+  const x = cx(t), y = cy(t);
+  let fill = TERRAIN_FILL[t.terrain] || 'rgb(90,90,90)';
+  if (t.height === 'HEIGHT_MOUNTAIN' || t.height === 'HEIGHT_VOLCANO') fill = 'rgb(150,150,153)';
+  S.push(`<polygon points="${hexPoints(x, y)}" fill="${fill}" stroke="${BOARD_BG}" stroke-width="1"/>`);
+  if (t.height === 'HEIGHT_HILL') {
+    const cid = uid(`clip${t.q}_${t.r}`);
+    clips.push(`<clipPath id="${cid}"><polygon points="${hexPoints(x, y)}"/></clipPath>`);
+    S.push(`<g clip-path="url(#${cid})"><rect x="${f(x - SIZE)}" y="${f(y - SIZE)}" width="${2 * SIZE}" height="${f(SIZE * 0.85)}" fill="rgba(255,255,255,.16)"/><rect x="${f(x - SIZE)}" y="${f(y + SIZE * 0.05)}" width="${2 * SIZE}" height="${SIZE}" fill="rgba(0,0,0,.30)"/></g>`);
+  }
+  const wash = t.vegetation ? VEG_WASH[t.vegetation] : null;
+  if (wash) {
+    S.push(`<polygon points="${hexPoints(x, y)}" fill="${wash}"/>`);
+    S.push(`<polygon points="${hexPoints(x, y, 0.9)}" fill="none" stroke="${VEG_RIM[t.vegetation!]}" stroke-width="2.5"/>`);
+  }
+  const onHill = t.height === 'HEIGHT_HILL';
+  if (t.vegetation === 'VEGETATION_SCRUB') drawScrub(x, y, onHill);
+  else if (t.vegetation === 'VEGETATION_JUNGLE') drawTrees(x, y, 3, onHill, 'rgba(14,50,16,.95)');
+  else if (t.vegetation === 'VEGETATION_TREES') drawTrees(x, y, 2, onHill, 'rgba(24,68,26,.95)');
+  if (t.city != null) {
+    const ring = hexPoints(x, y, 0.86);
+    S.push(`<polygon points="${ring}" fill="none" stroke="${PCOL[t.city] || '#999'}" stroke-width="5"/>`);
+    S.push(`<polygon points="${ring}" fill="none" stroke="${BOARD_BG}" stroke-width="1.5" stroke-dasharray="4 6"/>`);
+    S.push(`<text x="${f(x)}" y="${f(y + SIZE * 0.18)}" text-anchor="middle" font-size="22">🏛️</text>`);
+  }
+}
+
+// river edges (app.js: neighbour d sits at angle -60d; the shared edge spans ±30°)
+for (const t of tiles) {
+  for (const d of t.river || []) {
+    const x = cx(t), y = cy(t);
+    const a1 = (Math.PI / 180) * (-60 * d - 30), a2 = (Math.PI / 180) * (-60 * d + 30);
+    S.push(`<line x1="${f(x + SIZE * Math.cos(a1))}" y1="${f(y + SIZE * Math.sin(a1))}" x2="${f(x + SIZE * Math.cos(a2))}" y2="${f(y + SIZE * Math.sin(a2))}" stroke="#4696eb" stroke-width="${f(SIZE * 0.2)}" stroke-linecap="round"/>`);
+  }
+}
+
+// hostile ZOC wash — the game's own colour — plus an inset rim so a 20% wash
+// still reads on green; overlay-only tiles (what Hold-X paints although the
+// step is legal) get a dashed outline and no fill
+for (const t of tiles) {
+  const k = key(t.q, t.r), x = cx(t), y = cy(t);
+  if (zocSet.has(k)) {
+    S.push(`<polygon points="${hexPoints(x, y)}" fill="${zocRgb}" fill-opacity="${zocAlpha.toFixed(3)}"/>`);
+    S.push(`<polygon points="${hexPoints(x, y, 0.93)}" fill="none" stroke="${zocRgb}" stroke-opacity="0.6" stroke-width="2"/>`);
+  } else if (overlaySet.has(k)) {
+    S.push(`<polygon points="${hexPoints(x, y, 0.9)}" fill="none" stroke="${zocRgb}" stroke-opacity="0.85" stroke-width="2" stroke-dasharray="5 4"/>`);
+  }
+}
+
+// reach dots
+for (const t of tiles) {
+  if (!reachSet.has(key(t.q, t.r))) continue;
+  S.push(`<circle cx="${f(cx(t))}" cy="${f(cy(t))}" r="5.5" fill="#ffffff" opacity="0.85" stroke="#14161c" stroke-width="0.8"/>`);
+}
+
+// units: owner-coloured token with the in-game portrait clipped inside
+for (const u of sc.units) {
+  const x = cx(u), y = cy(u);
+  const col = PCOL[u.owner] || PCOL[1];
+  const cid = uid(`u${u.q}_${u.r}`);
+  const R = SIZE * 0.5;
+  clips.push(`<clipPath id="${cid}"><circle cx="${f(x)}" cy="${f(y)}" r="${f(R - 2)}"/></clipPath>`);
+  S.push(`<g${u.hidden ? ' opacity="0.5"' : ''}>`);
+  if (u.mover) S.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(R + 6)}" fill="none" stroke="#fff" stroke-width="2.5"/>`);
+  S.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(R)}" fill="${col}" stroke="${BOARD_BG}" stroke-width="1.5"/>`);
+  S.push(`<image href="${base}img/icons/units/${u.iconSlug}.png" x="${f(x - R)}" y="${f(y - R)}" width="${f(2 * R)}" height="${f(2 * R)}" clip-path="url(#${cid})" preserveAspectRatio="xMidYMid slice"/>`);
+  S.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(R - 1)}" fill="none" stroke="${col}" stroke-width="3"/>`);
+  S.push(`<title>${u.name}${u.hidden ? ' (hidden)' : ''}</title></g>`);
+}
+
+// step arrows: gold = legal, red with a × badge = refused
+for (const st of sc.steps) {
+  const a = { q: st.from[0], r: st.from[1] }, b = { q: st.to[0], r: st.to[1] };
+  const x1 = cx(a), y1 = cy(a), x2 = cx(b), y2 = cy(b);
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+  const ux = dx / len, uy = dy / len;
+  const sx = x1 + ux * SIZE * 0.6, sy = y1 + uy * SIZE * 0.6;
+  const ex = x2 - ux * SIZE * 0.62, ey = y2 - uy * SIZE * 0.62;
+  const col = st.legal ? GOLD : REFUSED;
+  S.push(`<line x1="${f(sx)}" y1="${f(sy)}" x2="${f(ex)}" y2="${f(ey)}" stroke="#0b0c0f" stroke-width="7" stroke-linecap="round" opacity="0.6"/>`);
+  S.push(`<line x1="${f(sx)}" y1="${f(sy)}" x2="${f(ex)}" y2="${f(ey)}" stroke="${col}" stroke-width="3.5" stroke-linecap="round" marker-end="url(#${uid(st.legal ? 'ok' : 'no')})"/>`);
+  if (!st.legal) {
+    const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+    S.push(`<circle cx="${f(mx)}" cy="${f(my)}" r="9" fill="#1a0d0d" stroke="${REFUSED}" stroke-width="2"/>`);
+    S.push(`<text x="${f(mx)}" y="${f(my + 0.5)}" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="700" fill="${REFUSED}" font-family="Inter, system-ui, sans-serif">×</text>`);
+  }
+}
+
+const defs = `<defs>${clips.join('')}` +
+  `<marker id="${uid('ok')}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${GOLD}"/></marker>` +
+  `<marker id="${uid('no')}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${REFUSED}"/></marker>` +
+  `</defs>`;
+const svg = `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${sc.title}">${defs}${S.join('')}</svg>`;
+const cap = caption ?? sc.caption;
+---
+
+<figure class="hexboard" data-scenario={sc.id}>
+  <div class="hexboard__svg" style={`max-width:${Math.round(vbW)}px`} set:html={svg} />
+  {(cap || note) && (
+    <figcaption>
+      {cap && <span class="hexboard__cap">{cap}</span>}
+      {note && <span class="hexboard__note">{note}</span>}
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  .hexboard {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+  .hexboard__svg {
+    width: 100%;
+    line-height: 0;
+  }
+  .hexboard__svg :global(svg) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  figcaption {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .hexboard__cap { font-weight: 500; }
+  .hexboard__note { color: var(--text-dim); font-size: 0.76rem; }
+</style>

@@ -361,6 +361,12 @@ export const TABS: Tab[] = [
     willContain: ['Damage formula, modifiers, worked examples'],
   },
   {
+    slug: 'zone-of-control', icon: '🛑', label: 'Zone of Control', section: 'Combat',
+    status: 'built', sourceSheet: '',
+    summary: 'Which tiles enemy units control and the one step they refuse',
+    willContain: ['The ZOC rule from the movement code', 'Who exerts, who ignores, who is pinned', 'Computed hex boards: walls, rivers, cities, water'],
+  },
+  {
     slug: 'unit-counters', icon: '⚔️', label: 'Unit Counters at-a-glance', section: 'Combat',
     status: 'built', sourceSheet: '⚔️ Unit Counters at-a-glance',
     summary: 'Quick rock-paper-scissors chart',
