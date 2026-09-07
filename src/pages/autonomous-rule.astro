@@ -1,0 +1,336 @@
+---
+import Base from '../layouts/Base.astro';
+import LinkedText from '../components/LinkedText.astro';
+import Term from '../components/Term.astro';
+import AutobuildCompare from '../components/AutobuildCompare.astro';
+import autobuild from '../data/autobuild.json';
+
+// Autonomous Rule = the hidden project PROJECT_AUTONOMOUS_RULE (project-event.xml)
+// whose effect EFFECTCITY_PROJECT_AUTONOMOUS_RULE sets bAutoBuild + bNoBuildUnits
+// + bNoHurry and pays per-population Science/Money. The build picker is the same
+// PlayerAI planner the Grand Vizier uses (see grand-vizier.astro); the unit pool is
+// empty because City.canBuildUnit(bTestEnabled) fails on isNoBuildUnits().
+// Events are detected by scripts/build_autobuild.py from bonuses that add/remove
+// the project and subjects gated on it.
+const base = import.meta.env.BASE_URL;
+const { constants: C, defensiveProjects, governorRequiredProjects, examples } = autobuild;
+const project = autobuild.autonomy.project;
+const carrier = autobuild.carriers.find(c => c.id === project.effectCity)!;
+const events = autobuild.autonomy.events;
+const grants = events.filter(e => e.role === 'grant');
+const during = events.filter(e => e.role === 'during');
+const ends = events.filter(e => e.role === 'end');
+
+// Subject tokens → plain words for the "who / where" column.
+const SUBJECT_WORDS: Record<string, string> = {
+  SUBJECT_CAPITAL_US: 'not your capital',
+  SUBJECT_CITY_FAMILY_SEAT: 'not a family seat',
+  SUBJECT_CITY_FAMILY_SEAT_NO: 'a city that is not a family seat',
+  SUBJECT_CITY_AUTONOMOUS_RULE: 'a city under Autonomous Rule',
+  SUBJECT_ZENOBIA: 'Zenobia present',
+  SUBJECT_GOVERNOR: 'the character is its Governor',
+  SUBJECT_PLAYER_NO_RISING_STAR: 'you have no Rising Star',
+  SUBJECT_NON_LEADER_GOVERNOR_US: 'a non-leader Governor of yours',
+  SUBJECT_FAMILY_MAX_FURIOUS: 'a Furious family',
+  SUBJECT_FAMILY_MIN_PLEASED: 'a Pleased (or better) family',
+  SUBJECT_CITY_DISCONTENT_MODERATE: 'a city with moderate Discontent',
+  SUBJECT_CITY_DISSENT_JUDAISM: 'a city with Jewish Dissent',
+  SUBJECT_RELIGION_MAX_UPSET: 'an Upset religion',
+  SUBJECT_ADULT: 'an adult',
+};
+const words = (ids: string[]) => ids.map(s => SUBJECT_WORDS[s] || s.replace('SUBJECT_', '').replace(/_/g, ' ').toLowerCase());
+const when = (e: typeof events[number]) => {
+  const bits: string[] = [];
+  if (e.eventLinkPrereq) bits.push(e.eventLinkTurns ? `${e.eventLinkTurns} turns after the linked event` : 'follows the linked event');
+  else if (e.trigger) bits.push(`on ${e.trigger.toLowerCase()}`);
+  else bits.push('random event');
+  if (e.prob) bits.push(`${e.prob}% roll`);
+  if (e.repeatTurns > 0) bits.push(`repeats every ${e.repeatTurns} turns`);
+  else if (e.repeatTurns < 0) bits.push('once');
+  return bits.join(', ');
+};
+// Strip {CITY-0}-style variables for table text.
+const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
+  if (m.startsWith('{CITY')) return 'the city';
+  if (m.startsWith('{CHARACTER')) return 'the character';
+  if (m.startsWith('{FAMILY')) return 'the family';
+  if (m.startsWith('{PLAYER')) return 'your nation';
+  if (m.startsWith('{G')) return m.split(':')[1] ?? '';
+  return '';
+}).replace(/\s+/g, ' ').replace(/\s([,.’'])/g, '$1').trim();
+---
+
+<Base
+  title="Autonomous Rule"
+  active="autonomous-rule"
+  pageMark="🗽"
+  description="Autonomous Rule in Old World: what the hidden project does to a city (+1 Science and +2 Money per citizen, no unit builds, no hurrying, production chosen by the AI), exactly what an autonomous city can and cannot build — projects like Decrees, Festivals and Opulence yes, every unit no — how the planner picks, and every event that grants or ends autonomy, from eventStory.xml and PlayerAI.cs."
+  pageStats={[
+    { label: 'per citizen', value: carrier.yields.join(' · ') },
+    { label: 'units', value: 'none' },
+    { label: 'granted by', value: `${grants.length} events` },
+    { label: 'ended by', value: `${ends.length} events, or capture` },
+  ]}
+>
+  <p class="lede">
+    <b>Autonomous Rule</b> is a city state you never build: events install the hidden project
+    <Term id={project.id} /> in one city. That city then pays you
+    {carrier.yields.map((y, i) => (<>{i > 0 && ' and '}<b><LinkedText text={y} /></b></>))},
+    but <b>cannot build units</b>, <b>cannot hurry</b>, and hands its production queue to the
+    game's AI planner — the same one the <a href={`${base}grand-vizier`}>Grand Vizier</a> uses.
+    You keep everything outside the queue: tiles, workers, laws, the Governor.
+  </p>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">The project</h2>
+    <table class="cc-table">
+      <tbody>
+        <tr><th scope="row">Effect</th><td>{carrier.effects.map(x => <div><LinkedText text={x} /></div>)}</td></tr>
+        <tr><th scope="row">Copies</th><td set:html={`One per city (<code>iMaxCount ${project.maxCount}</code>)`} /></tr>
+        <tr><th scope="row">Buildable</th><td>Never — <code>bHidden</code>; only <code>aeAddProjects</code> bonuses place it</td></tr>
+        <tr><th scope="row">Lost when</th><td>An event removes it (<code>aeRemoveProjects</code>), or the city is captured (<code>bCaptureDestroy</code>)</td></tr>
+        <tr><th scope="row">Hurry</th><td>Blocked (<code>bNoHurry</code>)</td></tr>
+        <tr><th scope="row">Governor</th><td>Most granting events also make the requesting character the city's <LinkedText text="Governor" />; the yields do not depend on it</td></tr>
+      </tbody>
+    </table>
+    <p class="cc-fineprint">
+      The per-citizen yields are <code>aiYieldRatePopulation</code> (Science 10, Money 20 in
+      XML, ÷10 for display). A ten-citizen city under Autonomous Rule pays 10 Science and 20 Money a turn.
+    </p>
+  </section>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">What an autonomous city can and cannot build</h2>
+    <div class="cc-scroll">
+      <table class="cc-table cc-table--wide">
+        <thead><tr><th>Can (the planner may pick it)</th><th>Cannot</th><th>Unaffected (still yours)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>
+              <b>Any project the city could normally build</b> — content, tech, culture and
+              prerequisite gates still apply, and the goods must already be in stock. That includes:
+              <ul class="cc-inner">
+                <li><Term id={examples.decree.id} /> and its tiers (Statesmen seat + Constitution) — repeatable projects are re-chosen on merit each time; the repeat flag is ignored</li>
+                <li><Term id={examples.festival.id} />, <Term id={examples.inquiry.id} />, Hunts and the other repeatable Civics sinks</li>
+                <li><Term id={examples.treasury.id} />, Forum and the other one-per-city tiers</li>
+                <li><Term id={examples.opulence.id} /> (Behind the Throne: 100 Civics + 500 Money, Developing culture, needs Luxurious Estates with a luxury)</li>
+                <li>{defensiveProjects.map((p, i) => (<>{i > 0 && ', '}<Term id={p.id} /></>))} — the only projects allowed while the city is in danger</li>
+                <li><b>Suppress Dissent</b> ({governorRequiredProjects.length} projects) — only if the city is governed and has the matching Dissent</li>
+              </ul>
+              <b>Specialists</b> — the next tier on any worked tile, rural or urban.
+            </td>
+            <td>
+              <b>Every unit.</b> <code>bNoBuildUnits</code> fails <code>canBuildUnit</code>, so the
+              planner's unit pool is empty: no military, no ships, and also no
+              <LinkedText text="Worker" />, <LinkedText text="Settler" />, <LinkedText text="Scout" />,
+              <LinkedText text="Disciple" /> or missionary from this city.<br /><br />
+              <b>Hurrying</b> with any yield.<br /><br />
+              <b>Your queue edits</b> — add, reorder, remove, repeat. The tooltip says
+              “{autobuild.vizier.help.cannotChange.replace('{LIST}', project.name)}”.
+            </td>
+            <td>
+              <b>Worker jobs</b> — rural and urban improvements, roads, <LinkedText text="Wonders" />:
+              these are unit actions, not queue items.<br /><br />
+              <b>Buying tiles</b>, <b>Laws</b>, <b>missions</b>, <b>religion</b>, assigning or
+              replacing the <LinkedText text="Governor" />.<br /><br />
+              <b>Specialist choice is not yours</b>, though — specialists are queue items, so the
+              planner picks which tile and which tier.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cc-fineprint">
+      The danger corner case: when the AI's threat estimate at the city exceeds its tile protection
+      (<code>isCityInDanger</code>, threshold {C.AI_CITY_MIN_DANGER}), specialists drop out and only
+      the defensive projects remain. With no units to fall back on, an autonomous city in danger
+      builds Walls, Moat or Towers if it legally can; if none qualifies the danger filter is lifted
+      and every project is back on the table.
+    </p>
+  </section>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">How it decides</h2>
+    <p>
+      At the start of your turn <code>AI.doAutomatedCityBuilds</code> runs the AI's city planner for
+      the autonomous city alongside any Vizier-run cities. The full breakdown — filters, value
+      formulas, the build-time discount — is on the
+      <a href={`${base}grand-vizier`}>Grand Vizier Rulership</a> page. The short version:
+    </p>
+    <ol class="cc-steps">
+      <li><b>Repair first</b> if the city is damaged beyond its passive healing.</li>
+      <li>
+        <b>Score every legal project</b> (effect value + finish bonus + ambition relevance −
+        cost − what it invalidates + ½ what it unlocks) and <b>every buildable specialist</b>
+        (yields, border growth, unlocks − cost).
+      </li>
+      <li>
+        <b>Discount by build time</b>: turns = ceil(cost ÷ city rate); at or under
+        {C.AI_MIN_PROJECT_BUILD_TURNS} turns full value, then value ×
+        ({C.AI_HALF_VALUE_PROJECT_BUILD_TURNS} − {C.AI_MIN_PROJECT_BUILD_TURNS}) ÷ (turns +
+        {C.AI_HALF_VALUE_PROJECT_BUILD_TURNS} − {2 * C.AI_MIN_PROJECT_BUILD_TURNS}). A
+        {C.AI_HALF_VALUE_PROJECT_BUILD_TURNS}-turn build keeps half its value.
+      </li>
+      <li>
+        <b>Pay in empire-wide value order, never buying.</b> The city's winner competes with
+        every other autobuild city's winner for the yields in stock; an unaffordable winner is
+        skipped for the turn.
+      </li>
+      <li><b>Never idle</b>: if nothing was affordable the planner still queues the best legal item.</li>
+    </ol>
+    <p class="cc-fineprint">
+      Because <code>projectValue</code> is floored at 1, a cheap project in a high-Civics city
+      often beats an expensive specialist. Opulence's 500 Money and Suppress Dissent's 100 Training
+      must already be in the treasury — the planner will not sell goods to get there.
+    </p>
+  </section>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">How a city becomes autonomous</h2>
+    <p>
+      Every event whose option places <Term id={project.id} /> in a city
+      (found by scanning <code>eventStory*.xml</code> for bonuses that add the project):
+    </p>
+    <div class="cc-scroll">
+      <table class="cc-table cc-table--wide">
+        <thead><tr><th>Event</th><th>When / where</th><th>Options and outcomes</th></tr></thead>
+        <tbody>
+          {grants.map(e => (
+            <tr id={e.id}>
+              <td>
+                {e.href ? <a href={`${base}${e.href}`}>{clean(e.title)}</a> : clean(e.title)}
+                {e.dlc && <div class="cc-dim">{e.dlc}</div>}
+              </td>
+              <td>
+                <div>{when(e)}</div>
+                {e.requires.length > 0 && <div class="cc-dim">needs: {words(e.requires).join('; ')}</div>}
+                {e.excludes.length > 0 && <div class="cc-dim">{words(e.excludes).join('; ')}</div>}
+              </td>
+              <td>
+                <ul class="cc-inner">
+                  {e.options.map(o => (
+                    <li class={o.grants ? 'is-grant' : ''}>
+                      <i>“{clean(o.text)}”</i>
+                      {o.outcomes.length > 0 && <span class="cc-dim"> → {o.outcomes.join('; ')}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {during.length > 0 && (
+    <section class="cc-section">
+      <h2 class="cc-h2">While it lasts</h2>
+      <p>Events that only fire in a city under Autonomous Rule without ending it:</p>
+      <ul class="cc-bullets">
+        {during.map(e => (
+          <li id={e.id}>
+            {e.href ? <a href={`${base}${e.href}`}>{clean(e.title)}</a> : clean(e.title)} — {when(e)}.
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <section class="cc-section">
+    <h2 class="cc-h2">How it ends</h2>
+    <p>
+      The project is removed by an event option, or destroyed when the city changes hands
+      (<code>bCaptureDestroy</code>). Taking a city back by force in these events spawns rebels.
+    </p>
+    <div class="cc-scroll">
+      <table class="cc-table cc-table--wide">
+        <thead><tr><th>Event</th><th>When / where</th><th>Options and outcomes</th></tr></thead>
+        <tbody>
+          {ends.map(e => (
+            <tr id={e.id}>
+              <td>
+                {e.href ? <a href={`${base}${e.href}`}>{clean(e.title)}</a> : clean(e.title)}
+                {e.dlc && <div class="cc-dim">{e.dlc}</div>}
+              </td>
+              <td>
+                <div>{when(e)}</div>
+                {e.requires.length > 0 && <div class="cc-dim">needs: {words(e.requires).join('; ')}</div>}
+                {e.excludes.length > 0 && <div class="cc-dim">{words(e.excludes).join('; ')}</div>}
+              </td>
+              <td>
+                <ul class="cc-inner">
+                  {e.options.map(o => (
+                    <li class={o.removes ? 'is-end' : ''}>
+                      <i>“{clean(o.text)}”</i>
+                      {o.outcomes.length > 0 && <span class="cc-dim"> → {o.outcomes.join('; ')}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          ))}
+          <tr>
+            <td>City captured</td>
+            <td>Any time</td>
+            <td><code>bCaptureDestroy</code> — the project is destroyed with the change of owner; recapturing does not restore it.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cc-section">
+    <h2 class="cc-h2">Compared with the other ways a queue gets decided</h2>
+    <AutobuildCompare current="autonomy" />
+  </section>
+
+  <p class="cc-source">
+    Source: <code>project-event.xml</code> (<code>PROJECT_AUTONOMOUS_RULE</code>),
+    <code>effectCity.xml</code> (<code>EFFECTCITY_PROJECT_AUTONOMOUS_RULE</code>),
+    <code>eventStory*.xml</code> / <code>eventOption*.xml</code> / <code>bonus-event*.xml</code>
+    (grant and end events), <code>subject.xml</code> (<code>SUBJECT_CITY_AUTONOMOUS_RULE</code>);
+    <code>City.cs</code> — <code>isAutoBuild</code>, <code>isNoBuildUnits</code>,
+    <code>canBuildUnit</code>, <code>canBuildProject</code>; <code>Game.cs</code> — the
+    <code>BUILD_*</code> action gates; <code>PlayerAI.cs</code> — <code>doAutomatedCityBuilds</code>,
+    <code>getBestBuild</code>, <code>isBuildProjectValid</code>, <code>getBuildValue</code>.
+  </p>
+</Base>
+
+<style>
+  .lede { color: var(--text-dim); font-size: 0.9rem; line-height: 1.55; max-width: 76ch; margin: 0.4rem 0 1.5rem; }
+  .lede b { color: var(--text); }
+  .lede a { color: var(--accent); }
+
+  .cc-section { margin-top: 2rem; }
+  .cc-h2 { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.04em; margin: 0 0 0.5rem; color: var(--text); }
+  .cc-section p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.55; max-width: 76ch; margin: 0.3rem 0; }
+  .cc-section p b { color: var(--text); }
+  .cc-section a { color: var(--accent); }
+
+  .cc-bullets { color: var(--text-dim); font-size: 0.85rem; line-height: 1.55; margin: 0.4rem 0 0.8rem; padding-left: 1.2rem; max-width: 84ch; }
+  .cc-bullets li { padding: 0.2rem 0; }
+  .cc-bullets b { color: var(--text); }
+  .cc-inner { margin: 0.3rem 0; padding-left: 1.1rem; }
+  .cc-inner li { padding: 0.12rem 0; }
+  .cc-inner li.is-grant, .cc-inner li.is-end { color: var(--text); }
+
+  .cc-steps { list-style: decimal inside; color: var(--text-dim); font-size: 0.85rem; line-height: 1.55; max-width: 80ch; padding: 0; margin: 0.5rem 0; }
+  .cc-steps li { padding: 0.25rem 0; }
+  .cc-steps b { color: var(--text); }
+
+  .cc-scroll { overflow-x: auto; max-width: 100%; }
+  .cc-table { width: 100%; max-width: 72ch; border-collapse: collapse; margin: 0.6rem 0; font-size: 0.8rem; }
+  .cc-table--wide { max-width: none; min-width: 52rem; }
+  .cc-table thead th { text-align: left; color: var(--text-dim); font-family: var(--font-ui); font-weight: 500; font-size: 0.7rem; letter-spacing: 0.05em; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border-strong); }
+  .cc-table tbody th { text-align: left; color: var(--text-dim); font-weight: 500; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; white-space: nowrap; }
+  .cc-table tbody td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-dim); line-height: 1.5; }
+  .cc-table tbody td b { color: var(--text); }
+  .cc-table tbody tr:hover { background: var(--bg-elev); }
+  .cc-dim { color: var(--text-faint); font-size: 0.85em; }
+
+  .cc-fineprint { color: var(--text-faint) !important; font-size: 0.78rem !important; line-height: 1.5; font-style: italic; max-width: 76ch; }
+  .cc-source { margin-top: 2.2rem; color: var(--text-faint); font-size: 0.75rem; line-height: 1.5; max-width: 84ch; }
+
+  code { font-family: var(--font-mono); font-size: 0.78em; background: var(--bg-elev); padding: 0 0.25rem; border-radius: 3px; border: 1px solid var(--border); }
+</style>

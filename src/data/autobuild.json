@@ -1,0 +1,1232 @@
+{
+  "autonomy": {
+    "events": [
+      {
+        "author": "Josh Unsworth",
+        "dlc": "",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [
+          "SUBJECT_CAPITAL_US"
+        ],
+        "href": "events/scripted#EVENTSTORY_AUTONOMOUS_VASSAL",
+        "id": "EVENTSTORY_AUTONOMOUS_VASSAL",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": true,
+            "outcomes": [
+              "leader becomes influenced by them",
+              "grants Autonomous Rule"
+            ],
+            "removes": false,
+            "text": "I trust {CHARACTER-SHORT-1} to guide the city well."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "+60 Discontent in the city",
+              "leader becomes disappointed with them"
+            ],
+            "removes": false,
+            "text": "Laws can be rewritten if needed."
+          }
+        ],
+        "prob": 0,
+        "repeatTurns": -1,
+        "requires": [
+          "SUBJECT_FAMILY_MIN_PLEASED",
+          "SUBJECT_CITY_FAMILY_SEAT_NO"
+        ],
+        "role": "grant",
+        "text": "Your vassals are happy under your rule, the {FAMILY-0} Family especially adapting to their role. Feeling favored above all others, they are loyal and eager to serve.\n\nHowever, this is tested when {CHARACTER-1} comes to you and asks for autonomous rule of {CITY-2}, citing an unexpected loophole in the laws that leaves the city under their command rather than the crown's.\n\nShould such independence be allowed?",
+        "title": "Autonomous Vassal",
+        "trigger": "",
+        "url": ""
+      },
+      {
+        "author": "Leyla Johnson",
+        "dlc": "",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [
+          "SUBJECT_CAPITAL_US",
+          "SUBJECT_CITY_FAMILY_SEAT"
+        ],
+        "href": "events/scripted#EVENTSTORY_CITY_AUTONOMY",
+        "id": "EVENTSTORY_CITY_AUTONOMY",
+        "options": [
+          {
+            "eventLink": "EVENTLINK_CITY_ZENOBIA_AUTONOMY",
+            "grants": true,
+            "outcomes": [
+              "grants Autonomous Rule",
+              "becomes the city's Governor"
+            ],
+            "removes": false,
+            "text": "Let them rule over themselves as long as they pay their taxes."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "-1 Happiness level"
+            ],
+            "removes": false,
+            "text": "Never! Find a noble, {PLAYER-2,1} husband for {CHARACTER-SHORT-1}."
+          }
+        ],
+        "prob": 0,
+        "repeatTurns": -1,
+        "requires": [],
+        "role": "grant",
+        "text": "The city of {CITY-0} would like to establish autonomy and rule itself independently from {PLAYER-2}. A prominent figure, named {CHARACTER-SHORT-1}, would like to reign over the city as its Governor.",
+        "title": "Autonomy in {CITY-0}",
+        "trigger": "",
+        "url": "https://en.wikipedia.org/wiki/Zenobia"
+      },
+      {
+        "author": "Jeri Roys",
+        "dlc": "Behind the Throne",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [],
+        "href": "events/on-production-specialist#EVENTSTORY_CORRUPTION_OF_THE_YOUTH",
+        "id": "EVENTSTORY_CORRUPTION_OF_THE_YOUTH",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": true,
+            "outcomes": [
+              "grants Autonomous Rule",
+              "gains Righteous"
+            ],
+            "removes": false,
+            "text": "Grant {CHARACTER-POSS-1} request."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "leader becomes disappointed with them"
+            ],
+            "removes": false,
+            "text": "There is no harm in talk."
+          }
+        ],
+        "prob": 0,
+        "repeatTurns": -1,
+        "requires": [
+          "SUBJECT_GOVERNOR",
+          "SUBJECT_CHARACTER_TRADITIONAL",
+          "SUBJECT_HEALTHY"
+        ],
+        "role": "grant",
+        "text": "{CHARACTER-1} has raised strong objections to the questionable morals and culture of idleness being spread by the intellectual movement in {CITY-0}. {G1:He:She} demands a stronger hand in keeping the city on the right course.",
+        "title": "Corruption of the Youth",
+        "trigger": "Production Specialist",
+        "url": ""
+      },
+      {
+        "author": "Josh Unsworth",
+        "dlc": "",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [
+          "SUBJECT_CAPITAL_US"
+        ],
+        "href": "events/scripted#EVENTSTORY_DEMAND_FOR_AUTONOMY",
+        "id": "EVENTSTORY_DEMAND_FOR_AUTONOMY",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": true,
+            "outcomes": [
+              "family remembers it",
+              "grants Autonomous Rule"
+            ],
+            "removes": false,
+            "text": "The crown relinquishes our control of the city."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "+80 Discontent in the city",
+              "+1 Discipline"
+            ],
+            "removes": false,
+            "text": "We cannot risk the {FAMILY-0,1} gaining more power."
+          }
+        ],
+        "prob": 0,
+        "repeatTurns": -1,
+        "requires": [
+          "SUBJECT_FAMILY_MAX_FURIOUS"
+        ],
+        "role": "grant",
+        "text": "Followers of the {FAMILY-0} Family have taken to the streets of {CITY-1} in the hundreds, protesting against collapsing roads and poor supplies in the city. Your advisers suspect that this is the result of a concentrated propaganda effort by the {FAMILY-0,1} to weaken your hold in the city.\n\nIt would be a bold move, but they suggest that giving the family completely autonomous rule of the city could go a long way to repairing relations with them.\n\nShall the {FAMILY-0,1} rule {CITY-1} alone?",
+        "title": "Demand for Autonomy",
+        "trigger": "",
+        "url": ""
+      },
+      {
+        "author": "Josh Unsworth",
+        "dlc": "",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [
+          "SUBJECT_CAPITAL_US",
+          "SUBJECT_CITY_FAMILY_SEAT"
+        ],
+        "href": "events/scripted#EVENTSTORY_INDEPENDENT_CITY",
+        "id": "EVENTSTORY_INDEPENDENT_CITY",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "3 rebel units spawn"
+            ],
+            "removes": false,
+            "text": "Refuse to indulge the rabble."
+          },
+          {
+            "eventLink": "",
+            "grants": true,
+            "outcomes": [
+              "grants Autonomous Rule",
+              "+1 Happiness level"
+            ],
+            "removes": false,
+            "text": "Very well, let them rule themselves."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "+1 Happiness level"
+            ],
+            "removes": false,
+            "text": "The people know my reign is ordained by the heavens, no usurpers will sway them."
+          }
+        ],
+        "prob": 0,
+        "repeatTurns": -1,
+        "requires": [
+          "SUBJECT_CITY_DISCONTENT_MODERATE"
+        ],
+        "role": "grant",
+        "text": "Amidst growing discontent, the people of {CITY-0} have been becoming increasingly organized in their resistance to your rule. Headed by an elected council of elders, they have trained an independent militia and live by their own laws.\n\nA message has arrived from this council, asking that you recognize the city's independence. They promise to continue to swear fealty and to pay taxes, but beyond that the city will be out of your hands.",
+        "title": "Independent City",
+        "trigger": "",
+        "url": ""
+      },
+      {
+        "author": "Josh Unsworth",
+        "dlc": "The Sacred and the Profane",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [
+          "SUBJECT_CAPITAL_US",
+          "SUBJECT_CITY_FAMILY_SEAT"
+        ],
+        "href": "events/ep-religion#EVENTSTORY_SON_OF_A_STAR",
+        "id": "EVENTSTORY_SON_OF_A_STAR",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": true,
+            "outcomes": [
+              "grants Autonomous Rule",
+              "family remembers it",
+              "leader becomes endeared to them",
+              "becomes the city's Governor"
+            ],
+            "removes": false,
+            "text": "Make an agreement for {CHARACTER-2} to lead the city as a semi-autonomous state."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "removes Jewish Dissent"
+            ],
+            "removes": false,
+            "text": "Send forces to fight {CHARACTER-SHORT-2} for the city."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "removes Jewish Dissent"
+            ],
+            "removes": false,
+            "text": "Use scorched-earth tactics to run {G2:him:her} to ground."
+          }
+        ],
+        "prob": 100,
+        "repeatTurns": -1,
+        "requires": [
+          "SUBJECT_CITY_DISSENT_JUDAISM",
+          "SUBJECT_RELIGION_MAX_UPSET"
+        ],
+        "role": "grant",
+        "text": "As the Dissent Judaism has taken hold in {CITY-0}, a leader has risen who has united the {RELIGION-1,3} against your local forces. {CHARACTER-2} has a reputation as a harsh but effective leader, punishing any who refuse to join {G2:his:her} ranks. \n\nSwift action will needed to be taken if we are to keep {CITY-0} from falling into {CHARACTER-POSS-2} control.",
+        "title": "Son of the Star",
+        "trigger": "",
+        "url": "https://en.wikipedia.org/wiki/Bar_Kokhba_revolt"
+      },
+      {
+        "author": "Josh Unsworth",
+        "dlc": "Empires of the Indus",
+        "eventLinkPrereq": "EVENTLINK_DISTANT_CLAIMANT",
+        "eventLinkTurns": 0,
+        "excludes": [
+          "SUBJECT_CITY_FAMILY_SEAT"
+        ],
+        "href": "events/follow-ups#EVENTSTORY_CLAIMANT_ARRIVES_BTT",
+        "id": "EVENTSTORY_CLAIMANT_ARRIVES_BTT",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": true,
+            "outcomes": [
+              "becomes the city's Governor",
+              "grants Autonomous Rule"
+            ],
+            "removes": false,
+            "text": "Placate {G1:him:her} with control of {CITY-0}."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "civil war",
+              "gains The Uncrowned King"
+            ],
+            "removes": false,
+            "text": "{CHARACTER-SHORT-1} will not rule even a single field of {PLAYER-2}."
+          }
+        ],
+        "prob": 100,
+        "repeatTurns": -1,
+        "requires": [],
+        "role": "grant",
+        "text": "Reaching the outskirts of {CITY-0}, {CHARACTER-1} demands rule over the land {G1:he:she} believes {G1:he:she} is entitled to.",
+        "title": "The Claimant Arrives",
+        "trigger": "",
+        "url": ""
+      },
+      {
+        "author": "Josh Unsworth",
+        "dlc": "Empires of the Indus",
+        "eventLinkPrereq": "EVENTLINK_DISTANT_CLAIMANT",
+        "eventLinkTurns": 0,
+        "excludes": [
+          "SUBJECT_CITY_FAMILY_SEAT"
+        ],
+        "href": "events/follow-ups#EVENTSTORY_CLAIMANT_ARRIVES_CONT",
+        "id": "EVENTSTORY_CLAIMANT_ARRIVES_CONT",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": true,
+            "outcomes": [
+              "becomes the city's Governor",
+              "grants Autonomous Rule"
+            ],
+            "removes": false,
+            "text": "Placate {G1:him:her} with control of {CITY-0}."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "3 rebel units spawn",
+              "leader becomes plotting against them"
+            ],
+            "removes": false,
+            "text": "{CHARACTER-SHORT-1} will not rule even a single field of {PLAYER-2}."
+          }
+        ],
+        "prob": 100,
+        "repeatTurns": -1,
+        "requires": [],
+        "role": "grant",
+        "text": "Reaching the outskirts of {CITY-0}, {CHARACTER-1} demands rule over the land {G1:he:she} believes {G1:he:she} is entitled to.",
+        "title": "The Claimant Arrives",
+        "trigger": "",
+        "url": ""
+      },
+      {
+        "author": "Brodie Frehlich",
+        "dlc": "",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [],
+        "href": "events/on-new-turn-1#EVENTSTORY_AUTONOMOUS_LIBERTIES",
+        "id": "EVENTSTORY_AUTONOMOUS_LIBERTIES",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "-160 Money (scales)"
+            ],
+            "removes": false,
+            "text": "Very well. I trust {CHARACTER-SHORT-1}’s judgment."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "leader becomes disappointed with them",
+              "removes Autonomous Rule"
+            ],
+            "removes": true,
+            "text": "{CHARACTER-SHORT-1} is taking advantage of {G1:his:her} position. This experiment must end."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "+1 Charisma",
+              "-3 Orders (scales)",
+              "+1 Discipline"
+            ],
+            "removes": false,
+            "text": "I will work with my friend {CHARACTER-SHORT-1} to find the funds elsewhere in {CITY-2}’s budget."
+          }
+        ],
+        "prob": 20,
+        "repeatTurns": -1,
+        "requires": [
+          "SUBJECT_NON_LEADER_GOVERNOR_US",
+          "SUBJECT_CITY_AUTONOMOUS_RULE"
+        ],
+        "role": "end",
+        "text": "{CITY-2} has been enjoying Autonomous Rule, with {CHARACTER-1} governing the city as {G1:he:she} sees fit. Most recently {G1:he:she} commissioned two small expeditions to explore the land beyond {CITY-2}’s borders. \n\nCiting reasons of national security and resource exploration, {CHARACTER-SHORT-1} is now asking for funds from the capital to recoup the project’s expenses.",
+        "title": "Autonomous Liberties",
+        "trigger": "New Turn",
+        "url": ""
+      },
+      {
+        "author": "Josh Unsworth",
+        "dlc": "",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [],
+        "href": "events/on-succession-us#EVENTSTORY_RECLAIMING_CONTROL",
+        "id": "EVENTSTORY_RECLAIMING_CONTROL",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "removes Autonomous Rule"
+            ],
+            "removes": true,
+            "text": "Welcome {CITY-0} back into the fold."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "+1 Happiness level",
+              "+60 Civics (scales)"
+            ],
+            "removes": false,
+            "text": "Permit their own rule."
+          }
+        ],
+        "prob": 0,
+        "repeatTurns": 40,
+        "requires": [
+          "SUBJECT_CITY_AUTONOMOUS_RULE",
+          "SUBJECT_ADULT"
+        ],
+        "role": "end",
+        "text": "The city of {CITY-0} has been living under its own guidance, away from the rule of {PLAYER-1}.\n\nA council from the city visits soon after hearing of your coronation. They are favorable to your rule and offer to bring the city back under the sway of the crown.\n\nWill you accept this offer, or allow {CITY-0} to keep their Autonomous Rule?",
+        "title": "Reclaiming Control",
+        "trigger": "Succession Us",
+        "url": ""
+      },
+      {
+        "author": "Josh Unsworth",
+        "dlc": "",
+        "eventLinkPrereq": "EVENTLINK_CITY_ZENOBIA_AUTONOMY",
+        "eventLinkTurns": 4,
+        "excludes": [],
+        "href": "events/on-new-turn-2#EVENTSTORY_CITY_AUTONOMY_EMPRESS",
+        "id": "EVENTSTORY_CITY_AUTONOMY_EMPRESS",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "removes Autonomous Rule",
+              "4 rebel units spawn",
+              "gains Imprisoned"
+            ],
+            "removes": true,
+            "text": "This experiment has gone far enough."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "+80 Happiness in the city",
+              "gains A Rising Star"
+            ],
+            "removes": false,
+            "text": "Such strong leadership is to be admired."
+          }
+        ],
+        "prob": 0,
+        "repeatTurns": -1,
+        "requires": [
+          "SUBJECT_ZENOBIA",
+          "SUBJECT_GOVERNOR",
+          "SUBJECT_PLAYER_NO_RISING_STAR"
+        ],
+        "role": "end",
+        "text": "The city of {CITY-0} has been thriving during its autonomous rule, the leadership of {CHARACTER-1} taking the city from strength to strength. A recent economic boom has seen the city minting new coins, with inscriptions that name {CHARACTER-1} an empress, and so an equal to yourself.\n\nIs such hubris to be tolerated?",
+        "title": "The Empress of {CITY-0}",
+        "trigger": "New Turn",
+        "url": "https://en.wikipedia.org/wiki/Zenobia"
+      },
+      {
+        "author": "Josh Unsworth",
+        "dlc": "",
+        "eventLinkPrereq": "",
+        "eventLinkTurns": 0,
+        "excludes": [],
+        "href": "events/on-new-turn-2#EVENTSTORY_CITY_AUTONOMY_END",
+        "id": "EVENTSTORY_CITY_AUTONOMY_END",
+        "options": [
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "removes Autonomous Rule",
+              "4 rebel units spawn"
+            ],
+            "removes": true,
+            "text": "We will take back {CITY-0}, by any means."
+          },
+          {
+            "eventLink": "",
+            "grants": false,
+            "outcomes": [
+              "+20 XP"
+            ],
+            "removes": false,
+            "text": "No, the city has earned its freedom."
+          }
+        ],
+        "prob": 10,
+        "repeatTurns": 15,
+        "requires": [
+          "SUBJECT_CITY_AUTONOMOUS_RULE"
+        ],
+        "role": "end",
+        "text": "The city of {CITY-0} has become renown as a free state of autonomous rule, a land unto itself. The court begrudges the situation, complaining that allowing such freedoms encourages others to expect the same.\n\nThe situation reaches a head when {CHARACTER-1} stands before the court and demands that something be done. {CITY-0} will not return to the fold without the use of force. Shall we fight to regain control?",
+        "title": "The End of Autonomy",
+        "trigger": "New Turn",
+        "url": ""
+      }
+    ],
+    "project": {
+      "captureDestroy": true,
+      "cost": [],
+      "dlc": false,
+      "effectCity": "EFFECTCITY_PROJECT_AUTONOMOUS_RULE",
+      "effects": [
+        "+1 Science/Pop",
+        "+2 Money/Pop",
+        "Cannot Choose Production",
+        "Cannot Build Units",
+        "Cannot Hurry"
+      ],
+      "eventOnly": true,
+      "hidden": true,
+      "icon": "img/icons/projects/monarch.png",
+      "id": "PROJECT_AUTONOMOUS_RULE",
+      "maxCount": 1,
+      "name": "Autonomous Rule",
+      "noHurry": false,
+      "prereqs": [],
+      "repeat": false,
+      "slug": "autonomous_rule",
+      "sortName": "Autonomous Rule",
+      "source": "Base game",
+      "unique": false
+    }
+  },
+  "carriers": [
+    {
+      "autoBuild": true,
+      "defaultGovernor": "",
+      "defaultGovernorName": "",
+      "effects": [
+        "+1 Science/Pop",
+        "+2 Money/Pop",
+        "Cannot Choose Production",
+        "Cannot Build Units",
+        "Cannot Hurry"
+      ],
+      "id": "EFFECTCITY_PROJECT_AUTONOMOUS_RULE",
+      "name": "Autonomous Rule",
+      "noBuildUnits": true,
+      "noHurry": true,
+      "yields": [
+        "+1 Science/Pop",
+        "+2 Money/Pop"
+      ]
+    },
+    {
+      "autoBuild": true,
+      "defaultGovernor": "COUNCIL_GRAND_VIZIER",
+      "defaultGovernorName": "Grand Vizier",
+      "effects": [
+        "Cannot Choose Production",
+        "Cannot Hurry",
+        "Default Governor: Council Grand Vizier"
+      ],
+      "id": "EFFECTCITY_SHARED_POWER",
+      "name": "Shared Power",
+      "noBuildUnits": false,
+      "noHurry": true,
+      "yields": []
+    }
+  ],
+  "constants": {
+    "AI_CITY_AUTOBUILD_VALUE": 0,
+    "AI_CITY_MIN_DANGER": 1,
+    "AI_HALF_VALUE_PROJECT_BUILD_TURNS": 8,
+    "AI_HALF_VALUE_SPECIALIST_BUILD_TURNS": 8,
+    "AI_HALF_VALUE_UNIT_BUILD_TURNS": 8,
+    "AI_MAX_ALLOWED_EXPENSE_IN_SHORTAGE": 40,
+    "AI_MAX_NUM_DISCIPLES_PER_HUNDRED_CITIES": 30,
+    "AI_MAX_NUM_DISCIPLES_PER_HUNDRED_ORDERS": 10,
+    "AI_MAX_NUM_WORKERS_PER_HUNDRED_CITIES": 150,
+    "AI_MAX_NUM_WORKERS_PER_HUNDRED_ORDERS": 50,
+    "AI_MIN_PROJECT_BUILD_TURNS": 2,
+    "AI_MIN_SPECIALIST_BUILD_TURNS": 2,
+    "AI_MIN_UNIT_BUILD_TURNS": 4,
+    "AI_NO_UNIT_BUILD_PERCENT": 75
+  },
+  "defensiveProjects": [
+    {
+      "dlc": "Empires of the Indus",
+      "eventOnly": true,
+      "id": "PROJECT_IMPROVISED_DEFENCES",
+      "name": "Improvised Defenses",
+      "slug": "improvised_defences"
+    },
+    {
+      "dlc": "",
+      "eventOnly": false,
+      "id": "PROJECT_MOAT",
+      "name": "Moat",
+      "slug": "moat"
+    },
+    {
+      "dlc": "",
+      "eventOnly": false,
+      "id": "PROJECT_TOWERS",
+      "name": "Towers",
+      "slug": "towers"
+    },
+    {
+      "dlc": "",
+      "eventOnly": false,
+      "id": "PROJECT_WALLS",
+      "name": "Walls",
+      "slug": "walls"
+    }
+  ],
+  "examples": {
+    "decree": {
+      "id": "PROJECT_DECREE_1",
+      "name": "Decree I",
+      "slug": "decree_1"
+    },
+    "festival": {
+      "id": "PROJECT_FESTIVAL_1",
+      "name": "Festival I",
+      "slug": "festival_1"
+    },
+    "inquiry": {
+      "id": "PROJECT_INQUIRY_1",
+      "name": "Inquiry I",
+      "slug": "inquiry_1"
+    },
+    "opulence": {
+      "id": "PROJECT_LAVISH_LIFESTYLE",
+      "name": "Opulence",
+      "slug": "lavish_lifestyle"
+    },
+    "treasury": {
+      "id": "PROJECT_TREASURY_1",
+      "name": "Treasury I",
+      "slug": "treasury_1"
+    }
+  },
+  "governorRequiredProjects": [
+    {
+      "cost": "100 Training",
+      "dlc": "Empires of the Indus",
+      "id": "PROJECT_SUPPRESS_DISSENT_BUDDHISM",
+      "name": "Suppress Buddhism Dissent",
+      "needsEffect": "Buddhist Dissent",
+      "slug": "suppress_dissent_buddhism"
+    },
+    {
+      "cost": "100 Training",
+      "dlc": "The Sacred and the Profane",
+      "id": "PROJECT_SUPPRESS_DISSENT_CHRISTIANITY",
+      "name": "Suppress Christianity Dissent",
+      "needsEffect": "Christian Dissent",
+      "slug": "suppress_dissent_christianity"
+    },
+    {
+      "cost": "100 Training",
+      "dlc": "Empires of the Indus",
+      "id": "PROJECT_SUPPRESS_DISSENT_HINDUISM",
+      "name": "Suppress Hinduism Dissent",
+      "needsEffect": "Hindu Dissent",
+      "slug": "suppress_dissent_hinduism"
+    },
+    {
+      "cost": "100 Training",
+      "dlc": "The Sacred and the Profane",
+      "id": "PROJECT_SUPPRESS_DISSENT_JUDAISM",
+      "name": "Suppress Judaism Dissent",
+      "needsEffect": "Jewish Dissent",
+      "slug": "suppress_dissent_judaism"
+    },
+    {
+      "cost": "100 Training",
+      "dlc": "The Sacred and the Profane",
+      "id": "PROJECT_SUPPRESS_DISSENT_MANICHAEISM",
+      "name": "Suppress Manichaeism Dissent",
+      "needsEffect": "Manichaean Dissent",
+      "slug": "suppress_dissent_manichaeism"
+    },
+    {
+      "cost": "100 Training",
+      "dlc": "The Sacred and the Profane",
+      "id": "PROJECT_SUPPRESS_DISSENT_ZOROASTRIANISM",
+      "name": "Suppress Zoroastrianism Dissent",
+      "needsEffect": "Zoroastrian Dissent",
+      "slug": "suppress_dissent_zoroastrianism"
+    }
+  ],
+  "governorTraitEffects": [
+    {
+      "archetype": true,
+      "effectCity": "EFFECTCITY_TRAIT_BUILDER",
+      "effects": [
+        "-1 turn to build Improvements"
+      ],
+      "id": "TRAIT_BUILDER_ARCHETYPE",
+      "name": "Builder"
+    },
+    {
+      "archetype": true,
+      "effectCity": "EFFECTCITY_TRAIT_DIPLOMAT",
+      "effects": [
+        "+40 Family Opinion"
+      ],
+      "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+      "name": "Diplomat"
+    },
+    {
+      "archetype": true,
+      "effectCity": "EFFECTCITY_TRAIT_JUDGE",
+      "effects": [
+        "Can hurry Projects & Specialists with Money"
+      ],
+      "id": "TRAIT_JUDGE_ARCHETYPE",
+      "name": "Judge"
+    },
+    {
+      "archetype": true,
+      "effectCity": "EFFECTCITY_TRAIT_ORATOR",
+      "effects": [
+        "+1 Happiness/Culture Level"
+      ],
+      "id": "TRAIT_ORATOR_ARCHETYPE",
+      "name": "Orator"
+    },
+    {
+      "archetype": true,
+      "effectCity": "EFFECTCITY_TRAIT_SCHOLAR",
+      "effects": [],
+      "id": "TRAIT_SCHOLAR_ARCHETYPE",
+      "name": "Scholar"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_RISING_STAR",
+      "effects": [
+        "+25% Growth",
+        "+1 Culture/Pop"
+      ],
+      "id": "TRAIT_RISING_STAR",
+      "name": "A Rising Star"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_AFFABLE",
+      "effects": [
+        "+2 Growth/Culture Level"
+      ],
+      "id": "TRAIT_AFFABLE",
+      "name": "Affable"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_ASTRONOMER",
+      "effects": [
+        "+10% Science"
+      ],
+      "id": "TRAIT_ASTRONOMER",
+      "name": "Astronomer"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_BOW_OF_PLENTY",
+      "effects": [
+        "+1 Growth/Pop"
+      ],
+      "id": "TRAIT_BOW_OF_PLENTY",
+      "name": "Bow of Plenty"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_CARPENTER",
+      "effects": [
+        "+100 Unit Trait XP / Siege",
+        "+100 Unit Trait XP / Ship"
+      ],
+      "id": "TRAIT_CARPENTER",
+      "name": "Carpenter"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_CORRUPT",
+      "effects": [
+        "+50% Maintenance"
+      ],
+      "id": "TRAIT_CORRUPT",
+      "name": "Corrupt"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_CRUEL",
+      "effects": [
+        "-20% Growth"
+      ],
+      "id": "TRAIT_CRUEL",
+      "name": "Cruel"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_CULTIVATOR",
+      "effects": [
+        "+50% Farm",
+        "+50% Grove"
+      ],
+      "id": "TRAIT_CULTIVATOR",
+      "name": "Cultivator"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_CUNNING",
+      "effects": [
+        "+2 Orders / Estates"
+      ],
+      "id": "TRAIT_CUNNING",
+      "name": "Cunning"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_DEBAUCHED",
+      "effects": [
+        "+4 Discontent/City"
+      ],
+      "id": "TRAIT_DEBAUCHED",
+      "name": "Debauched"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_DELVER",
+      "effects": [
+        "+50% Mine",
+        "+50% Quarry"
+      ],
+      "id": "TRAIT_DELVER",
+      "name": "Delver"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_ELOQUENT",
+      "effects": [
+        "+2 Civics/Culture Level"
+      ],
+      "id": "TRAIT_ELOQUENT",
+      "name": "Eloquent"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_EQUESTRIAN",
+      "effects": [
+        "+100 Unit Trait XP / Mounted"
+      ],
+      "id": "TRAIT_EQUESTRIAN",
+      "name": "Equestrian"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_EVANGELIST_GOVERNOR",
+      "effects": [
+        "Infantry units gain Adept",
+        "+40 Religion Opinion / Christianity",
+        "New Unit Religion: Christianity"
+      ],
+      "id": "TRAIT_EVANGELIST",
+      "name": "Evangelist"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_EXTRAVAGANT",
+      "effects": [
+        "-20% Money"
+      ],
+      "id": "TRAIT_EXTRAVAGANT",
+      "name": "Extravagant"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_FAMOUS",
+      "effects": [
+        "-25% Specialist Goods Costs"
+      ],
+      "id": "TRAIT_FAMOUS",
+      "name": "Famous"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_PERICLES_LEADER",
+      "effects": [
+        "-25% Improvement Cost"
+      ],
+      "id": "TRAIT_PERICLES_LEADER",
+      "name": "First Citizen"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_FOOLISH",
+      "effects": [
+        "-20% Science"
+      ],
+      "id": "TRAIT_FOOLISH",
+      "name": "Foolish"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_FRUGAL",
+      "effects": [
+        "-50% Improvement Cost"
+      ],
+      "id": "TRAIT_FRUGAL",
+      "name": "Frugal"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_INSPIRING",
+      "effects": [
+        "+2 Culture/Culture Level"
+      ],
+      "id": "TRAIT_INSPIRING",
+      "name": "Inspiring"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_INTELLIGENT",
+      "effects": [
+        "+1 Science/Culture Level"
+      ],
+      "id": "TRAIT_INTELLIGENT",
+      "name": "Intelligent"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_INTOLERANT",
+      "effects": [
+        "-20% Civics"
+      ],
+      "id": "TRAIT_INTOLERANT",
+      "name": "Intolerant"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_MAHOUT",
+      "effects": [
+        "+1 Level for new Elephant units"
+      ],
+      "id": "TRAIT_MAHOUT",
+      "name": "Mahout"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_CYAXARES_GOVERNOR",
+      "effects": [
+        "+20% Training"
+      ],
+      "id": "TRAIT_CYAXARES_LEADER",
+      "name": "Median Expansionist"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_NATURALIST",
+      "effects": [
+        "+50% Lumbermill",
+        "+50% Pasture"
+      ],
+      "id": "TRAIT_NATURALIST",
+      "name": "Naturalist"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_PATHFINDER",
+      "effects": [
+        "+50% Nets",
+        "+50% Camp"
+      ],
+      "id": "TRAIT_PATHFINDER",
+      "name": "Pathfinder"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_PLANTERS_CLOAK",
+      "effects": [
+        "+100% Grove",
+        "+50% Vegetation Regrowth Rate"
+      ],
+      "id": "TRAIT_PLANTERS_CLOAK",
+      "name": "Planter's Cloak"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_PROSPEROUS",
+      "effects": [
+        "+16 Money/Culture Level"
+      ],
+      "id": "TRAIT_PROSPEROUS",
+      "name": "Prosperous"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_RIGHTEOUS",
+      "effects": [
+        "+4 Happiness/City"
+      ],
+      "id": "TRAIT_RIGHTEOUS",
+      "name": "Righteous"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_ROBUST",
+      "effects": [
+        "+1 Orders/City"
+      ],
+      "id": "TRAIT_ROBUST",
+      "name": "Robust"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_SLOTHFUL",
+      "effects": [
+        "-20% Training"
+      ],
+      "id": "TRAIT_SLOTHFUL",
+      "name": "Slothful"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_STEWARD_OF_THE_LAND",
+      "effects": [
+        "+1 Happiness/City",
+        "+100% Food",
+        "+1 turn to build Improvements",
+        "+20% Specialist production time"
+      ],
+      "id": "TRAIT_STEWARD_OF_THE_LAND",
+      "name": "Steward of the Land"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_STRICT",
+      "effects": [
+        "+100 Unit Trait XP / Infantry"
+      ],
+      "id": "TRAIT_STRICT",
+      "name": "Strict"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_BUTCHERS_MASK",
+      "effects": [
+        "+10 Food/Resource Pig",
+        "+10 Food/Resource Cattle",
+        "+10 Food/Resource Game",
+        "Melee units gain Bloodthirsty"
+      ],
+      "id": "TRAIT_BUTCHERS_MASK",
+      "name": "The Butcher's Mask"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_THE_CORNERSTONE",
+      "effects": [
+        "+1 Training / Fort"
+      ],
+      "id": "TRAIT_THE_CORNERSTONE",
+      "name": "The Cornerstone"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_JESTERS_MASK",
+      "effects": [
+        "+10 Happiness/Opinionfamily Furious",
+        "+0.5 Happiness/Citizen"
+      ],
+      "id": "TRAIT_JESTERS_MASK",
+      "name": "The Jester's Mask"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_WOODSMANS_MASK",
+      "effects": [
+        "+2 Training/Specialist Woodcutter",
+        "Worker units gain Stealth"
+      ],
+      "id": "TRAIT_WOODSMANS_MASK",
+      "name": "The Woodsman's Mask"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_UNCOUTH",
+      "effects": [
+        "-20% Culture"
+      ],
+      "id": "TRAIT_UNCOUTH",
+      "name": "Uncouth"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_VIGILANT",
+      "effects": [],
+      "id": "TRAIT_VIGILANT",
+      "name": "Vigilant"
+    },
+    {
+      "archetype": false,
+      "effectCity": "EFFECTCITY_TRAIT_WARLIKE",
+      "effects": [
+        "+2 Training/Culture Level"
+      ],
+      "id": "TRAIT_WARLIKE",
+      "name": "Warlike"
+    }
+  ],
+  "unitBuildModifierTraits": [
+    {
+      "archetype": true,
+      "id": "TRAIT_COMMANDER_ARCHETYPE",
+      "modifier": 25,
+      "name": "Commander"
+    },
+    {
+      "archetype": true,
+      "id": "TRAIT_HERO_ARCHETYPE",
+      "modifier": 25,
+      "name": "Hero"
+    },
+    {
+      "archetype": true,
+      "id": "TRAIT_TACTICIAN_ARCHETYPE",
+      "modifier": 25,
+      "name": "Tactician"
+    },
+    {
+      "archetype": false,
+      "id": "TRAIT_WARLIKE",
+      "modifier": 25,
+      "name": "Warlike"
+    },
+    {
+      "archetype": true,
+      "id": "TRAIT_DIPLOMAT_ARCHETYPE",
+      "modifier": -15,
+      "name": "Diplomat"
+    },
+    {
+      "archetype": true,
+      "id": "TRAIT_SCHOLAR_ARCHETYPE",
+      "modifier": -15,
+      "name": "Scholar"
+    },
+    {
+      "archetype": false,
+      "id": "TRAIT_TIMID",
+      "modifier": -15,
+      "name": "Timid"
+    },
+    {
+      "archetype": true,
+      "id": "TRAIT_BUILDER_ARCHETYPE",
+      "modifier": -25,
+      "name": "Builder"
+    }
+  ],
+  "vizier": {
+    "assignOpinion": 40,
+    "dlc": "Behind the Throne",
+    "effectPlayer": "EFFECTPLAYER_SHARED_POWER_VIZIER",
+    "effectPlayerName": "Grand Vizier Rulership",
+    "help": {
+      "actsAsGovernor": "{0_character} acts as a Governor",
+      "automateButton": "{true_0:Cancel:Start} City Automation",
+      "cannotChange": "Cannot Change Production because of {LIST}",
+      "cannotChoose": "Cannot Choose Production",
+      "citiesWithoutGovernor": "[Cities without Governor] {0_cityEffectText}",
+      "noUnits": "Cannot Build Units"
+    },
+    "id": "COUNCIL_GRAND_VIZIER",
+    "name": "Grand Vizier",
+    "noGovernorEffectCity": "EFFECTCITY_SHARED_POWER",
+    "noNotifications": true,
+    "seatsAffectingAutobuild": [
+      "COUNCIL_GRAND_VIZIER"
+    ],
+    "slug": "grand_vizier",
+    "traitPrereqs": [
+      {
+        "id": "TRAIT_POWER_HUNGRY",
+        "name": "Power Hungry"
+      },
+      {
+        "id": "TRAIT_RISING_STAR",
+        "name": "A Rising Star"
+      }
+    ],
+    "traitsAffectAutobuild": true,
+    "xpPerTurn": 10
+  }
+}

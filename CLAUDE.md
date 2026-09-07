@@ -270,6 +270,20 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   `TEXT_UI_STATS_RESOURCE_VALUE` / `TEXT_UI_STATS_TOTAL_VALUE`; the binding class
   (StatsPopup) is not in the shipped source, but the tooltip and Stats graph showed
   the identical 19,931, and the per-good averages match the simulated walk-down.
+- **Forced city autobuild is ONE flag with TWO carriers.** `EFFECTCITY_SHARED_POWER`
+  (Grand Vizier: reached via `EFFECTPLAYER_SHARED_POWER_VIZIER.NoGovernorEffectCity`,
+  applied to every city without a governor) and `EFFECTCITY_PROJECT_AUTONOMOUS_RULE`
+  (hidden event project) both set `bAutoBuild`; only the latter adds `bNoBuildUnits`.
+  `Game.cs` refuses the BUILD_* actions on `isAutoBuild()` cities but NOT on the
+  player's "Start City Automation" toggle (`isAutomated()`), which shares the planner
+  but keeps the queue editable. The picker is `PlayerAI.doAutomatedCityBuilds →
+  getBestBuild`, with buying off for humans (`shouldBuyYields` needs `isAIAutoPlay`).
+  The Vizier's *only* trait influence on the picker is `iUnitBuildModifier` through
+  `bTraitsAffectAutobuild` (only that seat has it); his traits otherwise act as
+  Governor effects because `City.governor()` returns the acting governor. Autonomy
+  grant/end events must be DETECTED from bonuses that add/remove
+  `PROJECT_AUTONOMOUS_RULE` (8 grants, 4 ends) — a hand list missed half of them.
+  Pages: `/grand-vizier`, `/autonomous-rule`; data `scripts/build_autobuild.py`.
 - **F5 panel ≠ all cognomen stats.** The panel lists ~50 lifetime stats but only **47 feed cognomen scoring** (`calculator.inputStats`). `Worker Turns`, `Children Had`, `Trees Removed` etc. are real panel rows that score nothing — the parser's `ignored` bucket counting them is **correct behaviour, not a miss**. Verify against `inputStats` before "fixing" an ignored stat.
 
 ---

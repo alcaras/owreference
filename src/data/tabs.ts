@@ -154,6 +154,11 @@ export const TABS: Tab[] = [
     summary: 'Council seats (triangular rating yields) and the four courtier types',
   },
   {
+    slug: 'grand-vizier', icon: '📜', label: 'Grand Vizier Rulership', section: 'Court',
+    status: 'built', sourceSheet: '',
+    summary: 'How the Grand Vizier picks what every ungoverned city builds — the AI planner, its filters and value math',
+  },
+  {
     slug: 'missions', icon: '🎯', label: 'Missions', section: 'Court',
     status: 'built', sourceSheet: '',
     summary: 'Character missions — costs, requirements, outcomes',
@@ -242,6 +247,11 @@ export const TABS: Tab[] = [
     slug: 'projects', icon: '🏗️', label: 'Projects', section: 'Cities',
     status: 'built', sourceSheet: '',
     summary: 'City projects — cost, prerequisites, and effects',
+  },
+  {
+    slug: 'autonomous-rule', icon: '🗽', label: 'Autonomous Rule', section: 'Cities',
+    status: 'built', sourceSheet: '',
+    summary: 'Autonomous cities — what they can and cannot build, how they choose, and the events that grant and end autonomy',
   },
   {
     slug: 'hurrying', icon: '⏩', label: 'Hurrying Production', section: 'Cities',

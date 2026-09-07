@@ -65,6 +65,25 @@ WATCHED = [
      "unit-counters page: only Melee/Ship defenders counterattack (iMeleeCounter)"),
     ("Base/Game/GameCore/Unit.cs", "getEffectUnits", 30,
      "build_unit_damage.py unit_effect_ids(): units carry own aeEffectUnit + one EffectUnit per UnitTrait"),
+    # Forced city autobuild (grand-vizier / autonomous-rule pages, build_autobuild.py)
+    ("Base/Game/GameCore/PlayerAI.cs", "doAutomatedCityBuilds", 45,
+     "autobuild flow: move auto item first → repairs → plan (no buying) → fallback chooseBuild"),
+    ("Base/Game/GameCore/PlayerAI.cs", "getBestBuild", 110,
+     "autobuild candidate pools: projects / specialists (skipped in danger) / units; danger re-run"),
+    ("Base/Game/GameCore/PlayerAI.cs", "isBuildProjectValid", 15,
+     "autobuild: only defensive projects when in danger or border city with a defensive option"),
+    ("Base/Game/GameCore/PlayerAI.cs", "isBuildUnitValid", 140,
+     "autobuild unit filter: canBuildUnit (bNoBuildUnits), 1.5× military/warship caps, worker/disciple/settler/scout needs"),
+    ("Base/Game/GameCore/PlayerAI.cs", "getBuildValue", 18,
+     "autobuild build-time discount: base × (half−min)/(turns+half−2·min) — AI_*_BUILD_TURNS"),
+    ("Base/Game/GameCore/PlayerAI.cs", "calculateTargetMilitaryUnitNumber", 80,
+     "autobuild military target incl. bTraitsAffectAutobuild → Vizier iUnitBuildModifier traits"),
+    ("Base/Game/GameCore/PlayerAI.cs", "isDefensiveCityEffect", 15,
+     "autobuild 'defensive project' = effect iCityHP>0 or iStrengthModifier>0 (build_autobuild.py)"),
+    ("Base/Game/GameCore/City.cs", "updateDefaultGovernor", 32,
+     "Vizier acting-governor pick: DefaultGovernor effect with the highest count whose seat is filled"),
+    ("Base/Game/GameCore/City.cs", "canBuildProject", 100,
+     "bRequiresGovernor tests isGoverned() (acting governor counts); autobuild gates via Game.cs actions"),
 ]
 
 

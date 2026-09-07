@@ -1,0 +1,103 @@
+---
+// Four ways a city's production queue gets decided, side by side. Shared by
+// the Grand Vizier and Autonomous Rule pages. Facts:
+//  - Game.cs action handlers (BUILD_PROJECT / BUILD_SPECIALIST / BUILD_UNIT /
+//    BUILD_QUEUE) refuse when City.isAutoBuild() — but NOT when merely
+//    isAutomated() (the "Start City Automation" button).
+//  - City.canHurry → isNoHurry(); both autobuild carriers set bNoHurry.
+//  - PlayerAI.doAutomatedCityBuilds plans for isAutoBuild || isAutomated cities,
+//    but the "make sure every city builds something" fallback (chooseBuild)
+//    only covers isAutoBuild cities.
+//  - EFFECTCITY_PROJECT_AUTONOMOUS_RULE sets bNoBuildUnits; Shared Power does not.
+import autobuild from '../data/autobuild.json';
+const base = import.meta.env.BASE_URL;
+const { current = '' } = Astro.props as { current?: string };
+const ar = autobuild.carriers.find(c => c.id === 'EFFECTCITY_PROJECT_AUTONOMOUS_RULE');
+const yields = ar?.yields.join(', ') ?? '';
+
+const cols = [
+  { key: 'manual',  label: 'Manual',                 href: '' },
+  { key: 'auto',    label: 'City Automation button', href: '' },
+  { key: 'vizier',  label: 'Grand Vizier',           href: `${base}grand-vizier` },
+  { key: 'autonomy',label: 'Autonomous Rule',        href: `${base}autonomous-rule` },
+];
+const rows: { label: string; manual: string; auto: string; vizier: string; autonomy: string }[] = [
+  { label: 'Who picks the build',     manual: 'You',               auto: 'AI planner (you can override)', vizier: 'AI planner',        autonomy: 'AI planner' },
+  { label: 'Scope',                   manual: 'Per city',          auto: 'Per city (toggle)',            vizier: 'Every city without a Governor', autonomy: 'That one city' },
+  { label: 'Your queue edits',        manual: 'Allowed',           auto: 'Allowed',                      vizier: 'Refused',            autonomy: 'Refused' },
+  { label: 'Hurrying',                manual: 'Allowed',           auto: 'Allowed',                      vizier: 'Blocked',            autonomy: 'Blocked' },
+  { label: 'Units',                   manual: 'Yes',               auto: 'Yes',                          vizier: 'Yes',                autonomy: 'None at all' },
+  { label: 'Projects & specialists',  manual: 'Yes',               auto: 'Yes',                          vizier: 'Yes',                autonomy: 'Yes' },
+  { label: 'Buys missing goods',      manual: 'If you choose',     auto: 'Never',                        vizier: 'Never',              autonomy: 'Never' },
+  { label: 'Idle-city fallback',      manual: '—',                 auto: 'None (can sit idle)',          vizier: 'Always picks something', autonomy: 'Always picks something' },
+  { label: 'Acting Governor',         manual: '—',                 auto: '—',                            vizier: 'The Vizier',         autonomy: '— (event usually installs one)' },
+  { label: 'Extra yields',            manual: '—',                 auto: '—',                            vizier: '—',                  autonomy: yields },
+  { label: 'How to end it',           manual: '—',                 auto: 'Toggle off',                   vizier: 'Assign a Governor, or dismiss the Vizier', autonomy: 'Event choice, or lose the city' },
+];
+---
+<div class="ab-scroll">
+  <table class="ab-table">
+    <colgroup>
+      <col style="width: 11rem" />
+      {cols.map(() => <col style="width: 12rem" />)}
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        {cols.map(c => (
+          <th class={c.key === current ? 'ab-current' : ''}>
+            {c.href && c.key !== current ? <a href={c.href}>{c.label}</a> : c.label}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map(r => (
+        <tr>
+          <th scope="row">{r.label}</th>
+          {cols.map(c => <td class={c.key === current ? 'ab-current' : ''}>{(r as any)[c.key]}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .ab-scroll { overflow-x: auto; max-width: 100%; margin: 0.6rem 0 0.9rem; }
+  .ab-table {
+    width: 100%;
+    min-width: 58rem;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+  .ab-table thead th {
+    text-align: left;
+    color: var(--text-dim);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .ab-table tbody td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text);
+  }
+  .ab-table tbody tr:hover { background: var(--bg-elev); }
+  .ab-table tbody th {
+    text-align: left;
+    color: var(--text-dim);
+    font-weight: 500;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .ab-table thead th a { color: var(--accent); text-decoration: none; }
+  .ab-table thead th a:hover { text-decoration: underline; }
+  .ab-current { background: var(--bg-elev); }
+  .ab-table thead th.ab-current { color: var(--text); }
+</style>
