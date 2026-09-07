@@ -167,18 +167,18 @@ for (const t of tiles) {
   S.push(`<circle cx="${f(cx(t))}" cy="${f(cy(t))}" r="5.5" fill="#ffffff" opacity="0.85" stroke="#14161c" stroke-width="0.8"/>`);
 }
 
-// units: owner-coloured token with the in-game portrait clipped inside
+// units: owner-coloured disc with the game's white flag glyph on top
+// (owpuzzle app.js:685-687 — the silhouette sits ON the disc like the
+// in-game unit flags; glyphs live in public/img/icons/unit_glyphs/)
 for (const u of sc.units) {
   const x = cx(u), y = cy(u);
   const col = PCOL[u.owner] || PCOL[1];
-  const cid = uid(`u${u.q}_${u.r}`);
   const R = SIZE * 0.5;
-  clips.push(`<clipPath id="${cid}"><circle cx="${f(x)}" cy="${f(y)}" r="${f(R - 2)}"/></clipPath>`);
+  const G = SIZE * 0.66;
   S.push(`<g${u.hidden ? ' opacity="0.5"' : ''}>`);
   if (u.mover) S.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(R + 6)}" fill="none" stroke="#fff" stroke-width="2.5"/>`);
-  S.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(R)}" fill="${col}" stroke="${BOARD_BG}" stroke-width="1.5"/>`);
-  S.push(`<image href="${base}img/icons/units/${u.iconSlug}.png" x="${f(x - R)}" y="${f(y - R)}" width="${f(2 * R)}" height="${f(2 * R)}" clip-path="url(#${cid})" preserveAspectRatio="xMidYMid slice"/>`);
-  S.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(R - 1)}" fill="none" stroke="${col}" stroke-width="3"/>`);
+  S.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(R)}" fill="${col}" stroke="${BOARD_BG}" stroke-width="1.6"/>`);
+  S.push(`<image href="${base}img/icons/unit_glyphs/${u.iconSlug}.png" x="${f(x - G / 2)}" y="${f(y - G / 2)}" width="${f(G)}" height="${f(G)}"/>`);
   S.push(`<title>${u.name}${u.hidden ? ' (hidden)' : ''}</title></g>`);
 }
 

@@ -109,7 +109,7 @@ const stats = [
           <ul class="zc-card__units">
             {c.picks.map(u => (
               <li>
-                <img class="zc-uicon" src={`${base}img/icons/units/${u.iconSlug}.png`} alt="" loading="lazy" />
+                <img class="zc-uicon" src={`${base}img/icons/unit_glyphs/${u.iconSlug}.png`} alt="" loading="lazy" />
                 <Term id={u.id} showIcon={false} label={u.name} />
               </li>
             ))}
@@ -237,7 +237,7 @@ const stats = [
           {units.map(u => (
             <tr id={`zoc-${u.slug}`}>
               <td class="zc-unitcell">
-                <img class="zc-uicon" src={`${base}img/icons/units/${u.iconSlug}.png`} alt="" loading="lazy" />
+                <img class="zc-uicon" src={`${base}img/icons/unit_glyphs/${u.iconSlug}.png`} alt="" loading="lazy" />
                 <Term id={u.id} showIcon={false} label={u.name} />
               </td>
               <td class="zc-dim">{u.traits.join(', ')}</td>
@@ -441,9 +441,9 @@ const stats = [
     .zc-card__units li { display: inline-flex; align-items: center; gap: 0.3rem; }
     .zc-card__more { color: var(--text-dim); font-size: 0.76rem; }
     .zc-uicon {
-      width: 1.35em; height: 1.35em; border-radius: 50%;
-      object-fit: cover; border: 1px solid var(--border-strong);
-      background: var(--bg-elev-2);
+      width: 1.4em; height: 1.4em; border-radius: 50%;
+      object-fit: contain; padding: 0.12em; box-sizing: border-box;
+      background: var(--bg-elev-3); border: 1px solid var(--border-strong);
       flex-shrink: 0;
     }
 
