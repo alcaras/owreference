@@ -93,8 +93,17 @@ for zt, e in entries(parse("unit.xml")):
         "bIgnoreZOC": flag(e, "bIgnoreZOC"),
         "bWater": flag(e, "bWater"),
         "bBlocks": flag(e, "bBlocks"),
+        "bAmphibious": flag(e, "bAmphibious"),
+        "bTerritoryWater": flag(e, "bTerritoryWater"),
         "iRangeMax": int(e.findtext("iRangeMax") or 0),
     }
+
+# effectPlayer aeWaterUnit: which land unit types a player effect turns into
+# water units (Game.isWaterUnit → Player.isWaterUnitUnlock, Game.cs:14267)
+WATER_UNIT_UNLOCKS: dict[str, list[tuple[str, str]]] = {}
+for zt, e in entries(parse("effectPlayer.xml")):
+    for u in zvalues(e, "aeWaterUnit"):
+        WATER_UNIT_UNLOCKS.setdefault(u, []).append((zt, e.findtext("Name") or f"TEXT_{zt}"))
 
 EFFECTS: dict[str, dict] = {}
 for zt, e in entries(parse("effectUnit.xml")):
@@ -176,7 +185,9 @@ def name_of(key: str, fallback: str) -> str:
     raw = TEXT.get(key)
     if not raw:
         return fallback
-    return CLEANER.clean(raw).split("~")[0].strip()
+    out = CLEANER.clean(raw).split("~")[0].strip()
+    # {UNIT-RELIGION,1} and friends are runtime substitutions the disciples' names carry
+    return re.sub(r"\{[A-Z][A-Z_0-9-]*(?:,\d+)?\}\s*", "", out).strip()
 
 
 def game_text(key: str, hotkey: str = "") -> str:
@@ -240,6 +251,7 @@ class Unit:
     effects: list[str] = field(default_factory=list)  # promotions / general-trait effects held
     tribe: bool = False
     mover: bool = False
+    water_unlock: bool = False   # owner has an aeWaterUnit effect for this type (Exploration law → Scout)
 
     @property
     def info(self) -> dict:
@@ -323,7 +335,9 @@ def is_unit_zoc(exerter: Unit, mover_type: str) -> bool:
 
 
 def is_water_unit(u: Unit) -> bool:
-    return u.info["bWater"]
+    # Game.isWaterUnit (Game.cs:14267): bWater, bAmphibious (Caravan), or the
+    # owner's water-unit unlock (EFFECTPLAYER_LAW_EXPLORATION → Scout)
+    return u.info["bWater"] or u.info["bAmphibious"] or u.water_unlock
 
 
 def _hide_target_matches(target: str, t: Tile) -> bool:
@@ -424,16 +438,19 @@ IMPROVEMENT_IGNORE_ZOC = {zt: flag(e, "bIgnoreZOC") for zt, e in entries(parse("
 
 
 def passable(board: Board, t: Tile, mover: Unit) -> bool:
-    """The subset of Tile.canUnitPass a picket board needs: no impassable
-    terrain, stay in your medium (an embarked land mover stays afloat), and a
-    hostile blocking unit fills its tile."""
+    """The subset of Tile.canUnitPass (Tile.cs:10152) a board needs: no
+    impassable terrain; ships stay on water; a land unit may cross water only
+    when it is already afloat (standing in for an anchored ship's water
+    control, Tile.isWaterMovement Tile.cs:8027); and a hostile unit fills its
+    tile only if its type has bBlocks (Tile.cs:10272) — Settlers, Workers,
+    Scouts, Caravans and disciples do not."""
     if t.impassable:
         return False
     start = board.tile(mover.q, mover.r)
-    if is_water_unit(mover):
+    if mover.info["bWater"]:
         if not t.water:
             return False
-    elif t.water != start.water:
+    elif t.water and not start.water and not is_water_unit(mover):
         return False
     for o in board.units_at(t):
         if board.hostile(mover.owner, o.owner) and o.info["bBlocks"]:
@@ -441,10 +458,35 @@ def passable(board: Board, t: Tile, mover: Unit) -> bool:
     return True
 
 
+def can_end(board: Board, t: Tile, mover: Unit) -> bool:
+    """May the mover END a move here? Tile.canUnitTypeOccupy with bFinalTile
+    (Tile.cs:10524): ships need water, a land unit needs land unless it is a
+    water unit (Game.isWaterUnit) or has bTerritoryWater on own-territory
+    water (Worker); plus canUnitOccupy (Tile.cs:10479 → canBothUnitsOccupy
+    Tile.cs:10382): a hostile occupant of any kind refuses the tile — so a
+    non-blocking enemy can be walked THROUGH but never stopped ON."""
+    if not passable(board, t, mover):
+        return False
+    if mover.info["bWater"]:
+        if not t.water:
+            return False
+    elif t.water:
+        if mover.info["bTerritoryWater"]:
+            if t.owner != mover.owner:
+                return False
+        elif not is_water_unit(mover):
+            return False
+    for o in board.units_at(t):
+        if board.hostile(mover.owner, o.owner):
+            return False
+    return True
+
+
 def reachable(board: Board, mover: Unit) -> tuple[set[tuple[int, int]], dict]:
     """Every tile the mover could reach with unlimited movement, using only
     the ZOC step rule + passability — the picket boards' 'is there a way
-    through at all' question. Returns the set and BFS parents."""
+    through at all' question. Returns the visited set and BFS parents; the
+    caller filters with can_end for the tiles a move may finish on."""
     start = board.tile(mover.q, mover.r)
     seen = {(start.q, start.r)}
     parent: dict[tuple[int, int], tuple[int, int] | None] = {(start.q, start.r): None}
@@ -624,14 +666,27 @@ def scenario_defs() -> list[dict]:
     ))
     defs.append(dict(
         id="embarked", section="exceptions", render=True,
-        title="Water: embarked troops",
-        caption="A ship pins embarked land units, even a Scout, while an embarked enemy exerts nothing.",
-        board=lambda: make_board(hexagon(2), [Unit("UNIT_TRIREME", 1, 1, -1), Unit("UNIT_SPEARMAN", 1, 1, 1),
-                                              Unit("UNIT_SCOUT", 0, 1, 0, mover=True)],
+        title="Water: land units afloat",
+        caption="A ship also pins land units crossing its water under your own ship's control.",
+        board=lambda: make_board(hexagon(2), [Unit("UNIT_TRIREME", 1, 1, -1), Unit("UNIT_BIREME", 0, 2, 0),
+                                              Unit("UNIT_WARRIOR", 0, 1, 0, mover=True)],
                                  edits=water_edits),
-        paths=[[(1, 0), (0, 0)], [(1, 0), (0, 1)]],
+        paths=[[(1, 0), (0, 0)], [(1, 0), (1, 1)]],
         expect=dict(zoc={(2, -1), (2, -2), (1, -2), (0, -1), (0, 0), (1, 0)},
-                    legal={((1, 0), (0, 0)): False, ((1, 0), (0, 1)): True}),
+                    legal={((1, 0), (0, 0)): False, ((1, 0), (1, 1)): True}),
+    ))
+    # civilians: no bBlocks → walked through, never stopped on
+    landing_edits = {(q, r): dict(terrain=WATER) for (q, r) in hexagon(2) if q >= 1}
+    defs.append(dict(
+        id="landing", section="civilians", render=True, show_reach=True,
+        title="A Worker holds the beach",
+        caption="You may march through an enemy Worker's tile but never stop on it, so nothing can land there.",
+        board=lambda: make_board(hexagon(2), [Unit("UNIT_WORKER", 1, 0, 0), Unit("UNIT_BIREME", 0, 2, -1),
+                                              Unit("UNIT_WARRIOR", 0, 1, 0, mover=True)],
+                                 edits=landing_edits),
+        paths=[[(1, 0), (0, 0), (-1, 0)]],
+        expect=dict(zoc=set(), legal={((1, 0), (0, 0)): True, ((0, 0), (-1, 0)): True},
+                    passable={(0, 0): True}, can_end={(0, 0): False, (-1, 0): True, (0, -1): True, (1, 1): False}),
     ))
     defs.append(dict(
         id="hidden", section="exceptions", render=True,
@@ -681,6 +736,30 @@ def scenario_defs() -> list[dict]:
         paths=[[(1, 0), (0, 0)]], expect=dict(zoc=set(), legal={((1, 0), (0, 0)): True}),
     ))
     defs.append(dict(
+        id="scout_exploration", section="facts", render=False,
+        title="A Scout under the Exploration law is a water unit and keeps its ignore",
+        board=lambda: make_board(hexagon(2), [Unit("UNIT_TRIREME", 1, 1, -1),
+                                              Unit("UNIT_SCOUT", 0, 1, 0, mover=True, water_unlock=True)],
+                                 edits=water_edits),
+        paths=[[(1, 0), (0, 0)]], expect=dict(zoc=set(), legal={((1, 0), (0, 0)): True}, can_end={(1, 0): True}),
+    ))
+    defs.append(dict(
+        id="scout_ferried", section="facts", render=False,
+        title="A Scout without the law is pinned afloat like anyone else",
+        board=lambda: make_board(hexagon(2), [Unit("UNIT_TRIREME", 1, 1, -1),
+                                              Unit("UNIT_SCOUT", 0, 1, 0, mover=True)],
+                                 edits=water_edits),
+        paths=[[(1, 0), (0, 0)]], expect=dict(zoc_has={(1, 0), (0, 0)}, legal={((1, 0), (0, 0)): False}, can_end={(1, 0): False}),
+    ))
+    defs.append(dict(
+        id="worker_water", section="facts", render=False,
+        title="A Worker may end on own-territory water and is pinned by ships",
+        board=lambda: make_board(hexagon(2), [Unit("UNIT_TRIREME", 1, 1, -1),
+                                              Unit("UNIT_WORKER", 0, 1, 0, mover=True)],
+                                 edits={**water_edits, (1, 0): dict(terrain=WATER, owner=0)}),
+        paths=[], expect=dict(zoc_has={(1, 0), (0, 0)}, can_end={(1, 0): True, (0, 0): False}),
+    ))
+    defs.append(dict(
         id="cavalry_city", section="facts", render=False,
         title="Ignore-ZOC units are exempt from city zones",
         board=lambda: make_board(hexagon(2), [Unit("UNIT_HORSEMAN", 0, -1, 0, mover=True)],
@@ -707,7 +786,8 @@ def compute(defn: dict) -> dict:
     zoc = {(t.q, t.r) for t in tiles if is_hostile_zoc(board, t, mover)}
     overlay = {(t.q, t.r) for t in tiles if is_hostile_zoc(board, t, mover, ignore_river=True)} - zoc
 
-    reach, parents = reachable(board, mover)
+    visited, parents = reachable(board, mover)
+    reach = {p for p in visited if can_end(board, board.tile(*p), mover)}
 
     def auto_path(row: int) -> list[tuple[int, int]]:
         targets = sorted(((q, r) for (q, r) in reach if r == row), key=lambda p: (abs(p[0]), p[0]))
@@ -747,6 +827,12 @@ def compute(defn: dict) -> dict:
     for row, want in exp.get("reach_rows", {}).items():
         got = any(r == row for (_, r) in reach)
         assert got == want, f"{sid}: row {row} reachable={got}, expected {want}"
+    for p, want in exp.get("can_end", {}).items():
+        got = p in reach
+        assert got == want, f"{sid}: can end at {p} = {got}, expected {want}"
+    for p, want in exp.get("passable", {}).items():
+        got = p in visited
+        assert got == want, f"{sid}: passable through {p} = {got}, expected {want}"
     for (q, r), want in exp.get("swap", {}).items():
         other = next(u for u in board.units if (u.q, u.r) == (q, r))
         got = can_swap(board, mover, other)
@@ -771,7 +857,7 @@ def compute(defn: dict) -> dict:
         } for t in tiles],
         "units": [{
             "type": u.type, "owner": u.owner, "q": u.q, "r": u.r,
-            "effects": u.effects, "mover": u.mover,
+            "effects": u.effects, "mover": u.mover, "waterUnlock": u.water_unlock,
             "iconSlug": icon_slug(UNITS[u.type]),
             "name": name_of(UNITS[u.type]["nameKey"], u.type),
             "hidden": is_hidden_tile_from(board, u, board.tile(u.q, u.r)),
@@ -933,6 +1019,12 @@ def main() -> int:
             },
             "hostileStates": sorted(k for k, v in DIPLOMACY_HOSTILE.items() if v),
             "hiding": build_hiding(),
+            "nonBlocking": sorted(({"id": uid, "name": name_of(i["nameKey"], uid), "iconSlug": icon_slug(i),
+                                    "territoryWater": i["bTerritoryWater"], "amphibious": i["bAmphibious"]}
+                                   for uid, i in UNITS.items() if not i["bBlocks"]), key=lambda u: u["name"]),
+            "waterUnits": sorted(({"id": uid, "name": name_of(UNITS[uid]["nameKey"], uid),
+                                   "sources": [{"id": e, "name": name_of(nk, e)} for e, nk in effs]}
+                                  for uid, effs in WATER_UNIT_UNLOCKS.items()), key=lambda u: u["name"]),
             "improvementIgnoreZOC": sorted(k for k, v in IMPROVEMENT_IGNORE_ZOC.items() if v),
         },
         "texts": {

@@ -33,7 +33,7 @@ const cards = QUADRANT_ORDER.map(q => {
 const CARD_HINT: Record<string, string> = {
   exerts: 'Every infantry unit, melee or ranged, tribal or unique, plus the three ships.',
   'ignores-mounted': 'Horse, camel and chariot units: only Polearm infantry holds them.',
-  neither: 'Elephants, siege engines, Settlers, Workers, Caravans and disciples.',
+  neither: 'Elephants, siege engines, Settlers, Workers, Caravans and disciples (civilians also never block: see below).',
   'ignores-all': 'Scouts carry the ignore flag without the Mounted trait, so nothing pins them.',
 };
 
@@ -50,6 +50,9 @@ const SOURCES = [
   ['Tile.isHostileZOC', 'Tile.cs:10061-10096', 'impassable and city tiles never in ZOC; improvement bIgnoreZOC (unset everywhere); river edges skipped unless bIgnoreRiver.'],
   ['Tile.isInUnitZOC', 'Tile.cs:9974', 'the selected-unit overlay test: no river check.'],
   ['Game.isHostile', 'Game.cs:14753', 'diplomacy.xml bHostile: only DIPLOMACY_WAR.'],
+  ['Tile.canUnitPass', 'Tile.cs:10152, 10272', 'a hostile unit fills its tile only if its type has bBlocks; land units need water control (isWaterMovement, Tile.cs:8027) to enter water.'],
+  ['Tile.canUnitOccupy / canBothUnitsOccupy', 'Tile.cs:10479, 10382', 'a move may not end on a tile with any hostile unit, blocking or not.'],
+  ['Tile.canUnitTypeOccupy', 'Tile.cs:10524', 'ending on water needs a water unit (Game.isWaterUnit, Game.cs:14267: bWater, bAmphibious, or an aeWaterUnit player effect) or bTerritoryWater on own-territory water.'],
   ['ClientRenderer', 'ClientRenderer.cs:1641, 1854, 1880', 'Hold-X overlay calls isHostileZOC with bIgnoreRiver: true; the selected-unit overlay uses isInUnitZOC.'],
   ['PlayerAI', 'PlayerAI.cs:9358-9365, 10679-10686, 10953', `AI_UNIT_ZOC_VALUE ${constants.ai.zocValue}: ignore-ZOC worth ${constants.ai.ignoreZocValue}, each trait-ZOC ${constants.ai.traitZocValue}.`],
   ['XML', 'unit.xml, effectUnit.xml, unitTrait.xml, promotion.xml, trait.xml, diplomacy.xml, hotkeys.xml, color.xml, globalsAI.xml', 'flags, grants, hotkeys, colours and the quoted strings.'],
@@ -159,9 +162,26 @@ const stats = [
       <HexBoard scenario={sc.ships} zocColor={zocColor}
         note="Land and water never share a zone." />
       <HexBoard scenario={sc.embarked} zocColor={zocColor}
-        note="A land unit afloat cannot ignore ship zones even with the flag, and exerts nothing itself." />
+        note="Land units cross water only inside an anchored ship's control and cannot end a turn on it; while afloat they are pinned by ships even with the ignore flag, and exert nothing." />
       <HexBoard scenario={sc.hidden} zocColor={zocColor}
         note="Hiding effects: Scout Stealth, a Tactician leader's ranged units in trees or jungle, an Ambusher general in uncut trees or scrub." />
+    </div>
+  </section>
+
+  <section class="zc-section zc-section--wide" id="civilians">
+    <h2 class="zc-h">Civilians, scouts and blocking</h2>
+    <div class="zc-split">
+      <div>
+        <ul class="zc-list">
+          <li><strong>They never block a path.</strong> {constants.nonBlocking.map(u => u.name).filter((n, i, a) => a.indexOf(n) === i).join(', ')} lack the blocking flag, so a hostile unit walks straight through their tile.</li>
+          <li><strong>But nothing can stop on them.</strong> A move may not end on a tile holding any hostile unit, blocking or not. A Worker or Scout parked on a beach lets enemies pass over it yet denies them the landing.</li>
+          <li><strong>They exert no zone,</strong> and only the two scouts ignore one.</li>
+          <li><strong>On water,</strong> {constants.waterUnits.map(u => `${u.name} (${u.sources.map(s => s.name).join(', ')})`).join(' and ')} count as water units and may end a turn afloat; a Worker may stop on water inside its own territory; the Caravan is amphibious. Every other land unit crosses water only through an anchored ship's control and must keep moving.</li>
+          <li><strong>Afloat, only true water units keep their ignore.</strong> A Scout under Exploration passes a ship's zone; a Scout being ferried is pinned like a Warrior.</li>
+        </ul>
+      </div>
+      <HexBoard scenario={sc.landing} zocColor={zocColor}
+        note="Dots are tiles the move may end on: the beach tile under the Worker has none, the tiles beyond it do." />
     </div>
   </section>
 
@@ -434,6 +454,14 @@ const stats = [
     }
     .zc-boards--3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); max-width: 1400px; }
     .zc-boards--2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width: 1200px; }
+    .zc-split {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(260px, 420px);
+      gap: 1rem 1.5rem;
+      align-items: start;
+      max-width: 1100px;
+    }
+    @media (max-width: 720px) { .zc-split { grid-template-columns: 1fr; } }
 
     .zc-table { margin: 0.4rem 0 0.9rem; overflow-x: auto; max-width: 1200px; }
     .zc-table table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 40rem; }
