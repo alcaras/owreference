@@ -691,8 +691,10 @@ def scenario_defs() -> list[dict]:
     defs.append(dict(
         id="hidden", section="exceptions", render=True,
         title="Hidden units",
-        caption="An Ambusher-led archer standing unseen in woods exerts no zone at all.",
-        board=lambda: make_board(hexagon(2), [Unit("UNIT_ARCHER", 1, 0, 0, effects=["EFFECTUNIT_TRAIT_AMBUSHER"]),
+        caption="An archer under a Tactician leader, unseen in woods, exerts no zone at all.",
+        # EFFECTUNIT_TACTICIAN_RANGED reaches ranged units through
+        # EFFECTPLAYER_TRAIT_TACTICIAN_ARCHETYPE aeEffectUnitTrait (Ranged)
+        board=lambda: make_board(hexagon(2), [Unit("UNIT_ARCHER", 1, 0, 0, effects=["EFFECTUNIT_TACTICIAN_RANGED"]),
                                               Unit("UNIT_WARRIOR", 0, -1, 0, mover=True)],
                                  edits={(0, 0): dict(vegetation="VEGETATION_TREES")}),
         paths=[[(-1, 0), (-1, 1), (0, 1)]],
