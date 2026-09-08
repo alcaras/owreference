@@ -260,7 +260,7 @@ const stats = [
           <li><strong>Eligible:</strong> your unit stands on the tile; it touches the buying city's Territory, is not urban, and water must touch land. Costs {constants.unitBuyTileCost} order.</li>
           <li><strong>Unlocks:</strong> {buyPlayer.map((u, i) => <>{i > 0 && '; '}{u.sources.map(s => <>{(has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name)}{s.dlc && <span class="chip chip--dlc">{s.dlc}</span>}</>)} for {(has(u.yield) ? <Term id={u.yield} showIcon={false} label={u.yieldName} /> : u.yieldName)}</>)} (every city); {buyCity.map(u => <>{u.sources.map(s => (has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name))} seat for {(has(u.yield) ? <Term id={u.yield} showIcon={false} label={u.yieldName} /> : u.yieldName)}</>)} (that city only). A unit effect exists in the code but no unit carries it.</li>
           <li><strong>From your own city:</strong> a tile of another of your cities moves over with no unlock if it has no improvement and the move does not split that city's Territory. Both purchase counters still go up.</li>
-          <li><strong>Cost:</strong> (base + per × (city purchases + player purchases ÷ 2)) × (distance from the city + 1) ÷ 4, minimum 1, rounding down at each step. {money.name} base {money.base} per {money.per}; {training.name} base {training.base} per {training.per}.</li>
+          <li><strong>Cost:</strong> (base + per × (tile purchases in that city + tile purchases in any of your cities ÷ 2)) × (distance from the city + 1) ÷ 4, minimum 1, rounding down at each step. Every purchase raises both counts, so the buying city pays 1½ per tile it bought and ½ per tile any other city bought. {money.name} base {money.base} per {money.per}; {training.name} base {training.base} per {training.per}.</li>
           <li><strong>The rules run</strong> from a newly bought tile at range 0, so a resource behind it comes free; a tile moved between your cities spreads nothing.</li>
         </ul>
       </div>
@@ -283,7 +283,7 @@ const stats = [
         </div>
       ))}
     </div>
-    <p class="be-note">“Bought” is the city's own count plus half your total count, rounded down.</p>
+    <p class="be-note">“Bought” is tile purchases in that city plus half of tile purchases in any of your cities, that city's included, rounded down.</p>
   </section>
 
   <section class="be-section be-section--wide" id="growth">
