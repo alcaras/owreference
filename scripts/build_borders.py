@@ -51,6 +51,18 @@ Port assumptions (the scenarios never exercise the rest of the game state):
     onTradeNetwork test);
   * city population and culture are equal (Tile.doBorderFill's last
     tie-break) — that branch is unreachable anyway, see do_border_fill_tile.
+
+Two details that are easy to get wrong and that DO change results:
+  * map-edge (boundary) tiles: Tile.tileAdjacent(dir) and getTilesAtDistance
+    skip them unless asked (Tile.cs:11969, 12258), so the engine never sees
+    them; only getAdjacentUnclaimedUrbanTiles passes bIncludeBoundary=true,
+    which is why checkMinorCity filters them by hand (Tile.cs:11112);
+  * tile-id order: the game's y axis points NORTH (Utils.cs:211: NW/NE are
+    y+1) and ids run y*width+x, so "lowest tile id" = southernmost row, then
+    westernmost. Game.doBorderFill walks the map in that order with one
+    shared pending dictionary, and getCitySiteSurrounded's last tie-break is
+    the lowest city tile id. Boards use axial (q, r) with r growing SOUTH, so
+    the game's order is the key (-r, q) — see tile_order().
 """
 from __future__ import annotations
 
@@ -107,7 +119,13 @@ VEGETATION = {zt: {"border": ival(e, "iBorderValue"), "nameKey": e.findtext("Nam
               for zt, e in entries(parse("vegetation.xml"))}
 RESOURCE = {zt: {"border": ival(e, "iBorderValue"), "icon": (e.findtext("zIconName") or zt).strip(),
                  "nameKey": e.findtext("Name") or ""} for zt, e in entries(parse("resource.xml"))}
+def yield_pairs(e: ET.Element, tag: str) -> dict[str, int]:
+    return {p.findtext("zIndex"): int(p.findtext("iValue") or 0) for p in e.findall(f"{tag}/Pair") if p.findtext("zIndex")}
+
+
 IMPROVEMENT = {zt: {
+    "output": yield_pairs(e, "aiYieldOutput"), "consumption": yield_pairs(e, "aiYieldConsumption"),
+    "defenseFriendly": ival(e, "iDefenseModifierFriendly"), "effectPlayer": (e.findtext("EffectPlayer") or "").strip(),
     "urban": flag(e, "bUrban"), "spreads": flag(e, "bSpreadsBorders"), "removeBorder": flag(e, "bRemoveBorder"),
     "removeBonus": flag(e, "bRemoveBonus"), "territoryOnly": flag(e, "bTerritoryOnly"), "tribe": flag(e, "bTribe"),
     "wonder": flag(e, "bWonder"), "permanent": flag(e, "bPermanent"),
@@ -127,7 +145,7 @@ for _f in sorted(XML_DIR.glob("bonus*.xml")):
 BONUS_CHILDREN: dict[str, list[str]] = {zt: zvalues(e, "aeAllCityBonuses") + zvalues(e, "aeBonuses")
                                         for zt, e in entries(parse("bonus.xml"))}
 EFFECT_PLAYER = {zt: {"spread": zvalues(e, "aeImprovementSpreadBorders"), "buy": zvalues(e, "aeBuyTile"),
-                      "addUrban": flag(e, "bAddUrban"), "nameKey": e.findtext("Name") or ""}
+                      "addUrban": flag(e, "bAddUrban"), "vp": ival(e, "iVP"), "nameKey": e.findtext("Name") or ""}
                  for zt, e in entries(parse("effectPlayer.xml"))}
 EFFECT_CITY = {zt: {"buy": zvalues(e, "aeBuyTile"), "nameKey": e.findtext("Name") or ""}
                for zt, e in entries(parse("effectCity.xml"))}
@@ -216,6 +234,12 @@ DIR_NAMES = ["NW", "NE", "E", "SE", "SW", "W"]
 GAME_TO_HEXBOARD_DIR = {0: 2, 1: 1, 2: 0, 3: 5, 4: 4, 5: 3}
 NONE = -1
 Key = tuple[int, int]
+
+
+def tile_order(k: Key) -> tuple[int, int]:
+    """Sort key reproducing the game's tile id (y*width + x, y growing north):
+    southernmost row first, then west to east."""
+    return (-k[1], k[0])
 
 
 class CityTerritory(NamedTuple):
@@ -311,13 +335,18 @@ class Board:
     def at(self, k: Key) -> Tile:
         return self.tiles[k]
 
-    def adjacent(self, t: Tile, d: int) -> Tile | None:
+    def adjacent(self, t: Tile, d: int, include_boundary: bool = False) -> Tile | None:
+        """Tile.tileAdjacent(dir, bIncludeBoundary=false) (Tile.cs:11969): a
+        map-edge tile is null unless the caller asks for it."""
         dq, dr = DIRS[d]
-        return self.tile(t.q + dq, t.r + dr)
+        n = self.tile(t.q + dq, t.r + dr)
+        if n is not None and n.boundary and not include_boundary:
+            return None
+        return n
 
-    def neighbours(self, t: Tile):
+    def neighbours(self, t: Tile, include_boundary: bool = False):
         for d in range(6):
-            n = self.adjacent(t, d)
+            n = self.adjacent(t, d, include_boundary)
             if n is not None:
                 yield d, n
 
@@ -327,9 +356,16 @@ class Board:
         return max(abs(dq), abs(dr), abs(dq + dr))
 
     def tiles_at_distance(self, t: Tile, dist: int) -> list[Tile]:
-        # Tile.getTilesAtDistance: ring order does not matter for membership;
-        # tile-id order (row-major) keeps generation numbering stable
-        return sorted((o for o in self.tiles.values() if self.distance(t.key, o.key) == dist), key=lambda o: (o.r, o.q))
+        """Tile.getTilesAtDistance (Tile.cs:12258): boundary tiles excluded;
+        ring order does not matter for membership, tile-id order keeps the
+        generation numbering stable."""
+        return sorted((o for o in self.tiles.values() if self.distance(t.key, o.key) == dist and not o.boundary),
+                      key=lambda o: tile_order(o.key))
+
+    def in_id_order(self) -> list[Tile]:
+        """Every tile in the game's tile-id order (Game.doBorderFill,
+        doUrbanSurroundedRural walk the map this way)."""
+        return sorted(self.tiles.values(), key=lambda o: tile_order(o.key))
 
     def city_of(self, cid: int) -> City:
         return self.cities[cid]
@@ -415,7 +451,7 @@ class Engine:
         """Tile.getAdjacentUnclaimedUrbanTiles (Tile.cs:5030): the tile plus
         every connected urban tile with no territory."""
         out.add(t.key)
-        for _, n in self.b.neighbours(t):
+        for _, n in self.b.neighbours(t, include_boundary=True):   # tileAdjacent(dir, true)
             if n.urban and not n.has_territory and n.key not in out:
                 self.adjacent_unclaimed_urban(n, out)
 
@@ -449,7 +485,7 @@ class Engine:
                             queue.append(n)
         urban_site: dict[Key, Key] = {}
         section_sites: dict[int, int] = {}
-        for start in sorted(b.tiles.values(), key=lambda t: (t.r, t.q)):
+        for start in b.in_id_order():
             if not start.is_city_site_any():
                 continue
             section_sites[section.get(start.key, -1)] = section_sites.get(section.get(start.key, -1), 0) + 1
@@ -463,7 +499,7 @@ class Engine:
                         queue.append(n)
         surrounded: set[Key] = set()
         checked: set[Key] = set()
-        for start in sorted(b.tiles.values(), key=lambda t: (t.r, t.q)):
+        for start in b.in_id_order():
             if start.key in checked:
                 continue
             checked.add(start.key)
@@ -530,7 +566,7 @@ class Engine:
         if site is None:
             return None
         values: dict[CityTerritory, int] = {}
-        for k in sorted(site_tiles, key=lambda k: (k[1], k[0])):
+        for k in sorted(site_tiles, key=tile_order):
             ct = owned(k)
             if ct is not None and ct.city_site != site:
                 values[ct] = values.get(ct, 0) + (len(site_tiles) if b.at(k).land else 1)
@@ -540,7 +576,7 @@ class Engine:
             dist = b.distance(site, ct.city_tile)
             if (best is None or value > best_value or
                     (value == best_value and (dist < best_dist or
-                                              (dist == best_dist and (ct.city_tile[1], ct.city_tile[0]) < (best.city_tile[1], best.city_tile[0]))))):
+                                              (dist == best_dist and tile_order(ct.city_tile) < tile_order(best.city_tile))))):
                 best, best_value, best_dist = ct, value, dist
         return best
 
@@ -555,8 +591,8 @@ class Engine:
             return None
         urban: set[Key] = set()
         self.adjacent_unclaimed_urban(self.b.at(minor_site), urban)
-        for k in sorted(urban, key=lambda k: (k[1], k[0])):
-            if not self.b.at(k).boundary and k not in pending:
+        for k in sorted(urban, key=tile_order):
+            if not self.b.at(k).boundary and k not in pending:   # Tile.cs:11112
                 pending[k] = surround
                 out.append(Grab(k, surround, gen, "minor"))
         # getCityInitTiles from the site: range 2 in the surrounding city's name
@@ -760,7 +796,7 @@ class Engine:
         self._surrounded = None
         pending: dict[Key, CityTerritory] = {}
         out: list[Grab] = []
-        for t in sorted(self.b.tiles.values(), key=lambda t: (t.r, t.q)):
+        for t in self.b.in_id_order():
             if t.has_territory:
                 self.expansion_tiles(t, 0, self.b.territory_ct(t), pending, out, gen0)
         self.set_tiles_owner(out, NONE)
@@ -982,17 +1018,19 @@ def scenario_defs() -> list[dict]:
     defs: list[dict] = []
 
     # 2a — resource pull
+    # the wheat's only owned neighbour is the marble tile; the sheep's only
+    # neighbour that becomes yours is the horse tile — neither pulls
     def resource_board():
         b = make_board(hexagon(2), edits={(1, -1): dict(resource="RESOURCE_HORSE"), (2, -1): dict(resource="RESOURCE_SHEEP"),
-                                          (1, 1): dict(resource="RESOURCE_WHEAT"), (0, 0): dict(resource="RESOURCE_MARBLE")},
+                                          (1, 0): dict(resource="RESOURCE_WHEAT"), (0, 0): dict(resource="RESOURCE_MARBLE")},
                        cities=[(0, (-1, 0), 0)])
-        own(b, 0, [(0, 0), (-1, 1), (0, -1), (-2, 1), (-2, 2)])
+        own(b, 0, [(0, 0), (-1, 1), (0, -1), (-2, 1), (-2, 2), (-1, -1), (-2, 0)])
         return b
     defs.append(dict(
         id="resource", section="rules", title="Resource pull",
-        caption="An owned tile without a resource grabs any adjacent resource tile.",
-        board=resource_board, trigger=("fill", (0, -1)),
-        expect=dict(grabbed={(1, -1)}, not_grabbed={(1, 0), (2, -1), (1, 1)}),
+        caption="Only the horses join: the wheat touches only the marble tile and the sheep only the horse tile.",
+        board=resource_board, trigger=("turn",),
+        expect=dict(grabbed={(1, -1)}, not_grabbed={(1, 0), (2, -1)}, reason={(1, -1): "resource"}),
     ))
     # the same board from the Marble tile: a resource tile pulls nothing
     defs.append(dict(
@@ -1008,9 +1046,10 @@ def scenario_defs() -> list[dict]:
         return b
     defs.append(dict(
         id="urban", section="rules", title="Urban pull",
-        caption="An urban tile grabs every tile around it, whatever it is.",
-        board=urban_board, trigger=("fill", (1, -1)),
-        expect=dict(grabbed={(2, -2), (1, -2), (2, -1)}, not_grabbed={(0, 2), (-2, 2)}),
+        caption="The two urban tiles take their whole ring; your plain tiles on the other side take nothing.",
+        board=urban_board, trigger=("turn",),
+        expect=dict(grabbed={(2, -2), (1, -2), (2, -1), (0, -2), (-1, -1)}, not_grabbed={(0, 2), (-2, 2), (-2, 1), (-1, 2)},
+                    reason={(2, -2): "urban", (-1, -1): "urban"}),
     ))
 
     # 2c — flank rule, four boards from one shape: T owned at (0,0), N = water at (1,-1)
@@ -1023,14 +1062,14 @@ def scenario_defs() -> list[dict]:
         own(b, 0, [(0, 0), (-1, 0), (0, 1), (-2, 1), (-1, 2), (-2, 2)])
         return b
     defs.append(dict(
-        id="flank_open", section="rules", title="Water with no land flankers",
-        caption="Both tiles flanking the water are water too: taken.",
+        id="flank_open", section="rules", title="Water with no land beside it",
+        caption="Nothing but water on either side of this water, so it is yours, and so are the two flanking water tiles.",
         board=lambda: flank_board(W(), W()), trigger=("fill", (0, 0)),
         expect=dict(grabbed_has={(1, -1)}, reason={(1, -1): "flank"}),
     ))
     defs.append(dict(
-        id="flank_unowned", section="rules", title="One unowned land flanker",
-        caption="A flanker that is passable land but not yours blocks the grab.",
+        id="flank_unowned", section="rules", title="One unowned land tile beside it",
+        caption="One unowned land tile beside the water is enough to refuse it.",
         board=lambda: flank_board(dict(), W()), trigger=("fill", (0, 0)),
         expect=dict(not_grabbed={(1, -1)}),
     ))
@@ -1040,8 +1079,8 @@ def scenario_defs() -> list[dict]:
         own(b, 0, [(1, 0)])
         return b
     defs.append(dict(
-        id="flank_ours", section="rules", title="One flanker yours, one unowned",
-        caption="Once one flanker is yours the water is taken even if the other is not.",
+        id="flank_ours", section="rules", title="One side yours, one unowned",
+        caption="Own one of the two tiles beside the water and it is yours, whatever the other one is.",
         board=flank_ours_board, trigger=("fill", (0, 0)),
         expect=dict(grabbed={(1, -1)}),
     ))
@@ -1053,8 +1092,8 @@ def scenario_defs() -> list[dict]:
         own(b, 1, [(1, 0)])
         return b
     defs.append(dict(
-        id="flank_enemy", section="rules", title="One flanker the enemy's",
-        caption="An enemy flanker counts like an unowned one: no grab without a flanker of your own.",
+        id="flank_enemy", section="rules", title="One side the enemy's",
+        caption="An enemy tile beside the water refuses it exactly like an unowned one.",
         board=flank_enemy_board, trigger=("fill", (0, 0)),
         expect=dict(not_grabbed={(1, -1)}),
     ))
@@ -1073,47 +1112,51 @@ def scenario_defs() -> list[dict]:
     # 2d — hole fill
     def hole_board():
         b = make_board(hexagon(2), cities=[(0, (-2, 1), 0), (1, (2, -1), 1)])
-        own(b, 0, [(-1, 0), (-1, 1), (-2, 2), (-1, 2)])
+        own(b, 0, [(-1, 0), (-1, 1), (-2, 2), (-1, 2), (-2, 0)])
         own(b, 1, [(0, -1), (0, 1), (1, -1), (1, 0), (1, -2), (2, -2), (2, 0), (1, 1)])
         return b
     defs.append(dict(
-        id="hole", section="rules", title="Hole fill",
-        caption="An unowned tile with the same team on two opposite sides is filled; here the enemy fills it, not you.",
-        board=hole_board, trigger=("fill", (1, 0)),
+        id="hole", section="rules", title="Gap fill",
+        caption="The gap between two enemy tiles is filled for the enemy, although it touches your land too.",
+        board=hole_board, trigger=("turn",),
         expect=dict(grabbed={(0, 0)}, owner={(0, 0): 1}, reason={(0, 0): "fill"}),
     ))
 
     def hole_two_cities_board():
-        b = make_board(hexagon(2), cities=[(0, (-2, 2), 0), (1, (1, -1), 0)])
-        own(b, 0, [(-1, 1), (-2, 1), (-1, 2), (0, 1)])
-        own(b, 1, [(2, -2), (1, -2), (2, -1), (0, -1)])
+        b = make_board(hexagon(3), cities=[(0, (-2, 3), 0), (1, (2, -2), 0)])
+        own(b, 0, [(-2, 2), (-1, 2), (-1, 3), (-3, 3), (-1, 1)])
+        own(b, 1, [(2, -3), (3, -3), (3, -2), (2, -1), (1, -1), (1, -2), (0, -1)])
         return b
     defs.append(dict(
-        id="hole_which", section="rules", title="Which city gets a filled tile",
-        caption="Two of your cities either side of a hole: the far side of the first matching axis wins, here the distant city over the adjacent one.",
-        board=hole_two_cities_board, trigger=("fill", (0, 1)),
-        expect=dict(grabbed_has={(0, 0)}, territory={(0, 0): 0}),
+        id="hole_which", section="rules", title="Which of your cities gets a gap",
+        caption="Both cities are yours; the gap goes to the lower-left city although the upper-right one touches it on two sides.",
+        board=hole_two_cities_board, trigger=("turn",),
+        expect=dict(grabbed={(0, 0)}, territory={(0, 0): 0}, reason={(0, 0): "fill"}),
     ))
 
-    # 3 — chain: specialist → ring → resource → water (flank) → hole fill
+    # 3 — chain: specialist → ring → resource → water (shielded) → gap fill.
+    # The board sits one row below the top edge so both flankers of the water
+    # the game tile takes ((2, -3) and (1, -1)) are real tiles, not the void
+    # beyond the board.
     def chain_board():
         edits = {
-            (1, -2): dict(resource="RESOURCE_FISH", improvement=None, terrain="TERRAIN_WATER", height="HEIGHT_COAST"),
-            (2, -3): W(), (2, -2): W(), (3, -3): W(), (3, -2): W(),
-            (1, -3): dict(resource="RESOURCE_GAME", vegetation="VEGETATION_TREES"),
-            (0, -3): dict(vegetation="VEGETATION_TREES"),
-            (-1, -1): dict(specialist=True, improvement="IMPROVEMENT_FARM"),
+            (1, -1): dict(resource="RESOURCE_FISH", improvement=None, terrain="TERRAIN_WATER", height="HEIGHT_COAST"),
+            (2, -3): W(), (2, -2): W(), (2, -1): W(), (3, -2): W(), (3, -1): W(),
+            (1, -2): dict(resource="RESOURCE_GAME", vegetation="VEGETATION_TREES"),
+            (0, -2): dict(vegetation="VEGETATION_TREES"),
+            (-1, 0): dict(specialist=True, improvement="IMPROVEMENT_FARM"),
         }
-        b = make_board(hexagon(3), edits=edits, cities=[(0, (-1, 1), 0)])
-        own(b, 0, disc((-1, 1), 1, b.tiles) + [(-1, -1), (0, -1), (-2, 0), (1, -1), (0, 0), (2, -1)])
+        b = make_board(hexagon(3), edits=edits, cities=[(0, (-1, 2), 0)])
+        own(b, 0, disc((-1, 2), 1, b.tiles) + [(-1, 0), (0, 0), (-2, 1), (1, 0), (0, 1), (2, 0)])
         return b
     defs.append(dict(
         id="chain", section="chain", title="A specialist starts a chain",
-        caption="0 is the specialist's range; every later number is a rule firing from a tile grabbed the step before.",
-        board=chain_board, trigger=("specialist", (-1, -1)),
-        expect=dict(grabbed={(-1, -2), (0, -2), (-2, -1), (1, -2), (1, -3), (2, -3), (2, -2)},
-                    gen={(-1, -2): 0, (1, -2): 1, (1, -3): 1, (2, -3): 2, (2, -2): 2},
-                    reason={(1, -3): "resource", (1, -2): "resource", (2, -3): "flank", (2, -2): "fill"}),
+        caption="One specialist on the farm ends up adding seven tiles, three of them water.",
+        board=chain_board, trigger=("specialist", (-1, 0)),
+        expect=dict(grabbed={(-1, -1), (0, -1), (-2, 0), (1, -1), (1, -2), (2, -2), (2, -1)},
+                    not_grabbed={(2, -3), (1, -3), (3, -2)},
+                    gen={(-1, -1): 0, (1, -1): 1, (1, -2): 1, (2, -2): 2, (2, -1): 2},
+                    reason={(1, -2): "resource", (1, -1): "resource", (2, -2): "flank", (2, -1): "fill"}),
     ))
 
     # 4 — founding: radius 2 + urban rings, then a resource at distance 3
@@ -1124,7 +1167,7 @@ def scenario_defs() -> list[dict]:
         return make_board(hexagon(3), edits=edits)
     defs.append(dict(
         id="found", section="founding", title="Founding a city",
-        caption="Radius 2 is seeded at once (0); the urban tiles then pull their own ring, and the ring pulls resources (1).",
+        caption="Founding takes everything within 2 of the Settler, and the urban tiles at that edge pull one ring further.",
         board=found_board, trigger=("found", (0, 0), 0),
         expect=dict(grabbed_has={(3, 0), (3, -1), (2, 1), (1, 2), (3, -2), (-3, 1)}, not_grabbed={(3, -3), (0, 3), (-3, 0)},
                     gen={(2, 0): 0, (3, 0): 1, (3, -2): 1, (-3, 1): 1},
@@ -1141,7 +1184,7 @@ def scenario_defs() -> list[dict]:
         return make_board(hexagon(4), edits=edits)
     defs.append(dict(
         id="minor", section="founding", title="A site next door becomes a minor city",
-        caption="Every passable land tile around the second site is owned after the radius-2 seed, so the whole site and its own radius 2 join the new city.",
+        caption="The City Site next door is boxed in by the new city's land, so it becomes a Minor City and everything within 2 of it joins the new city.",
         board=minor_board, trigger=("found", (0, 0), 0),
         expect=dict(grabbed_has={(3, -1), (3, -2), (4, -2), (2, -3)}, minor={(3, -1)}, reason={(3, -1): "minor"}),
     ))
@@ -1165,7 +1208,7 @@ def scenario_defs() -> list[dict]:
         return b
     defs.append(dict(
         id="buy", section="buying", title="Buying a tile",
-        caption="Dashed tiles can be bought (label = Money cost from this city); buying the hill pulls the cattle behind it for free.",
+        caption="Dashed tiles can be bought, the label is the Money cost; buying the hill pulls the cattle behind it for free.",
         board=buy_board, trigger=("buy", (2, -1), 0, "YIELD_MONEY"),
         expect=dict(grabbed={(2, -1), (3, -2)}, cost=15, reason={(3, -2): "resource"}),
     ))
@@ -1182,7 +1225,7 @@ def scenario_defs() -> list[dict]:
         return b
     defs.append(dict(
         id="grow", section="growth", title="A growth bonus picks by score",
-        caption="Two tiles: each pick is the highest-scoring candidate adjacent to the territory, then the chain runs from it.",
+        caption="Two picks: each takes the best-scoring claimable tile beside the city's land, then the rules run from it.",
         board=grow_board, trigger=("grow", 0, 2, 50),
         expect=dict(grab_count_min=2),
     ))
@@ -1209,8 +1252,8 @@ def scenario_defs() -> list[dict]:
         return b
     defs.append(dict(
         id="tribe_surrounded", section="losing", title="A surrounded tribe site becomes your minor city",
-        caption="Every passable land tile around the Outpost is yours, so the end-of-turn fill swallows the site: the Outpost becomes a Minor City and everything within 2 of it joins your city, the water and the land beyond included.",
-        board=tribe_surrounded_board, trigger=("fill", (-1, 0)),
+        caption="Every passable land tile around the Outpost is yours, so at the end of the turn the Outpost becomes your Minor City and everything within 2 of it joins your city.",
+        board=tribe_surrounded_board, trigger=("turn",),
         expect=dict(grabbed={(0, 0), (1, -1), (1, 0), (2, -2), (2, -1), (2, 0)}, minor={(0, 0)},
                     reason={(0, 0): "minor", (2, -1): "seed"}, improvement_removed={(0, 0)}),
     ))
@@ -1249,6 +1292,9 @@ def compute(defn: dict) -> dict:
         eng.set_tiles_owner(out, t.territory)
         grabs = out
         extra["from"] = list(trig[1])
+    elif trig[0] == "turn":
+        # Game.doBorderFill: the end-of-turn pass from every owned tile, no ring
+        grabs = eng.global_fill()
     elif trig[0] == "specialist":
         grabs = eng.spread_borders(b.at(trig[1]))
         extra["from"] = list(trig[1])
@@ -1261,7 +1307,7 @@ def compute(defn: dict) -> dict:
         city = b.city_of(trig[2])
         t = b.at(trig[1])
         buyable = []
-        for o in sorted(b.tiles.values(), key=lambda o: (o.r, o.q)):
+        for o in b.in_id_order():
             if not o.has_territory and eng.can_buy_tile(city, o, True):
                 buyable.append({"q": o.q, "r": o.r, "cost": eng.buy_tile_cost(city, o, trig[3])})
         extra["buyable"] = buyable
@@ -1532,6 +1578,17 @@ def main() -> int:
             "borderPatterns": BORDER_PATTERNS,
             "minorCityImprovement": MINOR_CITY_IMPROVEMENT,
             "minorCityName": improvement_name(MINOR_CITY_IMPROVEMENT),
+            # what the Minor City improvement itself does (improvement.xml + its EffectPlayer);
+            # improvement yields are stored ×10 like every rate (Mine = 50 → +5 Iron)
+            "minorCity": {
+                "output": {y: v / 10 for y, v in IMPROVEMENT[MINOR_CITY_IMPROVEMENT]["output"].items()},
+                "consumption": {y: -v / 10 for y, v in IMPROVEMENT[MINOR_CITY_IMPROVEMENT]["consumption"].items()},
+                "defenseFriendly": IMPROVEMENT[MINOR_CITY_IMPROVEMENT]["defenseFriendly"],
+                "vp": EFFECT_PLAYER.get(IMPROVEMENT[MINOR_CITY_IMPROVEMENT]["effectPlayer"], {}).get("vp", 0),
+                "urban": IMPROVEMENT[MINOR_CITY_IMPROVEMENT]["urban"],
+                "yieldNames": {y: name_of(YIELD[y]["nameKey"], nice(y, "YIELD_")) for y in
+                               list(IMPROVEMENT[MINOR_CITY_IMPROVEMENT]["output"]) + list(IMPROVEMENT[MINOR_CITY_IMPROVEMENT]["consumption"])},
+            },
             "urbanTerrain": URBAN_TERRAIN,
             "removeBorder": [{"id": i, "name": improvement_name(i), "tribe": IMPROVEMENT[i]["tribe"]} for i in remove_border],
             "territoryOnlyCount": len(territory_only),
@@ -1549,6 +1606,9 @@ def main() -> int:
             "citySiteName": name_of("GENDERED_TEXT_CONCEPT_CITY_SITE", "City Site"),
             "citySite": game_text("TEXT_HELPTEXT_LINK_HELP_CITY_SITE"),
             "spreadsBorders": game_text("TEXT_HELPTEXT_LINK_HELP_URBAN_SPREADS_BORDERS"),
+            # the game's own Minor City help text says 'without a Tribal Settlement';
+            # Tile.checkMinorCity has no such test (see the tribe_surrounded board)
+            "minorCity": game_text("TEXT_HELPTEXT_LINK_HELP_MINOR_CITY"),
             "borderGrowthLog": TEXT.get("TEXT_GAME_DO_BONUS_BORDER_GROWTH", ""),
         },
         "scenarios": scenarios,

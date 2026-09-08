@@ -1,5 +1,5 @@
 ---
-// Border Expansion — how city territory is created and grows.
+// Border Expansion — how city Territory is created and grows.
 // Data: src/data/borders.json (scripts/build_borders.py: improvement / yield /
 // bonus / effect XML + a port of Tile.getExpansionTiles and its helpers that
 // computes every board below). Nothing on a board is hand-marked.
@@ -37,43 +37,53 @@ const winner = firstPick.candidates.find(c => c.q === firstPick.q && c.r === fir
 const runnerUp = [...firstPick.candidates].sort((a, b) => b.total - a.total)[1];
 const buyBoard = sc.buy;
 const chainGens = Math.max(...sc.chain.grabs.map(g => g.gen));
+const chainWater = sc.chain.grabs.filter(g => sc.chain.tiles.find(t => t.q === g.q && t.r === g.r)!.terrain === 'TERRAIN_WATER').length;
 const minorSiteGrabs = sc.minor.grabs.filter(g => g.reason === 'minor').length;
 const foundRing = sc.found.grabs.filter(g => g.reason === 'urban').length;
+const foundResources = sc.found.grabs.filter(g => g.reason === 'resource').length;
 const has = (id: string) => !!getEntity(id);
-const REASON_LABEL: Record<string, string> = { urban: 'urban', bSpreadsBorders: 'flag', unlock: 'player unlock' };
 const BUY_YIELDS = ['YIELD_MONEY', 'YIELD_TRAINING'] as const;
+const notClaimable = constants.negativeBorderValues.map(n => growth.names[n]).join(', ');
+const mc = constants.minorCity;
+const mcOut = Object.entries(mc.output).map(([y, v]) => `+${v} ${mc.yieldNames[y]}`).join(', ');
+const mcUpkeep = Object.entries(mc.consumption).map(([y, v]) => `${v} ${mc.yieldNames[y]}`).join(', ');
+const tribeSettlements = constants.removeBorder.filter(r => r.tribe).map(r => r.name).join(', ');
+const ruins = constants.removeBorder.filter(r => !r.tribe && r.id !== 'IMPROVEMENT_CITY_SITE').map(r => r.name).join(', ');
 
 const TRIGGERS = [
-  ['Found a city', 'Settler on a city site', '2 from the founding tile', 'Game.createCityNext → Tile.getCityInitTiles'],
+  ['Found a city', 'Settler on a City Site', '2 from the founding tile', 'Game.createCityNext → Tile.getCityInitTiles'],
   ['Place a specialist', 'first specialist on a tile', '1', 'Tile.onSpecialistChange → spreadBorders'],
   ['Finish an urban improvement', 'any of the ' + spreadersSummary.urbanCount + ' urban improvements', '1', 'Tile.doImprovementFinished → isImprovementBorderSpread (bUrban)'],
-  ['Finish a flagged improvement', 'Harbor, every Holy Site, every wonder', '1', 'isImprovementBorderSpread (bSpreadsBorders)'],
+  ['Finish a Spreads Borders improvement', 'Harbor, every Holy Site, every wonder', '1', 'isImprovementBorderSpread (bSpreadsBorders)'],
   ['Finish an unlocked improvement', unlockSpreaders.map(s => `${s.name} under ${s.unlockedBy.map(u => u.name).join(', ')}`).join('; '), '1', 'isImprovementBorderSpread → Player.isSpreadBordersUnlock'],
   ['Add urban', `${constants.builders.join(', ')} action, ${constants.addUrban.map(a => a.sources.map(s => s.name).join(', ')).join(', ')} leaders only`, '1', 'Unit.addUrban → spreadBorders (before makeUrban)'],
-  ['Buy a tile', 'unit on an adjacent tile', '0', 'Unit.buyTile → getExpansionTiles(0)'],
-  ['Growth bonus', 'card, tech card or event', '0 from each scored pick', 'City.growBorders → findGrowBorderTile'],
-  ['Border fill', 'every turn end, every capture, every founding, every editor tile change', '0 from every owned tile', 'Game.doTurn / City.setPlayer / City.start → Game.doBorderFill'],
+  ['Buy a tile', 'your unit on the tile', '0', 'Unit.buyTile → getExpansionTiles(0)'],
+  ['Growth bonus', 'card, tech card or event', '0 from each picked tile', 'City.growBorders → findGrowBorderTile'],
+  ['End-of-turn pass', 'every turn; also after a city is founded, captured or razed, at map setup, and after an editor tile change', '0 from every owned tile', 'Game.doTurn / City.start / City.setPlayer / removeCity → Game.doBorderFill'],
 ];
 
 const SOURCES = [
-  ['Tile.getExpansionTiles', 'Tile.cs:12657-12760', 'seed the tile + range ring, then breadth-first: getOwnerChangeTiles on each popped tile, then checkMinorCity on each adjacent unclaimed urban tile.'],
-  ['Tile.getOwnerChangeTiles', 'Tile.cs:7323-7470', 'the four rules in order: resource pull, urban pull, flank rule, else Tile.doBorderFill.'],
-  ['Tile.isValidOwnerChangeTerritory', 'Tile.cs:7302', 'revealed, not already territory or pending, and not connected to a different active city site.'],
-  ['Tile.isValidGrowth', 'Tile.cs:12576', 'terrain, height, vegetation and resource iBorderValue all ≥ 0; only ' + constants.negativeBorderValues.join(', ') + ' are negative.'],
-  ['Tile.doBorderFill', 'Tile.cs:11168-11260', 'opposite-side fill; the per-city count compares teams, so the far side always wins and the distance and population tie-breaks are dead code.'],
-  ['Tile.checkMinorCity / getCitySiteSurrounded', 'Tile.cs:11089, 4852-4960', 'a surrounded active site: its unclaimed urban tiles plus getCityInitTiles(2) go to the owner with the most adjacent tiles (land = cluster size, water = 1), then nearest city, then lowest city tile id.'],
-  ['Game.doUrbanSurroundedRural', 'Game.cs:12895-13050', 'rural pockets bounded by exactly one site, only on land sections holding more than one site; water, boundary and owned tiles do not count as pocket tiles.'],
+  ['Tile.getExpansionTiles', 'Tile.cs:12657-12760', 'queue the tile (an owned tile keeps its city) plus the range ring, then breadth-first: getOwnerChangeTiles on each popped tile, then checkMinorCity on each adjacent unclaimed urban tile.'],
+  ['Tile.getOwnerChangeTiles', 'Tile.cs:7323-7470', 'the four rules in order: resource pull, urban pull, shielded water, else Tile.doBorderFill. isOurTeam reads the pending dictionary, then Game.areAllied on the revealed owner; unowned is never allied (Game.cs:6290).'],
+  ['Tile.isValidOwnerChangeTerritory', 'Tile.cs:7302', 'revealed, not already Territory or pending, and not connected to a different live City Site.'],
+  ['Tile.isValidGrowth', 'Tile.cs:12576', 'terrain, height, vegetation and resource iBorderValue all ≥ 0; only ' + notClaimable + ' are negative.'],
+  ['Tile.doBorderFill', 'Tile.cs:11168-11260', 'axes NW–SE, NE–SW, E–W (Enums.cs:1849, Utils.cs:249); the per-city count compares teams, so the opposite side always wins and the distance and population tie-breaks are dead code.'],
+  ['Tile.checkMinorCity / getCitySiteSurrounded', 'Tile.cs:11089, 4852-4960', 'no tribe test; a surrounded live site: its unclaimed urban tiles (minus map-edge tiles) plus getCityInitTiles(2) go to the owner with the most tiles in the site set (land = set size, water = 1), then nearest city, then lowest city tile id.'],
+  ['Game.doUrbanSurroundedRural', 'Game.cs:12895-13050', 'rural pockets bounded by exactly one site, only on land sections holding more than one site; water, map-edge and owned tiles do not count as pocket tiles.'],
   ['Tile.setMinorCity / isMinorCity', 'Tile.cs:11127, 11146', 'site → USED, improvement → ' + constants.minorCityName + ', a city name is assigned.'],
+  ['Game.razeCity / removeCity', 'Game.cs:11033-11060, 11095-11190', 'Minor City tiles and the city tile become ACTIVE sites again unless the bonus is bRazeCityNoCitySite; every improvement in the Territory is cleared, every tile un-owned, then doBorderFill.'],
   ['Tile.spreadBorders', 'Tile.cs:7777', 'range 1 from an owned tile; callers: onSpecialistChange 6162, doImprovementFinished 6310 (before makeUrban), Unit.addUrban Unit.cs:11879, game start Game.cs:12220.'],
-  ['Tile.isImprovementBorderSpread', 'Tile.cs:6111', 'bUrban, bSpreadsBorders, Player.isSpreadBordersUnlock (effectPlayer aeImprovementSpreadBorders), or a free specialist from aeAdjacentImprovementSpecialists (empty in the current XML).'],
-  ['Game.createCityNext / City.start', 'Game.cs:11004, City.cs:7854-8007', 'range 2 from the founding tile with the founding site as the city site, then Game.doBorderFill.'],
-  ['Game.doBorderFill / setTilesOwner', 'Game.cs:13155, 13177', 'range 0 from every owned tile; setTilesOwner then calls setMinorCity on any active site it just owned. Called from Game.doTurn 12788, finishMapPlacement 12301, removeCity 11188, City.setPlayer 3529, City.start 8007, the editor TILE_OWNER action 19136.'],
-  ['Unit.buyTile / canBuyTile', 'Unit.cs:12707, 12665; City.cs:9493', 'range 0 from the bought tile, or a reassignment; eligibility and the unlock test; UNIT_BUY_TILE_COST orders.'],
+  ['Tile.isImprovementBorderSpread', 'Tile.cs:6111', 'bUrban, bSpreadsBorders, Player.isSpreadBordersUnlock (effectPlayer aeImprovementSpreadBorders), or a free specialist from aeAdjacentImprovementSpecialists (Tile.cs:6598, 7730; empty in the current XML).'],
+  ['Game.createCityNext / City.start', 'Game.cs:11004, City.cs:7854-8007', 'range 2 from the founding tile with the founding site as the city site; the founding site is set USED before setTilesOwner, then Game.doBorderFill.'],
+  ['Game.doBorderFill / setTilesOwner', 'Game.cs:13155, 13177', 'range 0 from every owned tile in tile-id order, one shared pending dictionary; setTilesOwner calls setMinorCity on any live site it just owned, then bounceUnitsCantOccupy on every new tile. Called from Game.doTurn 12788, finishMapPlacement 12301, removeCity 11188, City.setPlayer 3529, City.start 8007, the editor TILE_OWNER action 19136.'],
+  ['Tile.bounceUnitsCantOccupy / canEnterTerritory', 'Tile.cs:10723, 10106; Unit.cs:8176; InfoHelpers.cs:2469', 'a unit that may not stand in the new owner\'s Territory (truce: neither peace nor war) is moved to the nearest tile it can stand on, or removed if there is none.'],
+  ['Unit.buyTile / canBuyTile', 'Unit.cs:12707, 12665; City.cs:9493; Game.cs:18002', 'the acting unit\'s own tile; range 0 from a new tile, or a plain reassignment; eligibility and the unlock test; UNIT_BUY_TILE_COST orders.'],
   ['City.getBuyTileCost', 'City.cs:9445', '(base + per × (city count + player count ÷ 2)) × (distance + 1) ÷ 4, minimum 1; both counters increment on every purchase (City.cs:2964, Player.cs:6325).'],
   ['City.findGrowBorderTile / growBorders', 'City.cs:9659-9820', 'the scoring; RandomStruct(cityTile.initSeed()) is re-created per call, so the same city rolls the same numbers in the same candidate order every time.'],
-  ['Tile.canGrowBorder / getBorderAdjacent', 'Tile.cs:12605, ~12510', 'valid growth, not a boundary tile, not on or next to an urban tile, adjacent to the city\'s contiguous territory.'],
+  ['Tile.canGrowBorder / getBorderAdjacent', 'Tile.cs:12605, 12526', 'claimable, not a map-edge tile, not on or next to an urban tile, adjacent to the city\'s contiguous Territory.'],
   ['PlayerBonus.doBonus', 'PlayerBonus.cs:7053, 2432', 'bonus iBorderGrowth > 0 → City.growBorders; the bonus is unavailable when no tile can grow.'],
-  ['Tile.setOwner', 'Tile.cs:7470-7560', 'bRemoveBorder improvements are cleared when a border covers them (bRemoveBonus fires their bonus first).'],
+  ['Tile.setOwner', 'Tile.cs:7470-7560', 'bRemoveBorder improvements are cleared the moment the tile gets an owner (bRemoveBonus fires their bonus first).'],
+  ['Tile.tileAdjacent / getTilesAtDistance', 'Tile.cs:11969, 12258', 'map-edge (boundary) tiles are skipped unless bIncludeBoundary, so no rule, seed or growth pick ever reaches them.'],
   ['Unit.hasConsumptionBordersModifier / familyTerritoryModifier', 'Unit.cs:7354, 6959', 'CONSUMPTION_BORDERS_MODIFIER and FAMILY_TERRITORY_MODIFIER, see constants.'],
   ['XML', 'terrain, height, vegetation, resource, improvement, yield, bonus, bonus-event, effectPlayer, effectCity, effectUnit, trait, law, familyClass, tech, globalsInt, globalsType, color, teamColor', 'values, flags, grants and the quoted strings.'],
 ];
@@ -89,113 +99,123 @@ const stats = [
   active="border-expansion"
   pageMark="🗺️"
   pageStats={stats}
-  description="How Old World's city borders are created and grow: the four spread rules, chains, founding, minor cities, buying tiles and growth bonuses, with hex boards computed from the game's territory code."
+  description="How Old World's city borders are created and grow: the four spread rules, chains, founding, Minor Cities, buying tiles and growth bonuses, with hex boards computed from the game's territory code."
 >
   <p class="lede">
-    City territory is built by one engine in the game's tile code. Every
+    City Territory is built by one engine in the game's tile code. Every
     coloured tile and every number below was computed by a port of that
     engine, not drawn by hand.
   </p>
 
   <div class="legend be-legend">
     <span class="legend__label">Legend</span>
-    <span class="be-key"><i class="be-swatch be-swatch--you"></i> your territory</span>
+    <span class="be-key"><i class="be-swatch be-swatch--you"></i> your Territory</span>
     <span class="be-key"><i class="be-swatch be-swatch--enemy"></i> another player's</span>
-    <span class="be-key"><i class="be-swatch be-swatch--badge">1</i> grabbed by this trigger, number = generation (0 = seeded by its range)</span>
+    <span class="be-key"><i class="be-swatch be-swatch--badge">1</i> tile taken on this board; the number counts the steps from the trigger (0 = inside the trigger's own range)</span>
     <span class="be-key"><i class="be-dot" style="border-color:#e08a2e"></i> resource pull</span>
     <span class="be-key"><i class="be-dot" style="border-color:#c8a48c"></i> urban pull</span>
-    <span class="be-key"><i class="be-dot" style="border-color:#4696eb"></i> flank rule</span>
-    <span class="be-key"><i class="be-dot" style="border-color:#b9b9c2"></i> hole fill</span>
-    <span class="be-key"><i class="be-dot" style="border-color:#e5484d"></i> minor city</span>
-    <span class="be-key"><i class="be-swatch be-swatch--ring"></i> the tile the trigger fired from</span>
+    <span class="be-key"><i class="be-dot" style="border-color:#4696eb"></i> shielded water</span>
+    <span class="be-key"><i class="be-dot" style="border-color:#b9b9c2"></i> gap fill</span>
+    <span class="be-key"><i class="be-dot" style="border-color:#e5484d"></i> Minor City</span>
+    <span class="be-key"><i class="be-swatch be-swatch--ring"></i> the tile the board ran the rules from (no ring: the whole end-of-turn pass)</span>
     <span class="be-key"><i class="be-swatch be-swatch--buy"></i> can be bought, label = cost</span>
   </div>
 
   <section class="be-section" id="territory">
-    <h2 class="be-h">What territory is</h2>
+    <h2 class="be-h">What Territory is</h2>
     <blockquote class="be-quote">
       <p>{texts.territory}</p>
       <footer>In-game concept text, <code>{texts.territoryName}</code></footer>
     </blockquote>
-    <p class="be-rule">Plain land never joins on its own. A tile is grabbed only when one of four rules fires from a tile you already own, and every grab can fire the rules again.</p>
+    <p class="be-rule">A tile joins your Territory only inside a trigger's range, or when one of four rules fires on it from a tile you already own. Every tile taken runs the rules again.</p>
     <p>
-      The game re-runs the four rules from every owned tile at the end of every
-      turn (the <em>border fill</em>), so a resource or shielded water beside
-      your border joins by itself. Reaching further takes a seed: founding, a
-      specialist, an improvement, a bought tile or a growth bonus.
+      At the end of every turn the game runs the four rules from every owned
+      tile, so a resource or shielded water beside your border joins by
+      itself. Reaching further takes a trigger with a range: founding, a
+      specialist, an urban improvement, a bought tile or a growth bonus.
     </p>
   </section>
 
   <section class="be-section be-section--wide" id="rules">
     <h2 class="be-h">The four spread rules</h2>
-    <p>For an owned tile T and an unowned neighbour N, tested in this order. Each board runs the fill from the ringed tile.</p>
+    <p>
+      <em>Claimable land</em> is any tile that is not {notClaimable}. For an
+      owned tile T and an unowned neighbour N, tested in this order; the first
+      rule that fires takes N.
+    </p>
     <ol class="be-list">
-      <li><strong>Resource pull.</strong> N carries a resource and T does not. Any resource counts.</li>
-      <li><strong>Urban pull.</strong> T or N is urban, and N is not part of another active city site.</li>
-      <li><strong>Flank rule.</strong> T is <em>valid growth</em> (not {constants.negativeBorderValues.map(n => growth.names[n]).join(', ')}) and N is not. Look at the two tiles flanking N beside T. Valid-growth flankers are “yours” (you, an ally, or grabbed earlier in this chain) or “not yours”, and <em>unowned counts as not yours</em>. N is taken if no flanker is “not yours”, or at least one is yours.</li>
-      <li><strong>Hole fill.</strong> N is not urban and the same team owns two tiles on opposite sides of it.</li>
+      <li><strong>Resource pull.</strong> N has a resource and T has none.</li>
+      <li><strong>Urban pull.</strong> T or N is urban, and N is not connected to another live City Site.</li>
+      <li><strong>Shielded water.</strong> T is claimable land and N is not. Of the two tiles beside N that also touch T, ignore any that are not claimable land; N is taken if one of the rest is yours, or if none of them is land that is not yours. Unowned land is not yours; an ally's tile, or one taken earlier in the same pass, is.</li>
+      <li><strong>Gap fill.</strong> N is not urban, and the same team owns the tiles on two opposite sides of it.</li>
     </ol>
     <div class="be-boards be-boards--4">
-      <HexBoard scenario={sc.resource} note="The sheep two tiles out and the wheat beside the marble stay unowned: a resource tile pulls nothing." />
-      <HexBoard scenario={sc.urban} note="Founding works this way too: each urban tile pulls its ring." />
-      <HexBoard scenario={sc.hole} note="Fill runs from any neighbour, so your own tile triggered a grab for the enemy." />
-      <HexBoard scenario={sc.hole_which} note="Axes are tried NW–SE, NE–SW, E–W; the city on the second-named side wins. The code counts neighbours per side but compares teams, so that count never decides." />
+      <HexBoard scenario={sc.resource} note="A tile pulls a neighbouring resource only when it has no resource of its own, and nothing pulls at range 2." />
+      <HexBoard scenario={sc.urban} note="Urban tiles pull every neighbour, resource or not. A city tile is urban, which is why a city's ring is always its own." />
+      <HexBoard scenario={sc.hole} note="Gap fill looks only at the two tiles either side of the gap, on any of its three axes. Whose land is nearby otherwise does not matter." />
+      <HexBoard scenario={sc.hole_which} note="The game tries the axes NW–SE, NE–SW, E–W and gives the gap to the city on the second-named side of the first axis that matches. It counts each city's tiles around the gap but compares teams, so that count never decides." />
     </div>
-    <h3 class="be-h3">The flank rule, four ways</h3>
+    <h3 class="be-h3">Shielded water, four ways</h3>
     <div class="be-boards be-boards--4">
-      <HexBoard scenario={sc.flank_open} note="The two flanking water tiles are taken by the same rule." />
-      <HexBoard scenario={sc.flank_unowned} note="Counter-example to the wiki's 'two adjacent passable land tiles': two passable land tiles touch this water and it is not taken." />
+      <HexBoard scenario={sc.flank_open} note="Tiles beside the water that are themselves water do not count, so nothing speaks against taking it." />
+      <HexBoard scenario={sc.flank_unowned} note="Unowned land counts as not yours. Two passable land tiles next to water do not make it yours." />
       <HexBoard scenario={sc.flank_ours} />
       <HexBoard scenario={sc.flank_enemy} />
     </div>
     <p class="be-note">
-      Mountains and volcanoes follow the same rule as water (asserted). The
-      wiki's “two adjacent passable land tiles” is wrong both ways: the first
-      board takes water with no land beside it but T, the second refuses water
-      beside two land tiles because neither is yours.
+      Mountains and volcanoes follow the same rule as water (asserted). An
+      owned water tile spreads to nothing on its own.
     </p>
   </section>
 
   <section class="be-section be-section--wide" id="chain">
     <h2 class="be-h">Chains</h2>
-    <p>Every grabbed tile is queued and the rules run from it in turn. One specialist reaches generation {chainGens} here.</p>
+    <p>Every tile taken is queued and the rules run from it in turn, all in one pass. One specialist reaches {chainGens} steps here and adds {sc.chain.grabs.length} tiles, {chainWater} of them water.</p>
     <div class="be-split">
       <HexBoard scenario={sc.chain} showScores={false}
-        note="Ring tiles (0) pull the game and the fish (1); the game tile takes the water beyond it by the flank rule and the fish tile fills the hole between two owned tiles (2)." />
+        note="Badge 0 is the specialist's range; each later number is a rule firing from a tile taken the step before." />
       <ol class="be-list">
-        <li>Range 1 seeds the three unowned neighbours (0).</li>
-        <li>The north seed pulls the game and the fish (1).</li>
-        <li>The game tile takes the water beyond it: its only flanker is the pending fish tile, which is water, so nothing counts against it.</li>
-        <li>The water beyond the fish lies between that pending water and a tile you already owned: hole fill (2).</li>
-        <li>Water is not valid growth, so the flank rule cannot fire from it and the chain stops.</li>
+        <li>Range 1 takes the three unowned neighbours of the farm (0).</li>
+        <li>The northern one has no resource, so it pulls the game and the fish (1).</li>
+        <li>The game tile takes the water east of it: the tiles beside that water are the fish and more water, and water never counts against a grab (2).</li>
+        <li>The last water tile now lies between that water and land you already owned: gap fill (2).</li>
+        <li>Water is not claimable land, so the chain stops there.</li>
       </ol>
     </div>
   </section>
 
   <section class="be-section be-section--wide" id="founding">
     <h2 class="be-h">Founding</h2>
-    <p>Founding seeds every tile within 2 of the Settler's tile, then the chain runs; urban tiles at distance 2 pull their own ring at distance 3.</p>
+    <p>Founding takes every tile within 2 of the Settler, then the chain runs: urban tiles at distance 2 pull their ring at distance 3, and the end-of-turn pass follows.</p>
     <div class="be-boards be-boards--2">
       <HexBoard scenario={sc.found}
-        note={`${foundRing} tiles came from urban pull and two from resource pull; the trailing border fill added nothing here.`} />
+        note={`${foundRing} tiles came from urban pull and ${foundResources} from resource pull; the end-of-turn pass added nothing here.`} />
       <HexBoard scenario={sc.minor}
-        note={`${minorSiteGrabs} urban tiles of the site and its own radius 2 joined at generation 1; the site is now a ${constants.minorCityName} and can never be founded.`} />
+        note={`${minorSiteGrabs} urban tiles of the site and everything within 2 of it joined in the same pass. Water and mountains count as closed sides; one unowned passable land tile beside the site would have kept it free (asserted).`} />
     </div>
+    <blockquote class="be-quote">
+      <p>{texts.minorCity}</p>
+      <footer>In-game help text for the {constants.minorCityName}</footer>
+    </blockquote>
     <p>
-      <strong>Minor cities.</strong> After each popped tile the engine checks
-      adjacent unclaimed urban tiles. If they belong to another active site and
-      every passable land tile around that site's cluster is owned or pending,
-      the site is swallowed: its urban tiles plus its own radius 2 go to whoever
-      owns the most adjacent tiles, ties to the nearest city. Water and
-      mountains count as closed; one unowned land tile keeps the site free
-      (asserted). This path has no tribe test: a tribe settlement whose every
-      passable land neighbour is yours is swallowed the same way (board under
-      Losing tiles).
+      <strong>Minor Cities.</strong> A City Site stays live until a city is
+      founded on it. When every passable land tile around a live site's urban
+      cluster is owned, the next pass swallows it: its urban tiles and
+      everything within 2 of it go to the owner with the most tiles around it,
+      ties to the nearest city. The site is marked used and gets the
+      {constants.minorCityName} improvement and a name; nobody can found a city
+      there again, and its land is simply part of the neighbouring city. The
+      improvement is urban and pays {mcOut} and {mc.vp} victory points for
+      {mcUpkeep} upkeep. The help text says sites without a tribal settlement,
+      but the code has no tribe test (board under Losing tiles). If the owning
+      city is razed, its Minor Cities and its own tile become live City Sites
+      again, unless the razing event wipes sites.
     </p>
   </section>
 
   <section class="be-section be-section--wide" id="triggers">
     <h2 class="be-h">Triggers</h2>
+    <p class="be-note">Range 0 means the rules run from the tile itself.</p>
     <div class="be-table">
       <table>
         <thead><tr><th>Trigger</th><th>When</th><th>Range</th><th>Code</th></tr></thead>
@@ -206,7 +226,7 @@ const stats = [
         </tbody>
       </table>
     </div>
-    <p class="be-note">An urban improvement spreads before its tile turns urban, so the grab is the range-1 seed, not an urban pull. The free-specialist path in the same check reads a list that is empty in the current XML.</p>
+    <p class="be-note">An urban improvement spreads before its tile turns urban, so its grab is the plain range-1 ring, not an urban pull. A fourth spread path in the same check (free specialists from adjacent improvements) reads a list that is empty in the current data.</p>
   </section>
 
   <section class="be-section be-section--wide" id="buying">
@@ -218,14 +238,14 @@ const stats = [
     <div class="be-split">
       <div>
         <ul class="be-list">
-          <li><strong>Eligible:</strong> adjacent to the buying city's territory, not urban, water only if it touches land, with your unit standing on it. Costs {constants.unitBuyTileCost} order.</li>
-          <li><strong>Unlocks:</strong> {buyPlayer.map((u, i) => <>{i > 0 && '; '}{u.sources.map(s => <>{(has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name)}{s.dlc && <span class="chip chip--dlc">{s.dlc}</span>}</>)} for {(has(u.yield) ? <Term id={u.yield} showIcon={false} label={u.yieldName} /> : u.yieldName)}</>)} (for every city); {buyCity.map(u => <>{u.sources.map(s => (has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name))} seat for {(has(u.yield) ? <Term id={u.yield} showIcon={false} label={u.yieldName} /> : u.yieldName)}</>)} (that city only). A unit effect for it exists in the code but no unit carries one.</li>
-          <li><strong>From your own city:</strong> a tile of another of your cities can be reassigned with no unlock, if it has no improvement and taking it does not split that city's territory. The counters still tick.</li>
-          <li><strong>Cost:</strong> (base + per × (city purchases + player purchases ÷ 2)) × (distance + 1) ÷ 4, minimum 1, integer division. {money.name} base {money.base} per {money.per}; {training.name} base {training.base} per {training.per}.</li>
-          <li><strong>Chains fire</strong> at range 0, so a resource behind the bought tile comes free.</li>
+          <li><strong>Eligible:</strong> your unit stands on the tile; it touches the buying city's Territory, is not urban, and water must touch land. Costs {constants.unitBuyTileCost} order.</li>
+          <li><strong>Unlocks:</strong> {buyPlayer.map((u, i) => <>{i > 0 && '; '}{u.sources.map(s => <>{(has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name)}{s.dlc && <span class="chip chip--dlc">{s.dlc}</span>}</>)} for {(has(u.yield) ? <Term id={u.yield} showIcon={false} label={u.yieldName} /> : u.yieldName)}</>)} (every city); {buyCity.map(u => <>{u.sources.map(s => (has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name))} seat for {(has(u.yield) ? <Term id={u.yield} showIcon={false} label={u.yieldName} /> : u.yieldName)}</>)} (that city only). A unit effect exists in the code but no unit carries it.</li>
+          <li><strong>From your own city:</strong> a tile of another of your cities moves over with no unlock if it has no improvement and the move does not split that city's Territory. Both purchase counters still go up.</li>
+          <li><strong>Cost:</strong> (base + per × (city purchases + player purchases ÷ 2)) × (distance from the city + 1) ÷ 4, minimum 1, rounding down at each step. {money.name} base {money.base} per {money.per}; {training.name} base {training.base} per {training.per}.</li>
+          <li><strong>The rules run</strong> from a newly bought tile at range 0, so a resource behind it comes free; a tile moved between your cities spreads nothing.</li>
         </ul>
       </div>
-      <HexBoard scenario={buyBoard} note={`The Worker bought the hill for ${buyBoard.trigger.cost} ${money.name}; the cattle joined as generation 1. The next tile from this city costs more.`} />
+      <HexBoard scenario={buyBoard} note={`The Worker bought the hill for ${buyBoard.trigger.cost} ${money.name} and the cattle joined by resource pull. Both counters went up, so the next tile from this city costs more.`} />
     </div>
     <h3 class="be-h3">Cost by distance and purchases</h3>
     <div class="be-grids">
@@ -244,16 +264,16 @@ const stats = [
         </div>
       ))}
     </div>
-    <p class="be-note">“Bought” is the city's count plus half the player's count, rounded down.</p>
+    <p class="be-note">“Bought” is the city's own count plus half your total count, rounded down.</p>
   </section>
 
   <section class="be-section be-section--wide" id="growth">
     <h2 class="be-h">Growth bonuses</h2>
     <p>
-      Border growth <em>n</em> picks one tile <em>n</em> times: the highest-scoring
-      valid-growth tile adjacent to the city's contiguous territory, not on or
-      next to an urban tile, not on the map boundary. The rules then run from it
-      at range 0.
+      A growth bonus of <em>n</em> picks one tile <em>n</em> times: the
+      highest-scoring claimable tile that touches the city's connected
+      Territory, is not on or beside an urban tile and is not on the map edge.
+      The rules then run from it at range 0.
     </p>
     <div class="be-split">
       <div class="be-table">
@@ -268,39 +288,47 @@ const stats = [
             <tr><td>passable</td><td>{w.passable}</td></tr>
             <tr><td>on the trade network</td><td>{w.tradeNetwork}</td></tr>
             <tr><td>resource</td><td>{Object.values(w.resource).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b).join(' / ')} (see appendix)</td></tr>
-            <tr><td>per neighbour</td><td>height {Object.entries(w.landAdjacent).map(([k, v]) => `${growth.names[k]} ${v}`).join(', ')}; +{w.ownCityAdjacent} if this city's; +{w.alliedImprovedAdjacent} if yours and improved; else resource value ÷ {w.adjacentResourceDivisor}</td></tr>
+            <tr><td>per neighbour</td><td>height {Object.entries(w.landAdjacent).map(([k, v]) => `${growth.names[k]} ${v}`).join(', ')} (land candidates only); +{w.ownCityAdjacent} if this city's; +{w.alliedImprovedAdjacent} if your team's (or taken this pick) and improved; otherwise its resource value ÷ {w.adjacentResourceDivisor}</td></tr>
             <tr><td>distance</td><td>× {w.distanceNumerator} ÷ (distance from the city + {w.distanceOffset})</td></tr>
           </tbody>
         </table>
       </div>
       <HexBoard scenario={grow} showScores={true}
-        note={`Scores shown with the roll fixed at ${grow.trigger.roll} for every candidate. The trees at ${winner.total} beat the lush river tile at ${runnerUp.total}; the water beyond joined by the flank rule, then the second pick took the river tile.`} />
+        note={`Scores shown with the roll fixed at ${grow.trigger.roll} for every candidate. The trees at ${winner.total} beat the lush river tile at ${runnerUp.total}; the water beyond joined as shielded water, then the second pick took the river tile.`} />
     </div>
     <p>
-      <strong>The seed.</strong> The roll comes from a stream seeded by the city
-      tile and recreated for every pick, so a city always rolls the same numbers
-      in candidate order; the board fixes the roll to show the rest of the score.
+      <strong>The roll</strong> comes from a random stream seeded by the city
+      tile and restarted for every pick, so a city always rolls the same
+      numbers in the same candidate order; the board fixes the roll so the
+      rest of the score shows.
     </p>
-    <ul class="be-list">
-      <li><strong>Cards:</strong> {cards.map(c => `${c.name.replace('City Border Growth ', '')} ${c.value}`).join(', ')} tiles.</li>
-      {techCard && <li><strong>Tech card:</strong> {(has(techCard.tech!) ? <Term id={techCard.tech!} showIcon={false} label={techCard.name} /> : techCard.name)} ({(has(techCard.prereqId!) ? <Term id={techCard.prereqId!} showIcon={false} label={techCard.prereq!} /> : techCard.prereq!)}) gives {techCard.value} tiles to every city.</li>}
-      <li><strong>Events:</strong> {eventGroups.map(g => `${g.name} ${g.values.join('/')}${g.count > 1 ? ` (×${g.count})` : ''}`).join(', ')}. {events.filter(e => e.value < 0).map(e => `${e.name} carries ${e.value}, which does nothing: growth needs a positive value.`).join(' ')}</li>
-    </ul>
+    <div class="be-table">
+      <table>
+        <thead><tr><th>Source</th><th>Tiles</th></tr></thead>
+        <tbody>
+          <tr><td>Bonus cards</td><td>{cards.map(c => `${c.name.replace('City Border Growth ', '')} ${c.value}`).join(', ')}</td></tr>
+          {techCard && <tr><td>Tech card</td><td>{(has(techCard.tech!) ? <Term id={techCard.tech!} showIcon={false} label={techCard.name} /> : techCard.name)} ({(has(techCard.prereqId!) ? <Term id={techCard.prereqId!} showIcon={false} label={techCard.prereq!} /> : techCard.prereq!)}): {techCard.value} to every city</td></tr>}
+          <tr><td>Events</td><td>{eventGroups.map(g => `${g.name} ${g.values.join('/')}${g.count > 1 ? ` (×${g.count})` : ''}`).join(', ')}. {events.filter(e => e.value < 0).map(e => `${e.name} carries ${e.value}, which does nothing: growth needs a positive value.`).join(' ')}</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <section class="be-section be-section--wide" id="losing">
     <h2 class="be-h">Losing tiles and gotchas</h2>
     <div class="be-split">
       <ul class="be-list">
-        <li><strong>Territory never shrinks by itself.</strong> Tiles change hands on capture (the whole territory follows), razing (cleared), reassignment between your cities, or a swallowed site.</li>
-        <li><strong>Site markers are cleared, not kept.</strong> The city-site marker, the tribal {constants.removeBorder.filter(r => r.tribe).map(r => r.name).join(', ')} and the ruins a destroyed settlement leaves ({constants.removeBorder.filter(r => !r.tribe && r.id !== 'IMPROVEMENT_CITY_SITE').map(r => r.name).join(', ')}) carry a remove-on-border flag: the moment their tile becomes territory the improvement is cleared, then the Minor City is placed.</li>
-        <li><strong>Tribe sites</strong> are skipped by the four rules, and a settlement's own active city site blocks the urban pull even for an ally. The surround rule ignores tribes: own every passable land tile around a settlement and the next fill turns it into your minor city, clearing the settlement improvement. The code never consults the units on it.</li>
-        <li><strong>Other active city sites</strong> are never grabbed except by the surround rule.</li>
-        <li><strong>Map boundary</strong> tiles are never a growth pick nor part of a swallowed site.</li>
-        <li><strong>Growth picks avoid urban tiles</strong> and their neighbours; only the chain can reach them.</li>
-        <li><strong>{constants.territoryOnlyCount} of {constants.improvementCount} improvements</strong> need territory; {constants.territoryWaterUnits.join(', ')} may end a move on your own water.</li>
+        <li><strong>Territory never shrinks by itself:</strong> a tile leaves you only by capture, razing, or moving it to another of your cities.</li>
+        <li><strong>Your city is captured</strong> → all its tiles change hands at once; the end-of-turn pass then runs for the new owner.</li>
+        <li><strong>A city is razed</strong> → its tiles become unowned and their improvements are cleared; its Minor Cities and its own tile become live City Sites again.</li>
+        <li><strong>You own every passable land tile around a tribal {tribeSettlements}</strong> → at the end of the turn it becomes your Minor City and the settlement is removed. Its units stay unless the tribe is under truce with you, in which case they are pushed to the nearest tile they may stand on.</li>
+        <li><strong>Your border swallows a site still showing a City Site marker or ruins ({ruins})</strong> → the marker is removed and the Minor City placed.</li>
+        <li><strong>Another live City Site touches your border</strong> → its urban tiles are taken only by the surround above; a tribal site blocks the urban pull even for an ally.</li>
+        <li><strong>A tile is on the map edge</strong> → it never becomes Territory; rules, ranges and growth picks all skip it.</li>
+        <li><strong>A growth bonus never picks</strong> a tile on or beside an urban tile; only a chain reaches those.</li>
+        <li><strong>{constants.territoryOnlyCount} of {constants.improvementCount} improvements</strong> need Territory; {constants.territoryWaterUnits.join(', ')} may end a move on your own water.</li>
       </ul>
-      <HexBoard scenario={sc.tribe_surrounded} note="Red badge: the site itself. Gold badges: its radius 2, seeded in the same pass. The fill runs from every owned tile; the ring marks the one this board ran it from." />
+      <HexBoard scenario={sc.tribe_surrounded} note="Red badge: the site itself. Gold badges: everything within 2 of it, taken in the same pass." />
     </div>
   </section>
 
@@ -310,7 +338,7 @@ const stats = [
     <h3 class="be-h3">Improvements that spread borders</h3>
     <p class="be-note">
       All {flaggedWonders.length} wonders, all Holy Sites and the {(has('IMPROVEMENT_HARBOR') ? <Term id="IMPROVEMENT_HARBOR" showIcon={false} label="Harbor" /> : 'Harbor')} carry the
-      flag; {spreadersSummary.urbanCount} improvements spread because they are urban.
+      Spreads Borders flag; {spreadersSummary.urbanCount} improvements spread because they are urban.
     </p>
 
     <h3 class="be-h3">Every growth value</h3>
@@ -328,20 +356,20 @@ const stats = [
     <h3 class="be-h3">Resource border values</h3>
     <p class="be-note">
       {Object.entries(w.resource).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k, v], i) => <>{i > 0 && ', '}{growth.names[k]} {v}</>)}.
-      Resources without a value score 0 but are still pulled.
+      Resources without a value score 0 but are still pulled; a resource with a negative value would not be (none has one).
     </p>
 
     <h3 class="be-h3">Constants</h3>
     <div class="be-table">
       <table>
         <tbody>
-          <tr><td>BORDER_VISIBILITY</td><td>{constants.borderVisibility}: tiles seen around your territory (plus EXTRA_VISIBILITY {constants.extraVisibility} and vision effects).</td></tr>
+          <tr><td>BORDER_VISIBILITY</td><td>{constants.borderVisibility}: tiles seen around your Territory (plus EXTRA_VISIBILITY {constants.extraVisibility} and vision effects).</td></tr>
           <tr><td>CONSUMPTION_BORDERS_MODIFIER</td><td>+{constants.consumptionBordersModifier}% unit consumption on tiles that are not yours or an ally's, unless the tile is an unowned healing improvement or the player has the no-outside-consumption unlock.</td></tr>
-          <tr><td>FAMILY_TERRITORY_MODIFIER</td><td>+{constants.familyTerritoryModifier} for a unit standing in its own family's territory (Unit.familyTerritoryModifier).</td></tr>
+          <tr><td>FAMILY_TERRITORY_MODIFIER</td><td>+{constants.familyTerritoryModifier}% combat strength for a unit fighting from a tile its own family owns (Unit.familyTerritoryModifier).</td></tr>
           <tr><td>UNIT_BUY_TILE_COST</td><td>{constants.unitBuyTileCost} order per purchase.</td></tr>
           <tr><td>COLOR_MULTIPLIER_FOUND_BORDER_PREVIEW</td><td><code>{constants.foundBorderPreviewColor}</code>, the wash on the founding preview.</td></tr>
           <tr><td>Border patterns</td><td>{constants.borderPatterns.map(p => p.replace('BORDER_PATTERN_', '').toLowerCase()).join(', ')} (teamColor.xml, one per city of a team).</td></tr>
-          <tr><td>Minor city improvement</td><td><code>{constants.minorCityImprovement}</code> ({constants.minorCityName}).</td></tr>
+          <tr><td>Minor City improvement</td><td><code>{constants.minorCityImprovement}</code> ({constants.minorCityName}): {mcOut}, {mcUpkeep} upkeep, {mc.vp} VP, +{mc.defenseFriendly}% friendly defence, urban.</td></tr>
           <tr><td>Border growth log line</td><td><code>{texts.borderGrowthLog}</code></td></tr>
         </tbody>
       </table>
@@ -370,13 +398,14 @@ const stats = [
       display: inline-flex; align-items: center; justify-content: center;
       width: 0.95em; height: 0.95em; border-radius: 2px;
       font-style: normal; font-size: 0.7em; font-weight: 700;
+      flex: none;
     }
     .be-swatch--you { background: rgba(110,160,210,.45); border: 1px solid rgb(110,160,210); }
     .be-swatch--enemy { background: rgba(150,60,60,.45); border: 1px solid rgb(150,60,60); }
     .be-swatch--badge { border-radius: 50%; background: #0b0c0f; border: 2px solid var(--gold); color: #fff; width: 1.2em; height: 1.2em; }
     .be-swatch--ring { border-radius: 50%; border: 2px solid #fff; }
     .be-swatch--buy { border: 1px dashed var(--gold); }
-    .be-dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; border: 2px solid; background: #0b0c0f; }
+    .be-dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; border: 2px solid; background: #0b0c0f; flex: none; }
 
     .be-section { margin: 1.6rem 0; max-width: 78ch; }
     .be-section--wide { max-width: none; }
@@ -431,6 +460,7 @@ const stats = [
       border: 1px solid var(--border);
       font-size: 0.85em;
       font-family: var(--font-mono);
+      overflow-wrap: anywhere;
     }
     .be-note { font-size: 0.78rem !important; color: var(--text-dim) !important; margin-top: 0.6rem !important; }
     .be-list {
@@ -477,6 +507,7 @@ const stats = [
     .be-dim { color: var(--text-dim); }
     .be-num { text-align: right; font-family: var(--font-mono); font-size: 0.78rem; }
     .be-sources { font-size: 0.8rem; max-width: none; }
+    .be-sources li { overflow-wrap: anywhere; }
     .be-loc { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-2); }
     .chip--dlc { margin-left: 0.4rem; border-color: oklch(0.5 0.1 60); color: oklch(0.8 0.1 60); font-size: 0.66rem; }
     .be-section a { color: var(--accent-2); }

@@ -249,6 +249,21 @@
   "familyTerritoryModifier": 10,
   "foundBorderPreviewColor": "#ffffff9b",
   "improvementCount": 159,
+  "minorCity": {
+   "consumption": {
+    "YIELD_FOOD": 4.0
+   },
+   "defenseFriendly": 10,
+   "output": {
+    "YIELD_MONEY": 25.0
+   },
+   "urban": true,
+   "vp": 2,
+   "yieldNames": {
+    "YIELD_FOOD": "Food",
+    "YIELD_MONEY": "Money"
+   }
+  },
   "minorCityImprovement": "IMPROVEMENT_MINOR_CITY",
   "minorCityName": "Minor City",
   "negativeBorderValues": [
@@ -588,7 +603,7 @@
  "scenarios": [
   {
    "buyable": [],
-   "caption": "An owned tile without a resource grabs any adjacent resource tile.",
+   "caption": "Only the horses join: the wheat touches only the marble tile and the sheep only the horse tile.",
    "grabs": [
     {
      "city": 0,
@@ -696,8 +711,8 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
+     "owner": 0,
+     "ownerBefore": 0,
      "q": -1,
      "r": -1,
      "resource": null,
@@ -705,7 +720,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -796,8 +811,8 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
+     "owner": 0,
+     "ownerBefore": 0,
      "q": -2,
      "r": 0,
      "resource": null,
@@ -805,7 +820,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -875,8 +890,8 @@
      "ownerBefore": null,
      "q": 1,
      "r": 0,
-     "resource": null,
-     "resourceIcon": null,
+     "resource": "RESOURCE_WHEAT",
+     "resourceIcon": "wheat",
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
@@ -1000,8 +1015,8 @@
      "ownerBefore": null,
      "q": 1,
      "r": 1,
-     "resource": "RESOURCE_WHEAT",
-     "resourceIcon": "wheat",
+     "resource": null,
+     "resourceIcon": null,
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
@@ -1087,11 +1102,7 @@
    ],
    "title": "Resource pull",
    "trigger": {
-    "from": [
-     0,
-     -1
-    ],
-    "kind": "fill"
+    "kind": "turn"
    },
    "units": [],
    "zoc": []
@@ -1197,8 +1208,8 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
+     "owner": 0,
+     "ownerBefore": 0,
      "q": -1,
      "r": -1,
      "resource": null,
@@ -1206,7 +1217,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -1297,8 +1308,8 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
+     "owner": 0,
+     "ownerBefore": 0,
      "q": -2,
      "r": 0,
      "resource": null,
@@ -1306,7 +1317,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -1376,8 +1387,8 @@
      "ownerBefore": null,
      "q": 1,
      "r": 0,
-     "resource": null,
-     "resourceIcon": null,
+     "resource": "RESOURCE_WHEAT",
+     "resourceIcon": "wheat",
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
@@ -1501,8 +1512,8 @@
      "ownerBefore": null,
      "q": 1,
      "r": 1,
-     "resource": "RESOURCE_WHEAT",
-     "resourceIcon": "wheat",
+     "resource": null,
+     "resourceIcon": null,
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
@@ -1599,14 +1610,30 @@
   },
   {
    "buyable": [],
-   "caption": "An urban tile grabs every tile around it, whatever it is.",
+   "caption": "The two urban tiles take their whole ring; your plain tiles on the other side take nothing.",
    "grabs": [
+    {
+     "city": 0,
+     "gen": 1,
+     "player": 0,
+     "q": 0,
+     "r": -2,
+     "reason": "urban"
+    },
     {
      "city": 0,
      "gen": 1,
      "player": 0,
      "q": 1,
      "r": -2,
+     "reason": "urban"
+    },
+    {
+     "city": 0,
+     "gen": 1,
+     "player": 0,
+     "q": -1,
+     "r": -1,
      "reason": "urban"
     },
     {
@@ -1648,7 +1675,7 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
+     "owner": 0,
      "ownerBefore": null,
      "q": 0,
      "r": -2,
@@ -1657,7 +1684,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -1723,7 +1750,7 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
+     "owner": 0,
      "ownerBefore": null,
      "q": -1,
      "r": -1,
@@ -1732,7 +1759,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -2114,18 +2141,14 @@
    ],
    "title": "Urban pull",
    "trigger": {
-    "from": [
-     1,
-     -1
-    ],
-    "kind": "fill"
+    "kind": "turn"
    },
    "units": [],
    "zoc": []
   },
   {
    "buyable": [],
-   "caption": "Both tiles flanking the water are water too: taken.",
+   "caption": "Nothing but water on either side of this water, so it is yours, and so are the two flanking water tiles.",
    "grabs": [
     {
      "city": 0,
@@ -2638,7 +2661,7 @@
      "vegetation": null
     }
    ],
-   "title": "Water with no land flankers",
+   "title": "Water with no land beside it",
    "trigger": {
     "from": [
      0,
@@ -2651,7 +2674,7 @@
   },
   {
    "buyable": [],
-   "caption": "A flanker that is passable land but not yours blocks the grab.",
+   "caption": "One unowned land tile beside the water is enough to refuse it.",
    "grabs": [
     {
      "city": 0,
@@ -3148,7 +3171,7 @@
      "vegetation": null
     }
    ],
-   "title": "One unowned land flanker",
+   "title": "One unowned land tile beside it",
    "trigger": {
     "from": [
      0,
@@ -3161,7 +3184,7 @@
   },
   {
    "buyable": [],
-   "caption": "Once one flanker is yours the water is taken even if the other is not.",
+   "caption": "Own one of the two tiles beside the water and it is yours, whatever the other one is.",
    "grabs": [
     {
      "city": 0,
@@ -3658,7 +3681,7 @@
      "vegetation": null
     }
    ],
-   "title": "One flanker yours, one unowned",
+   "title": "One side yours, one unowned",
    "trigger": {
     "from": [
      0,
@@ -3671,7 +3694,7 @@
   },
   {
    "buyable": [],
-   "caption": "An enemy flanker counts like an unowned one: no grab without a flanker of your own.",
+   "caption": "An enemy tile beside the water refuses it exactly like an unowned one.",
    "grabs": [
     {
      "city": 0,
@@ -4168,7 +4191,7 @@
      "vegetation": null
     }
    ],
-   "title": "One flanker the enemy's",
+   "title": "One side the enemy's",
    "trigger": {
     "from": [
      0,
@@ -4707,7 +4730,7 @@
   },
   {
    "buyable": [],
-   "caption": "An unowned tile with the same team on two opposite sides is filled; here the enemy fills it, not you.",
+   "caption": "The gap between two enemy tiles is filled for the enemy, although it touches your land too.",
    "grabs": [
     {
      "city": 1,
@@ -4915,8 +4938,8 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
+     "owner": 0,
+     "ownerBefore": 0,
      "q": -2,
      "r": 0,
      "resource": null,
@@ -4924,7 +4947,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -5204,42 +5227,22 @@
      "vegetation": null
     }
    ],
-   "title": "Hole fill",
+   "title": "Gap fill",
    "trigger": {
-    "from": [
-     1,
-     0
-    ],
-    "kind": "fill"
+    "kind": "turn"
    },
    "units": [],
    "zoc": []
   },
   {
    "buyable": [],
-   "caption": "Two of your cities either side of a hole: the far side of the first matching axis wins, here the distant city over the adjacent one.",
+   "caption": "Both cities are yours; the gap goes to the lower-left city although the upper-right one touches it on two sides.",
    "grabs": [
     {
      "city": 0,
      "gen": 1,
      "player": 0,
      "q": 0,
-     "r": 0,
-     "reason": "fill"
-    },
-    {
-     "city": 0,
-     "gen": 1,
-     "player": 0,
-     "q": 1,
-     "r": 0,
-     "reason": "fill"
-    },
-    {
-     "city": 0,
-     "gen": 2,
-     "player": 0,
-     "q": -1,
      "r": 0,
      "reason": "fill"
     }
@@ -5269,6 +5272,131 @@
      "owner": null,
      "ownerBefore": null,
      "q": 0,
+     "r": -3,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 1,
+     "r": -3,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": 0,
+     "ownerBefore": 0,
+     "q": 2,
+     "r": -3,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": 1,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": 0,
+     "ownerBefore": 0,
+     "q": 3,
+     "r": -3,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": 1,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -1,
+     "r": -2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 0,
      "r": -2,
      "resource": null,
      "resourceIcon": null,
@@ -5295,81 +5423,6 @@
      "ownerBefore": 0,
      "q": 1,
      "r": -2,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": 1,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": 0,
-     "ownerBefore": 0,
-     "q": 2,
-     "r": -2,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": 1,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
-     "q": -1,
-     "r": -1,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": 0,
-     "ownerBefore": 0,
-     "q": 0,
-     "r": -1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5393,8 +5446,8 @@
      "minorCity": false,
      "owner": 0,
      "ownerBefore": 0,
-     "q": 1,
-     "r": -1,
+     "q": 2,
+     "r": -2,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5418,6 +5471,131 @@
      "minorCity": false,
      "owner": 0,
      "ownerBefore": 0,
+     "q": 3,
+     "r": -2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": 1,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -2,
+     "r": -1,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -1,
+     "r": -1,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": 0,
+     "ownerBefore": 0,
+     "q": 0,
+     "r": -1,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": 1,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": 0,
+     "ownerBefore": 0,
+     "q": 1,
+     "r": -1,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": 1,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": 0,
+     "ownerBefore": 0,
      "q": 2,
      "r": -1,
      "resource": null,
@@ -5443,6 +5621,56 @@
      "minorCity": false,
      "owner": null,
      "ownerBefore": null,
+     "q": 3,
+     "r": -1,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -3,
+     "r": 0,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
      "q": -2,
      "r": 0,
      "resource": null,
@@ -5466,7 +5694,7 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": 0,
+     "owner": null,
      "ownerBefore": null,
      "q": -1,
      "r": 0,
@@ -5475,7 +5703,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": 0,
+     "territory": null,
      "tribe": null,
      "vegetation": null
     },
@@ -5516,7 +5744,7 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": 0,
+     "owner": null,
      "ownerBefore": null,
      "q": 1,
      "r": 0,
@@ -5525,7 +5753,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": 0,
+     "territory": null,
      "tribe": null,
      "vegetation": null
     },
@@ -5566,8 +5794,58 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": 0,
-     "ownerBefore": 0,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 3,
+     "r": 0,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -3,
+     "r": 1,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
      "q": -2,
      "r": 1,
      "resource": null,
@@ -5575,7 +5853,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": 0,
+     "territory": null,
      "tribe": null,
      "vegetation": null
     },
@@ -5616,8 +5894,8 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": 0,
-     "ownerBefore": 0,
+     "owner": null,
+     "ownerBefore": null,
      "q": 0,
      "r": 1,
      "resource": null,
@@ -5625,7 +5903,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": 0,
+     "territory": null,
      "tribe": null,
      "vegetation": null
     },
@@ -5651,6 +5929,181 @@
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
      "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 2,
+     "r": 1,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -3,
+     "r": 2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": 0,
+     "ownerBefore": 0,
+     "q": -2,
+     "r": 2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": 0,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": 0,
+     "ownerBefore": 0,
+     "q": -1,
+     "r": 2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": 0,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 0,
+     "r": 2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 1,
+     "r": 2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": 0,
+     "ownerBefore": 0,
+     "q": -3,
+     "r": 3,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -5669,7 +6122,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": -2,
-     "r": 2,
+     "r": 3,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5694,7 +6147,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": -1,
-     "r": 2,
+     "r": 3,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5719,7 +6172,7 @@
      "owner": null,
      "ownerBefore": null,
      "q": 0,
-     "r": 2,
+     "r": 3,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5730,27 +6183,31 @@
      "vegetation": null
     }
    ],
-   "title": "Which city gets a filled tile",
+   "title": "Which of your cities gets a gap",
    "trigger": {
-    "from": [
-     0,
-     1
-    ],
-    "kind": "fill"
+    "kind": "turn"
    },
    "units": [],
    "zoc": []
   },
   {
    "buyable": [],
-   "caption": "0 is the specialist's range; every later number is a rule firing from a tile grabbed the step before.",
+   "caption": "One specialist on the farm ends up adding seven tiles, three of them water.",
    "grabs": [
     {
      "city": 0,
      "gen": 0,
      "player": 0,
+     "q": -2,
+     "r": 0,
+     "reason": "seed"
+    },
+    {
+     "city": 0,
+     "gen": 0,
+     "player": 0,
      "q": -1,
-     "r": -2,
+     "r": -1,
      "reason": "seed"
     },
     {
@@ -5758,14 +6215,6 @@
      "gen": 0,
      "player": 0,
      "q": 0,
-     "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": 0,
-     "gen": 0,
-     "player": 0,
-     "q": -2,
      "r": -1,
      "reason": "seed"
     },
@@ -5774,7 +6223,7 @@
      "gen": 1,
      "player": 0,
      "q": 1,
-     "r": -3,
+     "r": -2,
      "reason": "resource"
     },
     {
@@ -5782,7 +6231,7 @@
      "gen": 1,
      "player": 0,
      "q": 1,
-     "r": -2,
+     "r": -1,
      "reason": "resource"
     },
     {
@@ -5790,7 +6239,7 @@
      "gen": 2,
      "player": 0,
      "q": 2,
-     "r": -3,
+     "r": -2,
      "reason": "flank"
     },
     {
@@ -5798,7 +6247,7 @@
      "gen": 2,
      "player": 0,
      "q": 2,
-     "r": -2,
+     "r": -1,
      "reason": "fill"
     }
    ],
@@ -5835,6 +6284,131 @@
      "terrain": "TERRAIN_TEMPERATE",
      "territory": null,
      "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 1,
+     "r": -3,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_COAST",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 2,
+     "r": -3,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_WATER",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 3,
+     "r": -3,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -1,
+     "r": -2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": 0,
+     "r": -2,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
      "vegetation": "VEGETATION_TREES"
     },
     {
@@ -5852,7 +6426,7 @@
      "owner": 0,
      "ownerBefore": null,
      "q": 1,
-     "r": -3,
+     "r": -2,
      "resource": "RESOURCE_GAME",
      "resourceIcon": "game",
      "river": [],
@@ -5877,7 +6451,7 @@
      "owner": 0,
      "ownerBefore": null,
      "q": 2,
-     "r": -3,
+     "r": -2,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5902,7 +6476,7 @@
      "owner": null,
      "ownerBefore": null,
      "q": 3,
-     "r": -3,
+     "r": -2,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5924,10 +6498,35 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -2,
+     "r": -1,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
      "owner": 0,
      "ownerBefore": null,
      "q": -1,
-     "r": -2,
+     "r": -1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5952,7 +6551,7 @@
      "owner": 0,
      "ownerBefore": null,
      "q": 0,
-     "r": -2,
+     "r": -1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -5977,7 +6576,7 @@
      "owner": 0,
      "ownerBefore": null,
      "q": 1,
-     "r": -2,
+     "r": -1,
      "resource": "RESOURCE_FISH",
      "resourceIcon": "fish",
      "river": [],
@@ -6002,7 +6601,7 @@
      "owner": 0,
      "ownerBefore": null,
      "q": 2,
-     "r": -2,
+     "r": -1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6027,7 +6626,7 @@
      "owner": null,
      "ownerBefore": null,
      "q": 3,
-     "r": -2,
+     "r": -1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6049,10 +6648,35 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
+     "owner": null,
+     "ownerBefore": null,
+     "q": -3,
+     "r": 0,
+     "resource": null,
+     "resourceIcon": null,
+     "river": [],
+     "specialist": false,
+     "terrain": "TERRAIN_TEMPERATE",
+     "territory": null,
+     "tribe": null,
+     "vegetation": null
+    },
+    {
+     "boundary": false,
+     "city": null,
+     "cityId": null,
+     "citySite": null,
+     "citySiteBefore": null,
+     "height": "HEIGHT_FLAT",
+     "improvement": null,
+     "improvementBefore": null,
+     "improvementName": null,
+     "improvementRemoved": false,
+     "minorCity": false,
      "owner": 0,
      "ownerBefore": null,
      "q": -2,
-     "r": -1,
+     "r": 0,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6077,7 +6701,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": -1,
-     "r": -1,
+     "r": 0,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6102,7 +6726,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": 0,
-     "r": -1,
+     "r": 0,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6127,7 +6751,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": 1,
-     "r": -1,
+     "r": 0,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6152,7 +6776,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": 2,
-     "r": -1,
+     "r": 0,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6177,7 +6801,7 @@
      "owner": null,
      "ownerBefore": null,
      "q": 3,
-     "r": -1,
+     "r": 0,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6202,7 +6826,7 @@
      "owner": null,
      "ownerBefore": null,
      "q": -3,
-     "r": 0,
+     "r": 1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6227,7 +6851,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": -2,
-     "r": 0,
+     "r": 1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6252,7 +6876,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": -1,
-     "r": 0,
+     "r": 1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6277,7 +6901,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": 0,
-     "r": 0,
+     "r": 1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6302,7 +6926,7 @@
      "owner": null,
      "ownerBefore": null,
      "q": 1,
-     "r": 0,
+     "r": 1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6327,32 +6951,7 @@
      "owner": null,
      "ownerBefore": null,
      "q": 2,
-     "r": 0,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
-     "q": 3,
-     "r": 0,
+     "r": 1,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6377,7 +6976,7 @@
      "owner": null,
      "ownerBefore": null,
      "q": -3,
-     "r": 1,
+     "r": 2,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6402,7 +7001,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": -2,
-     "r": 1,
+     "r": 2,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6427,7 +7026,7 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": -1,
-     "r": 1,
+     "r": 2,
      "resource": null,
      "resourceIcon": null,
      "river": [],
@@ -6452,106 +7051,6 @@
      "owner": 0,
      "ownerBefore": 0,
      "q": 0,
-     "r": 1,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": 0,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
-     "q": 1,
-     "r": 1,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
-     "q": 2,
-     "r": 1,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
-     "q": -3,
-     "r": 2,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": 0,
-     "ownerBefore": 0,
-     "q": -2,
      "r": 2,
      "resource": null,
      "resourceIcon": null,
@@ -6559,56 +7058,6 @@
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
      "territory": 0,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": 0,
-     "ownerBefore": 0,
-     "q": -1,
-     "r": 2,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": 0,
-     "tribe": null,
-     "vegetation": null
-    },
-    {
-     "boundary": false,
-     "city": null,
-     "cityId": null,
-     "citySite": null,
-     "citySiteBefore": null,
-     "height": "HEIGHT_FLAT",
-     "improvement": null,
-     "improvementBefore": null,
-     "improvementName": null,
-     "improvementRemoved": false,
-     "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
-     "q": 0,
-     "r": 2,
-     "resource": null,
-     "resourceIcon": null,
-     "river": [],
-     "specialist": false,
-     "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
      "tribe": null,
      "vegetation": null
     },
@@ -6674,8 +7123,8 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
+     "owner": 0,
+     "ownerBefore": 0,
      "q": -2,
      "r": 3,
      "resource": null,
@@ -6683,7 +7132,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -6699,8 +7148,8 @@
      "improvementName": null,
      "improvementRemoved": false,
      "minorCity": false,
-     "owner": null,
-     "ownerBefore": null,
+     "owner": 0,
+     "ownerBefore": 0,
      "q": -1,
      "r": 3,
      "resource": null,
@@ -6708,7 +7157,7 @@
      "river": [],
      "specialist": false,
      "terrain": "TERRAIN_TEMPERATE",
-     "territory": null,
+     "territory": 0,
      "tribe": null,
      "vegetation": null
     },
@@ -6742,7 +7191,7 @@
    "trigger": {
     "from": [
      -1,
-     -1
+     0
     ],
     "kind": "specialist"
    },
@@ -6751,7 +7200,7 @@
   },
   {
    "buyable": [],
-   "caption": "Radius 2 is seeded at once (0); the urban tiles then pull their own ring, and the ring pulls resources (1).",
+   "caption": "Founding takes everything within 2 of the Settler, and the urban tiles at that edge pull one ring further.",
    "grabs": [
     {
      "city": null,
@@ -6765,16 +7214,16 @@
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": 0,
-     "r": -1,
+     "q": -1,
+     "r": 1,
      "reason": "seed"
     },
     {
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": 1,
-     "r": -1,
+     "q": 0,
+     "r": 1,
      "reason": "seed"
     },
     {
@@ -6797,47 +7246,7 @@
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": -1,
-     "r": 1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
      "q": 0,
-     "r": 1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 0,
-     "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 1,
-     "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 2,
-     "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": -1,
      "r": -1,
      "reason": "seed"
     },
@@ -6845,40 +7254,8 @@
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": 2,
-     "r": -1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": -2,
-     "r": 0,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 2,
-     "r": 0,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": -2,
-     "r": 1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
      "q": 1,
-     "r": 1,
+     "r": -1,
      "reason": "seed"
     },
     {
@@ -6907,11 +7284,75 @@
     },
     {
      "city": null,
-     "gen": 1,
+     "gen": 0,
      "player": 0,
-     "q": 3,
+     "q": -2,
+     "r": 1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 1,
+     "r": 1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -2,
+     "r": 0,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 2,
+     "r": 0,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -1,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 2,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 0,
      "r": -2,
-     "reason": "resource"
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 1,
+     "r": -2,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 2,
+     "r": -2,
+     "reason": "seed"
     },
     {
      "city": null,
@@ -6925,6 +7366,22 @@
      "city": null,
      "gen": 1,
      "player": 0,
+     "q": 2,
+     "r": 1,
+     "reason": "urban"
+    },
+    {
+     "city": null,
+     "gen": 1,
+     "player": 0,
+     "q": 1,
+     "r": 2,
+     "reason": "urban"
+    },
+    {
+     "city": null,
+     "gen": 1,
+     "player": 0,
      "q": 3,
      "r": -1,
      "reason": "urban"
@@ -6941,17 +7398,9 @@
      "city": null,
      "gen": 1,
      "player": 0,
-     "q": 2,
-     "r": 1,
-     "reason": "urban"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 1,
-     "r": 2,
-     "reason": "urban"
+     "q": 3,
+     "r": -2,
+     "reason": "resource"
     }
    ],
    "id": "found",
@@ -7903,7 +8352,7 @@
   },
   {
    "buyable": [],
-   "caption": "Every passable land tile around the second site is owned after the radius-2 seed, so the whole site and its own radius 2 join the new city.",
+   "caption": "The City Site next door is boxed in by the new city's land, so it becomes a Minor City and everything within 2 of it joins the new city.",
    "grabs": [
     {
      "city": null,
@@ -7917,16 +8366,16 @@
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": 0,
-     "r": -1,
+     "q": -1,
+     "r": 1,
      "reason": "seed"
     },
     {
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": 1,
-     "r": -1,
+     "q": 0,
+     "r": 1,
      "reason": "seed"
     },
     {
@@ -7949,8 +8398,32 @@
      "city": null,
      "gen": 0,
      "player": 0,
+     "q": 0,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 1,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -2,
+     "r": 2,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
      "q": -1,
-     "r": 1,
+     "r": 2,
      "reason": "seed"
     },
     {
@@ -7958,7 +8431,55 @@
      "gen": 0,
      "player": 0,
      "q": 0,
+     "r": 2,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -2,
      "r": 1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 1,
+     "r": 1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -2,
+     "r": 0,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 2,
+     "r": 0,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -1,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 2,
+     "r": -1,
      "reason": "seed"
     },
     {
@@ -7987,74 +8508,82 @@
     },
     {
      "city": null,
-     "gen": 0,
+     "gen": 1,
      "player": 0,
-     "q": -1,
+     "q": 3,
      "r": -1,
-     "reason": "seed"
+     "reason": "minor"
     },
     {
      "city": null,
-     "gen": 0,
+     "gen": 1,
      "player": 0,
-     "q": 2,
-     "r": -1,
-     "reason": "seed"
+     "q": 3,
+     "r": -2,
+     "reason": "minor"
     },
     {
      "city": null,
-     "gen": 0,
+     "gen": 1,
      "player": 0,
-     "q": -2,
+     "q": 3,
      "r": 0,
      "reason": "seed"
     },
     {
      "city": null,
-     "gen": 0,
+     "gen": 1,
+     "player": 0,
+     "q": 4,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 1,
+     "player": 0,
+     "q": 4,
+     "r": -2,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 1,
      "player": 0,
      "q": 2,
+     "r": 1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 1,
+     "player": 0,
+     "q": 3,
+     "r": 1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 1,
+     "player": 0,
+     "q": 4,
      "r": 0,
      "reason": "seed"
     },
     {
      "city": null,
-     "gen": 0,
+     "gen": 1,
      "player": 0,
-     "q": -2,
-     "r": 1,
+     "q": 3,
+     "r": -3,
      "reason": "seed"
     },
     {
      "city": null,
-     "gen": 0,
+     "gen": 1,
      "player": 0,
-     "q": 1,
-     "r": 1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": -2,
-     "r": 2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": -1,
-     "r": 2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 0,
-     "r": 2,
+     "q": 4,
+     "r": -3,
      "reason": "seed"
     },
     {
@@ -8064,86 +8593,6 @@
      "q": 2,
      "r": -3,
      "reason": "flank"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 3,
-     "r": -2,
-     "reason": "minor"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 3,
-     "r": -1,
-     "reason": "minor"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 4,
-     "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 4,
-     "r": -1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 3,
-     "r": 0,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 3,
-     "r": -3,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 4,
-     "r": -3,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 4,
-     "r": 0,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 2,
-     "r": 1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 1,
-     "player": 0,
-     "q": 3,
-     "r": 1,
-     "reason": "seed"
     }
    ],
    "id": "minor",
@@ -9711,16 +10160,16 @@
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": 0,
-     "r": -1,
+     "q": -1,
+     "r": 1,
      "reason": "seed"
     },
     {
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": 1,
-     "r": -1,
+     "q": 0,
+     "r": 1,
      "reason": "seed"
     },
     {
@@ -9743,47 +10192,7 @@
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": -1,
-     "r": 1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
      "q": 0,
-     "r": 1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 0,
-     "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 1,
-     "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 2,
-     "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": -1,
      "r": -1,
      "reason": "seed"
     },
@@ -9791,40 +10200,8 @@
      "city": null,
      "gen": 0,
      "player": 0,
-     "q": 2,
-     "r": -1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": -2,
-     "r": 0,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": 2,
-     "r": 0,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
-     "q": -2,
-     "r": 1,
-     "reason": "seed"
-    },
-    {
-     "city": null,
-     "gen": 0,
-     "player": 0,
      "q": 1,
-     "r": 1,
+     "r": -1,
      "reason": "seed"
     },
     {
@@ -9849,6 +10226,78 @@
      "player": 0,
      "q": 0,
      "r": 2,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -2,
+     "r": 1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 1,
+     "r": 1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -2,
+     "r": 0,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 2,
+     "r": 0,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": -1,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 2,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 0,
+     "r": -2,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 1,
+     "r": -2,
+     "reason": "seed"
+    },
+    {
+     "city": null,
+     "gen": 0,
+     "player": 0,
+     "q": 2,
+     "r": -2,
      "reason": "seed"
     },
     {
@@ -11411,38 +11860,18 @@
    "buyable": [
     {
      "cost": 15,
-     "q": 0,
-     "r": -2
-    },
-    {
-     "cost": 15,
-     "q": 1,
-     "r": -2
-    },
-    {
-     "cost": 15,
-     "q": 2,
-     "r": -2
+     "q": -2,
+     "r": 2
     },
     {
      "cost": 15,
      "q": -1,
-     "r": -1
+     "r": 2
     },
     {
      "cost": 15,
-     "q": 2,
-     "r": -1
-    },
-    {
-     "cost": 15,
-     "q": -2,
-     "r": 0
-    },
-    {
-     "cost": 15,
-     "q": 2,
-     "r": 0
+     "q": 0,
+     "r": 2
     },
     {
      "cost": 15,
@@ -11457,20 +11886,40 @@
     {
      "cost": 15,
      "q": -2,
-     "r": 2
+     "r": 0
+    },
+    {
+     "cost": 15,
+     "q": 2,
+     "r": 0
     },
     {
      "cost": 15,
      "q": -1,
-     "r": 2
+     "r": -1
+    },
+    {
+     "cost": 15,
+     "q": 2,
+     "r": -1
     },
     {
      "cost": 15,
      "q": 0,
-     "r": 2
+     "r": -2
+    },
+    {
+     "cost": 15,
+     "q": 1,
+     "r": -2
+    },
+    {
+     "cost": 15,
+     "q": 2,
+     "r": -2
     }
    ],
-   "caption": "Dashed tiles can be bought (label = Money cost from this city); buying the hill pulls the cattle behind it for free.",
+   "caption": "Dashed tiles can be bought, the label is the Money cost; buying the hill pulls the cattle behind it for free.",
    "grabs": [
     {
      "city": 0,
@@ -12450,7 +12899,7 @@
   },
   {
    "buyable": [],
-   "caption": "Two tiles: each pick is the highest-scoring candidate adjacent to the territory, then the chain runs from it.",
+   "caption": "Two picks: each takes the best-scoring claimable tile beside the city's land, then the rules run from it.",
    "grabs": [
     {
      "city": 0,
@@ -14389,7 +14838,7 @@
   },
   {
    "buyable": [],
-   "caption": "Every passable land tile around the Outpost is yours, so the end-of-turn fill swallows the site: the Outpost becomes a Minor City and everything within 2 of it joins your city, the water and the land beyond included.",
+   "caption": "Every passable land tile around the Outpost is yours, so at the end of the turn the Outpost becomes your Minor City and everything within 2 of it joins your city.",
    "grabs": [
     {
      "city": 0,
@@ -14404,7 +14853,7 @@
      "gen": 1,
      "player": 0,
      "q": 1,
-     "r": -1,
+     "r": 0,
      "reason": "seed"
     },
     {
@@ -14412,7 +14861,23 @@
      "gen": 1,
      "player": 0,
      "q": 1,
+     "r": -1,
+     "reason": "seed"
+    },
+    {
+     "city": 0,
+     "gen": 1,
+     "player": 0,
+     "q": 2,
      "r": 0,
+     "reason": "seed"
+    },
+    {
+     "city": 0,
+     "gen": 1,
+     "player": 0,
+     "q": 2,
+     "r": -1,
      "reason": "seed"
     },
     {
@@ -14421,22 +14886,6 @@
      "player": 0,
      "q": 2,
      "r": -2,
-     "reason": "seed"
-    },
-    {
-     "city": 0,
-     "gen": 1,
-     "player": 0,
-     "q": 2,
-     "r": -1,
-     "reason": "seed"
-    },
-    {
-     "city": 0,
-     "gen": 1,
-     "player": 0,
-     "q": 2,
-     "r": 0,
      "reason": "seed"
     }
    ],
@@ -14931,11 +15380,7 @@
    ],
    "title": "A surrounded tribe site becomes your minor city",
    "trigger": {
-    "from": [
-     -1,
-     0
-    ],
-    "kind": "fill"
+    "kind": "turn"
    },
    "units": [],
    "zoc": []
@@ -17357,6 +17802,7 @@
   "buyTileName": "Buy Tiles",
   "citySite": "The map is full of City Sites, which are the only locations Settlers can found new Cities. (The City can be founded on any of the Urban Tiles connected to the City Site.) Many City Sites are occupied by Tribes, which must either be defeated or joined in Tribal Alliances before founding a City is possible. A Unit placed directly on a City Site will block other Nations from founding Cities there.",
   "citySiteName": "City Site",
+  "minorCity": "City Sites without a Tribal Settlement can be turned into a Minor City if all of the Urban Tiles connected to the City Site are surrounded by your territory.",
   "spreadsBorders": "Spreads Borders",
   "territory": "A City's Territory is made up of its surrounding Tiles within the City's border. Most Improvements can only be built within a City's Territory. City Territory is expanded by building Urban Improvements, training Specialists near City borders, or when you Buy Tiles. Water tiles within a City's territory allow Water Transport.",
   "territoryName": "Territory"
