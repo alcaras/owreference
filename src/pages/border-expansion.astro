@@ -403,6 +403,11 @@ const stats = [
     </ul>
   </section>
 
+  <script>
+    // dev-only in-page prose editor; import.meta.env.DEV is false in the build, so nothing loads
+    if (import.meta.env.DEV) import('../lib/prose-edit');
+  </script>
+
   <style>
     .lede {
       color: var(--text-dim);

@@ -2,7 +2,12 @@
 """Round-trip the Border Expansion page's prose through a markdown file.
 
     python3 scripts/border_prose.py export > border-expansion-prose.md
-    python3 scripts/border_prose.py apply border-expansion-prose.md
+    python3 scripts/border_prose.py apply border-expansion-prose.md   # or `apply -` for stdin
+    python3 scripts/border_prose.py blocks                            # JSON, for the dev editor
+
+The in-page editor (`npx astro dev`, then the pencil button on the page) is
+scripts/prose-dev.mjs + src/lib/prose-edit.ts; it posts the same markdown
+format to this script's `apply -`.
 
 export writes one `### <id>` block per prose element, in page order:
 headings, paragraphs, list items and HexBoard notes from
@@ -120,9 +125,33 @@ def guard(old: str, new: str, bid: str) -> None:
             sys.exit(f"{bid}: {label}s changed; old {a}\n  new {b}")
 
 
+def blocks_json() -> str:
+    import json
+    out = []
+    for path, extractor in ((PAGE, page_blocks), (BUILD, build_blocks)):
+        for b in extractor(path.read_text()):
+            out.append(dict(id=b["id"], kind=b["kind"], file=str(path.relative_to(ROOT)), start=b["start"], end=b["end"], text=norm(b["text"])))
+    return json.dumps(out)
+
+
+def reflow(raw: str, new: str) -> str:
+    """Lay `new` out the way `raw` was: same leading/trailing whitespace and, for
+    multi-line blocks, wrapped at the same indent so source diffs stay small."""
+    import textwrap
+    m = re.match(r"^(\s*)(.*?)(\s*)$", raw, re.S)
+    lead, trail = m.group(1), m.group(3)
+    if "\n" not in lead:
+        return lead + new + trail
+    indent = lead.rsplit("\n", 1)[1]
+    body = textwrap.fill(new, width=max(40, 80 - len(indent)), initial_indent=indent, subsequent_indent=indent,
+                         break_long_words=False, break_on_hyphens=False)
+    return lead[: lead.rfind("\n") + 1] + body + trail
+
+
 def apply(md_path: Path) -> None:
-    edits = parse_md(md_path.read_text())
+    edits = parse_md(sys.stdin.read() if str(md_path) == "-" else md_path.read_text())
     changed = 0
+    boards = 0
     for path, extractor in ((PAGE, page_blocks), (BUILD, build_blocks)):
         src = path.read_text()
         blocks = extractor(src)
@@ -133,19 +162,24 @@ def apply(md_path: Path) -> None:
             guard(b["text"], new, b["id"])
             if b["kind"] in ("note", "title", "caption") and '"' in new and not b["text"].startswith("`"):
                 new = new.replace('"', "“")  # keep the attribute/string literal well-formed
-            src = src[: b["start"]] + new + src[b["end"] :]
+            src = src[: b["start"]] + reflow(b["text"], new) + src[b["end"] :]
             changed += 1
+            boards += path == BUILD
             print(f'  {b["id"]}: {norm(b["text"])[:50]!r} → {new[:50]!r}')
         path.write_text(src)
     unknown = [k for k in edits if k not in {b["id"] for b in page_blocks(PAGE.read_text()) + build_blocks(BUILD.read_text())}]
     if unknown:
         print(f"ignored unknown ids: {unknown}")
-    print(f"{changed} block(s) rewritten. If any board.* changed, run: python3 scripts/build_borders.py")
+    print(f"{changed} block(s) rewritten.")
+    if boards:
+        print("BOARDS_CHANGED: run python3 scripts/build_borders.py")
 
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2 and sys.argv[1] == "export":
         sys.stdout.write(export())
+    elif len(sys.argv) >= 2 and sys.argv[1] == "blocks":
+        sys.stdout.write(blocks_json())
     elif len(sys.argv) == 3 and sys.argv[1] == "apply":
         apply(Path(sys.argv[2]))
     else:

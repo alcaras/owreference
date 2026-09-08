@@ -357,6 +357,22 @@ is the fastest regression check (see git history of commit `5c37ecd`).
 
 ---
 
+## Border Expansion prose editor (dev only)
+
+`npx astro dev`, open `/owreference/border-expansion/`, click the **✎ Edit prose**
+button (bottom right), edit any outlined paragraph, list item, board caption or
+note in place, **Save to source**. Pieces: `scripts/border_prose.py` (the
+block extractor/applier, also `export`/`apply` for a markdown round trip),
+`scripts/prose-dev.mjs` (Vite plugin, `apply: 'serve'`: stamps
+`data-prose="<id>"` in a `load` hook and serves `/__prose/blocks` +
+`/__prose/apply`; Astro compiles `.astro` in its own transform, so a transform
+hook sees compiled JS, and the page's 🗺️ emoji means offsets must be handled as
+code points), `src/lib/prose-edit.ts` (client; loaded only under
+`import.meta.env.DEV`). Blocks holding `{slots}` or components are spliced by
+matching the unchanged text around the edit; if that fails the block is listed
+for a manual edit rather than guessed. Board captions save into
+`build_borders.py` and re-run it. The production build carries none of this.
+
 ## Common pitfalls
 
 - **Don't import `Bonus 1/2/3`-style rows for new pages without reason.** The spreadsheet's row structure was a workaround for fixed-column tables. With Astro we can render lists naturally.
