@@ -293,17 +293,14 @@ const stats = [
     <div class="be-split">
       <ul class="be-list">
         <li><strong>Territory never shrinks by itself.</strong> Tiles change hands on capture (the whole territory follows), razing (cleared), reassignment between your cities, or a swallowed site.</li>
-        <li><strong>Borders clear Ruins.</strong> {constants.removeBorder.filter(r => !r.tribe).map(r => r.name).join(', ')} and the tribal {constants.removeBorder.filter(r => r.tribe).map(r => r.name).join(', ')} carry a remove-on-border flag: the tile stays yours, the improvement goes.</li>
+        <li><strong>Site markers are cleared, not kept.</strong> The city-site marker, the tribal {constants.removeBorder.filter(r => r.tribe).map(r => r.name).join(', ')} and the ruins a destroyed settlement leaves ({constants.removeBorder.filter(r => !r.tribe && r.id !== 'IMPROVEMENT_CITY_SITE').map(r => r.name).join(', ')}) carry a remove-on-border flag: the moment their tile becomes territory the improvement is cleared, then the Minor City is placed.</li>
         <li><strong>Tribe sites</strong> are skipped by the four rules, and a settlement's own active city site blocks the urban pull even for an ally. The surround rule ignores tribes: own every passable land tile around a settlement and the next fill turns it into your minor city, clearing the settlement improvement. The code never consults the units on it.</li>
         <li><strong>Other active city sites</strong> are never grabbed except by the surround rule.</li>
         <li><strong>Map boundary</strong> tiles are never a growth pick nor part of a swallowed site.</li>
         <li><strong>Growth picks avoid urban tiles</strong> and their neighbours; only the chain can reach them.</li>
         <li><strong>{constants.territoryOnlyCount} of {constants.improvementCount} improvements</strong> need territory; {constants.territoryWaterUnits.join(', ')} may end a move on your own water.</li>
       </ul>
-      <div class="be-boards be-boards--1">
-        <HexBoard scenario={sc.ruin} />
-        <HexBoard scenario={sc.tribe_surrounded} note="The fill fired from the ringed tile; the site's unclaimed urban tiles came first (red badge), then its radius 2 as seeds." />
-      </div>
+      <HexBoard scenario={sc.tribe_surrounded} note="Red badge: the site itself. Gold badges: its radius 2, seeded in the same pass. The fill runs from every owned tile; the ring marks the one this board ran it from." />
     </div>
   </section>
 
@@ -454,7 +451,6 @@ const stats = [
       align-items: start;
     }
     .be-boards--4 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); max-width: 1500px; }
-    .be-boards--1 { grid-template-columns: 1fr; max-width: 460px; }
     .be-boards--2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width: 1200px; }
     .be-split {
       display: grid;

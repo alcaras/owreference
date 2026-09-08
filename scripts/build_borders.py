@@ -1187,32 +1187,7 @@ def scenario_defs() -> list[dict]:
         expect=dict(grab_count_min=2),
     ))
 
-    # 8 — losing tiles: a ruin is cleared when a border covers it; a tribe site
-    # (an urban ACTIVE city site carrying a bTribe improvement) is skipped
-    def ruin_board():
-        b = make_board(hexagon(2), edits={(1, -1): dict(improvement="IMPROVEMENT_RUINS_1", resource="RESOURCE_GEM"),
-                                          (1, 0): U(improvement="IMPROVEMENT_SETTLEMENT_1", tribe=3, city_site="ACTIVE"),
-                                          (2, -1): U()},
-                       cities=[(0, (-1, 0), 0)])
-        own(b, 0, [(0, 0), (0, -1), (-1, 1)])
-        return b
-    defs.append(dict(
-        id="ruin", section="losing", title="Ruins are cleared, a tribe site is skipped",
-        caption="The gem is pulled and the Hovel Ruins on it are cleared; the tribe's Hovel, on its own active city site, is not grabbed by any spread rule.",
-        board=ruin_board, trigger=("fill", (0, 0)),
-        expect=dict(grabbed={(1, -1)}, not_grabbed={(1, 0), (2, -1)}, improvement={(1, -1): None}, improvement_removed={(1, -1)}),
-    ))
-
-    def ruin_allied_board():
-        b = ruin_board()
-        b.tribe_ally[3] = 0
-        return b
-    defs.append(dict(
-        id="ruin_allied", section="losing", render=False, title="Even an allied tribe's settlement is blocked by its city site",
-        board=ruin_allied_board, trigger=("fill", (0, 0)),
-        expect=dict(grabbed={(1, -1)}, not_grabbed={(1, 0), (2, -1)}),
-    ))
-
+    # 8 — losing tiles
     # other active city site: blocked
     def site_blocked_board():
         b = make_board(hexagon(2), edits={(1, -1): U(city_site="ACTIVE"), (1, 0): U(), (2, -1): U()}, cities=[(0, (-1, 0), 0)])
@@ -1230,13 +1205,14 @@ def scenario_defs() -> list[dict]:
         edits = {(0, 0): U(improvement="IMPROVEMENT_SETTLEMENT_2", tribe=3, city_site="ACTIVE"),
                  (1, -1): W(), (1, 0): W()}
         b = make_board(hexagon(2), edits=edits, cities=[(0, (-2, 2), 0)])
-        own(b, 0, [k for k in b.tiles if k not in ((0, 0), (1, -1), (1, 0)) and Board.distance((0, 0), k) <= 1] + [(-2, 1), (-1, 2)])
+        own(b, 0, [k for k in b.tiles if k not in ((0, 0), (1, -1), (1, 0), (2, -2), (2, -1), (2, 0))])
         return b
     defs.append(dict(
         id="tribe_surrounded", section="losing", title="A surrounded tribe site becomes your minor city",
-        caption="Once every passable land tile around a tribe settlement is yours, the next fill swallows the site: the Outpost is replaced by a Minor City and the site's radius 2 joins the city.",
+        caption="Every passable land tile around the Outpost is yours, so the end-of-turn fill swallows the site: the Outpost becomes a Minor City and everything within 2 of it joins your city, the water and the land beyond included.",
         board=tribe_surrounded_board, trigger=("fill", (-1, 0)),
-        expect=dict(grabbed_has={(0, 0), (1, -1), (1, 0)}, minor={(0, 0)}),
+        expect=dict(grabbed={(0, 0), (1, -1), (1, 0), (2, -2), (2, -1), (2, 0)}, minor={(0, 0)},
+                    reason={(0, 0): "minor", (2, -1): "seed"}, improvement_removed={(0, 0)}),
     ))
 
     # map boundary excluded from growth picks
