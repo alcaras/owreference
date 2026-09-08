@@ -1063,13 +1063,13 @@ def scenario_defs() -> list[dict]:
         return b
     defs.append(dict(
         id="flank_open", section="rules", title="Water with no land beside it",
-        caption="Nothing but water on either side of this water, so it is yours, and so are the two flanking water tiles.",
+        caption="Both side tiles are water, so they are ignored and the water is yours; the two side tiles then join the same way, each with your land and the new water beside it.",
         board=lambda: flank_board(W(), W()), trigger=("fill", (0, 0)),
         expect=dict(grabbed_has={(1, -1)}, reason={(1, -1): "flank"}),
     ))
     defs.append(dict(
         id="flank_unowned", section="rules", title="One unowned land tile beside it",
-        caption="One unowned land tile beside the water is enough to refuse it.",
+        caption="One unowned side tile refuses the water; the other side tile is water and is ignored.",
         board=lambda: flank_board(dict(), W()), trigger=("fill", (0, 0)),
         expect=dict(not_grabbed={(1, -1)}),
     ))
@@ -1080,7 +1080,7 @@ def scenario_defs() -> list[dict]:
         return b
     defs.append(dict(
         id="flank_ours", section="rules", title="One side yours, one unowned",
-        caption="Own one of the two tiles beside the water and it is yours, whatever the other one is.",
+        caption="Own one side tile and the water is yours, whatever the other side tile is.",
         board=flank_ours_board, trigger=("fill", (0, 0)),
         expect=dict(grabbed={(1, -1)}),
     ))
@@ -1093,7 +1093,7 @@ def scenario_defs() -> list[dict]:
         return b
     defs.append(dict(
         id="flank_enemy", section="rules", title="One side the enemy's",
-        caption="An enemy tile beside the water refuses it exactly like an unowned one.",
+        caption="An enemy side tile refuses the water exactly like an unowned one.",
         board=flank_enemy_board, trigger=("fill", (0, 0)),
         expect=dict(not_grabbed={(1, -1)}),
     ))
@@ -1104,7 +1104,7 @@ def scenario_defs() -> list[dict]:
         own(b, 0, [(0, 0), (-1, 0), (0, 1)])
         return b
     defs.append(dict(
-        id="flank_mountain", section="rules", render=False, title="Mountains follow the flank rule",
+        id="flank_mountain", section="rules", render=False, title="Mountains follow the shielded water rule",
         board=flank_mountain_board, trigger=("fill", (0, 0)),
         expect=dict(grabbed={(1, -1), (1, 0), (0, -1)}),
     ))
