@@ -1197,8 +1197,8 @@ def scenario_defs() -> list[dict]:
         own(b, 0, [(0, 0), (0, -1), (-1, 1)])
         return b
     defs.append(dict(
-        id="ruin", section="losing", title="Ruins go, tribe sites stay",
-        caption="A resource under Ruins is still pulled and the Ruins are cleared; a tribe's settlement sits on its own active city site and is never grabbed.",
+        id="ruin", section="losing", title="Ruins are cleared, a tribe site is skipped",
+        caption="The gem is pulled and the Hovel Ruins on it are cleared; the tribe's Hovel, on its own active city site, is not grabbed by any spread rule.",
         board=ruin_board, trigger=("fill", (0, 0)),
         expect=dict(grabbed={(1, -1)}, not_grabbed={(1, 0), (2, -1)}, improvement={(1, -1): None}, improvement_removed={(1, -1)}),
     ))
@@ -1233,7 +1233,8 @@ def scenario_defs() -> list[dict]:
         own(b, 0, [k for k in b.tiles if k not in ((0, 0), (1, -1), (1, 0)) and Board.distance((0, 0), k) <= 1] + [(-2, 1), (-1, 2)])
         return b
     defs.append(dict(
-        id="tribe_surrounded", section="losing", render=False, title="A fully surrounded tribe settlement is swallowed",
+        id="tribe_surrounded", section="losing", title="A surrounded tribe site becomes your minor city",
+        caption="Once every passable land tile around a tribe settlement is yours, the next fill swallows the site: the Outpost is replaced by a Minor City and the site's radius 2 joins the city.",
         board=tribe_surrounded_board, trigger=("fill", (-1, 0)),
         expect=dict(grabbed_has={(0, 0), (1, -1), (1, 0)}, minor={(0, 0)}),
     ))

@@ -17,7 +17,7 @@ interface Tile {
   // border-expansion extras (all optional)
   territory?: number | null; ownerBefore?: number | null;
   resource?: string | null; resourceIcon?: string | null;
-  citySite?: string | null; specialist?: boolean; minorCity?: boolean;
+  citySite?: string | null; specialist?: boolean; minorCity?: boolean; tribe?: number | null;
   improvementBefore?: string | null; improvementName?: string | null; improvementRemoved?: boolean;
 }
 interface UnitOnBoard {
@@ -207,8 +207,9 @@ for (const t of tiles) {
     S.push(`<image href="${base}img/icons/resources/${t.resourceIcon}.png" x="${f(x - R * 0.5)}" y="${f(y - R * 0.5 - SIZE * 0.06)}" width="${f(R)}" height="${f(R)}"/>`);
   }
   if (t.citySite === 'ACTIVE' && t.city == null) {
-    S.push(`<polygon points="${hexPoints(x, y, 0.72)}" fill="none" stroke="#f3e7c6" stroke-width="2" stroke-dasharray="5 4"/>`);
-    pushLabel(x, y + SIZE * 0.55, 'site', 9, '#f3e7c6');
+    const tribal = t.tribe != null;
+    S.push(`<polygon points="${hexPoints(x, y, 0.72)}" fill="none" stroke="${tribal ? '#e5484d' : '#f3e7c6'}" stroke-width="2" stroke-dasharray="5 4"/>`);
+    pushLabel(x, y + SIZE * 0.55, tribal ? `tribe ${t.improvementName || 'site'}` : 'city site', 9, tribal ? '#f3b0b3' : '#f3e7c6');
   } else if (t.minorCity) {
     pushLabel(x, y + SIZE * 0.55, 'minor city', 9, '#f3e7c6');
   } else if (t.improvementName && t.city == null && !t.specialist) {

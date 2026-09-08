@@ -16,9 +16,7 @@ const boards = data.scenarios.filter(s => s.render);
 
 const flagged = spreaders.filter(s => s.reasons.includes('bSpreadsBorders'));
 const flaggedWonders = flagged.filter(s => s.wonder);
-const flaggedOther = flagged.filter(s => !s.wonder);
 const unlockSpreaders = spreaders.filter(s => s.reasons.includes('unlock'));
-const urbanOnly = spreaders.filter(s => s.reasons.length === 1 && s.reasons[0] === 'urban');
 const money = buyTile.yields.YIELD_MONEY;
 const training = buyTile.yields.YIELD_TRAINING;
 const cards = growth.values.filter(v => v.kind === 'bonus' && v.id.startsWith('BONUS_CITY_')).sort((a, b) => a.value - b.value);
@@ -49,7 +47,7 @@ const TRIGGERS = [
   ['Found a city', 'Settler on a city site', '2 from the founding tile', 'Game.createCityNext → Tile.getCityInitTiles'],
   ['Place a specialist', 'first specialist on a tile', '1', 'Tile.onSpecialistChange → spreadBorders'],
   ['Finish an urban improvement', 'any of the ' + spreadersSummary.urbanCount + ' urban improvements', '1', 'Tile.doImprovementFinished → isImprovementBorderSpread (bUrban)'],
-  ['Finish a flagged improvement', flaggedOther.map(s => s.name).join(', ') + ' and every wonder', '1', 'isImprovementBorderSpread (bSpreadsBorders)'],
+  ['Finish a flagged improvement', 'Harbor, every Holy Site, every wonder', '1', 'isImprovementBorderSpread (bSpreadsBorders)'],
   ['Finish an unlocked improvement', unlockSpreaders.map(s => `${s.name} under ${s.unlockedBy.map(u => u.name).join(', ')}`).join('; '), '1', 'isImprovementBorderSpread → Player.isSpreadBordersUnlock'],
   ['Add urban', `${constants.builders.join(', ')} action, ${constants.addUrban.map(a => a.sources.map(s => s.name).join(', ')).join(', ')} leaders only`, '1', 'Unit.addUrban → spreadBorders (before makeUrban)'],
   ['Buy a tile', 'unit on an adjacent tile', '0', 'Unit.buyTile → getExpansionTiles(0)'],
@@ -190,8 +188,9 @@ const stats = [
       the site is swallowed: its urban tiles plus its own radius 2 go to whoever
       owns the most adjacent tiles, ties to the nearest city. Water and
       mountains count as closed; one unowned land tile keeps the site free
-      (asserted). This path has no tribe test, so a fully enclosed tribe
-      settlement is swallowed too (asserted in the port, not seen in play).
+      (asserted). This path has no tribe test: a tribe settlement whose every
+      passable land neighbour is yours is swallowed the same way (board under
+      Losing tiles).
     </p>
   </section>
 
@@ -295,41 +294,27 @@ const stats = [
       <ul class="be-list">
         <li><strong>Territory never shrinks by itself.</strong> Tiles change hands on capture (the whole territory follows), razing (cleared), reassignment between your cities, or a swallowed site.</li>
         <li><strong>Borders clear Ruins.</strong> {constants.removeBorder.filter(r => !r.tribe).map(r => r.name).join(', ')} and the tribal {constants.removeBorder.filter(r => r.tribe).map(r => r.name).join(', ')} carry a remove-on-border flag: the tile stays yours, the improvement goes.</li>
-        <li><strong>Tribe sites</strong> are skipped by the rules, and a settlement's own active city site blocks the urban pull even for an ally.</li>
+        <li><strong>Tribe sites</strong> are skipped by the four rules, and a settlement's own active city site blocks the urban pull even for an ally. The surround rule ignores tribes: own every passable land tile around a settlement and the next fill turns it into your minor city, clearing the settlement improvement. The code never consults the units on it.</li>
         <li><strong>Other active city sites</strong> are never grabbed except by the surround rule.</li>
         <li><strong>Map boundary</strong> tiles are never a growth pick nor part of a swallowed site.</li>
         <li><strong>Growth picks avoid urban tiles</strong> and their neighbours; only the chain can reach them.</li>
         <li><strong>{constants.territoryOnlyCount} of {constants.improvementCount} improvements</strong> need territory; {constants.territoryWaterUnits.join(', ')} may end a move on your own water.</li>
       </ul>
-      <HexBoard scenario={sc.ruin} />
+      <div class="be-boards be-boards--1">
+        <HexBoard scenario={sc.ruin} />
+        <HexBoard scenario={sc.tribe_surrounded} note="The fill fired from the ringed tile; the site's unclaimed urban tiles came first (red badge), then its radius 2 as seeds." />
+      </div>
     </div>
   </section>
 
   <section class="be-section be-section--wide" id="appendix">
     <h2 class="be-h">Appendix</h2>
 
-    <h3 class="be-h3">Every improvement that spreads borders</h3>
+    <h3 class="be-h3">Improvements that spread borders</h3>
     <p class="be-note">
-      {spreadersSummary.urbanCount} improvements spread because they are urban;
-      the {flagged.length} below carry the flag as well, {flaggedWonders.length} of them wonders.
-      {unlockSpreaders.map(s => ` ${s.name} spreads only under ${s.unlockedBy.map(u => u.name).join(', ')}.`)}
+      All {flaggedWonders.length} wonders, all Holy Sites and the {(has('IMPROVEMENT_HARBOR') ? <Term id="IMPROVEMENT_HARBOR" showIcon={false} label="Harbor" /> : 'Harbor')} carry the
+      flag; {spreadersSummary.urbanCount} improvements spread because they are urban.
     </p>
-    <div class="be-table">
-      <table>
-        <thead><tr><th>Improvement</th><th>Why</th><th>Urban</th><th>DLC</th></tr></thead>
-        <tbody>
-          {[...flagged, ...unlockSpreaders].map(s => (
-            <tr id={`spread-${s.slug}`}>
-              <td>{(has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name)}</td>
-              <td class="be-dim">{s.reasons.map(r => REASON_LABEL[r]).join(' + ')}</td>
-              <td class="be-dim">{s.reasons.includes('urban') ? 'yes' : '—'}</td>
-              <td>{s.dlc && <span class="chip chip--dlc">{s.dlc}</span>}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    <p class="be-note">Urban-only spreaders ({urbanOnly.length}): {urbanOnly.map(s => s.name).join(', ')}.</p>
 
     <h3 class="be-h3">Every growth value</h3>
     <div class="be-table">
@@ -469,6 +454,7 @@ const stats = [
       align-items: start;
     }
     .be-boards--4 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); max-width: 1500px; }
+    .be-boards--1 { grid-template-columns: 1fr; max-width: 460px; }
     .be-boards--2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width: 1200px; }
     .be-split {
       display: grid;
