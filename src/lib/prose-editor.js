@@ -4,8 +4,10 @@
 // serialises each changed slot back to the page's minimal markdown and POSTs
 // it to the standalone save server (node scripts/prose_editor.mjs), which
 // rewrites src/data/<page>-prose.md. Computed values render as locked
-// .zc-var chips and serialise back to their {placeholder}.
-(function () {
+// .prose-var chips (src/lib/prose.ts) and serialise back to their {placeholder}.
+// Pages: zone-of-control, border-expansion.
+// The page inlines this script before its content, so wait for the DOM.
+function proseEditorMain() {
   if (!/[?&]edit\b/.test(location.search)) return;
   const meta = document.querySelector('meta[name="prose-file"]');
   if (!meta) return;
@@ -18,7 +20,7 @@
     [data-prose]:hover { outline-color: rgba(201,160,74,.7); }
     [data-prose]:focus-within, [data-prose]:focus { outline: 2px solid #c9a04a; outline-offset: 3px; background: rgba(201,160,74,.06); }
     [data-prose].is-dirty { outline-color: #7cc4ff; }
-    .zc-var { background: rgba(120,190,255,.14); border-bottom: 1px dotted rgba(120,190,255,.8); border-radius: 2px; padding: 0 .1em; cursor: not-allowed; }
+    .prose-var { background: rgba(120,190,255,.14); border-bottom: 1px dotted rgba(120,190,255,.8); border-radius: 2px; padding: 0 .1em; cursor: not-allowed; }
     #prose-bar { position: fixed; right: 14px; bottom: 14px; z-index: 9999; display: flex; gap: .5rem; align-items: center;
       background: #1c1d22; color: #eee; border: 1px solid #c9a04a; border-radius: 8px; padding: .5rem .75rem;
       font: 13px/1.3 Inter, system-ui, sans-serif; box-shadow: 0 6px 24px rgba(0,0,0,.5); }
@@ -37,7 +39,7 @@
       if (n.nodeType === 3) { out += n.nodeValue; continue; }
       if (n.nodeType !== 1) continue;
       const tag = n.tagName;
-      if (n.classList.contains('zc-var')) { out += `{${n.dataset.var}}`; continue; }
+      if (n.classList.contains('prose-var')) { out += `{${n.dataset.var}}`; continue; }
       if (tag === 'BR') { out += ' '; continue; }
       const inner = inlineOf(n);
       if (tag === 'STRONG' || tag === 'B') out += inner.trim() ? `**${inner}**` : inner;
@@ -58,7 +60,8 @@
       if (n.nodeType !== 1) continue;
       if (n.tagName === 'UL' || n.tagName === 'OL') {
         flushLoose();
-        const items = [...n.children].map(li => '- ' + tidy(inlineOf(li))).filter(l => l !== '- ');
+        const ordered = n.tagName === 'OL';
+        const items = [...n.children].map((li, i) => (ordered ? `${i + 1}. ` : '- ') + tidy(inlineOf(li))).filter(l => !/^(- |\d+\. )$/.test(l));
         if (items.length) blocks.push(items.join('\n'));
       } else if (n.tagName === 'P' || n.tagName === 'DIV') {
         flushLoose();
@@ -88,7 +91,7 @@
     }
     el.addEventListener('input', update);
   }
-  for (const v of document.querySelectorAll('.zc-var')) v.setAttribute('contenteditable', 'false');
+  for (const v of document.querySelectorAll('.prose-var')) v.setAttribute('contenteditable', 'false');
 
   const bar = document.createElement('div');
   bar.id = 'prose-bar';
@@ -146,4 +149,5 @@
   window.addEventListener('beforeunload', e => {
     if (Object.keys(dirty()).length && saveBtn.textContent !== 'Saved ✓') { e.preventDefault(); e.returnValue = ''; }
   });
-})();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', proseEditorMain); else proseEditorMain();

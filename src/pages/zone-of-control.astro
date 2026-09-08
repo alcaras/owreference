@@ -12,6 +12,7 @@ import HexBoard from '../components/HexBoard.astro';
 import data from '../data/zoc.json';
 import proseRaw from '../data/zoc-prose.md?raw';
 import editorJs from '../lib/prose-editor.js?raw';
+import { createProse, type ProseVar } from '../lib/prose';
 
 const PROSE_FILE = 'src/data/zoc-prose.md';
 const DEV = import.meta.env.DEV;
@@ -43,13 +44,8 @@ const polearm = grants.find(g => g.id === 'EFFECTUNIT_POLEARM')!;
 const maneuvers = grants.find(g => g.id === 'EFFECTUNIT_MANEUVERS')!;
 const mahout = grants.find(g => g.id === 'EFFECTUNIT_TRAIT_MAHOUT')!;
 
-// ---- prose file: "## key" sections, minimal inline markdown, {placeholders} ----
-const PROSE: Record<string, string> = {};
-for (const part of proseRaw.split(/\n---\n/)[0].split(/^## /m).slice(1)) {
-  const nl = part.indexOf('\n');
-  PROSE[part.slice(0, nl).trim()] = part.slice(nl + 1).trim();
-}
-const VARS: Record<string, string> = {
+// ---- prose file: "## key" sections, minimal inline markdown, {placeholders} (src/lib/prose.ts) ----
+const VARS: Record<string, ProseVar> = {
   conceptLong: texts.conceptLong,
   spearmanQuote: texts.spearman.split('. ').filter(s => s.includes('Only Polearm'))[0] ?? '',
   polearmCarriers: polearm.carriers.join(', '),
@@ -65,49 +61,7 @@ const VARS: Record<string, string> = {
   showKey: hk.show.key,
   lockKey: hk.lock.key,
 };
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-function inline(key: string): string {
-  const raw = PROSE[key];
-  if (raw === undefined) {
-    if (!key.endsWith('.note')) console.warn(`[zoc-prose] missing key: ${key}`);   // notes are optional
-    return '';
-  }
-  // Markdown first (placeholders are inert to it), then each {placeholder}
-  // becomes a locked chip whose own value may carry inline markdown.
-  return md(raw).replace(/\{([a-zA-Z]+)\}/g, (m, k) =>
-    k in VARS ? `<span class="zc-var" data-var="${k}">${md(VARS[k])}</span>` : m);
-}
-function md(text: string): string {
-  return esc(text)
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '<a href="$2" rel="noopener">$1</a>')
-    .replace(/\s*\n\s*/g, ' ');
-}
-// Paragraphs and "- " bullet lists, in source order.
-function blocks(key: string): string {
-  const raw = PROSE[key];
-  if (raw === undefined) { console.warn(`[zoc-prose] missing key: ${key}`); return ''; }
-  const out: string[] = [];
-  for (const block of raw.split(/\n\s*\n/)) {
-    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
-    if (!lines.length) continue;
-    if (lines.every(l => l.startsWith('- '))) {
-      out.push(`<ul class="zc-list">${lines.map(l => `<li>${inlineText(l.slice(2))}</li>`).join('')}</ul>`);
-    } else {
-      out.push(`<p>${inlineText(lines.join(' '))}</p>`);
-    }
-  }
-  return out.join('');
-}
-function inlineText(raw: string): string {
-  PROSE.__tmp = raw;
-  const s = inline('__tmp');
-  delete PROSE.__tmp;
-  return s;
-}
-const has = (key: string) => !!PROSE[key];
+const { inline, blocks, has } = createProse({ raw: proseRaw, vars: VARS, listClass: 'zc-list', name: 'zoc-prose' });
 
 const SOURCES = [
   ['Unit.isValidMovementDirection', 'Unit.cs:7670-7695', 'the one rule: refused iff both tiles are in hostile ZOC; current tile tested with bIgnoreRiver = the step crosses a river (7689). Called from PathFinder.cs:914.'],
@@ -330,7 +284,10 @@ const stats = [
     </ul>
   </section>
 
-  <style>
+  <!-- is:global: the prose is injected with set:html, which gets no scope
+       attribute, so scoped selectors like `.zc-section p` would miss it.
+       Every selector here is .zc-* namespaced (plus .lede). -->
+  <style is:global>
     .lede {
       color: var(--text-dim);
       max-width: 72ch;

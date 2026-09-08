@@ -357,21 +357,31 @@ is the fastest regression check (see git history of commit `5c37ecd`).
 
 ---
 
-## Border Expansion prose editor (dev only)
+## Page prose files + in-place editor
 
-`npx astro dev`, open `/owreference/border-expansion/`, click the **✎ Edit prose**
-button (bottom right), edit any outlined paragraph, list item, board caption or
-note in place, **Save to source**. Pieces: `scripts/border_prose.py` (the
-block extractor/applier, also `export`/`apply` for a markdown round trip),
-`scripts/prose-dev.mjs` (Vite plugin, `apply: 'serve'`: stamps
-`data-prose="<id>"` in a `load` hook and serves `/__prose/blocks` +
-`/__prose/apply`; Astro compiles `.astro` in its own transform, so a transform
-hook sees compiled JS, and the page's 🗺️ emoji means offsets must be handled as
-code points), `src/lib/prose-edit.ts` (client; loaded only under
-`import.meta.env.DEV`). Blocks holding `{slots}` or components are spliced by
-matching the unchanged text around the edit; if that fails the block is listed
-for a manual edit rather than guessed. Board captions save into
-`build_borders.py` and re-run it. The production build carries none of this.
+Two pages keep every line of their prose in a markdown data file instead of
+the template: `src/data/zoc-prose.md` (`/zone-of-control`) and
+`src/data/border-expansion-prose.md` (`/border-expansion`). The page imports
+the file with `?raw`, calls `createProse()` from `src/lib/prose.ts` and renders
+each `## key` slot with `data-prose="key" set:html={inline('key')}` (single
+line) or `data-prose-blocks set:html={blocks('key')}` (paragraphs, `- ` bullets,
+`1. ` numbered lists). Board text is `board.<id>.caption` / `.note`, passed to
+`<HexBoard caption note captionKey noteKey>`. `{placeholders}` come from the
+page's `VARS` (a string with inline markdown, or `{ html }` for prepared markup
+such as entity links) and render as locked `.prose-var` chips. Markdown that
+works: `**bold**`, `*em*`, `` `code` ``, `[text](url|#anchor)`.
+
+Editing in place: `npm run edit` (save server on :4399 + `astro dev` on :4321),
+open the page with `?edit`, click any outlined text, ⌘S. `src/lib/prose-editor.js`
+(inlined only under `import.meta.env.DEV`) serialises the DOM back to that
+markdown and POSTs it to `scripts/prose_editor.mjs`, which rewrites only the
+changed `## key` sections; Vite reloads. Nothing of this reaches the build.
+
+Two gotchas: (1) the page `<style>` must be `is:global` (namespaced selectors),
+because `set:html` markup gets no Astro scope attribute, so `.zc-section p`
+would silently not apply; (2) board captions also still live in
+`build_*.py`/`*.json` as the data-level fallback, but the page shows the prose
+file's copy, so edit captions in the prose file.
 
 ## Common pitfalls
 
