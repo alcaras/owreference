@@ -39,10 +39,14 @@ interface Props {
   scenario: Scenario;
   caption?: string;      // overrides scenario.caption
   note?: string;         // second line under the caption
+  noteId?: string;       // dev-only: prose block id stamped by scripts/prose-dev.mjs
+  captionKey?: string;   // data-prose slot keys when the page's prose file owns the text
+  noteKey?: string;      //   (zone-of-control: src/data/zoc-prose.md via src/lib/prose-editor.js)
   zocColor?: string;     // the game's COLOR_HOSTILE_ZOC (#rrggbbaa)
   showScores?: boolean;  // label growth candidates with their score (first pick)
 }
-const { scenario: sc, caption, note, zocColor = '#ff000033', showScores = false } = Astro.props;
+const { scenario: sc, caption, note, noteId, captionKey, noteKey, zocColor = '#ff000033', showScores = false } = Astro.props;
+const dev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL;
 
 // ---- geometry (owpuzzle app.js:406-417) ----
@@ -335,8 +339,9 @@ const cap = caption ?? sc.caption;
   <div class="hexboard__svg" style={`max-width:${Math.round(vbW)}px`} set:html={svg} />
   {(cap || note) && (
     <figcaption>
-      {cap && <span class="hexboard__cap">{cap}</span>}
-      {note && <span class="hexboard__note">{note}</span>}
+      {/* captions may carry inline HTML (bold, code, placeholder chips) — plain strings pass through unchanged */}
+      {cap && <span class="hexboard__cap" data-prose={captionKey ?? (dev && caption === undefined ? `board.${sc.id}.caption` : undefined)} set:html={cap} />}
+      {note && <span class="hexboard__note" data-prose={noteKey ?? (dev ? noteId : undefined)} set:html={note} />}
     </figcaption>
   )}
 </figure>

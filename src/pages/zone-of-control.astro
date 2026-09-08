@@ -11,6 +11,10 @@ import Term from '../components/Term.astro';
 import HexBoard from '../components/HexBoard.astro';
 import data from '../data/zoc.json';
 import proseRaw from '../data/zoc-prose.md?raw';
+import editorJs from '../lib/prose-editor.js?raw';
+
+const PROSE_FILE = 'src/data/zoc-prose.md';
+const DEV = import.meta.env.DEV;
 
 const base = import.meta.env.BASE_URL;
 const { units, grants, constants, texts, quadrants } = data;
@@ -68,9 +72,13 @@ function inline(key: string): string {
     if (!key.endsWith('.note')) console.warn(`[zoc-prose] missing key: ${key}`);   // notes are optional
     return '';
   }
-  let s = raw.replace(/\{([a-zA-Z]+)\}/g, (m, k) => (k in VARS ? VARS[k] : m));
-  s = esc(s);
-  return s
+  // Markdown first (placeholders are inert to it), then each {placeholder}
+  // becomes a locked chip whose own value may carry inline markdown.
+  return md(raw).replace(/\{([a-zA-Z]+)\}/g, (m, k) =>
+    k in VARS ? `<span class="zc-var" data-var="${k}">${md(VARS[k])}</span>` : m);
+}
+function md(text: string): string {
+  return esc(text)
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
@@ -133,36 +141,40 @@ const stats = [
   pageStats={stats}
   description="How Old World's zone of control works: the one movement rule, who pins whom, and computed hex boards for walls, rivers, cities and water."
 >
-  <p class="lede" set:html={inline('lede')} />
+  {DEV && <meta name="prose-file" content={PROSE_FILE} />}
+  {DEV && <meta name="prose-endpoint" content="http://127.0.0.1:4399/save" />}
+  {DEV && <script is:inline set:html={editorJs} />}
+
+  <p class="lede" data-prose="lede" set:html={inline('lede')} />
 
   <div class="legend zc-legend">
     <span class="legend__label">Legend</span>
-    <span class="zc-key"><i class="zc-swatch zc-swatch--you"></i> <span set:html={inline('legend.you')} /></span>
-    <span class="zc-key"><i class="zc-swatch zc-swatch--enemy"></i> <span set:html={inline('legend.enemy')} /></span>
-    <span class="zc-key"><i class="zc-swatch zc-swatch--zoc" style={`background:${zocColor}`}></i> <span set:html={inline('legend.zoc')} /></span>
-    <span class="zc-key"><i class="zc-swatch zc-swatch--ok"></i> <span set:html={inline('legend.legal')} /></span>
-    <span class="zc-key"><i class="zc-swatch zc-swatch--no">×</i> <span set:html={inline('legend.refused')} /></span>
-    <span class="zc-key"><i class="zc-swatch zc-swatch--dot"></i> <span set:html={inline('legend.reach')} /></span>
-    <span class="zc-key"><i class="zc-swatch zc-swatch--adv">⚔</i> <span set:html={inline('legend.advance')} /></span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--you"></i> <span data-prose="legend.you" set:html={inline('legend.you')} /></span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--enemy"></i> <span data-prose="legend.enemy" set:html={inline('legend.enemy')} /></span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--zoc" style={`background:${zocColor}`}></i> <span data-prose="legend.zoc" set:html={inline('legend.zoc')} /></span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--ok"></i> <span data-prose="legend.legal" set:html={inline('legend.legal')} /></span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--no">×</i> <span data-prose="legend.refused" set:html={inline('legend.refused')} /></span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--dot"></i> <span data-prose="legend.reach" set:html={inline('legend.reach')} /></span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--adv">⚔</i> <span data-prose="legend.advance" set:html={inline('legend.advance')} /></span>
   </div>
 
   <section class="zc-section" id="rule">
-    <h2 class="zc-h" set:html={inline('rule.heading')} />
-    <p class="zc-rule" set:html={inline('rule.headline')} />
-    <Fragment set:html={blocks('rule.body')} />
+    <h2 class="zc-h" data-prose="rule.heading" set:html={inline('rule.heading')} />
+    <p class="zc-rule" data-prose="rule.headline" set:html={inline('rule.headline')} />
+    <div data-prose="rule.body" data-prose-blocks set:html={blocks('rule.body')} />
     <blockquote class="zc-quote">
       <p>{texts.help}</p>
-      <footer set:html={inline('rule.quote.source')} />
+      <footer data-prose="rule.quote.source" set:html={inline('rule.quote.source')} />
     </blockquote>
   </section>
 
   <section class="zc-section zc-section--wide" id="who">
-    <h2 class="zc-h" set:html={inline('who.heading')} />
+    <h2 class="zc-h" data-prose="who.heading" set:html={inline('who.heading')} />
     <div class="zc-cards">
       {cards.map(c => (
         <article class={`zc-card zc-card--${c.q}`} id={`q-${c.q}`}>
           <h3 class="zc-card__title">{c.label}</h3>
-          <p class="zc-card__hint" set:html={inline(`who.hint.${c.q}`)} />
+          <p class="zc-card__hint" data-prose={`who.hint.${c.q}`} set:html={inline(`who.hint.${c.q}`)} />
           <ul class="zc-card__units">
             {c.picks.map(u => (
               <li>
@@ -175,72 +187,72 @@ const stats = [
         </article>
       ))}
     </div>
-    {has('who.note') && <p class="zc-note" set:html={inline('who.note')} />}
+    {has('who.note') && <p class="zc-note" data-prose="who.note" set:html={inline('who.note')} />}
   </section>
 
   <section class="zc-section zc-section--wide" id="movement">
-    <h2 class="zc-h" set:html={inline('movement.heading')} />
+    <h2 class="zc-h" data-prose="movement.heading" set:html={inline('movement.heading')} />
     <div class="zc-boards zc-boards--3">
-      <HexBoard scenario={sc.zone} zocColor={zocColor} caption={inline('board.zone.caption')} note={inline('board.zone.note')} />
-      <HexBoard scenario={sc.enter} zocColor={zocColor} caption={inline('board.enter.caption')} note={inline('board.enter.note')} />
-      <HexBoard scenario={sc.slip} zocColor={zocColor} caption={inline('board.slip.caption')} note={inline('board.slip.note')} />
+      <HexBoard scenario={sc.zone} zocColor={zocColor} caption={inline('board.zone.caption')} note={inline('board.zone.note')} captionKey="board.zone.caption" noteKey="board.zone.note" />
+      <HexBoard scenario={sc.enter} zocColor={zocColor} caption={inline('board.enter.caption')} note={inline('board.enter.note')} captionKey="board.enter.caption" noteKey="board.enter.note" />
+      <HexBoard scenario={sc.slip} zocColor={zocColor} caption={inline('board.slip.caption')} note={inline('board.slip.note')} captionKey="board.slip.caption" noteKey="board.slip.note" />
     </div>
   </section>
 
   <section class="zc-section zc-section--wide" id="walls">
-    <h2 class="zc-h" set:html={inline('walls.heading')} />
-    <Fragment set:html={blocks('walls.intro')} />
+    <h2 class="zc-h" data-prose="walls.heading" set:html={inline('walls.heading')} />
+    <div data-prose="walls.intro" data-prose-blocks set:html={blocks('walls.intro')} />
     <div class="zc-boards zc-boards--2">
-      <HexBoard scenario={sc.wall2} zocColor={zocColor} caption={inline('board.wall2.caption')} note={inline('board.wall2.note')} />
-      <HexBoard scenario={sc.wall3} zocColor={zocColor} caption={inline('board.wall3.caption')} note={inline('board.wall3.note')} />
+      <HexBoard scenario={sc.wall2} zocColor={zocColor} caption={inline('board.wall2.caption')} note={inline('board.wall2.note')} captionKey="board.wall2.caption" noteKey="board.wall2.note" />
+      <HexBoard scenario={sc.wall3} zocColor={zocColor} caption={inline('board.wall3.caption')} note={inline('board.wall3.note')} captionKey="board.wall3.caption" noteKey="board.wall3.note" />
     </div>
   </section>
 
   <section class="zc-section zc-section--wide" id="exceptions">
-    <h2 class="zc-h" set:html={inline('exceptions.heading')} />
+    <h2 class="zc-h" data-prose="exceptions.heading" set:html={inline('exceptions.heading')} />
     <div class="zc-boards zc-boards--3">
       {['cavalry', 'elephant_pinned', 'elephant_pins_nothing', 'river', 'city', 'ships', 'embarked', 'hidden'].map(id => (
-        <HexBoard scenario={sc[id]} zocColor={zocColor} caption={inline(`board.${id}.caption`)} note={inline(`board.${id}.note`)} />
+        <HexBoard scenario={sc[id]} zocColor={zocColor} caption={inline(`board.${id}.caption`)} note={inline(`board.${id}.note`)} captionKey={`board.${id}.caption`} noteKey={`board.${id}.note`} />
       ))}
     </div>
   </section>
 
   <section class="zc-section zc-section--wide" id="civilians">
-    <h2 class="zc-h" set:html={inline('civilians.heading')} />
+    <h2 class="zc-h" data-prose="civilians.heading" set:html={inline('civilians.heading')} />
     <div class="zc-split">
-      <div set:html={blocks('civilians.body')} />
-      <HexBoard scenario={sc.landing} zocColor={zocColor} caption={inline('board.landing.caption')} note={inline('board.landing.note')} />
+      <div data-prose="civilians.body" data-prose-blocks set:html={blocks('civilians.body')} />
+      <HexBoard scenario={sc.landing} zocColor={zocColor} caption={inline('board.landing.caption')} note={inline('board.landing.note')} captionKey="board.landing.caption" noteKey="board.landing.note" />
     </div>
   </section>
 
   <section class="zc-section zc-section--wide" id="special">
-    <h2 class="zc-h" set:html={inline('special.heading')} />
+    <h2 class="zc-h" data-prose="special.heading" set:html={inline('special.heading')} />
     <div class="zc-split">
-      <div set:html={blocks('special.body')} />
-      <HexBoard scenario={sc.rout_gap} zocColor={zocColor} caption={inline('board.rout_gap.caption')} note={inline('board.rout_gap.note')} />
+      <div data-prose="special.body" data-prose-blocks set:html={blocks('special.body')} />
+      <HexBoard scenario={sc.rout_gap} zocColor={zocColor} caption={inline('board.rout_gap.caption')} note={inline('board.rout_gap.note')} captionKey="board.rout_gap.caption" noteKey="board.rout_gap.note" />
     </div>
   </section>
 
   <section class="zc-section" id="not">
-    <h2 class="zc-h" set:html={inline('asked.heading')} />
-    <Fragment set:html={blocks('asked.body')} />
+    <h2 class="zc-h" data-prose="asked.heading" set:html={inline('asked.heading')} />
+    <div data-prose="asked.body" data-prose-blocks set:html={blocks('asked.body')} />
   </section>
 
   <section class="zc-section" id="overlay">
-    <h2 class="zc-h" set:html={inline('overlay.heading')} />
-    <Fragment set:html={blocks('overlay.body')} />
-    {has('overlay.callout') && <div class="zc-callout" set:html={inline('overlay.callout')} />}
+    <h2 class="zc-h" data-prose="overlay.heading" set:html={inline('overlay.heading')} />
+    <div data-prose="overlay.body" data-prose-blocks set:html={blocks('overlay.body')} />
+    {has('overlay.callout') && <div class="zc-callout" data-prose="overlay.callout" set:html={inline('overlay.callout')} />}
   </section>
 
   <section class="zc-section" id="play">
-    <h2 class="zc-h" set:html={inline('play.heading')} />
-    <Fragment set:html={blocks('play.body')} />
+    <h2 class="zc-h" data-prose="play.heading" set:html={inline('play.heading')} />
+    <div data-prose="play.body" data-prose-blocks set:html={blocks('play.body')} />
   </section>
 
   <section class="zc-section zc-section--wide" id="appendix">
-    <h2 class="zc-h" set:html={inline('appendix.heading')} />
+    <h2 class="zc-h" data-prose="appendix.heading" set:html={inline('appendix.heading')} />
 
-    <h3 class="zc-h3" set:html={inline('appendix.units.heading')} />
+    <h3 class="zc-h3" data-prose="appendix.units.heading" set:html={inline('appendix.units.heading')} />
     <div class="zc-table">
       <table>
         <thead>
@@ -265,7 +277,7 @@ const stats = [
       </table>
     </div>
 
-    <h3 class="zc-h3" set:html={inline('appendix.grants.heading')} />
+    <h3 class="zc-h3" data-prose="appendix.grants.heading" set:html={inline('appendix.grants.heading')} />
     <div class="zc-table">
       <table>
         <thead><tr><th>Effect</th><th>Does</th><th>Valid for</th><th>Comes from</th><th>Carried by</th></tr></thead>
@@ -293,9 +305,9 @@ const stats = [
         </tbody>
       </table>
     </div>
-    {has('appendix.grants.note') && <p class="zc-note" set:html={inline('appendix.grants.note')} />}
+    {has('appendix.grants.note') && <p class="zc-note" data-prose="appendix.grants.note" set:html={inline('appendix.grants.note')} />}
 
-    <h3 class="zc-h3" set:html={inline('appendix.constants.heading')} />
+    <h3 class="zc-h3" data-prose="appendix.constants.heading" set:html={inline('appendix.constants.heading')} />
     <div class="zc-table">
       <table>
         <tbody>
@@ -309,7 +321,7 @@ const stats = [
       </table>
     </div>
 
-    <h3 class="zc-h3" set:html={inline('appendix.sources.heading')} />
+    <h3 class="zc-h3" data-prose="appendix.sources.heading" set:html={inline('appendix.sources.heading')} />
     <ul class="zc-list zc-sources">
       {SOURCES.map(([fn, loc, what]) => (
         <li><code>{fn}</code> <span class="zc-loc">{loc}</span> — {what}</li>
