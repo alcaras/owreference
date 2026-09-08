@@ -44,6 +44,8 @@ const mahout = grants.find(g => g.id === 'EFFECTUNIT_TRAIT_MAHOUT')!;
 const SOURCES = [
   ['Unit.isValidMovementDirection', 'Unit.cs:7670-7695', 'the one rule: refused iff both tiles are in hostile ZOC; current tile tested with bIgnoreRiver = the step crosses a river (7689). Called from PathFinder.cs:914.'],
   ['Unit.canBeSwapped / canSwapUnits', 'Unit.cs:8252, 8287', 'swap refused when both tiles are in hostile ZOC. No other caller of isHostileZOC exists.'],
+  ['Unit.canAdvanceAfterAttack / canHaveRoutCooldown / canTargetFrom', 'Unit.cs:8342, 8389, 8508', 'Rout advance after a kill: bRout effect the defender is not immune to (getDefenderRoutEffectUnit 8420; EFFECTUNIT_POLEARM is immune), another target from the new tile, canOccupyTile — no zone test; the move is setTileID at Unit.cs:9711.'],
+  ['Unit.getPushTile', 'Unit.cs:10031', 'Panic / Fireship push: the three tiles away from the attacker, tested with canUnitOccupy only.'],
   ['Unit.hasZOC / hasIgnoreZOC', 'Unit.cs:6983, 7008', 'unit type flag or any held effect.'],
   ['Unit.isUnitZoc', 'Unit.cs:4550', 'aeUnitTraitZOC: Polearm effects list Mounted.'],
   ['Tile.isDirectionHostileZOC', 'Tile.cs:9991-10058', 'same medium only; hostile cities on land; hidden exerters and hidden movers; embarked units cannot ignore ship ZOC; ignore test, then the trait test.'],
@@ -84,6 +86,7 @@ const stats = [
     <span class="zc-key"><i class="zc-swatch zc-swatch--ok"></i> legal step</span>
     <span class="zc-key"><i class="zc-swatch zc-swatch--no">×</i> refused step</span>
     <span class="zc-key"><i class="zc-swatch zc-swatch--dot"></i> reachable with unlimited moves</span>
+    <span class="zc-key"><i class="zc-swatch zc-swatch--adv">⚔</i> Rout advance after a kill (no zone test)</span>
   </div>
 
   <section class="zc-section" id="rule">
@@ -185,14 +188,37 @@ const stats = [
     </div>
   </section>
 
+  <section class="zc-section zc-section--wide" id="special">
+    <h2 class="zc-h">Special moves: Rout and Push</h2>
+    <div class="zc-split">
+      <div>
+        <p>
+          The zone test lives in the pathfinder. Two combat abilities move units
+          without it, and they are how cavalry gets into, and through, a spear wall.
+        </p>
+        <ul class="zc-list">
+          <li><strong>Rout advance.</strong> After a kill, a unit with Rout ({constants.routUnits.join(', ')}) advances into the emptied tile when another enemy can be attacked from there, and may attack again. The advance asks only whether the tile can be occupied, never the zone. Each rout also costs the attacker 1 HP.</li>
+          <li><strong>The wall still holds against spears.</strong> Polearm units ({constants.routImmune.join(', ')}) are immune to Rout: killing one gives no advance, and every advance needs a further kill to continue.</li>
+          <li><strong>Push.</strong> Panic ({constants.pushUnits.join(', ')}) shoves a surviving defender to one of the three tiles away from the attacker, chosen only by occupancy, even into another zone. The Fireship does the same on water.</li>
+        </ul>
+      </div>
+      <HexBoard scenario={sc.rout_gap} zocColor={zocColor}
+        note="Every tile beside the pickets is washed, so ordinary movement into the gap is refused. Two kills carry the Horseman to the far side, where a normal step out of the zone is legal. The board assumes each attack kills." />
+    </div>
+  </section>
+
   <section class="zc-section" id="not">
-    <h2 class="zc-h">What a zone does not do</h2>
+    <h2 class="zc-h">Where the zone is asked, and where it is not</h2>
+    <p>
+      The game consults the zone in exactly two places: a movement step, and a
+      swap of two friendly units, which is refused when both of their tiles are
+      pinned. Everything else ignores it:
+    </p>
     <ul class="zc-list">
       <li><strong>No extra cost.</strong> Entering or leaving a zone costs normal movement.</li>
       <li><strong>No stop.</strong> Entering a zone does not end the move; only the zone-to-zone step is refused.</li>
-      <li><strong>No effect on combat.</strong> Attacks, rout retreats and pushes never consult it.</li>
+      <li><strong>No effect on attacks,</strong> nor on the moves they cause: the Rout advance and the Panic push above.</li>
       <li><strong>Nothing at peace or truce.</strong> Only war is hostile; tribes at war count.</li>
-      <li><strong>No swap</strong> between two friendly units when both of their tiles are pinned.</li>
       <li><strong>No terrain exemption.</strong> An improvement flag exists for it, but no improvement sets it.</li>
     </ul>
   </section>
@@ -332,6 +358,7 @@ const stats = [
     .zc-swatch--ok { border-radius: 2px; height: 0.3em; width: 1.4em; background: var(--gold); }
     .zc-swatch--no { border-radius: 2px; height: 0.3em; width: 1.4em; background: #e5484d; color: #e5484d; line-height: 0; }
     .zc-swatch--dot { width: 0.6em; height: 0.6em; background: #fff; }
+    .zc-swatch--adv { border-radius: 50%; width: 1.1em; height: 1.1em; border: 1px solid var(--gold); color: var(--gold); background: #1a1508; font-size: 0.65em; }
 
     .zc-section { margin: 1.6rem 0; max-width: 78ch; }
     .zc-section--wide { max-width: none; }

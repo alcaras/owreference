@@ -24,7 +24,7 @@ interface UnitOnBoard {
   type: string; owner: number; q: number; r: number; iconSlug: string;
   name: string; mover: boolean; hidden: boolean;
 }
-interface Step { from: number[]; to: number[]; legal: boolean; crossesRiver: boolean }
+interface Step { from: number[]; to: number[]; legal: boolean; crossesRiver: boolean; kind?: 'move' | 'advance' }
 interface Grab { q: number; r: number; gen: number; reason: string; player: number; city: number | null }
 interface Buyable { q: number; r: number; cost: number }
 interface Pick { q: number; r: number; candidates: { q: number; r: number; total: number }[] }
@@ -307,8 +307,15 @@ for (const st of sc.steps) {
   const sx = x1 + ux * SIZE * 0.6, sy = y1 + uy * SIZE * 0.6;
   const ex = x2 - ux * SIZE * 0.62, ey = y2 - uy * SIZE * 0.62;
   const col = st.legal ? GOLD : REFUSED;
+  const advance = st.kind === 'advance';
   S.push(`<line x1="${f(sx)}" y1="${f(sy)}" x2="${f(ex)}" y2="${f(ey)}" stroke="#0b0c0f" stroke-width="7" stroke-linecap="round" opacity="0.6"/>`);
-  S.push(`<line x1="${f(sx)}" y1="${f(sy)}" x2="${f(ex)}" y2="${f(ey)}" stroke="${col}" stroke-width="3.5" stroke-linecap="round" marker-end="url(#${uid(st.legal ? 'ok' : 'no')})"/>`);
+  S.push(`<line x1="${f(sx)}" y1="${f(sy)}" x2="${f(ex)}" y2="${f(ey)}" stroke="${col}" stroke-width="3.5" stroke-linecap="round"${advance ? ' stroke-dasharray="6 4"' : ''} marker-end="url(#${uid(st.legal ? 'ok' : 'no')})"/>`);
+  if (advance && st.legal) {
+    // a Rout advance after a kill: no zone test was asked
+    const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+    S.push(`<circle cx="${f(mx)}" cy="${f(my)}" r="9" fill="#1a1508" stroke="${GOLD}" stroke-width="2"/>`);
+    S.push(`<text x="${f(mx)}" y="${f(my + 0.5)}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="${GOLD}">⚔</text>`);
+  }
   if (!st.legal) {
     const mx = (sx + ex) / 2, my = (sy + ey) / 2;
     S.push(`<circle cx="${f(mx)}" cy="${f(my)}" r="9" fill="#1a0d0d" stroke="${REFUSED}" stroke-width="2"/>`);

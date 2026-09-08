@@ -115,6 +115,9 @@ for zt, e in entries(parse("effectUnit.xml")):
         "unitTraitZOC": zvalues(e, "aeUnitTraitZOC"),
         "unitTraitValid": pair_flags(e, "abUnitTraitValid"),
         "hideTerrainTarget": pair_flags(e, "abHideTerrainTarget"),
+        "bRout": flag(e, "bRout"),
+        "bPush": flag(e, "bPush") or flag(e, "bPushWater"),
+        "immune": zvalues(e, "aeEffectUnitImmune"),
         "fatigueExtra": int(e.findtext("iFatigueExtra") or 0),
         "gameContent": (e.findtext("GameContentDisplay") or e.findtext("GameContentRequired") or "").strip(),
     }
@@ -437,6 +440,47 @@ def can_swap(board: Board, u: Unit, o: Unit) -> bool:
 IMPROVEMENT_IGNORE_ZOC = {zt: flag(e, "bIgnoreZOC") for zt, e in entries(parse("improvement.xml"))}
 
 
+def rout_effect_vs(attacker: Unit, defender: Unit) -> str | None:
+    """Unit.getDefenderRoutEffectUnit (Unit.cs:8420): the attacker's first
+    bRout effect the defender is not immune to (EFFECTUNIT_POLEARM lists
+    EFFECTUNIT_ROUT in aeEffectUnitImmune, so spears never yield an advance)."""
+    immune = {i for e in unit_effects(defender) for i in EFFECTS.get(e, {}).get("immune", [])}
+    for e in unit_effects(attacker):
+        if EFFECTS.get(e, {}).get("bRout") and e not in immune:
+            return e
+    return None
+
+
+def can_advance_after_kill(board: Board, attacker: Unit, defender: Unit) -> bool:
+    """Unit.canAdvanceAfterAttack (Unit.cs:8342) for the kill case, minus the
+    settlement/city-site clauses no board uses: the tiles are adjacent, the
+    attacker has a Rout effect the defender lacks immunity to, another hostile
+    unit is attackable from the vacated tile (canHaveRoutCooldown Unit.cs:8389
+    → canTargetFrom Unit.cs:8508, range 1 for melee), and the attacker may
+    occupy the tile (canOccupyTile, ignoring the dead defender). The zone is
+    never consulted; the move itself is a bare setTileID (Unit.cs:9711)."""
+    a, b = board.tile(attacker.q, attacker.r), board.tile(defender.q, defender.r)
+    try:
+        board.direction(a, b)
+    except ValueError:
+        return False
+    if not board.hostile(attacker.owner, defender.owner) or rout_effect_vs(attacker, defender) is None:
+        return False
+    rng = 1 if not attacker.info["iRangeMax"] else attacker.info["iRangeMax"]
+    if rng != 1:
+        return False  # ranged advance needs canTargetFrom's range walk; no board uses it
+    another = any(board.hostile(attacker.owner, o.owner) and o is not defender
+                  and board.tile(o.q, o.r) is not None and board.tile(o.q, o.r) in
+                  [board.adjacent(b, d) for d in range(6)]
+                  for o in board.units)
+    if not another:
+        return False
+    for o in board.units_at(b):
+        if o is not defender and board.hostile(attacker.owner, o.owner) and o.info["bBlocks"]:
+            return False
+    return not b.impassable
+
+
 def passable(board: Board, t: Tile, mover: Unit) -> bool:
     """The subset of Tile.canUnitPass (Tile.cs:10152) a board needs: no
     impassable terrain; ships stay on water; a land unit may cross water only
@@ -701,6 +745,23 @@ def scenario_defs() -> list[dict]:
         expect=dict(zoc=set(), legal={((-1, 0), (-1, 1)): True, ((-1, 1), (0, 1)): True}),
     ))
 
+    # special moves: the Rout advance never asks the zone
+    defs.append(dict(
+        id="rout_gap", section="special", render=True,
+        title="Rout through the gap",
+        caption="Kill the unit in the gap and a Rout unit advances into it, a step the pathfinder would refuse; kill again to advance again.",
+        board=lambda: make_board(hexagon(2), [S((-1, 0)), S((1, 0)),
+                                              Unit("UNIT_WARRIOR", 1, 0, 0), Unit("UNIT_ARCHER", 1, 0, -1),
+                                              Unit("UNIT_SLINGER", 1, 1, -2),
+                                              Unit("UNIT_HORSEMAN", 0, 0, 1, mover=True)]),
+        paths=[[(0, 1), (0, 0), (0, -1), (0, -2)]],
+        advances=[((0, 1), (0, 0)), ((0, 0), (0, -1))],
+        expect=dict(zoc_has={(0, 1), (0, 0), (0, -1), (1, -1), (-1, 1), (1, 1)},
+                    advance={((0, 1), (0, 0)): True, ((0, 0), (0, -1)): True},
+                    legal={((0, -1), (0, -2)): True},
+                    rout_possible={((0, 1), (0, 0)): True, ((0, 1), (1, 0)): False}),
+    ))
+
     # asserted only (section 6 facts): nothing at peace; swap; Mahout; Maneuvers
     defs.append(dict(
         id="peace", section="facts", render=False,
@@ -803,12 +864,27 @@ def compute(defn: dict) -> dict:
 
     paths = [auto_path(int(p.split(":")[1])) if isinstance(p, str) else p for p in defn["paths"]]
     steps = []
+    original_units = list(board.units)   # advances remove killed defenders below
+    advances = defn.get("advances", [])   # [(from, to)] — attack from `from` kills the unit on `to`, Rout advances
     for path in paths:
         for a, b in zip(path, path[1:]):
             ta, tb = board.tile(*a), board.tile(*b)
             d = board.direction(ta, tb)
+            if (a, b) in advances:
+                defender = next(u for u in board.units if (u.q, u.r) == b and u.owner != mover.owner)
+                # the mover has advanced along the path so far: evaluate from `a`
+                shadow = Unit(mover.type, mover.owner, a[0], a[1], effects=mover.effects, water_unlock=mover.water_unlock)
+                steps.append({
+                    "from": list(a), "to": list(b), "kind": "advance",
+                    "legal": can_advance_after_kill(board, shadow, defender),
+                    "movementWouldRefuse": not is_valid_movement_direction(board, ta, tb, shadow),
+                    "crossesRiver": board.is_river(ta, d),
+                })
+                # after the advance the killed defender is gone
+                board.units = [u for u in board.units if u is not defender]
+                continue
             steps.append({
-                "from": list(a), "to": list(b),
+                "from": list(a), "to": list(b), "kind": "move",
                 "legal": is_valid_movement_direction(board, ta, tb, mover),
                 "crossesRiver": board.is_river(ta, d),
             })
@@ -826,6 +902,15 @@ def compute(defn: dict) -> dict:
     for (a, b), want in exp.get("legal", {}).items():
         got = is_valid_movement_direction(board, board.tile(*a), board.tile(*b), mover)
         assert got == want, f"{sid}: step {a}->{b} legal={got}, expected {want}"
+    for (a, b), want in exp.get("advance", {}).items():
+        st = next(x for x in steps if x.get("kind") == "advance" and tuple(x["from"]) == a and tuple(x["to"]) == b)
+        assert st["legal"] == want, f"{sid}: advance {a}->{b} = {st['legal']}, expected {want}"
+        assert st["movementWouldRefuse"], f"{sid}: advance {a}->{b} was not a refused movement step — pick a better board"
+    for (a, b), want in exp.get("rout_possible", {}).items():
+        att = next(u for u in original_units if (u.q, u.r) == a)
+        de = next(u for u in original_units if (u.q, u.r) == b)
+        got = rout_effect_vs(att, de) is not None
+        assert got == want, f"{sid}: rout vs {b} = {got}, expected {want}"
     for row, want in exp.get("reach_rows", {}).items():
         got = any(r == row for (_, r) in reach)
         assert got == want, f"{sid}: row {row} reachable={got}, expected {want}"
@@ -863,7 +948,7 @@ def compute(defn: dict) -> dict:
             "iconSlug": icon_slug(UNITS[u.type]),
             "name": name_of(UNITS[u.type]["nameKey"], u.type),
             "hidden": is_hidden_tile_from(board, u, board.tile(u.q, u.r)),
-        } for u in board.units],
+        } for u in original_units],
         "zoc": sorted(zoc),
         "overlayZoc": sorted(overlay) if defn.get("show_overlay") else [],
         "steps": steps,
@@ -1021,6 +1106,12 @@ def main() -> int:
             },
             "hostileStates": sorted(k for k, v in DIPLOMACY_HOSTILE.items() if v),
             "hiding": build_hiding(),
+            "routUnits": sorted(name_of(i["nameKey"], uid) for uid, i in UNITS.items()
+                                if any(EFFECTS.get(e, {}).get("bRout") for e in unit_effects(Unit(uid, 0, 0, 0)))),
+            "pushUnits": sorted(name_of(i["nameKey"], uid) for uid, i in UNITS.items()
+                                if any(EFFECTS.get(e, {}).get("bPush") for e in unit_effects(Unit(uid, 0, 0, 0)))),
+            "routImmune": sorted(name_of(i["nameKey"], uid) for uid, i in UNITS.items()
+                                 if "EFFECTUNIT_ROUT" in {im for e in unit_effects(Unit(uid, 0, 0, 0)) for im in EFFECTS.get(e, {}).get("immune", [])}),
             "nonBlocking": sorted(({"id": uid, "name": name_of(i["nameKey"], uid), "iconSlug": icon_slug(i),
                                     "territoryWater": i["bTerritoryWater"], "amphibious": i["bAmphibious"]}
                                    for uid, i in UNITS.items() if not i["bBlocks"]), key=lambda u: u["name"]),
