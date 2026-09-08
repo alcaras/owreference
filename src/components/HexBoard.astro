@@ -1,33 +1,48 @@
 ---
-// Static SVG hex board for the Zone of Control explainer. Server-rendered,
-// no runtime script. The visual language is ported from owpuzzle's board
-// (web/app.js:405-700 — pointy-top axial hexes, its terrain palette, banded
-// hills, procedural trees, owner-coloured unit tokens with the in-game icon).
-// Everything drawn on top — the ZOC wash, step arrows, reach dots — comes
-// from a scenario object computed by scripts/build_zoc.py, never from props
-// written by hand: this component only draws what the port decided.
+// Static SVG hex board for the Zone of Control and Border Expansion
+// explainers. Server-rendered, no runtime script. The visual language is
+// ported from owpuzzle's board (web/app.js:405-700 — pointy-top axial hexes,
+// its terrain palette, banded hills, procedural trees, owner-coloured unit
+// tokens with the in-game icon; app.js:599-611 — territory wash + hairline
+// border on ownership-change edges). Everything drawn on top — the ZOC wash,
+// step arrows, reach dots, territory, grab badges, buy outlines — comes from
+// a scenario object computed by scripts/build_zoc.py or
+// scripts/build_borders.py, never from props written by hand: this
+// component only draws what the port decided. Every territory-page field is
+// optional, so the ZOC boards render exactly as before.
 interface Tile {
   q: number; r: number; terrain: string; height: string;
   vegetation: string | null; improvement: string | null;
   river: number[]; city: number | null; owner: number | null;
+  // border-expansion extras (all optional)
+  territory?: number | null; ownerBefore?: number | null;
+  resource?: string | null; resourceIcon?: string | null;
+  citySite?: string | null; specialist?: boolean; minorCity?: boolean;
+  improvementBefore?: string | null; improvementName?: string | null; improvementRemoved?: boolean;
 }
 interface UnitOnBoard {
   type: string; owner: number; q: number; r: number; iconSlug: string;
   name: string; mover: boolean; hidden: boolean;
 }
 interface Step { from: number[]; to: number[]; legal: boolean; crossesRiver: boolean }
+interface Grab { q: number; r: number; gen: number; reason: string; player: number; city: number | null }
+interface Buyable { q: number; r: number; cost: number }
+interface Pick { q: number; r: number; candidates: { q: number; r: number; total: number }[] }
 export interface Scenario {
   id: string; title: string; caption: string;
   tiles: Tile[]; units: UnitOnBoard[];
   zoc: number[][]; overlayZoc: number[][]; steps: Step[]; reach: number[][];
+  grabs?: Grab[]; buyable?: Buyable[]; picks?: Pick[];
+  trigger?: { kind: string; from?: number[] };
 }
 interface Props {
   scenario: Scenario;
   caption?: string;      // overrides scenario.caption
   note?: string;         // second line under the caption
-  zocColor: string;      // the game's COLOR_HOSTILE_ZOC (#rrggbbaa)
+  zocColor?: string;     // the game's COLOR_HOSTILE_ZOC (#rrggbbaa)
+  showScores?: boolean;  // label growth candidates with their score (first pick)
 }
-const { scenario: sc, caption, note, zocColor } = Astro.props;
+const { scenario: sc, caption, note, zocColor = '#ff000033', showScores = false } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
 // ---- geometry (owpuzzle app.js:406-417) ----
@@ -78,6 +93,25 @@ const reachSet = new Set(sc.reach.map(([q, r]) => key(q, r)));
 const mover = sc.units.find(u => u.mover);
 if (mover) reachSet.delete(key(mover.q, mover.r));
 
+// ---- border-expansion layers ----
+// Same neighbour order as the river drawing: neighbour d sits at angle -60d
+// (E, NE, NW, W, SW, SE), so the shared edge spans -60d ± 30°.
+const HEX_DIRS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
+const grabAt = new Map((sc.grabs || []).map(g => [key(g.q, g.r), g]));
+const buyAt = new Map((sc.buyable || []).map(b => [key(b.q, b.r), b]));
+const scoreAt = new Map<string, number>();
+if (showScores && sc.picks && sc.picks.length) {
+  for (const c of sc.picks[0].candidates) scoreAt.set(key(c.q, c.r), c.total);
+}
+const hasTerritory = tiles.some(t => t.territory != null || t.owner != null);
+const REASON_COL: Record<string, string> = {
+  seed: '#c9a04a', reassign: '#c9a04a', resource: '#e08a2e', urban: '#c8a48c',
+  flank: '#4696eb', fill: '#b9b9c2', minor: '#e5484d',
+};
+const terr = (t: Tile) => (t.territory == null ? -1 : t.territory);
+const rgba = (rgb: string, a: number) => rgb.replace('rgb', 'rgba').replace(')', `,${a})`);
+const pcol = (p: number | null | undefined) => (p == null ? 'rgb(120,120,120)' : (PCOL[p] || 'rgb(120,120,120)'));
+
 let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 for (const t of tiles) {
   minX = Math.min(minX, cx(t) - SIZE); maxX = Math.max(maxX, cx(t) + SIZE);
@@ -90,6 +124,12 @@ const uid = (s: string) => `zb-${sc.id}-${s}`;
 
 const S: string[] = [];
 const clips: string[] = [];
+// small mono label on a dark pill (used for costs, scores, site / improvement names)
+function pushLabel(x: number, y: number, text: string, size = 10, fill = '#fff') {
+  const width = Math.max(18, text.length * size * 0.62 + 8);
+  S.push(`<rect x="${f(x - width * 0.5)}" y="${f(y - size * 0.75)}" width="${f(width)}" height="${f(size * 1.45)}" rx="3" fill="rgba(8,9,12,.8)"/>`);
+  S.push(`<text x="${f(x)}" y="${f(y)}" text-anchor="middle" dominant-baseline="middle" font-size="${size}" font-family="JetBrains Mono, ui-monospace, monospace" fill="${fill}">${text}</text>`);
+}
 
 // procedural trees / scrub (app.js:1225-1250)
 function drawScrub(x: number, y: number, onHill: boolean) {
@@ -139,6 +179,57 @@ for (const t of tiles) {
   }
 }
 
+// territory: owner wash + hairline border on every edge where the city
+// territory changes (owpuzzle app.js:599-611). Newly grabbed tiles get a
+// stronger wash so the before/after reads at a glance.
+if (hasTerritory) {
+  for (const t of tiles) {
+    if (t.owner == null) continue;
+    const x = cx(t), y = cy(t);
+    const oc = pcol(t.owner);
+    const fresh = grabAt.has(key(t.q, t.r));
+    S.push(`<polygon points="${hexPoints(x, y)}" fill="${rgba(oc, fresh ? 0.42 : 0.18)}"/>`);
+    for (let di = 0; di < 6; di++) {
+      const dq = HEX_DIRS[di][0], dr = HEX_DIRS[di][1];
+      const n = tileAt.get(key(t.q + dq, t.r + dr));
+      if (n && n.owner === t.owner && terr(n) === terr(t)) continue;
+      const a1 = (Math.PI / 180) * (-60 * di - 30), a2 = (Math.PI / 180) * (-60 * di + 30);
+      S.push(`<line x1="${f(x + SIZE * 0.96 * Math.cos(a1))}" y1="${f(y + SIZE * 0.96 * Math.sin(a1))}" x2="${f(x + SIZE * 0.96 * Math.cos(a2))}" y2="${f(y + SIZE * 0.96 * Math.sin(a2))}" stroke="${oc}" stroke-width="2.2" opacity="0.9" stroke-linecap="round"/>`);
+    }
+  }
+}
+
+// resource icons, improvement labels, city-site / minor-city markers, specialists
+for (const t of tiles) {
+  const x = cx(t), y = cy(t);
+  if (t.resourceIcon && t.city == null) {
+    const R = SIZE * 0.62;
+    S.push(`<image href="${base}img/icons/resources/${t.resourceIcon}.png" x="${f(x - R * 0.5)}" y="${f(y - R * 0.5 - SIZE * 0.06)}" width="${f(R)}" height="${f(R)}"/>`);
+  }
+  if (t.citySite === 'ACTIVE' && t.city == null) {
+    S.push(`<polygon points="${hexPoints(x, y, 0.72)}" fill="none" stroke="#f3e7c6" stroke-width="2" stroke-dasharray="5 4"/>`);
+    pushLabel(x, y + SIZE * 0.55, 'site', 9, '#f3e7c6');
+  } else if (t.minorCity) {
+    pushLabel(x, y + SIZE * 0.55, 'minor city', 9, '#f3e7c6');
+  } else if (t.improvementName && t.city == null && !t.specialist) {
+    pushLabel(x, y + SIZE * 0.55, t.improvementName, 8.5, t.improvementRemoved ? '#e5484d' : '#e8e2d2');
+    if (t.improvementRemoved) {
+      S.push(`<line x1="${f(x - SIZE * 0.34)}" y1="${f(y + SIZE * 0.55)}" x2="${f(x + SIZE * 0.34)}" y2="${f(y + SIZE * 0.55)}" stroke="#e5484d" stroke-width="1.5"/>`);
+    }
+  }
+  if (t.specialist) {
+    const sx = x, sy = y + SIZE * 0.12;
+    const pts: string[] = [];
+    for (let i = 0; i < 10; i++) {
+      const rad = i % 2 === 0 ? SIZE * 0.3 : SIZE * 0.13;
+      const a = (Math.PI / 180) * (-90 + i * 36);
+      pts.push(`${f(sx + rad * Math.cos(a))},${f(sy + rad * Math.sin(a))}`);
+    }
+    S.push(`<polygon points="${pts.join(' ')}" fill="#f0c95a" stroke="#3a2a08" stroke-width="1.2"/>`);
+    pushLabel(x, y + SIZE * 0.6, 'specialist', 8.5, '#f0c95a');
+  }
+}
+
 // river edges (app.js: neighbour d sits at angle -60d; the shared edge spans ±30°)
 for (const t of tiles) {
   for (const d of t.river || []) {
@@ -165,6 +256,30 @@ for (const t of tiles) {
 for (const t of tiles) {
   if (!reachSet.has(key(t.q, t.r))) continue;
   S.push(`<circle cx="${f(cx(t))}" cy="${f(cy(t))}" r="5.5" fill="#ffffff" opacity="0.85" stroke="#14161c" stroke-width="0.8"/>`);
+}
+
+// growth-candidate scores (first pick), buyable outlines with cost, the
+// trigger tile's ring, and the generation badge on every grabbed tile
+for (const t of tiles) {
+  const k = key(t.q, t.r), x = cx(t), y = cy(t);
+  const score = scoreAt.get(k);
+  if (score != null && !grabAt.has(k)) pushLabel(x, y - SIZE * 0.5, String(score), 9.5, '#d9d3c3');
+  const buy = buyAt.get(k);
+  if (buy) {
+    S.push(`<polygon points="${hexPoints(x, y, 0.84)}" fill="none" stroke="${GOLD}" stroke-width="2" stroke-dasharray="6 4" opacity="0.9"/>`);
+    if (!grabAt.has(k)) pushLabel(x, y - SIZE * 0.5, String(buy.cost), 10, '#f3e7c6');
+  }
+}
+if (sc.trigger && sc.trigger.from) {
+  const [q, r] = sc.trigger.from;
+  S.push(`<polygon points="${hexPoints(cx({ q, r }), cy({ q, r }), 0.93)}" fill="none" stroke="#ffffff" stroke-width="2.5"/>`);
+}
+for (const g of sc.grabs || []) {
+  const x = cx(g) + SIZE * 0.4, y = cy(g) - SIZE * 0.46;
+  const col = REASON_COL[g.reason] || '#fff';
+  S.push(`<g><title>${g.reason} (generation ${g.gen})</title>`);
+  S.push(`<circle cx="${f(x)}" cy="${f(y)}" r="10" fill="#0b0c0f" stroke="${col}" stroke-width="2.2"/>`);
+  S.push(`<text x="${f(x)}" y="${f(y + 0.5)}" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="700" fill="#fff" font-family="Inter, system-ui, sans-serif">${g.gen}</text></g>`);
 }
 
 // units: owner-coloured disc with the game's white flag glyph on top

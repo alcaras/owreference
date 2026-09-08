@@ -284,6 +284,19 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   grant/end events must be DETECTED from bonuses that add/remove
   `PROJECT_AUTONOMOUS_RULE` (8 grants, 4 ends) — a hand list missed half of them.
   Pages: `/grand-vizier`, `/autonomous-rule`; data `scripts/build_autobuild.py`.
+- **Borders: `Game.doBorderFill` runs EVERY turn** (`Game.doTurn`, Game.cs:12788), re-running
+  the four spread rules (`Tile.getOwnerChangeTiles`) at range 0 from every owned tile — so
+  adjacent resources and flank-shielded water join by themselves; only founding (range 2),
+  specialist / improvement / add-urban (range 1), buying (range 0) and scored growth reach
+  further. `Tile.doBorderFill`'s per-city neighbour count compares TEAMS, so the far-side
+  city of the first matching axis (NW–SE, NE–SW, E–W) always wins; its distance/population
+  tie-breaks are dead code. Tribe settlements sit on urban ACTIVE city sites (that, not
+  `isNonAlliedTribeSite`, is what really blocks them). `checkMinorCity` has no tribe test.
+  Port + asserted boards: `scripts/build_borders.py`, page `/border-expansion`.
+- **Astro frontmatter scanner: never write `/ 2` inside a template literal in a helper
+  function.** The compiler's tokenizer reads `/ 2)}" ... "/` as a regex literal, the rest of
+  the frontmatter is mis-tokenised and esbuild fails with `Unexpected "export"` at a
+  meaningless line. Use `* 0.5`. (Cost an hour on HexBoard.astro.)
 - **F5 panel ≠ all cognomen stats.** The panel lists ~50 lifetime stats but only **47 feed cognomen scoring** (`calculator.inputStats`). `Worker Turns`, `Children Had`, `Trees Removed` etc. are real panel rows that score nothing — the parser's `ignored` bucket counting them is **correct behaviour, not a miss**. Verify against `inputStats` before "fixing" an ignored stat.
 
 ---

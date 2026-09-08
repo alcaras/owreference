@@ -218,6 +218,12 @@ export const TABS: Tab[] = [
     willContain: ['Yield, cost, prerequisites, and adjacency bonuses'],
   },
   {
+    slug: 'border-expansion', icon: '🗺️', label: 'Border Expansion', section: 'Cities',
+    status: 'built', sourceSheet: '',
+    summary: 'How city territory is created and grows: the four spread rules, chains, founding, buying, growth bonuses',
+    willContain: ['The four spread rules from the territory code', 'Founding, minor cities, buying tiles, growth bonuses', 'Computed hex boards with the grab order numbered'],
+  },
+  {
     slug: 'urban-improvements', icon: '🏡', label: 'Urban Improvements', section: 'Cities',
     status: 'built', sourceSheet: '🏡 Urban Buildings',
     summary: 'City buildings — art, specialist slots, and effects',

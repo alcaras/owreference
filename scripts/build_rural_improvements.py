@@ -249,6 +249,9 @@ def main() -> int:
             restrictions.append("Canal")
         if (e.findtext("bAqueductEndpoint") or "0") == "1":
             restrictions.append("Aqueduct endpoint")
+        # Tile.isImprovementBorderSpread: bSpreadsBorders → range-1 border spread on completion
+        if (e.findtext("bSpreadsBorders") or "0") == "1":
+            restrictions.append("Spreads borders")
 
         slug = zt.replace("IMPROVEMENT_", "").lower()
         items.append({

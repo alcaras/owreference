@@ -181,7 +181,11 @@ for (const it of improvements) {
 
               {it.restrictions && it.restrictions.length > 0 ? (
                 <td class="cell yield-misc">
-                  {it.restrictions.map(r => <div class="listitem">{r}</div>)}
+                  {it.restrictions.map(r => (
+                    r === 'Spreads borders'
+                      ? <div class="listitem"><a href={`${base}border-expansion`} title="How border spread works">{r}</a></div>
+                      : <div class="listitem">{r}</div>
+                  ))}
                 </td>
               ) : (
                 <td class="cell is-empty"><span class="cell__dash">—</span></td>

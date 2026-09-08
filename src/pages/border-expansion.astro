@@ -1,0 +1,502 @@
+---
+// Border Expansion — how city territory is created and grows.
+// Data: src/data/borders.json (scripts/build_borders.py: improvement / yield /
+// bonus / effect XML + a port of Tile.getExpansionTiles and its helpers that
+// computes every board below). Nothing on a board is hand-marked.
+import Base from '../layouts/Base.astro';
+import Term from '../components/Term.astro';
+import HexBoard from '../components/HexBoard.astro';
+import { getEntity } from '../lib/entities';
+import data from '../data/borders.json';
+
+const base = import.meta.env.BASE_URL;
+const { texts, constants, buyTile, growth, spreaders, spreadersSummary } = data;
+const sc = Object.fromEntries(data.scenarios.map(s => [s.id, s])) as Record<string, (typeof data.scenarios)[number]>;
+const boards = data.scenarios.filter(s => s.render);
+
+const flagged = spreaders.filter(s => s.reasons.includes('bSpreadsBorders'));
+const flaggedWonders = flagged.filter(s => s.wonder);
+const flaggedOther = flagged.filter(s => !s.wonder);
+const unlockSpreaders = spreaders.filter(s => s.reasons.includes('unlock'));
+const urbanOnly = spreaders.filter(s => s.reasons.length === 1 && s.reasons[0] === 'urban');
+const money = buyTile.yields.YIELD_MONEY;
+const training = buyTile.yields.YIELD_TRAINING;
+const cards = growth.values.filter(v => v.kind === 'bonus' && v.id.startsWith('BONUS_CITY_')).sort((a, b) => a.value - b.value);
+const techCard = growth.values.find(v => v.kind === 'tech');
+const events = growth.values.filter(v => v.kind === 'event');
+const buyCity = buyTile.unlocks.filter(u => u.scope === 'city');
+const eventGroups = Object.values(events.filter(e => e.value > 0).reduce((acc, e) => {
+  const g = acc[e.name] || (acc[e.name] = { name: e.name, values: [] as number[], count: 0 });
+  if (!g.values.includes(e.value)) g.values.push(e.value);
+  g.count++;
+  return acc;
+}, {} as Record<string, { name: string; values: number[]; count: number }>));
+const buyPlayer = buyTile.unlocks.filter(u => u.scope === 'player');
+const w = growth.weights;
+const grow = sc.grow;
+const firstPick = grow.picks[0];
+const winner = firstPick.candidates.find(c => c.q === firstPick.q && c.r === firstPick.r)!;
+const runnerUp = [...firstPick.candidates].sort((a, b) => b.total - a.total)[1];
+const buyBoard = sc.buy;
+const chainGens = Math.max(...sc.chain.grabs.map(g => g.gen));
+const minorSiteGrabs = sc.minor.grabs.filter(g => g.reason === 'minor').length;
+const foundRing = sc.found.grabs.filter(g => g.reason === 'urban').length;
+const has = (id: string) => !!getEntity(id);
+const REASON_LABEL: Record<string, string> = { urban: 'urban', bSpreadsBorders: 'flag', unlock: 'player unlock' };
+const BUY_YIELDS = ['YIELD_MONEY', 'YIELD_TRAINING'] as const;
+
+const TRIGGERS = [
+  ['Found a city', 'Settler on a city site', '2 from the founding tile', 'Game.createCityNext → Tile.getCityInitTiles'],
+  ['Place a specialist', 'first specialist on a tile', '1', 'Tile.onSpecialistChange → spreadBorders'],
+  ['Finish an urban improvement', 'any of the ' + spreadersSummary.urbanCount + ' urban improvements', '1', 'Tile.doImprovementFinished → isImprovementBorderSpread (bUrban)'],
+  ['Finish a flagged improvement', flaggedOther.map(s => s.name).join(', ') + ' and every wonder', '1', 'isImprovementBorderSpread (bSpreadsBorders)'],
+  ['Finish an unlocked improvement', unlockSpreaders.map(s => `${s.name} under ${s.unlockedBy.map(u => u.name).join(', ')}`).join('; '), '1', 'isImprovementBorderSpread → Player.isSpreadBordersUnlock'],
+  ['Add urban', `${constants.builders.join(', ')} action, ${constants.addUrban.map(a => a.sources.map(s => s.name).join(', ')).join(', ')} leaders only`, '1', 'Unit.addUrban → spreadBorders (before makeUrban)'],
+  ['Buy a tile', 'unit on an adjacent tile', '0', 'Unit.buyTile → getExpansionTiles(0)'],
+  ['Growth bonus', 'card, tech card or event', '0 from each scored pick', 'City.growBorders → findGrowBorderTile'],
+  ['Border fill', 'every turn end, every capture, every founding, every editor tile change', '0 from every owned tile', 'Game.doTurn / City.setPlayer / City.start → Game.doBorderFill'],
+];
+
+const SOURCES = [
+  ['Tile.getExpansionTiles', 'Tile.cs:12657-12760', 'seed the tile + range ring, then breadth-first: getOwnerChangeTiles on each popped tile, then checkMinorCity on each adjacent unclaimed urban tile.'],
+  ['Tile.getOwnerChangeTiles', 'Tile.cs:7323-7470', 'the four rules in order: resource pull, urban pull, flank rule, else Tile.doBorderFill.'],
+  ['Tile.isValidOwnerChangeTerritory', 'Tile.cs:7302', 'revealed, not already territory or pending, and not connected to a different active city site.'],
+  ['Tile.isValidGrowth', 'Tile.cs:12576', 'terrain, height, vegetation and resource iBorderValue all ≥ 0; only ' + constants.negativeBorderValues.join(', ') + ' are negative.'],
+  ['Tile.doBorderFill', 'Tile.cs:11168-11260', 'opposite-side fill; the per-city count compares teams, so the far side always wins and the distance and population tie-breaks are dead code.'],
+  ['Tile.checkMinorCity / getCitySiteSurrounded', 'Tile.cs:11089, 4852-4960', 'a surrounded active site: its unclaimed urban tiles plus getCityInitTiles(2) go to the owner with the most adjacent tiles (land = cluster size, water = 1), then nearest city, then lowest city tile id.'],
+  ['Game.doUrbanSurroundedRural', 'Game.cs:12895-13050', 'rural pockets bounded by exactly one site, only on land sections holding more than one site; water, boundary and owned tiles do not count as pocket tiles.'],
+  ['Tile.setMinorCity / isMinorCity', 'Tile.cs:11127, 11146', 'site → USED, improvement → ' + constants.minorCityName + ', a city name is assigned.'],
+  ['Tile.spreadBorders', 'Tile.cs:7777', 'range 1 from an owned tile; callers: onSpecialistChange 6162, doImprovementFinished 6310 (before makeUrban), Unit.addUrban Unit.cs:11879, game start Game.cs:12220.'],
+  ['Tile.isImprovementBorderSpread', 'Tile.cs:6111', 'bUrban, bSpreadsBorders, Player.isSpreadBordersUnlock (effectPlayer aeImprovementSpreadBorders), or a free specialist from aeAdjacentImprovementSpecialists (empty in the current XML).'],
+  ['Game.createCityNext / City.start', 'Game.cs:11004, City.cs:7854-8007', 'range 2 from the founding tile with the founding site as the city site, then Game.doBorderFill.'],
+  ['Game.doBorderFill / setTilesOwner', 'Game.cs:13155, 13177', 'range 0 from every owned tile; setTilesOwner then calls setMinorCity on any active site it just owned. Called from Game.doTurn 12788, finishMapPlacement 12301, removeCity 11188, City.setPlayer 3529, City.start 8007, the editor TILE_OWNER action 19136.'],
+  ['Unit.buyTile / canBuyTile', 'Unit.cs:12707, 12665; City.cs:9493', 'range 0 from the bought tile, or a reassignment; eligibility and the unlock test; UNIT_BUY_TILE_COST orders.'],
+  ['City.getBuyTileCost', 'City.cs:9445', '(base + per × (city count + player count ÷ 2)) × (distance + 1) ÷ 4, minimum 1; both counters increment on every purchase (City.cs:2964, Player.cs:6325).'],
+  ['City.findGrowBorderTile / growBorders', 'City.cs:9659-9820', 'the scoring; RandomStruct(cityTile.initSeed()) is re-created per call, so the same city rolls the same numbers in the same candidate order every time.'],
+  ['Tile.canGrowBorder / getBorderAdjacent', 'Tile.cs:12605, ~12510', 'valid growth, not a boundary tile, not on or next to an urban tile, adjacent to the city\'s contiguous territory.'],
+  ['PlayerBonus.doBonus', 'PlayerBonus.cs:7053, 2432', 'bonus iBorderGrowth > 0 → City.growBorders; the bonus is unavailable when no tile can grow.'],
+  ['Tile.setOwner', 'Tile.cs:7470-7560', 'bRemoveBorder improvements are cleared when a border covers them (bRemoveBonus fires their bonus first).'],
+  ['Unit.hasConsumptionBordersModifier / familyTerritoryModifier', 'Unit.cs:7354, 6959', 'CONSUMPTION_BORDERS_MODIFIER and FAMILY_TERRITORY_MODIFIER, see constants.'],
+  ['XML', 'terrain, height, vegetation, resource, improvement, yield, bonus, bonus-event, effectPlayer, effectCity, effectUnit, trait, law, familyClass, tech, globalsInt, globalsType, color, teamColor', 'values, flags, grants and the quoted strings.'],
+];
+const stats = [
+  { label: 'spread rules', value: 4 },
+  { label: 'improvements spread', value: spreaders.length },
+  { label: 'boards', value: boards.length },
+];
+---
+
+<Base
+  title="Border Expansion"
+  active="border-expansion"
+  pageMark="🗺️"
+  pageStats={stats}
+  description="How Old World's city borders are created and grow: the four spread rules, chains, founding, minor cities, buying tiles and growth bonuses, with hex boards computed from the game's territory code."
+>
+  <p class="lede">
+    City territory is built by one engine in the game's tile code. Every
+    coloured tile and every number below was computed by a port of that
+    engine, not drawn by hand.
+  </p>
+
+  <div class="legend be-legend">
+    <span class="legend__label">Legend</span>
+    <span class="be-key"><i class="be-swatch be-swatch--you"></i> your territory</span>
+    <span class="be-key"><i class="be-swatch be-swatch--enemy"></i> another player's</span>
+    <span class="be-key"><i class="be-swatch be-swatch--badge">1</i> grabbed by this trigger, number = generation (0 = seeded by its range)</span>
+    <span class="be-key"><i class="be-dot" style="border-color:#e08a2e"></i> resource pull</span>
+    <span class="be-key"><i class="be-dot" style="border-color:#c8a48c"></i> urban pull</span>
+    <span class="be-key"><i class="be-dot" style="border-color:#4696eb"></i> flank rule</span>
+    <span class="be-key"><i class="be-dot" style="border-color:#b9b9c2"></i> hole fill</span>
+    <span class="be-key"><i class="be-dot" style="border-color:#e5484d"></i> minor city</span>
+    <span class="be-key"><i class="be-swatch be-swatch--ring"></i> the tile the trigger fired from</span>
+    <span class="be-key"><i class="be-swatch be-swatch--buy"></i> can be bought, label = cost</span>
+  </div>
+
+  <section class="be-section" id="territory">
+    <h2 class="be-h">What territory is</h2>
+    <blockquote class="be-quote">
+      <p>{texts.territory}</p>
+      <footer>In-game concept text, <code>{texts.territoryName}</code></footer>
+    </blockquote>
+    <p class="be-rule">Plain land never joins on its own. A tile is grabbed only when one of four rules fires from a tile you already own, and every grab can fire the rules again.</p>
+    <p>
+      The game re-runs the four rules from every owned tile at the end of every
+      turn (the <em>border fill</em>), so a resource or shielded water beside
+      your border joins by itself. Reaching further takes a seed: founding, a
+      specialist, an improvement, a bought tile or a growth bonus.
+    </p>
+  </section>
+
+  <section class="be-section be-section--wide" id="rules">
+    <h2 class="be-h">The four spread rules</h2>
+    <p>For an owned tile T and an unowned neighbour N, tested in this order. Each board runs the fill from the ringed tile.</p>
+    <ol class="be-list">
+      <li><strong>Resource pull.</strong> N carries a resource and T does not. Any resource counts.</li>
+      <li><strong>Urban pull.</strong> T or N is urban, and N is not part of another active city site.</li>
+      <li><strong>Flank rule.</strong> T is <em>valid growth</em> (not {constants.negativeBorderValues.map(n => growth.names[n]).join(', ')}) and N is not. Look at the two tiles flanking N beside T. Valid-growth flankers are “yours” (you, an ally, or grabbed earlier in this chain) or “not yours”, and <em>unowned counts as not yours</em>. N is taken if no flanker is “not yours”, or at least one is yours.</li>
+      <li><strong>Hole fill.</strong> N is not urban and the same team owns two tiles on opposite sides of it.</li>
+    </ol>
+    <div class="be-boards be-boards--4">
+      <HexBoard scenario={sc.resource} note="The sheep two tiles out and the wheat beside the marble stay unowned: a resource tile pulls nothing." />
+      <HexBoard scenario={sc.urban} note="Founding works this way too: each urban tile pulls its ring." />
+      <HexBoard scenario={sc.hole} note="Fill runs from any neighbour, so your own tile triggered a grab for the enemy." />
+      <HexBoard scenario={sc.hole_which} note="Axes are tried NW–SE, NE–SW, E–W; the city on the second-named side wins. The code counts neighbours per side but compares teams, so that count never decides." />
+    </div>
+    <h3 class="be-h3">The flank rule, four ways</h3>
+    <div class="be-boards be-boards--4">
+      <HexBoard scenario={sc.flank_open} note="The two flanking water tiles are taken by the same rule." />
+      <HexBoard scenario={sc.flank_unowned} note="Counter-example to the wiki's 'two adjacent passable land tiles': two passable land tiles touch this water and it is not taken." />
+      <HexBoard scenario={sc.flank_ours} />
+      <HexBoard scenario={sc.flank_enemy} />
+    </div>
+    <p class="be-note">
+      Mountains and volcanoes follow the same rule as water (asserted). The
+      wiki's “two adjacent passable land tiles” is wrong both ways: the first
+      board takes water with no land beside it but T, the second refuses water
+      beside two land tiles because neither is yours.
+    </p>
+  </section>
+
+  <section class="be-section be-section--wide" id="chain">
+    <h2 class="be-h">Chains</h2>
+    <p>Every grabbed tile is queued and the rules run from it in turn. One specialist reaches generation {chainGens} here.</p>
+    <div class="be-split">
+      <HexBoard scenario={sc.chain} showScores={false}
+        note="Ring tiles (0) pull the game and the fish (1); the game tile takes the water beyond it by the flank rule and the fish tile fills the hole between two owned tiles (2)." />
+      <ol class="be-list">
+        <li>Range 1 seeds the three unowned neighbours (0).</li>
+        <li>The north seed pulls the game and the fish (1).</li>
+        <li>The game tile takes the water beyond it: its only flanker is the pending fish tile, which is water, so nothing counts against it.</li>
+        <li>The water beyond the fish lies between that pending water and a tile you already owned: hole fill (2).</li>
+        <li>Water is not valid growth, so the flank rule cannot fire from it and the chain stops.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="be-section be-section--wide" id="founding">
+    <h2 class="be-h">Founding</h2>
+    <p>Founding seeds every tile within 2 of the Settler's tile, then the chain runs; urban tiles at distance 2 pull their own ring at distance 3.</p>
+    <div class="be-boards be-boards--2">
+      <HexBoard scenario={sc.found}
+        note={`${foundRing} tiles came from urban pull and two from resource pull; the trailing border fill added nothing here.`} />
+      <HexBoard scenario={sc.minor}
+        note={`${minorSiteGrabs} urban tiles of the site and its own radius 2 joined at generation 1; the site is now a ${constants.minorCityName} and can never be founded.`} />
+    </div>
+    <p>
+      <strong>Minor cities.</strong> After each popped tile the engine checks
+      adjacent unclaimed urban tiles. If they belong to another active site and
+      every passable land tile around that site's cluster is owned or pending,
+      the site is swallowed: its urban tiles plus its own radius 2 go to whoever
+      owns the most adjacent tiles, ties to the nearest city. Water and
+      mountains count as closed; one unowned land tile keeps the site free
+      (asserted). This path has no tribe test, so a fully enclosed tribe
+      settlement is swallowed too (asserted in the port, not seen in play).
+    </p>
+  </section>
+
+  <section class="be-section be-section--wide" id="triggers">
+    <h2 class="be-h">Triggers</h2>
+    <div class="be-table">
+      <table>
+        <thead><tr><th>Trigger</th><th>When</th><th>Range</th><th>Code</th></tr></thead>
+        <tbody>
+          {TRIGGERS.map(([t, when, range, code]) => (
+            <tr><td><strong>{t}</strong></td><td>{when}</td><td>{range}</td><td class="be-dim"><code>{code}</code></td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="be-note">An urban improvement spreads before its tile turns urban, so the grab is the range-1 seed, not an urban pull. The free-specialist path in the same check reads a list that is empty in the current XML.</p>
+  </section>
+
+  <section class="be-section be-section--wide" id="buying">
+    <h2 class="be-h">Buying tiles</h2>
+    <blockquote class="be-quote">
+      <p>{texts.buyTile}</p>
+      <footer>In-game concept text, <code>{texts.buyTileName}</code></footer>
+    </blockquote>
+    <div class="be-split">
+      <div>
+        <ul class="be-list">
+          <li><strong>Eligible:</strong> adjacent to the buying city's territory, not urban, water only if it touches land, with your unit standing on it. Costs {constants.unitBuyTileCost} order.</li>
+          <li><strong>Unlocks:</strong> {buyPlayer.map((u, i) => <>{i > 0 && '; '}{u.sources.map(s => <>{(has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name)}{s.dlc && <span class="chip chip--dlc">{s.dlc}</span>}</>)} for {(has(u.yield) ? <Term id={u.yield} showIcon={false} label={u.yieldName} /> : u.yieldName)}</>)} (for every city); {buyCity.map(u => <>{u.sources.map(s => (has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name))} seat for {(has(u.yield) ? <Term id={u.yield} showIcon={false} label={u.yieldName} /> : u.yieldName)}</>)} (that city only). A unit effect for it exists in the code but no unit carries one.</li>
+          <li><strong>From your own city:</strong> a tile of another of your cities can be reassigned with no unlock, if it has no improvement and taking it does not split that city's territory. The counters still tick.</li>
+          <li><strong>Cost:</strong> (base + per × (city purchases + player purchases ÷ 2)) × (distance + 1) ÷ 4, minimum 1, integer division. {money.name} base {money.base} per {money.per}; {training.name} base {training.base} per {training.per}.</li>
+          <li><strong>Chains fire</strong> at range 0, so a resource behind the bought tile comes free.</li>
+        </ul>
+      </div>
+      <HexBoard scenario={buyBoard} note={`The Worker bought the hill for ${buyBoard.trigger.cost} ${money.name}; the cattle joined as generation 1. The next tile from this city costs more.`} />
+    </div>
+    <h3 class="be-h3">Cost by distance and purchases</h3>
+    <div class="be-grids">
+      {BUY_YIELDS.map(y => (
+        <div class="be-table">
+          <table>
+            <thead>
+              <tr><th>{buyTile.yields[y].name}</th>{buyTile.counts.map(c => <th>{c} bought</th>)}</tr>
+            </thead>
+            <tbody>
+              {buyTile.grid[y].map(row => (
+                <tr><td>distance {row.distance}</td>{row.costs.map(c => <td class="be-num">{c}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </div>
+    <p class="be-note">“Bought” is the city's count plus half the player's count, rounded down.</p>
+  </section>
+
+  <section class="be-section be-section--wide" id="growth">
+    <h2 class="be-h">Growth bonuses</h2>
+    <p>
+      Border growth <em>n</em> picks one tile <em>n</em> times: the highest-scoring
+      valid-growth tile adjacent to the city's contiguous territory, not on or
+      next to an urban tile, not on the map boundary. The rules then run from it
+      at range 0.
+    </p>
+    <div class="be-split">
+      <div class="be-table">
+        <table>
+          <thead><tr><th>Score term</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>seeded roll</td><td>1 to {w.rollMax}</td></tr>
+            <tr><td>terrain</td><td>{Object.entries(w.terrain).map(([k, v]) => `${growth.names[k]} ${v}`).join(', ')}</td></tr>
+            <tr><td>height</td><td>{Object.entries(w.height).map(([k, v]) => `${growth.names[k]} ${v}`).join(', ')}</td></tr>
+            <tr><td>vegetation</td><td>{Object.entries(w.vegetation).map(([k, v]) => `${growth.names[k]} ${v}`).join(', ')}</td></tr>
+            <tr><td>river</td><td>{w.river}</td></tr>
+            <tr><td>passable</td><td>{w.passable}</td></tr>
+            <tr><td>on the trade network</td><td>{w.tradeNetwork}</td></tr>
+            <tr><td>resource</td><td>{Object.values(w.resource).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b).join(' / ')} (see appendix)</td></tr>
+            <tr><td>per neighbour</td><td>height {Object.entries(w.landAdjacent).map(([k, v]) => `${growth.names[k]} ${v}`).join(', ')}; +{w.ownCityAdjacent} if this city's; +{w.alliedImprovedAdjacent} if yours and improved; else resource value ÷ {w.adjacentResourceDivisor}</td></tr>
+            <tr><td>distance</td><td>× {w.distanceNumerator} ÷ (distance from the city + {w.distanceOffset})</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <HexBoard scenario={grow} showScores={true}
+        note={`Scores shown with the roll fixed at ${grow.trigger.roll} for every candidate. The trees at ${winner.total} beat the lush river tile at ${runnerUp.total}; the water beyond joined by the flank rule, then the second pick took the river tile.`} />
+    </div>
+    <p>
+      <strong>The seed.</strong> The roll comes from a stream seeded by the city
+      tile and recreated for every pick, so a city always rolls the same numbers
+      in candidate order; the board fixes the roll to show the rest of the score.
+    </p>
+    <ul class="be-list">
+      <li><strong>Cards:</strong> {cards.map(c => `${c.name.replace('City Border Growth ', '')} ${c.value}`).join(', ')} tiles.</li>
+      {techCard && <li><strong>Tech card:</strong> {(has(techCard.tech!) ? <Term id={techCard.tech!} showIcon={false} label={techCard.name} /> : techCard.name)} ({(has(techCard.prereqId!) ? <Term id={techCard.prereqId!} showIcon={false} label={techCard.prereq!} /> : techCard.prereq!)}) gives {techCard.value} tiles to every city.</li>}
+      <li><strong>Events:</strong> {eventGroups.map(g => `${g.name} ${g.values.join('/')}${g.count > 1 ? ` (×${g.count})` : ''}`).join(', ')}. {events.filter(e => e.value < 0).map(e => `${e.name} carries ${e.value}, which does nothing: growth needs a positive value.`).join(' ')}</li>
+    </ul>
+  </section>
+
+  <section class="be-section be-section--wide" id="losing">
+    <h2 class="be-h">Losing tiles and gotchas</h2>
+    <div class="be-split">
+      <ul class="be-list">
+        <li><strong>Territory never shrinks by itself.</strong> Tiles change hands on capture (the whole territory follows), razing (cleared), reassignment between your cities, or a swallowed site.</li>
+        <li><strong>Borders clear Ruins.</strong> {constants.removeBorder.filter(r => !r.tribe).map(r => r.name).join(', ')} and the tribal {constants.removeBorder.filter(r => r.tribe).map(r => r.name).join(', ')} carry a remove-on-border flag: the tile stays yours, the improvement goes.</li>
+        <li><strong>Tribe sites</strong> are skipped by the rules, and a settlement's own active city site blocks the urban pull even for an ally.</li>
+        <li><strong>Other active city sites</strong> are never grabbed except by the surround rule.</li>
+        <li><strong>Map boundary</strong> tiles are never a growth pick nor part of a swallowed site.</li>
+        <li><strong>Growth picks avoid urban tiles</strong> and their neighbours; only the chain can reach them.</li>
+        <li><strong>{constants.territoryOnlyCount} of {constants.improvementCount} improvements</strong> need territory; {constants.territoryWaterUnits.join(', ')} may end a move on your own water.</li>
+      </ul>
+      <HexBoard scenario={sc.ruin} />
+    </div>
+  </section>
+
+  <section class="be-section be-section--wide" id="appendix">
+    <h2 class="be-h">Appendix</h2>
+
+    <h3 class="be-h3">Every improvement that spreads borders</h3>
+    <p class="be-note">
+      {spreadersSummary.urbanCount} improvements spread because they are urban;
+      the {flagged.length} below carry the flag as well, {flaggedWonders.length} of them wonders.
+      {unlockSpreaders.map(s => ` ${s.name} spreads only under ${s.unlockedBy.map(u => u.name).join(', ')}.`)}
+    </p>
+    <div class="be-table">
+      <table>
+        <thead><tr><th>Improvement</th><th>Why</th><th>Urban</th><th>DLC</th></tr></thead>
+        <tbody>
+          {[...flagged, ...unlockSpreaders].map(s => (
+            <tr id={`spread-${s.slug}`}>
+              <td>{(has(s.id) ? <Term id={s.id} showIcon={false} label={s.name} /> : s.name)}</td>
+              <td class="be-dim">{s.reasons.map(r => REASON_LABEL[r]).join(' + ')}</td>
+              <td class="be-dim">{s.reasons.includes('urban') ? 'yes' : '—'}</td>
+              <td>{s.dlc && <span class="chip chip--dlc">{s.dlc}</span>}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="be-note">Urban-only spreaders ({urbanOnly.length}): {urbanOnly.map(s => s.name).join(', ')}.</p>
+
+    <h3 class="be-h3">Every growth value</h3>
+    <div class="be-table">
+      <table>
+        <thead><tr><th>Bonus</th><th>Tiles</th><th>Source</th></tr></thead>
+        <tbody>
+          {growth.values.map(v => (
+            <tr><td><code>{v.id}</code></td><td class="be-num">{v.value}</td><td class="be-dim">{v.kind === 'tech' ? `${v.name} tech card (${v.prereq})` : v.kind === 'event' ? `${v.name} event` : 'bonus card'}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="be-h3">Resource border values</h3>
+    <p class="be-note">
+      {Object.entries(w.resource).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k, v], i) => <>{i > 0 && ', '}{growth.names[k]} {v}</>)}.
+      Resources without a value score 0 but are still pulled.
+    </p>
+
+    <h3 class="be-h3">Constants</h3>
+    <div class="be-table">
+      <table>
+        <tbody>
+          <tr><td>BORDER_VISIBILITY</td><td>{constants.borderVisibility}: tiles seen around your territory (plus EXTRA_VISIBILITY {constants.extraVisibility} and vision effects).</td></tr>
+          <tr><td>CONSUMPTION_BORDERS_MODIFIER</td><td>+{constants.consumptionBordersModifier}% unit consumption on tiles that are not yours or an ally's, unless the tile is an unowned healing improvement or the player has the no-outside-consumption unlock.</td></tr>
+          <tr><td>FAMILY_TERRITORY_MODIFIER</td><td>+{constants.familyTerritoryModifier} for a unit standing in its own family's territory (Unit.familyTerritoryModifier).</td></tr>
+          <tr><td>UNIT_BUY_TILE_COST</td><td>{constants.unitBuyTileCost} order per purchase.</td></tr>
+          <tr><td>COLOR_MULTIPLIER_FOUND_BORDER_PREVIEW</td><td><code>{constants.foundBorderPreviewColor}</code>, the wash on the founding preview.</td></tr>
+          <tr><td>Border patterns</td><td>{constants.borderPatterns.map(p => p.replace('BORDER_PATTERN_', '').toLowerCase()).join(', ')} (teamColor.xml, one per city of a team).</td></tr>
+          <tr><td>Minor city improvement</td><td><code>{constants.minorCityImprovement}</code> ({constants.minorCityName}).</td></tr>
+          <tr><td>Border growth log line</td><td><code>{texts.borderGrowthLog}</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="be-h3">Sources</h3>
+    <ul class="be-list be-sources">
+      {SOURCES.map(([fn, loc, what]) => (
+        <li><code>{fn}</code> <span class="be-loc">{loc}</span> — {what}</li>
+      ))}
+      <li><code>scripts/build_borders.py</code> — the port that computed every board above, with {data.scenarios.length} asserted scenarios that fail the build if a rule drifts.</li>
+    </ul>
+  </section>
+
+  <style>
+    .lede {
+      color: var(--text-dim);
+      max-width: 72ch;
+      margin: 0 0 1rem;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .be-legend { margin: 0 0 1.4rem; row-gap: 0.45rem; }
+    .be-key { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .be-swatch {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 0.95em; height: 0.95em; border-radius: 2px;
+      font-style: normal; font-size: 0.7em; font-weight: 700;
+    }
+    .be-swatch--you { background: rgba(110,160,210,.45); border: 1px solid rgb(110,160,210); }
+    .be-swatch--enemy { background: rgba(150,60,60,.45); border: 1px solid rgb(150,60,60); }
+    .be-swatch--badge { border-radius: 50%; background: #0b0c0f; border: 2px solid var(--gold); color: #fff; width: 1.2em; height: 1.2em; }
+    .be-swatch--ring { border-radius: 50%; border: 2px solid #fff; }
+    .be-swatch--buy { border: 1px dashed var(--gold); }
+    .be-dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; border: 2px solid; background: #0b0c0f; }
+
+    .be-section { margin: 1.6rem 0; max-width: 78ch; }
+    .be-section--wide { max-width: none; }
+    .be-h {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin: 0 0 0.6rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+      padding-bottom: 0.35rem;
+      color: var(--text);
+    }
+    .be-h3 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 1.1rem 0 0.4rem;
+      color: var(--text);
+    }
+    .be-section p {
+      color: var(--text);
+      font-size: 0.86rem;
+      line-height: 1.55;
+      margin: 0 0 0.6rem;
+      max-width: 78ch;
+    }
+    .be-section p em { color: var(--accent); font-style: normal; }
+    .be-rule {
+      font-size: 1.02rem !important;
+      font-weight: 600;
+      line-height: 1.45 !important;
+      border-left: 3px solid var(--accent);
+      padding: 0.4rem 0.8rem;
+      background: var(--bg-elev);
+      border-radius: var(--radius);
+    }
+    .be-quote {
+      margin: 0 0 0.8rem;
+      padding: 0.6rem 0.9rem;
+      border-left: 3px solid var(--border-strong);
+      background: var(--bg-elev);
+      border-radius: var(--radius);
+      max-width: 78ch;
+    }
+    .be-quote p { font-style: italic; color: var(--text-soft); margin: 0 0 0.3rem; }
+    .be-quote footer { font-size: 0.72rem; color: var(--text-faint); }
+    .be-section code, .be-section kbd {
+      background: var(--bg-elev-2);
+      padding: 0.05rem 0.35rem;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      font-size: 0.85em;
+      font-family: var(--font-mono);
+    }
+    .be-note { font-size: 0.78rem !important; color: var(--text-dim) !important; margin-top: 0.6rem !important; }
+    .be-list {
+      margin: 0.3rem 0 0.8rem 0;
+      padding-left: 1.1rem;
+      color: var(--text);
+      font-size: 0.85rem;
+      line-height: 1.55;
+      max-width: 78ch;
+    }
+    .be-list li { margin: 0.2rem 0; }
+    .be-list strong { color: var(--text); font-weight: 600; }
+    .be-list em { color: var(--accent); font-style: normal; }
+
+    .be-boards {
+      display: grid;
+      gap: 1rem 1.2rem;
+      align-items: start;
+    }
+    .be-boards--4 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); max-width: 1500px; }
+    .be-boards--2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width: 1200px; }
+    .be-split {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(260px, 460px);
+      gap: 1rem 1.5rem;
+      align-items: start;
+      max-width: 1150px;
+    }
+    .be-split > :global(.hexboard) { min-width: 0; }
+    @media (max-width: 720px) { .be-split { grid-template-columns: 1fr; } }
+    .be-grids { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 1.5rem; max-width: 1200px; }
+
+    .be-table { margin: 0.4rem 0 0.9rem; overflow-x: auto; max-width: 1200px; }
+    .be-table table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 28rem; }
+    .be-table th, .be-table td {
+      text-align: left; padding: 0.3rem 0.55rem;
+      border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    .be-table th {
+      font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-faint); font-weight: 500; background: var(--bg-elev);
+    }
+    .be-table td strong { font-weight: 600; }
+    .be-dim { color: var(--text-dim); }
+    .be-num { text-align: right; font-family: var(--font-mono); font-size: 0.78rem; }
+    .be-sources { font-size: 0.8rem; max-width: none; }
+    .be-loc { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-2); }
+    .chip--dlc { margin-left: 0.4rem; border-color: oklch(0.5 0.1 60); color: oklch(0.8 0.1 60); font-size: 0.66rem; }
+    .be-section a { color: var(--accent-2); }
+  </style>
+</Base>

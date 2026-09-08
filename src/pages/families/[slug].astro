@@ -170,6 +170,9 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
               </ul>
             </>
           )}
+          {f.slug === 'landowners' && (
+            <p class="np-see">Tile buying rules and costs: <a href={`${base}border-expansion#buying`}>Border Expansion</a></p>
+          )}
           {(f.seatFounding || []).length > 0 && (
             <>
               <div class="np-sublabel">On founding the seat</div>
@@ -460,6 +463,8 @@ const luxIcon = (r: string) => `${base}img/icons/resources/${r}.png`;
     margin-left: auto;
   }
   .np-empty { color: var(--text-faint); font-style: italic; margin: 0; }
+  .np-see { font-size: 0.78rem; color: var(--text-dim); margin: 0.2rem 0 0.6rem; }
+  .np-see a { color: var(--accent-2); }
   .np-sublabel {
     font-family: var(--font-ui);
     font-size: 0.6rem;

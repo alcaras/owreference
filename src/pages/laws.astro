@@ -65,6 +65,9 @@ for (const g of laws.groups) {
                         })}
                       </ul>
                     )}
+                    {law.id === 'LAW_COLONIES' && (
+                      <div class="lawcard__see">Tile buying rules and costs: <a href={`${base}border-expansion#buying`}>Border Expansion</a></div>
+                    )}
                     {law.opinions.length > 0 && (
                       <div class="lawcard__opinions">
                         {law.opinions.map(op => (
@@ -294,6 +297,8 @@ for (const g of laws.groups) {
   }
 
   /* Faction opinion chips — who likes this law */
+  .lawcard__see { font-size: 0.72rem; color: var(--text-dim); margin: 0.35rem 0 0.2rem; }
+  .lawcard__see a { color: var(--accent-2); }
   .lawcard__opinions {
     display: flex; gap: 0.3rem; flex-wrap: wrap;
   }
