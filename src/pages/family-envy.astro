@@ -13,7 +13,7 @@ const champions = D.classes.find((c: any) => c.largestMilitary !== 0);
 // Default the picker to Rome — it has a Landowners family (Claudius), so the
 // class extra is visible the moment the page loads.
 const DEFAULT_NATION = D.nations.find((n: any) => n.id === 'NATION_ROME')?.id ?? D.nations[0].id;
-const DEFAULT_SPLIT = [4, 3, 1];
+const DEFAULT_TOTAL = 8;
 
 // Envy ladder, precomputed: triangle(gap - 1) x ENVY_OPINION for each number
 // of cities a family trails the largest family by.
@@ -62,48 +62,68 @@ const tieRows = [1, 2, 3].map((tied) => {
 >
   <p class="lede">
     Three of the terms in <a href={`${base}opinion`}>family opinion</a> care about nothing but
-    <strong>how many cities each family holds</strong>. Two are flat awards for the ends of the
-    table — <b>{D.help.mostCities}</b> and <b>{D.help.fewestCities}</b> — and the third,
-    <b>{D.help.envyName}</b>, is a curve that only starts once a family is <em>two</em> cities
-    behind the leader and then bites hard. {D.help.envy} They are recomputed from scratch every
-    time a city changes hands: nothing here accumulates, so an even split undoes the damage of a
-    lopsided one the same turn. Set your three families below and read what the split is costing
-    you.
+    <strong>how many cities each family holds</strong>: <b>{D.help.mostCities}</b>
+    (+{G.MOST_CITIES_OPINION}, split between families tied at the top), <b>{D.help.fewestCities}</b>
+    ({G.FEWEST_CITIES_OPINION}, split at the bottom) and <b>{D.help.envyName}</b>, a curve that only
+    starts once a family is <em>two</em> cities behind the leader and then bites hard. Only
+    <b>{landowners?.name}</b> bend them, by {landowners?.mostCities} more at each end. Pick your nation,
+    the three families you started with and how many cities you will have, and every way of
+    dividing them is ranked below, kindest split first.
   </p>
 
   <section class="asm">
     <div class="asm__row">
       <span class="asm__tag">Nation</span>
       <div class="asm__fields">
-        <label class="f f--sel"><span>Whose families <i>{G.MAX_FAMILIES} of the nation's 4 are ever in play</i></span>
+        <label class="f f--sel"><span>Whose families</span>
           <select id="e-nation">
             {D.nations.map((n: any) => (
               <option value={n.id} selected={n.id === DEFAULT_NATION}>{n.name}</option>
             ))}
           </select>
         </label>
-        <label class="f f--sel"><span>Families in play <i>a 4th can never start</i></span>
+        <label class="f f--sel"><span>Families in play <i>{G.MAX_FAMILIES} of the nation's 4 at most</i></span>
           <select id="e-count">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3" selected>3</option>
           </select>
         </label>
-        <label class="f"><span>Other opinion <i>every other term, per family</i></span>
-          <input type="number" id="e-other" value="0" step="10" /></label>
         <button type="button" class="asm__reset" id="e-reset">Reset</button>
+      </div>
+    </div>
+    <div class="asm__row">
+      <span class="asm__tag">Families</span>
+      <div class="asm__fields asm__fields--fams" id="e-picks"></div>
+    </div>
+    <div class="asm__row">
+      <span class="asm__tag">Cities</span>
+      <div class="asm__fields">
+        <label class="f"><span>Total cities <i>across all your families</i></span>
+          <span class="f__step">
+            <button type="button" class="stp" id="e-total-dn" aria-label="One fewer city">−</button>
+            <input type="number" id="e-total" value={DEFAULT_TOTAL} min="0" max="40" />
+            <button type="button" class="stp" id="e-total-up" aria-label="One more city">+</button>
+          </span>
+        </label>
+        <label class="f"><span>Show <i>splits, kindest first</i></span>
+          <select id="e-show">
+            <option value="20" selected>top 20</option>
+            <option value="60">top 60</option>
+            <option value="all">all</option>
+          </select>
+        </label>
       </div>
     </div>
   </section>
 
-  <div class="fams" id="e-fams"></div>
-
   <section class="rung">
-    <h2 class="rung__h">Every split, ranked</h2>
+    <h2 class="rung__h">Every way to split <b id="e-total-lbl">8</b> cities</h2>
     <p class="rung__note">
-      Every way of dividing <b id="e-total-lbl">8</b> cities between the families above, kindest
-      first: the split whose <em>unhappiest</em> family is least unhappy leads. Each cell is that
-      family's city count and its whole city-count opinion — click a row to load it.
+      One row per allocation. Each family cell is its city count and the whole city-count opinion
+      that split gives it; the bar colour is the opinion bracket once the family's other opinion is
+      added. Rows are ordered so the split whose <em>unhappiest</em> family is least unhappy comes
+      first, then by the sum. Click a row for the breakdown.
       <span id="e-rung-more"></span>
     </p>
     <div class="grid">
@@ -118,6 +138,9 @@ const tieRows = [1, 2, 3].map((tied) => {
       </div>
     </div>
   </section>
+
+  <h2 class="fams__h">Breakdown of <b id="e-sel-lbl"></b></h2>
+  <div class="fams" id="e-fams"></div>
 
   <section class="ladder">
     <div class="ladder__col">
@@ -244,7 +267,7 @@ const tieRows = [1, 2, 3].map((tied) => {
         <ul>
           <li>The city terms are only part of the sum. Leader traits, council seats, laws,
             luxuries, wonders, religion and memories all add into the same number before it is
-            bracketed — that is what the <b>Other opinion</b> box stands in for.</li>
+            bracketed — that is what each family's <b>other opinion</b> box stands in for.</li>
           <li>Because it is recomputed rather than accumulated, <b>giving a city away fixes the
             number immediately</b>. There is no decay to wait out.</li>
           <li>Founding a city is also previewed this way in-game: the found-city tooltip shows each
@@ -272,7 +295,7 @@ const tieRows = [1, 2, 3].map((tied) => {
   </section>
 </Base>
 
-<script is:inline define:vars={{ D, base, DEFAULT_NATION, DEFAULT_SPLIT }}>
+<script is:inline define:vars={{ D, base, DEFAULT_NATION, DEFAULT_TOTAL }}>
   (() => {
     const $ = (id) => document.getElementById(id);
     const G = D.globals;
@@ -295,8 +318,9 @@ const tieRows = [1, 2, 3].map((tied) => {
       return best;
     };
 
-    // The three city-count terms, replayed per family. `fams` is
-    // [{cities, mostCities, fewestCities}] — the class extras, not the globals.
+    // The three city-count terms, replayed per family
+    // (PlayerOpinion.cs calculateFamilyOpinionMostCities / FewestCities / Envy).
+    // `fams` is [{cities, mostCities, fewestCities}] — class extras, not globals.
     function cityTerms(fams) {
       const n = fams.length;
       const counts = fams.map((f) => f.cities);
@@ -348,21 +372,24 @@ const tieRows = [1, 2, 3].map((tied) => {
     // ── state ────────────────────────────────────────────────────────
     let nationId = DEFAULT_NATION;
     let count = 3;
-    let picks = [];   // family ids, one per slot
-    let cities = [];  // city counts, one per slot
+    let picks = [];     // family ids, one per slot
+    let other = [];     // per-slot "other opinion" offset
+    let total = DEFAULT_TOTAL;
+    let selected = null; // split key "a/b/c" the breakdown shows; null = the top row
 
     const nation = () => D.nations.find((n) => n.id === nationId) || D.nations[0];
     const familyById = (id) => nation().families.find((f) => f.id === id);
 
-    function resetPicks(keepCities) {
+    function resetPicks() {
       picks = nation().families.slice(0, 3).map((f) => f.id);
-      if (!keepCities) cities = DEFAULT_SPLIT.slice();
+      other = [0, 0, 0];
+      selected = null;
     }
 
     function slots() {
       return picks.slice(0, count).map((id, i) => {
         const f = familyById(id) || nation().families[i];
-        return { ...f, cities: Math.max(0, cities[i] | 0) };
+        return { ...f, other: other[i] | 0 };
       });
     }
 
@@ -370,53 +397,125 @@ const tieRows = [1, 2, 3].map((tied) => {
     const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+    // ── family pickers ───────────────────────────────────────────────
+    function renderPicks() {
+      const s = slots();
+      const nationFams = nation().families;
+      $('e-picks').innerHTML = s.map((f, i) => {
+        const options = nationFams.map((nf) =>
+          `<option value="${nf.id}"${nf.id === f.id ? ' selected' : ''}>${esc(nf.name)} · ${esc(nf.className)}</option>`).join('');
+        const extra = f.mostCities || f.fewestCities
+          ? `<span class="pick__extra" title="${esc(f.className)}: ${sign(f.mostCities)} most cities, ${sign(f.fewestCities)} fewest cities">${sign(f.mostCities)} / ${sign(f.fewestCities)}</span>` : '';
+        return `<div class="pick" style="--fam:${f.color}">
+          <span class="pick__strip"></span>
+          <label class="f f--sel"><span>Family ${i + 1}</span>
+            <select class="pick__sel" data-slot="${i}" aria-label="Family in slot ${i + 1}">${options}</select></label>
+          <a class="pick__class" href="${base}families/${f.classSlug}"><img src="${base}${f.icon}" alt="" width="14" height="14" />${esc(f.className)}${extra}</a>
+          <label class="f f--other"><span>Other opinion <i>every non-city term</i></span>
+            <input type="number" class="pick__other" data-slot="${i}" value="${f.other}" step="10" /></label>
+        </div>`;
+      }).join('');
+    }
+
+    // ── every split of `total` across the slots ──────────────────────
+    // Compositions, not partitions: who holds which pile matters once a
+    // Landowners family is in play, and the reader wants to see their own
+    // family names in the columns anyway.
+    function allSplits(s) {
+      const n = s.length;
+      const rows = [];
+      const walk = (i, left, acc) => {
+        if (i === n - 1) { rows.push(acc.concat(left)); return; }
+        for (let k = left; k >= 0; k--) walk(i + 1, left - k, acc.concat(k));
+      };
+      if (n > 0) walk(0, total, []);
+      const scored = rows.map((split) => {
+        const terms = cityTerms(s.map((f, i) => ({ ...f, cities: split[i] })));
+        const totals = terms.map((t) => t.total);
+        const withOther = totals.map((v, i) => v + s[i].other);
+        return {
+          split, key: split.join('/'), terms, totals,
+          sum: totals.reduce((a, v) => a + v, 0),
+          worst: Math.min(...totals),
+          worstAll: Math.min(...withOther),
+          even: Math.max(...split) - Math.min(...split) <= 1,
+        };
+      });
+      // Worst family first, then the sum, then the flattest split: the
+      // ordering a player actually cares about is "which split leaves nobody
+      // furious".
+      scored.sort((a, b) => (b.worst - a.worst) || (b.sum - a.sum) ||
+        ((Math.max(...a.split) - Math.min(...a.split)) - (Math.max(...b.split) - Math.min(...b.split))));
+      return scored;
+    }
+
+    function renderRungs(s, scored) {
+      const head = ['<th class="rowlabel rowlabel--corner">Split</th>']
+        .concat(s.map((f) => `<th class="nhdr rung__fh"><span style="--fam:${f.color}"></span>${esc(f.name)}</th>`))
+        .concat(['<th class="nhdr nhdr--num">Sum</th>', '<th class="nhdr nhdr--num">Worst</th>']);
+      $('e-rung-head').innerHTML = head.join('');
+      $('e-rung-cols').innerHTML = ['<col style="width:5.5rem" />']
+        .concat(s.map(() => '<col style="width:9.5rem" />'))
+        .concat(['<col style="width:5rem" />', '<col style="width:5rem" />']).join('');
+
+      const showSel = $('e-show').value;
+      const cap = showSel === 'all' ? Infinity : +showSel;
+      const shown = scored.slice(0, cap);
+      if (selected && !shown.some((r) => r.key === selected)) {
+        const here = scored.find((r) => r.key === selected);
+        if (here) shown.push(here);
+      }
+      $('e-rung-more').textContent = scored.length > shown.length
+        ? `Showing the best ${shown.length} of ${scored.length} splits.` : `${scored.length} splits.`;
+
+      const selKey = selected || (scored[0] && scored[0].key);
+      $('e-rung-body').innerHTML = shown.map((r, idx) => {
+        const cells = r.totals.map((v, i) => {
+          const b = bracketFor(v + s[i].other);
+          const cls = v > 0 ? 'is-good' : v < 0 ? 'is-bad' : 'is-zero';
+          return `<td class="cell rung__c ${cls}" style="--brk:${b ? b.color : '#7d8590'}" title="${b ? esc(b.label) : ''}">` +
+            `<b>${r.split[i]}</b><i>${sign(v)}</i></td>`;
+        }).join('');
+        const flags = (idx === 0 && !scored.slice(1).some(x => x.worst === r.worst && x.sum === r.sum) ? '<em class="rung__flag">best</em>' : '') +
+          (r.even ? '<em class="rung__flag rung__flag--even">even</em>' : '');
+        return `<tr class="rung__r${r.key === selKey ? ' is-here' : ''}" data-split="${r.key}">` +
+          `<td class="rowlabel rung__k">${r.key}${flags}</td>${cells}` +
+          `<td class="cell cell--num rung__s">${sign(r.sum)}</td>` +
+          `<td class="cell cell--num ${r.worst < 0 ? 'is-bad' : 'is-zero'}">${sign(r.worst)}</td></tr>`;
+      }).join('');
+      return selKey;
+    }
+
     // "40 ÷ 1 tied" is nonsense; say what the split actually was.
     function tieNote(term, off, n) {
       if (!term) return n > 1 ? off : 'no rivals';
       if (term.tied === 1) return `${term.pool}, alone at that end`;
       return `${term.pool} ÷ ${term.tied} tied`;
     }
-
     function termRow(label, note, term) {
       if (!term) return `<li class="fam__term is-off"><span>${label}</span><i>${note}</i><b>—</b></li>`;
       const cls = term.value > 0 ? 'is-good' : term.value < 0 ? 'is-bad' : '';
-      return `<li class="fam__term ${cls}"><span>${label}</span><i>${note}</i>` +
-        `<b>${sign(term.value)}</b></li>`;
+      return `<li class="fam__term ${cls}"><span>${label}</span><i>${note}</i><b>${sign(term.value)}</b></li>`;
     }
 
-    function render() {
-      const s = slots();
-      const terms = cityTerms(s);
-      const other = +$('e-other').value || 0;
-      const total = s.reduce((a, f) => a + f.cities, 0);
-      const nationFams = nation().families;
-
+    function renderBreakdown(s, row) {
+      $('e-sel-lbl').textContent = row ? row.key : '—';
+      if (!row) { $('e-fams').innerHTML = ''; return; }
       $('e-fams').innerHTML = s.map((f, i) => {
-        const t = terms[i];
-        const sum = t.total + other;
+        const t = row.terms[i];
+        const sum = t.total + f.other;
         const b = bracketFor(sum);
         const extra = f.mostCities || f.fewestCities
-          ? `<span class="fam__extra">${f.className} ${sign(f.mostCities)} / ${sign(f.fewestCities)}</span>` : '';
-        // Every family stays selectable: picking one that another slot holds
-        // swaps the two rather than duplicating it.
-        const options = nationFams.map((nf) =>
-          `<option value="${nf.id}"${nf.id === f.id ? ' selected' : ''}` +
-          `>${esc(nf.name)} · ${esc(nf.className)}</option>`).join('');
-
+          ? `<span class="fam__extra">${esc(f.className)} ${sign(f.mostCities)} / ${sign(f.fewestCities)}</span>` : '';
         return `<article class="fam" style="--fam:${f.color}">
           <div class="fam__strip"></div>
           <div class="fam__head">
-            <select class="fam__pick" data-slot="${i}" aria-label="Family in slot ${i + 1}">${options}</select>
+            <span class="fam__name">${esc(f.name)}</span>
             <a class="fam__class" href="${base}families/${f.classSlug}">
               <img src="${base}${f.icon}" alt="" width="16" height="16" />${esc(f.className)}</a>
             ${extra}
           </div>
-          <div class="fam__cities">
-            <button type="button" class="stp" data-slot="${i}" data-d="-1" aria-label="One fewer city">−</button>
-            <input type="number" class="fam__n" data-slot="${i}" value="${f.cities}" min="0" max="40" />
-            <button type="button" class="stp" data-slot="${i}" data-d="1" aria-label="One more city">+</button>
-            <span class="fam__cl">cities</span>
-          </div>
+          <div class="fam__cities"><b class="fam__n">${row.split[i]}</b><span class="fam__cl">${row.split[i] === 1 ? 'city' : 'cities'}</span></div>
           <ul class="fam__terms">
             ${termRow(D.help.mostCities, tieNote(t.most, 'not the largest', s.length), t.most)}
             ${termRow(D.help.fewestCities, tieNote(t.fewest, 'not the smallest', s.length), t.fewest)}
@@ -424,138 +523,81 @@ const tieRows = [1, 2, 3].map((tied) => {
           </ul>
           <div class="fam__sum">
             <span class="fam__sumn ${t.total > 0 ? 'is-good' : t.total < 0 ? 'is-bad' : ''}">${sign(t.total)}</span>
-            <span class="fam__suml">from cities${other ? `, ${sign(other)} elsewhere` : ''}</span>
+            <span class="fam__suml">from cities${f.other ? `, ${sign(f.other)} elsewhere` : ''}</span>
           </div>
           <div class="fam__brk" style="--brk:${b ? b.color : '#7d8590'}">
             <b>${b ? esc(b.label) : '—'}</b><i>at ${sum}</i>
           </div>
         </article>`;
       }).join('');
-
-      $('e-total-lbl').textContent = String(total);
-      renderRungs(s, total, other);
     }
 
-    // Every split of the current city total across the current families,
-    // ordered worst-sum-first. Compositions, not partitions: with a Landowners
-    // family in play, who holds which pile matters.
-    function renderRungs(s, total, other) {
-      const n = s.length;
-      const head = ['<th class="rowlabel rowlabel--corner">Split</th>']
-        .concat(s.map((f) => `<th class="nhdr rung__fh"><span style="--fam:${f.color}"></span>${esc(f.name)}</th>`))
-        .concat(['<th class="nhdr nhdr--num">Sum</th>', '<th class="nhdr nhdr--num">Worst</th>']);
-      $('e-rung-head').innerHTML = head.join('');
-      // .ntbl is table-layout: fixed — without <col> widths every column,
-      // including the 5-character Split key, takes an equal share.
-      $('e-rung-cols').innerHTML = ['<col style="width:5.5rem" />']
-        .concat(s.map(() => '<col style="width:9rem" />'))
-        .concat(['<col style="width:5rem" />', '<col style="width:5rem" />']).join('');
-
-      const rows = [];
-      const walk = (i, left, acc) => {
-        if (i === n - 1) { rows.push(acc.concat(left)); return; }
-        for (let k = left; k >= 0; k--) walk(i + 1, left - k, acc.concat(k));
-      };
-      if (n > 0 && total <= 24) walk(0, total, []);
-
-      const scored = rows.map((split) => {
-        const terms = cityTerms(s.map((f, i) => ({ ...f, cities: split[i] })));
-        const totals = terms.map((t) => t.total);
-        return {
-          split,
-          totals,
-          sum: totals.reduce((a, v) => a + v, 0),
-          worst: Math.min(...totals),
-        };
-      });
-      // Worst family first, then the sum: the ordering a player actually cares
-      // about is "which split leaves nobody furious".
-      scored.sort((a, b) => (b.worst - a.worst) || (b.sum - a.sum) ||
-        (Math.max(...b.split) - Math.max(...a.split)));
-
-      const current = s.map((f) => f.cities).join('/');
-      // Compositions grow as (total+2 choose 2); past a few dozen the table
-      // stops being readable long before it stops being cheap to build.
-      const CAP = 60;
-      const shown = scored.slice(0, CAP);
-      // Keep the split the reader is actually looking at on screen even when
-      // it ranks below the cut.
-      if (!shown.some((r) => r.split.join('/') === current)) {
-        const here = scored.find((r) => r.split.join('/') === current);
-        if (here) shown.push(here);
-      }
-      const moreEl = $('e-rung-more');
-      moreEl.textContent = scored.length > CAP
-        ? `Showing the best ${CAP} of ${scored.length} splits.`
-        : '';
-      $('e-rung-body').innerHTML = shown.map((r) => {
-        const key = r.split.join('/');
-        const cells = r.totals.map((v, i) => {
-          const b = bracketFor(v + other);
-          const cls = v > 0 ? 'is-good' : v < 0 ? 'is-bad' : 'is-zero';
-          return `<td class="cell rung__c ${cls}" style="--brk:${b ? b.color : '#7d8590'}">` +
-            `<b>${r.split[i]}</b><i>${sign(v)}</i></td>`;
-        }).join('');
-        return `<tr class="rung__r${key === current ? ' is-here' : ''}" data-split="${key}">` +
-          `<td class="rowlabel rung__k">${key}</td>${cells}` +
-          `<td class="cell cell--num rung__s">${sign(r.sum)}</td>` +
-          `<td class="cell cell--num ${r.worst < 0 ? 'is-bad' : 'is-zero'}">${sign(r.worst)}</td></tr>`;
-      }).join('');
+    function render() {
+      const s = slots();
+      $('e-total-lbl').textContent = String(total);
+      $('e-total').value = String(total);
+      const scored = allSplits(s);
+      const selKey = renderRungs(s, scored);
+      renderBreakdown(s, scored.find((r) => r.key === selKey) || null);
     }
 
     // ── events ───────────────────────────────────────────────────────
     $('e-nation').addEventListener('change', () => {
       nationId = $('e-nation').value;
-      resetPicks(true);
+      resetPicks();
+      renderPicks();
       render();
     });
     $('e-count').addEventListener('change', () => {
       count = +$('e-count').value;
+      selected = null;
+      renderPicks();
       render();
     });
-    $('e-other').addEventListener('input', render);
+    $('e-show').addEventListener('change', render);
+    const setTotal = (v) => { total = Math.max(0, Math.min(40, v | 0)); selected = null; render(); };
+    $('e-total').addEventListener('input', () => setTotal(+$('e-total').value || 0));
+    $('e-total-dn').addEventListener('click', () => setTotal(total - 1));
+    $('e-total-up').addEventListener('click', () => setTotal(total + 1));
     $('e-reset').addEventListener('click', () => {
       $('e-nation').value = DEFAULT_NATION;
       $('e-count').value = '3';
-      $('e-other').value = '0';
+      $('e-show').value = '20';
       nationId = DEFAULT_NATION;
       count = 3;
+      total = DEFAULT_TOTAL;
       resetPicks();
+      renderPicks();
       render();
     });
 
-    $('e-fams').addEventListener('click', (ev) => {
-      const btn = ev.target.closest('.stp');
-      if (!btn) return;
-      const i = +btn.dataset.slot;
-      cities[i] = Math.max(0, Math.min(40, (cities[i] | 0) + +btn.dataset.d));
-      render();
-    });
-    $('e-fams').addEventListener('input', (ev) => {
-      const inp = ev.target.closest('.fam__n');
-      if (!inp) return;
-      cities[+inp.dataset.slot] = Math.max(0, Math.min(40, +inp.value || 0));
-      render();
-    });
-    $('e-fams').addEventListener('change', (ev) => {
-      const sel = ev.target.closest('.fam__pick');
+    $('e-picks').addEventListener('change', (ev) => {
+      const sel = ev.target.closest('.pick__sel');
       if (!sel) return;
       const i = +sel.dataset.slot;
       const was = picks[i];
-      const other = picks.indexOf(sel.value);
-      if (other !== -1 && other !== i) picks[other] = was;  // swap, never duplicate
+      const dup = picks.indexOf(sel.value);
+      if (dup !== -1 && dup !== i) picks[dup] = was;  // swap, never duplicate
       picks[i] = sel.value;
+      renderPicks();
+      render();
+    });
+    $('e-picks').addEventListener('input', (ev) => {
+      const inp = ev.target.closest('.pick__other');
+      if (!inp) return;
+      other[+inp.dataset.slot] = +inp.value || 0;
       render();
     });
 
     $('e-rung-body').addEventListener('click', (ev) => {
       const row = ev.target.closest('.rung__r');
       if (!row) return;
-      row.dataset.split.split('/').forEach((v, i) => { cities[i] = +v; });
+      selected = row.dataset.split;
       render();
     });
 
     resetPicks();
+    renderPicks();
     render();
   })();
 </script>
@@ -581,6 +623,29 @@ const tieRows = [1, 2, 3].map((tied) => {
   .f input, .f select { width: 7rem; background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
     border-radius: 6px; padding: 0.25rem 0.4rem; font-family: var(--font-mono); font-size: 0.78rem; }
   .f--sel select { width: 12rem; font-family: var(--font-ui); }
+  .f__step { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .f__step input { width: 3.6rem; text-align: center; font-size: 0.95rem; }
+  .stp { width: 1.5rem; height: 1.5rem; border: 1px solid var(--border-strong);
+    background: var(--bg-elev-2); color: var(--text-soft); border-radius: 5px; cursor: pointer;
+    font-size: 0.85rem; line-height: 1; }
+  .stp:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── the three family pickers ──────────────────────────────────── */
+  .asm__fields--fams { gap: 0.6rem 1rem; }
+  .asm :global(.pick) { position: relative; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.3rem 0.7rem;
+    padding: 0.35rem 0.6rem 0.45rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg); min-width: 0; }
+  .asm :global(.pick__strip) { position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--fam); border-radius: var(--radius) 0 0 var(--radius); }
+  .asm :global(.pick__sel) { width: 13rem; font-family: var(--font-ui); }
+  .asm :global(.pick__class) { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.7rem;
+    font-style: italic; color: var(--text-dim); text-decoration: none; padding-bottom: 0.3rem; }
+  .asm :global(.pick__class:hover) { color: var(--accent); }
+  .asm :global(.pick__class img) { opacity: 0.8; }
+  .asm :global(.pick__extra) { font-family: var(--font-mono); font-size: 0.6rem; font-style: normal;
+    color: var(--gold-soft); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+    border-radius: 4px; padding: 0.02rem 0.28rem; margin-left: 0.3rem; }
+  .asm :global(.f--other input) { width: 5rem; }
 
   /* ── the three family cards ─────────────────────────────────────── */
   .fams { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
@@ -590,13 +655,9 @@ const tieRows = [1, 2, 3].map((tied) => {
   .fams :global(.fam__strip) { height: 4px; background: var(--fam); }
   .fams :global(.fam__head) { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.5rem;
     padding: 0.5rem 0.7rem 0.3rem; }
-  .fams :global(.fam__pick) { flex: 1 1 100%; background: transparent; color: var(--text);
-    border: 1px solid transparent; border-radius: 5px; margin-left: -0.25rem; padding: 0.1rem 0.25rem;
-    font-family: var(--font-display); font-size: 1.05rem; cursor: pointer; }
-  .fams :global(.fam__pick:hover), .fams :global(.fam__pick:focus) { border-color: var(--border-strong);
-    background: var(--bg-elev-2); }
-  .fams :global(.fam__pick option) { background: var(--bg-elev-2); font-family: var(--font-ui);
-    font-size: 0.8rem; }
+  .fams__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 0 0 0.5rem; }
+  .fams__h b { font-family: var(--font-mono); font-weight: 500; color: var(--gold); }
+  .fams :global(.fam__name) { flex: 1 1 100%; font-family: var(--font-display); font-size: 1.05rem; color: var(--text); }
   .fams :global(.fam__class) { display: inline-flex; align-items: center; gap: 0.25rem;
     font-size: 0.72rem; font-style: italic; color: var(--text-dim); text-decoration: none; }
   .fams :global(.fam__class:hover) { color: var(--accent); }
@@ -605,14 +666,8 @@ const tieRows = [1, 2, 3].map((tied) => {
     border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); border-radius: 4px;
     padding: 0.02rem 0.28rem; }
 
-  .fams :global(.fam__cities) { display: flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.7rem 0.5rem; }
-  .fams :global(.stp) { width: 1.5rem; height: 1.5rem; border: 1px solid var(--border-strong);
-    background: var(--bg-elev-2); color: var(--text-soft); border-radius: 5px; cursor: pointer;
-    font-size: 0.85rem; line-height: 1; }
-  .fams :global(.stp:hover) { border-color: var(--accent); color: var(--accent); }
-  .fams :global(.fam__n) { width: 3.2rem; background: var(--bg); color: var(--text);
-    border: 1px solid var(--border-strong); border-radius: 5px; padding: 0.15rem 0.3rem;
-    font-family: var(--font-mono); font-size: 0.95rem; text-align: center; }
+  .fams :global(.fam__cities) { display: flex; align-items: baseline; gap: 0.35rem; padding: 0.1rem 0.7rem 0.45rem; }
+  .fams :global(.fam__n) { font-family: var(--font-mono); font-size: 1.4rem; color: var(--text); }
   .fams :global(.fam__cl) { font-size: 0.68rem; color: var(--text-faint); }
 
   .fams :global(.fam__terms) { list-style: none; margin: 0; padding: 0 0.7rem; flex: 1; }
@@ -653,7 +708,11 @@ const tieRows = [1, 2, 3].map((tied) => {
   .rung :global(.rung__r) { cursor: pointer; }
   .rung :global(.rung__r:hover td) { background: var(--bg-elev-2); }
   .rung :global(.rung__r.is-here td) { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 45%, transparent); }
-  .rung :global(.rung__k) { font-family: var(--font-mono); font-size: 0.8rem; }
+  .rung :global(.rung__k) { font-family: var(--font-mono); font-size: 0.8rem; white-space: nowrap; }
+  .rung :global(.rung__flag) { font-family: var(--font-ui); font-style: normal; font-size: 0.58rem; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+    border-radius: 3px; padding: 0 0.25rem; margin-left: 0.35rem; vertical-align: middle; }
+  .rung :global(.rung__flag--even) { color: var(--text-dim); border-color: var(--border-strong); }
   .rung :global(.rung__c) { border-left: 3px solid var(--brk); }
   .rung :global(.rung__c b) { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text); }
   .rung :global(.rung__c i) { font-family: var(--font-mono); font-size: 0.72rem; font-style: normal;
