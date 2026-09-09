@@ -72,59 +72,37 @@ const tieRows = [1, 2, 3].map((tied) => {
   </p>
 
   <section class="asm">
-    <div class="asm__row">
-      <span class="asm__tag">Nation</span>
-      <div class="asm__fields">
-        <label class="f f--sel"><span>Whose families</span>
-          <select id="e-nation">
-            {D.nations.map((n: any) => (
-              <option value={n.id} selected={n.id === DEFAULT_NATION}>{n.name}</option>
-            ))}
-          </select>
-        </label>
-        <label class="f f--sel"><span>Families in play <i>{G.MAX_FAMILIES} of the nation's 4 at most</i></span>
-          <select id="e-count">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3" selected>3</option>
-          </select>
-        </label>
-        <button type="button" class="asm__reset" id="e-reset">Reset</button>
-      </div>
-    </div>
-    <div class="asm__row">
-      <span class="asm__tag">Families</span>
-      <div class="asm__fields asm__fields--fams" id="e-picks"></div>
-    </div>
-    <div class="asm__row">
-      <span class="asm__tag">Cities</span>
-      <div class="asm__fields">
-        <label class="f"><span>Total cities <i>across all your families</i></span>
-          <span class="f__step">
-            <button type="button" class="stp" id="e-total-dn" aria-label="One fewer city">−</button>
-            <input type="number" id="e-total" value={DEFAULT_TOTAL} min="0" max="40" />
-            <button type="button" class="stp" id="e-total-up" aria-label="One more city">+</button>
-          </span>
-        </label>
-        <label class="f"><span>Show <i>splits, kindest first</i></span>
-          <select id="e-show">
-            <option value="20" selected>top 20</option>
-            <option value="60">top 60</option>
-            <option value="all">all</option>
-          </select>
-        </label>
-      </div>
+    <div class="asm__bar">
+      <label class="f f--sel"><span>Nation</span>
+        <select id="e-nation">
+          {D.nations.map((n: any) => (
+            <option value={n.id} selected={n.id === DEFAULT_NATION}>{n.name}</option>
+          ))}
+        </select>
+      </label>
+      <div class="asm__picks" id="e-picks"></div>
+      <label class="f"><span>Total cities</span>
+        <span class="f__step">
+          <button type="button" class="stp" id="e-total-dn" aria-label="One fewer city">−</button>
+          <input type="number" id="e-total" value={DEFAULT_TOTAL} min="0" max="40" />
+          <button type="button" class="stp" id="e-total-up" aria-label="One more city">+</button>
+        </span>
+      </label>
+      <button type="button" class="asm__reset" id="e-reset">Reset</button>
     </div>
   </section>
 
-  <section class="rung">
+  <div class="duo">
+  <div class="duo__left">
+    <h2 class="fams__h">Breakdown of <b id="e-sel-lbl"></b></h2>
+    <div class="fams" id="e-fams"></div>
+  </div>
+  <section class="rung duo__right">
     <h2 class="rung__h">Every way to split <b id="e-total-lbl">8</b> cities</h2>
     <p class="rung__note">
-      One row per allocation, every family holding at least one city. Each family cell is its city count and the whole city-count opinion
-      that split gives it; the bar colour is the opinion bracket once the family's other opinion is
-      added. Rows are ordered so the split whose <em>unhappiest</em> family is least unhappy comes
-      first, then by the sum. Click a row for the breakdown.
-      <span id="e-rung-more"></span>
+      Kindest split first: the one whose <em>unhappiest</em> family is least unhappy, then by the
+      sum. Each cell is a family's city count and what that split does to its opinion. Click a row
+      for the breakdown.
     </p>
     <div class="grid">
       <div class="grid__scroll">
@@ -137,10 +115,9 @@ const tieRows = [1, 2, 3].map((tied) => {
         </table>
       </div>
     </div>
+    <p class="rung__more" id="e-rung-more"></p>
   </section>
-
-  <h2 class="fams__h">Breakdown of <b id="e-sel-lbl"></b></h2>
-  <div class="fams" id="e-fams"></div>
+  </div>
 
   <section class="ladder">
     <div class="ladder__col">
@@ -267,7 +244,7 @@ const tieRows = [1, 2, 3].map((tied) => {
         <ul>
           <li>The city terms are only part of the sum. Leader traits, council seats, laws,
             luxuries, wonders, religion and memories all add into the same number before it is
-            bracketed — that is what each family's <b>other opinion</b> box stands in for.</li>
+            bracketed, so the bracket shown here is what the cities alone would earn.</li>
           <li>Because it is recomputed rather than accumulated, <b>giving a city away fixes the
             number immediately</b>. There is no decay to wait out.</li>
           <li>Founding a city is also previewed this way in-game: the found-city tooltip shows each
@@ -371,26 +348,23 @@ const tieRows = [1, 2, 3].map((tied) => {
 
     // ── state ────────────────────────────────────────────────────────
     let nationId = DEFAULT_NATION;
-    let count = 3;
-    let picks = [];     // family ids, one per slot
-    let other = [];     // per-slot "other opinion" offset
+    const count = 3;     // MAX_FAMILIES: three of the nation's four are ever in play
+    let picks = [];      // family ids, one per slot
     let total = DEFAULT_TOTAL;
     let selected = null; // split key "a/b/c" the breakdown shows; null = the top row
+    let showAll = false;
 
     const nation = () => D.nations.find((n) => n.id === nationId) || D.nations[0];
     const familyById = (id) => nation().families.find((f) => f.id === id);
 
     function resetPicks() {
       picks = nation().families.slice(0, 3).map((f) => f.id);
-      other = [0, 0, 0];
       selected = null;
+      showAll = false;
     }
 
     function slots() {
-      return picks.slice(0, count).map((id, i) => {
-        const f = familyById(id) || nation().families[i];
-        return { ...f, other: other[i] | 0 };
-      });
+      return picks.slice(0, count).map((id, i) => ({ ...(familyById(id) || nation().families[i]), other: 0 }));
     }
 
     const sign = (v) => (v > 0 ? `+${v}` : `${v}`);
@@ -405,15 +379,9 @@ const tieRows = [1, 2, 3].map((tied) => {
         const options = nationFams.map((nf) =>
           `<option value="${nf.id}"${nf.id === f.id ? ' selected' : ''}>${esc(nf.name)} · ${esc(nf.className)}</option>`).join('');
         const extra = f.mostCities || f.fewestCities
-          ? `<span class="pick__extra" title="${esc(f.className)}: ${sign(f.mostCities)} most cities, ${sign(f.fewestCities)} fewest cities">${sign(f.mostCities)} / ${sign(f.fewestCities)}</span>` : '';
-        return `<div class="pick" style="--fam:${f.color}">
-          <span class="pick__strip"></span>
-          <label class="f f--sel"><span>Family ${i + 1}</span>
-            <select class="pick__sel" data-slot="${i}" aria-label="Family in slot ${i + 1}">${options}</select></label>
-          <a class="pick__class" href="${base}families/${f.classSlug}"><img src="${base}${f.icon}" alt="" width="14" height="14" />${esc(f.className)}${extra}</a>
-          <label class="f f--other"><span>Other opinion <i>every non-city term</i></span>
-            <input type="number" class="pick__other" data-slot="${i}" value="${f.other}" step="10" /></label>
-        </div>`;
+          ? ` <i class="pick__extra" title="${esc(f.className)}: ${sign(f.mostCities)} most cities, ${sign(f.fewestCities)} fewest cities">${sign(f.mostCities)}/${sign(f.fewestCities)}</i>` : '';
+        return `<label class="f f--sel pick" style="--fam:${f.color}"><span>Family ${i + 1}${extra}</span>
+          <select class="pick__sel" data-slot="${i}" aria-label="Family in slot ${i + 1}">${options}</select></label>`;
       }).join('');
     }
 
@@ -460,17 +428,17 @@ const tieRows = [1, 2, 3].map((tied) => {
         .concat(s.map(() => '<col style="width:9.5rem" />'))
         .concat(['<col style="width:5rem" />', '<col style="width:5rem" />']).join('');
 
-      const showSel = $('e-show').value;
-      const cap = showSel === 'all' ? Infinity : +showSel;
+      const cap = showAll ? Infinity : 20;
       const shown = scored.slice(0, cap);
       if (selected && !shown.some((r) => r.key === selected)) {
         const here = scored.find((r) => r.key === selected);
         if (here) shown.push(here);
       }
-      $('e-rung-more').textContent = scored.length === 0
+      $('e-rung-more').innerHTML = scored.length === 0
         ? `Fewer cities than families: every family needs at least one.`
         : scored.length > shown.length
-          ? `Showing the best ${shown.length} of ${scored.length} splits.` : `${scored.length} splits.`;
+          ? `Best ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
+          : `${scored.length} splits${showAll && scored.length > 20 ? ' · <a href="#" id="e-show-all">show fewer</a>' : ''}`;
 
       const selKey = selected || (scored[0] && scored[0].key);
       $('e-rung-body').innerHTML = shown.map((r, idx) => {
@@ -527,10 +495,10 @@ const tieRows = [1, 2, 3].map((tied) => {
           </ul>
           <div class="fam__sum">
             <span class="fam__sumn ${t.total > 0 ? 'is-good' : t.total < 0 ? 'is-bad' : ''}">${sign(t.total)}</span>
-            <span class="fam__suml">from cities${f.other ? `, ${sign(f.other)} elsewhere` : ''}</span>
+            <span class="fam__suml">from cities</span>
           </div>
           <div class="fam__brk" style="--brk:${b ? b.color : '#7d8590'}">
-            <b>${b ? esc(b.label) : '—'}</b><i>at ${sum}</i>
+            <b>${b ? esc(b.label) : '—'}</b><i>from cities alone</i>
           </div>
         </article>`;
       }).join('');
@@ -552,23 +520,20 @@ const tieRows = [1, 2, 3].map((tied) => {
       renderPicks();
       render();
     });
-    $('e-count').addEventListener('change', () => {
-      count = +$('e-count').value;
-      selected = null;
-      renderPicks();
+    $('e-rung-more').addEventListener('click', (ev) => {
+      const a = ev.target.closest('#e-show-all');
+      if (!a) return;
+      ev.preventDefault();
+      showAll = !showAll;
       render();
     });
-    $('e-show').addEventListener('change', render);
     const setTotal = (v) => { total = Math.max(0, Math.min(40, v | 0)); selected = null; render(); };
     $('e-total').addEventListener('input', () => setTotal(+$('e-total').value || 0));
     $('e-total-dn').addEventListener('click', () => setTotal(total - 1));
     $('e-total-up').addEventListener('click', () => setTotal(total + 1));
     $('e-reset').addEventListener('click', () => {
       $('e-nation').value = DEFAULT_NATION;
-      $('e-count').value = '3';
-      $('e-show').value = '20';
       nationId = DEFAULT_NATION;
-      count = 3;
       total = DEFAULT_TOTAL;
       resetPicks();
       renderPicks();
@@ -584,12 +549,6 @@ const tieRows = [1, 2, 3].map((tied) => {
       if (dup !== -1 && dup !== i) picks[dup] = was;  // swap, never duplicate
       picks[i] = sel.value;
       renderPicks();
-      render();
-    });
-    $('e-picks').addEventListener('input', (ev) => {
-      const inp = ev.target.closest('.pick__other');
-      if (!inp) return;
-      other[+inp.dataset.slot] = +inp.value || 0;
       render();
     });
 
@@ -613,10 +572,14 @@ const tieRows = [1, 2, 3].map((tied) => {
   .lede em { color: var(--text-soft); font-style: italic; }
 
   .asm { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elev);
-    padding: 0.2rem 0.9rem 0.6rem; margin: 0 0 1.1rem; }
-  .asm__row { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.55rem 0; }
-  .asm__tag { flex: none; width: 5rem; padding-top: 0.95rem; font-family: var(--font-mono);
-    font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
+    padding: 0.6rem 0.9rem 0.7rem; margin: 0 0 1.1rem; }
+  .asm__bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.5rem 1.2rem; }
+  .asm__picks { display: contents; }
+  .asm :global(.pick) { border-left: 3px solid var(--fam); padding-left: 0.45rem; }
+  .asm :global(.pick__sel) { width: 13rem; font-family: var(--font-ui); }
+  .asm :global(.pick__extra) { font-family: var(--font-mono); font-size: 0.6rem; font-style: normal;
+    color: var(--gold-soft); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+    border-radius: 4px; padding: 0 0.25rem; margin-left: 0.3rem; }
   .asm__fields { display: flex; flex-wrap: wrap; gap: 0.5rem 1.3rem; align-items: flex-end; flex: 1; }
   .asm__reset { align-self: flex-end; background: transparent; color: var(--accent); border: 1px solid
     color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 6px; padding: 0.3rem 0.6rem;
@@ -634,26 +597,18 @@ const tieRows = [1, 2, 3].map((tied) => {
     font-size: 0.85rem; line-height: 1; }
   .stp:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* ── the three family pickers ──────────────────────────────────── */
-  .asm__fields--fams { gap: 0.6rem 1rem; }
-  .asm :global(.pick) { position: relative; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.3rem 0.7rem;
-    padding: 0.35rem 0.6rem 0.45rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);
-    background: var(--bg); min-width: 0; }
-  .asm :global(.pick__strip) { position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-    background: var(--fam); border-radius: var(--radius) 0 0 var(--radius); }
-  .asm :global(.pick__sel) { width: 13rem; font-family: var(--font-ui); }
-  .asm :global(.pick__class) { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.7rem;
-    font-style: italic; color: var(--text-dim); text-decoration: none; padding-bottom: 0.3rem; }
-  .asm :global(.pick__class:hover) { color: var(--accent); }
-  .asm :global(.pick__class img) { opacity: 0.8; }
-  .asm :global(.pick__extra) { font-family: var(--font-mono); font-size: 0.6rem; font-style: normal;
-    color: var(--gold-soft); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
-    border-radius: 4px; padding: 0.02rem 0.28rem; margin-left: 0.3rem; }
-  .asm :global(.f--other input) { width: 5rem; }
 
   /* ── the three family cards ─────────────────────────────────────── */
-  .fams { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-    gap: 0.7rem; margin: 0 0 1.4rem; }
+  /* breakdown on the left (one card per family, stacked), the ranked list on the right */
+  .duo { display: grid; grid-template-columns: minmax(17rem, 22rem) minmax(0, 1fr); gap: 1.2rem 1.6rem;
+    align-items: start; margin: 0 0 1.4rem; }
+  .duo__left { position: sticky; top: 0.8rem; }
+  .fams { display: grid; grid-template-columns: 1fr; gap: 0.7rem; }
+  @media (max-width: 860px) {
+    .duo { grid-template-columns: 1fr; }
+    .duo__left { position: static; order: 2; }
+    .duo__right { order: 1; }
+  }
   .fams :global(.fam) { position: relative; border: 1px solid var(--border); border-radius: var(--radius-lg);
     background: var(--bg-elev); overflow: hidden; display: flex; flex-direction: column; }
   .fams :global(.fam__strip) { height: 4px; background: var(--fam); }
@@ -699,9 +654,11 @@ const tieRows = [1, 2, 3].map((tied) => {
   .fams :global(.fam__brk i) { font-size: 0.66rem; font-style: italic; color: var(--text-dim); }
 
   /* ── the ranked splits table ────────────────────────────────────── */
-  .rung { margin: 0 0 1.4rem; }
+  .rung { margin: 0; min-width: 0; }
   .rung__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 0 0 0.2rem; }
   .rung__note { font-size: 0.76rem; color: var(--text-dim); margin: 0 0 0.6rem; max-width: 80ch; }
+  .rung__more { font-size: 0.72rem; color: var(--text-faint); margin: 0.4rem 0 0; }
+  .rung__more a { color: var(--accent); }
   .rung__note b { color: var(--text); font-family: var(--font-mono); }
   /* Explicit widths on every <col> (table-layout: fixed) — otherwise the three
      family columns split the full page width and the numbers float in space. */
@@ -759,8 +716,4 @@ const tieRows = [1, 2, 3].map((tied) => {
   code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-elev-2);
     padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
 
-  @media (max-width: 640px) {
-    .asm__row { flex-direction: column; gap: 0.2rem; }
-    .asm__tag { padding-top: 0.3rem; width: auto; }
-  }
 </style>
