@@ -61,14 +61,12 @@ const tieRows = [1, 2, 3].map((tied) => {
   ]}
 >
   <p class="lede">
-    Three of the terms in <a href={`${base}opinion`}>family opinion</a> care about nothing but
-    <strong>how many cities each family holds</strong>: <b>{D.help.mostCities}</b>
-    (+{G.MOST_CITIES_OPINION}, split between families tied at the top), <b>{D.help.fewestCities}</b>
-    ({G.FEWEST_CITIES_OPINION}, split at the bottom) and <b>{D.help.envyName}</b>, a curve that only
-    starts once a family is <em>two</em> cities behind the leader and then bites hard. Only
-    <b>{landowners?.name}</b> bend them, by {landowners?.mostCities} more at each end. Pick your nation,
-    the three families you started with and how many cities you will have, and every way of
-    dividing them is ranked below, kindest split first.
+    <b>{D.help.mostCities}</b> (+{G.MOST_CITIES_OPINION}, shared by families tied at the top),
+    <b>{D.help.fewestCities}</b> ({G.FEWEST_CITIES_OPINION}, shared at the bottom) and
+    <b>{D.help.envyName}</b> (nothing until two cities behind the leader, then {G.ENVY_OPINION} × triangle)
+    are the <a href={`${base}opinion`}>family opinion</a> terms that depend only on how many cities each
+    family holds; <b>{landowners?.name}</b> feel both ends {landowners?.mostCities} harder. Pick your
+    families and city total to rank every split, kindest first. Details below the calculator.
   </p>
 
   <section class="asm">
@@ -87,6 +85,9 @@ const tieRows = [1, 2, 3].map((tied) => {
           <input type="number" id="e-total" value={DEFAULT_TOTAL} min="0" max="40" />
           <button type="button" class="stp" id="e-total-up" aria-label="One more city">+</button>
         </span>
+      </label>
+      <label class="f f--sel"><span>Favour <i>most cities to</i></span>
+        <select id="e-favour"><option value="-1">nobody in particular</option></select>
       </label>
       <button type="button" class="asm__reset" id="e-reset">Reset</button>
     </div>
@@ -353,6 +354,7 @@ const tieRows = [1, 2, 3].map((tied) => {
     let total = DEFAULT_TOTAL;
     let selected = null; // split key "a/b/c" the breakdown shows; null = the top row
     let showAll = false;
+    let favour = -1;     // slot index whose city count should be maximised, or -1
 
     const nation = () => D.nations.find((n) => n.id === nationId) || D.nations[0];
     const familyById = (id) => nation().families.find((f) => f.id === id);
@@ -361,6 +363,13 @@ const tieRows = [1, 2, 3].map((tied) => {
       picks = nation().families.slice(0, 3).map((f) => f.id);
       selected = null;
       showAll = false;
+      favour = -1;
+    }
+    function renderFavour(s) {
+      const sel = $('e-favour');
+      sel.innerHTML = '<option value="-1">nobody in particular</option>' +
+        s.map((f, i) => `<option value="${i}"${favour === i ? ' selected' : ''}>${esc(f.name)} · ${esc(f.className)}</option>`).join('');
+      sel.value = String(favour);
     }
 
     function slots() {
@@ -380,8 +389,8 @@ const tieRows = [1, 2, 3].map((tied) => {
           `<option value="${nf.id}"${nf.id === f.id ? ' selected' : ''}>${esc(nf.name)} · ${esc(nf.className)}</option>`).join('');
         const extra = f.mostCities || f.fewestCities
           ? ` <i class="pick__extra" title="${esc(f.className)}: ${sign(f.mostCities)} most cities, ${sign(f.fewestCities)} fewest cities">${sign(f.mostCities)}/${sign(f.fewestCities)}</i>` : '';
-        return `<label class="f f--sel pick" style="--fam:${f.color}"><span>Family ${i + 1}${extra}</span>
-          <select class="pick__sel" data-slot="${i}" aria-label="Family in slot ${i + 1}">${options}</select></label>`;
+        return `<label class="pick" style="--fam:${f.color}">
+          <select class="pick__sel" data-slot="${i}" aria-label="Family in slot ${i + 1}">${options}</select>${extra}</label>`;
       }).join('');
     }
 
@@ -428,19 +437,32 @@ const tieRows = [1, 2, 3].map((tied) => {
         .concat(s.map(() => '<col style="width:9.5rem" />'))
         .concat(['<col style="width:5rem" />', '<col style="width:5rem" />']).join('');
 
-      const cap = showAll ? Infinity : 20;
-      const shown = scored.slice(0, cap);
+      // Favouring a family: sort by its city count first, kindness second, and
+      // (unless showing all) keep only the kindest arrangement for each count —
+      // one row per "how many cities can I give them".
+      let list = scored;
+      if (favour >= 0 && favour < s.length) {
+        list = scored.slice().sort((a, b) => (b.split[favour] - a.split[favour]) || (b.worst - a.worst) || (b.sum - a.sum));
+        if (!showAll) {
+          const seen = new Set();
+          list = list.filter((r) => !seen.has(r.split[favour]) && seen.add(r.split[favour]));
+        }
+      }
+      const cap = showAll || favour >= 0 ? Infinity : 15;
+      const shown = list.slice(0, cap);
       if (selected && !shown.some((r) => r.key === selected)) {
         const here = scored.find((r) => r.key === selected);
         if (here) shown.push(here);
       }
       $('e-rung-more').innerHTML = scored.length === 0
         ? `Fewer cities than families: every family needs at least one.`
+        : favour >= 0 && !showAll
+          ? `Kindest arrangement for each ${esc(s[favour].name)} city count, ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
         : scored.length > shown.length
           ? `Best ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
-          : `${scored.length} splits${showAll && scored.length > 20 ? ' · <a href="#" id="e-show-all">show fewer</a>' : ''}`;
+          : `${scored.length} splits${showAll ? ' · <a href="#" id="e-show-all">show fewer</a>' : ''}`;
 
-      const selKey = selected || (scored[0] && scored[0].key);
+      const selKey = selected || (shown[0] && shown[0].key);
       $('e-rung-body').innerHTML = shown.map((r, idx) => {
         const cells = r.totals.map((v, i) => {
           const b = bracketFor(v + s[i].other);
@@ -448,7 +470,7 @@ const tieRows = [1, 2, 3].map((tied) => {
           return `<td class="cell rung__c ${cls}" style="--brk:${b ? b.color : '#7d8590'}" title="${b ? esc(b.label) : ''}">` +
             `<b>${r.split[i]}</b><i>${sign(v)}</i></td>`;
         }).join('');
-        const flags = (idx === 0 && !scored.slice(1).some(x => x.worst === r.worst && x.sum === r.sum) ? '<em class="rung__flag">best</em>' : '') +
+        const flags = (favour < 0 && idx === 0 && !scored.slice(1).some(x => x.worst === r.worst && x.sum === r.sum) ? '<em class="rung__flag">best</em>' : '') +
           (r.even ? '<em class="rung__flag rung__flag--even">even</em>' : '');
         return `<tr class="rung__r${r.key === selKey ? ' is-here' : ''}" data-split="${r.key}">` +
           `<td class="rowlabel rung__k">${r.key}${flags}</td>${cells}` +
@@ -464,10 +486,12 @@ const tieRows = [1, 2, 3].map((tied) => {
       if (term.tied === 1) return `${term.pool}, alone at that end`;
       return `${term.pool} ÷ ${term.tied} tied`;
     }
+    // One line per term; the arithmetic sits in the tooltip and in a small
+    // note that only shows when the term is live.
     function termRow(label, note, term) {
-      if (!term) return `<li class="fam__term is-off"><span>${label}</span><i>${note}</i><b>—</b></li>`;
+      if (!term) return `<span class="fam__term is-off" title="${esc(label)}: ${esc(note)}">${label} <b>—</b></span>`;
       const cls = term.value > 0 ? 'is-good' : term.value < 0 ? 'is-bad' : '';
-      return `<li class="fam__term ${cls}"><span>${label}</span><i>${note}</i><b>${sign(term.value)}</b></li>`;
+      return `<span class="fam__term ${cls}" title="${esc(label)}: ${esc(note)}">${label} <b>${sign(term.value)}</b></span>`;
     }
 
     function renderBreakdown(s, row) {
@@ -479,26 +503,19 @@ const tieRows = [1, 2, 3].map((tied) => {
         const b = bracketFor(sum);
         const extra = f.mostCities || f.fewestCities
           ? `<span class="fam__extra">${esc(f.className)} ${sign(f.mostCities)} / ${sign(f.fewestCities)}</span>` : '';
-        return `<article class="fam" style="--fam:${f.color}">
-          <div class="fam__strip"></div>
+        return `<article class="fam" style="--fam:${f.color};--brk:${b ? b.color : '#7d8590'}">
           <div class="fam__head">
             <span class="fam__name">${esc(f.name)}</span>
-            <a class="fam__class" href="${base}families/${f.classSlug}">
-              <img src="${base}${f.icon}" alt="" width="16" height="16" />${esc(f.className)}</a>
-            ${extra}
+            <a class="fam__class" href="${base}families/${f.classSlug}" title="${esc(f.className)}${f.mostCities ? ` · most ${sign(f.mostCities)} / fewest ${sign(f.fewestCities)}` : ''}">
+              <img src="${base}${f.icon}" alt="" width="14" height="14" />${esc(f.className)}</a>
+            <span class="fam__cities"><b>${row.split[i]}</b> ${row.split[i] === 1 ? 'city' : 'cities'}</span>
           </div>
-          <div class="fam__cities"><b class="fam__n">${row.split[i]}</b><span class="fam__cl">${row.split[i] === 1 ? 'city' : 'cities'}</span></div>
-          <ul class="fam__terms">
-            ${termRow(D.help.mostCities, tieNote(t.most, 'not the largest', s.length), t.most)}
-            ${termRow(D.help.fewestCities, tieNote(t.fewest, 'not the smallest', s.length), t.fewest)}
+          <div class="fam__terms">
+            ${termRow('Most', tieNote(t.most, 'not the largest', s.length), t.most)}
+            ${termRow('Fewest', tieNote(t.fewest, 'not the smallest', s.length), t.fewest)}
             ${termRow(D.help.envyName, t.envy ? `${t.envy.gap} behind → triangle(${t.envy.gap - 1}) = ${t.envy.tri}` : (s.length > 1 ? 'within one of the lead' : 'no rivals'), t.envy)}
-          </ul>
-          <div class="fam__sum">
-            <span class="fam__sumn ${t.total > 0 ? 'is-good' : t.total < 0 ? 'is-bad' : ''}">${sign(t.total)}</span>
-            <span class="fam__suml">from cities</span>
-          </div>
-          <div class="fam__brk" style="--brk:${b ? b.color : '#7d8590'}">
-            <b>${b ? esc(b.label) : '—'}</b><i>from cities alone</i>
+            <span class="fam__sumn ${t.total > 0 ? 'is-good' : t.total < 0 ? 'is-bad' : ''}" title="sum of the three city terms">${sign(t.total)}</span>
+            <span class="fam__brk">${b ? esc(b.label) : '—'}</span>
           </div>
         </article>`;
       }).join('');
@@ -508,6 +525,7 @@ const tieRows = [1, 2, 3].map((tied) => {
       const s = slots();
       $('e-total-lbl').textContent = String(total);
       $('e-total').value = String(total);
+      renderFavour(s);
       const scored = allSplits(s);
       const selKey = renderRungs(s, scored);
       renderBreakdown(s, scored.find((r) => r.key === selKey) || null);
@@ -518,6 +536,11 @@ const tieRows = [1, 2, 3].map((tied) => {
       nationId = $('e-nation').value;
       resetPicks();
       renderPicks();
+      render();
+    });
+    $('e-favour').addEventListener('change', () => {
+      favour = +$('e-favour').value;
+      selected = null;
       render();
     });
     $('e-rung-more').addEventListener('click', (ev) => {
@@ -548,6 +571,7 @@ const tieRows = [1, 2, 3].map((tied) => {
       const dup = picks.indexOf(sel.value);
       if (dup !== -1 && dup !== i) picks[dup] = was;  // swap, never duplicate
       picks[i] = sel.value;
+      selected = null;
       renderPicks();
       render();
     });
@@ -566,17 +590,19 @@ const tieRows = [1, 2, 3].map((tied) => {
 </script>
 
 <style>
-  .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
+  .lede { max-width: 120ch; color: var(--text-dim); font-size: 0.82rem; line-height: 1.5; margin: 0 0 0.7rem; }
   .lede a { color: var(--accent); }
   .lede b, .lede strong { color: var(--text); }
   .lede em { color: var(--text-soft); font-style: italic; }
 
   .asm { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elev);
-    padding: 0.6rem 0.9rem 0.7rem; margin: 0 0 1.1rem; }
-  .asm__bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.5rem 1.2rem; }
+    padding: 0.45rem 0.8rem 0.55rem; margin: 0 0 0.8rem; }
+  .asm__bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.4rem 0.9rem; }
   .asm__picks { display: contents; }
-  .asm :global(.pick) { border-left: 3px solid var(--fam); padding-left: 0.45rem; }
-  .asm :global(.pick__sel) { width: 13rem; font-family: var(--font-ui); }
+  .asm :global(.pick) { display: inline-flex; align-items: center; gap: 0.35rem; border-left: 3px solid var(--fam);
+    padding-left: 0.45rem; }
+  .asm :global(.pick__sel) { width: 11rem; font-family: var(--font-ui); background: var(--bg); color: var(--text);
+    border: 1px solid var(--border-strong); border-radius: 6px; padding: 0.25rem 0.4rem; font-size: 0.78rem; }
   .asm :global(.pick__extra) { font-family: var(--font-mono); font-size: 0.6rem; font-style: normal;
     color: var(--gold-soft); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
     border-radius: 4px; padding: 0 0.25rem; margin-left: 0.3rem; }
@@ -589,7 +615,7 @@ const tieRows = [1, 2, 3].map((tied) => {
   .f i { color: var(--text-faint); font-size: 0.9em; font-style: italic; }
   .f input, .f select { width: 7rem; background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
     border-radius: 6px; padding: 0.25rem 0.4rem; font-family: var(--font-mono); font-size: 0.78rem; }
-  .f--sel select { width: 12rem; font-family: var(--font-ui); }
+  .f--sel select { width: 9rem; font-family: var(--font-ui); }
   .f__step { display: inline-flex; align-items: center; gap: 0.3rem; }
   .f__step input { width: 3.6rem; text-align: center; font-size: 0.95rem; }
   .stp { width: 1.5rem; height: 1.5rem; border: 1px solid var(--border-strong);
@@ -600,63 +626,44 @@ const tieRows = [1, 2, 3].map((tied) => {
 
   /* ── the three family cards ─────────────────────────────────────── */
   /* breakdown on the left (one card per family, stacked), the ranked list on the right */
-  .duo { display: grid; grid-template-columns: minmax(17rem, 22rem) minmax(0, 1fr); gap: 1.2rem 1.6rem;
-    align-items: start; margin: 0 0 1.4rem; }
-  .duo__left { position: sticky; top: 0.8rem; }
-  .fams { display: grid; grid-template-columns: 1fr; gap: 0.7rem; }
+  .duo { display: grid; grid-template-columns: minmax(17rem, 21rem) minmax(0, 1fr); gap: 0.8rem 1.4rem;
+    align-items: start; margin: 0 0 1.2rem; }
+  .duo__left { position: sticky; top: 0.6rem; }
+  .fams { display: grid; grid-template-columns: 1fr; gap: 0.45rem; }
   @media (max-width: 860px) {
     .duo { grid-template-columns: 1fr; }
     .duo__left { position: static; order: 2; }
     .duo__right { order: 1; }
   }
-  .fams :global(.fam) { position: relative; border: 1px solid var(--border); border-radius: var(--radius-lg);
-    background: var(--bg-elev); overflow: hidden; display: flex; flex-direction: column; }
-  .fams :global(.fam__strip) { height: 4px; background: var(--fam); }
-  .fams :global(.fam__head) { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.5rem;
-    padding: 0.5rem 0.7rem 0.3rem; }
-  .fams__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 0 0 0.5rem; }
-  .fams__h b { font-family: var(--font-mono); font-weight: 500; color: var(--gold); }
-  .fams :global(.fam__name) { flex: 1 1 100%; font-family: var(--font-display); font-size: 1.05rem; color: var(--text); }
-  .fams :global(.fam__class) { display: inline-flex; align-items: center; gap: 0.25rem;
-    font-size: 0.72rem; font-style: italic; color: var(--text-dim); text-decoration: none; }
+  .fams :global(.fam) { border: 1px solid var(--border); border-left: 4px solid var(--fam); border-radius: var(--radius);
+    background: var(--bg-elev); padding: 0.35rem 0.6rem 0.4rem; }
+  .fams :global(.fam__head) { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
+  .fams :global(.fam__name) { font-family: var(--font-display); font-size: 1rem; color: var(--text); }
+  .fams :global(.fam__class) { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.66rem;
+    font-style: italic; color: var(--text-dim); text-decoration: none; }
   .fams :global(.fam__class:hover) { color: var(--accent); }
   .fams :global(.fam__class img) { opacity: 0.8; }
-  .fams :global(.fam__extra) { font-family: var(--font-mono); font-size: 0.6rem; color: var(--gold-soft);
-    border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); border-radius: 4px;
-    padding: 0.02rem 0.28rem; }
-
-  .fams :global(.fam__cities) { display: flex; align-items: baseline; gap: 0.35rem; padding: 0.1rem 0.7rem 0.45rem; }
-  .fams :global(.fam__n) { font-family: var(--font-mono); font-size: 1.4rem; color: var(--text); }
-  .fams :global(.fam__cl) { font-size: 0.68rem; color: var(--text-faint); }
-
-  .fams :global(.fam__terms) { list-style: none; margin: 0; padding: 0 0.7rem; flex: 1; }
-  .fams :global(.fam__term) { display: grid; grid-template-columns: 1fr auto; align-items: baseline;
-    gap: 0 0.5rem; padding: 0.22rem 0; border-top: 1px solid var(--border-faint); font-size: 0.74rem;
-    color: var(--text-soft); }
-  .fams :global(.fam__term i) { grid-column: 1; font-size: 0.62rem; font-style: italic;
+  .fams :global(.fam__cities) { margin-left: auto; font-size: 0.66rem; color: var(--text-faint); }
+  .fams :global(.fam__cities b) { font-family: var(--font-mono); font-size: 0.95rem; color: var(--text); }
+  .fams :global(.fam__terms) { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.7rem;
+    margin-top: 0.3rem; padding-top: 0.25rem; border-top: 1px solid var(--border-faint); font-size: 0.68rem;
     color: var(--text-faint); }
-  .fams :global(.fam__term b) { grid-row: 1 / span 2; grid-column: 2; font-family: var(--font-mono);
-    font-size: 0.9rem; color: var(--text-dim); }
+  .fams :global(.fam__term) { cursor: help; }
+  .fams :global(.fam__term b) { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dim); }
   .fams :global(.fam__term.is-good b) { color: #66bc37; }
   .fams :global(.fam__term.is-bad b) { color: #d2742f; }
-  .fams :global(.fam__term.is-off) { color: var(--text-faint); }
-
-  .fams :global(.fam__sum) { display: flex; align-items: baseline; gap: 0.4rem; padding: 0.5rem 0.7rem 0.2rem;
-    border-top: 1px solid var(--border); }
-  .fams :global(.fam__sumn) { font-family: var(--font-mono); font-size: 1.5rem; color: var(--text-dim); }
+  .fams :global(.fam__sumn) { margin-left: auto; font-family: var(--font-mono); font-size: 1.05rem; color: var(--text-dim); }
   .fams :global(.fam__sumn.is-good) { color: #66bc37; }
   .fams :global(.fam__sumn.is-bad) { color: #d2742f; }
-  .fams :global(.fam__suml) { font-size: 0.68rem; color: var(--text-faint); }
-  .fams :global(.fam__brk) { display: flex; align-items: baseline; gap: 0.4rem; margin: 0 0.7rem 0.7rem;
-    padding: 0.25rem 0.5rem; border-radius: 5px; border-left: 3px solid var(--brk);
+  .fams :global(.fam__brk) { font-family: var(--font-display); font-size: 0.82rem; color: var(--text);
+    padding: 0.02rem 0.4rem; border-radius: 4px; border-left: 3px solid var(--brk);
     background: color-mix(in srgb, var(--brk) 14%, transparent); }
-  .fams :global(.fam__brk b) { font-family: var(--font-display); font-size: 0.95rem; color: var(--text); }
-  .fams :global(.fam__brk i) { font-size: 0.66rem; font-style: italic; color: var(--text-dim); }
 
   /* ── the ranked splits table ────────────────────────────────────── */
   .rung { margin: 0; min-width: 0; }
-  .rung__h { font-family: var(--font-display); font-size: 1.05rem; color: var(--text); margin: 0 0 0.2rem; }
-  .rung__note { font-size: 0.76rem; color: var(--text-dim); margin: 0 0 0.6rem; max-width: 80ch; }
+  .rung__h { font-family: var(--font-display); font-size: 1rem; color: var(--text); margin: 0 0 0.15rem; }
+  .rung__note { font-size: 0.72rem; color: var(--text-dim); margin: 0 0 0.4rem; max-width: 90ch; }
+  .rung :global(.rung__r td), .rung :global(.rung__r th) { padding-top: 0.12rem; padding-bottom: 0.12rem; }
   .rung__more { font-size: 0.72rem; color: var(--text-faint); margin: 0.4rem 0 0; }
   .rung__more a { color: var(--accent); }
   .rung__note b { color: var(--text); font-family: var(--font-mono); }
