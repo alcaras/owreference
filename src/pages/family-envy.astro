@@ -368,7 +368,7 @@ const tieRows = [1, 2, 3].map((tied) => {
     }
     function renderFavour(s) {
       $('e-favour').innerHTML = s.map((f, i) =>
-        `<label class="fav${favour.has(i) ? ' is-on' : ''}" style="--fam:${f.color}"><input type="checkbox" data-slot="${i}"${favour.has(i) ? ' checked' : ''} /> ${esc(f.name)}</label>`).join('');
+        `<label class="fav${favour.has(i) ? ' is-on' : ''}" style="--fam:${f.color}"><input type="checkbox" data-slot="${i}"${favour.has(i) ? ' checked' : ''} /> ${esc(f.className)}</label>`).join('');
     }
     // Nobody below this from the city terms alone: Angry is where the real
     // city penalties start (-10% Civics / Training, +20% Maintenance).
@@ -388,7 +388,7 @@ const tieRows = [1, 2, 3].map((tied) => {
       const nationFams = nation().families;
       $('e-picks').innerHTML = s.map((f, i) => {
         const options = nationFams.map((nf) =>
-          `<option value="${nf.id}"${nf.id === f.id ? ' selected' : ''}>${esc(nf.name)} · ${esc(nf.className)}</option>`).join('');
+          `<option value="${nf.id}"${nf.id === f.id ? ' selected' : ''}>${esc(nf.className)} · ${esc(nf.name)}</option>`).join('');
         const extra = f.mostCities || f.fewestCities
           ? ` <i class="pick__extra" title="${esc(f.className)}: ${sign(f.mostCities)} most cities, ${sign(f.fewestCities)} fewest cities">${sign(f.mostCities)}/${sign(f.fewestCities)}</i>` : '';
         return `<label class="pick" style="--fam:${f.color}">
@@ -432,7 +432,7 @@ const tieRows = [1, 2, 3].map((tied) => {
 
     function renderRungs(s, scored) {
       const head = ['<th class="rowlabel rowlabel--corner">Split</th>']
-        .concat(s.map((f) => `<th class="nhdr rung__fh"><span style="--fam:${f.color}"></span>${esc(f.name)}</th>`))
+        .concat(s.map((f) => `<th class="nhdr rung__fh"><span style="--fam:${f.color}"></span>${esc(f.className)} <i>${esc(f.name)}</i></th>`))
         .concat(['<th class="nhdr nhdr--num">Sum</th>', '<th class="nhdr nhdr--num">Worst</th>']);
       $('e-rung-head').innerHTML = head.join('');
       $('e-rung-cols').innerHTML = ['<col style="width:5.5rem" />']
@@ -463,7 +463,7 @@ const tieRows = [1, 2, 3].map((tied) => {
       $('e-rung-more').innerHTML = scored.length === 0
         ? `Fewer cities than families: every family needs at least one.`
         : fav.length && !showAll
-          ? `Kindest arrangement for each number of cities held by ${fav.map((i) => esc(s[i].name)).join(' + ')}, ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
+          ? `Kindest arrangement for each number of cities held by ${fav.map((i) => esc(s[i].className)).join(' + ')}, ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
         : scored.length > shown.length
           ? `Best ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
           : `${scored.length} splits${showAll ? ' · <a href="#" id="e-show-all">show fewer</a>' : ''}`;
@@ -512,9 +512,9 @@ const tieRows = [1, 2, 3].map((tied) => {
           ? `<span class="fam__extra">${esc(f.className)} ${sign(f.mostCities)} / ${sign(f.fewestCities)}</span>` : '';
         return `<article class="fam" style="--fam:${f.color};--brk:${b ? b.color : '#7d8590'}">
           <div class="fam__head">
-            <span class="fam__name">${esc(f.name)}</span>
-            <a class="fam__class" href="${base}families/${f.classSlug}" title="${esc(f.className)}${f.mostCities ? ` · most ${sign(f.mostCities)} / fewest ${sign(f.fewestCities)}` : ''}">
-              <img src="${base}${f.icon}" alt="" width="14" height="14" />${esc(f.className)}</a>
+            <a class="fam__name" href="${base}families/${f.classSlug}" title="${esc(f.className)}${f.mostCities ? ` · most ${sign(f.mostCities)} / fewest ${sign(f.fewestCities)}` : ''}">
+              <img src="${base}${f.icon}" alt="" width="15" height="15" />${esc(f.className)}</a>
+            <span class="fam__class">${esc(f.name)}</span>
             <span class="fam__cities"><b>${row.split[i]}</b> ${row.split[i] === 1 ? 'city' : 'cities'}</span>
           </div>
           <div class="fam__terms">
@@ -654,11 +654,11 @@ const tieRows = [1, 2, 3].map((tied) => {
   .fams :global(.fam) { border: 1px solid var(--border); border-left: 4px solid var(--fam); border-radius: var(--radius);
     background: var(--bg-elev); padding: 0.35rem 0.6rem 0.4rem; }
   .fams :global(.fam__head) { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
-  .fams :global(.fam__name) { font-family: var(--font-display); font-size: 1rem; color: var(--text); }
-  .fams :global(.fam__class) { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.66rem;
-    font-style: italic; color: var(--text-dim); text-decoration: none; }
-  .fams :global(.fam__class:hover) { color: var(--accent); }
-  .fams :global(.fam__class img) { opacity: 0.8; }
+  .fams :global(.fam__name) { display: inline-flex; align-items: center; gap: 0.3rem; font-family: var(--font-display);
+    font-size: 1rem; color: var(--text); text-decoration: none; }
+  .fams :global(.fam__name:hover) { color: var(--accent); }
+  .fams :global(.fam__name img) { opacity: 0.85; }
+  .fams :global(.fam__class) { font-size: 0.66rem; font-style: italic; color: var(--text-dim); }
   .fams :global(.fam__cities) { margin-left: auto; font-size: 0.66rem; color: var(--text-faint); }
   .fams :global(.fam__cities b) { font-family: var(--font-mono); font-size: 0.95rem; color: var(--text); }
   .fams :global(.fam__terms) { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.7rem;
@@ -689,6 +689,7 @@ const tieRows = [1, 2, 3].map((tied) => {
   .rung :global(.rung__fh) { text-align: left; }
   .rung :global(.rung__fh span) { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 2px;
     background: var(--fam); margin-right: 0.35rem; }
+  .rung :global(.rung__fh i) { font-size: 0.66rem; font-style: italic; color: var(--text-faint); margin-left: 0.25rem; }
   .rung :global(.rung__r) { cursor: pointer; }
   .rung :global(.rung__r:hover td) { background: var(--bg-elev-2); }
   .rung :global(.rung__r.is-here td) { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 45%, transparent); }
