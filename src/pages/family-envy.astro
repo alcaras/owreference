@@ -86,9 +86,9 @@ const tieRows = [1, 2, 3].map((tied) => {
           <button type="button" class="stp" id="e-total-up" aria-label="One more city">+</button>
         </span>
       </label>
-      <label class="f f--sel"><span>Favour <i>most cities to</i></span>
-        <select id="e-favour"><option value="-1">nobody in particular</option></select>
-      </label>
+      <div class="f"><span>Favour <i>as many cities as possible to</i></span>
+        <span class="favs" id="e-favour"></span>
+      </div>
       <button type="button" class="asm__reset" id="e-reset">Reset</button>
     </div>
   </section>
@@ -102,8 +102,9 @@ const tieRows = [1, 2, 3].map((tied) => {
     <h2 class="rung__h">Every way to split <b id="e-total-lbl">8</b> cities</h2>
     <p class="rung__note">
       Kindest split first: the one whose <em>unhappiest</em> family is least unhappy, then by the
-      sum. Each cell is a family's city count and what that split does to its opinion. Click a row
-      for the breakdown.
+      sum. Favouring a family lists one row per city count it could hold and marks the
+      <em>recommended</em> trade-off: the most favoured cities before anyone drops into Angry.
+      Click a row for the breakdown.
     </p>
     <div class="grid">
       <div class="grid__scroll">
@@ -354,7 +355,7 @@ const tieRows = [1, 2, 3].map((tied) => {
     let total = DEFAULT_TOTAL;
     let selected = null; // split key "a/b/c" the breakdown shows; null = the top row
     let showAll = false;
-    let favour = -1;     // slot index whose city count should be maximised, or -1
+    let favour = new Set(); // slot indices whose combined city count should be maximised
 
     const nation = () => D.nations.find((n) => n.id === nationId) || D.nations[0];
     const familyById = (id) => nation().families.find((f) => f.id === id);
@@ -363,14 +364,15 @@ const tieRows = [1, 2, 3].map((tied) => {
       picks = nation().families.slice(0, 3).map((f) => f.id);
       selected = null;
       showAll = false;
-      favour = -1;
+      favour = new Set();
     }
     function renderFavour(s) {
-      const sel = $('e-favour');
-      sel.innerHTML = '<option value="-1">nobody in particular</option>' +
-        s.map((f, i) => `<option value="${i}"${favour === i ? ' selected' : ''}>${esc(f.name)} · ${esc(f.className)}</option>`).join('');
-      sel.value = String(favour);
+      $('e-favour').innerHTML = s.map((f, i) =>
+        `<label class="fav${favour.has(i) ? ' is-on' : ''}" style="--fam:${f.color}"><input type="checkbox" data-slot="${i}"${favour.has(i) ? ' checked' : ''} /> ${esc(f.name)}</label>`).join('');
     }
+    // Nobody below this from the city terms alone: Angry is where the real
+    // city penalties start (-10% Civics / Training, +20% Maintenance).
+    const ANGRY_MAX = (D.brackets.find((b) => b.bracket === 'ANGRY') || {}).max ?? -100;
 
     function slots() {
       return picks.slice(0, count).map((id, i) => ({ ...(familyById(id) || nation().families[i]), other: 0 }));
@@ -440,15 +442,19 @@ const tieRows = [1, 2, 3].map((tied) => {
       // Favouring a family: sort by its city count first, kindness second, and
       // (unless showing all) keep only the kindest arrangement for each count —
       // one row per "how many cities can I give them".
+      const fav = [...favour].filter((i) => i < s.length);
+      const favCount = (r) => fav.reduce((a, i) => a + r.split[i], 0);
       let list = scored;
-      if (favour >= 0 && favour < s.length) {
-        list = scored.slice().sort((a, b) => (b.split[favour] - a.split[favour]) || (b.worst - a.worst) || (b.sum - a.sum));
-        if (!showAll) {
-          const seen = new Set();
-          list = list.filter((r) => !seen.has(r.split[favour]) && seen.add(r.split[favour]));
-        }
+      let recommended = null;
+      if (fav.length && fav.length < s.length) {
+        list = scored.slice().sort((a, b) => (favCount(b) - favCount(a)) || (b.worst - a.worst) || (b.sum - a.sum));
+        const seen = new Set();
+        const frontier = list.filter((r) => !seen.has(favCount(r)) && seen.add(favCount(r)));
+        if (!showAll) list = frontier;
+        // Recommended: the most favoured cities while nobody drops into Angry.
+        recommended = frontier.find((r) => r.worst > ANGRY_MAX) || null;
       }
-      const cap = showAll || favour >= 0 ? Infinity : 15;
+      const cap = showAll || fav.length ? Infinity : 15;
       const shown = list.slice(0, cap);
       if (selected && !shown.some((r) => r.key === selected)) {
         const here = scored.find((r) => r.key === selected);
@@ -456,13 +462,13 @@ const tieRows = [1, 2, 3].map((tied) => {
       }
       $('e-rung-more').innerHTML = scored.length === 0
         ? `Fewer cities than families: every family needs at least one.`
-        : favour >= 0 && !showAll
-          ? `Kindest arrangement for each ${esc(s[favour].name)} city count, ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
+        : fav.length && !showAll
+          ? `Kindest arrangement for each number of cities held by ${fav.map((i) => esc(s[i].name)).join(' + ')}, ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
         : scored.length > shown.length
           ? `Best ${shown.length} of ${scored.length} splits · <a href="#" id="e-show-all">show all</a>`
           : `${scored.length} splits${showAll ? ' · <a href="#" id="e-show-all">show fewer</a>' : ''}`;
 
-      const selKey = selected || (shown[0] && shown[0].key);
+      const selKey = selected || (recommended && recommended.key) || (shown[0] && shown[0].key);
       $('e-rung-body').innerHTML = shown.map((r, idx) => {
         const cells = r.totals.map((v, i) => {
           const b = bracketFor(v + s[i].other);
@@ -470,7 +476,8 @@ const tieRows = [1, 2, 3].map((tied) => {
           return `<td class="cell rung__c ${cls}" style="--brk:${b ? b.color : '#7d8590'}" title="${b ? esc(b.label) : ''}">` +
             `<b>${r.split[i]}</b><i>${sign(v)}</i></td>`;
         }).join('');
-        const flags = (favour < 0 && idx === 0 && !scored.slice(1).some(x => x.worst === r.worst && x.sum === r.sum) ? '<em class="rung__flag">best</em>' : '') +
+        const flags = (!fav.length && idx === 0 && !scored.slice(1).some(x => x.worst === r.worst && x.sum === r.sum) ? '<em class="rung__flag">best</em>' : '') +
+          (recommended && r.key === recommended.key ? '<em class="rung__flag" title="the most favoured cities while nobody drops into Angry from the city terms alone">recommended</em>' : '') +
           (r.even ? '<em class="rung__flag rung__flag--even">even</em>' : '');
         return `<tr class="rung__r${r.key === selKey ? ' is-here' : ''}" data-split="${r.key}">` +
           `<td class="rowlabel rung__k">${r.key}${flags}</td>${cells}` +
@@ -538,8 +545,11 @@ const tieRows = [1, 2, 3].map((tied) => {
       renderPicks();
       render();
     });
-    $('e-favour').addEventListener('change', () => {
-      favour = +$('e-favour').value;
+    $('e-favour').addEventListener('change', (ev) => {
+      const cb = ev.target.closest('input[type=checkbox]');
+      if (!cb) return;
+      const i = +cb.dataset.slot;
+      if (cb.checked) favour.add(i); else favour.delete(i);
       selected = null;
       render();
     });
@@ -599,9 +609,15 @@ const tieRows = [1, 2, 3].map((tied) => {
     padding: 0.45rem 0.8rem 0.55rem; margin: 0 0 0.8rem; }
   .asm__bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.4rem 0.9rem; }
   .asm__picks { display: contents; }
+  .favs { display: inline-flex; gap: 0.35rem; }
+  .asm :global(.fav) { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.74rem; color: var(--text-dim);
+    border: 1px solid var(--border-strong); border-left: 3px solid var(--fam); border-radius: 6px;
+    padding: 0.22rem 0.5rem; cursor: pointer; background: var(--bg); }
+  .asm :global(.fav.is-on) { color: var(--text); border-color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, var(--bg)); }
+  .asm :global(.fav input) { margin: 0; accent-color: var(--gold); }
   .asm :global(.pick) { display: inline-flex; align-items: center; gap: 0.35rem; border-left: 3px solid var(--fam);
     padding-left: 0.45rem; }
-  .asm :global(.pick__sel) { width: 11rem; font-family: var(--font-ui); background: var(--bg); color: var(--text);
+  .asm :global(.pick__sel) { width: 10.25rem; font-family: var(--font-ui); background: var(--bg); color: var(--text);
     border: 1px solid var(--border-strong); border-radius: 6px; padding: 0.25rem 0.4rem; font-size: 0.78rem; }
   .asm :global(.pick__extra) { font-family: var(--font-mono); font-size: 0.6rem; font-style: normal;
     color: var(--gold-soft); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
@@ -615,7 +631,7 @@ const tieRows = [1, 2, 3].map((tied) => {
   .f i { color: var(--text-faint); font-size: 0.9em; font-style: italic; }
   .f input, .f select { width: 7rem; background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
     border-radius: 6px; padding: 0.25rem 0.4rem; font-family: var(--font-mono); font-size: 0.78rem; }
-  .f--sel select { width: 9rem; font-family: var(--font-ui); }
+  .f--sel select { width: 8.5rem; font-family: var(--font-ui); }
   .f__step { display: inline-flex; align-items: center; gap: 0.3rem; }
   .f__step input { width: 3.6rem; text-align: center; font-size: 0.95rem; }
   .stp { width: 1.5rem; height: 1.5rem; border: 1px solid var(--border-strong);
