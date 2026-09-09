@@ -120,7 +120,7 @@ const tieRows = [1, 2, 3].map((tied) => {
   <section class="rung">
     <h2 class="rung__h">Every way to split <b id="e-total-lbl">8</b> cities</h2>
     <p class="rung__note">
-      One row per allocation. Each family cell is its city count and the whole city-count opinion
+      One row per allocation, every family holding at least one city. Each family cell is its city count and the whole city-count opinion
       that split gives it; the bar colour is the opinion bracket once the family's other opinion is
       added. Rows are ordered so the split whose <em>unhappiest</em> family is least unhappy comes
       first, then by the sum. Click a row for the breakdown.
@@ -424,11 +424,13 @@ const tieRows = [1, 2, 3].map((tied) => {
     function allSplits(s) {
       const n = s.length;
       const rows = [];
+      // Every family holds at least one city: a family with none is not a
+      // plan anyone makes, and it drowns the list in 0/x/y rows.
       const walk = (i, left, acc) => {
-        if (i === n - 1) { rows.push(acc.concat(left)); return; }
-        for (let k = left; k >= 0; k--) walk(i + 1, left - k, acc.concat(k));
+        if (i === n - 1) { if (left >= 1) rows.push(acc.concat(left)); return; }
+        for (let k = left - (n - 1 - i); k >= 1; k--) walk(i + 1, left - k, acc.concat(k));
       };
-      if (n > 0) walk(0, total, []);
+      if (n > 0 && total >= n) walk(0, total, []);
       const scored = rows.map((split) => {
         const terms = cityTerms(s.map((f, i) => ({ ...f, cities: split[i] })));
         const totals = terms.map((t) => t.total);
@@ -465,8 +467,10 @@ const tieRows = [1, 2, 3].map((tied) => {
         const here = scored.find((r) => r.key === selected);
         if (here) shown.push(here);
       }
-      $('e-rung-more').textContent = scored.length > shown.length
-        ? `Showing the best ${shown.length} of ${scored.length} splits.` : `${scored.length} splits.`;
+      $('e-rung-more').textContent = scored.length === 0
+        ? `Fewer cities than families: every family needs at least one.`
+        : scored.length > shown.length
+          ? `Showing the best ${shown.length} of ${scored.length} splits.` : `${scored.length} splits.`;
 
       const selKey = selected || (scored[0] && scored[0].key);
       $('e-rung-body').innerHTML = shown.map((r, idx) => {
