@@ -6,16 +6,8 @@
         "reason": "no zType"
       },
       {
-        "id": "CONCEPT_CAPITAL",
-        "reason": "no help text (zHelpText=—)"
-      },
-      {
-        "id": "CONCEPT_CLEAR",
-        "reason": "no help text (zHelpText=—)"
-      },
-      {
         "id": "CONCEPT_COURTIER",
-        "reason": "no help text (zHelpText=—)"
+        "reason": "no help text (zHelpText=TEXT_HELPTEXT_LINK_HELP_COURTIER)"
       },
       {
         "id": "CONCEPT_EMPIRES_OF_THE_INDUS",
@@ -26,41 +18,17 @@
         "reason": "no help text (zHelpText=—)"
       },
       {
-        "id": "CONCEPT_FRESH_WATER",
-        "reason": "no help text (zHelpText=—)"
-      },
-      {
-        "id": "CONCEPT_HOLY_CITY",
-        "reason": "no help text (zHelpText=—)"
-      },
-      {
-        "id": "CONCEPT_IGNORES_ZOC",
-        "reason": "no help text (zHelpText=—)"
-      },
-      {
-        "id": "CONCEPT_LUXURY",
-        "reason": "no help text (zHelpText=—)"
-      },
-      {
         "id": "CONCEPT_RIVER",
-        "reason": "no help text (zHelpText=—)"
-      },
-      {
-        "id": "CONCEPT_TRADE_NETWORK",
-        "reason": "no help text (zHelpText=—)"
+        "reason": "no help text (zHelpText=TEXT_HELPTEXT_LINK_HELP_RIVER)"
       },
       {
         "id": "CONCEPT_WONDERS_AND_DYNASTIES",
         "reason": "no help text (zHelpText=—)"
-      },
-      {
-        "id": "CONCEPT_ZOC",
-        "reason": "no help text (zHelpText=—)"
       }
     ],
-    "skippedCount": 14,
+    "skippedCount": 6,
     "source": "concept.xml",
-    "total": 134
+    "total": 142
   },
   "concepts": [
     {
@@ -178,6 +146,15 @@
     {
       "dlc": "",
       "help": [
+        "The first City a player founds is known as their Capital. The Capital is the center of a Nation's Trade Network, and certain bonuses, like the Science boost from Centralization and Aksum's Mint Coin Projects, apply only to the Capital. Units acquired from Bonus Cards also spawn in the Capital."
+      ],
+      "id": "CONCEPT_CAPITAL",
+      "name": "Capital",
+      "slug": "capital"
+    },
+    {
+      "dlc": "",
+      "help": [
         "Caravan Units can be sent on a Caravan Mission to a Foreign Capital. The Caravan moves once per Turn (costing one Order), and upon safe arrival, the Unit is consumed, producing a lump sum of Money and an Opinion boost. To gain Caravan Access, assign a Cunning Governor to a City or found a Traders Family Seat."
       ],
       "id": "CONCEPT_CARAVAN_MISSION",
@@ -211,6 +188,15 @@
       "id": "CONCEPT_CITY_SITE",
       "name": "City Site",
       "slug": "city-site"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Clear Tiles have no Improvements."
+      ],
+      "id": "CONCEPT_CLEAR",
+      "name": "Clear",
+      "slug": "clear"
     },
     {
       "dlc": "The Sacred and the Profane",
@@ -484,6 +470,15 @@
     {
       "dlc": "",
       "help": [
+        "Fresh Water"
+      ],
+      "id": "CONCEPT_FRESH_WATER",
+      "name": "Fresh Water",
+      "slug": "fresh-water"
+    },
+    {
+      "dlc": "",
+      "help": [
         "A General modifies the stats of a Unit. Generals must not be of a different Family from the Unit and also must be younger than 50 to be assigned. Generals can be Injured when attacked. (Generals retire at age 60.)"
       ],
       "id": "CONCEPT_GENERAL",
@@ -529,6 +524,15 @@
     {
       "dlc": "",
       "help": [
+        "A Holy City is where a Religion was first founded. A Holy Site can only be built in a Holy City."
+      ],
+      "id": "CONCEPT_HOLY_CITY",
+      "name": "Holy City",
+      "slug": "holy-city"
+    },
+    {
+      "dlc": "",
+      "help": [
         "A Holy Site is a Religious Improvement which can only be built at the Holy City of a World Religion. For example, The Church of the Holy Sepulchre can only be built at the Christian Holy City."
       ],
       "id": "CONCEPT_HOLY_SITE",
@@ -561,6 +565,15 @@
       "id": "CONCEPT_IDLE",
       "name": "Idle",
       "slug": "idle"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Ignores the Zone-of-Control of enemy Units."
+      ],
+      "id": "CONCEPT_IGNORES_ZOC",
+      "name": "Ignores ZOC",
+      "slug": "ignores-zoc"
     },
     {
       "dlc": "",
@@ -666,6 +679,17 @@
       "id": "CONCEPT_LEGITIMACY",
       "name": "Legitimacy",
       "slug": "legitimacy"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "Luxuries can be traded to a City to increase Happiness. They can also be traded to other Nations, Tribes, and Families to improve their Opinion of you.",
+        "Family Classes all have two specific Luxuries which give them a higher Opinion boost. (For example, Clerics prefer Incense and Lavender.)",
+        "Luxuries come from the following Resources:"
+      ],
+      "id": "CONCEPT_LUXURY",
+      "name": "Luxuries",
+      "slug": "luxury"
     },
     {
       "dlc": "Behind the Throne",
@@ -1142,6 +1166,16 @@
     {
       "dlc": "",
       "help": [
+        "The Trade Network consists of all Tiles connected to the {0_capital} via Roads, Rivers, Urban Tiles, and open Water.",
+        "Foreign Cities on your Trade Network (which requires National Peace) produce Money each Turn."
+      ],
+      "id": "CONCEPT_TRADE_NETWORK",
+      "name": "Trade Network",
+      "slug": "trade-network"
+    },
+    {
+      "dlc": "",
+      "help": [
         "Trade Outposts generate Money and grant a small Tribe Opinion bonus for 10 turns before consuming the City Site and turning into a City owned by the player. Establishing a Trade Outpost consumes the unit and can only be established with a non-hostile Tribal City Site. The cost of establishing a Trade Outpost scales with Tribe Opinion. If War is declared between the Tribe and the owner of the Trade Outpost, progress towards a City will be paused for the duration of the war."
       ],
       "id": "CONCEPT_TRADE_OUTPOST",
@@ -1341,6 +1375,16 @@
       "id": "CONCEPT_XP",
       "name": "XP",
       "slug": "xp"
+    },
+    {
+      "dlc": "",
+      "help": [
+        "A land military Unit exerts a Zone of Control (ZOC) over all adjacent land Tiles, and a ship exerts ZOC over all adjacent water Tiles. A Unit may not move directly from one Hostile ZOC into an adjacent Tile that is also under a Hostile ZOC, unless the destination Tile lies on the opposite side of a river from the hostile Unit exerting the ZOC.",
+        "Hold [X] to see Unit ZOCs."
+      ],
+      "id": "CONCEPT_ZOC",
+      "name": "ZOC",
+      "slug": "zoc"
     }
   ]
 }

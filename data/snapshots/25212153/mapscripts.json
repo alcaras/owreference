@@ -1,0 +1,655 @@
+[
+  {
+    "description": "A large stretch of water containing many islands.",
+    "id": "ARCHIPELAGO",
+    "name": "Archipelago",
+    "optionCount": 6,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "More water, and islands are relatively far apart",
+            "label": "Large"
+          },
+          {
+            "help": "Islands are moderately far apart",
+            "label": "Medium"
+          },
+          {
+            "help": "Less water, and islands are relatively close together, or even merged into larger islands",
+            "label": "Small"
+          }
+        ],
+        "group": "Water Size"
+      },
+      {
+        "choices": [
+          {
+            "help": "Small Islands",
+            "label": "Small"
+          },
+          {
+            "help": "Water occupies approximately half of the map",
+            "label": "Medium"
+          },
+          {
+            "help": "Land occupies more area than water",
+            "label": "Large"
+          }
+        ],
+        "group": "Variant"
+      }
+    ],
+    "slug": "archipelago",
+    "special": false
+  },
+  {
+    "description": "A region deep inland, behind a mountain range, where little rain falls.  Balanced to support two teams in multi-player games.",
+    "id": "ARID_PLATEAU",
+    "name": "Arid Plateau",
+    "optionCount": 8,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Start in the south on a great plateau",
+            "label": "The Plateau"
+          },
+          {
+            "help": "Start in the middle latitudes",
+            "label": "The Midland"
+          },
+          {
+            "help": "Start in the north, where it is colder",
+            "label": "Near the Tundra"
+          }
+        ],
+        "group": "Player Start"
+      },
+      {
+        "choices": [
+          {
+            "help": "Choose a random option",
+            "label": "Random"
+          },
+          {
+            "help": "Bays that range offscreen to the north",
+            "label": "Far North"
+          },
+          {
+            "help": "Seas with land passage to their north",
+            "label": "Middle North"
+          }
+        ],
+        "group": "Water Location"
+      },
+      {
+        "choices": [
+          {
+            "help": "Fewer, larger seas of irregular shape",
+            "label": "Large Seas"
+          },
+          {
+            "help": "Several small seas will be narrow and jagged. They may interconnect.",
+            "label": "Small Jagged Seas"
+          }
+        ],
+        "group": "Water Size"
+      }
+    ],
+    "slug": "arid-plateau",
+    "special": false
+  },
+  {
+    "description": "A temperate coastal map, with a large area of shallow sea in the middle.",
+    "id": "BAY",
+    "name": "Bay",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "bay",
+    "special": false
+  },
+  {
+    "description": "A coastal region bordered by a mountain range, which catches rain and creates a fertile band near the mountains.  Balanced to support two teams in multi-player games.",
+    "id": "COASTAL_RAIN_BASIN",
+    "name": "Coastal Rain Basin",
+    "optionCount": 3,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Start in the south on a great plateau",
+            "label": "The Plateau"
+          },
+          {
+            "help": "Start in the middle latitudes",
+            "label": "The Midland"
+          },
+          {
+            "help": "Start in the north, near the ocean",
+            "label": "Near the Ocean"
+          }
+        ],
+        "group": "Player Start"
+      }
+    ],
+    "slug": "coastal-rain-basin",
+    "special": false
+  },
+  {
+    "description": "A small continent, guaranteed to be circumnavigable within the map boundary.",
+    "id": "CONTINENT",
+    "name": "Continent",
+    "optionCount": 11,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Start adjacent to salt water",
+            "label": "Coastal"
+          },
+          {
+            "help": "Start away from the coast",
+            "label": "Inland"
+          }
+        ],
+        "group": "Player Start"
+      },
+      {
+        "choices": [
+          {
+            "help": "Varied in number and distribution",
+            "label": "Random"
+          },
+          {
+            "help": "Tribe placement will be scattered",
+            "label": "Five Tribes"
+          },
+          {
+            "help": "Tribes will be placed in quadrants",
+            "label": "Four Tribes"
+          },
+          {
+            "help": "Two Tribes in play, with all camps away from the ocean",
+            "label": "Inland Only"
+          },
+          {
+            "help": "Two Tribes in play, with all camps near the coast",
+            "label": "Coastal Only"
+          }
+        ],
+        "group": "Tribes"
+      },
+      {
+        "choices": [
+          {
+            "help": "Extreme terrain can be either Tundra or Desert",
+            "label": "Either"
+          },
+          {
+            "help": "No tundra or a major desert",
+            "label": "None"
+          },
+          {
+            "help": "Extreme terrain on the map will be Tundra",
+            "label": "Tundra"
+          },
+          {
+            "help": "Extreme terrain on the map will be Desert",
+            "label": "Desert"
+          }
+        ],
+        "group": "Terrain"
+      }
+    ],
+    "slug": "continent",
+    "special": false
+  },
+  {
+    "description": "A lush land, with large lakes and areas of dense jungle.",
+    "id": "DEEP_JUNGLE",
+    "name": "Deep Jungle",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "deep-jungle",
+    "special": false
+  },
+  {
+    "description": "A vast and open terrain, where small areas of temperate land are separated by large areas of open desert.",
+    "id": "DESERT",
+    "name": "Desert",
+    "optionCount": 9,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "The desert is landlocked, with no large bodies of water. NOTE: This is an extreme map-mode. Naval units cannot be built and it will not be possible to connect all Cities with Roads and Trade Networks.",
+            "label": "None"
+          },
+          {
+            "help": "Choose a random option (will not pick None, so there will always be some water)",
+            "label": "Random"
+          },
+          {
+            "help": "The map has a coast, similar to the Seaside mapscript.",
+            "label": "Dry Coast"
+          },
+          {
+            "help": "The map has a coast, with a band of lush terrain between the water and desert.",
+            "label": "Lush Coast"
+          }
+        ],
+        "group": "Coast"
+      },
+      {
+        "choices": [
+          {
+            "help": "The map is the default map size.",
+            "label": "Standard"
+          },
+          {
+            "help": "The map size is doubled, with more desert between Nations.",
+            "label": "Double"
+          }
+        ],
+        "group": "Size"
+      },
+      {
+        "choices": [
+          {
+            "help": "Start anywhere",
+            "label": "Anywhere"
+          },
+          {
+            "help": "Start adjacent to salt water (no effect if playing without water)",
+            "label": "Coastal"
+          },
+          {
+            "help": "Start away from the coast (no effect if playing without water)",
+            "label": "Inland"
+          }
+        ],
+        "group": "Start"
+      }
+    ],
+    "slug": "desert",
+    "special": false
+  },
+  {
+    "description": "Fertile land with deserts that expand over time.",
+    "id": "DESOLATION",
+    "name": "Desolation",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "desolation",
+    "special": false
+  },
+  {
+    "description": "A series of channels extend radially from the center, dividing a land map into separate regions.  Balanced to support either teams or free-for-all in multi-player games.",
+    "id": "DISJUNCTION",
+    "name": "Disjunction",
+    "optionCount": 5,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Each of the eight continent generation methods has an equal chance to be used",
+            "label": "Weighted Random"
+          },
+          {
+            "help": "Two continents of nearly-equal size",
+            "label": "Two Continents, Split Evenly"
+          },
+          {
+            "help": "Three continents of nearly-equal size",
+            "label": "Three Continents, Split Evenly"
+          },
+          {
+            "help": "Three continents of uneven sizes",
+            "label": "Three Continents, Split Unevenly"
+          },
+          {
+            "help": "One continent per team, with size proportional to the number of team members",
+            "label": "One continent per team"
+          }
+        ],
+        "group": "Continents"
+      }
+    ],
+    "slug": "disjunction",
+    "special": false
+  },
+  {
+    "description": "A small continent, on the scale of Australia, that contains an inland sea. Guaranteed to be circumnavigable within the map boundary.",
+    "id": "DONUT",
+    "name": "Donut",
+    "optionCount": 5,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Start on a coastal site on the inner sea",
+            "label": "Inner Sea"
+          },
+          {
+            "help": "Start on a coastal site on the outer sea",
+            "label": "Outer Sea"
+          }
+        ],
+        "group": "Player Start"
+      },
+      {
+        "choices": [
+          {
+            "help": "The landmass is less likely to have an uneven coast, especially good for multiplayer",
+            "label": "Low"
+          },
+          {
+            "help": "The landmass has an average coast, with some irregularities and larger areas of land",
+            "label": "Medium"
+          },
+          {
+            "help": "The landmass is very random, with many irregularities and uneven amounts of land",
+            "label": "High"
+          }
+        ],
+        "group": "Variant"
+      }
+    ],
+    "slug": "donut",
+    "special": false
+  },
+  {
+    "description": "A series of islands in a sea that slowly recedes from coastlines. There are no water resources on this map, but some new resources will appear on dried up ocean Tiles.",
+    "id": "EBBING_SEA",
+    "name": "Ebbing Sea",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "ebbing-sea",
+    "special": false
+  },
+  {
+    "description": "Land whose northern half is covered with a dense hardwood forest. South of the leafy trees lies a band of lush terrain. Rains come from the west, but there are also seas to north and south.",
+    "id": "HARDWOOD_FOREST",
+    "name": "Hardwood Forest",
+    "optionCount": 5,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Start adjacent to salt water",
+            "label": "Coastal"
+          },
+          {
+            "help": "Start away from the sea",
+            "label": "Inland"
+          }
+        ],
+        "group": "Player Start"
+      },
+      {
+        "choices": [
+          {
+            "help": "Tribes own the great forest. Nations start in the plains.",
+            "label": "Forest"
+          },
+          {
+            "help": "Tribes occupy the open plains. Nations start in the forest.",
+            "label": "Plains"
+          },
+          {
+            "help": "Nations and Tribes can start anywhere.",
+            "label": "Scattered"
+          }
+        ],
+        "group": "Tribes"
+      }
+    ],
+    "slug": "hardwood-forest",
+    "special": false
+  },
+  {
+    "description": "Inland map with numerous mountain ranges surrounding areas of elevated flat terrain.",
+    "id": "HIGHLANDS",
+    "name": "Highlands",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "highlands",
+    "special": false
+  },
+  {
+    "description": "Land that completely surrounds a sea or group of seas.  Balanced to support free-for-all in multi-player games.",
+    "id": "INLAND_SEA",
+    "name": "Inland Sea",
+    "optionCount": 7,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Six Tribes distributed evenly around the inland sea(s)",
+            "label": "Six Tribes"
+          },
+          {
+            "help": "Varied in number and distribution",
+            "label": "Random"
+          },
+          {
+            "help": "Tribes will be placed in quadrants",
+            "label": "Four Tribes"
+          },
+          {
+            "help": "One Tribe per latitude band",
+            "label": "Three Tribes"
+          },
+          {
+            "help": "One west, one east",
+            "label": "Two Tribes"
+          },
+          {
+            "help": "Tribes inhabit land away from the water",
+            "label": "Two Tribes, Inland"
+          },
+          {
+            "help": "No Tribes, only Barbarian camps",
+            "label": "Barbarians Only"
+          }
+        ],
+        "group": "Tribes"
+      }
+    ],
+    "slug": "inland-sea",
+    "special": false
+  },
+  {
+    "description": "Multiple relatively small bodies of water, surrounded by land.",
+    "id": "LAKES_AND_GULFS",
+    "name": "Lakes and Gulfs",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "lakes-and-gulfs",
+    "special": false
+  },
+  {
+    "description": "A diverse landscape of coastal plains, mountainous regions, and islands, surrounding a nearly landlocked sea.",
+    "id": "MEDITERRANEAN",
+    "name": "Mediterranean",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "mediterranean",
+    "special": false
+  },
+  {
+    "description": "A demanding land between two mountain ranges, broken up by mountains, lakes, and tundra.  Balanced to support two teams in multi-player games.",
+    "id": "MOUNTAIN_PASS",
+    "name": "Mountain Pass",
+    "optionCount": 2,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Start towards the middle of the map",
+            "label": "Central"
+          },
+          {
+            "help": "Start towards one of the E/W sides of the map",
+            "label": "Sides"
+          }
+        ],
+        "group": "Player Start"
+      }
+    ],
+    "slug": "mountain-pass",
+    "special": false
+  },
+  {
+    "description": "Two or Three Continents.",
+    "id": "MULTIPLE_CONTINENTS",
+    "name": "Multiple Continents",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "multiple-continents",
+    "special": false
+  },
+  {
+    "description": "A cold oceanic region containing numerous islands, large and small, bordered by a continent to the south. Resources on the continent are depleted (fewer resources per City).  An adventure map intended for single player games, with larger dimensions to compensate for a lower percentage of habitable Tiles.",
+    "id": "NORTHERN_OCEAN",
+    "name": "Northern Ocean",
+    "optionCount": 4,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Start on the main continent. Selecting a high number of Nations may require some to start in the north.",
+            "label": "On the Continent"
+          },
+          {
+            "help": "Start in the north, on an island or peninsula. Selecting a high number of Nations may require some to start on the continent.",
+            "label": "Islands and Peninsulas"
+          }
+        ],
+        "group": "Player Start"
+      },
+      {
+        "choices": [
+          {
+            "help": "Use Tribal homelands native to the Northern Ocean",
+            "label": "Native"
+          },
+          {
+            "help": "Randomly distribute Tribes",
+            "label": "Random"
+          }
+        ],
+        "group": "Tribes"
+      }
+    ],
+    "slug": "northern-ocean",
+    "special": false
+  },
+  {
+    "description": "A barren desert that becomes more temperate and acquires resources over time.",
+    "id": "REJUVENATION",
+    "name": "Rejuvenation",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "rejuvenation",
+    "special": false
+  },
+  {
+    "description": "A region bordered by or containing large seas, gulfs, or bays, offering a substantial amount of coastline.  Inspired by the Middle East but with a generally milder climate.",
+    "id": "SEASIDE",
+    "name": "Seaside",
+    "optionCount": 9,
+    "optionGroups": [
+      {
+        "choices": [
+          {
+            "help": "Start adjacent to salt water",
+            "label": "Coastal"
+          },
+          {
+            "help": "Start away from the coast",
+            "label": "Inland"
+          }
+        ],
+        "group": "Player Start"
+      },
+      {
+        "choices": [
+          {
+            "help": "Varied in number and distribution",
+            "label": "Random"
+          },
+          {
+            "help": "Wide variation in size of Tribes",
+            "label": "Five Tribes"
+          },
+          {
+            "help": "Tribes will be placed in quadrants",
+            "label": "Four Tribes"
+          },
+          {
+            "help": "Tribes of similar sizes. More unaffiliated camps.",
+            "label": "Three Tribes"
+          }
+        ],
+        "group": "Tribes"
+      },
+      {
+        "choices": [
+          {
+            "help": "Choose a random option",
+            "label": "Random"
+          },
+          {
+            "help": "The map will include some Tundra",
+            "label": "Tundra"
+          },
+          {
+            "help": "The map will include a major Desert",
+            "label": "Desert"
+          }
+        ],
+        "group": "Terrain"
+      }
+    ],
+    "slug": "seaside",
+    "special": false
+  },
+  {
+    "description": "A series of land regions separated by impassable mountains. After a specified number of turns, the mountains flatten to hills and become passable.  Balanced to support either teams or free-for-all in multi-player games.",
+    "id": "TUMBLING_MOUNTAIN",
+    "name": "Tumbling Mountain",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "tumbling-mountain",
+    "special": false
+  },
+  {
+    "description": "Thin and close islands of lush and marshy terrain, surrounded by winding seas.",
+    "id": "WETLANDS",
+    "name": "Wetlands",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "wetlands",
+    "special": false
+  },
+  {
+    "description": "Designed for duels, this map places players at diagonally opposite corners. Narrow paths through difficult terrain create natural chokepoints.",
+    "id": "DOTA",
+    "name": "Duel of the Ancients",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "dota",
+    "special": true
+  },
+  {
+    "description": "One island per player. All islands are approximately the same size.",
+    "id": "PLAYER_ISLANDS",
+    "name": "Player Islands",
+    "optionCount": 0,
+    "optionGroups": [],
+    "slug": "player-islands",
+    "special": true
+  }
+]

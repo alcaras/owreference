@@ -45,7 +45,7 @@ const ratingCols = RATING_ORDER.map((slug) => {
   return { slug, name: s.name as string, color: s.color as string, yield: s.yield as string };
 });
 
-type MxCell = { text: string; tone: string; tri?: boolean } | null;
+type MxCell = { text: string; tone: string; tri?: boolean; triOffset?: number } | null;
 
 // Rows whose payout comes straight from the rating formula (stat-scaling.json).
 // General's combat bonuses get the training tone (same call as stats.json's
@@ -62,18 +62,43 @@ function scalingRow(roleKey: string): MxCell[] {
 }
 
 // Council rows: jobs.json effects are "+X Thing × tri(Rating)" strings
-// humanized from council.xml — split them back out per rating.
+// humanized from council.xml — split them back out per rating. Since 1.0.84658
+// an offset yield reads "× tri(Rating-2)+2" (yield.xml iTriangleOffset), so the
+// rating name may be followed by a signed offset.
+const TRI_RE = /^(.+) × tri\((\w+)([+-]\d+)?\)([+-]\d+)?$/;
+// The seat's multiplier at ratings 1–5 — Utils.triangleOffset(R, offset).
+function triMultipliers(offset: number): number[] {
+  return [1, 2, 3, 4, 5].map((r) => {
+    const v = r + offset;
+    return v <= 0 ? r : (v * (v + 1)) / 2 - offset;
+  });
+}
+function triTitle(offset: number): string {
+  const mults = triMultipliers(offset).join('/');
+  return offset
+    ? `Rating 1–5 multiplies this by ${mults} (triangle offset ${offset > 0 ? '+' : ''}${offset})`
+    : `Rating 1–5 multiplies this by ${mults}`;
+}
 function councilRow(jobName: string): MxCell[] {
   const job = jobs.find((j) => j.name === jobName);
   const byRating: Record<string, string> = {};
+  const offsetByRating: Record<string, number> = {};
   for (const e of job?.effects ?? []) {
-    const m = e.match(/^(.+) × tri\((\w+)\)$/);
-    if (m) byRating[m[2].toLowerCase()] = m[1];
+    const m = e.match(TRI_RE);
+    if (m) {
+      byRating[m[2].toLowerCase()] = m[1];
+      offsetByRating[m[2].toLowerCase()] = m[3] ? Number(m[3]) : 0;
+    }
   }
   return RATING_ORDER.map((slug) => {
     const text = byRating[slug];
     if (!text) return null;
-    return { text, tone: `yield-${classifyYield(text)?.toLowerCase() || 'misc'}`, tri: true };
+    return {
+      text,
+      tone: `yield-${classifyYield(text)?.toLowerCase() || 'misc'}`,
+      tri: true,
+      triOffset: offsetByRating[slug] ?? 0,
+    };
   });
 }
 
@@ -176,7 +201,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
                 <td class="cell mx-cell">
                   <div class={`effect ${c.tone}`}>
                     <LinkedText text={c.text} showIcons={false} />
-                    {c.tri && <span class="tri-mark" title="Scales with the triangle of the rating: ×R·(R+1)/2">×△</span>}
+                    {c.tri && <span class="tri-mark" title={triTitle(c.triOffset ?? 0)}>×△{c.triOffset ? <sup>{c.triOffset > 0 ? '+' : ''}{c.triOffset}</sup> : null}</span>}
                   </div>
                 </td>
               ) : (
@@ -266,7 +291,9 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
     </div>
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
-      Council payouts multiply their base by tri(R) = R·(R+1)/2 of the seat-holder's rating.
+      Council payouts multiply their base by the triangle of the seat-holder's rating: tri(R) = R·(R+1)/2,
+      so 1/2/3/4/5 → ×1/×3/×6/×10/×15. A superscript on the marker is that yield's triangle offset
+      (1.0.84658 applied these to council seats): the multiplier becomes tri(R + offset) − offset.
     </div>
   </div>
 
@@ -335,8 +362,10 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
                   <td class={`cell ${j.effects.length ? 'cell--effects' : 'is-empty'}`}>
                     {j.effects.length ? j.effects.map(text => {
                       const yieldKey = classifyYield(text)?.toLowerCase() || 'misc';
-                      // "+1 Civics × tri(Charisma)" → base + ×△ marker, same as the Council page
-                      const tri = text.match(/^(.+) × tri\((\w+)\)$/);
+                      // "+1 Civics × tri(Charisma)" / "+0.5 Science × tri(Wisdom-2)+2"
+                      // → base + ×△ marker, same as the Council page
+                      const tri = text.match(TRI_RE);
+                      const triOffset = tri && tri[3] ? Number(tri[3]) : 0;
                       return (
                         <div class={`effect yield-${yieldKey}${tri ? ' effect--tri' : ''}`}>
                           {tri ? (
@@ -344,7 +373,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
                               <span class="rating-label">{tri[2]}</span>
                               <span class="effect__out">
                                 <LinkedText text={tri[1]} showIcons={false} />
-                                <span class="tri-mark" title="Scales with the triangle of the rating: ×R·(R+1)/2">×△</span>
+                                <span class="tri-mark" title={triTitle(triOffset)}>×△{triOffset ? <sup>{triOffset > 0 ? '+' : ''}{triOffset}</sup> : null}</span>
                               </span>
                             </>
                           ) : (
@@ -367,7 +396,9 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
       Council yields and opinions multiply their base by tri(R) = R·(R+1)/2 of the assigned character's rating —
-      rating 1/2/3/4/5 → ×1/×3/×6/×10/×15. Opinions are also rounded out to the nearest 5.
+      rating 1/2/3/4/5 → ×1/×3/×6/×10/×15. Since 1.0.84658 a yield with a triangle offset (shown as a
+      superscript) instead scales by tri(R + offset) − offset, which is why Culture and Science ramp later.
+      Opinions keep offset 0 and are rounded out to the nearest 5.
       See <a href={`${base}council`}>Council</a> for the full breakdown.
     </div>
   </div>

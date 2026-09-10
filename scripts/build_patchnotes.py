@@ -115,17 +115,27 @@ def record_signals(rec: dict) -> tuple[str | None, set[str], set[str]]:
 
 
 def correlate(note: str, recs: list[dict]) -> list[int]:
-    """Indices of records that plausibly back this note."""
+    """Indices of records that plausibly back this note.
+
+    Two tiers. A *named* hit — the record's entity appears verbatim in the note,
+    or the note and the record's value share a proper noun — is strong evidence.
+    A *numeric* hit (≥2 shared multi-digit numbers) is weak: balance notes are
+    full of numbers that collide across unrelated datasets (the 1.0.84658
+    cognomen note, "30/50 … to 20/40", otherwise drags in every Garrison
+    "+20% → +30%" row). So numeric hits only stand when the note found no named
+    hit at all.
+    """
     nc, nn = note_signals(note)
     low = note.lower()
-    hits: list[int] = []
+    named: list[int] = []
+    numeric: list[int] = []
     for i, r in enumerate(recs):
         phrase, rc, rn = record_signals(r)
-        # A specific entity name verbatim in the note, OR ≥2 shared multi-digit
-        # numbers (cost tweaks), OR a shared proper-noun word (Plague, Ranger…).
-        if (phrase and phrase in low) or len(rn & nn) >= 2 or (rc & nc):
-            hits.append(i)
-    return hits
+        if (phrase and phrase in low) or (rc & nc):
+            named.append(i)
+        elif len(rn & nn) >= 2:
+            numeric.append(i)
+    return named or numeric
 
 
 def baseline_snapshot(build_id: str) -> Path | None:

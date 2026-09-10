@@ -1,0 +1,1074 @@
+{
+  "actionGroups": [
+    {
+      "actions": [
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Declare War",
+          "id": "MISSION_PLAYER_DECLARE_WAR",
+          "name": "Declare War",
+          "options": [],
+          "performer": null,
+          "requirements": [
+            "Contact with the target",
+            "At least 5 turns since your last war/peace change with them (Min Treaty Turns)"
+          ],
+          "resultState": "War",
+          "slug": "player-declare-war",
+          "summary": "Truce → War. No cost — war only needs the treaty-turn gate.",
+          "target": "a Nation you have a Truce with",
+          "turns": null,
+          "variantCount": 1
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": true,
+          "costs": [],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "National Truce",
+          "id": "MISSION_PLAYER_TRUCE",
+          "name": "Negotiate Truce",
+          "options": [
+            {
+              "blocked": [],
+              "blocksDiplomacy": false,
+              "costs": [
+                {
+                  "label": "Orders",
+                  "value": 2,
+                  "yield": "orders"
+                }
+              ],
+              "costsOpinion": [
+                {
+                  "label": "Civics",
+                  "value": 100,
+                  "yield": "civics"
+                }
+              ],
+              "effects": [
+                "Envoy gains 20 XP"
+              ],
+              "gameName": "Offer Tribute for Truce",
+              "id": "MISSION_PLAYER_TRUCE_OFFER_TRIBUTE",
+              "name": "Offer Tribute for Truce",
+              "options": [],
+              "performer": "Ambassador (council seat)",
+              "requirements": [
+                "Contact with the target"
+              ],
+              "resultState": "Truce",
+              "slug": "player-truce-offer-tribute",
+              "summary": "Sweeten the deal — you pay them Tribute for 40 turns.",
+              "target": "a Nation you are at War with",
+              "turns": 2,
+              "variantCount": 0
+            },
+            {
+              "blocked": [],
+              "blocksDiplomacy": false,
+              "costs": [
+                {
+                  "label": "Orders",
+                  "value": 2,
+                  "yield": "orders"
+                }
+              ],
+              "costsOpinion": [
+                {
+                  "label": "Civics",
+                  "value": 100,
+                  "yield": "civics"
+                }
+              ],
+              "effects": [
+                "Envoy gains 20 XP"
+              ],
+              "gameName": "Ask for Truce",
+              "id": "MISSION_PLAYER_TRUCE_NO_TRIBUTE",
+              "name": "Ask for Truce",
+              "options": [],
+              "performer": "Ambassador (council seat)",
+              "requirements": [
+                "Contact with the target"
+              ],
+              "resultState": "Truce",
+              "slug": "player-truce-no-tribute",
+              "summary": "A plain white peace offer.",
+              "target": "a Nation you are at War with",
+              "turns": 2,
+              "variantCount": 0
+            },
+            {
+              "blocked": [],
+              "blocksDiplomacy": false,
+              "costs": [
+                {
+                  "label": "Orders",
+                  "value": 2,
+                  "yield": "orders"
+                }
+              ],
+              "costsOpinion": [
+                {
+                  "label": "Civics",
+                  "value": 100,
+                  "yield": "civics"
+                }
+              ],
+              "effects": [
+                "Envoy gains 20 XP"
+              ],
+              "gameName": "Demand Tribute for Truce",
+              "id": "MISSION_PLAYER_TRUCE_DEMAND_TRIBUTE",
+              "name": "Demand Tribute for Truce",
+              "options": [],
+              "performer": "Ambassador (council seat)",
+              "requirements": [
+                "Contact with the target"
+              ],
+              "resultState": "Truce",
+              "slug": "player-truce-demand-tribute",
+              "summary": "Press your advantage — they pay you Tribute for 40 turns.",
+              "target": "a Nation you are at War with",
+              "turns": 2,
+              "variantCount": 0
+            }
+          ],
+          "performer": "Ambassador (council seat)",
+          "requirements": [
+            "Contact with the target",
+            "The war can be ended (not locked in by an Alliance)"
+          ],
+          "resultState": "Truce",
+          "slug": "player-truce",
+          "summary": "War → Truce. Opens negotiation with three options (below); diplomacy with the target is blocked while the mission runs.",
+          "target": "a Nation you are at War with",
+          "turns": null,
+          "variantCount": 2
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [
+            {
+              "label": "Civics",
+              "value": 200,
+              "yield": "civics"
+            }
+          ],
+          "effects": [
+            "Envoy gains 20 XP"
+          ],
+          "gameName": "National Peace",
+          "id": "MISSION_PLAYER_PEACE",
+          "name": "Make Peace",
+          "options": [],
+          "performer": "Ambassador (council seat)",
+          "requirements": [
+            "Contact with the target",
+            "Their opinion of you is at least Pleased (+100)"
+          ],
+          "resultState": "Peace",
+          "slug": "player-peace",
+          "summary": "Truce → Peace. Needs them at least Pleased with you.",
+          "target": "a Nation you have a Truce with",
+          "turns": 2,
+          "variantCount": 2
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Break Peace",
+          "id": "MISSION_PLAYER_BREAK_PEACE",
+          "name": "Break Peace",
+          "options": [],
+          "performer": null,
+          "requirements": [
+            "Contact with the target",
+            "They are not in an Alliance"
+          ],
+          "resultState": "Truce",
+          "slug": "player-break-peace",
+          "summary": "Peace → Truce. The step back down before any new war.",
+          "target": "a Nation you are at Peace with",
+          "turns": null,
+          "variantCount": 1
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Civics",
+              "value": 400,
+              "yield": "civics"
+            },
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Alliance Player",
+          "id": "MISSION_TEAM_ALLIANCE",
+          "name": "National Alliance",
+          "options": [],
+          "performer": "Your leader, Diplomat archetype",
+          "requirements": [
+            "At Peace with them and their opinion of you is Friendly (+200)"
+          ],
+          "resultState": null,
+          "slug": "team-alliance",
+          "summary": "Allied Nations share visibility and join each other's defensive wars; you can move and attack with allied units. One Alliance per Nation.",
+          "target": "a Nation able to form an Alliance (neither side already allied)",
+          "turns": 2,
+          "variantCount": 1
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "End Alliance",
+          "id": "MISSION_PLAYER_END_ALLIANCE",
+          "name": "End Alliance",
+          "options": [],
+          "performer": "Your leader",
+          "requirements": [],
+          "resultState": null,
+          "slug": "player-end-alliance",
+          "summary": "Dissolve your National Alliance.",
+          "target": "your allied Nation",
+          "turns": null,
+          "variantCount": 1
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Cancel All Trade",
+          "id": "MISSION_PLAYER_CANCEL_TRADE",
+          "name": "Cancel All Trade",
+          "options": [],
+          "performer": "Your leader",
+          "requirements": [],
+          "resultState": null,
+          "slug": "player-cancel-trade",
+          "summary": "End all trade routes with a trading partner.",
+          "target": "a Nation you are trading with",
+          "turns": null,
+          "variantCount": 0
+        },
+        {
+          "blocked": [
+            "You already demanded Tribute from them recently"
+          ],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [
+            {
+              "label": "Civics",
+              "value": 100,
+              "yield": "civics"
+            }
+          ],
+          "effects": [
+            "Envoy gains 20 XP"
+          ],
+          "gameName": "Demand Tribute",
+          "id": "MISSION_DEMAND_TRIBUTE",
+          "name": "Demand Tribute",
+          "options": [],
+          "performer": "Ambassador (council seat)",
+          "requirements": [
+            "Contact with the target",
+            "At least 5 turns since your last war/peace change with them (Min Treaty Turns)"
+          ],
+          "resultState": null,
+          "slug": "demand-tribute",
+          "summary": "Demand a Tribute payment (lasts 40 turns) from a Nation you are not at war with. Refusal can mean war; one demand at a time.",
+          "target": "a Nation you have a Truce with",
+          "turns": 3,
+          "variantCount": 1
+        }
+      ],
+      "blurb": "Changing your diplomatic state with another Nation. Truce and Peace offers are run by your Ambassador; Alliances need a Diplomat leader.",
+      "id": "nations",
+      "label": "With Nations"
+    },
+    {
+      "actions": [
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Declare War",
+          "id": "MISSION_TRIBE_DECLARE_WAR",
+          "name": "Declare War (Tribe)",
+          "options": [],
+          "performer": null,
+          "requirements": [
+            "Contact with the target",
+            "At least 5 turns since your last war/peace change with the Tribe (Min Treaty Turns)"
+          ],
+          "resultState": "War",
+          "slug": "tribe-declare-war",
+          "summary": "Truce → War with a Tribe.",
+          "target": "a Tribe you have a Truce with",
+          "turns": null,
+          "variantCount": 0
+        },
+        {
+          "blocked": [
+            "The Tribe is at War alongside its ally"
+          ],
+          "blocksDiplomacy": true,
+          "costs": [
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [
+            {
+              "label": "Training",
+              "value": 200,
+              "yield": "training"
+            }
+          ],
+          "effects": [
+            "Envoy gains 20 XP"
+          ],
+          "gameName": "Tribal Truce",
+          "id": "MISSION_TRIBE_TRUCE",
+          "name": "Tribal Truce",
+          "options": [],
+          "performer": "Ambassador (council seat)",
+          "requirements": [
+            "Contact with the target"
+          ],
+          "resultState": "Truce",
+          "slug": "tribe-truce",
+          "summary": "War → Truce with a Tribe.",
+          "target": "a Tribe you are at War with",
+          "turns": 2,
+          "variantCount": 1
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [
+            {
+              "label": "Training",
+              "value": 200,
+              "yield": "training"
+            }
+          ],
+          "effects": [
+            "Envoy gains 20 XP"
+          ],
+          "gameName": "Tribal Peace",
+          "id": "MISSION_TRIBE_PEACE",
+          "name": "Tribal Peace",
+          "options": [],
+          "performer": "Ambassador (council seat)",
+          "requirements": [
+            "Contact with the target",
+            "The Tribe's opinion of you is at least Pleased (+100)"
+          ],
+          "resultState": "Peace",
+          "slug": "tribe-peace",
+          "summary": "Truce → Peace. The Tribe stops targeting your cities with raiders and can heal in your territory.",
+          "target": "a Tribe you have a Truce with",
+          "turns": 2,
+          "variantCount": 1
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Training",
+              "value": 400,
+              "yield": "training"
+            },
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Tribal Alliance",
+          "id": "MISSION_TRIBE_ALLIANCE",
+          "name": "Tribal Alliance",
+          "options": [],
+          "performer": "Your leader, Diplomat archetype",
+          "requirements": [
+            "At Peace with the Tribe"
+          ],
+          "resultState": null,
+          "slug": "tribe-alliance",
+          "summary": "Move and attack with the Tribe's units, and settle near their sites without the ×2 Money surcharge. One tribal ally at a time; Diplomat leaders only.",
+          "target": "a Tribe able to form an Alliance (you have no tribal ally, it has no ally)",
+          "turns": 2,
+          "variantCount": 0
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Break Peace",
+          "id": "MISSION_TRIBE_BREAK_PEACE",
+          "name": "Break Peace (Tribe)",
+          "options": [],
+          "performer": null,
+          "requirements": [
+            "The Tribe is not allied with your team"
+          ],
+          "resultState": null,
+          "slug": "tribe-break-peace",
+          "summary": "Peace → Truce with a Tribe.",
+          "target": "a Tribe you are at Peace with",
+          "turns": null,
+          "variantCount": 0
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "End Alliance",
+          "id": "MISSION_TRIBE_END_ALLIANCE",
+          "name": "End Alliance (Tribe)",
+          "options": [],
+          "performer": "Your leader",
+          "requirements": [],
+          "resultState": null,
+          "slug": "tribe-end-alliance",
+          "summary": "Dissolve your Tribal Alliance.",
+          "target": "your allied Tribe",
+          "turns": null,
+          "variantCount": 1
+        }
+      ],
+      "blurb": "The same ladder against the barbarian Tribes — but tribal diplomacy is paid in Training, not Civics.",
+      "id": "tribes",
+      "label": "With Tribes"
+    },
+    {
+      "actions": [
+        {
+          "blocked": [
+            "That leader is already in an Alliance",
+            "Their opinion of the target is already Pleased or better"
+          ],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Civics",
+              "value": 200,
+              "yield": "civics"
+            },
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Ask to Declare War",
+          "id": "MISSION_PLAYER_PLAYER_WAR",
+          "name": "Ask a Nation to Declare War",
+          "options": [],
+          "performer": "Another Nation's leader (at Peace or Truce with you)",
+          "requirements": [
+            "Your leader is a Schemer",
+            "Their opinion of you is at least Cautious (0)",
+            "They are at Peace or Truce with you (not at War)",
+            "They are not allied with the target",
+            "At least 5 turns since the last war/peace change between the two (Min Treaty Turns)"
+          ],
+          "resultState": null,
+          "slug": "player-player-war",
+          "summary": "Schemer leaders only: pay another ruler to declare War on a third Nation.",
+          "target": "any other Nation",
+          "turns": 2,
+          "variantCount": 0
+        },
+        {
+          "blocked": [
+            "Their opinion of the target is already Pleased or better"
+          ],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Civics",
+              "value": 200,
+              "yield": "civics"
+            },
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Ask to Join War",
+          "id": "MISSION_PLAYER_JOIN_PLAYER_WAR",
+          "name": "Ask a Nation to Join Your War",
+          "options": [],
+          "performer": "Another Nation's leader (at Peace or Truce with you)",
+          "requirements": [
+            "Requires Polis technology",
+            "Their opinion of you is at least Pleased (+100)",
+            "They are at Peace or Truce with you (not at War)",
+            "They are not allied with the target",
+            "At least 5 turns since the last war/peace change between the two (Min Treaty Turns)"
+          ],
+          "resultState": null,
+          "slug": "player-join-player-war",
+          "summary": "Bring another Nation into a war you are already fighting.",
+          "target": "a Nation at War with you",
+          "turns": 2,
+          "variantCount": 0
+        },
+        {
+          "blocked": [
+            "That leader is already in an Alliance"
+          ],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Civics",
+              "value": 200,
+              "yield": "civics"
+            },
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Ask to Declare War",
+          "id": "MISSION_PLAYER_TRIBE_WAR",
+          "name": "Ask a Nation to Attack a Tribe",
+          "options": [],
+          "performer": "Another Nation's leader (at Peace or Truce with you)",
+          "requirements": [
+            "Their opinion of you is at least Pleased (+100)",
+            "The Tribe is at Peace or Truce with them",
+            "The Tribe is not their ally"
+          ],
+          "resultState": null,
+          "slug": "player-tribe-war",
+          "summary": "Pay another ruler to declare War on a Tribe.",
+          "target": "a Tribe not allied with your team",
+          "turns": 2,
+          "variantCount": 0
+        },
+        {
+          "blocked": [],
+          "blocksDiplomacy": false,
+          "costs": [
+            {
+              "label": "Training",
+              "value": 200,
+              "yield": "training"
+            },
+            {
+              "label": "Orders",
+              "value": 2,
+              "yield": "orders"
+            }
+          ],
+          "costsOpinion": [],
+          "effects": [],
+          "gameName": "Ask to Declare War",
+          "id": "MISSION_TRIBE_PLAYER_WAR",
+          "name": "Ask a Tribe to Attack a Nation",
+          "options": [],
+          "performer": "A Tribe's leader (Tribe at Peace or Truce with you)",
+          "requirements": [
+            "The Tribe's opinion of you is at least Pleased (+100)",
+            "The Tribe is at Peace or Truce with them",
+            "The Tribe is not their ally"
+          ],
+          "resultState": null,
+          "slug": "tribe-player-war",
+          "summary": "Pay a friendly Tribe to declare War on a Nation.",
+          "target": "any other Nation",
+          "turns": 2,
+          "variantCount": 0
+        }
+      ],
+      "blurb": "Paying other powers to fight your battles. These target the other ruler directly rather than your own council.",
+      "id": "third-party",
+      "label": "Third-party Wars"
+    }
+  ],
+  "constants": [
+    {
+      "id": "MIN_TREATY_TURNS",
+      "label": "Min Treaty Turns",
+      "note": "Turns you must wait after any war/peace change with a power before declaring war on them again (also no declarations this early in the game).",
+      "value": 5
+    },
+    {
+      "id": "TRIBUTE_TURNS",
+      "label": "Tribute Duration",
+      "note": "How many turns a Tribute payment (offered or demanded) keeps flowing.",
+      "value": 40
+    },
+    {
+      "id": "TRIBUTE_OPINION_PLAYER",
+      "label": "Tribute Opinion",
+      "note": "Opinion bonus with a Nation while you are paying them Tribute.",
+      "value": 20
+    },
+    {
+      "id": "FOUND_CITY_TRIBE_COST_BASE",
+      "label": "Tribal Site Cost (base Money)",
+      "note": "Money cost to found a city on a tribe-claimed site (+ the per-purchase increase below; modified by the Tribe's opinion of you).",
+      "value": 1000
+    },
+    {
+      "id": "FOUND_CITY_TRIBE_COST_PER",
+      "label": "Tribal Site Cost (per prior purchase)",
+      "note": "Added to the base cost for every tribal site your team has already bought.",
+      "value": 500
+    },
+    {
+      "id": "NON_TRIBAL_ALLIANCE_SETTLE_COST_MULTIPLIER",
+      "label": "Non-ally Settle Multiplier (%)",
+      "note": "The tribal-site cost is multiplied by this (×2) when the Tribe is not your ally.",
+      "value": 200
+    }
+  ],
+  "counts": {
+    "actions": 21,
+    "constants": 6,
+    "scaleBands": 15,
+    "states": 4,
+    "variants": 12,
+    "warStates": 5
+  },
+  "scales": {
+    "knowledge": [
+      {
+        "cut": 67,
+        "declareWar": false,
+        "id": "KNOWLEDGE_PRIMITIVE",
+        "name": "Primitive",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 0,
+        "playerOpinion": 0,
+        "range": "up to 67%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 83,
+        "declareWar": false,
+        "id": "KNOWLEDGE_NAIVE",
+        "name": "Naive",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 1,
+        "playerOpinion": 0,
+        "range": "68–83%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 120,
+        "declareWar": false,
+        "id": "KNOWLEDGE_COMPETENT",
+        "name": "Competent",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 2,
+        "playerOpinion": 0,
+        "range": "84–120%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 150,
+        "declareWar": false,
+        "id": "KNOWLEDGE_LEARNED",
+        "name": "Learned",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 3,
+        "playerOpinion": 0,
+        "range": "121–150%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": null,
+        "declareWar": false,
+        "id": "KNOWLEDGE_ERUDITE",
+        "name": "Erudite",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 4,
+        "playerOpinion": 0,
+        "range": "above 150%",
+        "truceModifier": 0,
+        "warModifier": 0
+      }
+    ],
+    "power": [
+      {
+        "cut": 40,
+        "declareWar": false,
+        "id": "POWER_MUCH_WEAKER",
+        "name": "Much Weaker",
+        "noTribePeace": true,
+        "noTribeWar": false,
+        "order": 0,
+        "playerOpinion": 0,
+        "range": "up to 40%",
+        "truceModifier": 50,
+        "warModifier": -50
+      },
+      {
+        "cut": 75,
+        "declareWar": false,
+        "id": "POWER_WEAKER",
+        "name": "Weaker",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 1,
+        "playerOpinion": 0,
+        "range": "41–75%",
+        "truceModifier": 25,
+        "warModifier": -25
+      },
+      {
+        "cut": 133,
+        "declareWar": true,
+        "id": "POWER_SIMILAR",
+        "name": "Similar",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 2,
+        "playerOpinion": 0,
+        "range": "76–133%",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 250,
+        "declareWar": true,
+        "id": "POWER_STRONGER",
+        "name": "Stronger",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 3,
+        "playerOpinion": 0,
+        "range": "134–250%",
+        "truceModifier": -25,
+        "warModifier": 25
+      },
+      {
+        "cut": null,
+        "declareWar": true,
+        "id": "POWER_MUCH_STRONGER",
+        "name": "Much Stronger",
+        "noTribePeace": true,
+        "noTribeWar": false,
+        "order": 4,
+        "playerOpinion": 0,
+        "range": "above 250%",
+        "truceModifier": -50,
+        "warModifier": 50
+      }
+    ],
+    "proximity": [
+      {
+        "cut": 12,
+        "declareWar": true,
+        "id": "PROXIMITY_VERY_CLOSE",
+        "name": "Very Close",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 0,
+        "playerOpinion": -60,
+        "range": "within 12 tiles",
+        "truceModifier": 0,
+        "warModifier": 0
+      },
+      {
+        "cut": 20,
+        "declareWar": true,
+        "id": "PROXIMITY_CLOSE",
+        "name": "Close",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 1,
+        "playerOpinion": -40,
+        "range": "13–20 tiles",
+        "truceModifier": 0,
+        "warModifier": -10
+      },
+      {
+        "cut": 28,
+        "declareWar": true,
+        "id": "PROXIMITY_NEAR",
+        "name": "Near",
+        "noTribePeace": false,
+        "noTribeWar": false,
+        "order": 2,
+        "playerOpinion": -20,
+        "range": "21–28 tiles",
+        "truceModifier": 10,
+        "warModifier": -20
+      },
+      {
+        "cut": 36,
+        "declareWar": false,
+        "id": "PROXIMITY_DISTANT",
+        "name": "Distant",
+        "noTribePeace": false,
+        "noTribeWar": true,
+        "order": 3,
+        "playerOpinion": 0,
+        "range": "29–36 tiles",
+        "truceModifier": 20,
+        "warModifier": -40
+      },
+      {
+        "cut": null,
+        "declareWar": false,
+        "id": "PROXIMITY_FAR",
+        "name": "Far",
+        "noTribePeace": false,
+        "noTribeWar": true,
+        "order": 4,
+        "playerOpinion": 0,
+        "range": "beyond 36 tiles",
+        "truceModifier": 30,
+        "warModifier": -80
+      }
+    ]
+  },
+  "states": [
+    {
+      "color": "#ff8d00",
+      "help": "You can attack each other freely.",
+      "helpTribe": null,
+      "hostile": true,
+      "id": "DIPLOMACY_WAR",
+      "name": "War",
+      "opinion": -60,
+      "opinionEnemy": 20,
+      "opinionEthnicity": -80,
+      "opinionReligion": -40,
+      "order": 1,
+      "peace": false,
+      "slug": "war",
+      "warModifier": 0
+    },
+    {
+      "color": "#ffffff",
+      "help": "You cannot attack each other without declaring War. A Truce cannot be ended by War until 5 Turns have passed.",
+      "helpTribe": null,
+      "hostile": false,
+      "id": "DIPLOMACY_TRUCE",
+      "name": "Truce",
+      "opinion": 0,
+      "opinionEnemy": 0,
+      "opinionEthnicity": 0,
+      "opinionReligion": 0,
+      "order": 2,
+      "peace": false,
+      "slug": "truce",
+      "warModifier": 0
+    },
+    {
+      "color": "#00e2ff",
+      "help": "The two Nations at Peace cannot attack each other. They are also less likely to declare War on each other, and they can enter each other's territory.",
+      "helpTribe": "The Nation and Tribe cannot attack each other. The Tribe will not target your Cities with Raiders (although Raiders Units will still attack you if nearby). They can enter and heal in your territory.",
+      "hostile": false,
+      "id": "DIPLOMACY_PEACE",
+      "name": "Peace",
+      "opinion": 0,
+      "opinionEnemy": -40,
+      "opinionEthnicity": 20,
+      "opinionReligion": 10,
+      "order": 3,
+      "peace": true,
+      "slug": "peace",
+      "warModifier": -20
+    },
+    {
+      "color": "#00e2ff",
+      "help": "Members of the same team. Permanent — always at Peace, share war and peace, and can never change diplomatic state with each other.",
+      "helpTribe": null,
+      "hostile": false,
+      "id": "DIPLOMACY_TEAM",
+      "name": "Team",
+      "opinion": 0,
+      "opinionEnemy": 0,
+      "opinionEthnicity": 0,
+      "opinionReligion": 0,
+      "order": 4,
+      "peace": true,
+      "slug": "team",
+      "warModifier": 0
+    }
+  ],
+  "warScore": {
+    "nations": [
+      {
+        "delta": 10,
+        "event": "Kill an enemy unit",
+        "source": "Unit.cs (kill)"
+      },
+      {
+        "delta": 5,
+        "event": "Pillage or burn an improvement in their territory",
+        "source": "Unit.cs (pillage / burn)"
+      },
+      {
+        "delta": 50,
+        "event": "Breach an enemy city (it falls into anarchy)",
+        "source": "Unit.cs doCityCapture"
+      },
+      {
+        "delta": 100,
+        "event": "Take ownership of an enemy city",
+        "source": "City.cs setPlayer"
+      }
+    ],
+    "note": "War score is tracked per pair of teams; your war state against an opponent comes from the score difference. Tribal wars use a doubled scale.",
+    "tribes": [
+      {
+        "delta": 10,
+        "event": "You kill a tribal unit",
+        "source": "Unit.cs (kill), tribe score −10"
+      },
+      {
+        "delta": -20,
+        "event": "A tribe kills one of your units",
+        "source": "Unit.cs (kill), tribe score +20"
+      },
+      {
+        "delta": 5,
+        "event": "You pillage a tribal improvement",
+        "source": "Unit.cs (pillage), tribe score −5"
+      },
+      {
+        "delta": 200,
+        "event": "You capture a tribal settlement",
+        "source": "City.cs setPlayer, tribe score −200"
+      },
+      {
+        "delta": -100,
+        "event": "A tribe breaches one of your cities",
+        "source": "Unit.cs doCityCapture, tribe score +100"
+      },
+      {
+        "delta": -200,
+        "event": "A tribe takes ownership of one of your cities",
+        "source": "City.cs setPlayer, tribe score +200"
+      }
+    ]
+  },
+  "warStates": [
+    {
+      "diplomacyMoneyPercent": 0,
+      "id": "WARSTATE_ROUTED",
+      "name": "Routed",
+      "order": 0,
+      "range": "-200 and below",
+      "threshold": -200,
+      "truceModifier": 50
+    },
+    {
+      "diplomacyMoneyPercent": 50,
+      "id": "WARSTATE_LOSING",
+      "name": "Losing",
+      "order": 1,
+      "range": "-199 to -20",
+      "threshold": -20,
+      "truceModifier": 25
+    },
+    {
+      "diplomacyMoneyPercent": 100,
+      "id": "WARSTATE_NEUTRAL",
+      "name": "Neutral",
+      "order": 2,
+      "range": "-19 to +20",
+      "threshold": 20,
+      "truceModifier": 0
+    },
+    {
+      "diplomacyMoneyPercent": 150,
+      "id": "WARSTATE_WINNING",
+      "name": "Winning",
+      "order": 3,
+      "range": "+21 to +200",
+      "threshold": 200,
+      "truceModifier": -25
+    },
+    {
+      "diplomacyMoneyPercent": 200,
+      "id": "WARSTATE_TRIUMPHANT",
+      "name": "Triumphant",
+      "order": 4,
+      "range": "+201 and above",
+      "threshold": null,
+      "truceModifier": -50
+    }
+  ]
+}

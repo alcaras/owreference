@@ -14,6 +14,8 @@
 		<AssetVariation/>
 		<AssetConstruction/>
 		<ExplorationTexts/>
+		<ExplorationTrigger/>
+		<ExplorationStat/>
 		<WorkerAnimation/>
 		<zIconName/>
 		<iSubClass/>
@@ -43,6 +45,7 @@
 		<iOpinionReligion/>
 		<fHillHeightOffsetOverride/>
 		<bHideWorkers/>
+		<bHideUnits/>
 		<bBuild/>
 		<bHolyCity/>
 		<bTerritoryOnly/>
@@ -123,6 +126,7 @@
 		<AdjacentImprovementClassAllPrereq/>
 		<EffectCityAnyPrereq/>
 		<TerrainValid/>
+		<AdjacentImprovementValid/>
 		<aeResourceAssetVariation/>
 		<aeTribeUnitDefend/>
 		<aaiAdjacentImprovementClassYield/>
@@ -140,6 +144,8 @@
 		<zType>IMPROVEMENT_ANCIENT_RUINS</zType>
 		<Name>TEXT_IMPROVEMENT_ANCIENT_RUINS</Name>
 		<AssetVariation>ASSET_VARIATION_IMPROVEMENT_RUINS</AssetVariation>
+		<ExplorationTrigger>EVENTTRIGGER_RUINS_EXPLORED</ExplorationTrigger>
+		<ExplorationStat>STAT_RUINS_EXPLORED</ExplorationStat>
 		<zIconName>IMPROVEMENT_RUINS</zIconName>
 		<iRevealChange>1</iRevealChange>
 		<bUrban>1</bUrban>
@@ -909,6 +915,7 @@
 		<bNoVegetation>1</bNoVegetation>
 		<bAqueductEndpoint>1</bAqueductEndpoint>
 		<Specialist>SPECIALIST_FARMER</Specialist>
+		<TerrainInvalid>TERRAIN_TARGET_WATER</TerrainInvalid>
 		<aiYieldCost>
 			<Pair>
 				<zIndex>YIELD_WOOD</zIndex>
@@ -2521,7 +2528,7 @@
 		<iBuildTurns>4</iBuildTurns>
 		<iBuildCost>1</iBuildCost>
 		<iPillageTurns>10</iPillageTurns>
-		<iDefenseModifierFriendly>20</iDefenseModifierFriendly>
+		<iDefenseModifierFriendly>30</iDefenseModifierFriendly>
 		<iMaxCityCount>1</iMaxCityCount>
 		<iPrereqLaws>1</iPrereqLaws>
 		<bBuild>1</bBuild>
@@ -2568,7 +2575,7 @@
 		<iBuildTurns>5</iBuildTurns>
 		<iBuildCost>1</iBuildCost>
 		<iPillageTurns>10</iPillageTurns>
-		<iDefenseModifierFriendly>30</iDefenseModifierFriendly>
+		<iDefenseModifierFriendly>40</iDefenseModifierFriendly>
 		<iMaxCityCount>1</iMaxCityCount>
 		<iPrereqLaws>4</iPrereqLaws>
 		<bBuild>1</bBuild>
@@ -2617,7 +2624,7 @@
 		<iBuildTurns>6</iBuildTurns>
 		<iBuildCost>1</iBuildCost>
 		<iPillageTurns>10</iPillageTurns>
-		<iDefenseModifierFriendly>40</iDefenseModifierFriendly>
+		<iDefenseModifierFriendly>50</iDefenseModifierFriendly>
 		<iMaxCityCount>1</iMaxCityCount>
 		<iPrereqLaws>7</iPrereqLaws>
 		<bBuild>1</bBuild>

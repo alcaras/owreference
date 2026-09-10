@@ -221,7 +221,11 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
         <b>Gather candidates</b> for each city that has no planned build
         (<code>getBestBuild</code>): every legal project, the next specialist on every worked
         tile, every unit that passes the need test (pools below). Each gets a value; the
-        highest wins that city.
+        highest wins that city — except that since 1.0.84658 candidates also carry a
+        <code>bLowPriority</code> flag, and a low-priority one loses to <em>every</em> ordinary
+        candidate no matter how the values compare. Emergency units (Militia, Conscripts) are
+        always flagged, and so is any land military unit once its relevant count already exceeds
+        the plain military target.
       </li>
       <li>
         <b>Spend across the empire in value order.</b> Every city's winner becomes an
@@ -292,9 +296,13 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
               under target with no up-to-date unit buildable.
             </td>
             <td>
-              City in danger → only units that can fight. Otherwise: land military when you
-              already have more than 1.5× the military target; warships when the water area
-              already has 1.5× its target (or a target of 0).
+              City in danger → only units that can fight. Otherwise the land-military cap, which
+              since 1.0.84658 is asymmetric: an <b>up-to-date regular</b> unit is blocked once your
+              count of up-to-date military passes <b>1.5×</b> the target, while an
+              <b>obsolete</b> one is measured against <em>all</em> your land military, and an
+              <b>emergency</b> unit (not <code>bRegular</code> — Militia, Conscripts) against all
+              land military versus the <b>plain</b> target, with no 1.5× headroom. Warships: when
+              the water area already has 1.5× its target (or a target of 0).
             </td>
           </tr>
         </tbody>

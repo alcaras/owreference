@@ -1,0 +1,135 @@
+{
+  "character": {
+    "cityScoringNoFamily": {
+      "note": "Characters without a family (initial rulers, foreigners, etc.). All player cities count, weighted less.",
+      "rules": [
+        {
+          "label": "Player owns the holy city of this religion",
+          "points": 2
+        },
+        {
+          "label": "Religion present in any other player city",
+          "points": 1
+        }
+      ]
+    },
+    "cityScoringTribe": {
+      "note": "Tribe characters score off tribe settlements (cities + tribe sites).",
+      "rules": [
+        {
+          "label": "Tribe city is the holy city",
+          "points": 4
+        },
+        {
+          "label": "Tribe city has the religion (not holy)",
+          "points": 3
+        },
+        {
+          "label": "Tribe site has the religion",
+          "points": 2
+        }
+      ]
+    },
+    "cityScoringWithFamily": {
+      "note": "Family characters: only their family's cities (player-owned and family-aligned) count.",
+      "rules": [
+        {
+          "label": "Family seat is the holy city of this religion",
+          "points": 4
+        },
+        {
+          "label": "Any other family city is the holy city",
+          "points": 3
+        },
+        {
+          "label": "Religion present in family seat (not as holy city)",
+          "points": 2
+        },
+        {
+          "label": "Religion present in other family cities (not as holy city)",
+          "points": 1
+        }
+      ]
+    },
+    "postThreshold": {
+      "note": "Only religions whose pre-mod score cleared the threshold get these. Then the random multiplier picks the winner.",
+      "rules": [
+        {
+          "label": "Religion is a Pagan religion (has a `mePaganNation`)",
+          "points": 3
+        },
+        {
+          "label": "max(0, 4 − total_characters_following) — boosts small religions",
+          "points": "0–4"
+        }
+      ]
+    },
+    "randomization": "Final score = sum × random integer in [5, 14]. Highest score wins.",
+    "roleScoring": {
+      "note": "Role bonuses stack on top of city/family scoring, regardless of family affiliation.",
+      "rules": [
+        {
+          "label": "Governor of the holy city",
+          "points": 3
+        },
+        {
+          "label": "Governor of a city with this religion (not the holy city)",
+          "points": 2
+        },
+        {
+          "label": "Agent in the holy city",
+          "points": 2
+        },
+        {
+          "label": "Agent in a city with this religion (not the holy city)",
+          "points": 1
+        }
+      ]
+    },
+    "threshold": {
+      "description": "A random integer 1..3 is drawn at the start of evaluation. Each religion's city-based + role-based score must be **strictly greater than** the threshold to be eligible. The highest post-modifier score among eligible religions wins; ties go nowhere."
+    },
+    "whoRolls": [
+      "Leader characters of human players never auto-convert (`isHuman() && isLeader()`).",
+      "Anyone who already has a religion is skipped (`hasReligion()` check).",
+      "Religion heads, characters with NoReligion trait, and anyone under age 10 (TUTORS_AGE) are ineligible.",
+      "Non-leaders with a 'locked religion' trait can only convert to that locked religion.",
+      "No conversion before turn 10 of the game (CHARACTER_RELIGION_DELAY_TURNS).",
+      "Per turn, each eligible character rolls a 10% chance (CHARACTER_RELIGION_PROB).",
+      "Adults always proceed after the 10% gate. Children (age < 18) proceed with probability 1 / (ADULT_AGE − age + 1). At age 10 that's 1/9; at 17, 1/2. Adulthood = 18."
+    ]
+  },
+  "family": {
+    "rotation": 4,
+    "scoring": [
+      {
+        "label": "Each family character following that religion",
+        "points": 100
+      },
+      {
+        "label": "Family head (additional, on top of the +100 above → +200 total)",
+        "points": 100
+      },
+      {
+        "label": "Council members (additional — stacks with the job bonus → +40 for a council job)",
+        "points": 20
+      },
+      {
+        "label": "Has a job — governor / general / agent / council (additional)",
+        "points": 20
+      },
+      {
+        "label": "Current religion bonus (tiebreaker so families don't churn)",
+        "points": 50
+      }
+    ],
+    "startTurn": 10,
+    "threshold": 100
+  },
+  "globals": {
+    "adultAge": 18,
+    "characterReligionDelayTurns": 10,
+    "characterReligionProb": 10,
+    "tutorsAge": 10
+  }
+}

@@ -1,0 +1,883 @@
+{
+  "groups": [
+    {
+      "classes": [
+        {
+          "id": "LAWCLASS_ORDER",
+          "isSuccession": true,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "Heir is the eldest son"
+              ],
+              "id": "LAW_PRIMOGENITURE",
+              "name": "Primogeniture",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "primogeniture",
+              "successionOrder": "Primogeniture",
+              "switchCost": 400,
+              "upkeep": []
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "Heir is the youngest son"
+              ],
+              "id": "LAW_ULTIMOGENITURE",
+              "name": "Ultimogeniture",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "ultimogeniture",
+              "successionOrder": "Ultimogeniture",
+              "switchCost": 400,
+              "upkeep": []
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "Heir is the eldest sibling, then the eldest son"
+              ],
+              "id": "LAW_LATERAL",
+              "name": "Lateral",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "lateral",
+              "successionOrder": "Lateral",
+              "switchCost": 400,
+              "upkeep": []
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "Heir is the highest Rated dynastic child"
+              ],
+              "id": "LAW_DYNASTIC",
+              "name": "Dynastic",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "dynastic",
+              "successionOrder": "Dynastic",
+              "switchCost": 400,
+              "upkeep": []
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "Heir is the eldest dynastic family member"
+              ],
+              "id": "LAW_SENIORITY",
+              "name": "Seniority",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "seniority",
+              "successionOrder": "Seniority",
+              "switchCost": 400,
+              "upkeep": []
+            }
+          ],
+          "slug": "order",
+          "techPrereq": "",
+          "techPrereqLabel": ""
+        }
+      ],
+      "label": "Succession (Order)",
+      "tier": 0
+    },
+    {
+      "classes": [
+        {
+          "id": "LAWCLASS_EPICS_EXPLORATION",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "+10 Culture/Kill"
+              ],
+              "id": "LAW_EPICS",
+              "name": "Epics",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Hero",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "epics",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": []
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "Movement bonus along Rivers",
+                "Scouts can move on Water"
+              ],
+              "id": "LAW_EXPLORATION",
+              "name": "Exploration",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Hunters",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "exploration",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": []
+            }
+          ],
+          "slug": "epics_exploration",
+          "techPrereq": "TECH_RHETORIC",
+          "techPrereqLabel": "Rhetoric"
+        },
+        {
+          "id": "LAWCLASS_SLAVERY_FREEDOM",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "+4 Iron/City",
+                "+4 Stone/City"
+              ],
+              "id": "LAW_SLAVERY",
+              "name": "Slavery",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Builder",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "slavery",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": []
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+20% Growth",
+                "-5% Rebel Chance"
+              ],
+              "id": "LAW_FREEDOM",
+              "name": "Freedom",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "freedom",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": []
+            }
+          ],
+          "slug": "slavery_freedom",
+          "techPrereq": "TECH_LABOR_FORCE",
+          "techPrereqLabel": "Labor Force"
+        },
+        {
+          "id": "LAWCLASS_CENTRALIZATION_VASSALAGE",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "Can build Farm on Marsh",
+                "[Capital] +2 Science/Culture Level"
+              ],
+              "id": "LAW_CENTRALIZATION",
+              "name": "Centralization",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "centralization",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": []
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "-50% Unit Consumption",
+                "Units consume no Resources"
+              ],
+              "id": "LAW_VASSALAGE",
+              "name": "Vassalage",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Riders",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "vassalage",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": []
+            }
+          ],
+          "slug": "centralization_vassalage",
+          "techPrereq": "TECH_ARISTOCRACY",
+          "techPrereqLabel": "Aristocracy"
+        }
+      ],
+      "label": "Tier 1 (early civic techs)",
+      "tier": 1
+    },
+    {
+      "classes": [
+        {
+          "id": "LAWCLASS_TYRANNY_CONSTITUTION",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "+20% Training",
+                "+10 Money/Military Unit"
+              ],
+              "id": "LAW_TYRANNY",
+              "name": "Tyranny",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Orator",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "tyranny",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-1 Civics/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+1 Science/Urban Specialist"
+              ],
+              "id": "LAW_CONSTITUTION",
+              "name": "Constitution",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Statesmen",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "constitution",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-2 Training/City"
+              ]
+            }
+          ],
+          "slug": "tyranny_constitution",
+          "techPrereq": "TECH_SOVEREIGNTY",
+          "techPrereqLabel": "Sovereignty"
+        },
+        {
+          "id": "LAWCLASS_COLONIES_SERFDOM",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "Can buy Tiles with Money"
+              ],
+              "id": "LAW_COLONIES",
+              "name": "Colonies",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Diplomat",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "colonies",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-4 Money/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+5 Orders/Turn",
+                "+1 Discontent/City"
+              ],
+              "id": "LAW_SERFDOM",
+              "name": "Serfdom",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Landowners",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "serfdom",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-2 Training/City"
+              ]
+            }
+          ],
+          "slug": "colonies_serfdom",
+          "techPrereq": "TECH_NAVIGATION",
+          "techPrereqLabel": "Navigation"
+        },
+        {
+          "id": "LAWCLASS_MONOTHEISM_POLYTHEISM",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "[State Religion] +1 Orders/City"
+              ],
+              "id": "LAW_MONOTHEISM",
+              "name": "Monotheism",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "monotheism",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-1 Civics/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "No max count for Shrine"
+              ],
+              "id": "LAW_POLYTHEISM",
+              "name": "Polytheism",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "polytheism",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-4 Money/City"
+              ]
+            }
+          ],
+          "slug": "monotheism_polytheism",
+          "techPrereq": "TECH_MONASTICISM",
+          "techPrereqLabel": "Monasticism"
+        }
+      ],
+      "label": "Tier 2",
+      "tier": 2
+    },
+    {
+      "classes": [
+        {
+          "id": "LAWCLASS_DIVINE_RULE_LEGAL_CODE",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "Can adopt Pagan State Religions",
+                "+1 Orders/Pagan Religion"
+              ],
+              "id": "LAW_DIVINE_RULE",
+              "name": "Divine Rule",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Clerics",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "divine_rule",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-0.5 Science/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+10 Civics/Active Law"
+              ],
+              "id": "LAW_LEGAL_CODE",
+              "name": "Legal Code",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Judge",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "legal_code",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-6 Money/City"
+              ]
+            }
+          ],
+          "slug": "divine_rule_legal_code",
+          "techPrereq": "TECH_CITIZENSHIP",
+          "techPrereqLabel": "Citizenship"
+        },
+        {
+          "id": "LAWCLASS_TOLERANCE_ORTHODOXY",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "Can build Non-State Religion Disciples",
+                "+2 Happiness/Non-State Religion"
+              ],
+              "id": "LAW_TOLERANCE",
+              "name": "Tolerance",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "tolerance",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-2 Civics/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "Disciples can purge World Religions",
+                "[State Religion] Can hurry production with Orders"
+              ],
+              "id": "LAW_ORTHODOXY",
+              "name": "Orthodoxy",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "orthodoxy",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-6 Money/City"
+              ]
+            }
+          ],
+          "slug": "tolerance_orthodoxy",
+          "techPrereq": "TECH_DOCTRINE",
+          "techPrereqLabel": "Doctrine"
+        },
+        {
+          "id": "LAWCLASS_PHILOSOPHY_ENGINEERING",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "-20% Urban Specialist Production Time",
+                "+1 Science/Forum"
+              ],
+              "id": "LAW_PHILOSOPHY",
+              "name": "Philosophy",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Sages",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "philosophy",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-2 Civics/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "-25% Wonder Cost",
+                "Can cross Rivers without penalty"
+              ],
+              "id": "LAW_ENGINEERING",
+              "name": "Engineering",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Scholar",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "engineering",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-6 Money/City"
+              ]
+            }
+          ],
+          "slug": "philosophy_engineering",
+          "techPrereq": "TECH_ARCHITECTURE",
+          "techPrereqLabel": "Architecture"
+        }
+      ],
+      "label": "Tier 3",
+      "tier": 3
+    },
+    {
+      "classes": [
+        {
+          "id": "LAWCLASS_PROFESSIONAL_ARMY_VOLUNTEERS",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "+50% XP for All Units",
+                "+2 Training/Treasury"
+              ],
+              "id": "LAW_PROFESSIONAL_ARMY",
+              "name": "Professional Army",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Tactician",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "professional_army",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-8 Money/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+20 Training per War",
+                "Can hurry production with Population"
+              ],
+              "id": "LAW_VOLUNTEERS",
+              "name": "Volunteers",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Champions",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "volunteers",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-3 Civics/City"
+              ]
+            }
+          ],
+          "slug": "professional_army_volunteers",
+          "techPrereq": "TECH_MANOR",
+          "techPrereqLabel": "Manor"
+        },
+        {
+          "id": "LAWCLASS_ICONOGRAPHY_CALLIGRAPHY",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "+2 Training/Monastery",
+                "+20 Money/Temple",
+                "+2 Happiness/Cathedral",
+                "No random Non-State Religion spread"
+              ],
+              "id": "LAW_ICONOGRAPHY",
+              "name": "Iconography",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "iconography",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-3 Civics/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+10 Culture/City",
+                "+1 Happiness/Specialist Elder"
+              ],
+              "id": "LAW_CALLIGRAPHY",
+              "name": "Calligraphy",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Patrons",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "calligraphy",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-8 Money/City"
+              ]
+            }
+          ],
+          "slug": "iconography_calligraphy",
+          "techPrereq": "TECH_VAULTING",
+          "techPrereqLabel": "Vaulting"
+        },
+        {
+          "id": "LAWCLASS_PILGRIMAGE_HOLY_WAR",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "+25% State Religion Spread Chance",
+                "+10 Money/Holy City"
+              ],
+              "id": "LAW_PILGRIMAGE",
+              "name": "Pilgrimage",
+              "opinions": [],
+              "perChangeCost": 100,
+              "slug": "pilgrimage",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-4 Training/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+1 Random Promotions for new Units",
+                "[State Religion] Can hurry Units with Money"
+              ],
+              "id": "LAW_HOLY_WAR",
+              "name": "Holy War",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Zealot",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "holy_war",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-1 Science/City"
+              ]
+            }
+          ],
+          "slug": "pilgrimage_holy_war",
+          "techPrereq": "TECH_MARTIAL_CODE",
+          "techPrereqLabel": "Martial Code"
+        }
+      ],
+      "label": "Tier 4",
+      "tier": 4
+    },
+    {
+      "classes": [
+        {
+          "id": "LAWCLASS_GUILDS_ELITES",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "Can build Elder Specialist without prereq",
+                "+10 Money/Specialist Class"
+              ],
+              "id": "LAW_GUILDS",
+              "name": "Guilds",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Artisans",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "guilds",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-0.5 Orders/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+100 Max Actions",
+                "+2 Orders/Culture Legendary"
+              ],
+              "id": "LAW_ELITES",
+              "name": "Elites",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Schemer",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "elites",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-5 Training/City"
+              ]
+            }
+          ],
+          "slug": "guilds_elites",
+          "techPrereq": "TECH_JURISPRUDENCE",
+          "techPrereqLabel": "Jurisprudence"
+        },
+        {
+          "id": "LAWCLASS_AUTARKY_TRADE_LEAGUE",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "+20% Mine",
+                "+20% Quarry",
+                "+20% Lumbermill",
+                "Provides: Horse, Camel, Elephant"
+              ],
+              "id": "LAW_AUTARKY",
+              "name": "Autarky",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Commander",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "autarky",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-2 Science/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "Sell at the same price as buying",
+                "Unlocks Convoy"
+              ],
+              "id": "LAW_TRADE_LEAGUE",
+              "name": "Trade League",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Traders",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "trade_league",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-4 Civics/City"
+              ]
+            }
+          ],
+          "slug": "autarky_trade_league",
+          "techPrereq": "TECH_LATEEN_SAIL",
+          "techPrereqLabel": "Lateen Sail"
+        },
+        {
+          "id": "LAWCLASS_COIN_DEBASEMENT_MONETARY_REFORM",
+          "isSuccession": false,
+          "laws": [
+            {
+              "cost": 400,
+              "effects": [
+                "Can buy/sell Orders for Money"
+              ],
+              "id": "LAW_COIN_DEBASEMENT",
+              "name": "Coin Debasement",
+              "opinions": [
+                {
+                  "group": "archetype",
+                  "label": "Schemer",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "coin_debasement",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-10 Money/City"
+              ]
+            },
+            {
+              "cost": 400,
+              "effects": [
+                "+2 Happiness/City",
+                "-100% Hurry Discontent"
+              ],
+              "id": "LAW_MONETARY_REFORM",
+              "name": "Monetary Reform",
+              "opinions": [
+                {
+                  "group": "family",
+                  "label": "Traders",
+                  "value": 20
+                }
+              ],
+              "perChangeCost": 100,
+              "slug": "monetary_reform",
+              "successionOrder": "",
+              "switchCost": 200,
+              "upkeep": [
+                "-4 Civics/City"
+              ]
+            }
+          ],
+          "slug": "coin_debasement_monetary_reform",
+          "techPrereq": "TECH_FISCAL_POLICY",
+          "techPrereqLabel": "Fiscal Policy"
+        }
+      ],
+      "label": "Tier 5 (late civic techs)",
+      "tier": 5
+    }
+  ],
+  "totalLaws": 35,
+  "totalPairs": 15
+}

@@ -252,6 +252,17 @@ def main() -> int:
         # Tile.isImprovementBorderSpread: bSpreadsBorders → range-1 border spread on completion
         if (e.findtext("bSpreadsBorders") or "0") == "1":
             restrictions.append("Spreads borders")
+        # improvementClass bNoAdjacent (Tile.cs:6141 canBuildImprovement →
+        # notAdjacentToImprovementClass): no two of the class may touch. Phrasing
+        # follows the game's own TEXT_HELPTEXT_IMPROVEMENT_REQUIRES_NO_ADJACENT
+        # ("Cannot be Adjacent to another {improvementClass}"). Forts only, as of 1.0.84658.
+        cls_entry = class_index.get(cls)
+        if cls_entry is not None and (cls_entry.findtext("bNoAdjacent") or "0") == "1":
+            restrictions.append(f"Cannot be adjacent to another {fmt_class(cls)}")
+        # bNoAdjacentReligion (same gate, religion variant) — unpopulated today, kept
+        # so a patch that turns it on shows up instead of vanishing.
+        if (e.findtext("bNoAdjacentReligion") or "0") == "1":
+            restrictions.append("Cannot be adjacent to another Religion")
 
         slug = zt.replace("IMPROVEMENT_", "").lower()
         items.append({

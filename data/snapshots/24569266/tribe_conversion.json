@@ -1,0 +1,209 @@
+{
+  "adopters": [
+    {
+      "diplomacy": true,
+      "id": "TRIBE_GAULS",
+      "name": "Gauls"
+    },
+    {
+      "diplomacy": true,
+      "id": "TRIBE_VANDALS",
+      "name": "Vandals"
+    },
+    {
+      "diplomacy": true,
+      "id": "TRIBE_DANES",
+      "name": "Danes"
+    },
+    {
+      "diplomacy": true,
+      "id": "TRIBE_THRACIANS",
+      "name": "Thracians"
+    },
+    {
+      "diplomacy": true,
+      "id": "TRIBE_SCYTHIANS",
+      "name": "Scythians"
+    },
+    {
+      "diplomacy": true,
+      "id": "TRIBE_NUMIDIANS",
+      "name": "Numidians"
+    },
+    {
+      "diplomacy": true,
+      "id": "TRIBE_HUNS",
+      "name": "Huns"
+    }
+  ],
+  "barbarian": [
+    {
+      "diplomacy": false,
+      "id": "TRIBE_REBELS",
+      "name": "Rebels"
+    },
+    {
+      "diplomacy": false,
+      "id": "TRIBE_ANARCHY",
+      "name": "Anarchy"
+    },
+    {
+      "diplomacy": false,
+      "id": "TRIBE_RAIDERS",
+      "name": "Raiders"
+    },
+    {
+      "diplomacy": false,
+      "id": "TRIBE_BARBARIANS",
+      "name": "Barbarians"
+    }
+  ],
+  "counts": {
+    "adopters": 7,
+    "convertingLevels": 4
+  },
+  "levels": [
+    {
+      "canConvert": false,
+      "id": "TRIBELEVEL_NONE",
+      "name": "None",
+      "odds": [],
+      "percent": 0,
+      "startTurn": 0,
+      "unitRange": 0
+    },
+    {
+      "canConvert": false,
+      "id": "TRIBELEVEL_PASSIVE",
+      "name": "Passive",
+      "odds": [],
+      "percent": 0,
+      "startTurn": 0,
+      "unitRange": 3
+    },
+    {
+      "canConvert": true,
+      "id": "TRIBELEVEL_WEAK",
+      "name": "Weak",
+      "odds": [
+        {
+          "byTurn": 70,
+          "chance": 26.3,
+          "turnsAfter": 10
+        },
+        {
+          "byTurn": 85,
+          "chance": 53.3,
+          "turnsAfter": 25
+        },
+        {
+          "byTurn": 110,
+          "chance": 78.2,
+          "turnsAfter": 50
+        },
+        {
+          "byTurn": 160,
+          "chance": 95.2,
+          "turnsAfter": 100
+        }
+      ],
+      "percent": 3,
+      "startTurn": 60,
+      "unitRange": 3
+    },
+    {
+      "canConvert": true,
+      "id": "TRIBELEVEL_NORMAL",
+      "name": "Normal",
+      "odds": [
+        {
+          "byTurn": 60,
+          "chance": 33.5,
+          "turnsAfter": 10
+        },
+        {
+          "byTurn": 75,
+          "chance": 64.0,
+          "turnsAfter": 25
+        },
+        {
+          "byTurn": 100,
+          "chance": 87.0,
+          "turnsAfter": 50
+        },
+        {
+          "byTurn": 150,
+          "chance": 98.3,
+          "turnsAfter": 100
+        }
+      ],
+      "percent": 4,
+      "startTurn": 50,
+      "unitRange": 3
+    },
+    {
+      "canConvert": true,
+      "id": "TRIBELEVEL_STRONG",
+      "name": "Strong",
+      "odds": [
+        {
+          "byTurn": 50,
+          "chance": 40.1,
+          "turnsAfter": 10
+        },
+        {
+          "byTurn": 65,
+          "chance": 72.3,
+          "turnsAfter": 25
+        },
+        {
+          "byTurn": 90,
+          "chance": 92.3,
+          "turnsAfter": 50
+        },
+        {
+          "byTurn": 140,
+          "chance": 99.4,
+          "turnsAfter": 100
+        }
+      ],
+      "percent": 5,
+      "startTurn": 40,
+      "unitRange": 3
+    },
+    {
+      "canConvert": true,
+      "id": "TRIBELEVEL_RAGING",
+      "name": "Raging",
+      "odds": [
+        {
+          "byTurn": 40,
+          "chance": 46.1,
+          "turnsAfter": 10
+        },
+        {
+          "byTurn": 55,
+          "chance": 78.7,
+          "turnsAfter": 25
+        },
+        {
+          "byTurn": 80,
+          "chance": 95.5,
+          "turnsAfter": 50
+        },
+        {
+          "byTurn": 130,
+          "chance": 99.8,
+          "turnsAfter": 100
+        }
+      ],
+      "percent": 6,
+      "startTurn": 30,
+      "unitRange": 3
+    }
+  ],
+  "search": {
+    "range": 12,
+    "source": "Tile.cs \u2014 findNearestSettlementTribe(this, 12)"
+  }
+}

@@ -109,11 +109,12 @@ def build_camp_spawn() -> dict:
             "turn1IntervalHalved": True,           # resetImprovementUnitTurns
             "developAddsTurns": 2,                 # updateDevelopImprovement
             "coopExtraPlayerFactor": 3,            # TRIBE_UNIT_SPAWN_TURN_EXTRA_PLAYER_FACTOR
-            # Unit.makeDead: a dying tribe unit cuts the countdown of its
-            # tribe's NEAREST settlement to (turns*4)/5 (int), only while >4.
-            "killAccelNumerator": 4,
-            "killAccelDenominator": 5,
-            "killAccelMinTurns": 4,
+            # Patch 1.0.84658 removed the kill acceleration: Unit.makeDead used
+            # to cut the countdown of the dead unit's NEAREST tribe settlement
+            # to (turns*4)/5 while it was >4. Nothing in the current source
+            # touches miImprovementUnitTurns on a death (grep: Tile.cs,
+            # HelpText.Game.cs and ClientUI.cs are the only readers/writers).
+            "killAccelRemovedIn": "1.0.84658",
         },
     }
 

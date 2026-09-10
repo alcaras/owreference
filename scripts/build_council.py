@@ -7,11 +7,17 @@ Two sections:
   • seats — the Council positions (Ambassador, Chancellor, Spymaster, plus the
     Behind the Throne Grand Vizier). Each seat's yield/opinion output scales
     with the seated character's ratings — and per the game source
-    (InfoHelpers.getRatingYieldRateCouncil → modifyRating → triangleOffset with
-    offset 0) the scaling is TRIANGULAR, not linear: a rating of R multiplies
-    the base by R·(R+1)/2. The Jobs page renders these as flat "per Rating"
-    raw-unit strings; here we keep the structured base values (÷10 for display
-    units, per CLAUDE.md) and let the page explain the triangle.
+    (InfoHelpers.getRatingYieldRateCouncil → modifyRating → Utils.triangleOffset)
+    the scaling is TRIANGULAR, not linear. Since patch 1.0.84658 the council
+    path passes the YIELD's own iTriangleOffset (it used to hard-code 0, like
+    the court path has always done), so the multiplier is
+    tri(R + offset) − offset, falling back to R when R + offset <= 0:
+    Culture −2 and Science −2 ramp later (that is the "reduced culture from the
+    Ambassador / science from the Spymaster" change), Money +1 earlier, Civics
+    −1 later. Opinions still pass 0 (getPlayerOpinionCouncil and friends).
+    The Jobs page renders these as flat "per Rating" raw-unit strings; here we
+    keep the structured base values (÷10 for display units, per CLAUDE.md) and
+    let the page explain the triangle.
 
   • courtiers — the four courtier types. courtier.xml expresses each type's
     rating roll (aiRatingBase + random(aiRatingRand), see
@@ -107,7 +113,25 @@ class Names:
         return tech_id.replace("TECH_", "").replace("_", " ").title()
 
 
+def load_yield_offsets() -> dict[str, int]:
+    """yield.xml iTriangleOffset per yield id (InfoHelpers passes it to modifyRating)."""
+    return {
+        (e.findtext("zType") or ""): int(e.findtext("iTriangleOffset") or "0")
+        for e in parse("yield.xml").findall("Entry") if e.findtext("zType")
+    }
+
+
+def triangle_offset(n: int, offset: int) -> int:
+    """Utils.triangleOffset: |n|+offset <= 0 → n, else sign(n)·(tri(|n|+offset) − offset)."""
+    v = abs(n) + offset
+    if v <= 0:
+        return n
+    sign = (n > 0) - (n < 0)
+    return sign * ((v * (v + 1) // 2) - offset)
+
+
 def build_seats(names: Names, indexes: dict) -> list[dict]:
+    yield_offsets = load_yield_offsets()
     entries: list[ET.Element] = []
     for fn in ("council.xml", "council-btt.xml"):
         p = XML_DIR / fn
@@ -133,27 +157,37 @@ def build_seats(names: Names, indexes: dict) -> list[dict]:
         )
 
         # Rating-scaled yields. XML values are rate units (10 = 1.0/turn
-        # display); base = value at rating 1 (triangle(1) == 1).
+        # display); base = value at rating 1 when the offset is 0 (tri(1) == 1).
+        # Since 1.0.84658 each yield's iTriangleOffset applies here too, so the
+        # multiplier at rating R is triangle_offset(R, offset), not tri(R).
         rating_yields: list[dict] = []
         for scope_tag, scope in (("aaiRatingYieldGlobal", "empire"), ("aaiRatingYieldCity", "per city")):
             for pr in e.findall(f"{scope_tag}/Pair"):
                 rating = RATING_LABELS.get(pr.findtext("zIndex") or "", pr.findtext("zIndex") or "")
                 for sp in pr.findall("SubPair"):
-                    y = yield_name(sp.findtext("zSubIndex"))
+                    yid = sp.findtext("zSubIndex") or ""
+                    y = yield_name(yid)
                     raw = int(sp.findtext("iValue") or "0")
                     base = raw / 10
+                    offset = yield_offsets.get(yid, 0)
                     suffix = "/City" if scope == "per city" else ""
+                    tri = "tri(R)" if offset == 0 else f"tri(R{offset:+d}){-offset:+d}"
                     rating_yields.append({
                         "rating": rating,
                         "yield": y,
                         "scope": scope,
                         "base": base,
-                        "text": f"{fmt_decimal(base)} {y}{suffix} × tri({rating})",
+                        "triangleOffset": offset,
+                        # multiplier at each rating 1..5, as the game computes it
+                        "multipliers": [triangle_offset(r, offset) for r in range(1, 6)],
+                        "text": f"{fmt_decimal(base)} {y}{suffix} × {tri} of {rating}",
                     })
 
-        # Rating-scaled opinion. Also triangular (InfoHelpers.getPlayerOpinionCouncil
-        # → modifyRating offset 0, rounded out to 5); player opinion is disabled
-        # in all-human (MP) games.
+        # Rating-scaled opinion. Also triangular, but the opinion getters still
+        # pass offset 0 (InfoHelpers.getPlayerOpinionCouncil / Tribe / Religion /
+        # Family → modifyRating(…, 0), rounded out to 5) — only the two YIELD
+        # paths take the yield's offset. Player opinion is disabled in all-human
+        # (MP) games.
         rating_opinions: list[dict] = []
         for tag, target in (("aiPlayerOpinion", "Foreign Leader"),
                             ("aiTribeOpinion", "Tribe"),
@@ -314,13 +348,10 @@ def build_meta(names: Names) -> dict:
              for e in parse("globalsInt.xml").findall("Entry") if e.findtext("zType")}
     courtier_mod = g_int.get("COURTIER_YIELD_MODIFIER", -67)
 
-    # Court income scales triangularly too, but with each yield's own
-    # iTriangleOffset (InfoHelpers.getRatingYieldRateCourt passes
-    # yield.miTriangleOffset, unlike council seats which pass 0).
-    yield_offsets = {
-        (e.findtext("zType") or ""): int(e.findtext("iTriangleOffset") or "0")
-        for e in parse("yield.xml").findall("Entry") if e.findtext("zType")
-    }
+    # Court income scales triangularly with each yield's own iTriangleOffset
+    # (InfoHelpers.getRatingYieldRateCourt) — the same offsets council seats
+    # now use as well.
+    yield_offsets = load_yield_offsets()
 
     # rating.xml aiYieldCourtRate: what every court character (leader at 100%)
     # produces per rating; courtiers get it at 100+COURTIER_YIELD_MODIFIER %.
@@ -344,6 +375,13 @@ def build_meta(names: Names) -> dict:
         "courtierAge": g_int.get("COURTIER_AGE", 25),
         "courtierYieldModifier": courtier_mod,
         "courtRates": court_rates,
+        # Every non-zero yield.xml iTriangleOffset, for the page legend. Applies
+        # to court income and — since 1.0.84658 — to council seat yields too.
+        "triangleOffsets": [
+            {"yield": yield_name(yid), "offset": off}
+            for yid, off in sorted(yield_offsets.items(), key=lambda kv: -kv[1])
+            if off != 0
+        ],
         "randomSources": [
             # bonus.xml bRandomCourtier consumers (missionResult.xml)
             "Hold Court mission result (random courtier type)",

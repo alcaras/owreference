@@ -11,10 +11,13 @@ Each job in job.xml is one of three families:
     with a flat assignment opinion modifier.
 
 Rating scaling is TRIANGULAR, not linear: per the game source
-(InfoHelpers.getRatingYieldRateCouncil → modifyRating → triangleOffset with
-offset 0) a rating of R multiplies the base by tri(R) = R·(R+1)/2. We emit
-the base (display units, raw ÷ 10 per CLAUDE.md) with an "× tri(Rating)"
-suffix that jobs.astro renders as the ×△ marker, same as the Council page.
+(InfoHelpers.getRatingYieldRateCouncil → modifyRating → Utils.triangleOffset) a
+rating of R multiplies the base by tri(R) = R·(R+1)/2 when the yield has no
+triangle offset. Since patch 1.0.84658 the council path passes the yield's own
+iTriangleOffset (it used to pass 0), so an offset yield scales by
+tri(R + offset) − offset and is emitted as "× tri(Rating-2)+2". Opinions still
+pass 0. We emit the base (display units, raw ÷ 10 per CLAUDE.md) with that
+suffix, which jobs.astro renders as the ×△ marker, same as the Council page.
 
 We render each job as: name, slot type, prereq tech (Council jobs), trait
 prereqs, assignment opinion, and an `effects` list of humanized rating-yield
@@ -93,22 +96,38 @@ def slot_type(entry: ET.Element) -> str:
     return "Misc"
 
 
-def humanize_rating_yields(council_entry: ET.Element, scope: str) -> list[str]:
+def load_yield_offsets() -> dict[str, int]:
+    """yield.xml iTriangleOffset per yield id."""
+    return {
+        (e.findtext("zType") or ""): int(e.findtext("iTriangleOffset") or "0")
+        for e in parse("yield.xml").findall("Entry") if e.findtext("zType")
+    }
+
+
+def humanize_rating_yields(council_entry: ET.Element, scope: str,
+                           yield_offsets: dict[str, int]) -> list[str]:
     """Render aaiRatingYieldCity / aaiRatingYieldGlobal as '+N Yield × tri(Rating)'.
 
-    XML values are rate units (10 = 1.0/turn display) → divide by 10. The
-    rating multiplier is triangular (InfoHelpers.getRatingYieldRateCouncil →
-    modifyRating with offset 0): base × R·(R+1)/2.
+    XML values are rate units (10 = 1.0/turn display) → divide by 10. The rating
+    multiplier is triangular (InfoHelpers.getRatingYieldRateCouncil →
+    modifyRating → Utils.triangleOffset), and since patch 1.0.84658 the council
+    path passes the yield's own iTriangleOffset instead of 0: the multiplier is
+    tri(R + offset) − offset, so an offset yield reads "× tri(R−2)+2". Opinions
+    (below) still scale at offset 0. The Council page shows the per-rating
+    multipliers; here the notation carries the offset.
     """
     out: list[str] = []
     tag = "aaiRatingYieldCity" if scope == "City" else "aaiRatingYieldGlobal"
     for pair in council_entry.findall(f"{tag}/Pair"):
         rating = RATING_LABELS.get(pair.findtext("zIndex") or "", pair.findtext("zIndex") or "")
         for sp in pair.findall("SubPair"):
-            y = yield_name(sp.findtext("zSubIndex"))
+            yid = sp.findtext("zSubIndex") or ""
+            y = yield_name(yid)
             base = int(sp.findtext("iValue") or "0") / 10
             suffix = "/City" if scope == "City" else ""
-            out.append(f"{fmt_decimal(base)} {y}{suffix} × tri({rating})")
+            off = yield_offsets.get(yid, 0)
+            tri = f"tri({rating})" if off == 0 else f"tri({rating}{off:+d}){-off:+d}"
+            out.append(f"{fmt_decimal(base)} {y}{suffix} × {tri}")
     return out
 
 
@@ -147,6 +166,7 @@ def humanize_effect_player(ep_entry: ET.Element | None) -> list[str]:
 def main() -> int:
     text_infos = load_text("text-infos.xml", "text-concept.xml")
 
+    yield_offsets = load_yield_offsets()
     job_entries = parse("job.xml").findall("Entry")
     # council-btt.xml (Behind the Throne) holds the Grand Vizier seat.
     council_idx: dict[str, ET.Element] = {}
@@ -211,8 +231,8 @@ def main() -> int:
                         tid.replace("TRAIT_", "").replace("_ARCHETYPE", "").replace("_", " ").title())
 
             # Rating-scaled yields — both global and per-city
-            effects.extend(humanize_rating_yields(ce, "Global"))
-            effects.extend(humanize_rating_yields(ce, "City"))
+            effects.extend(humanize_rating_yields(ce, "Global", yield_offsets))
+            effects.extend(humanize_rating_yields(ce, "City", yield_offsets))
 
             # Rating-scaled opinion modifiers (Ambassador: +3 Foreign Leader Opinion × tri(Charisma))
             effects.extend(humanize_opinion_pairs(ce, "aiPlayerOpinion", "Foreign Leader"))

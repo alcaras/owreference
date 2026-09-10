@@ -28,10 +28,10 @@ OUT_PATH = os.path.join(ROOT, 'src', 'data', 'turn_order.json')
 
 SEQUENCES = {
     'game':           ('Game.cs',      r'protected virtual void doTurn\(\)',          12738),
-    'player':         ('Player.cs',    r'public virtual void doTurn\(\)',             16866),
-    'player_process': ('Player.cs',    r'protected virtual void processTurn\(\)',     16505),
+    'player':         ('Player.cs',    r'public virtual void doTurn\(\)',             16972),
+    'player_process': ('Player.cs',    r'protected virtual void processTurn\(\)',     16611),
     'tile':           ('Tile.cs',      r'public virtual void doTurn\(\)',             10905),
-    'tile_player':    ('Tile.cs',      r'public virtual void doPlayerTurn\(\)',       11447),
+    'tile_player':    ('Tile.cs',      r'public virtual void doPlayerTurn\(\)',       11530),
     'tribe':          ('Tribe.cs',     r'public virtual void doTurn\(\)',               289),
     'city':           ('City.cs',      r'public virtual void doPlayerTurn\(',          8217),
     'city_tribe':     ('City.cs',      r'public virtual void doTribeTurn\(\)',         8112),

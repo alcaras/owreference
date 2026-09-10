@@ -238,7 +238,26 @@ Add new fields to the humanizer as you encounter them. Always test against the s
 - **`development.xml` is the advanced-start setup option** (AI starting cities/techs/no-wonder turns), not city development.
 - **`subject.xml` is the event-system casting layer** (role templates events bind), not vassals. No SaP "Sons of Adad" — `-sap` = The Sacred and the Profane.
 - **`diplomacy.xml` holds only the 4 states**; diplomatic *actions* are missions in `mission.xml`; war-score deltas are source-only (`City.cs`/`Unit.cs`).
-- **Council seat rating yields scale triangularly** — base × R(R+1)/2 (`InfoHelpers.getRatingYieldRateCouncil → triangleOffset`), not linearly. Grand Vizier's seat lives in `council-btt.xml`.
+- **Council seat rating yields scale triangularly, with the YIELD's own offset** —
+  `InfoHelpers.getRatingYieldRateCouncil → modifyRating → Utils.triangleOffset`.
+  Multiplier at rating R is `tri(R + off) − off`, falling back to plain R while
+  `R + off ≤ 0`; `off` is `yield.xml iTriangleOffset` (Money +1, Civics −1,
+  Culture −2, Science −2, everything else 0). **Patch 1.0.84658 changed this**: the
+  council path used to hard-code offset 0 (only the *court* path passed the yield's
+  offset), which is what "reduced culture from Ambassador / science from Spymaster,
+  adjusted Chancellor Money and Civics" means. Opinions still pass 0
+  (`getPlayerOpinionCouncil` and the Tribe/Religion/Family variants), rounded out
+  to 5. Consumers: `build_council.py`, `build_jobs.py`, `build_stat_scaling.py`,
+  and the ×△ markers on `/council`, `/jobs`, `/stat-scaling`. Grand Vizier's seat
+  lives in `council-btt.xml`.
+- **Tribe-kill camp acceleration is GONE (1.0.84658).** `Unit.makeDead` used to cut
+  the countdown of the dead unit's nearest tribe settlement to `(turns*4)/5` while
+  it was >4 (the "7→5 jump"). That block was removed with no replacement —
+  `miImprovementUnitTurns` is now touched only by `Tile.cs` (tick, develop +2,
+  reset) plus two read-only call sites in `HelpText.Game.cs` / `ClientUI.cs`.
+  Mohawk's notes never mentioned it. The only way to slow a camp is still to keep
+  its garrison at the cap (`skipImprovementUnitTurns`). `tribe_camps.json`
+  records `code.killAccelRemovedIn`; page `/camp-spawning`.
 - **Bonus-card tech zTypes lie about prereqs** (`TECH_FORESTRY_BONUS_SCIENTIST` requires Metaphysics) — always read `abTechPrereq`, never parse the zType.
 - **`resource.xml` has no category field** — luxury = union of `effectCity aeLuxuryResources`; strategic = unit `EffectCityPrereq` chains. Worked-resource yields live on `improvementClass.xml`, not `improvement.xml`. `zIconName` redirects shared art (Marble→stone.png, Ore→iron.png).
 - **Terrains have no base yields in XML** — tile yields come from improvements/resources; `aiDefendEffectUnit` is an *attack penalty into* the tile; `TerrainValid` targets are OR'd; `iRemoveCost` is Orders, not worker-turns.
@@ -278,6 +297,12 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   player's "Start City Automation" toggle (`isAutomated()`), which shares the planner
   but keeps the queue editable. The picker is `PlayerAI.doAutomatedCityBuilds →
   getBestBuild`, with buying off for humans (`shouldBuyYields` needs `isAIAutoPlay`).
+  Since 1.0.84658 `BuildValue.bLowPriority` sorts emergency units (`canDamage ∧
+  ¬bRegular` — Militia, Conscripts) and over-target military *behind every* ordinary
+  candidate regardless of value, and `isBuildUnitValid`'s land cap is asymmetric:
+  up-to-date regulars compare the latest-upgrade count to 1.5× the target, while
+  obsolete and emergency units compare ALL land military — emergency against the
+  plain target, with no 1.5× headroom.
   The Vizier's *only* trait influence on the picker is `iUnitBuildModifier` through
   `bTraitsAffectAutobuild` (only that seat has it); his traits otherwise act as
   Governor effects because `City.governor()` returns the acting governor. Autonomy

@@ -1,0 +1,851 @@
+{
+  "advantages": [
+    {
+      "effects": [
+        "+25% Unit Consumption",
+        "+3 Discontent/City",
+        "-25% Growth",
+        "-25% Civics",
+        "-25% Training",
+        "-25% Science",
+        "-25% Orders",
+        "-25% Strength Modifier",
+        "-25% Unit Strength"
+      ],
+      "id": "ADVANTAGE_PENALTY_HIGH",
+      "name": "High Penalty",
+      "slug": "penalty_high"
+    },
+    {
+      "effects": [
+        "+10% Unit Consumption",
+        "+2 Discontent/City",
+        "-10% Growth",
+        "-10% Civics",
+        "-10% Training",
+        "-10% Science",
+        "-10% Orders",
+        "-10% Strength Modifier",
+        "-10% Unit Strength"
+      ],
+      "id": "ADVANTAGE_PENALTY_MODERATE",
+      "name": "Moderate Penalty",
+      "slug": "penalty_moderate"
+    },
+    {
+      "effects": [
+        "+5% Unit Consumption",
+        "+1 Discontent/City",
+        "-5% Growth",
+        "-5% Civics",
+        "-5% Training",
+        "-5% Science",
+        "-5% Orders",
+        "-5% Strength Modifier",
+        "-5% Unit Strength"
+      ],
+      "id": "ADVANTAGE_PENALTY_SMALL",
+      "name": "Small Penalty",
+      "slug": "penalty_small"
+    },
+    {
+      "effects": [],
+      "id": "ADVANTAGE_NONE",
+      "name": "None",
+      "slug": "none"
+    },
+    {
+      "effects": [
+        "+10 Civics/Turn",
+        "+10 Training/Turn",
+        "+1 Orders/Turn",
+        "+1 Happiness/City",
+        "+10% Science",
+        "-5% Maintenance",
+        "-5% Improvement Cost",
+        "-5% Project Goods Costs",
+        "-5% Specialist Cost",
+        "-5% Project Cost"
+      ],
+      "id": "ADVANTAGE_SMALL",
+      "name": "Small Advantage",
+      "slug": "small"
+    },
+    {
+      "effects": [
+        "-5% Unit Consumption",
+        "+25 Civics/Turn",
+        "+25 Training/Turn",
+        "+2.5 Orders/Turn",
+        "+2 Happiness/City",
+        "+20% Science",
+        "-10% Maintenance",
+        "-10% Improvement Cost",
+        "-10% Project Goods Costs",
+        "+10 XP for New Units",
+        "-10% Specialist Cost",
+        "-10% Project Cost",
+        "+10 XP for new Units"
+      ],
+      "id": "ADVANTAGE_MODERATE",
+      "name": "Moderate Advantage",
+      "slug": "moderate"
+    },
+    {
+      "effects": [
+        "-10% Unit Consumption",
+        "+50 Civics/Turn",
+        "+50 Training/Turn",
+        "+5 Orders/Turn",
+        "+3 Happiness/City",
+        "+50% Science",
+        "-25% Maintenance",
+        "-20% Improvement Cost",
+        "-20% Project Goods Costs",
+        "+20 XP for New Units",
+        "-20% Specialist Cost",
+        "-20% Project Cost",
+        "+20 XP for new Units"
+      ],
+      "id": "ADVANTAGE_HIGH",
+      "name": "High Advantage",
+      "slug": "high"
+    },
+    {
+      "effects": [
+        "-20% Unit Consumption",
+        "+100 Civics/Turn",
+        "+100 Training/Turn",
+        "+10 Orders/Turn",
+        "+4 Happiness/City",
+        "+100% Science",
+        "-50% Maintenance",
+        "-50% Improvement Cost",
+        "-50% Project Goods Costs",
+        "+50 XP for New Units",
+        "-50% Specialist Cost",
+        "-50% Project Cost",
+        "+50 XP for new Units"
+      ],
+      "id": "ADVANTAGE_VERY_HIGH",
+      "name": "Very High Advantage",
+      "slug": "very_high"
+    }
+  ],
+  "aiProsperity": "DIFFICULTY_STRONG",
+  "aiProsperityName": "Thriving",
+  "calamityLevels": {
+    "OCCURRENCELEVEL_CALAMITIES_HIGH": {
+      "help": "Calamities will occur earlier in the game and more frequently",
+      "name": "Common"
+    },
+    "OCCURRENCELEVEL_CALAMITIES_LOW": {
+      "help": "Calamities will occur later in the game and less frequently",
+      "name": "Rare"
+    },
+    "OCCURRENCELEVEL_CALAMITIES_NONE": {
+      "help": "",
+      "name": "None"
+    },
+    "OCCURRENCELEVEL_CALAMITIES_NORMAL": {
+      "help": "There will be a balanced level of Calamities",
+      "name": "Default"
+    },
+    "OCCURRENCELEVEL_CALAMITIES_VERY_HIGH": {
+      "help": "Calamities will occur much earlier in the game and much more frequently",
+      "name": "Very Common"
+    },
+    "OCCURRENCELEVEL_CALAMITIES_VERY_LOW": {
+      "help": "Calamities will occur much later in the game and much less frequently",
+      "name": "Very Rare"
+    }
+  },
+  "developments": {
+    "DEVELOPMENT_ADVANCED": {
+      "details": [
+        "~4 Cities at start",
+        "4 Techs researched",
+        "Capital starts at 4 Citizens",
+        "No Wonders for 15 turns",
+        "No Religions for 12 turns"
+      ],
+      "name": "Advanced"
+    },
+    "DEVELOPMENT_DEFAULT": {
+      "details": [],
+      "name": "Default"
+    },
+    "DEVELOPMENT_ESTABLISHED": {
+      "details": [
+        "~3 Cities at start",
+        "3 Techs researched",
+        "Capital starts at 3 Citizens",
+        "No Wonders for 10 turns",
+        "No Religions for 8 turns"
+      ],
+      "name": "Established"
+    },
+    "DEVELOPMENT_FLEDGLING": {
+      "details": [
+        "~2 Cities at start",
+        "2 Techs researched",
+        "Capital starts at 2 Citizens",
+        "No Wonders for 5 turns",
+        "No Religions for 4 turns"
+      ],
+      "name": "Fledgling"
+    },
+    "DEVELOPMENT_MASSIVE": {
+      "details": [
+        "~5 Cities at start",
+        "5 Techs researched",
+        "Capital starts at 5 Citizens",
+        "No Wonders for 20 turns",
+        "No Religions for 16 turns"
+      ],
+      "name": "Massive"
+    },
+    "DEVELOPMENT_NONE": {
+      "details": [],
+      "name": "None"
+    }
+  },
+  "modes": [
+    {
+      "advantage": "ADVANTAGE_PENALTY_HIGH",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_VERY_LOW",
+      "description": "Suitable for a first experience. You begin with a healthy stockpile of resources and will only end up at war if you want to. AI Nations are significantly weakened.",
+      "development": "DEVELOPMENT_NONE",
+      "easy": true,
+      "emptySites": 4,
+      "id": "DIFFICULTYMODE_NEW",
+      "isDefaultMP": false,
+      "isDefaultSP": false,
+      "name": "The New",
+      "opponentLevel": "OPPONENTLEVEL_PASSIVE",
+      "prosperity": "DIFFICULTY_ABLE",
+      "slug": "new",
+      "tribeLevel": "TRIBELEVEL_PASSIVE"
+    },
+    {
+      "advantage": "ADVANTAGE_PENALTY_MODERATE",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_VERY_LOW",
+      "description": "Suitable for an easy experience. You begin with a healthy stockpile of resources and will only end up at war if you want to. AI Nations are somewhat weakened.",
+      "development": "DEVELOPMENT_NONE",
+      "easy": true,
+      "emptySites": 4,
+      "id": "DIFFICULTYMODE_ABLE",
+      "isDefaultMP": false,
+      "isDefaultSP": false,
+      "name": "The Able",
+      "opponentLevel": "OPPONENTLEVEL_PASSIVE",
+      "prosperity": "DIFFICULTY_ABLE",
+      "slug": "able",
+      "tribeLevel": "TRIBELEVEL_WEAK"
+    },
+    {
+      "advantage": "ADVANTAGE_PENALTY_SMALL",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_VERY_LOW",
+      "description": "A good choice for learning the game mechanics. You start in a better position than AI Nations, who will rarely attack and whose Units are slightly weakened.",
+      "development": "DEVELOPMENT_NONE",
+      "easy": false,
+      "emptySites": 3,
+      "id": "DIFFICULTYMODE_JUST",
+      "isDefaultMP": false,
+      "isDefaultSP": true,
+      "name": "The Just",
+      "opponentLevel": "OPPONENTLEVEL_PEACEFUL",
+      "prosperity": "DIFFICULTY_GOOD",
+      "slug": "just",
+      "tribeLevel": "TRIBELEVEL_WEAK"
+    },
+    {
+      "advantage": "ADVANTAGE_NONE",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_LOW",
+      "description": "AI Nations start with some development, according to the game's premise that you are a new nation in a world of established nations. AI Nations at this difficulty are inclined to be peaceful but may eventually declare war.",
+      "development": "DEVELOPMENT_FLEDGLING",
+      "easy": false,
+      "emptySites": 3,
+      "id": "DIFFICULTYMODE_GOOD",
+      "isDefaultMP": true,
+      "isDefaultSP": false,
+      "name": "The Good",
+      "opponentLevel": "OPPONENTLEVEL_PEACEFUL",
+      "prosperity": "DIFFICULTY_GOOD",
+      "slug": "good",
+      "tribeLevel": "TRIBELEVEL_WEAK"
+    },
+    {
+      "advantage": "ADVANTAGE_NONE",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_LOW",
+      "description": "This is the baseline difficulty of the game and the first difficulty level at which AI Nations are not restricted in warfare. They will declare war more freely and will use March. Tribal raids also become more common, and Cities near the map edges are no longer safe from distant tribal raids. Your baseline economy is the same as that of AI nations.",
+      "development": "DEVELOPMENT_FLEDGLING",
+      "easy": false,
+      "emptySites": 2,
+      "id": "DIFFICULTYMODE_STRONG",
+      "isDefaultMP": false,
+      "isDefaultSP": false,
+      "name": "The Strong",
+      "opponentLevel": "OPPONENTLEVEL_NORMAL",
+      "prosperity": "DIFFICULTY_STRONG",
+      "slug": "strong",
+      "tribeLevel": "TRIBELEVEL_NORMAL"
+    },
+    {
+      "advantage": "ADVANTAGE_NONE",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_LOW",
+      "description": "Harder difficulties begin here. AI Nations begin the game with more Cities and with a slightly stronger economy.",
+      "development": "DEVELOPMENT_ESTABLISHED",
+      "easy": false,
+      "emptySites": 2,
+      "id": "DIFFICULTYMODE_NOBLE",
+      "isDefaultMP": false,
+      "isDefaultSP": false,
+      "name": "The Noble",
+      "opponentLevel": "OPPONENTLEVEL_NORMAL",
+      "prosperity": "DIFFICULTY_NOBLE",
+      "slug": "noble",
+      "tribeLevel": "TRIBELEVEL_NORMAL"
+    },
+    {
+      "advantage": "ADVANTAGE_SMALL",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_NORMAL",
+      "description": "AI Nations are more aggressive than on lower difficulties and can attack earlier. They also gain a small advantage to Research and economy. Tribal Units get an additional Fatigue point, making raiders considerably more dangerous than at lower difficulties.",
+      "development": "DEVELOPMENT_ESTABLISHED",
+      "easy": false,
+      "emptySites": 1,
+      "id": "DIFFICULTYMODE_GLORIOUS",
+      "isDefaultMP": false,
+      "isDefaultSP": false,
+      "name": "The Glorious",
+      "opponentLevel": "OPPONENTLEVEL_AGGRESSIVE",
+      "prosperity": "DIFFICULTY_GLORIOUS",
+      "slug": "glorious",
+      "tribeLevel": "TRIBELEVEL_STRONG"
+    },
+    {
+      "advantage": "ADVANTAGE_SMALL",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_NORMAL",
+      "description": "A very challenging difficulty in which your economy is weaker than that of AI Nations, who begin the game with multiple Cities and researched Technologies. Avoiding early war is critical, as AI Nations start with enough power to easily crush you.",
+      "development": "DEVELOPMENT_ADVANCED",
+      "easy": false,
+      "emptySites": 1,
+      "id": "DIFFICULTYMODE_MAGNIFICENT",
+      "isDefaultMP": false,
+      "isDefaultSP": false,
+      "name": "The Magnificent",
+      "opponentLevel": "OPPONENTLEVEL_AGGRESSIVE",
+      "prosperity": "DIFFICULTY_MAGNIFICENT",
+      "slug": "magnificent",
+      "tribeLevel": "TRIBELEVEL_STRONG"
+    },
+    {
+      "advantage": "ADVANTAGE_MODERATE",
+      "calamities": "OCCURRENCELEVEL_CALAMITIES_NORMAL",
+      "description": "The highest difficulty. AI Nations get a moderate economy bonus in addition to being well established at the game's start. They will not wait long before demanding tribute or attacking you outright. You will face many tribal raids and an increased chance of domestic rebels.",
+      "development": "DEVELOPMENT_ADVANCED",
+      "easy": false,
+      "emptySites": 1,
+      "id": "DIFFICULTYMODE_GREAT",
+      "isDefaultMP": false,
+      "isDefaultSP": false,
+      "name": "The Great",
+      "opponentLevel": "OPPONENTLEVEL_COMPETITIVE",
+      "prosperity": "DIFFICULTY_GREAT",
+      "slug": "great",
+      "tribeLevel": "TRIBELEVEL_RAGING"
+    }
+  ],
+  "opponentLevels": {
+    "OPPONENTLEVEL_AGGRESSIVE": {
+      "details": [
+        "+25% AI war desire",
+        "No AI wars vs humans before turn 20",
+        "AI fights at least 8 turns before peace",
+        "AI skips Wonders for 8 turns",
+        "AI skips Religions for 8 turns"
+      ],
+      "name": "Aggressive"
+    },
+    "OPPONENTLEVEL_COMPETITIVE": {
+      "details": [
+        "+50% AI war desire",
+        "No AI wars vs humans before turn 10",
+        "AI fights at least 10 turns before peace",
+        "AI skips Wonders for 4 turns",
+        "AI skips Religions for 4 turns"
+      ],
+      "name": "Competitive"
+    },
+    "OPPONENTLEVEL_NORMAL": {
+      "details": [
+        "No AI wars vs humans before turn 30",
+        "AI fights at least 6 turns before peace",
+        "AI skips Wonders for 12 turns",
+        "AI skips Religions for 12 turns"
+      ],
+      "name": "Normal"
+    },
+    "OPPONENTLEVEL_PASSIVE": {
+      "details": [
+        "-100% AI war desire",
+        "No AI wars vs humans before turn 50",
+        "AI fights at least 2 turns before peace",
+        "AI skips Wonders for 20 turns",
+        "AI skips Religions for 20 turns",
+        "AI never uses Forced March",
+        "AI never expands to new sites"
+      ],
+      "name": "Passive"
+    },
+    "OPPONENTLEVEL_PEACEFUL": {
+      "details": [
+        "-50% AI war desire",
+        "No AI wars vs humans before turn 40",
+        "AI fights at least 4 turns before peace",
+        "AI skips Wonders for 16 turns",
+        "AI skips Religions for 16 turns",
+        "AI never uses Forced March"
+      ],
+      "name": "Peaceful"
+    }
+  },
+  "prosperity": [
+    {
+      "effects": [
+        "+20 Civics/Turn",
+        "+20 Training/Turn",
+        "+12 Science/Turn",
+        "+10 Orders/Turn",
+        "+3 Discontent/City",
+        "+16 Money/City"
+      ],
+      "emptyNearbySitePercent": 100,
+      "extraUnits": [
+        "Worker",
+        "Scout",
+        "Militia"
+      ],
+      "id": "DIFFICULTY_ABLE",
+      "name": "Affluent",
+      "raidNumCity": 0,
+      "raidProbCity": 0,
+      "rebelProbs": [],
+      "slug": "able",
+      "stockpile": [
+        {
+          "label": "Civics",
+          "value": 400,
+          "yield": "civics"
+        },
+        {
+          "label": "Training",
+          "value": 400,
+          "yield": "training"
+        },
+        {
+          "label": "Orders",
+          "value": 8,
+          "yield": "orders"
+        },
+        {
+          "label": "Food",
+          "value": 400,
+          "yield": "food"
+        },
+        {
+          "label": "Wood",
+          "value": 400,
+          "yield": "wood"
+        },
+        {
+          "label": "Iron",
+          "value": 400,
+          "yield": "iron"
+        },
+        {
+          "label": "Stone",
+          "value": 400,
+          "yield": "stone"
+        }
+      ]
+    },
+    {
+      "effects": [
+        "+12 Science/Turn",
+        "+10 Orders/Turn",
+        "+5 Discontent/City",
+        "+12 Money/City"
+      ],
+      "emptyNearbySitePercent": 75,
+      "extraUnits": [],
+      "id": "DIFFICULTY_GOOD",
+      "name": "Abundant",
+      "raidNumCity": 0,
+      "raidProbCity": 0,
+      "rebelProbs": [],
+      "slug": "good",
+      "stockpile": [
+        {
+          "label": "Civics",
+          "value": 300,
+          "yield": "civics"
+        },
+        {
+          "label": "Training",
+          "value": 300,
+          "yield": "training"
+        },
+        {
+          "label": "Orders",
+          "value": 8,
+          "yield": "orders"
+        },
+        {
+          "label": "Food",
+          "value": 200,
+          "yield": "food"
+        },
+        {
+          "label": "Wood",
+          "value": 200,
+          "yield": "wood"
+        },
+        {
+          "label": "Iron",
+          "value": 200,
+          "yield": "iron"
+        },
+        {
+          "label": "Stone",
+          "value": 200,
+          "yield": "stone"
+        }
+      ]
+    },
+    {
+      "effects": [
+        "+11 Science/Turn",
+        "+9 Orders/Turn",
+        "+6 Discontent/City",
+        "+10 Money/City"
+      ],
+      "emptyNearbySitePercent": 50,
+      "extraUnits": [],
+      "id": "DIFFICULTY_STRONG",
+      "name": "Thriving",
+      "raidNumCity": 2,
+      "raidProbCity": 1,
+      "rebelProbs": [],
+      "slug": "strong",
+      "stockpile": [
+        {
+          "label": "Civics",
+          "value": 300,
+          "yield": "civics"
+        },
+        {
+          "label": "Training",
+          "value": 300,
+          "yield": "training"
+        },
+        {
+          "label": "Orders",
+          "value": 8,
+          "yield": "orders"
+        },
+        {
+          "label": "Food",
+          "value": 100,
+          "yield": "food"
+        },
+        {
+          "label": "Wood",
+          "value": 100,
+          "yield": "wood"
+        },
+        {
+          "label": "Iron",
+          "value": 100,
+          "yield": "iron"
+        },
+        {
+          "label": "Stone",
+          "value": 100,
+          "yield": "stone"
+        }
+      ]
+    },
+    {
+      "effects": [
+        "+10 Science/Turn",
+        "+8 Orders/Turn",
+        "+7 Discontent/City",
+        "+8 Money/City"
+      ],
+      "emptyNearbySitePercent": 50,
+      "extraUnits": [],
+      "id": "DIFFICULTY_NOBLE",
+      "name": "Comfortable",
+      "raidNumCity": 2,
+      "raidProbCity": 1,
+      "rebelProbs": [],
+      "slug": "noble",
+      "stockpile": [
+        {
+          "label": "Civics",
+          "value": 200,
+          "yield": "civics"
+        },
+        {
+          "label": "Training",
+          "value": 200,
+          "yield": "training"
+        },
+        {
+          "label": "Orders",
+          "value": 8,
+          "yield": "orders"
+        },
+        {
+          "label": "Food",
+          "value": 100,
+          "yield": "food"
+        },
+        {
+          "label": "Wood",
+          "value": 100,
+          "yield": "wood"
+        },
+        {
+          "label": "Iron",
+          "value": 100,
+          "yield": "iron"
+        },
+        {
+          "label": "Stone",
+          "value": 100,
+          "yield": "stone"
+        }
+      ]
+    },
+    {
+      "effects": [
+        "+9 Science/Turn",
+        "+7 Orders/Turn",
+        "+9 Discontent/City",
+        "+6 Money/City"
+      ],
+      "emptyNearbySitePercent": 25,
+      "extraUnits": [],
+      "id": "DIFFICULTY_GLORIOUS",
+      "name": "Sufficient",
+      "raidNumCity": 4,
+      "raidProbCity": 3,
+      "rebelProbs": [
+        "Furious Family cities: +5% Rebel chance"
+      ],
+      "slug": "glorious",
+      "stockpile": [
+        {
+          "label": "Civics",
+          "value": 200,
+          "yield": "civics"
+        },
+        {
+          "label": "Training",
+          "value": 200,
+          "yield": "training"
+        },
+        {
+          "label": "Orders",
+          "value": 8,
+          "yield": "orders"
+        },
+        {
+          "label": "Food",
+          "value": 50,
+          "yield": "food"
+        },
+        {
+          "label": "Wood",
+          "value": 50,
+          "yield": "wood"
+        },
+        {
+          "label": "Iron",
+          "value": 50,
+          "yield": "iron"
+        },
+        {
+          "label": "Stone",
+          "value": 50,
+          "yield": "stone"
+        }
+      ]
+    },
+    {
+      "effects": [
+        "+8 Science/Turn",
+        "+6 Orders/Turn",
+        "+10 Discontent/City",
+        "+4 Money/City"
+      ],
+      "emptyNearbySitePercent": 25,
+      "extraUnits": [],
+      "id": "DIFFICULTY_MAGNIFICENT",
+      "name": "Modest",
+      "raidNumCity": 4,
+      "raidProbCity": 3,
+      "rebelProbs": [
+        "Furious Family cities: +5% Rebel chance",
+        "Angry Family cities: +5% Rebel chance"
+      ],
+      "slug": "magnificent",
+      "stockpile": [
+        {
+          "label": "Civics",
+          "value": 100,
+          "yield": "civics"
+        },
+        {
+          "label": "Training",
+          "value": 100,
+          "yield": "training"
+        },
+        {
+          "label": "Orders",
+          "value": 8,
+          "yield": "orders"
+        },
+        {
+          "label": "Food",
+          "value": 50,
+          "yield": "food"
+        },
+        {
+          "label": "Wood",
+          "value": 50,
+          "yield": "wood"
+        },
+        {
+          "label": "Iron",
+          "value": 50,
+          "yield": "iron"
+        },
+        {
+          "label": "Stone",
+          "value": 50,
+          "yield": "stone"
+        }
+      ]
+    },
+    {
+      "effects": [
+        "+7 Science/Turn",
+        "+5 Orders/Turn",
+        "+12 Discontent/City",
+        "+2 Money/City"
+      ],
+      "emptyNearbySitePercent": 25,
+      "extraUnits": [],
+      "id": "DIFFICULTY_GREAT",
+      "name": "Fragile",
+      "raidNumCity": 5,
+      "raidProbCity": 4,
+      "rebelProbs": [
+        "Furious Family cities: +5% Rebel chance",
+        "Angry Family cities: +5% Rebel chance",
+        "Upset Family cities: +5% Rebel chance"
+      ],
+      "slug": "great",
+      "stockpile": [
+        {
+          "label": "Civics",
+          "value": 100,
+          "yield": "civics"
+        },
+        {
+          "label": "Training",
+          "value": 100,
+          "yield": "training"
+        },
+        {
+          "label": "Orders",
+          "value": 8,
+          "yield": "orders"
+        }
+      ]
+    }
+  ],
+  "tribeLevels": {
+    "TRIBELEVEL_NONE": {
+      "details": [
+        "No Tribes on the map"
+      ],
+      "name": "None"
+    },
+    "TRIBELEVEL_NORMAL": {
+      "details": [
+        "4 Tribal sites near each player",
+        "-20% Tribal site development",
+        "+20% time between Tribal units",
+        "+2 defenders at Tribal sites",
+        "Raids from turn 30",
+        "6% Raid chance/site/turn",
+        "Sites can convert to Tribes after turn 50 (4%/turn)",
+        "Distant raids from turn 60"
+      ],
+      "name": "Normal"
+    },
+    "TRIBELEVEL_PASSIVE": {
+      "details": [
+        "4 Tribal sites near each player",
+        "-100% Tribal war desire",
+        "-80% Tribal site development",
+        "+80% time between Tribal units"
+      ],
+      "name": "Passive"
+    },
+    "TRIBELEVEL_RAGING": {
+      "details": [
+        "3 Tribal sites near each player",
+        "+20% Tribal war desire",
+        "+4 defenders at Tribal sites",
+        "Raids from turn 20",
+        "10% Raid chance/site/turn",
+        "Sites can convert to Tribes after turn 30 (6%/turn)",
+        "Distant raids from turn 50"
+      ],
+      "name": "Raging"
+    },
+    "TRIBELEVEL_STRONG": {
+      "details": [
+        "4 Tribal sites near each player",
+        "+10% Tribal war desire",
+        "-10% Tribal site development",
+        "+10% time between Tribal units",
+        "+3 defenders at Tribal sites",
+        "Raids from turn 25",
+        "8% Raid chance/site/turn",
+        "Sites can convert to Tribes after turn 40 (5%/turn)",
+        "Distant raids from turn 55"
+      ],
+      "name": "Strong"
+    },
+    "TRIBELEVEL_WEAK": {
+      "details": [
+        "4 Tribal sites near each player",
+        "-50% Tribal war desire",
+        "-40% Tribal site development",
+        "+40% time between Tribal units",
+        "+1 defender at Tribal sites",
+        "Raids from turn 35",
+        "3% Raid chance/site/turn",
+        "Sites can convert to Tribes after turn 60 (3%/turn)",
+        "Distant raids from turn 65"
+      ],
+      "name": "Weak"
+    }
+  }
+}

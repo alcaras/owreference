@@ -52,8 +52,17 @@ WATCHED = [
      "tribe_camps.json pause rule (cap, no-raid-target halving, area cap) — camp-spawning page"),
     ("Base/Game/GameCore/Tile.cs", "resetImprovementUnitTurns", 35,
      "tribe_camps.json interval math (level modifier, co-op factor, turn-1 halving) — camp-spawning page"),
-    ("Base/Game/GameCore/Unit.cs", "makeDead", 60,
-     "tribe_camps.json kill acceleration (nearest settlement ×4/5 while >4) — camp-spawning page"),
+    # Rating → yield scaling (council / jobs / stat-scaling pages). 1.0.84658 changed
+    # getRatingYieldRateCouncil from offset 0 to the yield's own miTriangleOffset and
+    # nothing of ours noticed, hence these three watches.
+    ("Base/Game/GameCore/InfoHelpers.cs", "getRatingYieldRateCouncil", 20,
+     "council.json / jobs.json / stat-scaling.json: which triangle offset council SEAT yields use "
+     "(yield.miTriangleOffset since 1.0.84658, was 0)"),
+    ("Base/Game/GameCore/InfoHelpers.cs", "getRatingYieldRateCourt", 25,
+     "stat-scaling.json Leader/court rates: court yields use yield.miTriangleOffset"),
+    ("Base/Game/GameCore/Utils.cs", "triangleOffset", 12,
+     "the triangle formula itself (build_council.triangle_offset, build_stat_scaling.modify_rating, "
+     "jobs.astro triMultipliers)"),
     # Combat math mirrored in src/lib/combat.ts (unit-damage / unit-counters pages)
     ("Base/Game/GameCore/InfoHelpers.cs", "getAttackDamage", 25,
      "combat.ts attackDamage rounding (BASE_DAMAGE × Str, round up in stronger attacker's favor)"),
@@ -69,11 +78,14 @@ WATCHED = [
     ("Base/Game/GameCore/PlayerAI.cs", "doAutomatedCityBuilds", 45,
      "autobuild flow: move auto item first → repairs → plan (no buying) → fallback chooseBuild"),
     ("Base/Game/GameCore/PlayerAI.cs", "getBestBuild", 110,
-     "autobuild candidate pools: projects / specialists (skipped in danger) / units; danger re-run"),
+     "autobuild candidate pools: projects / specialists (skipped in danger) / units; danger re-run; "
+     "BuildValue.bLowPriority sorts emergency + over-target military behind everything else"),
     ("Base/Game/GameCore/PlayerAI.cs", "isBuildProjectValid", 15,
      "autobuild: only defensive projects when in danger or border city with a defensive option"),
     ("Base/Game/GameCore/PlayerAI.cs", "isBuildUnitValid", 140,
-     "autobuild unit filter: canBuildUnit (bNoBuildUnits), 1.5× military/warship caps, worker/disciple/settler/scout needs"),
+     "autobuild unit filter: canBuildUnit (bNoBuildUnits), warship 1.5× cap, worker/disciple/settler/scout needs; "
+     "land-military cap compares latest-upgrade count vs 1.5× target but ALL land military vs the plain "
+     "target for emergency (non-bRegular) and obsolete units"),
     ("Base/Game/GameCore/PlayerAI.cs", "getBuildValue", 18,
      "autobuild build-time discount: base × (half−min)/(turns+half−2·min) — AI_*_BUILD_TURNS"),
     ("Base/Game/GameCore/PlayerAI.cs", "calculateTargetMilitaryUnitNumber", 80,

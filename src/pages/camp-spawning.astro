@@ -4,7 +4,9 @@ import camps from '../data/tribe_camps.json';
 
 // Mechanic transcribed from Tile.doTurn → skipImprovementUnitTurns /
 // resetImprovementUnitTurns / countTribeAvailableUnits (reference/Source —
-// all drift-watched in verify_source_constants.py). XML-derived numbers
+// all drift-watched in verify_source_constants.py). Patch 1.0.84658 removed
+// the old kill acceleration from Unit.makeDead; see tribe_camps.json
+// code.killAccelRemovedIn. XML-derived numbers
 // (tribe_camps.json, build_tribes.py): settlement tiers from improvement.xml,
 // per-Tribal-Level knobs from tribeLevel.xml.
 const base = import.meta.env.BASE_URL;
@@ -15,7 +17,7 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
   title="Camp Unit Spawning"
   active="camp-spawning"
   pageMark="🏕️"
-  description={`When tribal camps in Old World spawn units and when they don't: the spawn countdown (${camps.baseUnitTurns} turns base, ${camps.levels.map((l: any) => l.interval).join('/')} by the Tribal Strength setting), the kill acceleration — every tribe unit that dies cuts its nearest settlement's countdown to 4/5 while it is above 4 (that's the 7→5 jump) — and the pause rule that freezes a full camp's countdown. Transcribed from Unit.makeDead and Tile.cs in the game source.`}
+  description={`When tribal camps in Old World spawn units and when they don't: the spawn countdown (${camps.baseUnitTurns} turns base, ${camps.levels.map((l: any) => l.interval).join('/')} by the Tribal Strength setting), the pause rule that freezes a full camp's countdown, and the develop timer that upgrades the camp's tier. Transcribed from Tile.cs in the game source. Patch ${camps.code.killAccelRemovedIn} removed the old kill acceleration.`}
   pageStats={[
     { label: 'base interval', value: `${camps.baseUnitTurns}t` },
     { label: 'camp tiers', value: camps.settlements.length },
@@ -25,33 +27,12 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
   <p class="lede">
     Every tribal settlement runs a <b>spawn countdown</b>. Each turn the
     countdown ticks down <em>only if the camp is not already "full"</em> —
-    when it reaches zero, a unit appears and the countdown resets. And the
-    tribe fights back: <b>every unit it loses accelerates the nearest camp's
-    next spawn</b>. Transcribed from <code>Unit.makeDead</code>,
-    <code>Tile.skipImprovementUnitTurns</code> and
+    when it reaches zero, a unit appears and the countdown resets. So the only
+    way to slow a camp down is to keep its garrison at the cap, which freezes
+    the timer. Transcribed from <code>Tile.skipImprovementUnitTurns</code> and
     <code>resetImprovementUnitTurns</code> in the game source; numbers from
     <code>improvement.xml</code> and <code>tribeLevel.xml</code>.
   </p>
-
-  <section class="cs-section">
-    <h2 class="cs-h2">Kills speed up the next spawn</h2>
-    <div class="cs-rule">
-      Every time a tribe unit dies — anywhere, killed by anyone — the
-      <b>nearest settlement of that tribe</b> (straight-line, no range limit)
-      cuts its next-unit countdown to
-      <b>4/5, rounding down — but only while it is above 4</b>
-      (<code>Unit.makeDead</code>, Tile counter ×4÷5 integer division):
-      <div class="cs-formula">7 → 5 · 6 → 4 · 5 → 4 · 10 → 8 · 13 → 10 · 4 or less → unchanged</div>
-      That is the "the timer jumped from 7 to 5 when I killed a unit" effect —
-      the camp rushes replacements as its kin fall. It is per death, so several
-      kills compound in one turn (9 → 7 → 5 → 4), and it bottoms out at 4:
-      a camp can never be rushed below a ~4-turn countdown this way.
-    </div>
-    <ul class="cs-notes">
-      <li><b>Why a kill sometimes changes nothing:</b> the countdown was already at 4 or less (the <code>&gt;4</code> gate), or the dead unit's <em>nearest</em> settlement was a different camp of that tribe than the one you're watching.</li>
-      <li>It keys on the dead unit's tribe, not on who killed it — tribe units dying to other tribes, cities or occurrences accelerate their camp all the same.</li>
-    </ul>
-  </section>
 
   <section class="cs-section">
     <h2 class="cs-h2">The pause rule</h2>
@@ -66,9 +47,9 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
         <li><b>Halved</b> (rounded up) if no raidable city is within the tribe's raid range</li>
         <li>Never more than a third of the landmass's tiles (small islands cap low)</li>
       </ul>
-      So a kill near a full camp does double duty: it triggers the ×4/5
-      acceleration above <em>and</em> can drop the garrison below the cap,
-      un-freezing the countdown.
+      So killing a unit near a full camp no longer rushes the timer
+      (patch {camps.code.killAccelRemovedIn} removed that) — what it does is
+      drop the garrison below the cap, un-freezing the countdown.
     </div>
   </section>
 
@@ -79,9 +60,9 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
       the <b>develop timer</b> (time until the camp upgrades to its next tier).
       Everything that can move the next-unit timer, from code:
       <b>−1</b> per turn while running (frozen at cap — the tile tooltip
-      appends <em>"(PAUSED)"</em>), <b>×4/5</b> when one of the tribe's units
-      dies and this is its nearest settlement (while above 4), <b>+2</b> when
-      the camp develops, and a <b>reset to full</b> when the unit spawns.
+      appends <em>"(PAUSED)"</em>), <b>+2</b> when the camp develops, and a
+      <b>reset to full</b> when the unit spawns. Nothing else moves it: since
+      patch {camps.code.killAccelRemovedIn}, unit deaths do not.
     </p>
     <ul class="cs-notes">
       <li>
@@ -92,7 +73,7 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
         stronger tier's units and its next-unit timer gets +2 turns.
       </li>
       <li>
-        The freeze can also flip with no kills at all — raiders leaving or
+        The freeze flips on unit movement as much as on combat — raiders leaving or
         returning, units crossing the {range}-tile ring, or a nearby city
         becoming raidable (the cap doubles).
       </li>

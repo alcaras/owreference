@@ -449,6 +449,20 @@
     "randomSources": [
       "Hold Court mission result (random courtier type)",
       "Court of the Divine King (random courtier type)"
+    ],
+    "triangleOffsets": [
+      {
+        "offset": 1,
+        "yield": "Money"
+      },
+      {
+        "offset": -1,
+        "yield": "Civics"
+      },
+      {
+        "offset": -2,
+        "yield": "Science"
+      }
     ]
   },
   "seats": [
@@ -482,9 +496,17 @@
       "ratingYields": [
         {
           "base": 0.2,
+          "multipliers": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ],
           "rating": "Wisdom",
           "scope": "per city",
-          "text": "+0.2 Culture/City × tri(Wisdom)",
+          "text": "+0.2 Culture/City × tri(R) of Wisdom",
+          "triangleOffset": 0,
           "yield": "Culture"
         }
       ],
@@ -509,30 +531,62 @@
       "ratingYields": [
         {
           "base": 1.0,
+          "multipliers": [
+            1,
+            2,
+            4,
+            7,
+            11
+          ],
           "rating": "Charisma",
           "scope": "empire",
-          "text": "+1 Civics × tri(Charisma)",
+          "text": "+1 Civics × tri(R-1)+1 of Charisma",
+          "triangleOffset": -1,
           "yield": "Civics"
         },
         {
           "base": 1.5,
+          "multipliers": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ],
           "rating": "Courage",
           "scope": "empire",
-          "text": "+1.5 Training × tri(Courage)",
+          "text": "+1.5 Training × tri(R) of Courage",
+          "triangleOffset": 0,
           "yield": "Training"
         },
         {
           "base": 3.0,
+          "multipliers": [
+            2,
+            5,
+            9,
+            14,
+            20
+          ],
           "rating": "Discipline",
           "scope": "empire",
-          "text": "+3 Money × tri(Discipline)",
+          "text": "+3 Money × tri(R+1)-1 of Discipline",
+          "triangleOffset": 1,
           "yield": "Money"
         },
         {
           "base": 0.2,
+          "multipliers": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ],
           "rating": "Wisdom",
           "scope": "per city",
-          "text": "+0.2 Growth/City × tri(Wisdom)",
+          "text": "+0.2 Growth/City × tri(R) of Wisdom",
+          "triangleOffset": 0,
           "yield": "Growth"
         }
       ],
@@ -566,23 +620,47 @@
       "ratingYields": [
         {
           "base": 0.5,
+          "multipliers": [
+            1,
+            2,
+            3,
+            5,
+            8
+          ],
           "rating": "Wisdom",
           "scope": "empire",
-          "text": "+0.5 Science × tri(Wisdom)",
+          "text": "+0.5 Science × tri(R-2)+2 of Wisdom",
+          "triangleOffset": -2,
           "yield": "Science"
         },
         {
           "base": 0.2,
+          "multipliers": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ],
           "rating": "Discipline",
           "scope": "empire",
-          "text": "+0.2 Orders × tri(Discipline)",
+          "text": "+0.2 Orders × tri(R) of Discipline",
+          "triangleOffset": 0,
           "yield": "Orders"
         },
         {
           "base": 0.1,
+          "multipliers": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ],
           "rating": "Courage",
           "scope": "per city",
-          "text": "+0.1 Happiness/City × tri(Courage)",
+          "text": "+0.1 Happiness/City × tri(R) of Courage",
+          "triangleOffset": 0,
           "yield": "Happiness"
         }
       ],

@@ -1,0 +1,963 @@
+{
+  "heights": [
+    {
+      "bonuses": [],
+      "id": "HEIGHT_OCEAN",
+      "improvements": [],
+      "moveCostExtra": 0,
+      "name": "Ocean",
+      "properties": [
+        "No vegetation"
+      ],
+      "resources": [],
+      "roadCost": [],
+      "slug": "ocean",
+      "urbanCost": [],
+      "validTerrains": [
+        "Water"
+      ]
+    },
+    {
+      "bonuses": [],
+      "id": "HEIGHT_COAST",
+      "improvements": [
+        "Harbor (adj. land)"
+      ],
+      "moveCostExtra": 0,
+      "name": "Coast",
+      "properties": [
+        "No vegetation"
+      ],
+      "resources": [
+        {
+          "id": "RESOURCE_DYE",
+          "name": "Dyes",
+          "slug": "dye"
+        },
+        {
+          "id": "RESOURCE_PEARL",
+          "name": "Pearls",
+          "slug": "pearl"
+        },
+        {
+          "id": "RESOURCE_FISH",
+          "name": "Fish",
+          "slug": "fish"
+        },
+        {
+          "id": "RESOURCE_CRAB",
+          "name": "Crabs",
+          "slug": "crab"
+        }
+      ],
+      "roadCost": [],
+      "slug": "coast",
+      "urbanCost": [],
+      "validTerrains": [
+        "Water"
+      ]
+    },
+    {
+      "bonuses": [],
+      "id": "HEIGHT_LAKE",
+      "improvements": [],
+      "moveCostExtra": 0,
+      "name": "Lake",
+      "properties": [
+        "Fresh water source",
+        "No vegetation"
+      ],
+      "resources": [],
+      "roadCost": [],
+      "slug": "lake",
+      "urbanCost": [],
+      "validTerrains": [
+        "Water"
+      ]
+    },
+    {
+      "bonuses": [
+        "+1 sight"
+      ],
+      "id": "HEIGHT_FLAT",
+      "improvements": [],
+      "moveCostExtra": 0,
+      "name": "Flat",
+      "properties": [],
+      "resources": [
+        {
+          "id": "RESOURCE_MARBLE",
+          "name": "Marble",
+          "slug": "marble"
+        },
+        {
+          "id": "RESOURCE_SALT",
+          "name": "Salt",
+          "slug": "salt"
+        },
+        {
+          "id": "RESOURCE_HORSE",
+          "name": "Horses",
+          "slug": "horse"
+        },
+        {
+          "id": "RESOURCE_CATTLE",
+          "name": "Cattle",
+          "slug": "cattle"
+        },
+        {
+          "id": "RESOURCE_SHEEP",
+          "name": "Sheep",
+          "slug": "sheep"
+        },
+        {
+          "id": "RESOURCE_PIG",
+          "name": "Pigs",
+          "slug": "pig"
+        },
+        {
+          "id": "RESOURCE_GOAT",
+          "name": "Goats",
+          "slug": "goat"
+        },
+        {
+          "id": "RESOURCE_WHEAT",
+          "name": "Wheat",
+          "slug": "wheat"
+        },
+        {
+          "id": "RESOURCE_BARLEY",
+          "name": "Barley",
+          "slug": "barley"
+        },
+        {
+          "id": "RESOURCE_SORGHUM",
+          "name": "Sorghum",
+          "slug": "sorghum"
+        },
+        {
+          "id": "RESOURCE_CAMEL",
+          "name": "Camels",
+          "slug": "camel"
+        },
+        {
+          "id": "RESOURCE_ELEPHANT",
+          "name": "Elephants",
+          "slug": "elephant"
+        },
+        {
+          "id": "RESOURCE_GAME",
+          "name": "Game",
+          "slug": "game"
+        },
+        {
+          "id": "RESOURCE_FUR",
+          "name": "Fur",
+          "slug": "fur"
+        },
+        {
+          "id": "RESOURCE_CITRUS",
+          "name": "Citrus",
+          "slug": "citrus"
+        },
+        {
+          "id": "RESOURCE_HONEY",
+          "name": "Honey",
+          "slug": "honey"
+        },
+        {
+          "id": "RESOURCE_INCENSE",
+          "name": "Incense",
+          "slug": "incense"
+        },
+        {
+          "id": "RESOURCE_LAVENDER",
+          "name": "Lavender",
+          "slug": "lavender"
+        },
+        {
+          "id": "RESOURCE_JADE",
+          "name": "Jade",
+          "slug": "jade"
+        },
+        {
+          "id": "RESOURCE_EBONY",
+          "name": "Ebony",
+          "slug": "ebony"
+        },
+        {
+          "id": "RESOURCE_SPICES",
+          "name": "Spices",
+          "slug": "spices"
+        },
+        {
+          "id": "RESOURCE_SILK",
+          "name": "Silk",
+          "slug": "silk"
+        }
+      ],
+      "roadCost": [
+        "10 Stone"
+      ],
+      "slug": "flat",
+      "urbanCost": [
+        "20 Stone"
+      ],
+      "validTerrains": [
+        "Urban",
+        "Lush",
+        "Temperate",
+        "Arid",
+        "Sand",
+        "Tundra",
+        "Marsh"
+      ]
+    },
+    {
+      "bonuses": [
+        "+1 attack range",
+        "+2 sight",
+        "+1 turn to build improvements"
+      ],
+      "id": "HEIGHT_HILL",
+      "improvements": [
+        "Mine",
+        "Windmill"
+      ],
+      "moveCostExtra": 1,
+      "name": "Hill",
+      "properties": [
+        "Elevated",
+        "City site"
+      ],
+      "resources": [
+        {
+          "id": "RESOURCE_ORE",
+          "name": "Ore",
+          "slug": "ore"
+        },
+        {
+          "id": "RESOURCE_GEM",
+          "name": "Gems",
+          "slug": "gem"
+        },
+        {
+          "id": "RESOURCE_GOLD",
+          "name": "Gold",
+          "slug": "gold"
+        },
+        {
+          "id": "RESOURCE_SILVER",
+          "name": "Silver",
+          "slug": "silver"
+        },
+        {
+          "id": "RESOURCE_GOAT",
+          "name": "Goats",
+          "slug": "goat"
+        },
+        {
+          "id": "RESOURCE_FUR",
+          "name": "Fur",
+          "slug": "fur"
+        },
+        {
+          "id": "RESOURCE_CITRUS",
+          "name": "Citrus",
+          "slug": "citrus"
+        },
+        {
+          "id": "RESOURCE_HONEY",
+          "name": "Honey",
+          "slug": "honey"
+        },
+        {
+          "id": "RESOURCE_INCENSE",
+          "name": "Incense",
+          "slug": "incense"
+        },
+        {
+          "id": "RESOURCE_OLIVE",
+          "name": "Olives",
+          "slug": "olive"
+        },
+        {
+          "id": "RESOURCE_WINE",
+          "name": "Wine",
+          "slug": "wine"
+        },
+        {
+          "id": "RESOURCE_JADE",
+          "name": "Jade",
+          "slug": "jade"
+        },
+        {
+          "id": "RESOURCE_EBONY",
+          "name": "Ebony",
+          "slug": "ebony"
+        }
+      ],
+      "roadCost": [
+        "20 Stone"
+      ],
+      "slug": "hill",
+      "urbanCost": [
+        "40 Stone"
+      ],
+      "validTerrains": [
+        "Urban",
+        "Lush",
+        "Temperate",
+        "Arid",
+        "Sand",
+        "Tundra"
+      ]
+    },
+    {
+      "bonuses": [
+        "+2 attack range",
+        "+3 sight"
+      ],
+      "id": "HEIGHT_MOUNTAIN",
+      "improvements": [],
+      "moveCostExtra": 0,
+      "name": "Mountain",
+      "properties": [
+        "Impassable",
+        "Blocks ranged attacks",
+        "Elevated",
+        "Supports aqueduct",
+        "No vegetation"
+      ],
+      "resources": [],
+      "roadCost": [],
+      "slug": "mountain",
+      "urbanCost": [],
+      "validTerrains": [
+        "Lush",
+        "Temperate",
+        "Arid",
+        "Sand",
+        "Tundra"
+      ]
+    },
+    {
+      "bonuses": [
+        "+2 attack range",
+        "+3 sight"
+      ],
+      "id": "HEIGHT_VOLCANO",
+      "improvements": [],
+      "moveCostExtra": 0,
+      "name": "Volcano",
+      "properties": [
+        "Impassable",
+        "Blocks ranged attacks",
+        "Elevated",
+        "Supports aqueduct",
+        "No vegetation"
+      ],
+      "resources": [],
+      "roadCost": [],
+      "slug": "volcano",
+      "urbanCost": [],
+      "validTerrains": [
+        "Lush",
+        "Temperate",
+        "Arid",
+        "Sand",
+        "Tundra"
+      ]
+    }
+  ],
+  "terrains": [
+    {
+      "borderValue": -1,
+      "defaultHeight": "Coast",
+      "id": "TERRAIN_WATER",
+      "improvements": [],
+      "moveCost": 1,
+      "name": "Water",
+      "properties": [
+        "Water",
+        "No vegetation",
+        "No roads"
+      ],
+      "resources": [
+        {
+          "id": "RESOURCE_DYE",
+          "name": "Dyes",
+          "slug": "dye"
+        },
+        {
+          "id": "RESOURCE_PEARL",
+          "name": "Pearls",
+          "slug": "pearl"
+        },
+        {
+          "id": "RESOURCE_FISH",
+          "name": "Fish",
+          "slug": "fish"
+        },
+        {
+          "id": "RESOURCE_CRAB",
+          "name": "Crabs",
+          "slug": "crab"
+        }
+      ],
+      "slug": "water"
+    },
+    {
+      "borderValue": 0,
+      "defaultHeight": "Flat",
+      "id": "TERRAIN_URBAN",
+      "improvements": [
+        "Quarry (adj. Mountain/Volcano)"
+      ],
+      "moveCost": 1,
+      "name": "Urban",
+      "properties": [
+        "Urban",
+        "City site",
+        "No vegetation",
+        "Roads free"
+      ],
+      "resources": [],
+      "slug": "urban"
+    },
+    {
+      "borderValue": 500,
+      "defaultHeight": "Flat",
+      "id": "TERRAIN_LUSH",
+      "improvements": [
+        "Fort",
+        "Farm",
+        "Mine",
+        "Quarry",
+        "Granary",
+        "Estates"
+      ],
+      "moveCost": 1,
+      "name": "Lush",
+      "properties": [
+        "City site",
+        "Roads allowed"
+      ],
+      "resources": [
+        {
+          "id": "RESOURCE_MARBLE",
+          "name": "Marble",
+          "slug": "marble"
+        },
+        {
+          "id": "RESOURCE_ORE",
+          "name": "Ore",
+          "slug": "ore"
+        },
+        {
+          "id": "RESOURCE_HORSE",
+          "name": "Horses",
+          "slug": "horse"
+        },
+        {
+          "id": "RESOURCE_CATTLE",
+          "name": "Cattle",
+          "slug": "cattle"
+        },
+        {
+          "id": "RESOURCE_PIG",
+          "name": "Pigs",
+          "slug": "pig"
+        },
+        {
+          "id": "RESOURCE_BARLEY",
+          "name": "Barley",
+          "slug": "barley"
+        },
+        {
+          "id": "RESOURCE_GAME",
+          "name": "Game",
+          "slug": "game"
+        },
+        {
+          "id": "RESOURCE_CITRUS",
+          "name": "Citrus",
+          "slug": "citrus"
+        },
+        {
+          "id": "RESOURCE_HONEY",
+          "name": "Honey",
+          "slug": "honey"
+        },
+        {
+          "id": "RESOURCE_EBONY",
+          "name": "Ebony",
+          "slug": "ebony"
+        },
+        {
+          "id": "RESOURCE_SPICES",
+          "name": "Spices",
+          "slug": "spices"
+        },
+        {
+          "id": "RESOURCE_SILK",
+          "name": "Silk",
+          "slug": "silk"
+        }
+      ],
+      "slug": "lush"
+    },
+    {
+      "borderValue": 400,
+      "defaultHeight": "Flat",
+      "id": "TERRAIN_TEMPERATE",
+      "improvements": [
+        "Fort",
+        "Farm",
+        "Mine",
+        "Quarry",
+        "Granary",
+        "Estates"
+      ],
+      "moveCost": 1,
+      "name": "Temperate",
+      "properties": [
+        "City site",
+        "Roads allowed"
+      ],
+      "resources": [
+        {
+          "id": "RESOURCE_MARBLE",
+          "name": "Marble",
+          "slug": "marble"
+        },
+        {
+          "id": "RESOURCE_ORE",
+          "name": "Ore",
+          "slug": "ore"
+        },
+        {
+          "id": "RESOURCE_SALT",
+          "name": "Salt",
+          "slug": "salt"
+        },
+        {
+          "id": "RESOURCE_GEM",
+          "name": "Gems",
+          "slug": "gem"
+        },
+        {
+          "id": "RESOURCE_GOLD",
+          "name": "Gold",
+          "slug": "gold"
+        },
+        {
+          "id": "RESOURCE_SILVER",
+          "name": "Silver",
+          "slug": "silver"
+        },
+        {
+          "id": "RESOURCE_HORSE",
+          "name": "Horses",
+          "slug": "horse"
+        },
+        {
+          "id": "RESOURCE_SHEEP",
+          "name": "Sheep",
+          "slug": "sheep"
+        },
+        {
+          "id": "RESOURCE_WHEAT",
+          "name": "Wheat",
+          "slug": "wheat"
+        },
+        {
+          "id": "RESOURCE_ELEPHANT",
+          "name": "Elephants",
+          "slug": "elephant"
+        },
+        {
+          "id": "RESOURCE_GAME",
+          "name": "Game",
+          "slug": "game"
+        },
+        {
+          "id": "RESOURCE_FUR",
+          "name": "Fur",
+          "slug": "fur"
+        },
+        {
+          "id": "RESOURCE_CITRUS",
+          "name": "Citrus",
+          "slug": "citrus"
+        },
+        {
+          "id": "RESOURCE_LAVENDER",
+          "name": "Lavender",
+          "slug": "lavender"
+        },
+        {
+          "id": "RESOURCE_OLIVE",
+          "name": "Olives",
+          "slug": "olive"
+        },
+        {
+          "id": "RESOURCE_WINE",
+          "name": "Wine",
+          "slug": "wine"
+        },
+        {
+          "id": "RESOURCE_EBONY",
+          "name": "Ebony",
+          "slug": "ebony"
+        }
+      ],
+      "slug": "temperate"
+    },
+    {
+      "borderValue": 300,
+      "defaultHeight": "Flat",
+      "id": "TERRAIN_ARID",
+      "improvements": [
+        "Fort",
+        "Farm",
+        "Mine",
+        "Quarry",
+        "Granary",
+        "Estates"
+      ],
+      "moveCost": 1,
+      "name": "Arid",
+      "properties": [
+        "City site",
+        "Roads allowed"
+      ],
+      "resources": [
+        {
+          "id": "RESOURCE_MARBLE",
+          "name": "Marble",
+          "slug": "marble"
+        },
+        {
+          "id": "RESOURCE_ORE",
+          "name": "Ore",
+          "slug": "ore"
+        },
+        {
+          "id": "RESOURCE_SALT",
+          "name": "Salt",
+          "slug": "salt"
+        },
+        {
+          "id": "RESOURCE_GEM",
+          "name": "Gems",
+          "slug": "gem"
+        },
+        {
+          "id": "RESOURCE_GOLD",
+          "name": "Gold",
+          "slug": "gold"
+        },
+        {
+          "id": "RESOURCE_SILVER",
+          "name": "Silver",
+          "slug": "silver"
+        },
+        {
+          "id": "RESOURCE_GOAT",
+          "name": "Goats",
+          "slug": "goat"
+        },
+        {
+          "id": "RESOURCE_SORGHUM",
+          "name": "Sorghum",
+          "slug": "sorghum"
+        },
+        {
+          "id": "RESOURCE_CAMEL",
+          "name": "Camels",
+          "slug": "camel"
+        },
+        {
+          "id": "RESOURCE_GAME",
+          "name": "Game",
+          "slug": "game"
+        },
+        {
+          "id": "RESOURCE_FUR",
+          "name": "Fur",
+          "slug": "fur"
+        },
+        {
+          "id": "RESOURCE_INCENSE",
+          "name": "Incense",
+          "slug": "incense"
+        },
+        {
+          "id": "RESOURCE_OLIVE",
+          "name": "Olives",
+          "slug": "olive"
+        },
+        {
+          "id": "RESOURCE_JADE",
+          "name": "Jade",
+          "slug": "jade"
+        }
+      ],
+      "slug": "arid"
+    },
+    {
+      "borderValue": 0,
+      "defaultHeight": "Flat",
+      "id": "TERRAIN_SAND",
+      "improvements": [
+        "Quarry (adj. Mountain/Volcano)"
+      ],
+      "moveCost": 2,
+      "name": "Sand",
+      "properties": [
+        "No vegetation",
+        "No roads",
+        "+1 turn to build improvements"
+      ],
+      "resources": [],
+      "slug": "sand"
+    },
+    {
+      "borderValue": 100,
+      "defaultHeight": "Flat",
+      "id": "TERRAIN_TUNDRA",
+      "improvements": [
+        "Quarry (adj. Mountain/Volcano)"
+      ],
+      "moveCost": 1,
+      "name": "Tundra",
+      "properties": [
+        "Roads allowed",
+        "+1 turn to build improvements"
+      ],
+      "resources": [],
+      "slug": "tundra"
+    },
+    {
+      "borderValue": 100,
+      "defaultHeight": "Flat",
+      "id": "TERRAIN_MARSH",
+      "improvements": [],
+      "moveCost": 2,
+      "name": "Marsh",
+      "properties": [
+        "Fresh water source",
+        "No vegetation",
+        "No roads",
+        "+1 turn to build improvements",
+        "Units take 1 damage/turn"
+      ],
+      "resources": [],
+      "slug": "marsh"
+    }
+  ],
+  "vegetations": [
+    {
+      "defense": [
+        "-75% Ranged attacks vs this tile"
+      ],
+      "dlc": "Empires of the Indus",
+      "id": "VEGETATION_JUNGLE",
+      "improvements": [],
+      "lifecycle": [
+        "Cut → Jungle (Cut)",
+        "Spreads as Scrub"
+      ],
+      "moveCostExtra": 2,
+      "name": "Jungle",
+      "notes": [
+        "Removal requires unlock",
+        "Remove cost: 1 Order"
+      ],
+      "resources": [],
+      "slug": "jungle",
+      "yieldBuild": [
+        "+60 Wood"
+      ],
+      "yieldRemove": [
+        "+30 Wood"
+      ]
+    },
+    {
+      "defense": [],
+      "dlc": "Empires of the Indus",
+      "id": "VEGETATION_JUNGLE_CUT",
+      "improvements": [],
+      "lifecycle": [
+        "Grows into Jungle"
+      ],
+      "moveCostExtra": 0,
+      "name": "Jungle (Cut)",
+      "notes": [
+        "Remove cost: 1 Order"
+      ],
+      "resources": [],
+      "slug": "jungle_cut",
+      "yieldBuild": [
+        "+30 Wood"
+      ],
+      "yieldRemove": [
+        "+30 Wood"
+      ]
+    },
+    {
+      "defense": [
+        "-50% Ranged attacks vs this tile"
+      ],
+      "dlc": "",
+      "id": "VEGETATION_TREES",
+      "improvements": [
+        "Lumbermill"
+      ],
+      "lifecycle": [
+        "Cut → Trees (Cut)",
+        "Spreads as Scrub"
+      ],
+      "moveCostExtra": 1,
+      "name": "Trees",
+      "notes": [
+        "Remove cost: 1 Order"
+      ],
+      "resources": [
+        {
+          "id": "RESOURCE_PIG",
+          "name": "Pigs",
+          "slug": "pig"
+        },
+        {
+          "id": "RESOURCE_GAME",
+          "name": "Game",
+          "slug": "game"
+        },
+        {
+          "id": "RESOURCE_FUR",
+          "name": "Fur",
+          "slug": "fur"
+        },
+        {
+          "id": "RESOURCE_EBONY",
+          "name": "Ebony",
+          "slug": "ebony"
+        }
+      ],
+      "slug": "trees",
+      "yieldBuild": [
+        "+40 Wood"
+      ],
+      "yieldRemove": [
+        "+20 Wood"
+      ]
+    },
+    {
+      "defense": [],
+      "dlc": "",
+      "id": "VEGETATION_TREES_CUT",
+      "improvements": [],
+      "lifecycle": [
+        "Grows into Trees"
+      ],
+      "moveCostExtra": 0,
+      "name": "Trees (Cut)",
+      "notes": [
+        "Remove cost: 1 Order"
+      ],
+      "resources": [],
+      "slug": "trees_cut",
+      "yieldBuild": [
+        "+20 Wood"
+      ],
+      "yieldRemove": [
+        "+20 Wood"
+      ]
+    },
+    {
+      "defense": [
+        "-25% Ranged attacks vs this tile"
+      ],
+      "dlc": "",
+      "id": "VEGETATION_SCRUB",
+      "improvements": [],
+      "lifecycle": [
+        "Cut → Scrub (Cut)",
+        "Grows into Trees"
+      ],
+      "moveCostExtra": 1,
+      "name": "Scrub",
+      "notes": [
+        "Remove cost: 1 Order"
+      ],
+      "resources": [
+        {
+          "id": "RESOURCE_SHEEP",
+          "name": "Sheep",
+          "slug": "sheep"
+        },
+        {
+          "id": "RESOURCE_PIG",
+          "name": "Pigs",
+          "slug": "pig"
+        },
+        {
+          "id": "RESOURCE_GOAT",
+          "name": "Goats",
+          "slug": "goat"
+        },
+        {
+          "id": "RESOURCE_SORGHUM",
+          "name": "Sorghum",
+          "slug": "sorghum"
+        },
+        {
+          "id": "RESOURCE_CAMEL",
+          "name": "Camels",
+          "slug": "camel"
+        },
+        {
+          "id": "RESOURCE_ELEPHANT",
+          "name": "Elephants",
+          "slug": "elephant"
+        },
+        {
+          "id": "RESOURCE_OLIVE",
+          "name": "Olives",
+          "slug": "olive"
+        }
+      ],
+      "slug": "scrub",
+      "yieldBuild": [
+        "+20 Wood"
+      ],
+      "yieldRemove": [
+        "+10 Wood"
+      ]
+    },
+    {
+      "defense": [],
+      "dlc": "",
+      "id": "VEGETATION_SCRUB_CUT",
+      "improvements": [],
+      "lifecycle": [
+        "Grows into Scrub"
+      ],
+      "moveCostExtra": 0,
+      "name": "Scrub (Cut)",
+      "notes": [
+        "Remove cost: 1 Order"
+      ],
+      "resources": [],
+      "slug": "scrub_cut",
+      "yieldBuild": [
+        "+10 Wood"
+      ],
+      "yieldRemove": [
+        "+10 Wood"
+      ]
+    }
+  ]
+}

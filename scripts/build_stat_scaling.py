@@ -16,10 +16,12 @@ Source of truth (all XML + the decompiled C# the formula lives in):
   color.xml    → per-rating accent hex
   council.xml / council-btt.xml → per-seat aaiRatingYieldGlobal (flat/turn) and
                  aaiRatingYieldCity (flat per city) tables. Council seats scale
-                 via modifyRating with OFFSET 0 (InfoHelpers.getRatingYieldRateCouncil),
-                 i.e. base × triangle(rating) — R(R+1)/2. Grand Vizier (BTT) has
-                 no rating-yield table, so only Ambassador/Chancellor/Spymaster
-                 appear. (council-btt.xml is still parsed in case a patch adds one.)
+                 via modifyRating with the SEAT YIELD's own iTriangleOffset since
+                 patch 1.0.84658 (InfoHelpers.getRatingYieldRateCouncil used to
+                 pass 0) — that is the reduced Ambassador culture / Spymaster
+                 science. Grand Vizier (BTT) has no rating-yield table, so only
+                 Ambassador/Chancellor/Spymaster appear. (council-btt.xml is
+                 still parsed in case a patch adds one.)
   trait.xml / opinionCharacter.xml → agent-calculator constants: the Schemer
                  archetype's iAgentModifier (+10 percentage points, added flat
                  AFTER the rating multiply — InfoHelpers.getRatingYieldAgentPercent)
@@ -37,8 +39,9 @@ Formula (Utils.cs / InfoHelpers.cs, verified against the source):
   Governor (yield %)    = govModifier · triangleBoost(rating)
   Agent    (yield %)    = agentPercent · rating                  (linear)
   General  (combat)     = combatBase  · triangleBoost(rating)
-  Council  (flat yield) = seatRate   · triangleOffset(rating, 0)            [/10 display]
-                          (= seatRate · R(R+1)/2; global or per-city per the seat)
+  Council  (flat yield) = seatRate   · triangleOffset(rating, seatYieldOffset) [/10 display]
+                          (global or per-city per the seat; the offset is the
+                           SEAT's yield, which need not be the rating's yield)
 
 Competitive Mode = the GAMEOPTION_LOWER_CHARACTER_YIELDS sub-option. It swaps
 the triangular curve for a LINEAR one through an "equivalent rating" of
@@ -126,7 +129,8 @@ def council_roles_by_rating() -> dict[str, list[dict]]:
     """rating zType → council seat roles giving flat yields from that rating.
 
     InfoHelpers.getRatingYieldRateCouncil{Global,City}: seat base value ×
-    modifyRating(rating, offset=0). Global = empire-wide per turn; City = per city.
+    modifyRating(rating, that yield's iTriangleOffset — 0 before patch 1.0.84658).
+    Global = empire-wide per turn; City = per city.
     """
     out: dict[str, list[dict]] = {}
     for fn in ("council.xml", "council-btt.xml"):
@@ -246,8 +250,11 @@ def main() -> int:
                 "general": general,
             }
             for c in councils:
-                # Council seats: base × triangleOffset(rating, 0) = triangle(rating).
-                out[c["label"].lower()] = round(modify_rating(c["value"], rating, 0, competitive) / 10, 2)
+                # Council seats: base × triangleOffset(rating, the SEAT yield's own
+                # offset) — e.g. the Ambassador's Culture carries -2, so a Wisdom 4
+                # Ambassador multiplies by 5, not 10 (patch 1.0.84658).
+                c_off = yield_off.get(c["yield"], 0)
+                out[c["label"].lower()] = round(modify_rating(c["value"], rating, c_off, competitive) / 10, 2)
             return out
 
         roles = [
@@ -265,6 +272,7 @@ def main() -> int:
                 "kind": "yield",
                 "yield": c["yield"].lower(),
                 "council": True,
+                "triangleOffset": yield_off.get(c["yield"], 0),
             })
 
         stats_out.append({

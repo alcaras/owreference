@@ -1,0 +1,4296 @@
+[
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_ABDICATE",
+    "internal": false,
+    "name": "Abdicate Throne",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Abdicates"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "abdicate",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_ADOPT",
+    "internal": false,
+    "name": "Adopt Child",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Adopted",
+      "Adopted Event"
+    ],
+    "performer": "Leader",
+    "roleReq": {
+      "icon": "icons/traits/schemer",
+      "kind": "archetype",
+      "label": "Schemer"
+    },
+    "slug": "adopt",
+    "target": "Not Adult Us",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader (Schemer)",
+    "whoId": "SUBJECT_LEADER_SCHEMER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_ADOPT_RELIGION",
+    "internal": false,
+    "name": "Adopt State Religion",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Adopt State Religion"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "adopt-religion",
+    "target": "Religion State No",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 400,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TEAM_ALLIANCE",
+    "internal": false,
+    "name": "Alliance Player",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Alliance Player Event"
+    ],
+    "performer": "Leader",
+    "roleReq": {
+      "icon": "icons/traits/diplomat",
+      "kind": "archetype",
+      "label": "Diplomat"
+    },
+    "slug": "team-alliance",
+    "target": "Player Can Alliance",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader (Diplomat)",
+    "whoId": "SUBJECT_LEADER_DIPLOMAT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 200,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_PLAYER_WAR",
+    "internal": true,
+    "name": "Ask to Declare War",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Ask a Tribe to Declare War on a Nation"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "tribe-player-war",
+    "target": "Player Not Team Human Or Ai",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_TRIBE_PEACE_OR_TRUCE"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 200,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_TRIBE_WAR",
+    "internal": true,
+    "name": "Ask to Declare War",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Ask a Nation to Declare War on a Tribe"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "player-tribe-war",
+    "target": "Tribe No Alliance Team",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_PEACE_OR_TRUCE"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 200,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_PLAYER_WAR",
+    "internal": true,
+    "name": "Ask to Declare War",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Ask a Nation to Declare War on another Nation"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "player-player-war",
+    "target": "Player Not Team Human Or Ai",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_PEACE_OR_TRUCE"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 200,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_JOIN_PLAYER_WAR",
+    "internal": true,
+    "name": "Ask to Join War",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Ask a Nation to join your War against another Nation"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "player-join-player-war",
+    "target": "Player War Human Or Ai",
+    "techPrereq": {
+      "id": "TECH_POLIS",
+      "label": "Polis",
+      "slug": "polis"
+    },
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_PEACE_OR_TRUCE"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_BREAK_PEACE_HUMAN",
+    "internal": true,
+    "name": "Break Peace",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Break Peace"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "player-break-peace-human",
+    "target": "Player Peace Human",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_CANCEL_TRADE",
+    "internal": true,
+    "name": "Cancel All Trade",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Cancel Trade"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "player-cancel-trade",
+    "target": "Player Trading",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_CONVERT_SELF",
+    "internal": false,
+    "name": "Convert Religion",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Converted Your Religion",
+      "Convert Your Religion Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "convert-self",
+    "target": "Religion Player",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_CONVERT_STATE",
+    "internal": false,
+    "name": "Convert to State Religion",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Converted Target to State Religion",
+      "Convert Target to State Religion Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "convert-state",
+    "target": "Character Us",
+    "techPrereq": {
+      "id": "TECH_METAPHYSICS",
+      "label": "Metaphysics",
+      "slug": "metaphysics"
+    },
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_DIVORCE",
+    "internal": false,
+    "name": "Divorce Spouse",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Divorce",
+      "Divorce Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "divorce",
+    "target": "Spouse Of Leader Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_END_ALLIANCE",
+    "internal": true,
+    "name": "End Alliance",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "End Alliance Player"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "player-end-alliance",
+    "target": "Player Alliance",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_END_ALLIANCE_HUMAN",
+    "internal": true,
+    "name": "End Alliance",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "End Alliance Player"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "player-end-alliance-human",
+    "target": "Player Alliance Human",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_END_ALLIANCE",
+    "internal": false,
+    "name": "End Alliance",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "End Alliance Tribe"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "tribe-end-alliance",
+    "target": "Tribe Alliance",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Scandal Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_GAMBLE",
+    "internal": false,
+    "name": "Gamble",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Gambling pay out",
+      "Gambling losses",
+      "Gambling Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "gamble",
+    "target": "",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 100,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Pass judgment to gain Civics",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_HOLD_COURT",
+    "internal": false,
+    "name": "Hold Court",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Hold Court",
+      "Hold Court, New Courtier",
+      "Hold Court Event"
+    ],
+    "performer": "Leader",
+    "roleReq": {
+      "icon": "icons/traits/judge",
+      "kind": "archetype",
+      "label": "Judge"
+    },
+    "slug": "hold-court",
+    "target": "",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader (Judge)",
+    "whoId": "SUBJECT_LEADER_JUDGE"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 100,
+        "yield": "money"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Relieve Mental Strain",
+    "diplomacy": null,
+    "dlc": "Scandal Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_REVEL",
+    "internal": false,
+    "name": "Indulge in Revelry",
+    "opinionCost": [],
+    "outcomeCount": 4,
+    "outcomes": [
+      "Stress removed",
+      "Wanton revel",
+      "Drunken revel",
+      "Revelry Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "revel",
+    "target": "",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_INFLUENCE",
+    "internal": false,
+    "name": "Influence",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Influence Exerted",
+      "Influence Exposes our Weakness",
+      "Influence Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "influence",
+    "target": "Character Us Or Them Human Or Ai",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_LEAVE_RELIGION",
+    "internal": false,
+    "name": "Leave State Religion",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Leave State Religion"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "leave-religion",
+    "target": "Religion State",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_CHOSEN_HEIR",
+    "internal": false,
+    "name": "Make Chosen Heir",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Heir Chosen",
+      "Heir Chosen Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "chosen-heir",
+    "target": "Non Heir Us",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_MARRY_COURTIER",
+    "internal": false,
+    "name": "Marry Courtier",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Marriage"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "marry-courtier",
+    "target": "Courtier Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Leader or descendant",
+    "whoId": "SUBJECT_LEADER_OR_DESCENDANT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 200,
+        "yield": "training"
+      },
+      {
+        "label": "Civics",
+        "value": 200,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLOT_MURDER",
+    "internal": false,
+    "name": "Plot Vengeance",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Target Killed",
+      "Target Killed, Plot Exposed",
+      "Target Survives"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "plot-murder",
+    "target": "Vengeance Target",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 100,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_PROSCRIPTION",
+    "internal": false,
+    "name": "Proscription",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Proscription"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "proscription",
+    "target": "Family Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Dictator",
+    "whoId": "SUBJECT_DICTATOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Inspire the troops to gain Training",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_RALLY_TROOPS",
+    "internal": false,
+    "name": "Rally Troops",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Troops Rallied",
+      "Rally Troops Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "rally-troops",
+    "target": "",
+    "techPrereq": {
+      "id": "TECH_MILITARY_DRILL",
+      "label": "Military Drill",
+      "slug": "military-drill"
+    },
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Take preemptive action against Powerful Rivals",
+    "diplomacy": null,
+    "dlc": "Scandal Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_SCHEME_AGAINST_RIVAL",
+    "internal": false,
+    "name": "Scheme Against a Rival",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Plotting leads to a potential rival's demise",
+      "Plotting leads to a potential rival's exile",
+      "Scheme Foiled Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "scheme-against-rival",
+    "target": "Grand Vizier",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Take preemptive action against Powerful Rivals",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_SCHEME_AGAINST_RIVAL_RISING_STAR",
+    "internal": false,
+    "name": "Scheme Against a Rival",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Plotting leads to a potential rival's demise",
+      "Plotting leads to a potential rival's exile",
+      "Scheme Foiled Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "scheme-against-rival-rising-star",
+    "target": "Rising Star",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 200,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Scandal Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_SEEK_POLITICAL_ALLIES",
+    "internal": false,
+    "name": "Seek Political Allies",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "New political allies improve your popularity",
+      "Play politics",
+      "Seek Political Allies Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "seek-political-allies",
+    "target": "",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER_US"
+  },
+  {
+    "cooldown": 100,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Laugh in the face of their pitiful excuse for a civilization.",
+    "diplomacy": null,
+    "dlc": "Scandal Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TAUNT",
+    "internal": false,
+    "name": "Taunt",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "They may choose shame or War"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "taunt",
+    "target": "Player Peace Or Truce Human",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 400,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_ALLIANCE",
+    "internal": false,
+    "name": "Tribal Alliance",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Alliance Event"
+    ],
+    "performer": "Leader",
+    "roleReq": {
+      "icon": "icons/traits/diplomat",
+      "kind": "archetype",
+      "label": "Diplomat"
+    },
+    "slug": "tribe-alliance",
+    "target": "Tribe Can Alliance",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader (Diplomat)",
+    "whoId": "SUBJECT_LEADER_DIPLOMAT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TUTOR_SCHOLAR",
+    "internal": false,
+    "name": "Tutor Child (as Leader)",
+    "opinionCost": [],
+    "outcomeCount": 5,
+    "outcomes": [
+      "Improve Wisdom",
+      "Improve Charisma",
+      "Improve Courage",
+      "Improve Discipline",
+      "Tutor Event"
+    ],
+    "performer": "Leader",
+    "roleReq": {
+      "icon": "icons/traits/scholar",
+      "kind": "archetype",
+      "label": "Scholar"
+    },
+    "slug": "tutor-scholar",
+    "target": "Character Us",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": true,
+    "who": "Leader (Scholar)",
+    "whoId": "SUBJECT_LEADER_SCHOLAR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 800,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Force a weaker Tribe into a Alliance Tribe.",
+    "diplomacy": null,
+    "dlc": "Empires of the Indus",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_VASSALIZE_TRIBE",
+    "internal": false,
+    "name": "Vassalize Tribe",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Vassalize Tribe Event"
+    ],
+    "performer": "Leader",
+    "roleReq": null,
+    "slug": "vassalize-tribe",
+    "target": "Tribe Can Alliance",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader",
+    "whoId": "SUBJECT_LEADER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_TRUCE_NO_TRIBUTE",
+    "internal": true,
+    "name": "Ask for Truce",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Ask for Truce Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "player-truce-no-tribute",
+    "target": "Player War",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_DEMAND_TRIBUTE",
+    "internal": true,
+    "name": "Demand Tribute",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Demand Tribute Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "demand-tribute",
+    "target": "Player Truce",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_TRUCE_DEMAND_TRIBUTE",
+    "internal": true,
+    "name": "Demand Tribute for Truce",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Demand Tribute for Truce Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "player-truce-demand-tribute",
+    "target": "Player War",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Meet with religious leaders to improve the Religion's Opinion Religion",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_HIGH_SYNOD",
+    "internal": false,
+    "name": "High Synod",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Religious Concord is Found",
+      "Religious Tensions are Worse",
+      "High Synod Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "high-synod",
+    "target": "Religion World",
+    "techPrereq": {
+      "id": "TECH_METAPHYSICS",
+      "label": "Metaphysics",
+      "slug": "metaphysics"
+    },
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Peace",
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_PEACE",
+    "internal": false,
+    "name": "National Peace",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 200,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Peace Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "player-peace",
+    "target": "Player Truce",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_TRUCE",
+    "internal": false,
+    "name": "National Truce",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Truce Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "player-truce",
+    "target": "Player War",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_TRUCE_OFFER_TRIBUTE",
+    "internal": true,
+    "name": "Offer Tribute for Truce",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Offer Tribute for Truce Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "player-truce-offer-tribute",
+    "target": "Player War",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TRADE_MISSION",
+    "internal": false,
+    "name": "Trade Mission",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Trade Mission Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "trade-mission",
+    "target": "Player Peace Or Truce",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Peace",
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_PEACE",
+    "internal": false,
+    "name": "Tribal Peace",
+    "opinionCost": [
+      {
+        "label": "Training",
+        "value": 200,
+        "yield": "training"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Peace Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "tribe-peace",
+    "target": "Tribe Truce",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_TRUCE",
+    "internal": false,
+    "name": "Tribal Truce",
+    "opinionCost": [
+      {
+        "label": "Training",
+        "value": 200,
+        "yield": "training"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Truce Event"
+    ],
+    "performer": "Ambassador",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Ambassador"
+    },
+    "slug": "tribe-truce",
+    "target": "Tribe War",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Ambassador",
+    "whoId": "SUBJECT_AMBASSADOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Bribe the Family with gifts to improve their Opinion Family",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_FAMILY_GIFT",
+    "internal": false,
+    "name": "Family Gifts",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Gifts Please the Family",
+      "Gifts Expose our Weakness",
+      "Family Gift Event"
+    ],
+    "performer": "Chancellor",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Chancellor"
+    },
+    "slug": "family-gift",
+    "target": "Family Us",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Chancellor",
+    "whoId": "SUBJECT_CHANCELLOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_IMPRISON",
+    "internal": false,
+    "name": "Imprison",
+    "opinionCost": [
+      {
+        "label": "Training",
+        "value": 100,
+        "yield": "training"
+      }
+    ],
+    "outcomeCount": 4,
+    "outcomes": [
+      "Target Justly Imprisoned",
+      "Target Unjustly Imprisoned",
+      "Target Escapes",
+      "Imprison Event"
+    ],
+    "performer": "Chancellor",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Chancellor"
+    },
+    "slug": "imprison",
+    "target": "Non Leader Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Chancellor",
+    "whoId": "SUBJECT_CHANCELLOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Attempt to increase Happiness in a City",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_PACIFY_CITY",
+    "internal": false,
+    "name": "Pacify City",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Pacification Successful",
+      "Pacification Exposes our Weakness",
+      "Pacify City Event"
+    ],
+    "performer": "Chancellor",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Chancellor"
+    },
+    "slug": "pacify-city",
+    "target": "City Us",
+    "techPrereq": {
+      "id": "TECH_COINAGE",
+      "label": "Coinage",
+      "slug": "coinage"
+    },
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Chancellor",
+    "whoId": "SUBJECT_CHANCELLOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Religion Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_MAKE_CLERGY",
+    "internal": false,
+    "name": "Suggest for the Clergy",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 300,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Make Clergy"
+    ],
+    "performer": "Chancellor",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Chancellor"
+    },
+    "slug": "make-clergy",
+    "target": "Character Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Chancellor",
+    "whoId": "SUBJECT_CHANCELLOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_ASSASSINATE",
+    "internal": false,
+    "name": "Assassinate",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 5,
+    "outcomes": [
+      "Target Killed",
+      "Target Killed, Plot Exposed",
+      "Target Survives, Plot Exposed",
+      "Target Survives",
+      "Assassination Event"
+    ],
+    "performer": "Spymaster",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Spymaster"
+    },
+    "slug": "assassinate",
+    "target": "Character Non Leader Us Or Them",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Spymaster",
+    "whoId": "SUBJECT_SPYMASTER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_EXPOSE_AGENT",
+    "internal": false,
+    "name": "Expose Agent Network",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Agent Network Exposed",
+      "No Agent Network Found",
+      "Expose Agent Network Event"
+    ],
+    "performer": "Spymaster",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Spymaster"
+    },
+    "slug": "expose-agent",
+    "target": "City Us",
+    "techPrereq": {
+      "id": "TECH_SCHOLARSHIP",
+      "label": "Scholarship",
+      "slug": "scholarship"
+    },
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Spymaster",
+    "whoId": "SUBJECT_SPYMASTER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Infiltrate a Nation to reveal their territory",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_INFILTRATE",
+    "internal": false,
+    "name": "Infiltrate Nation",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Territory Infiltrated",
+      "Territory Infiltrated, Effort Exposed",
+      "Infiltrate Event"
+    ],
+    "performer": "Spymaster",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Spymaster"
+    },
+    "slug": "infiltrate",
+    "target": "Player Not Team Human Or Ai",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Spymaster",
+    "whoId": "SUBJECT_SPYMASTER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Slander a Nation to decrease other Nations' Opinion Player of them",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_SLANDER",
+    "internal": false,
+    "name": "Slander Nation",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Slander Spread",
+      "Slander Spread, Effort Exposed",
+      "Slander Event"
+    ],
+    "performer": "Spymaster",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Spymaster"
+    },
+    "slug": "slander",
+    "target": "Player Not Team Human Or Ai",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Spymaster",
+    "whoId": "SUBJECT_SPYMASTER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Steal a Nation's research to gain Science",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_STEAL_RESEARCH",
+    "internal": false,
+    "name": "Steal Research",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Research Stolen",
+      "Research Stolen, Effort Exposed",
+      "Steal Research Event"
+    ],
+    "performer": "Spymaster",
+    "roleReq": {
+      "icon": null,
+      "kind": "council",
+      "label": "Spymaster"
+    },
+    "slug": "steal-research",
+    "target": "Player Not Team Human Or Ai",
+    "techPrereq": {
+      "id": "TECH_CARTOGRAPHY",
+      "label": "Cartography",
+      "slug": "cartography"
+    },
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Spymaster",
+    "whoId": "SUBJECT_SPYMASTER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_INSURRECTION",
+    "internal": false,
+    "name": "Insurrection",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 4,
+    "outcomes": [
+      "Missionresult Insurrection Revolt",
+      "Missionresult Insurrection Exposed",
+      "Missionresult Insurrection Failure",
+      "Insurrection Event"
+    ],
+    "performer": "Agent",
+    "roleReq": null,
+    "slug": "insurrection",
+    "target": "City Them Human Or Ai",
+    "techPrereq": {
+      "id": "TECH_JURISPRUDENCE",
+      "label": "Jurisprudence",
+      "slug": "jurisprudence"
+    },
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Agent",
+    "whoId": "SUBJECT_AGENT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_MOVE_NETWORK",
+    "internal": false,
+    "name": "Move Agent Network",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Agent Network Moved",
+      "Agent Network Unable to Move",
+      "Move Agent Network Event"
+    ],
+    "performer": "Agent",
+    "roleReq": null,
+    "slug": "move-network",
+    "target": "City Them Human Or Ai",
+    "techPrereq": {
+      "id": "TECH_SCHOLARSHIP",
+      "label": "Scholarship",
+      "slug": "scholarship"
+    },
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Agent",
+    "whoId": "SUBJECT_AGENT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TREACHERY",
+    "internal": false,
+    "name": "Treachery",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 4,
+    "outcomes": [
+      "Missionresult Treachery Success",
+      "Missionresult Treachery Exposed",
+      "Missionresult Treachery Failure",
+      "Treachery Event"
+    ],
+    "performer": "Agent",
+    "roleReq": null,
+    "slug": "treachery",
+    "target": "City Them Human Or Ai",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Agent",
+    "whoId": "SUBJECT_AGENT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_INTERCESSION_FAMILY",
+    "internal": false,
+    "name": "Intercession (Family)",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Intercession Finished",
+      "Intercession Exposes our Weakness",
+      "Intercession Event"
+    ],
+    "performer": "Family Head",
+    "roleReq": null,
+    "slug": "intercession-family",
+    "target": "Character Family Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Family head",
+    "whoId": "SUBJECT_FAMILY_HEAD_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_CONVERT_RELIGION",
+    "internal": false,
+    "name": "Convert Religion",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Converted Target to Religion",
+      "Convert Target to Religion Event"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": null,
+    "slug": "convert-religion",
+    "target": "Character Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Religion head",
+    "whoId": "SUBJECT_RELIGION_HEAD_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_INTERCESSION_RELIGION",
+    "internal": false,
+    "name": "Intercession (Religion)",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Intercession Finished",
+      "Intercession Exposes our Weakness",
+      "Intercession Event"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": null,
+    "slug": "intercession-religion",
+    "target": "Character Us Or Them Human Or Ai",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Religion head",
+    "whoId": "SUBJECT_RELIGION_HEAD_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Religion Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_QUELL_DISSENT_CHRISTIANITY",
+    "internal": false,
+    "name": "Quell Christianity Dissent",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Quell Religious Dissent"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": {
+      "icon": "icons/religions/christianity",
+      "kind": "faith",
+      "label": "Clergy Christian"
+    },
+    "slug": "quell-dissent-christianity",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Christian clergy",
+    "whoId": "SUBJECT_CLERGY_CHRISTIAN"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Empires of the Indus",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_QUELL_DISSENT_BUDDHISM",
+    "internal": false,
+    "name": "Quell Dissent Buddhism",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Quell Religious Dissent"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": {
+      "icon": "icons/religions/buddhism",
+      "kind": "faith",
+      "label": "Clergy Buddhism"
+    },
+    "slug": "quell-dissent-buddhism",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Buddhist clergy",
+    "whoId": "SUBJECT_CLERGY_BUDDHISM"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Empires of the Indus",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_QUELL_DISSENT_HINDUISM",
+    "internal": false,
+    "name": "Quell Dissent Hinduism",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Quell Religious Dissent"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": {
+      "icon": "icons/religions/hinduism",
+      "kind": "faith",
+      "label": "Clergy Hinduism"
+    },
+    "slug": "quell-dissent-hinduism",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Hindu clergy",
+    "whoId": "SUBJECT_CLERGY_HINDUISM"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Religion Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_QUELL_DISSENT_JUDAISM",
+    "internal": false,
+    "name": "Quell Judaism Dissent",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Quell Religious Dissent"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": {
+      "icon": "icons/religions/judaism",
+      "kind": "faith",
+      "label": "Clergy Jewish"
+    },
+    "slug": "quell-dissent-judaism",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Jewish clergy",
+    "whoId": "SUBJECT_CLERGY_JEWISH"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Religion Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_QUELL_DISSENT_MANICHAEISM",
+    "internal": false,
+    "name": "Quell Manichaeism Dissent",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Quell Religious Dissent"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": {
+      "icon": "icons/religions/manichaeism",
+      "kind": "faith",
+      "label": "Clergy Manichaean"
+    },
+    "slug": "quell-dissent-manichaeism",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Manichaean clergy",
+    "whoId": "SUBJECT_CLERGY_MANICAHEAN"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Religion Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_QUELL_DISSENT_ZOROASTRIANISM",
+    "internal": false,
+    "name": "Quell Zoroastrianism Dissent",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Quell Religious Dissent"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": {
+      "icon": "icons/religions/zoroastrianism",
+      "kind": "faith",
+      "label": "Clergy Zoroastrian"
+    },
+    "slug": "quell-dissent-zoroastrianism",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Zoroastrian clergy",
+    "whoId": "SUBJECT_CLERGY_ZOROASTRIAN"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Make offerings to increase Happiness in a City",
+    "diplomacy": null,
+    "dlc": "Religion Event Pack",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_PAGAN_SACRIFICES",
+    "internal": false,
+    "name": "Sacrifices to the Gods",
+    "opinionCost": [
+      {
+        "label": "Food",
+        "value": 200,
+        "yield": "food"
+      }
+    ],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Successful Sacrifices",
+      "Bad Omens"
+    ],
+    "performer": "Religious Head & Clergy",
+    "roleReq": null,
+    "slug": "pagan-sacrifices",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Pagan clergy",
+    "whoId": "SUBJECT_CLERGY_PAGAN"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_ASSASSINATE_ANY",
+    "internal": true,
+    "name": "Assassinate",
+    "opinionCost": [],
+    "outcomeCount": 4,
+    "outcomes": [
+      "Target Killed",
+      "Target Killed, Plot Exposed",
+      "Target Survives, Plot Exposed",
+      "Assassination Event"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "assassinate-any",
+    "target": "Character Non Leader Us Or Them",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Any character",
+    "whoId": "SUBJECT_CHARACTER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_DEMAND_TRIBUTE_ANY",
+    "internal": true,
+    "name": "Demand Tribute",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Demand Tribute Event"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "demand-tribute-any",
+    "target": "Player Truce",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Any character",
+    "whoId": "SUBJECT_CHARACTER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_FAMILY_MARRIAGE",
+    "internal": false,
+    "name": "Family Marriage",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Family Marriage"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "family-marriage",
+    "target": "Family Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Any marriageable character",
+    "whoId": "SUBJECT_CAN_MARRY"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_MARRIAGE",
+    "internal": false,
+    "name": "Foreign Marriage",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Foreign Marriage"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "player-marriage",
+    "target": "Player Peace Or Truce",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Any marriageable character",
+    "whoId": "SUBJECT_CAN_MARRY"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "Infiltrate a Nation to reveal their territory",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_INFILTRATE_ANY",
+    "internal": true,
+    "name": "Infiltrate Nation",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Territory Infiltrated",
+      "Territory Infiltrated, Effort Exposed",
+      "Infiltrate Event"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "infiltrate-any",
+    "target": "Player Not Team Human Or Ai",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Any character",
+    "whoId": "SUBJECT_CHARACTER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Aksum",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_LEAD_DELEGATION",
+    "internal": false,
+    "name": "Lead Delegation",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Science Exchange",
+      "Civics Exchange",
+      "Trade Exchange"
+    ],
+    "performer": "Any Character",
+    "roleReq": {
+      "icon": null,
+      "kind": "archetype",
+      "label": "Envoy"
+    },
+    "slug": "lead-delegation",
+    "target": "Leader Them",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": true,
+    "who": "Envoy",
+    "whoId": "SUBJECT_ENVOY"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_LEAVE_COUNCIL",
+    "internal": false,
+    "name": "Leave Council",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Leave Council"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "leave-council",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Council member",
+    "whoId": "SUBJECT_COUNCIL"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_AMBASSADOR",
+    "internal": false,
+    "name": "Make Ambassador",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Make Ambassador"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "ambassador",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Any non-leader character",
+    "whoId": "SUBJECT_NON_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_CHANCELLOR",
+    "internal": false,
+    "name": "Make Chancellor",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Make Chancellor"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "chancellor",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Any non-leader character",
+    "whoId": "SUBJECT_NON_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_SPYMASTER",
+    "internal": false,
+    "name": "Make Spymaster",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Make Spymaster"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "spymaster",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Any non-leader character",
+    "whoId": "SUBJECT_NON_LEADER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAN_WEDDING",
+    "internal": false,
+    "name": "Plan Wedding",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Wedding Event"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "plan-wedding",
+    "target": "Character Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Any character",
+    "whoId": "SUBJECT_CHARACTER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_SEND_COURTIER",
+    "internal": false,
+    "name": "Send Courtier",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Send Courtier"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "send-courtier",
+    "target": "Player Team Human Or Ai",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Courtier",
+    "whoId": "SUBJECT_COURTIER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "Slander a Nation to decrease other Nations' Opinion Player of them",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_SLANDER_ANY",
+    "internal": true,
+    "name": "Slander Nation",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Slander Spread",
+      "Slander Spread, Effort Exposed",
+      "Slander Event"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "slander-any",
+    "target": "Player Not Team",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Any character",
+    "whoId": "SUBJECT_CHARACTER_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_MARRIAGE",
+    "internal": false,
+    "name": "Tribal Marriage",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Tribal Marriage"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "tribe-marriage",
+    "target": "Tribe Peace Or Truce",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Any marriageable character",
+    "whoId": "SUBJECT_CAN_MARRY"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TUTOR",
+    "internal": false,
+    "name": "Tutor Child",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 5,
+    "outcomes": [
+      "Improve Wisdom",
+      "Improve Charisma",
+      "Improve Courage",
+      "Improve Discipline",
+      "Tutor Event"
+    ],
+    "performer": "Any Character",
+    "roleReq": null,
+    "slug": "tutor",
+    "target": "Character Us",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": true,
+    "who": "Tutor",
+    "whoId": "SUBJECT_TUTOR_US"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 100,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_CAPTURE",
+    "internal": false,
+    "name": "Capture",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Target Surrenders",
+      "Target Killed Resisting Capture",
+      "Target Flees Country"
+    ],
+    "performer": "Situational",
+    "roleReq": {
+      "icon": null,
+      "kind": "archetype",
+      "label": "Fugitive"
+    },
+    "slug": "capture",
+    "target": "",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Fugitive",
+    "whoId": "SUBJECT_FUGITIVE"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Impart the wisdom of the land upon another, teaching them to become a Steward Of The Land.",
+    "diplomacy": null,
+    "dlc": "Calamities",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_IMPART_STEWARDSHIP",
+    "internal": false,
+    "name": "Impart Stewardship",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Target becomes a Steward Of The Land",
+      "Impart Stewardship Failed"
+    ],
+    "performer": "Situational",
+    "roleReq": {
+      "icon": null,
+      "kind": "archetype",
+      "label": "Steward Of The Land"
+    },
+    "slug": "impart-stewardship",
+    "target": "Character Us",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Steward of the Land",
+    "whoId": "SUBJECT_CHARACTER_STEWARD_OF_THE_LAND_ADULT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 100,
+        "yield": "money"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Incubate an Infected Character during a Plague, protecting them from further infection.",
+    "diplomacy": null,
+    "dlc": "Calamities",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_INCUBATE",
+    "internal": false,
+    "name": "Incubate",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Target becomes Incubated (no longer Infected)"
+    ],
+    "performer": "Situational",
+    "roleReq": {
+      "icon": null,
+      "kind": "archetype",
+      "label": "Infected"
+    },
+    "slug": "incubate",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Infected character",
+    "whoId": "SUBJECT_INFECTED"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_LEGITIMIZE",
+    "internal": false,
+    "name": "Legitimize",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Legitimized",
+      "Legitimized Event"
+    ],
+    "performer": "Situational",
+    "roleReq": {
+      "icon": null,
+      "kind": "archetype",
+      "label": "Bastard"
+    },
+    "slug": "legitimize",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Bastard",
+    "whoId": "SUBJECT_BASTARD"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_PAY_RANSOM",
+    "internal": false,
+    "name": "Pay Ransom",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Ransom Paid"
+    ],
+    "performer": "Situational",
+    "roleReq": {
+      "icon": null,
+      "kind": "archetype",
+      "label": "Captured"
+    },
+    "slug": "pay-ransom",
+    "target": "",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Captured character",
+    "whoId": "SUBJECT_CAPTURED"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_RELEASE",
+    "internal": false,
+    "name": "Release from Prison",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Target is Grateful",
+      "Target Remains Bitter",
+      "Release Considered Unjust"
+    ],
+    "performer": "Situational",
+    "roleReq": {
+      "icon": null,
+      "kind": "archetype",
+      "label": "Imprisoned"
+    },
+    "slug": "release",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Imprisoned character",
+    "whoId": "SUBJECT_IMPRISONED"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 200,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_ADOPT_AS_HEIR",
+    "internal": false,
+    "name": "Adopt As Heir",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Adopt As Heir"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "adopt-as-heir",
+    "target": "Royal Us",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Augustus dynasty leader",
+    "whoId": "SUBJECT_AUGUSTUS_DYNASTY_LEADER_US"
+  },
+  {
+    "cooldown": 5,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_BOOST_LEGITIMACY_BARDIYA",
+    "internal": false,
+    "name": "Boost Legitimacy Bardiya",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Boost Legitimacy Bardiya"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "boost-legitimacy-bardiya",
+    "target": "Player Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Bardiya / Gaumata",
+    "whoId": "SUBJECT_CHARACTER_BARDIYA_GAUMATA"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 100,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_COURT_OF_THE_DIVINE_KING",
+    "internal": false,
+    "name": "Court Of The Divine King",
+    "opinionCost": [],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Court Of The Divine King",
+      "Court Of The Divine King Courtier",
+      "Hold Court Event"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "court-of-the-divine-king",
+    "target": "",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Hammurabi",
+    "whoId": "SUBJECT_LEADER_HAMMURABI"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Bribe the Family with gifts to improve their Opinion Family",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_FAMILY_GIFT_MENTUHOTEP_II",
+    "internal": false,
+    "name": "Family Gifts",
+    "opinionCost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Gifts Please the Family",
+      "Gifts Expose our Weakness",
+      "Family Gift Event"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "family-gift-mentuhotep-ii",
+    "target": "Family Us",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Mentuhotep II",
+    "whoId": "SUBJECT_CHARACTER_MENTUHOTEP_II"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_IMPRISON_MENTUHOTEP_II",
+    "internal": false,
+    "name": "Imprison",
+    "opinionCost": [
+      {
+        "label": "Training",
+        "value": 100,
+        "yield": "training"
+      }
+    ],
+    "outcomeCount": 4,
+    "outcomes": [
+      "Target Justly Imprisoned",
+      "Target Unjustly Imprisoned",
+      "Target Escapes",
+      "Imprison Event"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "imprison-mentuhotep-ii",
+    "target": "Non Leader Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Mentuhotep II",
+    "whoId": "SUBJECT_CHARACTER_MENTUHOTEP_II"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_INFLUENCE_OLYMPIAS",
+    "internal": false,
+    "name": "Influence",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Influence Exerted",
+      "Influence Exposes our Weakness"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "influence-olympias",
+    "target": "Non Leader Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Olympias",
+    "whoId": "SUBJECT_OLYMPIAS_ALEXANDER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 200,
+        "yield": "money"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Aksum",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_INTIMIDATE",
+    "internal": false,
+    "name": "Intimidate",
+    "opinionCost": [],
+    "outcomeCount": 2,
+    "outcomes": [
+      "Enemy Intimidated",
+      "Intimidation Attempt Failed"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "intimidate",
+    "target": "Character Us Or Them Human Or Ai",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Gudit",
+    "whoId": "SUBJECT_CHARACTER_GUDIT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 300,
+        "yield": "money"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_LAND_GRANTS_HANNO_II",
+    "internal": false,
+    "name": "Land Grants Hanno II",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Land Grants"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "land-grants-hanno-ii",
+    "target": "Player Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": false,
+    "who": "Hanno II",
+    "whoId": "SUBJECT_CHARACTER_HANNO_II"
+  },
+  {
+    "cooldown": 10,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 1,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_LEGENDARY_FOUNDER_TO_HERO",
+    "internal": false,
+    "name": "Legendary Founder To Hero",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Legendary Founder To Hero"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": {
+      "icon": "icons/traits/builder",
+      "kind": "archetype",
+      "label": "Builder"
+    },
+    "slug": "legendary-founder-to-hero",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Shammuramat",
+    "whoId": "SUBJECT_LEADER_SHAMMURAMAT_BUILDER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "Attempt to increase Happiness in a City",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PACIFY_CITY_MENTUHOTEP_II",
+    "internal": false,
+    "name": "Pacify City",
+    "opinionCost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      }
+    ],
+    "outcomeCount": 3,
+    "outcomes": [
+      "Pacification Successful",
+      "Pacification Exposes our Weakness",
+      "Pacify City Event"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "pacify-city-mentuhotep-ii",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 3,
+    "turnsScaled": false,
+    "who": "Mentuhotep II",
+    "whoId": "SUBJECT_CHARACTER_MENTUHOTEP_II"
+  },
+  {
+    "cooldown": 10,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 1,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_REAL_HERO_TO_BUILDER",
+    "internal": false,
+    "name": "Real Hero To Builder",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Real Hero To Builder"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": {
+      "icon": "icons/traits/hero",
+      "kind": "archetype",
+      "label": "Hero"
+    },
+    "slug": "real-hero-to-builder",
+    "target": "",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "Shammuramat",
+    "whoId": "SUBJECT_LEADER_SHAMMURAMAT_HERO"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Money",
+        "value": 400,
+        "yield": "money"
+      },
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_RECRUIT_SCHOLAR",
+    "internal": false,
+    "name": "Recruit Scholar",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Recruit Scholar Event"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "recruit-scholar",
+    "target": "",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Ptolemy",
+    "whoId": "SUBJECT_CHARACTER_PTOLEMY"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 100,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_SPAWN_MILITIA_STATEIRA",
+    "internal": false,
+    "name": "Spawn Militia Stateira",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Spawn Militia Stateira"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "spawn-militia-stateira",
+    "target": "City Us",
+    "techPrereq": null,
+    "turns": 1,
+    "turnsScaled": true,
+    "who": "Stateira",
+    "whoId": "SUBJECT_CHARACTER_STATEIRA_LEADER"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 200,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Wonders & Dynasties",
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_ALLIANCE_HANNO_NAVIGATOR",
+    "internal": false,
+    "name": "Tribal Alliance",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Alliance Event"
+    ],
+    "performer": "Unique Leader Powers",
+    "roleReq": null,
+    "slug": "tribe-alliance-hanno-navigator",
+    "target": "Tribe Can Alliance",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Hanno the Navigator",
+    "whoId": "SUBJECT_LEADER_HANNO_NAVIGATOR"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_TEAM_ALLIANCE_HUMAN",
+    "internal": true,
+    "name": "Alliance Player",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Alliance Player Event"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "team-alliance-human",
+    "target": "Player Can Alliance Human",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_BREAK_PEACE",
+    "internal": true,
+    "name": "Break Peace",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Break Peace"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "player-break-peace",
+    "target": "Player Peace",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_BREAK_PEACE",
+    "internal": true,
+    "name": "Break Peace",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Break Peace"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "tribe-break-peace",
+    "target": "Tribe Peace",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": "War",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_DECLARE_WAR",
+    "internal": true,
+    "name": "Declare War",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Declare War"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "player-declare-war",
+    "target": "Player Truce",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": "War",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_DECLARE_WAR_HUMAN",
+    "internal": true,
+    "name": "Declare War",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Declare War"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "player-declare-war-human",
+    "target": "Player Peace Or Truce Human",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": "War",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_TRIBE_DECLARE_WAR",
+    "internal": true,
+    "name": "Declare War",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Declare War"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "tribe-declare-war",
+    "target": "Tribe Truce",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": "No Characters",
+    "id": "MISSION_TRIBE_END_ALLIANCE_NO_CHARACTERS",
+    "internal": true,
+    "name": "End Alliance",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "End Alliance"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "tribe-end-alliance-no-characters",
+    "target": "Tribe Alliance",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Peace",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_PEACE_HUMAN",
+    "internal": true,
+    "name": "National Peace",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Peace Event"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "player-peace-human",
+    "target": "Player Truce Human",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 200,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Peace",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": "No Characters",
+    "id": "MISSION_PLAYER_PEACE_NO_CHARACTERS",
+    "internal": true,
+    "name": "National Peace",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Peace Event"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "player-peace-no-characters",
+    "target": "Player Truce",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_PLAYER_TRUCE_HUMAN",
+    "internal": true,
+    "name": "National Truce",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Truce Event"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "player-truce-human",
+    "target": "Player War Human",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Civics",
+        "value": 100,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": "No Characters",
+    "id": "MISSION_PLAYER_TRUCE_NO_CHARACTERS",
+    "internal": true,
+    "name": "National Truce",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Truce Event"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "player-truce-no-characters",
+    "target": "Player War",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      },
+      {
+        "label": "Training",
+        "value": 200,
+        "yield": "training"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Peace",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": "No Characters",
+    "id": "MISSION_TRIBE_PEACE_NO_CHARACTERS",
+    "internal": true,
+    "name": "Tribal Peace",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Peace Event"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "tribe-peace-no-characters",
+    "target": "Tribe Truce",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      },
+      {
+        "label": "Training",
+        "value": 200,
+        "yield": "training"
+      }
+    ],
+    "description": "",
+    "diplomacy": "Truce",
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": "No Characters",
+    "id": "MISSION_TRIBE_TRUCE_NO_CHARACTERS",
+    "internal": true,
+    "name": "Tribal Truce",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Peace Event"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "tribe-truce-no-characters",
+    "target": "Tribe War",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Training",
+        "value": 800,
+        "yield": "training"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": "Empires of the Indus",
+    "encyclopedia": false,
+    "gameOption": "No Characters",
+    "id": "MISSION_VASSALIZE_TRIBE_NO_CHARACTERS",
+    "internal": true,
+    "name": "Vassalize Tribe No Characters",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "Vassalize Tribe No Characters"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "vassalize-tribe-no-characters",
+    "target": "Tribe Can Alliance",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  }
+]

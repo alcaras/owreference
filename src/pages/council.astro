@@ -8,6 +8,12 @@ const base = import.meta.env.BASE_URL;
 
 const { seats, courtiers, meta } = council;
 
+// Non-zero triangle offsets, for the legend. Both court income and (since
+// 1.0.84658) council seat yields use them; opinions stay at offset 0.
+const offsetList = meta.triangleOffsets
+  .map((o: any) => `${o.yield} ${o.offset > 0 ? '+' : ''}${o.offset}`)
+  .join(', ');
+
 // Same rating→tone mapping the Archetypes page uses
 const RATING_TONE: Record<string, string> = {
   Wisdom:     'yield-science',
@@ -98,7 +104,7 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
                     <img class="rating-ico" src={`${base}img/icons/ratings/${ry.rating.toLowerCase()}.png`} alt={ry.rating} onerror="this.style.display='none'" />
                     <span class="effect__out">
                       <LinkedText text={`+${ry.base} ${ry.yield}${ry.scope === 'per city' ? '/City' : ''}`} showIcons={false} iconsForYields={true} />
-                      <span class="tri-mark" title="Scales with the triangle of the rating: ×R·(R+1)/2">×△</span>
+                      <span class="tri-mark" title={`Rating 1–5 multiplies this by ${ry.multipliers.join('/')}${ry.triangleOffset ? ` — ${ry.yield} carries a ${ry.triangleOffset > 0 ? '+' : ''}${ry.triangleOffset} triangle offset` : ''}`}>×△{ry.triangleOffset ? <sup>{ry.triangleOffset > 0 ? '+' : ''}{ry.triangleOffset}</sup> : null}</span>
                     </span>
                   </div>
                 )) : <span class="cell__dash">—</span>}
@@ -265,14 +271,17 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
   <div class="legends">
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
-      Council yields and opinions multiply their base by tri(R) = R·(R+1)/2 of the seated character's rating —
-      rating 1/2/3/4/5 → ×1/×3/×6/×10/×15. Flat "per point" readings understate high ratings.
+      A seat multiplies its base by the <em>triangle</em> of the seated character's rating, not the rating
+      itself: with no offset, rating 1/2/3/4/5 → ×1/×3/×6/×10/×15. Flat "per point" readings understate
+      high ratings.
     </div>
     <div class="legend">
-      <span class="legend__label">Court income offsets</span>
-      Court income (table above) applies each yield's triangle offset
-      ({meta.courtRates.map(r => `${r.yield} ${r.triangleOffset >= 0 ? '+' : ''}${r.triangleOffset}`).join(', ')}):
-      multiplier is tri(R + offset) − offset, so Science ramps later and Money earlier.
+      <span class="legend__label">△ offsets</span>
+      Each yield carries its own triangle offset ({offsetList}), and the multiplier is
+      tri(R + offset) − offset — falling back to plain R while R + offset ≤ 0. So Money ramps earlier and
+      Civics, Culture and Science later. Patch 1.0.84658 extended these offsets from court income to
+      <em>council seats</em> as well (they used to scale at offset 0), and gave Culture its −2: that is the
+      reduced Ambassador culture and Spymaster science. Opinions still scale at offset 0.
     </div>
     {meta.notes.map(n => (
       <div class="legend"><span class="legend__label">Note</span><LinkedText text={n} showIcons={false} /></div>
