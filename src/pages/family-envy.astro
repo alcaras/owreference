@@ -2,6 +2,12 @@
 import Base from '../layouts/Base.astro';
 import D from '../data/family_city_opinion.json';
 import OPINION from '../data/opinion.json';
+import proseRaw from '../data/family-envy-prose.md?raw';
+import editorJs from '../lib/prose-editor.js?raw';
+import { createProse, type ProseVar } from '../lib/prose';
+
+const PROSE_FILE = 'src/data/family-envy-prose.md';
+const DEV = import.meta.env.DEV;
 
 const base = import.meta.env.BASE_URL;
 
@@ -14,6 +20,33 @@ const champions = D.classes.find((c: any) => c.largestMilitary !== 0);
 // class extra is visible the moment the page loads.
 const DEFAULT_NATION = D.nations.find((n: any) => n.id === 'NATION_ROME')?.id ?? D.nations[0].id;
 const DEFAULT_TOTAL = 8;
+
+// ---- prose file: "## key" sections, minimal inline markdown, {placeholders} (src/lib/prose.ts) ----
+const lo = landowners ?? { name: 'Landowners', slug: 'landowners', mostCities: 0, fewestCities: 0 };
+const ch = champions ?? { name: 'Champions', slug: 'champions', largestMilitary: 0, smallestMilitary: 0 };
+const link = (href: string, text: string) => ({ html: `<a href="${href}">${text}</a>` });
+const VARS: Record<string, ProseVar> = {
+  mostCities: D.help.mostCities,
+  fewestCities: D.help.fewestCities,
+  envyName: D.help.envyName,
+  mostValue: String(G.MOST_CITIES_OPINION),
+  fewestValue: String(G.FEWEST_CITIES_OPINION),
+  envyStep: String(G.ENVY_OPINION),
+  envy2: String(1 * G.ENVY_OPINION), envy3: String(3 * G.ENVY_OPINION),
+  envy4: String(6 * G.ENVY_OPINION), envy5: String(10 * G.ENVY_OPINION),
+  landownersName: lo.name,
+  landownersLink: link(`${base}families/${lo.slug}`, lo.name),
+  landownersMost: String(lo.mostCities),
+  landownersFewest: String(lo.fewestCities),
+  landownersTop: String(G.MOST_CITIES_OPINION + lo.mostCities),
+  landownersBottom: String(G.FEWEST_CITIES_OPINION + lo.fewestCities),
+  championsLink: link(`${base}families/${ch.slug}`, ch.name),
+  championsLargest: String(ch.largestMilitary),
+  championsSmallest: String(ch.smallestMilitary),
+  opinionLink: link(`${base}opinion`, 'family opinion'),
+  familiesLink: link(`${base}families`, 'Families'),
+};
+const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'family-envy-prose' });
 
 // Envy ladder, precomputed: triangle(gap - 1) x ENVY_OPINION for each number
 // of cities a family trails the largest family by.
@@ -60,14 +93,11 @@ const tieRows = [1, 2, 3].map((tied) => {
     { label: 'envy step', value: G.ENVY_OPINION },
   ]}
 >
-  <p class="lede">
-    <b>{D.help.mostCities}</b> (+{G.MOST_CITIES_OPINION}, shared by families tied at the top),
-    <b>{D.help.fewestCities}</b> ({G.FEWEST_CITIES_OPINION}, shared at the bottom) and
-    <b>{D.help.envyName}</b> (nothing until two cities behind the leader, then {G.ENVY_OPINION} × triangle)
-    are the <a href={`${base}opinion`}>family opinion</a> terms that depend only on how many cities each
-    family holds; <b>{landowners?.name}</b> feel both ends {landowners?.mostCities} harder. Pick your
-    families and city total to rank every split, kindest first. Details below the calculator.
-  </p>
+  {DEV && <meta name="prose-file" content={PROSE_FILE} />}
+  {DEV && <meta name="prose-endpoint" content="http://127.0.0.1:4399/save" />}
+  {DEV && <script is:inline set:html={editorJs} />}
+
+  <p class="lede" data-prose="lede" set:html={inline('lede')} />
 
   <section class="asm">
     <div class="asm__bar">
@@ -100,12 +130,7 @@ const tieRows = [1, 2, 3].map((tied) => {
   </div>
   <section class="rung duo__right">
     <h2 class="rung__h">Every way to split <b id="e-total-lbl">8</b> cities</h2>
-    <p class="rung__note">
-      Kindest split first: the one whose <em>unhappiest</em> family is least unhappy, then by the
-      sum. Favouring a family lists one row per city count it could hold and marks the
-      <em>recommended</em> trade-off: the most favoured cities before anyone drops into Angry.
-      Click a row for the breakdown.
-    </p>
+    <p class="rung__note" data-prose="rung.note" set:html={inline('rung.note')} />
     <div class="grid">
       <div class="grid__scroll">
         <table class="ntbl rung__t">
@@ -123,12 +148,8 @@ const tieRows = [1, 2, 3].map((tied) => {
 
   <section class="ladder">
     <div class="ladder__col">
-      <h3>The {D.help.envyName} curve <span class="tag">triangular</span></h3>
-      <p class="ladder__p">
-        <code>triangle(lead − yours − 1) × {G.ENVY_OPINION}</code>, where <em>lead</em> is the most
-        cities any one family holds. One city behind is free; after that each further city costs
-        more than the last.
-      </p>
+      <h3><span data-prose="envy.heading" set:html={inline('envy.heading')} /> <span class="tag">triangular</span></h3>
+      <p class="ladder__p" data-prose="envy.body" set:html={inline('envy.body')} />
       <table class="ntbl mini">
         <colgroup><col style="width:9rem" /><col /><col /></colgroup>
         <thead><tr>
@@ -148,13 +169,8 @@ const tieRows = [1, 2, 3].map((tied) => {
       </table>
     </div>
     <div class="ladder__col">
-      <h3>Ties split the award <span class="tag">integer division</span></h3>
-      <p class="ladder__p">
-        {D.help.mostCities} and {D.help.fewestCities} are divided by the number of families tied at
-        that end, truncating toward zero — and if <em>every</em> family is tied, neither term
-        applies at all. That is why a perfectly even split is worth exactly nothing rather than
-        being worth something to everyone.
-      </p>
+      <h3><span data-prose="ties.heading" set:html={inline('ties.heading')} /> <span class="tag">integer division</span></h3>
+      <p class="ladder__p" data-prose="ties.body" set:html={inline('ties.body')} />
       <table class="ntbl mini">
         <colgroup><col style="width:8rem" /><col /><col /><col style="width:8rem" /></colgroup>
         <thead><tr>
@@ -178,62 +194,26 @@ const tieRows = [1, 2, 3].map((tied) => {
   </section>
 
   <section class="rates">
-    <h2 class="rates__h">What the code says</h2>
+    <h2 class="rates__h" data-prose="code.heading" set:html={inline('code.heading')} />
     <div class="rates__cols">
       <div>
-        <h3>{D.help.mostCities} <span class="tag">+{G.MOST_CITIES_OPINION}</span></h3>
-        <ul>
-          <li>Goes to the family holding <b>at least as many</b> cities as every other — a family
-            that merely ties for the lead still qualifies.</li>
-          <li>The award is <code>({G.MOST_CITIES_OPINION} + the class's own bonus) ÷ families tied
-            at the top</code>, C# integer division.</li>
-          <li>Nothing is paid when <b>all</b> families are tied — a young empire where every family
-            holds one city collects at neither end — and nothing in a 1-family game.</li>
-        </ul>
+        <h3><span data-prose="code.most.heading" set:html={inline('code.most.heading')} /> <span class="tag">+{G.MOST_CITIES_OPINION}</span></h3>
+        <div data-prose="code.most.body" data-prose-blocks set:html={blocks('code.most.body')} />
       </div>
       <div>
-        <h3>{D.help.fewestCities} <span class="tag">{G.FEWEST_CITIES_OPINION}</span></h3>
-        <ul>
-          <li>The mirror image: charged to whoever holds <b>no more</b> cities than anyone else,
-            split across everyone tied at the bottom.</li>
-          <li>Both ends can land on the same family only if the split is even — and an even split
-            cancels both, so in practice no family ever takes both.</li>
-          <li>A family with <b>zero</b> cities is still counted; losing your last city to a rival
-            leaves the family at the bottom of the table, not out of it.</li>
-        </ul>
+        <h3><span data-prose="code.fewest.heading" set:html={inline('code.fewest.heading')} /> <span class="tag">{G.FEWEST_CITIES_OPINION}</span></h3>
+        <div data-prose="code.fewest.body" data-prose-blocks set:html={blocks('code.fewest.body')} />
       </div>
       <div>
-        <h3>{D.help.envyName} <span class="tag">{G.ENVY_OPINION} × triangle</span></h3>
-        <ul>
-          <li>Compares every family against the <b>largest</b> family, not against the average, so
-            one runaway family makes the other two miserable at once.</li>
-          <li><code>(yours + 1) ≥ lead</code> pays nothing — the one-city grace is what makes a
-            4/3/3 split so much cheaper than 4/4/1.</li>
-          <li>Triangular, not linear: two behind is {1 * G.ENVY_OPINION}, three is
-            {3 * G.ENVY_OPINION}, four is {6 * G.ENVY_OPINION}, five is {10 * G.ENVY_OPINION}. The
-            fifth city of a gap costs as much as the first four together.</li>
-          <li>Unlike the other two it has no tie logic and no class modifier — every family reads
-            the same ladder.</li>
-        </ul>
+        <h3><span data-prose="code.envy.heading" set:html={inline('code.envy.heading')} /> <span class="tag">{G.ENVY_OPINION} × triangle</span></h3>
+        <div data-prose="code.envy.body" data-prose-blocks set:html={blocks('code.envy.body')} />
       </div>
       <div>
-        <h3>Class extras</h3>
-        <ul>
-          <li><b><a href={`${base}families/${landowners?.slug}`}>{landowners?.name}</a></b> are the
-            only class that bends these terms: <code>iMostCitiesOpinion</code>
-            +{landowners?.mostCities} and <code>iFewestCitiesOpinion</code> {landowners?.fewestCities},
-            which <b>doubles</b> both — {G.MOST_CITIES_OPINION + (landowners?.mostCities ?? 0)} at the
-            top, {G.FEWEST_CITIES_OPINION + (landowners?.fewestCities ?? 0)} at the bottom. Envy is
-            unchanged.</li>
-          <li><b><a href={`${base}families/${champions?.slug}`}>{champions?.name}</a></b> run the same
-            mechanic on <em>units</em> instead ({champions?.largestMilitary} / {champions?.smallestMilitary}
-            for the largest and smallest military), and there the award is not divided on a tie —
-            ties simply pay nothing.</li>
-          <li>Every other class contributes 0 to both, so their families read the flat globals.</li>
-        </ul>
+        <h3 data-prose="code.class.heading" set:html={inline('code.class.heading')} />
+        <div data-prose="code.class.body" data-prose-blocks set:html={blocks('code.class.body')} />
       </div>
       <div>
-        <h3>What lands where</h3>
+        <h3 data-prose="code.brackets.heading" set:html={inline('code.brackets.heading')} />
         <ul>
           {famBrackets.map((b: any) => (
             <li><b>{b.label}</b> <span class="tag">{b.range}</span>
@@ -242,35 +222,11 @@ const tieRows = [1, 2, 3].map((tied) => {
         </ul>
       </div>
       <div>
-        <h3>Reading the result</h3>
-        <ul>
-          <li>The city terms are only part of the sum. Leader traits, council seats, laws,
-            luxuries, wonders, religion and memories all add into the same number before it is
-            bracketed, so the bracket shown here is what the cities alone would earn.</li>
-          <li>Because it is recomputed rather than accumulated, <b>giving a city away fixes the
-            number immediately</b>. There is no decay to wait out.</li>
-          <li>Founding a city is also previewed this way in-game: the found-city tooltip shows each
-            family's Envy and Most/Fewest terms <em>before and after</em>, which is the same routine
-            run with the new city already assigned.</li>
-          <li>The count is not the only way cities move opinion — <code>calculateFamilyOpinionCityDist</code>
-            also rewards a family whose own cities sit <b>close together</b>, off the average distance
-            between them and the map's minimum city-site spacing. Traders are the one class that wants
-            the opposite (<code>bPrefersDistant</code>), and either way it is a bonus only, never a
-            penalty. It is not modelled here.</li>
-        </ul>
+        <h3 data-prose="code.reading.heading" set:html={inline('code.reading.heading')} />
+        <div data-prose="code.reading.body" data-prose-blocks set:html={blocks('code.reading.body')} />
       </div>
     </div>
-    <p class="fine">
-      Formulas from <b>PlayerOpinion.cs</b> —
-      <code>calculateFamilyOpinionMostCities</code>, <code>calculateFamilyOpinionFewestCities</code>,
-      <code>calculateFamilyOpinionEnvy</code>, summed by <code>calculateFamilyOpinionRate</code> and
-      bracketed by <code>InfoHelpers.getOpinionFamilyFromRate</code>; <code>triangle</code> from
-      <b>Utils.cs</b>. Constants from <code>globalsInt.xml</code> and <code>familyClass.xml</code>,
-      brackets from <code>opinionFamily.xml</code>, family colors from <code>color.xml</code>.
-      Integer truncation is reproduced exactly. See <a href={`${base}families`}>Families</a> for the
-      rest of each class's opinion modifiers and <a href={`${base}opinion`}>Opinion</a> for the
-      bracket effects in full.
-    </p>
+    <p class="fine" data-prose="fine" set:html={inline('fine')} />
   </section>
 </Base>
 
@@ -599,7 +555,7 @@ const tieRows = [1, 2, 3].map((tied) => {
   })();
 </script>
 
-<style>
+<style is:global>
   .lede { max-width: 120ch; color: var(--text-dim); font-size: 0.82rem; line-height: 1.5; margin: 0 0 0.7rem; }
   .lede a { color: var(--accent); }
   .lede b, .lede strong { color: var(--text); }
@@ -610,16 +566,16 @@ const tieRows = [1, 2, 3].map((tied) => {
   .asm__bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.4rem 0.9rem; }
   .asm__picks { display: contents; }
   .favs { display: inline-flex; gap: 0.35rem; }
-  .asm :global(.fav) { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.74rem; color: var(--text-dim);
+  .asm .fav { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.74rem; color: var(--text-dim);
     border: 1px solid var(--border-strong); border-left: 3px solid var(--fam); border-radius: 6px;
     padding: 0.22rem 0.5rem; cursor: pointer; background: var(--bg); }
-  .asm :global(.fav.is-on) { color: var(--text); border-color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, var(--bg)); }
-  .asm :global(.fav input) { margin: 0; accent-color: var(--gold); }
-  .asm :global(.pick) { display: inline-flex; align-items: center; gap: 0.35rem; border-left: 3px solid var(--fam);
+  .asm .fav.is-on { color: var(--text); border-color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, var(--bg)); }
+  .asm .fav input { margin: 0; accent-color: var(--gold); }
+  .asm .pick { display: inline-flex; align-items: center; gap: 0.35rem; border-left: 3px solid var(--fam);
     padding-left: 0.45rem; }
-  .asm :global(.pick__sel) { width: 10.25rem; font-family: var(--font-ui); background: var(--bg); color: var(--text);
+  .asm .pick__sel { width: 10.25rem; font-family: var(--font-ui); background: var(--bg); color: var(--text);
     border: 1px solid var(--border-strong); border-radius: 6px; padding: 0.25rem 0.4rem; font-size: 0.78rem; }
-  .asm :global(.pick__extra) { font-family: var(--font-mono); font-size: 0.6rem; font-style: normal;
+  .asm .pick__extra { font-family: var(--font-mono); font-size: 0.6rem; font-style: normal;
     color: var(--gold-soft); border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
     border-radius: 4px; padding: 0 0.25rem; margin-left: 0.3rem; }
   .asm__fields { display: flex; flex-wrap: wrap; gap: 0.5rem 1.3rem; align-items: flex-end; flex: 1; }
@@ -651,27 +607,27 @@ const tieRows = [1, 2, 3].map((tied) => {
     .duo__left { position: static; order: 2; }
     .duo__right { order: 1; }
   }
-  .fams :global(.fam) { border: 1px solid var(--border); border-left: 4px solid var(--fam); border-radius: var(--radius);
+  .fams .fam { border: 1px solid var(--border); border-left: 4px solid var(--fam); border-radius: var(--radius);
     background: var(--bg-elev); padding: 0.35rem 0.6rem 0.4rem; }
-  .fams :global(.fam__head) { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
-  .fams :global(.fam__name) { display: inline-flex; align-items: center; gap: 0.3rem; font-family: var(--font-display);
+  .fams .fam__head { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
+  .fams .fam__name { display: inline-flex; align-items: center; gap: 0.3rem; font-family: var(--font-display);
     font-size: 1rem; color: var(--text); text-decoration: none; }
-  .fams :global(.fam__name:hover) { color: var(--accent); }
-  .fams :global(.fam__name img) { opacity: 0.85; }
-  .fams :global(.fam__class) { font-size: 0.66rem; font-style: italic; color: var(--text-dim); }
-  .fams :global(.fam__cities) { margin-left: auto; font-size: 0.66rem; color: var(--text-faint); }
-  .fams :global(.fam__cities b) { font-family: var(--font-mono); font-size: 0.95rem; color: var(--text); }
-  .fams :global(.fam__terms) { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.7rem;
+  .fams .fam__name:hover { color: var(--accent); }
+  .fams .fam__name img { opacity: 0.85; }
+  .fams .fam__class { font-size: 0.66rem; font-style: italic; color: var(--text-dim); }
+  .fams .fam__cities { margin-left: auto; font-size: 0.66rem; color: var(--text-faint); }
+  .fams .fam__cities b { font-family: var(--font-mono); font-size: 0.95rem; color: var(--text); }
+  .fams .fam__terms { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.15rem 0.7rem;
     margin-top: 0.3rem; padding-top: 0.25rem; border-top: 1px solid var(--border-faint); font-size: 0.68rem;
     color: var(--text-faint); }
-  .fams :global(.fam__term) { cursor: help; }
-  .fams :global(.fam__term b) { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dim); }
-  .fams :global(.fam__term.is-good b) { color: #66bc37; }
-  .fams :global(.fam__term.is-bad b) { color: #d2742f; }
-  .fams :global(.fam__sumn) { margin-left: auto; font-family: var(--font-mono); font-size: 1.05rem; color: var(--text-dim); }
-  .fams :global(.fam__sumn.is-good) { color: #66bc37; }
-  .fams :global(.fam__sumn.is-bad) { color: #d2742f; }
-  .fams :global(.fam__brk) { font-family: var(--font-display); font-size: 0.82rem; color: var(--text);
+  .fams .fam__term { cursor: help; }
+  .fams .fam__term b { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dim); }
+  .fams .fam__term.is-good b { color: #66bc37; }
+  .fams .fam__term.is-bad b { color: #d2742f; }
+  .fams .fam__sumn { margin-left: auto; font-family: var(--font-mono); font-size: 1.05rem; color: var(--text-dim); }
+  .fams .fam__sumn.is-good { color: #66bc37; }
+  .fams .fam__sumn.is-bad { color: #d2742f; }
+  .fams .fam__brk { font-family: var(--font-display); font-size: 0.82rem; color: var(--text);
     padding: 0.02rem 0.4rem; border-radius: 4px; border-left: 3px solid var(--brk);
     background: color-mix(in srgb, var(--brk) 14%, transparent); }
 
@@ -679,34 +635,34 @@ const tieRows = [1, 2, 3].map((tied) => {
   .rung { margin: 0; min-width: 0; }
   .rung__h { font-family: var(--font-display); font-size: 1rem; color: var(--text); margin: 0 0 0.15rem; }
   .rung__note { font-size: 0.72rem; color: var(--text-dim); margin: 0 0 0.4rem; max-width: 90ch; }
-  .rung :global(.rung__r td), .rung :global(.rung__r th) { padding-top: 0.12rem; padding-bottom: 0.12rem; }
+  .rung .rung__r td, .rung .rung__r th { padding-top: 0.12rem; padding-bottom: 0.12rem; }
   .rung__more { font-size: 0.72rem; color: var(--text-faint); margin: 0.4rem 0 0; }
   .rung__more a { color: var(--accent); }
   .rung__note b { color: var(--text); font-family: var(--font-mono); }
   /* Explicit widths on every <col> (table-layout: fixed) — otherwise the three
      family columns split the full page width and the numbers float in space. */
   .rung__t { width: auto; min-width: 32rem; }
-  .rung :global(.rung__fh) { text-align: left; }
-  .rung :global(.rung__fh span) { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 2px;
+  .rung .rung__fh { text-align: left; }
+  .rung .rung__fh span { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 2px;
     background: var(--fam); margin-right: 0.35rem; }
-  .rung :global(.rung__fh i) { font-size: 0.66rem; font-style: italic; color: var(--text-faint); margin-left: 0.25rem; }
-  .rung :global(.rung__r) { cursor: pointer; }
-  .rung :global(.rung__r:hover td) { background: var(--bg-elev-2); }
-  .rung :global(.rung__r.is-here td) { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 45%, transparent); }
-  .rung :global(.rung__k) { font-family: var(--font-mono); font-size: 0.8rem; white-space: nowrap; }
-  .rung :global(.rung__flag) { font-family: var(--font-ui); font-style: normal; font-size: 0.58rem; letter-spacing: 0.06em;
+  .rung .rung__fh i { font-size: 0.66rem; font-style: italic; color: var(--text-faint); margin-left: 0.25rem; }
+  .rung .rung__r { cursor: pointer; }
+  .rung .rung__r:hover td { background: var(--bg-elev-2); }
+  .rung .rung__r.is-here td { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 45%, transparent); }
+  .rung .rung__k { font-family: var(--font-mono); font-size: 0.8rem; white-space: nowrap; }
+  .rung .rung__flag { font-family: var(--font-ui); font-style: normal; font-size: 0.58rem; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
     border-radius: 3px; padding: 0 0.25rem; margin-left: 0.35rem; vertical-align: middle; }
-  .rung :global(.rung__flag--even) { color: var(--text-dim); border-color: var(--border-strong); }
-  .rung :global(.rung__c) { border-left: 3px solid var(--brk); }
-  .rung :global(.rung__c b) { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text); }
-  .rung :global(.rung__c i) { font-family: var(--font-mono); font-size: 0.72rem; font-style: normal;
+  .rung .rung__flag--even { color: var(--text-dim); border-color: var(--border-strong); }
+  .rung .rung__c { border-left: 3px solid var(--brk); }
+  .rung .rung__c b { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text); }
+  .rung .rung__c i { font-family: var(--font-mono); font-size: 0.72rem; font-style: normal;
     color: var(--text-faint); margin-left: 0.4rem; }
-  .rung :global(.rung__c.is-good i) { color: #66bc37; }
-  .rung :global(.rung__c.is-bad i) { color: #d2742f; }
-  .rung :global(.rung__s) { font-family: var(--font-mono); color: var(--text-dim); }
-  .rung :global(.is-bad) { color: #d2742f; }
-  .rung :global(.is-zero) { color: var(--text-faint); }
+  .rung .rung__c.is-good i { color: #66bc37; }
+  .rung .rung__c.is-bad i { color: #d2742f; }
+  .rung .rung__s { font-family: var(--font-mono); color: var(--text-dim); }
+  .rung .is-bad { color: #d2742f; }
+  .rung .is-zero { color: var(--text-faint); }
 
   /* ── the two reference ladders ──────────────────────────────────── */
   .ladder { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));

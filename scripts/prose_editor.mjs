@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // In-place prose editing for pages whose text lives in src/data/<page>-prose.md
-// (zone-of-control, border-expansion; see src/lib/prose.ts). Usage:
+// (zone-of-control, border-expansion, family-envy; see src/lib/prose.ts). Usage:
 //
 //   npm run edit                             # save server on :4399 + `astro dev` on :4321
 //   node scripts/prose_editor.mjs --no-dev   # save server only (you run astro dev yourself)
@@ -86,6 +86,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       dev.on('exit', code => process.exit(code ?? 0));
       process.on('SIGINT', () => { dev.kill('SIGINT'); process.exit(0); });
     }
-    for (const page of ['zone-of-control', 'border-expansion']) console.log(`[prose-editor] edit at http://localhost:${DEV_PORT}/owreference/${page}/?edit`);
+    for (const page of ['zone-of-control', 'border-expansion', 'family-envy']) console.log(`[prose-editor] edit at http://localhost:${DEV_PORT}/owreference/${page}/?edit`);
   });
 }
