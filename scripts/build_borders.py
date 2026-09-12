@@ -205,6 +205,17 @@ def name_of(key: str, fallback: str) -> str:
     return re.sub(r"\{[A-Z][A-Z_0-9-]*(?:,\d+)?\}\s*", "", out).strip()
 
 
+_MEMORY_FAMILY = {zt: e for zt, e in entries(parse("memory-family.xml"))}
+_MEMORY_LEVEL = {zt: e for zt, e in entries(parse("memoryLevel.xml"))}
+
+
+def _memory_family(mem_id: str) -> dict:
+    e = _MEMORY_FAMILY[mem_id]
+    level = _MEMORY_LEVEL[(e.findtext("MemoryLevel") or "").strip()]
+    return {"id": mem_id, "text": game_text((e.findtext("Text") or "").strip()),
+            "value": ival(level, "iValue"), "turns": ival(level, "iTurns")}
+
+
 def game_text(key: str) -> str:
     return " ".join(CLEANER.paragraphs(TEXT.get(key, "")))
 
@@ -1574,6 +1585,12 @@ def main() -> int:
             "consumptionBordersModifier": GLOBALS_INT["CONSUMPTION_BORDERS_MODIFIER"],
             "familyTerritoryModifier": GLOBALS_INT["FAMILY_TERRITORY_MODIFIER"],
             "unitBuyTileCost": GLOBALS_INT["UNIT_BUY_TILE_COST"],
+            # moving a tile between two of your cities of different families (Unit.buyTile):
+            # the gaining family gets GIVEN_TILE, the losing family GAVE_AWAY_TILE; a memory's
+            # opinion value and lifetime come from its MemoryLevel (memoryLevel.xml), and
+            # Player.doMemoryTurn drops it once iTurns have passed
+            "tileSwapMemory": {k: _memory_family(GLOBALS_TYPE[g]) for k, g in
+                               (("gain", "GIVEN_TILE_MEMORY_FAMILY"), ("loss", "GAVE_AWAY_TILE_MEMORY_FAMILY"))},
             "foundBorderPreviewColor": COLORS.get("COLOR_MULTIPLIER_FOUND_BORDER_PREVIEW", ""),
             "borderPatterns": BORDER_PATTERNS,
             "minorCityImprovement": MINOR_CITY_IMPROVEMENT,

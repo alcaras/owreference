@@ -14,16 +14,16 @@ reads this file at build time. Edit freely and rebuild (`npx astro build`), or e
   left as typed.
 - Board captions are `board.<id>.caption` (one sentence, always shown) and
   `board.<id>.note` (smaller second line, optional). The boards themselves, the quoted
-  game strings, the tables and the source citations are computed, not editable here.
+  game strings and the tables are computed, not editable here.
   Board titles stay in `scripts/build_borders.py`.
 
 ## lede
 
-City Territory is built by one engine in the game's tile code. Every coloured tile and every number below was computed by a port of that engine, not drawn by hand.
+Borders in Old World are entirely deterministic, unlike in other games.
 
 ## legend.you
 
-your Territory
+your territory
 
 ## legend.enemy
 
@@ -31,7 +31,7 @@ another player's
 
 ## legend.badge
 
-tile taken on this board; the number counts the steps from the trigger (0 = inside the trigger's own range)
+tile acquisition order
 
 ## legend.resource
 
@@ -43,7 +43,7 @@ urban pull
 
 ## legend.water
 
-shielded water
+adjacent water
 
 ## legend.gap
 
@@ -55,23 +55,23 @@ Minor City
 
 ## legend.ring
 
-the tile the board ran the rules from (no ring: the whole end-of-turn pass)
+starting tile
 
 ## legend.buy
 
-can be bought, label = cost
+a buyable tile
 
 ## summary.heading
 
-If you only read one paragraph
+TL;DR
 
 ## summary.body
 
-Your border does not creep outward by itself. Land joins your Territory only within range of something you do: founding a city takes everything within 2 tiles, a specialist or an urban improvement takes its neighbours, a bought tile takes itself, and a border growth card picks tiles for you. Two things join by themselves at the end of each turn: a resource next to your land, and water or a mountain beside your land, unless all other land around it is nobody's or someone else's. Build toward resources and coastlines. A tile boxed in between two of your tiles on opposite sides fills in too. A City Site you completely surround on land becomes your Minor City: nobody can found a city there again, and its land is yours. Tribal settlements count too (see [Losing tiles and gotchas](#losing)). Tiles never leave your Territory unless a city is captured or razed.
+Tile acquisition is entirely deterministic in Old World, unlike other games. This page outlines the simple rules that the game uses to expand your borders -- whether through a Border Boost card, urban expansion, or buying tiles via the Colonies law or in a Landowner Seat.
 
 ## territory.heading
 
-What Territory is
+Tiles
 
 ## territory.quote.source
 
@@ -79,90 +79,62 @@ In-game concept text, `{territoryName}`
 
 ## territory.headline
 
-A tile joins your Territory only inside a trigger's range, or when one of four rules fires on it from a tile you already own. Every tile taken runs the rules again.
-
-## territory.body
-
-At the end of every turn the game runs the four rules from every owned tile, so a resource or shielded water beside your border joins by itself. Reaching further takes a trigger with a range: founding, a specialist, an urban improvement, a bought tile or a growth bonus.
+You gain a tile whenever it meets one of the rules below. Then, the rules run again to see if you gain any other tiles because of the new tile you just gained.
 
 ## rules.heading
 
-The four spread rules
+Tile acquisition rules
 
 ## rules.intro
 
-*Claimable land* is any tile that is not {notClaimable}. For an owned tile T and an unowned neighbour N, tested in this order; the first rule that fires takes N.
+*Claimable land* is any tile that is not {notClaimable}. The game goes down this list, considering all your owned tiles.
 
 ## rules.list
 
-1. **Resource pull.** N has a resource and T has none.
-2. **Urban pull.** T or N is urban, and N is not connected to another live City Site.
-3. **Shielded water.** T is claimable land and N is not: water, a mountain or a volcano. The two tiles that touch both T and N are the *side tiles*; a side tile that is not claimable land itself is ignored. N is taken if a side tile is yours, or if both side tiles are ignored. A side tile that is unowned or someone else's refuses N unless the other side tile is yours. Yours includes an ally's tile and a tile taken earlier in the same pass.
-4. **Gap fill.** N is not urban, and the same team owns the tiles on two opposite sides of it.
+1. **Resource pull.** Your borders will expand to a tile neighboring one of your tiles that has a resource when your tile doesn't have a resource.
+2. **Urban pull.** Your borders will expand to an urban tile if you own an adjacent tile.
+3. **Adjacent water.** If you own two tiles next to each other, both adjacent to a water tile, and both are claimable land, your borders will expand to that water tile. This also works for mountain or volcano tiles. If there's only one possible adjacent land tile and you own it, your borders will expand.
+4. **Gap fill.** If your owned tiles 'flank' a tile (i.e. you have a tile on both sides of the neighboring tile), you'll gain that tile.
 
 ## board.resource.caption
 
-Only the horses join: the wheat touches only the marble tile and the sheep only the horse tile.
-
-## board.resource.note
-
-A tile pulls a neighbouring resource only when it has no resource of its own, and nothing pulls at range 2.
+Your borders only expand to the horses, since you can't 'chain' resources from another resource tile.
 
 ## board.urban.caption
 
-The two urban tiles take their whole ring; your plain tiles on the other side take nothing.
-
-## board.urban.note
-
-Urban tiles pull every neighbour, resource or not. A city tile is urban, which is why a city's ring is always its own.
+Your gain everything next to the urban tiles, since urban tiles 'push' borders around them.
 
 ## board.hole.caption
 
-The gap between two enemy tiles is filled for the enemy, although it touches your land too.
-
-## board.hole.note
-
-Gap fill looks only at the two tiles either side of the gap, on any of its three axes. Whose land is nearby otherwise does not matter.
+Since red owns a tile on both sides of the tile, they get the tile.
 
 ## board.hole_which.caption
 
-Both cities are yours; the gap goes to the lower-left city although the upper-right one touches it on two sides.
-
-## board.hole_which.note
-
-The game tries the axes NW–SE, NE–SW, E–W and gives the gap to the city on the second-named side of the first axis that matches. It counts each city's tiles around the gap but compares teams, so that count never decides.
+You own both sides of this tile. It goes to the lower-left city because the game checks the three axes in a fixed order -- NW–SE, then NE–SW, then E–W -- and gives the tile to the city on the second-named side of the first axis where you own both ends. Here that is the NE–SW axis, so the city on the SW side wins.
 
 ## rules.water.heading
 
-Shielded water, four ways
+Adjacent water
 
 ## board.flank_open.caption
 
-Both side tiles are water, so they are ignored and the water is yours; the two side tiles then join the same way, each with your land and the new water beside it.
-
-## board.flank_open.note
-
-Side tiles that are themselves water are ignored, so nothing speaks against taking it.
+Getting the highlighted land tile first gets you the central water tile, since the only adjacent claimable tile to it is a land tile you own. Then the other two tiles chain off that.
 
 ## board.flank_unowned.caption
 
-One unowned side tile refuses the water; the other side tile is water and is ignored.
-
-## board.flank_unowned.note
-
-Unowned land counts as not yours. Your own tile plus an unowned side tile is not enough; a side tile itself must be yours.
+Getting the highlighted land tile only gets one tile since you don't have another tile along the coast. You get the tile you get since you have land on two sides of it.
 
 ## board.flank_ours.caption
 
-Own one side tile and the water is yours, whatever the other side tile is.
+You get the water tile because you own one of the two land tiles beside it. The other one being unowned doesn't matter.
 
 ## board.flank_enemy.caption
 
-An enemy side tile refuses the water exactly like an unowned one.
+If there's an enemy tile, you don't get the water tile -- since you don't own the enemy tile. (It acts just like an unowned tile).
 
 ## rules.water.note
 
-Mountains and volcanoes follow the same rule as water (asserted). An owned water tile spreads to nothing on its own.
+Mountains and volcanoes follow the same rules as water.
 
 ## chain.heading
 
@@ -170,23 +142,18 @@ Chains
 
 ## chain.intro
 
-Every tile taken is queued and the rules run from it in turn, all in one pass. One specialist reaches {chainGens} steps here and adds {chainGrabs} tiles, {chainWater} of them water.
+You can 'chain' border expansion.
 
 ## board.chain.caption
 
-One specialist on the farm ends up adding seven tiles, three of them water.
-
-## board.chain.note
-
-Badge 0 is the specialist's range; each later number is a rule firing from a tile taken the step before.
+Adding a specialist on the farm ends up adding 7 tiles.
 
 ## chain.steps
 
-1. Range 1 takes the three unowned neighbours of the farm (0).
-2. The northern one has no resource, so it pulls the game and the fish (1).
-3. The game tile takes the water east of it: its side tiles are the fish and more water, and water never counts against a grab (2).
-4. The last water tile now lies between that water and land you already owned: gap fill (2).
-5. Water is not claimable land, so the chain stops there.
+1. First we grab all tiles adjacent to the specialist (the three tiles labeled 0).
+2. Because the game has a resource and is adjacent to a tile we now own that doesn't have a resource, we grab it (resource pull). Same deal with the fish.
+3. The game grabs the water tile east of itself, since that's the only land boundary of that water (tile 2).
+4. The last water tile now lies between that tile and land you already owned: gap fill.
 
 ## founding.heading
 
@@ -194,23 +161,15 @@ Founding
 
 ## founding.intro
 
-Founding takes every tile within 2 of the Settler, then the chain runs: urban tiles at distance 2 pull their ring at distance 3, and the end-of-turn pass follows.
+Founding works the same way -- it gets everything within 2 tiles of the Settler, then runs all the same rules.
 
 ## board.found.caption
 
-Founding takes everything within 2 of the Settler, and the urban tiles at that edge pull one ring further.
-
-## board.found.note
-
-{foundRing} tiles came from urban pull and {foundResources} from resource pull; the end-of-turn pass added nothing here.
+We pick up the ore and wheat since they border tiles we own that don't have resources.
 
 ## board.minor.caption
 
-The City Site next door is boxed in by the new city's land, so it becomes a Minor City and everything within 2 of it joins the new city.
-
-## board.minor.note
-
-{minorSiteGrabs} urban tiles of the site and everything within 2 of it joined in the same pass. Water and mountains count as closed sides; one unowned passable land tile beside the site would have kept it free (asserted).
+We'd make a minor city here because we own all land tiles bordering a city site.
 
 ## founding.quote.source
 
@@ -218,19 +177,15 @@ In-game help text for the {minorCityName}
 
 ## founding.body
 
-**Minor Cities.** A City Site stays live until a city is founded on it. When every passable land tile around a live site's urban cluster is owned, the next pass swallows it: its urban tiles and everything within 2 of it go to the owner with the most tiles around it, ties to the nearest city. The site is marked used and gets the {minorCityName} improvement and a name; nobody can found a city there again, and its land is simply part of the neighbouring city. The improvement is urban and pays {minorCityOutput} and {minorCityVp} victory points for {minorCityUpkeep} upkeep. The help text says sites without a tribal settlement, but the code has no tribe test (board under Losing tiles). If the owning city is razed, its Minor Cities and its own tile become live City Sites again, unless the razing event wipes sites.
+**Minor Cities.** If you surround all land tiles of a city site, you make a minor city. Minor cities are worth {minorCityVp} VP, give {minorCityOutput} and cost {minorCityUpkeep} upkeep.
 
 ## triggers.heading
 
-Triggers
-
-## triggers.note
-
-Range 0 means the rules run from the tile itself.
+What can expand borders
 
 ## triggers.after
 
-An urban improvement spreads before its tile turns urban, so its grab is the plain range-1 ring, not an urban pull. A fourth spread path in the same check (free specialists from adjacent improvements) reads a list that is empty in the current data.
+Building an urban improvement grabs the tiles next to it, just like a specialist. And it can chain, just like another border expansion.
 
 ## buying.heading
 
@@ -242,47 +197,56 @@ In-game concept text, `{buyTileName}`
 
 ## buying.body
 
-- **Eligible:** your unit stands on the tile; it touches the buying city's Territory, is not urban, and water must touch land. Costs {buyTileCost} order.
-- **Unlocks:** {buyUnlocksPlayer} (every city); {buyUnlocksCity} (that city only). A unit effect exists in the code but no unit carries it.
-- **From your own city:** a tile of another of your cities moves over with no unlock if it has no improvement and the move does not split that city's Territory. Both purchase counters still go up.
-- **Cost:** (base + per × (tile purchases in that city + tile purchases in any of your cities ÷ 2)) × (distance from the city + 1) ÷ 4, minimum 1, rounding down at each step. Every purchase raises both counts, so the buying city pays 1½ per tile it bought and ½ per tile any other city bought. {moneyName} base {moneyBase} per {moneyPer}; {trainingName} base {trainingBase} per {trainingPer}.
-- **The rules run** from a newly bought tile at range 0, so a resource behind it comes free; a tile moved between your cities spreads nothing.
+You can buy tiles with the Colonies law or in a Landowners seat.
+
+- You need a unit on the tile. It can be a military or civilian unit.
+- The tile cannot be urban.
+- If the tile is water, it must touch land. Being Coastal is not enough, it must touch land.
+- The tile needs to be adjacent to a tile you already own.
+- The same border expansion rules run on tile buying.
+- **Cost:** (base + per × (tile purchases for that city + tile purchases for any of your cities ÷ 2)) × (distance from the city + 1) ÷ 4, minimum 1, rounding down at each step. Every purchase raises both the 'tile purchases for that city' and the 'tile purchases for any of your cities' counts.
+
+## buying.swap.heading
+
+Swapping tiles
+
+## buying.swap.body
+
+- You can also swap tiles between your own cities without Colonies or a Landowners seat. The tile can't have an improvement on it, and moving it can't split the other city's territory. Swapping costs the same as buying.
+- Swapping tiles between cities of the same family just has the Money cost.
+- Swapping tiles between cities of different families gives {swapGain} opinion to the family gaining the tile (for {swapGainTurns} turns) and {swapLoss} to the family losing it (for {swapLossTurns} turns).
 
 ## board.buy.caption
 
-Dashed tiles can be bought, the label is the Money cost; buying the hill pulls the cattle behind it for free.
-
-## board.buy.note
-
-The Worker bought the hill for {buyBoardCost} {moneyName} and the cattle joined by resource pull. Both counters went up, so the next tile from this city costs more.
+You can buy any of the dashed tiles for the price listed. Buying the hill will also grab the cattle because of border expansion rules.
 
 ## buying.grid.heading
 
 Cost by distance and purchases
 
-## buying.grid.note
-
-“Bought” is tile purchases in that city plus half of tile purchases in any of your cities, that city's included, rounded down.
-
 ## growth.heading
 
-Growth bonuses
+Border Boost and similar events
 
 ## growth.intro
 
-A growth bonus of *n* picks one tile *n* times: the highest-scoring claimable tile that touches the city's connected Territory, is not on or beside an urban tile and is not on the map edge. The rules then run from it at range 0.
+Let's use Border Boost as an example. Border Boost grabs {borderBoostTiles} tiles. It goes through all potential tiles, scores them, and picks the highest scoring one, then grabs it, and chains from that. Then it does that again until it's grabbed all {borderBoostTiles} tiles. Note this can result in grabbing way more than {borderBoostTiles} tiles since you always get {borderBoostTiles} tiles and whatever they chain to.
 
 ## board.grow.caption
 
-Two picks: each takes the best-scoring claimable tile beside the city's land, then the rules run from it.
+Here's an event that grabs +2 tiles.
 
 ## board.grow.note
 
-Scores shown with the roll fixed at {growRoll} for every candidate. The trees at {growWinner} beat the lush river tile at {growRunnerUp}; the water beyond joined as shielded water, then the second pick took the river tile.
+Each tile is labeled with its score.
 
 ## growth.roll
 
-**The roll** comes from a random stream seeded by the city tile and restarted for every pick, so a city always rolls the same numbers in the same candidate order; the board fixes the roll so the rest of the score shows.
+The roll is random, but is seeded by the city tile and restarted each pick, so the tiles grabbed are always grabbed in the same order.
+
+## growth.resources
+
+**Resource border values.** {resourceValues}. Resources without a value score 0 but are still pulled.
 
 ## losing.heading
 
@@ -290,56 +254,14 @@ Losing tiles and gotchas
 
 ## losing.body
 
-- **Territory never shrinks by itself:** a tile leaves you only by capture, razing, or moving it to another of your cities.
-- **Your city is captured** → all its tiles change hands at once; the end-of-turn pass then runs for the new owner.
-- **A city is razed** → its tiles become unowned and their improvements are cleared; its Minor Cities and its own tile become live City Sites again.
-- **You own every passable land tile around a tribal {tribeSettlements}** → at the end of the turn it becomes your Minor City and the settlement is removed. Its units stay unless the tribe is under truce with you, in which case they are pushed to the nearest tile they may stand on.
-- **Your border swallows a site still showing a City Site marker or ruins ({ruins})** → the marker is removed and the Minor City placed.
-- **Another live City Site touches your border** → its urban tiles are taken only by the surround above; a tribal site blocks the urban pull even for an ally.
-- **A tile is on the map edge** → it never becomes Territory; rules, ranges and growth picks all skip it.
-- **A growth bonus never picks** a tile on or beside an urban tile; only a chain reaches those.
-- **{territoryOnlyCount} of {improvementCount} improvements** need Territory; {territoryWaterUnits} may end a move on your own water.
+- Tiles are never removed from a city. You can lose a city, but the tiles go with the city.
+- If City Razing is on, and a City is Razed, then the Tiles become unowned because the City no longer exists.
+- You can minor city a Tribal Site *even with units still on it* -- this will instantly turn the camp into a minor city.
 
 ## board.tribe_surrounded.caption
 
-Every passable land tile around the Outpost is yours, so at the end of the turn the Outpost becomes your Minor City and everything within 2 of it joins your city.
-
-## board.tribe_surrounded.note
-
-Red badge: the site itself. Gold badges: everything within 2 of it, taken in the same pass.
-
-## appendix.heading
-
-Appendix
-
-## appendix.spreaders.heading
-
-Improvements that spread borders
-
-## appendix.spreaders.note
-
-All {wonderCount} wonders, all Holy Sites and the {harbor} carry the Spreads Borders flag; {urbanCount} improvements spread because they are urban.
-
-## appendix.growth.heading
-
-Every growth value
-
-## appendix.resources.heading
-
-Resource border values
-
-## appendix.resources.note
-
-{resourceValues}. Resources without a value score 0 but are still pulled; a resource with a negative value would not be (none has one).
-
-## appendix.constants.heading
-
-Constants
-
-## appendix.sources.heading
-
-Sources
+All land tiles surrounding the city site are yours, so you minor the city and then grab tiles around it, as if you had founded a city (grabbing tiles within 2).
 
 ---
 
-Placeholders: `{buyBoardCost}` `{buyTileCost}` `{buyTileName}` `{buyUnlocksCity}` `{buyUnlocksPlayer}` `{chainGens}` `{chainGrabs}` `{chainWater}` `{foundResources}` `{foundRing}` `{growRoll}` `{growRunnerUp}` `{growWinner}` `{harbor}` `{improvementCount}` `{minorCityName}` `{minorCityOutput}` `{minorCityUpkeep}` `{minorCityVp}` `{minorSiteGrabs}` `{moneyBase}` `{moneyName}` `{moneyPer}` `{notClaimable}` `{resourceValues}` `{ruins}` `{territoryName}` `{territoryOnlyCount}` `{territoryWaterUnits}` `{trainingBase}` `{trainingName}` `{trainingPer}` `{tribeSettlements}` `{urbanCount}` `{wonderCount}`.
+Placeholders: `{borderBoostTiles}` `{buyTileName}` `{minorCityName}` `{minorCityOutput}` `{minorCityUpkeep}` `{minorCityVp}` `{notClaimable}` `{resourceValues}` `{swapGainTurns}` `{swapGain}` `{swapLossTurns}` `{swapLoss}` `{territoryName}`.

@@ -11,7 +11,7 @@ import Base from '../layouts/Base.astro';
 import Term from '../components/Term.astro';
 import HexBoard from '../components/HexBoard.astro';
 import { getEntity } from '../lib/entities';
-import { createProse, md, type ProseVar } from '../lib/prose';
+import { createProse, type ProseVar } from '../lib/prose';
 import data from '../data/borders.json';
 import proseRaw from '../data/border-expansion-prose.md?raw';
 import editorJs from '../lib/prose-editor.js?raw';
@@ -24,81 +24,45 @@ const { texts, constants, buyTile, growth, spreaders, spreadersSummary } = data;
 const sc = Object.fromEntries(data.scenarios.map(s => [s.id, s])) as Record<string, (typeof data.scenarios)[number]>;
 const boards = data.scenarios.filter(s => s.render);
 
-const flagged = spreaders.filter(s => s.reasons.includes('bSpreadsBorders'));
-const flaggedWonders = flagged.filter(s => s.wonder);
-const unlockSpreaders = spreaders.filter(s => s.reasons.includes('unlock'));
 const money = buyTile.yields.YIELD_MONEY;
 const training = buyTile.yields.YIELD_TRAINING;
 const cards = growth.values.filter(v => v.kind === 'bonus' && v.id.startsWith('BONUS_CITY_')).sort((a, b) => a.value - b.value);
 const techCard = growth.values.find(v => v.kind === 'tech');
 const events = growth.values.filter(v => v.kind === 'event');
-const buyCity = buyTile.unlocks.filter(u => u.scope === 'city');
 const eventGroups = Object.values(events.filter(e => e.value > 0).reduce((acc, e) => {
   const g = acc[e.name] || (acc[e.name] = { name: e.name, values: [] as number[], count: 0 });
   if (!g.values.includes(e.value)) g.values.push(e.value);
   g.count++;
   return acc;
 }, {} as Record<string, { name: string; values: number[]; count: number }>));
-const buyPlayer = buyTile.unlocks.filter(u => u.scope === 'player');
 const w = growth.weights;
 const grow = sc.grow;
-const firstPick = grow.picks[0];
-const winner = firstPick.candidates.find(c => c.q === firstPick.q && c.r === firstPick.r)!;
-const runnerUp = [...firstPick.candidates].sort((a, b) => b.total - a.total)[1];
 const buyBoard = sc.buy;
-const chainGens = Math.max(...sc.chain.grabs.map(g => g.gen));
-const chainWater = sc.chain.grabs.filter(g => sc.chain.tiles.find(t => t.q === g.q && t.r === g.r)!.terrain === 'TERRAIN_WATER').length;
-const minorSiteGrabs = sc.minor.grabs.filter(g => g.reason === 'minor').length;
-const foundRing = sc.found.grabs.filter(g => g.reason === 'urban').length;
-const foundResources = sc.found.grabs.filter(g => g.reason === 'resource').length;
 const has = (id: string) => !!getEntity(id);
 const BUY_YIELDS = ['YIELD_MONEY', 'YIELD_TRAINING'] as const;
 const notClaimable = constants.negativeBorderValues.map(n => growth.names[n]).join(', ');
 const mc = constants.minorCity;
 const mcOut = Object.entries(mc.output).map(([y, v]) => `+${v} ${mc.yieldNames[y]}`).join(', ');
 const mcUpkeep = Object.entries(mc.consumption).map(([y, v]) => `${v} ${mc.yieldNames[y]}`).join(', ');
-const tribeSettlements = constants.removeBorder.filter(r => r.tribe).map(r => r.name).join(', ');
-const ruins = constants.removeBorder.filter(r => !r.tribe && r.id !== 'IMPROVEMENT_CITY_SITE').map(r => r.name).join(', ');
 
 // ---- prose file placeholders ----
-// Entity links inside prose: same href as <Term>, plain anchor (styled by .be-section a).
-const link = (id: string, label: string) => {
-  const e = getEntity(id);
-  if (!e) return md(label);
-  return `<a href="${base}${e.page}${e.page.endsWith('/' + e.slug) ? '' : `#${e.slug}`}">${md(label)}</a>`;
-};
-const chip = (dlc?: string | null) => (dlc ? ` <span class="chip chip--dlc">${md(dlc)}</span>` : '');
+const swap = constants.tileSwapMemory;
+const signed = (n: number) => (n > 0 ? `+${n}` : `−${Math.abs(n)}`);
 const VARS: Record<string, ProseVar> = {
   notClaimable,
   territoryName: texts.territoryName,
   buyTileName: texts.buyTileName,
-  chainGens: String(chainGens),
-  chainGrabs: String(sc.chain.grabs.length),
-  chainWater: String(chainWater),
-  foundRing: String(foundRing),
-  foundResources: String(foundResources),
-  minorSiteGrabs: String(minorSiteGrabs),
   minorCityName: constants.minorCityName,
   minorCityOutput: mcOut,
   minorCityVp: String(mc.vp),
   minorCityUpkeep: mcUpkeep,
   buyTileCost: String(constants.unitBuyTileCost),
-  buyUnlocksPlayer: { html: buyPlayer.map(u => `${u.sources.map(s => link(s.id, s.name) + chip(s.dlc)).join(', ')} for ${link(u.yield, u.yieldName)}`).join('; ') },
-  buyUnlocksCity: { html: buyCity.map(u => `${u.sources.map(s => link(s.id, s.name)).join(', ')} seat for ${link(u.yield, u.yieldName)}`).join('; ') },
   moneyName: money.name, moneyBase: String(money.base), moneyPer: String(money.per),
   trainingName: training.name, trainingBase: String(training.base), trainingPer: String(training.per),
   buyBoardCost: String(buyBoard.trigger.cost),
-  growRoll: String(grow.trigger.roll),
-  growWinner: String(winner.total),
-  growRunnerUp: String(runnerUp.total),
-  tribeSettlements,
-  ruins,
-  territoryOnlyCount: String(constants.territoryOnlyCount),
-  improvementCount: String(constants.improvementCount),
-  territoryWaterUnits: constants.territoryWaterUnits.join(', '),
-  wonderCount: String(flaggedWonders.length),
-  harbor: { html: link('IMPROVEMENT_HARBOR', 'Harbor') },
-  urbanCount: String(spreadersSummary.urbanCount),
+  swapGain: signed(swap.gain.value), swapGainTurns: String(swap.gain.turns),
+  swapLoss: signed(swap.loss.value), swapLossTurns: String(swap.loss.turns),
+  borderBoostTiles: String(techCard?.value ?? 0),
   resourceValues: Object.entries(w.resource).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k, v]) => `${growth.names[k]} ${v}`).join(', '),
 };
 const { inline, blocks, has: hasText } = createProse({ raw: proseRaw, vars: VARS, listClass: 'be-list', name: 'border-prose' });
@@ -109,38 +73,11 @@ const TRIGGERS = [
   ['Place a specialist', 'first specialist on a tile', '1', 'Tile.onSpecialistChange → spreadBorders'],
   ['Finish an urban improvement', 'any of the ' + spreadersSummary.urbanCount + ' urban improvements', '1', 'Tile.doImprovementFinished → isImprovementBorderSpread (bUrban)'],
   ['Finish a Spreads Borders improvement', 'Harbor, every Holy Site, every wonder', '1', 'isImprovementBorderSpread (bSpreadsBorders)'],
-  ['Finish an unlocked improvement', unlockSpreaders.map(s => `${s.name} under ${s.unlockedBy.map(u => u.name).join(', ')}`).join('; '), '1', 'isImprovementBorderSpread → Player.isSpreadBordersUnlock'],
   ['Add urban', `${constants.builders.join(', ')} action, ${constants.addUrban.map(a => a.sources.map(s => s.name).join(', ')).join(', ')} leaders only`, '1', 'Unit.addUrban → spreadBorders (before makeUrban)'],
   ['Buy a tile', 'your unit on the tile', '0', 'Unit.buyTile → getExpansionTiles(0)'],
   ['Growth bonus', 'card, tech card or event', '0 from each picked tile', 'City.growBorders → findGrowBorderTile'],
-  ['End-of-turn pass', 'every turn; also after a city is founded, captured or razed, at map setup, and after an editor tile change', '0 from every owned tile', 'Game.doTurn / City.start / City.setPlayer / removeCity → Game.doBorderFill'],
 ];
 
-const SOURCES = [
-  ['Tile.getExpansionTiles', 'Tile.cs:12657-12760', 'queue the tile (an owned tile keeps its city) plus the range ring, then breadth-first: getOwnerChangeTiles on each popped tile, then checkMinorCity on each adjacent unclaimed urban tile.'],
-  ['Tile.getOwnerChangeTiles', 'Tile.cs:7323-7470', 'the four rules in order: resource pull, urban pull, shielded water, else Tile.doBorderFill. isOurTeam reads the pending dictionary, then Game.areAllied on the revealed owner; unowned is never allied (Game.cs:6290).'],
-  ['Tile.isValidOwnerChangeTerritory', 'Tile.cs:7302', 'revealed, not already Territory or pending, and not connected to a different live City Site.'],
-  ['Tile.isValidGrowth', 'Tile.cs:12576', 'terrain, height, vegetation and resource iBorderValue all ≥ 0; only ' + notClaimable + ' are negative.'],
-  ['Tile.doBorderFill', 'Tile.cs:11168-11260', 'axes NW–SE, NE–SW, E–W (Enums.cs:1849, Utils.cs:249); the per-city count compares teams, so the opposite side always wins and the distance and population tie-breaks are dead code.'],
-  ['Tile.checkMinorCity / getCitySiteSurrounded', 'Tile.cs:11089, 4852-4960', 'no tribe test; a surrounded live site: its unclaimed urban tiles (minus map-edge tiles) plus getCityInitTiles(2) go to the owner with the most tiles in the site set (land = set size, water = 1), then nearest city, then lowest city tile id.'],
-  ['Game.doUrbanSurroundedRural', 'Game.cs:12895-13050', 'rural pockets bounded by exactly one site, only on land sections holding more than one site; water, map-edge and owned tiles do not count as pocket tiles.'],
-  ['Tile.setMinorCity / isMinorCity', 'Tile.cs:11127, 11146', 'site → USED, improvement → ' + constants.minorCityName + ', a city name is assigned.'],
-  ['Game.razeCity / removeCity', 'Game.cs:11033-11060, 11095-11190', 'Minor City tiles and the city tile become ACTIVE sites again unless the bonus is bRazeCityNoCitySite; every improvement in the Territory is cleared, every tile un-owned, then doBorderFill.'],
-  ['Tile.spreadBorders', 'Tile.cs:7777', 'range 1 from an owned tile; callers: onSpecialistChange 6162, doImprovementFinished 6310 (before makeUrban), Unit.addUrban Unit.cs:11879, game start Game.cs:12220.'],
-  ['Tile.isImprovementBorderSpread', 'Tile.cs:6111', 'bUrban, bSpreadsBorders, Player.isSpreadBordersUnlock (effectPlayer aeImprovementSpreadBorders), or a free specialist from aeAdjacentImprovementSpecialists (Tile.cs:6598, 7730; empty in the current XML).'],
-  ['Game.createCityNext / City.start', 'Game.cs:11004, City.cs:7854-8007', 'range 2 from the founding tile with the founding site as the city site; the founding site is set USED before setTilesOwner, then Game.doBorderFill.'],
-  ['Game.doBorderFill / setTilesOwner', 'Game.cs:13155, 13177', 'range 0 from every owned tile in tile-id order, one shared pending dictionary; setTilesOwner calls setMinorCity on any live site it just owned, then bounceUnitsCantOccupy on every new tile. Called from Game.doTurn 12788, finishMapPlacement 12301, removeCity 11188, City.setPlayer 3529, City.start 8007, the editor TILE_OWNER action 19136.'],
-  ['Tile.bounceUnitsCantOccupy / canEnterTerritory', 'Tile.cs:10723, 10106; Unit.cs:8176; InfoHelpers.cs:2469', 'a unit that may not stand in the new owner\'s Territory (truce: neither peace nor war) is moved to the nearest tile it can stand on, or removed if there is none.'],
-  ['Unit.buyTile / canBuyTile', 'Unit.cs:12707, 12665; City.cs:9493; Game.cs:18002', 'the acting unit\'s own tile; range 0 from a new tile, or a plain reassignment; eligibility and the unlock test; UNIT_BUY_TILE_COST orders.'],
-  ['City.getBuyTileCost', 'City.cs:9445', '(base + per × (city count + player count ÷ 2)) × (distance + 1) ÷ 4, minimum 1; both counters increment on every purchase (City.cs:2964, Player.cs:6325).'],
-  ['City.findGrowBorderTile / growBorders', 'City.cs:9659-9820', 'the scoring; RandomStruct(cityTile.initSeed()) is re-created per call, so the same city rolls the same numbers in the same candidate order every time.'],
-  ['Tile.canGrowBorder / getBorderAdjacent', 'Tile.cs:12605, 12526', 'claimable, not a map-edge tile, not on or next to an urban tile, adjacent to the city\'s contiguous Territory.'],
-  ['PlayerBonus.doBonus', 'PlayerBonus.cs:7053, 2432', 'bonus iBorderGrowth > 0 → City.growBorders; the bonus is unavailable when no tile can grow.'],
-  ['Tile.setOwner', 'Tile.cs:7470-7560', 'bRemoveBorder improvements are cleared the moment the tile gets an owner (bRemoveBonus fires their bonus first).'],
-  ['Tile.tileAdjacent / getTilesAtDistance', 'Tile.cs:11969, 12258', 'map-edge (boundary) tiles are skipped unless bIncludeBoundary, so no rule, seed or growth pick ever reaches them.'],
-  ['Unit.hasConsumptionBordersModifier / familyTerritoryModifier', 'Unit.cs:7354, 6959', 'CONSUMPTION_BORDERS_MODIFIER and FAMILY_TERRITORY_MODIFIER, see constants.'],
-  ['XML', 'terrain, height, vegetation, resource, improvement, yield, bonus, bonus-event, effectPlayer, effectCity, effectUnit, trait, law, familyClass, tech, globalsInt, globalsType, color, teamColor', 'values, flags, grants and the quoted strings.'],
-];
 const stats = [
   { label: 'spread rules', value: 4 },
   { label: 'improvements spread', value: spreaders.length },
@@ -187,7 +124,6 @@ const stats = [
       <footer data-prose="territory.quote.source" set:html={inline('territory.quote.source')} />
     </blockquote>
     <p class="be-rule" data-prose="territory.headline" set:html={inline('territory.headline')} />
-    <div data-prose="territory.body" data-prose-blocks set:html={blocks('territory.body')} />
   </section>
 
   <section class="be-section be-section--wide" id="rules">
@@ -235,7 +171,6 @@ const stats = [
 
   <section class="be-section be-section--wide" id="triggers">
     <h2 class="be-h" data-prose="triggers.heading" set:html={inline('triggers.heading')} />
-    <p class="be-note" data-prose="triggers.note" set:html={inline('triggers.note')} />
     <div class="be-table">
       <table>
         <thead><tr><th>Trigger</th><th>When</th><th>Range</th><th>Code</th></tr></thead>
@@ -259,6 +194,8 @@ const stats = [
       <div data-prose="buying.body" data-prose-blocks set:html={blocks('buying.body')} />
       <HexBoard scenario={buyBoard} {...board('buy')} />
     </div>
+    <h3 class="be-h3" data-prose="buying.swap.heading" set:html={inline('buying.swap.heading')} />
+    <div data-prose="buying.swap.body" data-prose-blocks set:html={blocks('buying.swap.body')} />
     <h3 class="be-h3" data-prose="buying.grid.heading" set:html={inline('buying.grid.heading')} />
     <div class="be-grids">
       {BUY_YIELDS.map(y => (
@@ -276,7 +213,6 @@ const stats = [
         </div>
       ))}
     </div>
-    <p class="be-note" data-prose="buying.grid.note" set:html={inline('buying.grid.note')} />
   </section>
 
   <section class="be-section be-section--wide" id="growth">
@@ -294,7 +230,7 @@ const stats = [
             <tr><td>river</td><td>{w.river}</td></tr>
             <tr><td>passable</td><td>{w.passable}</td></tr>
             <tr><td>on the trade network</td><td>{w.tradeNetwork}</td></tr>
-            <tr><td>resource</td><td>{Object.values(w.resource).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b).join(' / ')} (see appendix)</td></tr>
+            <tr><td>resource</td><td>{Object.values(w.resource).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b).join(' / ')} (values below)</td></tr>
             <tr><td>per neighbour</td><td>height {Object.entries(w.landAdjacent).map(([k, v]) => `${growth.names[k]} ${v}`).join(', ')} (land candidates only); +{w.ownCityAdjacent} if this city's; +{w.alliedImprovedAdjacent} if your team's (or taken this pick) and improved; otherwise its resource value ÷ {w.adjacentResourceDivisor}</td></tr>
             <tr><td>distance</td><td>× {w.distanceNumerator} ÷ (distance from the city + {w.distanceOffset})</td></tr>
           </tbody>
@@ -313,6 +249,7 @@ const stats = [
         </tbody>
       </table>
     </div>
+    <div data-prose="growth.resources" data-prose-blocks set:html={blocks('growth.resources')} />
   </section>
 
   <section class="be-section be-section--wide" id="losing">
@@ -321,52 +258,6 @@ const stats = [
       <div data-prose="losing.body" data-prose-blocks set:html={blocks('losing.body')} />
       <HexBoard scenario={sc.tribe_surrounded} {...board('tribe_surrounded')} />
     </div>
-  </section>
-
-  <section class="be-section be-section--wide" id="appendix">
-    <h2 class="be-h" data-prose="appendix.heading" set:html={inline('appendix.heading')} />
-
-    <h3 class="be-h3" data-prose="appendix.spreaders.heading" set:html={inline('appendix.spreaders.heading')} />
-    <p class="be-note" data-prose="appendix.spreaders.note" set:html={inline('appendix.spreaders.note')} />
-
-    <h3 class="be-h3" data-prose="appendix.growth.heading" set:html={inline('appendix.growth.heading')} />
-    <div class="be-table">
-      <table>
-        <thead><tr><th>Bonus</th><th>Tiles</th><th>Source</th></tr></thead>
-        <tbody>
-          {growth.values.map(v => (
-            <tr><td><code>{v.id}</code></td><td class="be-num">{v.value}</td><td class="be-dim">{v.kind === 'tech' ? `${v.name} tech card (${v.prereq})` : v.kind === 'event' ? `${v.name} event` : 'bonus card'}</td></tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-
-    <h3 class="be-h3" data-prose="appendix.resources.heading" set:html={inline('appendix.resources.heading')} />
-    <p class="be-note" data-prose="appendix.resources.note" set:html={inline('appendix.resources.note')} />
-
-    <h3 class="be-h3" data-prose="appendix.constants.heading" set:html={inline('appendix.constants.heading')} />
-    <div class="be-table">
-      <table>
-        <tbody>
-          <tr><td>BORDER_VISIBILITY</td><td>{constants.borderVisibility}: tiles seen around your Territory (plus EXTRA_VISIBILITY {constants.extraVisibility} and vision effects).</td></tr>
-          <tr><td>CONSUMPTION_BORDERS_MODIFIER</td><td>+{constants.consumptionBordersModifier}% unit consumption on tiles that are not yours or an ally's, unless the tile is an unowned healing improvement or the player has the no-outside-consumption unlock.</td></tr>
-          <tr><td>FAMILY_TERRITORY_MODIFIER</td><td>+{constants.familyTerritoryModifier}% combat strength for a unit fighting from a tile its own family owns (Unit.familyTerritoryModifier).</td></tr>
-          <tr><td>UNIT_BUY_TILE_COST</td><td>{constants.unitBuyTileCost} order per purchase.</td></tr>
-          <tr><td>COLOR_MULTIPLIER_FOUND_BORDER_PREVIEW</td><td><code>{constants.foundBorderPreviewColor}</code>, the wash on the founding preview.</td></tr>
-          <tr><td>Border patterns</td><td>{constants.borderPatterns.map(p => p.replace('BORDER_PATTERN_', '').toLowerCase()).join(', ')} (teamColor.xml, one per city of a team).</td></tr>
-          <tr><td>Minor City improvement</td><td><code>{constants.minorCityImprovement}</code> ({constants.minorCityName}): {mcOut}, {mcUpkeep} upkeep, {mc.vp} VP, +{mc.defenseFriendly}% friendly defence, urban.</td></tr>
-          <tr><td>Border growth log line</td><td><code>{texts.borderGrowthLog}</code></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h3 class="be-h3" data-prose="appendix.sources.heading" set:html={inline('appendix.sources.heading')} />
-    <ul class="be-list be-sources">
-      {SOURCES.map(([fn, loc, what]) => (
-        <li><code>{fn}</code> <span class="be-loc">{loc}</span> — {what}</li>
-      ))}
-      <li><code>scripts/build_borders.py</code> — the port that computed every board above, with {data.scenarios.length} asserted scenarios that fail the build if a rule drifts.</li>
-    </ul>
   </section>
 
   <!-- is:global: the prose is injected with set:html, which gets no scope
@@ -494,9 +385,6 @@ const stats = [
     .be-table td strong { font-weight: 600; }
     .be-dim { color: var(--text-dim); }
     .be-num { text-align: right; font-family: var(--font-mono); font-size: 0.78rem; }
-    .be-sources { font-size: 0.8rem; max-width: none; }
-    .be-sources li { overflow-wrap: anywhere; }
-    .be-loc { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-2); }
     .be-section .chip--dlc { margin-left: 0.4rem; border-color: oklch(0.5 0.1 60); color: oklch(0.8 0.1 60); font-size: 0.66rem; }
     .be-section a { color: var(--accent-2); }
   </style>
