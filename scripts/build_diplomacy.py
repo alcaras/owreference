@@ -135,7 +135,7 @@ STATE_HELP_KEY = {
 STATE_HELP_TRIBE_KEY = {
     "DIPLOMACY_PEACE": "TEXT_HELPTEXT_LINK_HELP_DIPLOMACY_PEACE_TRIBE",
 }
-TEAM_HELP = ("Members of the same team. Permanent — always at Peace, share "
+TEAM_HELP = ("Members of the same team. The state is permanent, so they are always at Peace, share "
              "war and peace, and can never change diplomatic state with "
              "each other.")
 
@@ -373,26 +373,26 @@ ACTION_GROUPS = [
         "actions": [
             {"id": "MISSION_PLAYER_DECLARE_WAR", "name": "Declare War",
              "variants": ["MISSION_PLAYER_DECLARE_WAR_HUMAN"],
-             "summary": "Truce → War. No cost — war only needs the treaty-turn gate."},
+             "summary": "Truce to War. There is no cost, because war only needs the treaty-turn gate."},
             {"id": "MISSION_PLAYER_TRUCE", "name": "Negotiate Truce",
              "variants": ["MISSION_PLAYER_TRUCE_HUMAN", "MISSION_PLAYER_TRUCE_NO_CHARACTERS"],
-             "summary": ("War → Truce. Opens negotiation with three options "
-                         "(below); diplomacy with the target is blocked while "
+             "summary": ("War to Truce. Opens negotiation with the three options "
+                         "below, and diplomacy with the target is blocked while "
                          "the mission runs."),
              "options": [
                  {"id": "MISSION_PLAYER_TRUCE_OFFER_TRIBUTE", "name": "Offer Tribute for Truce",
-                  "summary": "Sweeten the deal — you pay them Tribute for 40 turns."},
+                  "summary": "Sweeten the deal, because you pay them Tribute for 40 turns."},
                  {"id": "MISSION_PLAYER_TRUCE_NO_TRIBUTE", "name": "Ask for Truce",
                   "summary": "A plain white peace offer."},
                  {"id": "MISSION_PLAYER_TRUCE_DEMAND_TRIBUTE", "name": "Demand Tribute for Truce",
-                  "summary": "Press your advantage — they pay you Tribute for 40 turns."},
+                  "summary": "Press your advantage, because they pay you Tribute for 40 turns."},
              ]},
             {"id": "MISSION_PLAYER_PEACE", "name": "Make Peace",
              "variants": ["MISSION_PLAYER_PEACE_HUMAN", "MISSION_PLAYER_PEACE_NO_CHARACTERS"],
-             "summary": "Truce → Peace. Needs them at least Pleased with you."},
+             "summary": "Truce to Peace. They must be at least Pleased with you."},
             {"id": "MISSION_PLAYER_BREAK_PEACE", "name": "Break Peace",
              "variants": ["MISSION_PLAYER_BREAK_PEACE_HUMAN"],
-             "summary": "Peace → Truce. The step back down before any new war."},
+             "summary": "Peace to Truce, which is the step back down before any new war."},
             {"id": "MISSION_TEAM_ALLIANCE", "name": "National Alliance",
              "variants": ["MISSION_TEAM_ALLIANCE_HUMAN"],
              "summary": ("Allied Nations share visibility and join each "
@@ -414,18 +414,18 @@ ACTION_GROUPS = [
     {
         "id": "tribes",
         "label": "With Tribes",
-        "blurb": ("The same ladder against the barbarian Tribes — but tribal "
-                  "diplomacy is paid in Training, not Civics."),
+        "blurb": ("The same ladder against the barbarian Tribes, except that tribal "
+                  "diplomacy is paid in Training rather than Civics."),
         "actions": [
             {"id": "MISSION_TRIBE_DECLARE_WAR", "name": "Declare War (Tribe)",
              "variants": [],
-             "summary": "Truce → War with a Tribe."},
+             "summary": "Truce to War with a Tribe."},
             {"id": "MISSION_TRIBE_TRUCE", "name": "Tribal Truce",
              "variants": ["MISSION_TRIBE_TRUCE_NO_CHARACTERS"],
-             "summary": "War → Truce with a Tribe."},
+             "summary": "War to Truce with a Tribe."},
             {"id": "MISSION_TRIBE_PEACE", "name": "Tribal Peace",
              "variants": ["MISSION_TRIBE_PEACE_NO_CHARACTERS"],
-             "summary": ("Truce → Peace. The Tribe stops targeting your "
+             "summary": ("Truce to Peace. The Tribe stops targeting your "
                          "cities with raiders and can heal in your territory.")},
             {"id": "MISSION_TRIBE_ALLIANCE", "name": "Tribal Alliance",
              "variants": [],
@@ -434,7 +434,7 @@ ACTION_GROUPS = [
                          "One tribal ally at a time; Diplomat leaders only.")},
             {"id": "MISSION_TRIBE_BREAK_PEACE", "name": "Break Peace (Tribe)",
              "variants": [],
-             "summary": "Peace → Truce with a Tribe."},
+             "summary": "Peace to Truce with a Tribe."},
             {"id": "MISSION_TRIBE_END_ALLIANCE", "name": "End Alliance (Tribe)",
              "variants": ["MISSION_TRIBE_END_ALLIANCE_NO_CHARACTERS"],
              "summary": "Dissolve your Tribal Alliance."},

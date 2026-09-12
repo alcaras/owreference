@@ -28,12 +28,12 @@ export const TABS: Tab[] = [
   {
     slug: 'tribes', icon: '🏕️', label: 'Tribes', section: 'Nations & Tribes',
     status: 'built', sourceSheet: '',
-    summary: 'Barbarian tribes — levels, units, sites, diplomacy',
+    summary: 'Barbarian tribes, with their levels, units, sites and diplomacy',
   },
   {
     slug: 'tribe-conversion', icon: '🏕️', label: 'Barbarian Site Conversion', section: 'Nations & Tribes',
     status: 'built', sourceSheet: '',
-    summary: 'When barbarian sites are adopted by a real tribe — start turns, per-turn odds, and what blocks it',
+    summary: 'When barbarian sites are adopted by a real tribe, with start turns, odds per turn and what blocks it',
     willContain: [
       'The per-turn roll and its start turn by tribe level',
       'The 12-tile pathfound search for an adopting tribe',
@@ -64,14 +64,14 @@ export const TABS: Tab[] = [
     status: 'built', sourceSheet: '',
     summary: 'Every trio of family classes and which nations can play all three (max 3 families per game)' },
   {
-    slug: 'family-envy', icon: '😠', label: 'Envy & the City Split', section: 'Families',
+    slug: 'family-envy', icon: '😠', label: 'Envy and the City Split', section: 'Families',
     status: 'built', sourceSheet: '',
-    summary: 'Most Cities, Fewest Cities and Envy — how a split of cities moves family opinion',
+    summary: 'How Most Cities, Fewest Cities and Envy move family opinion when you split cities',
   },
   {
     slug: 'family-heads', icon: '👑', label: 'Family Head Selection', section: 'Families',
     status: 'built', sourceSheet: '',
-    summary: 'How the game picks a family head — succession priority, then a weighted roll',
+    summary: 'How the game picks a family head, by succession priority and then a weighted roll',
   },
   {
     slug: 'archetype-tendencies', icon: '🎲', label: 'Archetype Tendencies', section: 'Families',
@@ -93,7 +93,7 @@ export const TABS: Tab[] = [
   {
     slug: 'traits', icon: '🎭', label: 'Traits', section: 'Characters',
     status: 'built', sourceSheet: '',
-    summary: 'Full trait catalog — ratings, effects, opinions, restrictions',
+    summary: 'The full trait catalog, with ratings, effects, opinions and restrictions',
   },
   {
     slug: 'trait-inheritance', icon: '🧬', label: 'Trait Inheritance', section: 'Characters',
@@ -110,7 +110,7 @@ export const TABS: Tab[] = [
   {
     slug: 'regents', icon: '👶', label: 'Regents', section: 'Characters',
     status: 'built', sourceSheet: '',
-    summary: 'Who rules when the heir is a child — the regent candidate ladder and what regency does',
+    summary: 'Who rules when the heir is a child, with the regent candidate ladder and what regency does',
     willContain: [
       'The priority ladder: parent, grandparent, aunt/uncle, elder courtier, family head',
       'Age gates that trigger a regency, and which rungs you may decline',
@@ -156,12 +156,12 @@ export const TABS: Tab[] = [
   {
     slug: 'grand-vizier', icon: '📜', label: 'Grand Vizier Rulership', section: 'Court',
     status: 'built', sourceSheet: '',
-    summary: 'How the Grand Vizier picks what every ungoverned city builds — the AI planner, its filters and value math',
+    summary: 'How the Grand Vizier picks what every ungoverned city builds, with the AI planner, its filters and its value math',
   },
   {
     slug: 'missions', icon: '🎯', label: 'Missions', section: 'Court',
     status: 'built', sourceSheet: '',
-    summary: 'Character missions — costs, requirements, outcomes',
+    summary: 'Character missions, with costs, requirements and outcomes',
   },
   {
     slug: 'diplomacy', icon: '🕊️', label: 'Diplomacy', section: 'Court',
@@ -226,7 +226,7 @@ export const TABS: Tab[] = [
   {
     slug: 'urban-improvements', icon: '🏡', label: 'Urban Improvements', section: 'Cities',
     status: 'built', sourceSheet: '🏡 Urban Buildings',
-    summary: 'City buildings — art, specialist slots, and effects',
+    summary: 'City buildings, with art, specialist slots and effects',
     willContain: ['Cost, slots, yield, and required terrain/tech'],
   },
   {
@@ -252,12 +252,12 @@ export const TABS: Tab[] = [
   {
     slug: 'projects', icon: '🏗️', label: 'Projects', section: 'Cities',
     status: 'built', sourceSheet: '',
-    summary: 'City projects — cost, prerequisites, and effects',
+    summary: 'City projects, with cost, prerequisites and effects',
   },
   {
     slug: 'autonomous-rule', icon: '🗽', label: 'Autonomous Rule', section: 'Cities',
     status: 'built', sourceSheet: '',
-    summary: 'Autonomous cities — what they can and cannot build, how they choose, and the events that grant and end autonomy',
+    summary: 'Autonomous cities, covering what they can and cannot build, how they choose, and the events that grant and end autonomy',
   },
   {
     slug: 'hurrying', icon: '⏩', label: 'Hurrying Production', section: 'Cities',
@@ -268,17 +268,17 @@ export const TABS: Tab[] = [
   {
     slug: 'culture', icon: '🎭', label: 'Culture & Development', section: 'Cities',
     status: 'built', sourceSheet: '',
-    summary: 'City culture levels — thresholds, VP, consumption, and unlocks',
+    summary: 'City culture levels, with thresholds, VP, consumption and unlocks',
   },
   {
     slug: 'terrain', icon: '⛰️', label: 'Terrain', section: 'Cities',
     status: 'built', sourceSheet: '',
-    summary: 'Terrain, vegetation, height — movement, chop yields, valid builds',
+    summary: 'Terrain, vegetation and height, with movement, chop yields and valid builds',
   },
   {
     slug: 'resources', icon: '💎', label: 'Resources', section: 'Cities',
     status: 'built', sourceSheet: '',
-    summary: 'Map resources — yields, harvests, luxuries, and spawn rules',
+    summary: 'Map resources, with yields, harvests, luxuries and spawn rules',
   },
 
   // ── Wonders ───────────────────────────────────────────────────────
@@ -399,12 +399,12 @@ export const TABS: Tab[] = [
   {
     slug: 'events', icon: '📜', label: 'Story Events', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'Every narrative event — browsable by class, trigger, and chain',
+    summary: 'Every narrative event, browsable by class, trigger and chain',
   },
   {
     slug: 'events/chains', icon: '⛓', label: 'Event Chains', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'Multi-event chains as flow diagrams — branches, merges, follow-ups',
+    summary: 'Multi-event chains as flow diagrams, with branches, merges and follow-ups',
   },
   {
     slug: 'harvest-events', icon: '🌾', label: 'Harvest Events', section: 'Events',
@@ -427,23 +427,23 @@ export const TABS: Tab[] = [
   {
     slug: 'building-events', icon: '🧱', label: 'Building Events', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'Decision events fired by finishing a (non-wonder) building — Barracks, Library, Quarry…',
+    summary: 'Decision events fired by finishing a building other than a wonder, such as a Barracks, Library or Quarry',
     willContain: ['Every building-completion decision event and its option rewards'],
   },
   {
     slug: 'trait-events', icon: '🔓', label: 'Trait Events', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'Look up a trait — the events only it opens, plus what it reaches through its clusters',
+    summary: 'Look up a trait to see the events only it opens, plus what it reaches through its clusters',
   },
   {
     slug: 'trait-clusters', icon: '🧩', label: 'Trait Clusters', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'The named trait groups events gate on — Charming, Honorable, Terrifying and the rest',
+    summary: 'The named trait groups events gate on, such as Charming, Honorable and Terrifying',
   },
   {
     slug: 'trait-acquisition', icon: '🌱', label: 'Trait Acquisition', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'How to get a trait onto a character — the options that grant it, the rolls that might',
+    summary: 'How to get a trait onto a character, with the options that grant it and the rolls that might',
   },
   {
     slug: 'trait-removal', icon: '🧹', label: 'Trait Removal', section: 'Events',
@@ -458,7 +458,7 @@ export const TABS: Tab[] = [
   {
     slug: 'cursed-events', icon: '🐈‍⬛', label: 'Cursed Events', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'Stories that require, grant or remove the Cursed trait — including the four that lift it',
+    summary: 'Stories that require, grant or remove the Cursed trait, including the four that lift it',
   },
   {
     slug: 'family-events', icon: '👪', label: 'Family Events', section: 'Events',
@@ -469,7 +469,7 @@ export const TABS: Tab[] = [
   {
     slug: 'ruin-events', icon: '🏚️', label: 'Ruin Events', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'Ruins-tile events — triggers, odds, options, rewards',
+    summary: 'Events from ruins tiles, with triggers, odds, options and rewards',
     willContain: [
       'Ruins-tile events with eligibility conditions and weighted odds',
       'Each option’s requirements and outcome rewards',
@@ -492,14 +492,14 @@ export const TABS: Tab[] = [
   {
     slug: 'subjects', icon: '🤝', label: 'Subjects', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'Event-system casting roles — 2,062 subject templates and their filters',
+    summary: 'The casting roles of the event system, covering 2,062 subject templates and their filters',
   },
 
   // ── Concepts ──────────────────────────────────────────────────────
   {
     slug: 'concepts', icon: '📖', label: 'Concepts', section: 'Concepts',
     status: 'built', sourceSheet: '',
-    summary: 'Game-mechanics glossary — every in-game encyclopedia entry, auto-linked',
+    summary: 'A glossary of game mechanics, with every in-game encyclopedia entry, linked automatically',
   },
   {
     slug: 'hints', icon: '💡', label: 'Hints', section: 'Concepts',
@@ -509,19 +509,19 @@ export const TABS: Tab[] = [
   {
     slug: 'turn-order', icon: '🔄', label: 'Turn Order', section: 'Concepts',
     status: 'built', sourceSheet: '',
-    summary: 'Exact order of operations at turn start — rollover and per-player, from the game code',
+    summary: 'The exact order of operations at turn start, for the rollover and for each player, from the game code',
   },
   {
     slug: 'difficulty', icon: '🎚️', label: 'Difficulty & Advantages', section: 'Concepts',
     status: 'built', sourceSheet: '',
-    summary: 'What each difficulty preset changes — prosperity, AI bonuses, tribes',
+    summary: 'What each difficulty preset changes, covering prosperity, AI bonuses and tribes',
   },
 
   // ── Tools ─────────────────────────────────────────────────────────
   {
     slug: 'order-economy', icon: '⚡', label: 'Order Economy', section: 'Tools',
     status: 'built', sourceSheet: '',
-    summary: 'Compare nations on Orders/turn — families, starting techs, shrines, national effects',
+    summary: 'Compare nations on Orders per turn, across families, starting techs, shrines and national effects',
     willContain: [
       'Per-nation Orders/turn from only the sources that differ by nation',
       'Era presets (early / mid / late) driven by each nation\'s starting techs',
@@ -531,7 +531,7 @@ export const TABS: Tab[] = [
   {
     slug: 'streamer', icon: '🎙️', label: 'Streamer Overlay', section: 'Tools',
     status: 'built', sourceSheet: '',
-    summary: 'Push reference cards to an OBS overlay — units, techs, traits, events',
+    summary: 'Push reference cards to an OBS overlay, covering units, techs, traits and events',
     willContain: [
       'Search across all entities and events, live preview of the overlay card',
       'OBS setup: Browser Source overlay + Custom Browser Dock controls',
@@ -541,7 +541,7 @@ export const TABS: Tab[] = [
   {
     slug: 'hurry-calculator', icon: '⏩', label: 'Hurry Production Calculator', section: 'Tools',
     status: 'built', sourceSheet: '',
-    summary: 'What Hurry Production costs — by channel, progress, and how often you have hurried in that city',
+    summary: 'What Hurry Production costs, by channel, by progress and by how often you have hurried in that city',
     willContain: [
       'Cost per hurry channel against prior-hurry count 0-9 (the +10%/repeat escalation)',
       'Under-50%-progress penalty and the Growth production +50% surcharge',
@@ -551,7 +551,7 @@ export const TABS: Tab[] = [
   {
     slug: 'victory-points', icon: '🏆', label: 'Victory Point Target', section: 'Tools',
     status: 'built', sourceSheet: '',
-    summary: 'How many VP a game takes to win — by city sites, players, teams and the setup option',
+    summary: 'How many VP a game takes to win, by city sites, players, teams and the setup option',
     willContain: [
       'The engine\'s own routine (Game.cs getVPToWin) replayed for any setup',
       'Sites → target table for all four Victory Point options, tournament defaults',

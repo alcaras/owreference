@@ -16,7 +16,7 @@ const base = import.meta.env.BASE_URL;
   title="Family Head Selection"
   active="family-heads"
   pageMark="👑"
-  description={`How Old World picks a family head: the sitting head keeps the job while eligible; otherwise the first eligible family member in your dynastic line of succession; otherwise a weighted random roll (d${heads.weights.roll}, +${heads.weights.overAge} over age ${heads.preferredMinAge}, +${heads.weights.council} on Council, +${heads.weights.job} with a job, modified by traits like Power Hungry). Transcribed from Player.updateFamilyHead in the game source.`}
+  description={`How Old World picks a family head. The sitting head keeps the job while eligible. Otherwise the job goes to the first eligible family member in your dynastic line of succession, and otherwise to the winner of a weighted random roll of d${heads.weights.roll}, with +${heads.weights.overAge} over age ${heads.preferredMinAge}, +${heads.weights.council} on the Council and +${heads.weights.job} with a job, modified by traits such as Power Hungry. Transcribed from Player.updateFamilyHead in the game source.`}
   pageStats={[
     { label: 'random roll', value: `d${heads.weights.roll}` },
     { label: 'trait modifiers', value: heads.traitModifiers.length },
@@ -24,12 +24,12 @@ const base = import.meta.env.BASE_URL;
   ]}
 >
   <p class="lede">
-    When a family needs a new head — its old one died, became leader, took a
-    religion's mantle, or got locked up — the game does not simply crown the
-    eldest. The selection has a strict order, and only the final fallback is
-    random. Transcribed from <code>Player.updateFamilyHead</code> and
-    <code>Character.canHeadFamily</code> in the game source; numbers from
-    <code>trait.xml</code> and <code>globalsInt.xml</code>.
+    A family needs a new head when the old one dies, becomes leader, takes
+    charge of a religion or is imprisoned, and the game does not simply crown the
+    eldest member. The selection follows a strict order, and only the last step is
+    random. The rules are transcribed from <code>Player.updateFamilyHead</code>
+    and <code>Character.canHeadFamily</code> in the game source, and the numbers
+    come from <code>trait.xml</code> and <code>globalsInt.xml</code>.
   </p>
 
   <section class="fh-section">
@@ -37,26 +37,27 @@ const base = import.meta.env.BASE_URL;
     <ol class="fh-steps">
       <li>
         <b>The sitting head keeps the job</b> for as long as they remain
-        eligible. There is no re-election — a head is only replaced when
-        something disqualifies them (death, becoming leader, religion
-        headship, imprisonment, exile…).
+        eligible. There is no re-election, and a head is replaced only when
+        something disqualifies them, such as death, becoming leader, taking
+        charge of a religion, imprisonment or exile.
       </li>
       <li>
-        <b>Royal succession claims it first.</b> The game walks your dynastic
-        line of succession (in succession order, honoring your succession
-        law's gender rules); the <em>first</em> person in it who belongs to
-        the family and is eligible becomes head — ahead of every ordinary
-        family member.
+        <b>Royal succession claims the job first.</b> The game walks your
+        dynastic line of succession in order, following your succession law's
+        gender rules, and the <em>first</em> person in it who belongs to the
+        family and is eligible becomes head, ahead of every ordinary family
+        member.
       </li>
       <li>
-        <b>Otherwise it's a weighted random roll</b> among all eligible
-        members. Each rolls 1–{heads.weights.roll}, then adds:
+        <b>Otherwise the game runs a weighted random roll</b> among all eligible
+        members. Each one rolls 1 to {heads.weights.roll} and then adds the
+        following.
         <ul class="fh-weights">
           <li><b>+{heads.weights.overAge}</b> if older than {heads.preferredMinAge}</li>
           <li><b>+{heads.weights.council}</b> if seated on the Council</li>
           <li><b>+{heads.weights.job}</b> if holding a job (governor, general, agent, …)</li>
         </ul>
-        …and the total is scaled by trait modifiers. Highest total wins.
+        The total is then scaled by trait modifiers, and the highest total wins.
       </li>
     </ol>
   </section>
@@ -64,8 +65,8 @@ const base = import.meta.env.BASE_URL;
   <section class="fh-section">
     <h2 class="fh-h2">Trait modifiers</h2>
     <p class="fh-note">
-      Applied as a percentage to the character's final total in step 3 —
-      schemers and the ambitious push their way to the front.
+      A trait modifier applies as a percentage to the character's final total in
+      step 3, so a schemer or an ambitious character reaches the front.
     </p>
     <table class="fh-tbl">
       <thead><tr><th>Trait</th><th>Selection weight</th></tr></thead>
@@ -83,14 +84,15 @@ const base = import.meta.env.BASE_URL;
   <section class="fh-section">
     <h2 class="fh-h2">Who is eligible</h2>
     <p class="fh-note">
-      From <code>Character.canHeadFamily</code> — every check must pass:
+      Every check below comes from <code>Character.canHeadFamily</code>, and a
+      candidate must pass all of them.
     </p>
     <ul class="fh-elig">
       <li>An <b>adult</b> member of that family, alive and in your court</li>
       <li>Not your <b>current leader</b></li>
       <li>Not the <b>head of a religion</b></li>
       <li>Carrying none of the disqualifying status traits below</li>
-      <li>Not mortally ill — characters with a death-probability trait are skipped when picking a <em>new</em> head (a sitting head who falls ill is not deposed)</li>
+      <li>Not mortally ill, because a character with a trait that carries a death chance is skipped when the game picks a <em>new</em> head, although a sitting head who falls ill is not removed</li>
     </ul>
     <div class="fh-blocked">
       <div class="fh-blocked__hd">Disqualifying traits ({heads.blockedTraits.length})</div>
@@ -101,13 +103,13 @@ const base = import.meta.env.BASE_URL;
   </section>
 
   <p class="provenance">
-    Mechanic transcribed from <code>Player.updateFamilyHead</code> and
-    <code>Character.canHeadFamily</code> in the game source; the age
-    preference (<code>FAMILY_HEAD_PREFERRED_MIN_AGE</code>), trait weights
-    (<code>iFamilyHeadModifier</code>) and disqualifying traits
-    (<code>bNoFamilyHead</code>) are read from the game's XML each patch.
-    Both source functions are hash-watched, so a patch that changes the
-    weights trips this site's drift alarm. See also
+    The mechanic is transcribed from <code>Player.updateFamilyHead</code> and
+    <code>Character.canHeadFamily</code> in the game source. The age preference
+    (<code>FAMILY_HEAD_PREFERRED_MIN_AGE</code>), the trait weights
+    (<code>iFamilyHeadModifier</code>) and the disqualifying traits
+    (<code>bNoFamilyHead</code>) are read from the game's XML each patch. This
+    site hashes both source functions, so a patch that changes the weights raises
+    an alarm here. See also
     <a href={`${base}families`}>Families</a>.
   </p>
 </Base>

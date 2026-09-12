@@ -24,7 +24,7 @@ const unit = tribe.unit;
 <Base
   title={tribe.name}
   active="tribes"
-  description={`Old World tribe — ${tribe.name}${unit ? ` · signature unit: ${unit.unitName} (${unit.promoName})` : ''}.`}
+  description={`The Old World tribe ${tribe.name}${unit ? `, whose signature unit is the ${unit.unitName} with ${unit.promoName}` : ''}.`}
 >
   <nav class="crumbs">
     <a href={`${base}tribes`}>Tribes</a>
@@ -95,9 +95,9 @@ const unit = tribe.unit;
         <dt>Default state</dt>
         <dd>{tribe.defaultDiplomacy}</dd>
         <dt>Negotiable</dt>
-        <dd>{tribe.diplomacy ? 'Yes — peace, truce, alliance' : 'No'}</dd>
+        <dd>{tribe.diplomacy ? 'Yes, through peace, truce and alliance' : 'No'}</dd>
         <dt>Mercenary recruit</dt>
-        <dd>{tribe.mercenary ? 'Yes — friendly state unlocks hires' : 'No'}</dd>
+        <dd>{tribe.mercenary ? 'Yes, and a friendly state unlocks hires' : 'No'}</dd>
         <dt>Pillage priority</dt>
         <dd>{tribe.iPillagePriority}</dd>
         <dt>City attack priority</dt>

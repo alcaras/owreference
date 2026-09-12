@@ -83,13 +83,14 @@ const GROUP_GLYPH: Record<string, string> = {
   { label: 'victory types', value: victories.length },
 ]}>
   <p class="amb-intro">
-    Ambitions are the game's quest ladder: each new leader is offered goals
-    drawn from <code>goal.xml</code>, filtered by <strong>tier</strong> — the
-    slot it can fill, i.e. how many ambitions you have already completed plus
-    one. Complete {globals.maxAmbitions} (including one
-    <strong>National Ambition</strong>, the tier-{globals.maxAmbitions} capstone)
-    to win an Ambition victory. There is no per-goal reward field in the XML:
-    each finished ambition counts toward the {globals.maxAmbitions}, raises
+    Ambitions are the game's ladder of goals. Each new leader is offered goals
+    drawn from <code>goal.xml</code>, filtered by <strong>tier</strong>, which is
+    the slot the goal can fill, meaning how many ambitions you have already
+    completed plus one. Completing {globals.maxAmbitions} of them wins an
+    Ambition victory, and one of those must be a
+    <strong>National Ambition</strong>, which is the tier
+    {globals.maxAmbitions} goal. The XML has no reward field on a goal. Each
+    finished ambition counts toward the {globals.maxAmbitions}, raises
     Legitimacy through the cognomen system
     (<code>STAT_AMBITION_ACHIEVED</code>), and can fire follow-up events. A new
     ambition is offered no sooner than {globals.ambitionDelayTurns} turns after
@@ -138,10 +139,11 @@ const GROUP_GLYPH: Record<string, string> = {
       </table>
     </div></div>
     <p class="amb-vpnote">
-      The Victory Point target is computed per map — every city site, buildable
-      VP improvement and project on the map feeds it
-      (<code>Game.cs&nbsp;·&nbsp;getVPToWin()</code>), scaled down by team count —
-      then shifted by the game-setup Victory Point option:
+      The Victory Point target is computed for each map, because every city site,
+      buildable VP improvement and project on the map feeds it
+      (<code>Game.cs getVPToWin()</code>). The result is scaled down by the team
+      count and then shifted by the Victory Point option in game setup, which
+      offers
       {victoryPointOptions.map((o, i) => (
         <span class="amb-vpopt">{o.name} {o.modifier >= 0 ? `+${o.modifier}` : o.modifier}%{i < victoryPointOptions.length - 1 ? ' · ' : ''}</span>
       ))}.

@@ -693,7 +693,7 @@ def main() -> int:
               "drawn by weight from those whose conditions are met; the percentage "
               "is each story's share of the eligible-by-weight pool."),
         group(expeditions, "expeditions", "Expeditions",
-              "The scripted “send a character off to explore distant lands” chains. "
+              "The scripted chains in which you send a character off to explore distant lands. "
               "Some entries are follow-ups that only fire after an earlier expedition "
               "via an event link.",
               mechanics=expedition_mechanics(expeditions, eopt_idx, story_name)),

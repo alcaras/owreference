@@ -152,11 +152,11 @@ const fmtNet = (n: number) => (n > 0 ? `+${n}` : `${n}`);
   ]}
 >
   <p class="lede">
-    <b>If you're facing a unit, build these</b> — ranked by the trade, not raw damage.
+    <b>If you are facing a unit, build these.</b> They are ranked by the trade rather than by raw damage.
     Each pick reads <span class="key"><b class="k-str">STR</b> · unit · <b class="k-deal">dealt</b>/<b class="k-take">taken</b> · <b class="k-net">net</b></span>,
     where <i>dealt</i> is your damage attacking it and <i>taken</i> is its damage attacking you
     (<code>6 × StrAtt / StrDef</code>, both sides' anti-trait modifiers, full HP, open terrain,
-    no promotions — the same numbers as <a href={`${base}unit-damage`}>Unit Damage</a>).
+    no promotions, which are the same numbers as on <a href={`${base}unit-damage`}>Unit Damage</a>).
     Research costs live on <a href={`${base}science-to-unlock`}>Total Science to Unlock</a>.
   </p>
 
@@ -223,7 +223,7 @@ const fmtNet = (n: number) => (n > 0 ? `+${n}` : `${n}`);
                       <>
                       <span class="cell__none cell__dash">none under current filters</span>
                       {picks.map(p => (
-                        <a class="pick" data-nation={p.nation || ''} data-str={p.str} data-tech={p.techCost} data-net={p.net} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''} — ${p.cls}, STR ${p.str / 10}, ${p.techCost} science to unlock. Deals ${p.deal} attacking it; takes ${p.take} when it attacks. Net ${fmtNet(p.net)}.`}>
+                        <a class="pick" data-nation={p.nation || ''} data-str={p.str} data-tech={p.techCost} data-net={p.net} href={`${base}units#${p.slug}`} title={`${p.name}${p.nation ? ` (${p.nation})` : ''}: ${p.cls}, STR ${p.str / 10}, ${p.techCost} science to unlock. Deals ${p.deal} attacking it, and takes ${p.take} when it attacks. Net ${fmtNet(p.net)}.`}>
                           <span class="pick__str">{p.str / 10}</span>
                           <img class="pick__icon" src={`${base}img/icons/units/${p.iconSlug}.png`} alt="" loading="lazy" />
                           <span class="pick__name">{p.name}</span>

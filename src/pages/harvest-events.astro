@@ -55,12 +55,12 @@ const resourceCount = sections.filter(s => s.icon).length;
 ]}>
   <section class="he-intro">
     <p>
-      A <strong>Harvest Event</strong> can fire when a Worker finishes gathering a tile Resource — the
-      tile yields its stockpile and a story-frame asks the leader to choose what to do with the windfall.
-      Each option grants different rewards to the player, city, or family. Events are flagged in
-      <code>eventStory*.xml</code> with <code>Class=EVENTCLASS_HARVESTING</code> and trigger on
-      <code>EVENTTRIGGER_RESOURCE_HARVESTED</code>; the reward chips below are the humanized
-      <code>bonus*.xml</code> payloads.
+      A <strong>Harvest Event</strong> can fire when a Worker finishes gathering a tile Resource. The
+      tile yields its stockpile, and a short story asks the leader what to do with the windfall. Each
+      option grants different rewards to the player, the city or the family. These events are flagged
+      in <code>eventStory*.xml</code> with <code>Class=EVENTCLASS_HARVESTING</code> and trigger on
+      <code>EVENTTRIGGER_RESOURCE_HARVESTED</code>, and the reward chips below are the
+      <code>bonus*.xml</code> payloads in plain words.
     </p>
   </section>
 
@@ -101,11 +101,11 @@ const resourceCount = sections.filter(s => s.icon).length;
                     : 'Excluded when Competitive Events is on (Competitive Mode tournaments)'}
                 >CM {(ev as any).cmEligible !== false ? '✓' : '✗'}</span>
                 {(ev as any).minTurns && <span class="chip--turn" title="Earliest turn this event can fire (its own minimum, or its event class's)">Turn {(ev as any).minTurns}+</span>}
-                {ev.oncePerGame && <span class="ev-card__once" title="iRepeatTurns = −1 — this event can only fire once per game">once per game</span>}
+                {ev.oncePerGame && <span class="ev-card__once" title="iRepeatTurns = −1, so this event can only fire once per game">once per game</span>}
               </h3>
               {chainIndex[ev.id] && (
                 <a class="ev-card__chain" href={`${base}events/chains/${chainIndex[ev.id].slug}#${ev.id}`}>
-                  ⛓ part of the {chainIndex[ev.id].title} chain — view map →
+                  ⛓ part of the {chainIndex[ev.id].title} chain, view map →
                 </a>
               )}
               {ev.options && ev.options.length > 0 && (

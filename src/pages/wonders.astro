@@ -70,7 +70,7 @@ const FACETS: Facet[] = [
   title="Wonders"
   active="wonders"
   pageMark="🏛️"
-  description={`The ${wonders.length} World Wonders of Old World (${wonders.length - dlcCount} base game, ${dlcCount} DLC) — build cost broken out per yield (Food, Iron, Stone, Wood, Civics, sortable), Culture tier, tile location requirement, per-turn yield output, and every benefit grouped by scope (Global, All cities, This city, Tile) so it is clear what reaches your whole empire versus just the wonder's city. Every fact is derived from the game's improvement.xml, not the legacy spreadsheet. Buildable by any nation.`}
+  description={`The ${wonders.length} World Wonders of Old World, with ${wonders.length - dlcCount} in the base game and ${dlcCount} in DLC. Covers the build cost per yield for Food, Iron, Stone, Wood and Civics, which the table can sort, along with the Culture tier, the tile the wonder needs, its yield per turn, and every benefit grouped by whether it reaches the whole empire, all cities, the wonder's own city or its tile. Every fact is derived from the game's improvement.xml rather than the legacy spreadsheet, and any nation can build these wonders.`}
 >
   <div class="page-meta">
     <h1 class="page-title">Wonders</h1>
@@ -89,10 +89,11 @@ const FACETS: Facet[] = [
   </div>
 
   <p class="lede">
-    Completing a wonder always grants <b>Legitimacy</b> by its tier — and many wonders also fire a
-    <b>decision event</b> with its own rewards (the <span class="chip chip--event chip--event-demo">📜 Event</span>
-    chip below): see <a href={`${base}wonder-events`}>Wonder Events</a> for every choice.
-    Every wonder also <b>spreads borders</b> one tile around it when finished: see
+    Completing a wonder always grants <b>Legitimacy</b> according to its tier, and many wonders also
+    fire a <b>decision event</b> with its own rewards, marked by the
+    <span class="chip chip--event chip--event-demo">📜 Event</span> chip below. See
+    <a href={`${base}wonder-events`}>Wonder Events</a> for every choice. Every wonder also
+    <b>spreads borders</b> one tile around it when finished, as covered on
     <a href={`${base}border-expansion`}>Border Expansion</a>.
   </p>
 
@@ -155,7 +156,7 @@ const FACETS: Facet[] = [
                 </span>
               </th>
             ))}
-            <th class="nhdr nhdr--col" title="Benefits grouped by reach — derived from XML"><span class="nhdr__name">Benefits by scope</span></th>
+            <th class="nhdr nhdr--col" title="Benefits grouped by how far they reach, derived from the XML"><span class="nhdr__name">Benefits by scope</span></th>
           </tr>
         </thead>
         <tbody>
@@ -183,7 +184,7 @@ const FACETS: Facet[] = [
                       {w.isHolyCity && <span class="chip chip--holy" title="Holy City Wonder">✧ Holy</span>}
                       {(w as any).events?.length > 0 && (
                         <a class="chip chip--event" href={`${base}wonder-events#${(w as any).events[0].id}`}
-                           title="Completing this wonder can fire a decision event — see its choices and rewards">
+                           title="Completing this wonder can fire a decision event. See its choices and rewards.">
                           📜 Event
                         </a>
                       )}

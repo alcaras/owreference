@@ -49,7 +49,7 @@ for (const g of actionGroups) {
   title="Diplomacy"
   active="diplomacy"
   pageMark="🕊️"
-  description="Old World's diplomacy, XML-canonical: the four diplomatic states and their opinion effects, war score and war states, and every state-changing action — truces, peace, alliances, tribute and third-party wars — with costs and requirements."
+  description="Diplomacy in Old World, taken from the game's XML. Covers the four diplomatic states and their opinion effects, war score and war states, and every action that changes a state, including truces, peace, alliances, tribute and third-party wars, with costs and requirements."
   pageStats={[
     { label: 'states', value: counts.states },
     { label: 'war states', value: counts.warStates },
@@ -62,11 +62,11 @@ for (const g of actionGroups) {
 
     <!-- ── Diplomatic states ─────────────────────────────────────── -->
     <section class="dip__sec" id="states">
-      <h2 class="dip__h">Diplomatic States</h2>
+      <h2 class="dip__h">Diplomatic states</h2>
       <p class="dip__intro">
-        Relations with every Nation and Tribe sit in exactly one of these states.
-        War ↔ Truce ↔ Peace move one step at a time via the actions below;
-        Team is fixed at game start.
+        Your relationship with every Nation and Tribe sits in one of the states below. War, Truce
+        and Peace move one step at a time through the actions listed further down, and Team is
+        fixed when the game starts.
       </p>
       <div class="states">
         {states.map(s => (
@@ -96,12 +96,12 @@ for (const g of actionGroups) {
 
     <!-- ── War score & war states ────────────────────────────────── -->
     <section class="dip__sec" id="war-score">
-      <h2 class="dip__h">War Score &amp; War States</h2>
+      <h2 class="dip__h">War score and war states</h2>
       <p class="dip__intro"><LinkedText text={warScore.note} showIcons={false} /></p>
 
       <div class="warwrap">
         <div class="warcol">
-          <h3 class="dip__sub">War states <span class="dip__subnote">(by score difference)</span></h3>
+          <h3 class="dip__sub">War states <span class="dip__subnote">by score difference</span></h3>
           <table class="dtbl">
             <thead>
               <tr>
@@ -125,7 +125,7 @@ for (const g of actionGroups) {
         </div>
 
         <div class="warcol">
-          <h3 class="dip__sub">War score events <span class="dip__subnote">(from game source)</span></h3>
+          <h3 class="dip__sub">War score events <span class="dip__subnote">from the game source</span></h3>
           <table class="dtbl">
             <thead>
               <tr><th>vs Nations</th><th class="dtbl__num">Score</th></tr>
@@ -139,7 +139,7 @@ for (const g of actionGroups) {
               ))}
             </tbody>
             <tbody>
-              <tr class="dtbl__subhead"><th>vs Tribes <span class="dip__subnote">(doubled scale, your point of view)</span></th><th class="dtbl__num">Score</th></tr>
+              <tr class="dtbl__subhead"><th>vs Tribes <span class="dip__subnote">doubled scale, from your point of view</span></th><th class="dtbl__num">Score</th></tr>
               {warScore.tribes.map(e => (
                 <tr>
                   <td><LinkedText text={e.event} showIcons={false} /></td>
@@ -154,17 +154,17 @@ for (const g of actionGroups) {
 
     <!-- ── Rival assessment scales ───────────────────────────────── -->
     <section class="dip__sec" id="rivals">
-      <h2 class="dip__h">How Rivals Are Described</h2>
+      <h2 class="dip__h">How rivals are described</h2>
       <p class="dip__intro">
-        The diplomacy screen never shows a rival's science or army size — it shows a word.
-        Each word is a band, and both comparisons are <b>ratios of them to you</b>, so the same
-        rival changes description when <em>you</em> grow. Distance bands and the war-chance
-        modifiers below are what the AI actually acts on.
+        The diplomacy screen shows a word rather than a rival's science or army size. Each word is
+        a band, and both comparisons are <b>ratios of them to you</b>, so the same rival changes
+        description as <em>you</em> grow. The distance bands and the war chance modifiers below are
+        what the AI acts on.
       </p>
 
       <div class="warwrap">
         <div class="warcol">
-          <h3 class="dip__sub">Technology <span class="dip__subnote">(their lifetime Science ÷ yours)</span></h3>
+          <h3 class="dip__sub">Technology <span class="dip__subnote">their lifetime Science ÷ yours</span></h3>
           <table class="dtbl">
             <thead><tr><th>Word</th><th>Their science, as % of yours</th></tr></thead>
             <tbody>
@@ -177,15 +177,15 @@ for (const g of actionGroups) {
             </tbody>
           </table>
           <p class="dip__note">
-            Counts <b>all Science ever earned</b> (the running total, not techs known and not
-            your current rate), so it moves slowly and never falls.
-            <code>Player.calculateKnowledgeOf</code>. Purely informational — no AI modifiers
-            hang off it.
+            The band counts <b>all Science ever earned</b>, which is the running total rather than
+            the techs you know or your current rate, so it moves slowly and never falls. The code is
+            <code>Player.calculateKnowledgeOf</code>. The band is informational only, and no AI
+            modifier depends on it.
           </p>
         </div>
 
         <div class="warcol">
-          <h3 class="dip__sub">Military <span class="dip__subnote">(their army strength ÷ yours)</span></h3>
+          <h3 class="dip__sub">Military <span class="dip__subnote">their army strength ÷ yours</span></h3>
           <table class="dtbl">
             <thead>
               <tr>
@@ -209,15 +209,15 @@ for (const g of actionGroups) {
             </tbody>
           </table>
           <p class="dip__note">
-            Strength is the sum of every unit's base strength (<code>Unit.getStrengthRating</code>) —
-            damaged units still count full, and ships count for less on low-water maps. An AI
-            will only consider declaring war from <b>Similar</b> upward, and a
-            <b>Much Weaker</b> tribe will never accept peace.
+            Strength is the sum of every unit's base strength
+            (<code>Unit.getStrengthRating</code>), where a damaged unit still counts in full and a
+            ship counts for less on a map with little water. An AI considers declaring war only from
+            <b>Similar</b> upward, and a <b>Much Weaker</b> tribe never accepts peace.
           </p>
         </div>
       </div>
 
-      <h3 class="dip__sub">Distance <span class="dip__subnote">(nearest cities, in tiles)</span></h3>
+      <h3 class="dip__sub">Distance <span class="dip__subnote">between nearest cities, in tiles</span></h3>
       <table class="dtbl dtbl--wide">
         <thead>
           <tr>
@@ -240,19 +240,19 @@ for (const g of actionGroups) {
         </tbody>
       </table>
       <p class="dip__note">
-        Proximity is the harshest of the three: a <b>Very Close</b> neighbour takes a standing
-        <b>−60</b> opinion of you for nothing but existing nearby, and only the two farthest
-        bands stop tribes declaring war outright.
+        Proximity is the harshest of the three bands. A <b>Very Close</b> neighbour takes a
+        standing <b>−60</b> opinion of you simply for being nearby, and only the two farthest bands
+        stop tribes from declaring war outright.
       </p>
     </section>
 
     <!-- ── Actions ───────────────────────────────────────────────── -->
     <section class="dip__sec" id="actions">
-      <h2 class="dip__h">Diplomacy Actions</h2>
+      <h2 class="dip__h">Diplomacy actions</h2>
       <p class="dip__intro">
-        Costs are paid from your stockpile; “opinion-scaled” costs are modified
-        by the performing character’s opinion of you
-        (−50% at Friendly, up to +100% at Furious).
+        Costs are paid from your stockpile. A cost marked as scaled by opinion changes with the
+        opinion the performing character holds of you, from −50% at Friendly up to +100% at
+        Furious.
       </p>
 
       {actionGroups.map(group => (
@@ -304,7 +304,7 @@ for (const g of actionGroups) {
                             </span>
                           ))}
                           {a.costsOpinion.map(c => (
-                            <span class="ycost ycost--op" title={`${c.value} ${c.label} — opinion-scaled`}>
+                            <span class="ycost ycost--op" title={`${c.value} ${c.label}, scaled by opinion`}>
                               <b>{c.value}</b>
                               <img class="ycost__ic" src={`${base}img/icons/yields/${c.yield}.png`} alt={c.label} onerror="this.replaceWith(document.createTextNode(' ' + this.alt))" />
                               <i>±</i>
@@ -358,7 +358,7 @@ for (const g of actionGroups) {
                             </span>
                           ))}
                           {o.costsOpinion.map(c => (
-                            <span class="ycost ycost--op" title={`${c.value} ${c.label} — opinion-scaled`}>
+                            <span class="ycost ycost--op" title={`${c.value} ${c.label}, scaled by opinion`}>
                               <b>{c.value}</b>
                               <img class="ycost__ic" src={`${base}img/icons/yields/${c.yield}.png`} alt={c.label} onerror="this.replaceWith(document.createTextNode(' ' + this.alt))" />
                               <i>±</i>
@@ -392,7 +392,7 @@ for (const g of actionGroups) {
 
     <!-- ── Constants ─────────────────────────────────────────────── -->
     <section class="dip__sec" id="constants">
-      <h2 class="dip__h">Treaty &amp; Tribute Constants</h2>
+      <h2 class="dip__h">Treaty and tribute constants</h2>
       <table class="dtbl dtbl--consts">
         <thead>
           <tr><th>Constant</th><th class="dtbl__num">Value</th><th>What it does</th></tr>

@@ -64,7 +64,7 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
   title="Autonomous Rule"
   active="autonomous-rule"
   pageMark="🗽"
-  description="Autonomous Rule in Old World: what the hidden project does to a city (+1 Science and +2 Money per citizen, no unit builds, no hurrying, production chosen by the AI), exactly what an autonomous city can and cannot build — projects like Decrees, Festivals and Opulence yes, every unit no — how the planner picks, and every event that grants or ends autonomy, from eventStory.xml and PlayerAI.cs."
+  description="What Autonomous Rule does to a city in Old World. The hidden project pays +1 Science and +2 Money per citizen, blocks unit builds and hurrying, and hands production to the AI. The page lists what an autonomous city can build, such as Decrees, Festivals and Opulence, what it cannot build, which is every unit, how the planner chooses, and every event that grants or ends autonomy, from eventStory.xml and PlayerAI.cs."
   pageStats={[
     { label: 'per citizen', value: carrier.yields.join(' · ') },
     { label: 'units', value: 'none' },
@@ -73,13 +73,14 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
   ]}
 >
   <p class="lede">
-    <b>Autonomous Rule</b> is a city state you never build: events install the hidden project
-    <Term id={project.id} /> in one city. That city then pays you
-    {carrier.yields.map((y, i) => (<>{i > 0 && ' and '}<b><LinkedText text={y} /></b></>))},
-    but <b>cannot build units</b>, <b>cannot hurry</b>, and hands its production queue to the
-    game's AI planner — similar to the one the <a href={`${base}grand-vizier`}>Grand Vizier</a> uses,
-    but with the unit pool removed, so it behaves quite differently in practice.
-    You keep everything outside the queue: tiles, workers, laws, the Governor.
+    <b>Autonomous Rule</b> is a city state you never choose, because events install the hidden
+    project <Term id={project.id} /> in one city. The city then pays you
+    {carrier.yields.map((y, i) => (<>{i > 0 && ' and '}<b><LinkedText text={y} /></b></>))}, but it
+    <b>cannot build units</b>, it <b>cannot hurry</b>, and it hands its production queue to the
+    game's AI planner. The planner is the same one the
+    <a href={`${base}grand-vizier`}>Grand Vizier</a> uses with the unit pool removed, so it behaves
+    differently in practice. You keep everything outside the queue, including tiles, workers, laws
+    and the Governor.
   </p>
 
   <section class="cc-section">
@@ -88,15 +89,16 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
       <tbody>
         <tr><th scope="row">Effect</th><td>{carrier.effects.map(x => <div><LinkedText text={x} /></div>)}</td></tr>
         <tr><th scope="row">Copies</th><td set:html={`One per city (<code>iMaxCount ${project.maxCount}</code>)`} /></tr>
-        <tr><th scope="row">Buildable</th><td>Never — <code>bHidden</code>; only <code>aeAddProjects</code> bonuses place it</td></tr>
+        <tr><th scope="row">Buildable</th><td>Never, because it is <code>bHidden</code>. Only an <code>aeAddProjects</code> bonus places it</td></tr>
         <tr><th scope="row">Lost when</th><td>An event removes it (<code>aeRemoveProjects</code>), or the city is captured (<code>bCaptureDestroy</code>)</td></tr>
         <tr><th scope="row">Hurry</th><td>Blocked (<code>bNoHurry</code>)</td></tr>
-        <tr><th scope="row">Governor</th><td>Most granting events also make the requesting character the city's <LinkedText text="Governor" />; the yields do not depend on it</td></tr>
+        <tr><th scope="row">Governor</th><td>Most granting events also make the requesting character the city's <LinkedText text="Governor" />, although the yields do not depend on that</td></tr>
       </tbody>
     </table>
     <p class="cc-fineprint">
-      The per-citizen yields are <code>aiYieldRatePopulation</code> (Science 10, Money 20 in
-      XML, ÷10 for display). A ten-citizen city under Autonomous Rule pays 10 Science and 20 Money a turn.
+      The yields per citizen are <code>aiYieldRatePopulation</code>, which is Science 10 and Money
+      20 in the XML, divided by 10 for display. A city of ten citizens under Autonomous Rule pays
+      10 Science and 20 Money a turn.
     </p>
   </section>
 
@@ -108,45 +110,47 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
         <tbody>
           <tr>
             <td>
-              <b>Any project the city could normally build</b> — content, tech, culture and
-              prerequisite gates still apply, and the goods must already be in stock. That includes:
+              <b>Any project the city could normally build.</b> Content, tech, culture and
+              prerequisite gates still apply, and the goods must already be in stock. Examples
+              include the following.
               <ul class="cc-inner">
-                <li><Term id={examples.decree.id} /> and its tiers (Statesmen seat + Constitution) — repeatable projects are re-chosen on merit each time; the repeat flag is ignored</li>
+                <li><Term id={examples.decree.id} /> and its tiers, which need the Statesmen seat or Constitution. A repeatable project is chosen again on merit each time, because the repeat flag is ignored</li>
                 <li><Term id={examples.festival.id} />, <Term id={examples.inquiry.id} />, Hunts and the other repeatable Civics sinks</li>
                 <li><Term id={examples.treasury.id} />, Forum and the other one-per-city tiers</li>
-                <li><Term id={examples.opulence.id} /> (Behind the Throne: 100 Civics + 500 Money, Developing culture, needs Luxurious Estates with a luxury)</li>
-                <li>{defensiveProjects.map((p, i) => (<>{i > 0 && ', '}<Term id={p.id} /></>))} — the only projects allowed while the city is in danger</li>
-                <li><b>Suppress Dissent</b> ({governorRequiredProjects.length} projects) — only if the city is governed and has the matching Dissent</li>
+                <li><Term id={examples.opulence.id} /> from Behind the Throne, costing 100 Civics and 500 Money at Developing culture, and needing Luxurious Estates with a luxury</li>
+                <li>{defensiveProjects.map((p, i) => (<>{i > 0 && ', '}<Term id={p.id} /></>))}, which are the only projects allowed while the city is in danger</li>
+                <li><b>Suppress Dissent</b>, {governorRequiredProjects.length} projects, allowed only when the city is governed and has the matching Dissent</li>
               </ul>
-              <b>Specialists</b> — the next tier on any worked tile, rural or urban.
+              <b>Specialists</b> are also allowed, meaning the next tier on any worked tile, rural or urban.
             </td>
             <td>
-              <b>Every unit.</b> <code>bNoBuildUnits</code> fails <code>canBuildUnit</code>, so the
-              planner's unit pool is empty: no military, no ships, and also no
-              <LinkedText text="Worker" />, <LinkedText text="Settler" />, <LinkedText text="Scout" />,
-              <LinkedText text="Disciple" /> or missionary from this city.<br /><br />
+              <b>Every unit.</b> <code>bNoBuildUnits</code> makes <code>canBuildUnit</code> fail, so
+              the planner's unit pool is empty. The city builds no military and no ships, and it also
+              builds no <LinkedText text="Worker" />, <LinkedText text="Settler" />,
+              <LinkedText text="Scout" />, <LinkedText text="Disciple" /> or missionary.<br /><br />
               <b>Hurrying</b> with any yield.<br /><br />
-              <b>Your queue edits</b> — add, reorder, remove, repeat. The tooltip says
-              “{autobuild.vizier.help.cannotChange.replace('{LIST}', project.name)}”.
+              <b>Your own queue edits</b>, meaning add, reorder, remove and repeat. The tooltip says
+              "{autobuild.vizier.help.cannotChange.replace('{LIST}', project.name)}".
             </td>
             <td>
-              <b>Worker jobs</b> — rural and urban improvements, roads, <LinkedText text="Wonders" />:
-              these are unit actions, not queue items.<br /><br />
-              <b>Buying tiles</b>, <b>Laws</b>, <b>missions</b>, <b>religion</b>, assigning or
+              <b>Worker jobs</b>, meaning rural and urban improvements, roads and
+              <LinkedText text="Wonders" />, because they are unit actions rather than queue
+              items.<br /><br />
+              <b>Buying tiles</b>, <b>Laws</b>, <b>missions</b>, <b>religion</b>, and assigning or
               replacing the <LinkedText text="Governor" />.<br /><br />
-              <b>Specialist choice is not yours</b>, though — specialists are queue items, so the
-              planner picks which tile and which tier.
+              <b>You do not choose specialists</b>, because specialists are queue items, so the
+              planner picks the tile and the tier.
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <p class="cc-fineprint">
-      The danger corner case: when the AI's threat estimate at the city exceeds its tile protection
-      (<code>isCityInDanger</code>, threshold {C.AI_CITY_MIN_DANGER}), specialists drop out and only
-      the defensive projects remain. With no units to fall back on, an autonomous city in danger
-      builds Walls, Moat or Towers if it legally can; if none qualifies the danger filter is lifted
-      and every project is back on the table.
+      Danger changes the pool. When the AI's threat estimate at the city exceeds the protection of
+      its tile (<code>isCityInDanger</code>, threshold {C.AI_CITY_MIN_DANGER}), specialists drop out
+      and only the defensive projects remain. An autonomous city has no units to fall back on, so it
+      builds Walls, Moat or Towers when it legally can. When none of them qualifies, the game lifts
+      the danger filter and every project is available again.
     </p>
   </section>
 
@@ -154,45 +158,48 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
     <h2 class="cc-h2">How it decides</h2>
     <p>
       At the start of your turn <code>AI.doAutomatedCityBuilds</code> runs the AI's city planner for
-      the autonomous city. It shares its code with the Grand Vizier's planner, but because units are
-      off the table here the outcomes differ: projects and specialists only, and in danger only
-      defensive projects. The full breakdown of the shared parts — filters, value formulas, the
-      build-time discount — is on the <a href={`${base}grand-vizier`}>Grand Vizier Rulership</a> page.
-      The short version for an autonomous city:
+      the autonomous city. The code is shared with the Grand Vizier's planner, but units are not
+      available here, so the outcomes differ. The planner picks projects and specialists, and in
+      danger it picks defensive projects only. The <a href={`${base}grand-vizier`}>Grand Vizier
+      Rulership</a> page covers the shared parts in full, including the filters, the value formulas
+      and the discount for slow builds. The steps for an autonomous city are below.
     </p>
     <ol class="cc-steps">
       <li><b>Repair first</b> if the city is damaged beyond its passive healing.</li>
       <li>
-        <b>Score every legal project</b> (effect value + finish bonus + ambition relevance −
-        cost − what it invalidates + ½ what it unlocks) and <b>every buildable specialist</b>
-        (yields, border growth, unlocks − cost).
+        <b>Score every legal project</b>, which is the effect value plus the finish bonus plus
+        ambition relevance, minus cost, minus what it invalidates, plus half of what it unlocks.
+        Then <b>score every buildable specialist</b> from its yields, border growth and unlocks,
+        minus cost.
       </li>
       <li>
-        <b>Discount by build time</b>: turns = ceil(cost ÷ city rate); at or under
-        {C.AI_MIN_PROJECT_BUILD_TURNS} turns full value, then value ×
+        <b>Discount by build time.</b> Turns are ceil(cost ÷ city rate), and a build of
+        {C.AI_MIN_PROJECT_BUILD_TURNS} turns or fewer keeps its full value. Above that the value is
+        multiplied by
         ({C.AI_HALF_VALUE_PROJECT_BUILD_TURNS} − {C.AI_MIN_PROJECT_BUILD_TURNS}) ÷ (turns +
         {C.AI_HALF_VALUE_PROJECT_BUILD_TURNS} − {2 * C.AI_MIN_PROJECT_BUILD_TURNS}). A
         {C.AI_HALF_VALUE_PROJECT_BUILD_TURNS}-turn build keeps half its value.
       </li>
       <li>
-        <b>Pay in empire-wide value order, never buying.</b> The city's winner competes with
-        every other autobuild city's winner for the yields in stock; an unaffordable winner is
-        skipped for the turn.
+        <b>Pay across the empire in value order, never buying.</b> The city's winner competes with
+        every other autobuild city's winner for the yields in stock, and a winner you cannot afford
+        is skipped for the turn.
       </li>
-      <li><b>Never idle</b>: if nothing was affordable the planner still queues the best legal item.</li>
+      <li><b>Never leave the city idle.</b> When nothing was affordable the planner still queues the best legal item.</li>
     </ol>
     <p class="cc-fineprint">
-      Because <code>projectValue</code> is floored at 1, a cheap project in a high-Civics city
-      often beats an expensive specialist. Opulence's 500 Money and Suppress Dissent's 100 Training
-      must already be in the treasury — the planner will not sell goods to get there.
+      Because <code>projectValue</code> is floored at 1, a cheap project in a city with high Civics
+      often beats an expensive specialist. The 500 Money for Opulence and the 100 Training for
+      Suppress Dissent must already be in the treasury, because the planner will not sell goods to
+      raise them.
     </p>
   </section>
 
   <section class="cc-section">
     <h2 class="cc-h2">How a city becomes autonomous</h2>
     <p>
-      Every event whose option places <Term id={project.id} /> in a city
-      (found by scanning <code>eventStory*.xml</code> for bonuses that add the project):
+      The table lists every event whose option places <Term id={project.id} /> in a city, found by
+      scanning <code>eventStory*.xml</code> for bonuses that add the project.
     </p>
     <div class="cc-scroll">
       <table class="cc-table cc-table--wide">
@@ -213,7 +220,7 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
                 <ul class="cc-inner">
                   {e.options.map(o => (
                     <li class={o.grants ? 'is-grant' : ''}>
-                      <i>“{clean(o.text)}”</i>
+                      <i>"{clean(o.text)}"</i>
                       {o.outcomes.length > 0 && <span class="cc-dim"> → {o.outcomes.join('; ')}</span>}
                     </li>
                   ))}
@@ -229,11 +236,11 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
   {during.length > 0 && (
     <section class="cc-section">
       <h2 class="cc-h2">While it lasts</h2>
-      <p>Events that only fire in a city under Autonomous Rule without ending it:</p>
+      <p>The events below fire only in a city under Autonomous Rule, and they do not end it.</p>
       <ul class="cc-bullets">
         {during.map(e => (
           <li id={e.id}>
-            {e.href ? <a href={`${base}${e.href}`}>{clean(e.title)}</a> : clean(e.title)} — {when(e)}.
+            {e.href ? <a href={`${base}${e.href}`}>{clean(e.title)}</a> : clean(e.title)}, {when(e)}.
           </li>
         ))}
       </ul>
@@ -243,8 +250,9 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
   <section class="cc-section">
     <h2 class="cc-h2">How it ends</h2>
     <p>
-      The project is removed by an event option, or destroyed when the city changes hands
-      (<code>bCaptureDestroy</code>). Taking a city back by force in these events spawns rebels.
+      An event option removes the project, and a change of owner destroys it
+      (<code>bCaptureDestroy</code>). Taking a city back by force in one of these events spawns
+      rebels.
     </p>
     <div class="cc-scroll">
       <table class="cc-table cc-table--wide">
@@ -265,7 +273,7 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
                 <ul class="cc-inner">
                   {e.options.map(o => (
                     <li class={o.removes ? 'is-end' : ''}>
-                      <i>“{clean(o.text)}”</i>
+                      <i>"{clean(o.text)}"</i>
                       {o.outcomes.length > 0 && <span class="cc-dim"> → {o.outcomes.join('; ')}</span>}
                     </li>
                   ))}
@@ -276,7 +284,7 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
           <tr>
             <td>City captured</td>
             <td>Any time</td>
-            <td><code>bCaptureDestroy</code> — the project is destroyed with the change of owner; recapturing does not restore it.</td>
+            <td><code>bCaptureDestroy</code> destroys the project when the owner changes, and recapturing the city does not restore it.</td>
           </tr>
         </tbody>
       </table>
@@ -292,10 +300,10 @@ const clean = (s: string) => s.replace(/\{[^}]*\}/g, m => {
     Source: <code>project-event.xml</code> (<code>PROJECT_AUTONOMOUS_RULE</code>),
     <code>effectCity.xml</code> (<code>EFFECTCITY_PROJECT_AUTONOMOUS_RULE</code>),
     <code>eventStory*.xml</code> / <code>eventOption*.xml</code> / <code>bonus-event*.xml</code>
-    (grant and end events), <code>subject.xml</code> (<code>SUBJECT_CITY_AUTONOMOUS_RULE</code>);
-    <code>City.cs</code> — <code>isAutoBuild</code>, <code>isNoBuildUnits</code>,
-    <code>canBuildUnit</code>, <code>canBuildProject</code>; <code>Game.cs</code> — the
-    <code>BUILD_*</code> action gates; <code>PlayerAI.cs</code> — <code>doAutomatedCityBuilds</code>,
+    (grant and end events) and <code>subject.xml</code> (<code>SUBJECT_CITY_AUTONOMOUS_RULE</code>).
+    <code>City.cs</code>, namely <code>isAutoBuild</code>, <code>isNoBuildUnits</code>,
+    <code>canBuildUnit</code> and <code>canBuildProject</code>. <code>Game.cs</code>, namely the
+    <code>BUILD_*</code> action gates. <code>PlayerAI.cs</code>, namely <code>doAutomatedCityBuilds</code>,
     <code>getBestBuild</code>, <code>isBuildProjectValid</code>, <code>getBuildValue</code>.
   </p>
 </Base>

@@ -31,7 +31,7 @@ const KIND_GLYPH: Record<string, string> = { added: '+', removed: '−', changed
   title="Patch notes"
   active="patch-notes"
   pageMark="🛠"
-  description="Old World patch notes — Mohawk's official build notes for each release, mirrored and entity-linked, with each note paired to the exact game-data change it produced, plus any data changes not mentioned in the notes."
+  description="Old World patch notes. Mohawk's official build notes for each release, mirrored and linked to the entities they name, with each note paired to the game-data change it produced, plus any data changes the notes do not mention."
 >
   <div class="page-meta">
     <h1 class="page-title">Patch notes</h1>
@@ -42,9 +42,9 @@ const KIND_GLYPH: Record<string, string> = { added: '+', removed: '−', changed
 
   <p class="pn-lede">
     Mohawk's official <a href="https://github.com/MohawkGames/main_buildnotes" target="_blank" rel="noopener">build notes</a>
-    for each release — mirrored and auto-linked. Under each note we surface the exact change our
-    reference detected in the game's XML when it re-synced the patch, and list any data changes the
-    notes don't mention.
+    for each release, mirrored here and linked automatically. Under each note is the change this
+    reference detected in the game's XML when it resynced the patch, along with any data changes the
+    notes do not mention.
   </p>
 
   {patchnotes.map((p: any) => (
@@ -114,9 +114,9 @@ const KIND_GLYPH: Record<string, string> = { added: '+', removed: '−', changed
             ))}
           </ul>
           <p class="pn-other__note">
-            Derived by diffing this patch's generated data against the previous patch's — so it
-            reflects game-XML changes, not reference-site tooling. Engine, AI and UI changes leave
-            no XML trace and won't appear here.
+            The list comes from diffing this patch's generated data against the previous patch's, so
+            it reflects changes in the game's XML rather than changes to this site's tooling. Engine,
+            AI and UI changes leave no trace in the XML and do not appear here.
           </p>
         </section>
       )}

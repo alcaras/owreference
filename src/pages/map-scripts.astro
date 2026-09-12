@@ -46,7 +46,7 @@ for (const s of scripts) {
   title="Map Scripts"
   active="map-scripts"
   pageMark="🗺️"
-  description="Every procedurally-generated map script in Old World — Continent, Inland Sea, Archipelago, Seaside and more — with each script's generation options (player start, tribes, terrain, water). Pulled XML-canonical from the game's files."
+  description="Every map script Old World generates procedurally, including Continent, Inland Sea, Archipelago and Seaside, with each script's generation options for player start, tribes, terrain and water, pulled from the game's own files."
   pageStats={[
     { label: 'generated scripts', value: generators.length },
     { label: 'special layouts', value: special.length },
@@ -55,14 +55,14 @@ for (const s of scripts) {
   ]}
 >
   <p class="lede">
-    The map types the game builds procedurally when you start a new game —
-    not the hand-authored preset scenario maps. Each script below lists
-    the generation knobs it exposes (player start, tribes, terrain,
-    water). Scripts with no options generate a fixed layout.
-    Previews are real sample generations (three seeds each) at default
-    options — 6-player Medium maps, or the intended 1v1 Duel size for
-    duel scripts — showing terrain, rivers, resources, city sites (pink
-    dots) and player capitals (stars).
+    The map types the game builds procedurally when you start a new game,
+    rather than the preset scenario maps drawn by hand. Each script below
+    lists the generation settings it exposes for player start, tribes,
+    terrain and water, and a script with no options generates a fixed
+    layout. The previews are real sample generations from three seeds each,
+    at default options, on a 6-player Medium map, or at the intended 1v1
+    size for a duel script. They show terrain, rivers, resources, city
+    sites as pink dots and player capitals as stars.
   </p>
 
   <div class="ms-toolbar">
@@ -86,7 +86,7 @@ for (const s of scripts) {
               <figure class="ms-prev">
                 <div class="ms-prev__strip" data-n={prevs.length}>
                   {prevs.map(p => (
-                    <a href={p.src} target="_blank" rel="noopener" title={`${s.name} — ${previewKind(s)} sample ${p.n} (click to enlarge)`}>
+                    <a href={p.src} target="_blank" rel="noopener" title={`${s.name}, ${previewKind(s)} sample ${p.n}. Click to enlarge.`}>
                       <img src={p.src} alt={`${s.name} map preview, ${previewKind(s)} sample ${p.n}`} loading="lazy" decoding="async" />
                     </a>
                   ))}
@@ -95,7 +95,7 @@ for (const s of scripts) {
               </figure>
             )}
             {prevs.length === 0 && (
-              <p class="ms-prev__none">Sample previews unavailable — the offline map generator can't build this script on the current game patch.</p>
+              <p class="ms-prev__none">Sample previews are unavailable, because the offline map generator cannot build this script on the current game patch.</p>
             )}
             {s.optionGroups.length > 0 && (
               <dl class="ms-opts">
@@ -134,7 +134,7 @@ for (const s of scripts) {
                 <figure class="ms-prev">
                   <div class="ms-prev__strip" data-n={prevs.length}>
                     {prevs.map(p => (
-                      <a href={p.src} target="_blank" rel="noopener" title={`${s.name} — ${previewKind(s)} sample ${p.n} (click to enlarge)`}>
+                      <a href={p.src} target="_blank" rel="noopener" title={`${s.name}, ${previewKind(s)} sample ${p.n}. Click to enlarge.`}>
                         <img src={p.src} alt={`${s.name} map preview, ${previewKind(s)} sample ${p.n}`} loading="lazy" decoding="async" />
                       </a>
                     ))}
@@ -143,7 +143,7 @@ for (const s of scripts) {
                 </figure>
               )}
               {prevs.length === 0 && (
-                <p class="ms-prev__none">Sample previews unavailable — the offline map generator can't build this script on the current game patch.</p>
+                <p class="ms-prev__none">Sample previews are unavailable, because the offline map generator cannot build this script on the current game patch.</p>
               )}
             </article>
             );

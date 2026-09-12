@@ -284,7 +284,7 @@ def humanize_bonus(bonus_id: str, idx: dict, text: dict, _seen: set | None = Non
         nm = _name(text, "TEXT_" + tr, tr, "TRAIT_")
         tip = _trait_tip(tr)
         out.append({"text": f"Gain trait: {nm}",
-                    **({"tipTitle": f"{nm} — trait", "tip": tip} if tip else {})})
+                    **({"tipTitle": f"{nm} trait", "tip": tip} if tip else {})})
 
     for u, v in pairs(b, "aiUnits"):
         out.append(_txt(f"+{v} {_name(text, 'TEXT_' + u, u, 'UNIT_')}"))

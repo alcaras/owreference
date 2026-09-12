@@ -19,7 +19,7 @@ const totalUnits = levels.reduce((n, l) => n + l.gates.units.length, 0);
   title="Culture & Development"
   active="culture"
   pageMark="🎭"
-  description="Old World's four city culture levels — Weak, Developing, Strong and Legendary — with the culture thresholds, victory points, governor XP, citizen consumption, capture and assimilation modifiers, and everything each level unlocks: wonders, urban buildings, culture-tier units and city projects. Plus the Development game-setup levels from development.xml."
+  description="Old World's four city culture levels, which are Weak, Developing, Strong and Legendary. Covers the culture thresholds, victory points, governor XP, citizen consumption, and the capture and assimilation modifiers, along with everything each level unlocks, including wonders, urban buildings, units gated by culture and city projects. Also covers the Development game setup levels from development.xml."
   pageStats={[
     { label: 'culture levels', value: levels.length },
     { label: 'gated wonders', value: totalWonders },
@@ -28,13 +28,13 @@ const totalUnits = levels.reduce((n, l) => n + l.gates.units.length, 0);
   ]}
 >
   <p class="lede">
-    Every city has a <b>culture level</b>: Weak → Developing → Strong →
-    Legendary. Culture accumulates per city from buildings, specialists,
-    projects and events; when it reaches the level's threshold the city
-    advances (and fires a culture event). Higher culture is worth more
-    <LinkedText text="Victory Points" />, unlocks better wonders, buildings,
-    units and projects — but each <LinkedText text="Citizen" /> consumes more
-    to sustain the lifestyle.
+    Every city has a <b>culture level</b>, rising from Weak to Developing to
+    Strong to Legendary. Each city accumulates culture from buildings,
+    specialists, projects and events, and when it reaches the level's threshold
+    the city advances and a culture event fires. Higher culture is worth more
+    <LinkedText text="Victory Points" /> and unlocks better wonders, buildings,
+    units and projects, and it also makes each <LinkedText text="Citizen" />
+    consume more.
   </p>
 
   <section class="cl-section">
@@ -78,25 +78,26 @@ const totalUnits = levels.reduce((n, l) => n + l.gates.units.length, 0);
       </tbody>
     </table>
     <p class="cl-fineprint">
-      <b>Culture to advance</b> is <code>iThreshold</code> — the culture a city
-      must accumulate to leave that level (100 to go Weak → Developing, … 5,000
-      to advance past Legendary). Beyond Legendary each further <i>culture
-      step</i> costs 5,000 × (steps + 1) and is worth <b>+1 VP</b> apiece
-      (<code>countCultureStepVPs</code>). <b>Governor XP/turn</b> is the XP a
-      governor earns each turn from the city's culture level
-      (<code>culture().miXP</code>). The <b>level-up project</b> (Council
-      I–IV) is the city's default/shortfall project at that level.
+      <b>Culture to advance</b> is <code>iThreshold</code>, the culture a city
+      must accumulate to leave that level, running from 100 to move from Weak to
+      Developing up to 5,000 to advance past Legendary. Past Legendary each
+      further <i>culture step</i> costs 5,000 × (steps + 1) and is worth
+      <b>+1 VP</b> each (<code>countCultureStepVPs</code>).
+      <b>Governor XP per turn</b> is the XP a governor earns each turn from the
+      city's culture level (<code>culture().miXP</code>), and the
+      <b>level-up project</b>, Council I to IV, is the city's default project at
+      that level.
     </p>
   </section>
 
   <section class="cl-section">
     <h2 class="cl-h2">What each level unlocks</h2>
     <p>
-      Culture prereqs across the rest of the XML, grouped by the level that
-      gates them. Tiered city projects (Council, Festival, Decree, Inquiry,
-      Hunt, Olympiad, Convoy) require the city to be at <b>exactly</b> that
-      level; Treasury / Forum / Archive tiers require <b>at least</b> that
-      level.
+      The lists below gather the culture prereqs from the rest of the XML,
+      grouped by the level that gates them. A tiered city project, such as
+      Council, Festival, Decree, Inquiry, Hunt, Olympiad or Convoy, requires the
+      city to be at <b>exactly</b> that level, while the Treasury, Forum and
+      Archive tiers require <b>at least</b> that level.
     </p>
     <div class="cl-cards">
       {levels.map(l => (
@@ -170,16 +171,16 @@ const totalUnits = levels.reduce((n, l) => n + l.gates.units.length, 0);
       ))}
     </div>
     <p class="cl-fineprint">
-      Culture-tier units come in pairs: the Developing-tier version (Battering
-      Ram, Hoplite, Hastatus…) goes <b>obsolete at Strong</b>, replaced by its
-      Strong-tier upgrade (Siege Tower, Phalangite, Legionary…). Buildings and
-      wonders also need their tech and other prereqs — only the culture gate is
-      shown here.
+      Units gated by culture come in pairs. The Developing version, such as the
+      Battering Ram, Hoplite or Hastatus, goes <b>obsolete at Strong</b> and is
+      replaced by its Strong upgrade, such as the Siege Tower, Phalangite or
+      Legionary. Buildings and wonders also need their tech and other prereqs,
+      and only the culture gate is shown here.
     </p>
   </section>
 
   <section class="cl-section">
-    <h2 class="cl-h2">Capture & assimilation</h2>
+    <h2 class="cl-h2">Capture and assimilation</h2>
     <table class="cl-table cl-table--narrow">
       <thead>
         <tr>
@@ -205,25 +206,24 @@ const totalUnits = levels.reduce((n, l) => n + l.gates.units.length, 0);
     </table>
     <p class="cl-fineprint">
       A captured foreign city starts at <b>{G.baseAssimilateTurns} base
-      assimilate turns</b> plus the <i>founder's</i> culture bonus, and yields
-      are modified by <b>{G.assimilateYieldModifier}%</b> until assimilated;
-      the countdown ticks by the city's <i>current</i> culture level each turn
-      — higher culture assimilates faster (<code>City.cs</code>,
-      <code>doPlayerTurn</code>). Extra capture turns stack on the base
-      {G.baseCaptureTurns} — full formula on the
+      assimilate turns</b> plus the <i>founder's</i> culture bonus, and its yields
+      are modified by <b>{G.assimilateYieldModifier}%</b> until it assimilates.
+      The countdown moves by the city's <i>current</i> culture level each turn, so
+      higher culture assimilates faster (<code>City.cs</code>,
+      <code>doPlayerTurn</code>). Extra capture turns add to the base of
+      {G.baseCaptureTurns}, and the full formula is on the
       <a href={`${base}city-capture-mechanics`}>City Capture Mechanics</a> page.
     </p>
   </section>
 
   <section class="cl-section">
-    <h2 class="cl-h2">Development — what development.xml actually is</h2>
+    <h2 class="cl-h2">What development.xml actually is</h2>
     <p>
-      Despite the name, <code>development.xml</code> has nothing to do with
-      city development. It defines the <b>Development</b> game-setup option
-      (advanced start): how developed <i>existing</i> (AI) nations are when
-      the game begins — average cities, capital population and free techs —
-      plus how many turns the AI holds off building wonders and founding
-      religions.
+      Despite the name, <code>development.xml</code> has nothing to do with city
+      development. It defines the <b>Development</b> option in advanced setup,
+      which sets how developed the <i>existing</i> AI nations are when the game
+      begins, in average cities, capital population and free techs, and how many
+      turns the AI waits before building wonders and founding religions.
     </p>
     <table class="cl-table">
       <thead>

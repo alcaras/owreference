@@ -164,7 +164,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
               <span class="rowlabel__big">Role ↓</span>
             </th>
             {ratingCols.map((s) => (
-              <th class="nhdr" style={`--nation-bg:${s.color}`} title={`${s.name} — in-game color`}>
+              <th class="nhdr" style={`--nation-bg:${s.color}`} title={`${s.name}, in-game color`}>
                 <div class="nhdr__inner">
                   <a class="nhdr__link" href={`${base}stat-scaling`}>
                     <img class="nhdr__crest" src={`${base}img/icons/yields/${s.yield}.png`} alt="" loading="lazy" onerror="this.style.display='none'" />
@@ -188,7 +188,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
         <tbody>
           <tr class="srow">
             <th class="srow__th" colspan={mxCols}>
-              <span class="srow__chevron">▸</span> Roles — rating payout · archetype fit
+              <span class="srow__chevron">▸</span> Roles, rating payout and archetype fit
             </th>
           </tr>
           {matrixRoles.map((r) => (
@@ -210,7 +210,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
               {archRows.map((a, i) => (
                 <td class={`cell mx-cell mx-fitcell${i === 0 ? ' mx-archstart' : ''} ${r.fits?.has(a.name) ? '' : 'is-empty'}`}>
                   {r.fits?.has(a.name)
-                    ? <span class="mx-dot" title={`${a.name} — ${r.fitNote ?? 'fits'} (${r.name})`}>●</span>
+                    ? <span class="mx-dot" title={`${a.name}: ${r.fitNote ?? 'fits'} (${r.name})`}>●</span>
                     : <span class="cell__dash">—</span>}
                 </td>
               ))}
@@ -219,7 +219,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
 
           <tr class="srow">
             <th class="srow__th" colspan={mxCols}>
-              <span class="srow__chevron">▸</span> Heir education — course rating bump · graduation archetype pool
+              <span class="srow__chevron">▸</span> Heir education, course rating bump and graduation archetype pool
             </th>
           </tr>
           {courseRows.map((c) => (
@@ -246,7 +246,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
 
           <tr class="srow">
             <th class="srow__th" colspan={mxCols}>
-              <span class="srow__chevron">▸</span> Archetypes — rating modifiers
+              <span class="srow__chevron">▸</span> Archetypes and their rating modifiers
             </th>
           </tr>
           {archRows.map((a) => (
@@ -272,7 +272,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
               {archRows.map((other, i) => (
                 <td class={`cell mx-cell mx-fitcell${i === 0 ? ' mx-archstart' : ''} ${other.slug === a.slug ? '' : 'is-empty'}`}>
                   {other.slug === a.slug
-                    ? <span class="mx-self" title={`${a.name} — this column`}>◆</span>
+                    ? <span class="mx-self" title={`${a.name}, this column`}>◆</span>
                     : <span class="cell__dash">—</span>}
                 </td>
               ))}
@@ -286,13 +286,15 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
   <div class="legends mx-legends">
     <div class="legend">
       <span class="legend__label">● Fit</span>
-      Archetype can hold the role (trait prereqs in <code>trait.xml</code> / council seat prereqs) —
-      or, on education rows, the course's graduation archetype pool.
+      The archetype can hold the role, following the trait prereqs in <code>trait.xml</code> and the
+      council seat prereqs. On an education row it marks the course's graduation archetype pool
+      instead.
     </div>
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
-      Council payouts multiply their base by the triangle of the seat-holder's rating: tri(R) = R·(R+1)/2,
-      so 1/2/3/4/5 → ×1/×3/×6/×10/×15. A superscript on the marker is that yield's triangle offset
+      Council payouts multiply their base by the triangle of the seat holder's rating, where
+      tri(R) = R·(R+1)/2, so a rating of 1, 2, 3, 4 or 5 multiplies by 1, 3, 6, 10 or 15. A superscript on
+      the marker is that yield's triangle offset
       (1.0.84658 applied these to council seats): the multiplier becomes tri(R + offset) − offset.
     </div>
   </div>
@@ -395,9 +397,10 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
   <div class="legends">
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
-      Council yields and opinions multiply their base by tri(R) = R·(R+1)/2 of the assigned character's rating —
-      rating 1/2/3/4/5 → ×1/×3/×6/×10/×15. Since 1.0.84658 a yield with a triangle offset (shown as a
-      superscript) instead scales by tri(R + offset) − offset, which is why Culture and Science ramp later.
+      Council yields and opinions multiply their base by tri(R) = R·(R+1)/2 of the assigned character's
+      rating, so a rating of 1, 2, 3, 4 or 5 multiplies by 1, 3, 6, 10 or 15. Since 1.0.84658 a yield with
+      a triangle offset, shown as a superscript, scales by tri(R + offset) − offset instead, which is why
+      Culture and Science ramp later.
       Opinions keep offset 0 and are rounded out to the nearest 5.
       See <a href={`${base}council`}>Council</a> for the full breakdown.
     </div>

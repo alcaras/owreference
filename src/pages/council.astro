@@ -104,7 +104,7 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
                     <img class="rating-ico" src={`${base}img/icons/ratings/${ry.rating.toLowerCase()}.png`} alt={ry.rating} onerror="this.style.display='none'" />
                     <span class="effect__out">
                       <LinkedText text={`+${ry.base} ${ry.yield}${ry.scope === 'per city' ? '/City' : ''}`} showIcons={false} iconsForYields={true} />
-                      <span class="tri-mark" title={`Rating 1–5 multiplies this by ${ry.multipliers.join('/')}${ry.triangleOffset ? ` — ${ry.yield} carries a ${ry.triangleOffset > 0 ? '+' : ''}${ry.triangleOffset} triangle offset` : ''}`}>×△{ry.triangleOffset ? <sup>{ry.triangleOffset > 0 ? '+' : ''}{ry.triangleOffset}</sup> : null}</span>
+                      <span class="tri-mark" title={`Rating 1–5 multiplies this by ${ry.multipliers.join('/')}${ry.triangleOffset ? `, and ${ry.yield} carries a ${ry.triangleOffset > 0 ? '+' : ''}${ry.triangleOffset} triangle offset` : ''}`}>×△{ry.triangleOffset ? <sup>{ry.triangleOffset > 0 ? '+' : ''}{ry.triangleOffset}</sup> : null}</span>
                     </span>
                   </div>
                 )) : <span class="cell__dash">—</span>}
@@ -179,7 +179,7 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
               <th class="nhdr nhdr--family" data-col={`courtier-${c.slug}`} id={c.slug}>
                 <div class="nhdr__inner">
                   <span class="nhdr__name">{c.name}</span>
-                  <span class="hdr__dlc">“{c.nickname}”</span>
+                  <span class="hdr__dlc">"{c.nickname}"</span>
                 </div>
               </th>
             ))}
@@ -272,23 +272,24 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
       A seat multiplies its base by the <em>triangle</em> of the seated character's rating, not the rating
-      itself: with no offset, rating 1/2/3/4/5 → ×1/×3/×6/×10/×15. Flat "per point" readings understate
-      high ratings.
+      itself, so with no offset a rating of 1, 2, 3, 4 or 5 multiplies by 1, 3, 6, 10 or 15. Reading
+      the yield as a flat amount per point understates high ratings.
     </div>
     <div class="legend">
       <span class="legend__label">△ offsets</span>
       Each yield carries its own triangle offset ({offsetList}), and the multiplier is
-      tri(R + offset) − offset — falling back to plain R while R + offset ≤ 0. So Money ramps earlier and
-      Civics, Culture and Science later. Patch 1.0.84658 extended these offsets from court income to
-      <em>council seats</em> as well (they used to scale at offset 0), and gave Culture its −2: that is the
-      reduced Ambassador culture and Spymaster science. Opinions still scale at offset 0.
+      tri(R + offset) − offset, falling back to plain R while R + offset ≤ 0. Money therefore ramps
+      earlier, and Civics, Culture and Science ramp later. Patch 1.0.84658 extended these offsets from
+      court income to <em>council seats</em> as well, where they used to scale at offset 0, and gave
+      Culture its −2, which is what reduced Ambassador culture and Spymaster science. Opinions still
+      scale at offset 0.
     </div>
     {meta.notes.map(n => (
       <div class="legend"><span class="legend__label">Note</span><LinkedText text={n} showIcons={false} /></div>
     ))}
     <div class="legend">
       <span class="legend__label">Random courtiers</span>
-      {meta.randomSources.join(' · ')} — courtiers join at age {meta.courtierAge}.
+      {meta.randomSources.join(', ')}. Courtiers join at age {meta.courtierAge}.
     </div>
     <div class="legend">
       <span class="legend__label">See also</span>

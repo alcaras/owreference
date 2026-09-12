@@ -46,16 +46,17 @@ const payload = {
   { label: 'inputs', value: calculator.inputStats.length },
 ]}>
   <p class="cog-intro">
-    Enter what your leader has done — pulled from the timeline screen
-    (<kbd>F5</kbd>, hover the leader's portrait) — to see which regnal title
-    they currently hold and how far the next one is. This runs the game's exact
-    award routine (<code>Character.cs · updateCognomen()</code>): score
-    = Σ&nbsp;stat&nbsp;×&nbsp;weight; the title is the one with the highest
-    legitimacy whose scaled threshold you've cleared. Thresholds scale by
-    <strong>ruler number</strong> and <strong>game speed</strong> — both modelled
-    from the source. Fastest path: <strong>paste the F5 leader panel</strong>
-    straight in (labels map to the game's own <code>text-stat.xml</code>
-    strings, Indus DLC stats included). Inputs persist in your browser.
+    Enter what your leader has done, taken from the timeline screen by pressing
+    <kbd>F5</kbd> and hovering the leader's portrait, to see which regnal title
+    they hold now and how far away the next one is. The page runs the game's own
+    award routine (<code>Character.cs updateCognomen()</code>), where the score is
+    the sum of each stat times its weight, and the title you hold is the one with
+    the highest legitimacy whose scaled threshold you have cleared. Thresholds
+    scale by <strong>ruler number</strong> and <strong>game speed</strong>, and
+    both are modelled from the source. The quickest way to fill this in is to
+    <strong>paste the F5 leader panel</strong> straight in, because the labels map
+    to the game's own <code>text-stat.xml</code> strings, including the Indus DLC
+    stats. Your inputs stay in your browser.
   </p>
 
   <div class="calc">
@@ -65,15 +66,15 @@ const payload = {
         <p class="calc__paste-help">
           In-game press <kbd>F5</kbd> and hover your leader's portrait. Then
           either <strong>copy the <em>Stat(s)</em> text</strong> and paste it
-          below, or just <strong>paste a screenshot</strong> of the panel
-          (<kbd>⌘/Ctrl</kbd>+<kbd>V</kbd> a screen grab) — it's read on your
-          device, nothing is uploaded. Include the <code>Cognomen:</code> line
-          if you have it; it's used as a cross-check.
+          below, or <strong>paste a screenshot</strong> of the panel with
+          <kbd>⌘/Ctrl</kbd>+<kbd>V</kbd>. The screenshot is read on your own
+          device and nothing is uploaded. Include the <code>Cognomen:</code> line
+          if you have it, because it is used as a cross-check.
         </p>
         <div id="cf-drop" class="calc__drop">
           <textarea id="cf-paste" rows="5" spellcheck="false"
             aria-label="Paste the Stat(s) text or a screenshot"
-            placeholder="Paste the Stat(s) text — or a screenshot — here.&#10;Cognomen: the Gatherer (Legitimacy: +30)&#10;Tribes Contacted: 2&#10;Resources Harvested: 14 …"></textarea>
+            placeholder="Paste the Stat(s) text, or a screenshot, here.&#10;Cognomen: the Gatherer (Legitimacy: +30)&#10;Tribes Contacted: 2&#10;Resources Harvested: 14 …"></textarea>
           <label class="calc__drop-pick">
             drop / choose a screenshot
             <input id="cf-file" type="file" accept="image/*" hidden />
@@ -101,7 +102,7 @@ const payload = {
         </label>
         <label class="calc__check">
           <input id="cf-dlc" type="checkbox" checked />
-          <span>Empires of the Indus DLC<span class="calc__hint"> (the only DLC with cognomens — 6 tracks)</span></span>
+          <span>Empires of the Indus DLC<span class="calc__hint"> (the only DLC with cognomens, 6 tracks)</span></span>
         </label>
         <button id="cf-reset" type="button" class="calc__reset">Reset all</button>
       </div>
@@ -117,7 +118,7 @@ const payload = {
       </section>
 
       <section class="calc__next" id="cf-next" hidden>
-        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">— only titles that would actually replace yours (higher legitimacy); click a row for how to earn it</span></h2>
+        <h2 class="calc__next-hdr">Closest titles <span class="calc__next-note">only titles with higher legitimacy, which would replace yours. Click a row for how to earn it</span></h2>
         <ol class="calc__next-list" id="cf-next-list"></ol>
       </section>
 
@@ -328,8 +329,8 @@ const payload = {
 
         if (!filled) {
           setMsg('is-warn', ignored
-            ? 'No cognomen stats recognised — is this the F5 leader Stat(s) block?'
-            : 'Nothing to parse — paste the leader Stat(s) lines, or a screenshot.');
+            ? 'No cognomen stats recognised. Is this the F5 leader Stat(s) block?'
+            : 'Nothing to parse. Paste the leader Stat(s) lines, or a screenshot.');
           return false;
         }
 
@@ -349,9 +350,9 @@ const payload = {
             msg += ' · ✓ matches in-game (' + best.title + ')';
           } else {
             cls = 'is-warn';
-            msg += ' · ⚠ game shows “' + expected + '”, we get “' +
+            msg += ' · ⚠ game shows "' + expected + '", we get "' +
               (best ? best.title : 'none') +
-              '” — adjust Ruler #/Game speed to reconcile';
+              '". Adjust Ruler # or Game speed to reconcile';
           }
         }
         setMsg(cls, msg);
@@ -426,7 +427,7 @@ const payload = {
         setMsg('is-warn', '⏳ Loading OCR engine…');
         let T;
         try { T = await loadTesseract(); }
-        catch (e) { setMsg('is-warn', '⚠ ' + e.message + ' — paste the text instead.'); return; }
+        catch (e) { setMsg('is-warn', '⚠ ' + e.message + ' Paste the text instead.'); return; }
         try {
           const url = URL.createObjectURL(blob);
           const img = await new Promise((res, rej) => {
@@ -442,7 +443,7 @@ const payload = {
           pasteBox.value = text;
           const ok = parseAndFill(text);
           if (ok) pasteMsg.textContent = '📷 ' + pasteMsg.textContent +
-            ' — check the extracted text above for OCR slips.';
+            '. Check the extracted text above for OCR slips.';
         } catch (e) {
           setMsg('is-warn', '⚠ OCR failed: ' + (e && e.message || e));
         }
@@ -539,7 +540,7 @@ const payload = {
         if (pens.length) {
           h += '<div class="gain__dim gain__pen">Penalties: ' +
             pens.map(r => r.lbl + ' (× ' + r.w + ')').join(', ') +
-            ' — these subtract.</div>';
+            ', which subtract.</div>';
         }
         return h;
       }
@@ -558,7 +559,7 @@ const payload = {
           hero.classList.add('is-set');
         } else {
           heroTitle.textContent = 'No title yet';
-          heroSub.textContent = 'No threshold cleared — keep ruling.';
+          heroSub.textContent = 'No threshold cleared yet.';
           hero.classList.remove('is-set', 'is-bad');
         }
 
@@ -618,7 +619,7 @@ const payload = {
                 (up ? ' is-upgrade' : '') + '">' +
                 '<span class="calc__tier-name">' + t.c.title + '</span>' +
                 '<span class="calc__tier-leg" title="legitimacy' +
-                  (up ? ' — outranks your current title' : '') + '">' +
+                  (up ? ', outranks your current title' : '') + '">' +
                   signed(t.c.legitimacy) + '</span>' +
                 '<span class="calc__tier-min">' + fmt(t.sMin) + '</span>' +
               '</li>';
@@ -645,7 +646,7 @@ const payload = {
                   '<span class="calc__next-mark">' + n.glyph + '</span>' +
                   '<span class="calc__next-title">' + n.title + '</span>' +
                   '<span class="calc__next-leg" title="legitimacy' +
-                    (n.upgrade ? ' — would become your title' : ' — ≤ current, won\'t change title') +
+                    (n.upgrade ? ', would become your title' : ', at or below your current title, so it would not change it') +
                     '">' + signed(n.legit) + (n.upgrade ? ' ▲' : '') + '</span>' +
                   '<span class="calc__next-track">' + n.track + '</span>' +
                   '<span class="calc__next-bar"><span style="width:' +
@@ -660,7 +661,7 @@ const payload = {
                       ? 'Earning this sets your title to <b>' + n.title +
                         '</b> (legitimacy ' + signed(n.legit) + ', outranks your current).'
                       : 'Legitimacy ' + signed(n.legit) +
-                        ' is ≤ your current title — earning it won\'t change the displayed title.') +
+                        ' is at or below your current title, so earning it will not change the displayed title.') +
                   '</p>' +
                   gainHTML(n.cog, n.score, n.sMin) +
                 '</div>' +
@@ -679,8 +680,8 @@ const payload = {
             '<li class="calc__next-none">' +
               (best
                 ? 'No title outranks <b>' + best.title + '</b> (legitimacy ' +
-                  signed(best.legitimacy) + ') — you hold the best available.'
-                : 'No titles in reach yet — start earning stats.') +
+                  signed(best.legitimacy) + '), the best available.'
+                : 'No titles in reach yet.') +
             '</li>';
           nextWrap.hidden = false;
         }

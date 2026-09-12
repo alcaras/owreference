@@ -25,7 +25,7 @@ function blob(d: any): string {
   title="Discoveries"
   active="discoveries"
   pageMark="🎴"
-  description="Every discovery (bonus card) in Old World — the one-shot cards drawn on finishing a tech: what each grants, what it costs, which tech offers it, and which are locked to a nation, culture level or DLC. Pulled from tech.xml's hidden entries and their bonuses."
+  description="Every discovery, meaning the single-use bonus cards drawn when a tech finishes in Old World. Covers what each card grants, what it costs, which tech offers it, and which cards are locked to a nation, culture level or DLC, pulled from the hidden entries in tech.xml and their bonuses."
   pageStats={[
     { label: 'discoveries', value: discoveries.length },
     { label: 'from a tech', value: offered.length },
@@ -33,22 +33,22 @@ function blob(d: any): string {
   ]}
 >
   <p class="lede">
-    <b>Discoveries</b> are the bonus cards you draw when a tech completes — free units, yield boosts,
-    a courtier, an imported luxury. In the XML they are techs flagged hidden, which is why they never
-    show up in the <a href={`${base}technologies`}>tech tree</a>: you can't research one, you're offered
-    it. Every card is single-use and goes back in the deck if you pass on it. Cost is what the card
-    itself costs to take.
+    <b>Discoveries</b> are the bonus cards you draw when a tech completes, and they grant free units,
+    yield boosts, a courtier or an imported luxury. In the XML they are techs flagged as hidden, which
+    is why they never appear in the <a href={`${base}technologies`}>tech tree</a>. You cannot research
+    a discovery, because the game offers it to you. Every card is single use and returns to the deck
+    if you pass on it, and the cost shown is what taking the card costs.
   </p>
 
   <input id="disc-filter" class="disc__filter" type="search" autocomplete="off"
-         placeholder="Filter discoveries — name, reward, tech, nation…" aria-label="Filter discoveries" />
+         placeholder="Filter discoveries by name, reward, tech or nation…" aria-label="Filter discoveries" />
 
   <section class="disc">
     <h2 class="disc__h">Offered by a tech <span class="disc__n">{offered.length}</span></h2>
     <p class="disc__note">
       The card is drawn from the deck when its tech finishes. The offering tech comes from
-      <code>abTechPrereq</code>, not the card's name — those disagree (Forestry's Scientist card
-      actually requires Metaphysics).
+      <code>abTechPrereq</code> rather than from the card's name, because the two disagree. The
+      Forestry Scientist card, for example, requires Metaphysics.
     </p>
     <div class="grid__scroll">
       <table class="ntbl disc__tbl">
@@ -93,8 +93,9 @@ function blob(d: any): string {
   <section class="disc">
     <h2 class="disc__h">Not tied to a tech <span class="disc__n">{special.length}</span></h2>
     <p class="disc__note">
-      No <code>abTechPrereq</code> — these enter the deck another way: a nation's unique unit card
-      (gated by nation and culture level) or an event that adds the card directly.
+      These cards have no <code>abTechPrereq</code>, so they enter the deck another way. They are
+      either a nation's unique unit card, gated by nation and culture level, or a card an event adds
+      directly.
     </p>
     <div class="grid__scroll">
       <table class="ntbl disc__tbl">

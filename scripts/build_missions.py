@@ -133,17 +133,17 @@ MISSIONS = [
     ("infiltrate",            "MISSION_INFILTRATE", {"folds": [
         ("MISSION_INFILTRATE_ANY", True,
          "An internal any-character variant (MISSION_INFILTRATE_ANY) rolls the "
-         "same outcome dice — it differs only in who may run it."),
+         "same outcome dice, and it differs only in who may run it."),
     ]}),
     ("slander",               "MISSION_SLANDER", {"folds": [
         ("MISSION_SLANDER_ANY", True,
          "An internal any-character variant (MISSION_SLANDER_ANY) rolls the "
-         "same outcome dice — it differs only in who may run it."),
+         "same outcome dice, and it differs only in who may run it."),
     ]}),
     ("assassinate",           "MISSION_ASSASSINATE", {"folds": [
         ("MISSION_ASSASSINATE_ANY", False,
          "The internal any-character variant (MISSION_ASSASSINATE_ANY) rolls 4 "
-         "outcomes instead of 5: the undetected-failure outcome is dropped and "
+         "outcomes instead of 5, because the undetected failure outcome is dropped and "
          "exposed failure takes its weight (2/6)."),
     ]}),
     ("expose-agent",          "MISSION_EXPOSE_AGENT", {}),
@@ -158,9 +158,9 @@ MISSIONS = [
     ("capture",               "MISSION_CAPTURE", {}),
     ("tutor",                 "MISSION_TUTOR", {"folds": [
         ("MISSION_TUTOR_SCHOLAR", True,
-         "MISSION_TUTOR_SCHOLAR — the same mission run by a Scholar-archetype "
-         "leader instead of a Tutor — rolls the same outcome dice and skips "
-         "the opinion-scaled Money cost."),
+         "MISSION_TUTOR_SCHOLAR is the same mission run by a leader of the Scholar "
+         "archetype instead of a Tutor. It rolls the same outcome dice and skips "
+         "the Money cost that scales with opinion."),
     ]}),
     ("revel",                 "MISSION_REVEL", {}),
     ("scheme-against-rival",  "MISSION_SCHEME_AGAINST_RIVAL", {}),
@@ -172,8 +172,8 @@ MISSIONS = [
         "Each delegation outcome pays a base amount plus a per-city amount for "
         "both your cities and the rival's (e.g. Science: 40 + 10 per your city "
         "+ 50 + 20 per rival city), then turn-scales like other mission "
-        "rewards. The single-axis calculator can't chart two city counts, so "
-        "it is omitted — the outcome cards above carry the exact values."}),
+        "rewards. The calculator charts one axis and cannot chart two city counts, so "
+        "it is omitted, and the outcome cards above carry the exact values."}),
     ("pagan-sacrifices",      "MISSION_PAGAN_SACRIFICES", {}),
     ("impart-stewardship",    "MISSION_IMPART_STEWARDSHIP", {}),
 ]
@@ -491,7 +491,7 @@ def memory_chain() -> dict[str, dict[str, list[str]]]:
 def memory_rewards(b: ET.Element) -> list[dict]:
     """Reward rows for a bonus's memory grants. Each carries the memory token
     (so builders can wire 'may enable' follow-up links) and, when nothing in
-    the data keys off the memory, an honest note — the in-game '[Could lead to
+    the data keys off the memory, an honest note. The in-game '[Could lead to
     future Events]' hint shows for ANY memory grant, consumed or not."""
     out: list[dict] = []
     for tag, who in (("Memory", ""), ("MemoryLeader", " (leader of you)"),
@@ -634,13 +634,13 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
             nm = _named(text, t.text, "TRAIT_")
             tip = _trait_tip(t.text)
             out.append({"text": f"Gain trait: {nm}",
-                        **({"tipTitle": f"{nm} — trait", "tip": tip} if tip else {})})
+                        **({"tipTitle": f"{nm} trait", "tip": tip} if tip else {})})
     for t in b.findall("aeRemoveTraits/zValue"):
         if t.text:
             nm = _named(text, t.text, "TRAIT_")
             tip = _trait_tip(t.text)
             out.append({"text": f"Loses trait: {nm}",
-                        **({"tipTitle": f"{nm} — trait", "tip": tip} if tip else {})})
+                        **({"tipTitle": f"{nm} trait", "tip": tip} if tip else {})})
     if b.findall("aeRandomTraitDelay/zValue") or b.findall("aeRandomTrait/zValue"):
         out.append(_txt("Gain a random trait"))
     if b.findall("aeRandomLeaderRelationshipDelay/zValue") or b.findall("aeRandomLeaderRelationship/zValue"):
@@ -769,7 +769,7 @@ def option_outcomes(opt: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict
 
 def _subject_kind(tok: str) -> str:
     if "COGNOMEN_" in tok:
-        return " (a cognomen — an earned leader title)"
+        return " (a cognomen, an earned leader title)"
     if "CHARACTER_" in tok:
         return " (a character trait)"
     return ""
@@ -1124,8 +1124,8 @@ def main() -> int:
         if mixed:
             scaling_note = scaling_note or (
                 "This mission's reward scales with both your city count and the "
-                "rival's, which the single-axis calculator can't chart — the "
-                "outcome cards above carry the exact base + per-city values.")
+                "rival's, which the calculator cannot chart on one axis, so the "
+                "outcome cards above carry the exact base and per-city values.")
             print(f"  ⚠ {slug}: two-axis reward scaling — calculator skipped", file=sys.stderr)
         elif len(uniq) == 1:
             scaling = candidates[0]
@@ -1134,8 +1134,8 @@ def main() -> int:
             scaling_note = None
         elif len(uniq) > 1:
             scaling_note = scaling_note or (
-                "Different outcomes scale differently with empire size — the "
-                "outcome cards above carry each one's base + per-city values.")
+                "Different outcomes scale differently with empire size, so the "
+                "outcome cards above carry each one's base and per-city values.")
             print(f"  ⚠ {slug}: outcomes scale differently — calculator skipped", file=sys.stderr)
 
         # Event chains: any outcome whose result id has stories hanging off

@@ -25,7 +25,7 @@ const DEDICATED = [
   { href: 'harvest-events', mark: '🌾', label: 'Harvest Events', count: meta.excludedCovered['harvest-events'],
     blurb: 'Harvesting a resource, grouped by resource' },
   { href: 'study-events', mark: '🎓', label: 'Study Events', count: meta.excludedCovered['study-events'],
-    blurb: 'Royal education — also as the per-course Tutor Events view' },
+    blurb: 'Royal education, also shown per course as Tutor Events' },
 ];
 
 function catHref(c: any): string {
@@ -50,20 +50,20 @@ function schedHint(c: any): string | null {
   { label: 'on dedicated pages', value: meta.excludedCovered.total },
 ]}>
   <p class="lede">
-    Every narrative event story in the game's XML ({meta.totalStories} across the base game and
-    DLC), browsable by the game's own taxonomy: the <strong>event class</strong> pools that roll
-    each turn (eventClass.xml) and the <strong>triggers</strong> that fire the rest
-    (eventTrigger.xml). Each category page shows the full card — gating conditions,
-    every option with requirements, raw XML payloads, and chain links. The story prose itself
-    is left for you to discover in game.
-    {meta.excludedCovered.total} stories already covered by the dedicated pages below are linked
-    there instead of duplicated here — but the search box above spans <em>every</em> event on the
-    site, including those dedicated pages, and jumps you straight to the card.
+    Every narrative event story in the game's XML, which is {meta.totalStories} across the base
+    game and the DLC, arranged by the game's own grouping. The groups are the <strong>event
+    class</strong> pools that roll each turn (eventClass.xml) and the <strong>triggers</strong>
+    that fire the rest (eventTrigger.xml). Each category page shows the full card, with the gating
+    conditions, every option and its requirements, the raw XML payloads and the chain links, and it
+    leaves the story text for you to find in game. The {meta.excludedCovered.total} stories already
+    covered by the dedicated pages below are linked there rather than repeated here, and the search
+    box above covers <em>every</em> event on the site, including those dedicated pages, and takes
+    you straight to the card.
   </p>
 
   <div class="ev-search">
     <input type="search" id="ev-q" class="ev-search__input"
-           placeholder="Search every event by name — incl. expedition, ruin, harvest & study…" autocomplete="off"
+           placeholder="Search every event by name, including expedition, ruin, harvest and study…" autocomplete="off"
            aria-label="Search every event" />
     <p class="ev-search__note" id="ev-q-note" hidden></p>
     <ol class="ev-search__results" id="ev-q-results" hidden></ol>
@@ -73,7 +73,7 @@ function schedHint(c: any): string | null {
     <span class="ev-chainscta__ico">⛓</span>
     <span class="ev-chainscta__body">
       <span class="ev-chainscta__t">Event Chains</span>
-      <span class="ev-chainscta__d">Events that link into one another — see every chain as a flow diagram, with branches and follow-ups drawn out.</span>
+      <span class="ev-chainscta__d">Events that link into one another, drawn as a flow diagram for each chain, with its branches and follow-ups.</span>
     </span>
     <span class="ev-chainscta__go">browse →</span>
   </a>
@@ -92,7 +92,7 @@ function schedHint(c: any): string | null {
     ))}
   </div>
 
-  <h2 class="sec">Event classes <small>pools that roll each turn — {classCats.length} classes</small></h2>
+  <h2 class="sec">Event classes <small>pools that roll each turn, {classCats.length} classes</small></h2>
   <div class="grid">
     {classCats.map(c => (
       <a class="card" href={catHref(c)}>
@@ -105,7 +105,7 @@ function schedHint(c: any): string | null {
     ))}
   </div>
 
-  <h2 class="sec">Triggered events <small>fire on a game moment — {triggerCats.length} triggers</small></h2>
+  <h2 class="sec">Triggered events <small>fire on a game moment, {triggerCats.length} triggers</small></h2>
   <div class="grid grid--dense">
     {triggerCats.map(c => (
       <a class="card" href={catHref(c)}>
@@ -166,9 +166,9 @@ function schedHint(c: any): string | null {
         const top = hits.slice(0, 50);
         note.hidden = false;
         note.textContent = hits.length === 0
-          ? 'No events match “' + q + '”.'
+          ? 'No events match "' + q + '".'
           : (hits.length >= 400 ? '400+' : hits.length) + ' match' + (hits.length === 1 ? '' : 'es') +
-            (hits.length > top.length ? ' — showing first ' + top.length : '') + '.';
+            (hits.length > top.length ? ', showing the first ' + top.length : '') + '.';
         list.hidden = top.length === 0;
         list.innerHTML = top.map(({ e }) =>
           '<li><a href="' + base + e.h + '">' +

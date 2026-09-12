@@ -15,10 +15,11 @@ const base = import.meta.env.BASE_URL;
   pageStats={[{ label: 'cards', value: '5,900+' }]}
 >
   <p class="lede">
-    Show any reference card on stream. Search below, check the preview — it renders exactly what the
-    overlay shows — and push it. The overlay page is <a href={`${base}obs`}><code>/obs</code></a>,
-    a transparent page made to be an OBS <b>Browser Source</b>; this panel drives it. Cards cover
-    every entity on the site plus all story, harvest and study events with their options and rewards.
+    Show any reference card on stream. Search below, check the preview, which renders exactly what
+    the overlay shows, and then push it. The overlay page is
+    <a href={`${base}obs`}><code>/obs</code></a>, a transparent page built to be an OBS
+    <b>Browser Source</b>, and this panel drives it. Cards cover every entity on the site, along with
+    all story, harvest and study events and their options and rewards.
   </p>
 
   <div class="sl">
@@ -79,20 +80,21 @@ const base = import.meta.env.BASE_URL;
             <code id="dock-url">…</code>
             <button class="sl__copy" data-copy="dock-url">copy</button><br />
             The dock and the browser source share one browser profile inside OBS, so the panel
-            drives the overlay directly — everything stays on your machine. (The overlay source
-            keeps its transparency either way; it's the Browser Source that renders on stream,
-            the dock is only controls.)</li>
+            drives the overlay directly, and everything stays on your machine. The overlay source
+            keeps its transparency either way, because the Browser Source is what renders on stream
+            and the dock holds only the controls.</li>
           <li><b>Prefer controlling from your own browser?</b> OBS's browser is a separate
-            program that shares nothing with yours. Tick <b>Remote session</b> above — the
-            overlay URL gains your private session code and pushes travel over a free public
-            relay (<a href="https://ntfy.sh" rel="noopener">ntfy.sh</a>; only card ids are sent,
-            each visitor gets their own random code). Off by default; with it off, nothing
-            leaves your browser. Re-copy the overlay URL after toggling.</li>
+            program that shares nothing with yours. Tick <b>Remote session</b> above, and the
+            overlay URL gains your private session code, after which pushes travel over a free
+            public relay (<a href="https://ntfy.sh" rel="noopener">ntfy.sh</a>). Only card ids are
+            sent, and each visitor gets their own random code. The setting is off by default, and
+            while it is off nothing leaves your browser. Copy the overlay URL again after you
+            change it.</li>
           <li><b>Fully offline alternative:</b> run <code>make overlay-server</code> (or
             <code>node scripts/overlay_state_server.cjs</code>) from the repo and add
             <code>?server</code> to the Browser Source URL.</li>
-          <li><b>Pin a card statically:</b> <code>/obs?id=UNIT_HOPLITE</code> shows one card with no
-            controls at all — handy for testing the look.</li>
+          <li><b>Pin a single card:</b> <code>/obs?id=UNIT_HOPLITE</code> shows one card with no
+            controls at all, which is useful for testing the look.</li>
         </ol>
       </details>
     </section>
@@ -132,7 +134,7 @@ const base = import.meta.env.BASE_URL;
       dot.classList.toggle('is-on', !!liveId);
       if (!liveId) { txt.textContent = 'Overlay is clear'; return; }
       const left = liveExpiry ? Math.max(0, Math.ceil((liveExpiry - Date.now()) / 1000)) : 0;
-      txt.textContent = `Live: ${describeState(liveId)}` + (left ? ` — hides in ${left}s` : '');
+      txt.textContent = `Live: ${describeState(liveId)}` + (left ? `, hides in ${left}s` : '');
     }
     setInterval(tickLive, 1000);
 
@@ -192,7 +194,7 @@ const base = import.meta.env.BASE_URL;
         if (items.length > 60) {
           const more = document.createElement('p');
           more.className = 'sl__empty';
-          more.textContent = `…and ${items.length - 60} more — keep typing`;
+          more.textContent = `…and ${items.length - 60} more. Keep typing.`;
           results.appendChild(more);
         }
       }

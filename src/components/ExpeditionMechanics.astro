@@ -22,8 +22,8 @@ const soloExtra = [...new Set(solo.flatMap(r => r.gates).filter(g => !pairGates.
   <summary>How expedition events fire <span class="mech__tag">1 roll / turn</span></summary>
   <div class="mech__body">
     <p>Expeditions are the <code>{mech.class}</code> event class. The game rolls it
-    <b>once per player per turn</b> — <b>not</b> once per travelling character. The chance is the class's
-    <code>iLevelProb {mech.levelProb}</code> scaled by the game's event-level setting:</p>
+    <b>once per player per turn</b>, and <b>not</b> once per travelling character. The chance is the class's
+    <code>iLevelProb {mech.levelProb}</code> scaled by the game's event level setting, as below.</p>
 
     <ul class="mech__levels">
       {mech.levels.map((l: any) => (
@@ -39,17 +39,17 @@ const soloExtra = [...new Set(solo.flatMap(r => r.gates).filter(g => !pairGates.
     <p>It does not add rolls. What the number of characters with <b>Travelling Afar</b> changes:</p>
     <ul>
       <li><b>You need at least one.</b> {mech.pool.needTraveller} of the {mech.pool.stories} stories in the
-      per-turn pool require the starring character to be travelling — with nobody abroad the roll finds
-      nothing eligible and is simply wasted.</li>
+      per-turn pool require the starring character to be travelling, so with nobody abroad the roll finds
+      nothing eligible and is wasted.</li>
       <li><b>The star is picked uniformly at random</b> among eligible travellers, so with three abroad each
       has a ~⅓ chance of being the one in the story.</li>
-      <li><b>A varied roster widens the pool slightly</b> — individual stories add gates on top of travelling
-      (adult or teenager, at most two strengths, religious-but-unconverted, a specific character), and only
-      travellers who pass them count.</li>
+      <li><b>A varied roster widens the pool slightly</b>, because individual stories add gates on top of
+      travelling, such as being an adult or a teenager, having at most two strengths, being religious but
+      unconverted, or being one specific character, and only travellers who pass those gates count.</li>
     </ul>
 
-    <h3 class="mech__h">Coming home — and why it can cost you events</h3>
-    <p>The return stories are the exception: they are rolled <b>per character, every turn</b>
+    <h3 class="mech__h">Coming home, and why it can cost you events</h3>
+    <p>The return stories are the exception, because they are rolled <b>per character, every turn</b>
     (<code>EVENTTRIGGER_NEW_TURN_CHARACTER</code>), so they <em>do</em> scale with how many people you have abroad.</p>
     <ul class="mech__returns">
       {returns.map(r => (
@@ -67,7 +67,7 @@ const soloExtra = [...new Set(solo.flatMap(r => r.gates).filter(g => !pairGates.
       {solo.length > 0 && (
         <>{' '}The one-traveller variant additionally requires the character to be
         {' '}<b>{soloExtra.join(' + ')}</b> ({solo.map(r => `${r.prob}%`).join(' / ')}), so a single
-        {' '}younger traveller has no way home from this class at all — they stay abroad until some other
+        {' '}younger traveller has no way home from this class at all, and stays abroad until some other
         {' '}event recalls them.</>
       )}</p>
     )}
@@ -77,15 +77,15 @@ const soloExtra = [...new Set(solo.flatMap(r => r.gates).filter(g => !pairGates.
     them, fewer of the stories below.</p>
 
     <h3 class="mech__h">Why it feels like a rotation</h3>
-    <p>{mech.pool.onceOnly} of the {mech.pool.stories} pool stories are <code>iRepeatTurns -1</code> — fired once,
-    then removed from the pool permanently for that game
+    <p>{mech.pool.onceOnly} of the {mech.pool.stories} pool stories are <code>iRepeatTurns -1</code>, so they fire once
+    and are then removed from the pool for the rest of that game
     {mech.pool.repeatable > 0 && <> (only {mech.pool.repeatable} repeats)</>}. The pool drains as the game goes on.
     A further {mech.followups} stories are follow-ups that fire only once an earlier choice sets their event link.</p>
 
     {mech.lawGates.map((g: any) => (
       <p>The <Term id={g.id} /> law is an <b>option</b> gate, not an event gate:
       {` ${g.options} option${g.options === 1 ? '' : 's'} across ${g.stories} ${g.stories === 1 ? 'story' : 'stories'} `}
-      require you to have already adopted it — and those are the options that set the event link into the
+      require you to have already adopted it, and those are the options that set the event link into the
       follow-up.</p>
     ))}
 

@@ -68,7 +68,7 @@ for (const n of ordered) {
   title="Archetype Tendencies"
   active="archetype-tendencies"
   pageMark="🎓"
-  description="Which family classes of each Old World nation tend to produce each character archetype — the aiTraitDie weights (×10 signature, ×5 secondary) from familyClass.xml, crossed against every nation's family lineup."
+  description="Which family classes of each Old World nation tend to produce each character archetype, using the aiTraitDie weights from familyClass.xml, where ×10 marks the signature archetype and ×5 a secondary one, crossed against every nation's family lineup."
 >
   <div class="page-meta">
     <h1 class="page-title">Archetype Tendencies</h1>
@@ -182,10 +182,11 @@ for (const n of ordered) {
   </div>
 
   <p class="matrix-note">
-    Weights come from each family class's archetype die (<code>aiTraitDie</code> in
-    <code>familyClass.xml</code>): ×10 is the class's signature archetype, ×5 secondary.
-    Every class can still roll any archetype at a baseline ×1 — grayed cells mean no
-    family of that nation weights the archetype above baseline.
+    Weights come from each family class's archetype die, which is <code>aiTraitDie</code>
+    in <code>familyClass.xml</code>, where ×10 marks the class's signature archetype and
+    ×5 marks a secondary one. Every class can still roll any archetype at a baseline of
+    ×1, and a greyed cell means no family of that nation weights the archetype above the
+    baseline.
   </p>
 
   <script type="application/json" id="nation-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>

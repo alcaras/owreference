@@ -24,7 +24,7 @@ import '../styles/overlay-card.css';
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
-  <title>OBS Overlay — Old World Reference</title>
+  <title>OBS Overlay, Old World Reference</title>
 </head>
 <body class="obs">
   <div id="card" class="ocard obs__card" hidden></div>
@@ -101,7 +101,7 @@ import '../styles/overlay-card.css';
       try {
         const r = await fetch('http://127.0.0.1:43210/get');
         apply(await r.json());
-      } catch { /* server not running — stay on last state */ }
+      } catch { /* server not running, so stay on the last state */ }
     }
 
     // Free public pub/sub (ntfy.sh): the panel POSTs state to a random

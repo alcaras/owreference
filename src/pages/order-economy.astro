@@ -39,12 +39,13 @@ const payload = {
   ]}
 >
   <p class="lede">
-    <b>Orders/turn that differs by nation</b>, at <b id="l-cities">9</b> cities of which
-    <span id="l-cpf">3</span> sit in each Orders family. Only nation-specific sources are
-    counted — family classes, that nation's <b>starting techs</b>, its own Sun shrine, its national
-    effect. Garrisons, citizens, the Pyramids wonder and a plain temple's base Orders are the same for
-    everyone, so they'd move every row equally and are left out. Tile densities are <b>measured</b> from
-    <a href="https://alcaras.github.io/owtournamentatlas/">owtournamentatlas</a> (128 map configs).
+    <b>Orders per turn that differ by nation</b>, at <b id="l-cities">9</b> cities, of which
+    <span id="l-cpf">3</span> sit in each Orders family. Only the sources that vary by nation are
+    counted, e.g. family classes, that nation's <b>starting techs</b>, its own Sun shrine and its
+    national effect. Garrisons, citizens, the Pyramids wonder and a plain temple's base Orders are the
+    same for everyone, so they would move every row equally and are left out. Tile densities are
+    <b>measured</b> from <a href="https://alcaras.github.io/owtournamentatlas/">owtournamentatlas</a>
+    across 128 map configurations.
   </p>
 
   <section class="asm">
@@ -53,9 +54,9 @@ const payload = {
       <div class="asm__fields">
         <label class="f f--wide"><span>Era</span>
           <select id="a-era">
-            <option value="early" selected>Early — starting techs + Divination</option>
-            <option value="mid">Mid — all tier 1–4 techs, no temples</option>
-            <option value="late">Late — all techs + temples</option>
+            <option value="early" selected>Early: starting techs and Divination</option>
+            <option value="mid">Mid: all tier 1 to 4 techs, no temples</option>
+            <option value="late">Late: all techs and temples</option>
           </select>
         </label>
         <label class="f"><span>Total cities</span><input type="number" id="a-cities" value="9" min="1" max="30" step="1" /></label>
@@ -81,7 +82,7 @@ const payload = {
       <span class="asm__tag">Your play</span>
       <div class="asm__fields">
         <label class="f--chk"><input type="checkbox" id="a-rev" /> <span>Revelation theology <i>temples +0.5 Orders</i></span></label>
-        <label class="f--chk"><input type="checkbox" id="a-poly" /> <span>Polytheism <i>Sun shrine per city — automatic from Mid</i></span></label>
+        <label class="f--chk"><input type="checkbox" id="a-poly" /> <span>Polytheism <i>Sun shrine per city, automatic from Mid</i></span></label>
       </div>
     </div>
   </section>
@@ -95,7 +96,7 @@ const payload = {
             <th class="nhdr">Starting techs</th>
             <th class="nhdr nhdr--num" title="Orders from the family classes it can field">Families</th>
             <th class="nhdr nhdr--num" title="Horse pastures + Camel/Elephant camps, gated by this nation's techs">Tiles</th>
-            <th class="nhdr nhdr--num" title="This nation's own Orders-yielding shrine — all five are Sun shrines, one per player, needs Divination">Shrine</th>
+            <th class="nhdr nhdr--num" title="This nation's own shrine that gives Orders. All five are Sun shrines, one per player, and they need Divination.">Shrine</th>
             <th class="nhdr nhdr--num" title="The nation's own unique Orders effect: Persia's pasture bonus, Assyria's kills, Tamil's harbours. Yuezhi's free Horse lands in Tiles instead.">National</th>
             <th class="nhdr nhdr--num" title="Legitimacy from Kushite Pyramids / Mint Coin, converted to Orders">Legit</th>
             <th class="nhdr nhdr--num oe__tot">Orders / turn</th>
@@ -111,50 +112,50 @@ const payload = {
     <h2 class="rates__h">What the XML says</h2>
     <div class="rates__cols">
       <div>
-        <h3>Family classes that matter</h3>
+        <h3>Family classes that give Orders</h3>
         <ul>
-          <li><b>Statesmen</b> +{D.classes.FAMILYCLASS_STATESMEN.perCity}/turn in <i>every</i> city of that family; its <b>seat unlocks Decree</b></li>
-          <li><b>Riders</b> +{D.classes.FAMILYCLASS_RIDERS.seat}/turn, <i>seat only</i></li>
-          <li><b>Hunters</b> camps +{D.classes.FAMILYCLASS_HUNTERS.campModifier}% — doubles camp Orders in its cities</li>
-          <li><b>Clerics</b> temples +{D.classes.FAMILYCLASS_CLERICS.templeModifier}% — doubles a temple's
-            Orders in its cities. With <b>Revelation</b> a temple makes
+          <li><b>Statesmen</b>: +{D.classes.FAMILYCLASS_STATESMEN.perCity} per turn in <i>every</i> city of that family, and the <b>seat unlocks Decree</b></li>
+          <li><b>Riders</b>: +{D.classes.FAMILYCLASS_RIDERS.seat} per turn, from the <i>seat only</i></li>
+          <li><b>Hunters</b>: camps +{D.classes.FAMILYCLASS_HUNTERS.campModifier}%, which doubles camp Orders in its cities</li>
+          <li><b>Clerics</b>: temples +{D.classes.FAMILYCLASS_CLERICS.templeModifier}%, which doubles a
+            temple's Orders in its cities. With <b>Revelation</b> a temple makes
             {D.buildings.templeWorldReligion.orders} + {D.buildings.revelationTemple.orders} =
-            {D.buildings.templeWorldReligion.orders + D.buildings.revelationTemple.orders}, so Clerics
-            double-dip and their marginal doubles too.</li>
+            {D.buildings.templeWorldReligion.orders + D.buildings.revelationTemple.orders} Orders, and a
+            Clerics family doubles that larger number, so each extra temple is worth more to them.</li>
           <li>The other six classes give no Orders.</li>
         </ul>
       </div>
       <div>
-        <h3>Tiles — and their tech</h3>
+        <h3>Tiles and their techs</h3>
         <ul>
-          <li><b>Pasture</b> +{D.tiles.pasture.byResource.Horse} on <b>Horse only</b> — needs {D.tiles.pasture.techName} ({D.techs.TECH_HUSBANDRY.cost} sci, via Ironworking)</li>
-          <li><b>Camp</b> +{D.tiles.camp.byResource.Camel} on <b>Camel/Elephant only</b> — needs {D.tiles.camp.techName} ({D.techs.TECH_TRAPPING.cost} sci, no prereq)</li>
-          <li>Cattle/Sheep/Pig/Goat pastures and Game/Fur camps give <b>no</b> Orders.</li>
-          <li><b>Persia</b> adds +0.5 to <i>every</i> pasture, any resource — a horse pasture pays 1.0.</li>
+          <li><b>Pasture</b>: +{D.tiles.pasture.byResource.Horse} on <b>Horse only</b>, and it needs {D.tiles.pasture.techName} ({D.techs.TECH_HUSBANDRY.cost} sci, via Ironworking)</li>
+          <li><b>Camp</b>: +{D.tiles.camp.byResource.Camel} on <b>Camel and Elephant only</b>, and it needs {D.tiles.camp.techName} ({D.techs.TECH_TRAPPING.cost} sci, no prereq)</li>
+          <li>Cattle, Sheep, Pig and Goat pastures and Game and Fur camps give <b>no</b> Orders.</li>
+          <li><b>Persia</b> adds +0.5 to <i>every</i> pasture on any resource, so a horse pasture pays 1.0.</li>
           <li><b>Yuezhi</b> founds every city with a <b>Horse</b> resource
-            (<code>BONUS_NATION_YUEZHI</code> FoundBonus), so it banks +0.5 Orders per city on top of
-            the map's horses — and it starts with Husbandry to use them.</li>
+            (<code>BONUS_NATION_YUEZHI</code> FoundBonus), so it gains +0.5 Orders per city on top of
+            the map's horses, and it starts with Husbandry to use them.</li>
         </ul>
       </div>
       <div>
         <h3>Orders shrines <span class="tag">7 nations</span></h3>
         <ul>
           {nations.filter((n: any) => n.ordersShrines?.length).map((n: any) => (
-            <li><b>{n.name}</b> — {n.ordersShrines.map((s: any) =>
+            <li><b>{n.name}</b>: {n.ordersShrines.map((s: any) =>
               `${s.name} (${s.type}) +${+(s.orders * (1 + (n.shrineModifier || 0) / 100)).toFixed(2)}${s.per === 'wonder' ? '/adjacent Wonder' : ''}`).join(' · ')}
               {n.shrineModifier ? <i> (incl. this nation's +{n.shrineModifier}% Shrines)</i> : null}</li>
           ))}
-          <li class="muted"><b>Sun</b> shrines pay a flat +0.5; <b>Kingship</b> shrines pay
-            +1 <i>per adjacent Wonder</i> — so Babylonia and Greece have an Orders shrine after all,
-            it just needs a Wonder next door. Normally
-            <b>one per player</b> (<code>iMaxPlayerCount 1</code>), but <b>Polytheism</b> lifts the cap
-            outright (<code>LAW_POLYTHEISM</code> sets <code>abNoImprovementClassMax</code> for Shrines,
-            checked at <code>City.cs:10277</code>) — tick it and you can run one in every city.
-            Needs Divination. The other eight nations' pantheons have no Sun shrine at all.</li>
-          <li class="muted"><b>Kush multiplies both of its shrines by 1.5</b> —
+          <li class="muted"><b>Sun</b> shrines pay a flat +0.5, and <b>Kingship</b> shrines pay
+            +1 <i>per adjacent Wonder</i>, so Babylonia and Greece do have an Orders shrine, as long as
+            you place a Wonder beside it. A player normally gets <b>one shrine of a type</b>
+            (<code>iMaxPlayerCount 1</code>), but <b>Polytheism</b> removes the cap
+            (<code>LAW_POLYTHEISM</code> sets <code>abNoImprovementClassMax</code> for Shrines, checked
+            at <code>City.cs:10277</code>), so tick it and you can run one in every city. Shrines need
+            Divination. The other eight nations' pantheons have no Sun shrine at all.</li>
+          <li class="muted"><b>Kush multiplies both of its shrines by 1.5</b>, because
             <code>EFFECTCITY_NATION_KUSH</code> carries <code>aiImprovementClassModifier</code>
-            SHRINE +50, so Melul pays 0.75 flat and Amani 1.5 per adjacent Wonder. The
-            per-wonder output is scaled too: <code>Tile.cs:13608</code> folds
+            SHRINE +50, so Melul pays 0.75 flat and Amani 1.5 per adjacent Wonder. The output per
+            wonder is scaled as well, because <code>Tile.cs:13608</code> adds
             <code>maiAdjacentWonderYieldOutput</code> into the same total that
             <code>getImprovementModifierForGovernor</code> modifies
             (<code>Tile.cs:13717</code> → <code>City.cs:4365</code>).</li>
@@ -163,39 +164,47 @@ const payload = {
       <div>
         <h3>Legitimacy → Orders</h3>
         <ul>
-          <li><b>{D.buildings.legitimacyPerOrder} Orders per Legitimacy</b>, always on — <code>iPerLegitimacy 1</code> in <code>yield.xml</code>, applied ungated in <code>Player.calculateNonCityYield</code>. Not a setting: it's the game's rate.</li>
-          <li><b>Kush</b> — Kushite Pyramids +4 Legitimacy, one per city</li>
-          <li><b>Aksum</b> — Mint Coin +20 (Strong) → +40 (Legendary), upgrading in place</li>
-          <li class="muted">A Schemer leader can additionally dump Legitimacy for a lump
-            +10 Orders (<code>CONVERT_LEGITIMACY</code>, 2 Legitimacy rising +1 per use, once a turn) —
-            leader-dependent, so not scored here.</li>
+          <li><b>{D.buildings.legitimacyPerOrder} Orders per Legitimacy</b>, always on. It is
+            <code>iPerLegitimacy 1</code> in <code>yield.xml</code>, applied without any condition in
+            <code>Player.calculateNonCityYield</code>, and the game fixes the rate rather than exposing
+            it as a setting.</li>
+          <li><b>Kush</b>: Kushite Pyramids +4 Legitimacy, one per city</li>
+          <li><b>Aksum</b>: Mint Coin +20 (Strong) rising to +40 (Legendary), upgrading in place</li>
+          <li class="muted">A Schemer leader can also spend Legitimacy for a one-off
+            +10 Orders (<code>CONVERT_LEGITIMACY</code>, costing 2 Legitimacy and rising +1 per use,
+            once a turn). The option depends on the leader, so it is not scored here.</li>
         </ul>
       </div>
       <div>
         <h3>Decree <span class="tag">Statesmen seat</span></h3>
         <ul>
           {D.decree.map((d: any) => (
-            <li>{d.name} — {d.civics} Civics → <b>{d.orders} Orders</b> <i>({d.culture})</i></li>
+            <li>{d.name}: {d.civics} Civics for <b>{d.orders} Orders</b> <i>({d.culture})</i></li>
           ))}
         </ul>
-        <p class="fine">A repeatable Civics→Orders conversion, not a per-turn yield, so it's outside the
-        table. The seat alone unlocks it — Constitution is an alternative, not a requirement
-        (<code>City.cs:9914</code> ORs the prereqs). <code>RequiresCulture</code> is exact, so one tier at a time.</p>
+        <p class="fine">Decree converts Civics into Orders as often as you can pay for it, and it
+        yields nothing per turn, so it sits outside the table. The seat on its own unlocks it, and
+        Constitution is an alternative route rather than a requirement, because
+        <code>City.cs:9914</code> ORs the prereqs. <code>RequiresCulture</code> asks for an exact
+        culture level, so you get one tier at a time.</p>
       </div>
     </div>
     <p class="fine">
-      <b>Legitimacy IS Orders.</b> <code>YIELD_ORDERS</code> carries <code>iPerLegitimacy 1</code> and
-      <code>Player.calculateNonCityYield</code> adds <code>getLegitimacy() × iPerLegitimacy</code> to the
-      rate with no gating — so every point of Legitimacy is <b>+0.1 Orders/turn</b>, i.e.
-      <b>100 Legitimacy = +10 Orders</b>. That makes <b>Kushite Pyramids</b> (+4 each, one per city) and
-      <b>Aksum's Mint Coin</b> (+20 at Strong, +40 at Legendary, each tier replacing the last) real
-      Orders sources, scored in the Legit column from Mid onward.
-      <b>Left out deliberately</b> (same for every nation): garrisons +0.5, citizens +0.1 each, Pyramids wonder +1,
-      a plain temple's +0.5, and laws like Serfdom (+5 flat).
-      <b>Assyria's +2/kill</b> is scored off a <b>measured</b> rate: 0.55 military kills per player per
-      turn, from 639 player-games in the owglick save corpus (median 0.53, p25–p75 0.39–0.71; games past
-      turn 60 run a bit hotter at 0.59). <b>Tamil's +1/Harbor</b> is scored once Cartography is in —
-      tier 5, so late game only.
+      <b>Legitimacy pays Orders directly.</b> <code>YIELD_ORDERS</code> carries
+      <code>iPerLegitimacy 1</code>, and <code>Player.calculateNonCityYield</code> adds
+      <code>getLegitimacy() × iPerLegitimacy</code> to the rate with no condition attached, so every
+      point of Legitimacy is <b>+0.1 Orders per turn</b> and <b>100 Legitimacy is +10 Orders</b>.
+      <b>Kushite Pyramids</b> (+4 each, one per city) and <b>Aksum's Mint Coin</b> (+20 at Strong and
+      +40 at Legendary, each tier replacing the last) are therefore Orders sources, and both are scored
+      in the Legit column from Mid onward.
+      Some sources are <b>left out on purpose</b>, because they are the same for every nation. They are
+      garrisons +0.5, citizens +0.1 each, the Pyramids wonder +1, a plain temple's +0.5, and laws such
+      as Serfdom (+5 flat).
+      <b>Assyria's +2 per kill</b> is scored from a <b>measured</b> rate of 0.55 military kills per
+      player per turn, taken from 639 player games in the owglick save corpus. The median is 0.53 and
+      the middle half of games falls between 0.39 and 0.71, while games past turn 60 run a little higher
+      at 0.59. <b>Tamil's +1 per Harbor</b> is scored once you have Cartography, which is tier 5 and so
+      late game only.
     </p>
   </section>
 
@@ -287,8 +296,8 @@ const payload = {
         const tiles = horse + camps;
         // note only what pays — absent techs already show as a smaller number
         const tileBits = [];
-        if (horse > 0) tileBits.push(`${r1(horse)} Horse pastures — ${A.horse}/city × ${cities} × ${R.horse}`);
-        if (camps > 0) tileBits.push(`${r1(camps)} Camel/Elephant camps — ${A.camp}/city × ${cities} × ${R.camp}`);
+        if (horse > 0) tileBits.push(`${r1(horse)} Horse pastures, ${A.horse}/city × ${cities} × ${R.horse}`);
+        if (camps > 0) tileBits.push(`${r1(camps)} Camel and Elephant camps, ${A.camp}/city × ${cities} × ${R.camp}`);
         const tileNote = tileBits.join(' · ');
         const famNote = (combos[0] || [])
           .map((o) => `${nice(o.c)}: ${o.why}`).join(' · ');
@@ -302,13 +311,13 @@ const payload = {
               const v = cities * pastures * s.value;
               national += v;
               notes.push(`+${s.value}/pasture × ${r1(pastures)} pastures × ${cities} cities`);
-            } else notes.push('pasture bonus — needs Husbandry');
+            } else notes.push('pasture bonus, needs Husbandry');
           } else if (s.kind === 'foundHorse') {
             if (hasHusb) {
               const v = cities * s.value * R.horse;
               national += v;
               notes.push(`+${s.value} Horse/city × ${cities} cities × ${R.horse}`);
-            } else notes.push(`+${s.value} Horse/city — needs Husbandry`);
+            } else notes.push(`+${s.value} Horse/city, needs Husbandry`);
           } else if (s.kind === 'perKill') {
             national += s.value * A.kills;
             notes.push(`+${s.value}/kill × ${A.kills} kills/turn`);
@@ -319,7 +328,7 @@ const payload = {
               national += s.value * A.harbors;
               notes.push(`+${s.value}/Harbor × ${A.harbors} harbors`);
             } else {
-              notes.push(`+${s.value}/Harbor — needs Cartography`);
+              notes.push(`+${s.value}/Harbor, needs Cartography`);
             }
           }
         }
@@ -335,13 +344,13 @@ const payload = {
         let shrine = 0; const shrineBits = [];
         for (const sh of (n.ordersShrines || [])) {
           const label = `${sh.name} (${sh.type})`;
-          if (!hasDiv) { shrineBits.push(`${label} — needs Divination`); continue; }
+          if (!hasDiv) { shrineBits.push(`${label}, needs Divination`); continue; }
           const rate = sh.orders * shMod;
           if (sh.per === 'wonder') {
             // Scales with how many Wonders sit next to a Kingship shrine. The
             // era preset follows measured owglick counts: ~0.8 wonders/player at
             // turn 50, ~3.4 past turn 90.
-            if (!A.wonders) { shrineBits.push(`${label} — no adjacent Wonder`); continue; }
+            if (!A.wonders) { shrineBits.push(`${label}, no adjacent Wonder`); continue; }
             shrine += rate * A.wonders;
             shrineBits.push(`${label} ×${A.wonders} wonder${A.wonders > 1 ? 's' : ''}`);
           } else {

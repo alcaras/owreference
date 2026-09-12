@@ -35,7 +35,7 @@ function theologyYield(eff: string[]): string {
     To establish a theology you must adopt the religion as your State Religion
     and spend a <LinkedText text="Disciple" /> on the founding mission. The
     effect then applies <em>globally</em> to every nation following that
-    religion, and the slot is locked — no other player can pick it.
+    religion, and the slot locks, so no other player can pick it.
   </p>
 
   <div class="legend legend--audience">
@@ -45,7 +45,7 @@ function theologyYield(eff: string[]): string {
         class="chip chip--neutral"
         href={`${base}world-religion-buildings#${r.slug}`}
         title={r.paganNations?.length
-          ? `Pagan religion of ${r.paganNations.join(', ')} — always adopts theologies, never spreads (Empires of the Indus)`
+          ? `Pagan religion of ${r.paganNations.join(', ')}, which always adopts theologies and never spreads (Empires of the Indus)`
           : undefined}
       >
         <img class="chip__icon" src={`${base}img/icons/yields/divine_favor.png`} alt="" />

@@ -48,11 +48,11 @@ const payload = {
   { label: 'clusters', value: data.meta.clusters + data.meta.roleClusters },
   { label: 'events reachable', value: data.meta.storiesCM },
 ]}
-  description="Look up any Old World trait and see the events it unlocks — the stories only that trait opens, plus every event and extra choice it reaches through the trait clusters it belongs to.">
+  description="Look up any Old World trait and see the events it unlocks, covering the stories only that trait opens plus every event and extra choice it reaches through the trait clusters it belongs to.">
 
   <p class="lede">
-    Pick a trait to see what story content it buys you. <strong>Solo</strong> content
-    is gated on that trait alone — nothing else in the game satisfies it.
+    Pick a trait to see what story content it opens. <strong>Solo</strong> content
+    is gated on that trait alone, and nothing else in the game satisfies it.
     <strong>Shared</strong> content comes through a
     <a href={`${base}trait-clusters`}>cluster</a> the trait belongs to, where any
     member qualifies, so it is only worth something if the character has none of the
@@ -100,11 +100,11 @@ const payload = {
   <p class="foot">
     Gates come from <code>subject.xml</code> (<code>TraitPrereq</code> /
     <code>aeTraitAny</code>) applied through <code>eventStory.xml</code>
-    (<code>aeSubjects</code> + <code>SubjectExtras</code>, a hard AND — see
-    <code>PlayerEvent.cs:1000</code>) and <code>eventOption.xml</code>
-    (<code>LeaderSubject</code> / <code>LeaderSubjectAny</code>). Counts are
-    distinct events, unioned across every subject a trait satisfies — a trait in
-    two clusters does not get the same story counted twice. Trait ratings,
+    (<code>aeSubjects</code> and <code>SubjectExtras</code>, which must all hold, as
+    <code>PlayerEvent.cs:1000</code> shows) and <code>eventOption.xml</code>
+    (<code>LeaderSubject</code> and <code>LeaderSubjectAny</code>). Counts are of
+    distinct events across every subject a trait satisfies, so a trait in two clusters
+    does not have the same story counted twice. Trait ratings,
     opinions and effects live on the <a href={`${base}traits`}>Traits</a> page;
     this page is only about story access.
   </p>

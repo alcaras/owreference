@@ -28,7 +28,7 @@ const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
   title="Difficulty & Advantages"
   active="difficulty"
   pageMark="🎚️"
-  description="What each Old World difficulty (The New through The Great) actually changes: your Prosperity (starting stockpile, base yields, discontent), AI development, AI aggression, tribal strength, calamities, and the AI handicap ladder — all read straight from difficultyMode.xml, difficulty.xml, and advantage.xml."
+  description="What each Old World difficulty, from The New to The Great, actually changes. Covers your Prosperity, meaning starting stockpile, base yields and discontent, along with AI development, AI aggression, tribal strength, calamities and the AI handicap ladder, all read from difficultyMode.xml, difficulty.xml and advantage.xml."
   pageStats={[
     { label: 'difficulties', value: modes.length },
     { label: 'prosperity levels', value: prosperity.length },
@@ -37,12 +37,12 @@ const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
 >
   <section class="diff-intro">
     <p>
-      A named difficulty is a <b>preset bundle of six dials</b>: your <b>Prosperity</b>
-      (stockpile, base yields, discontent), <b>AI Development</b>, <b>AI Aggression</b>,
-      <b>Tribal Level</b>, <b>AI Handicap</b>, and <b>Calamities</b>. All six can also be set
-      individually in advanced setup. AI nations always run at Prosperity
-      <b>{aiProsperityName}</b> (the Strong baseline) no matter which difficulty you pick —
-      what changes for them is their head start and handicap.
+      A named difficulty is a preset bundle of six settings, which are your <b>Prosperity</b>,
+      covering stockpile, base yields and discontent, plus <b>AI Development</b>,
+      <b>AI Aggression</b>, <b>Tribal Level</b>, <b>AI Handicap</b> and <b>Calamities</b>. You can
+      also set all six individually in advanced setup. AI nations always run at Prosperity
+      <b>{aiProsperityName}</b>, the Strong baseline, whichever difficulty you pick, and what
+      changes for them is their head start and their handicap.
     </p>
   </section>
 
@@ -67,7 +67,7 @@ const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
           </tr>
         </thead>
         <tbody>
-          <tr class="grp"><th colspan={modes.length + 1}>Your start — Prosperity</th></tr>
+          <tr class="grp"><th colspan={modes.length + 1}>Your start, set by Prosperity</th></tr>
           <tr>
             <th class="rowlabel" scope="row">Prosperity</th>
             {modes.map((m: any) => (
@@ -217,9 +217,9 @@ const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
   <section class="adv" id="advantages">
     <h2 class="adv__title">AI Handicap ladder</h2>
     <p class="adv__lede">
-      The <b>AI Handicap</b> (advantage) is the per-AI-player thumb on the scale: penalties
-      weaken AI nations on easy difficulties, advantages strengthen them on hard ones. Custom
-      games can pick any step — including <b>{advById['ADVANTAGE_HIGH'].name}</b> and
+      The <b>AI Handicap</b>, called advantage in the files, adjusts each AI player directly. A
+      penalty weakens AI nations on easy difficulties, and an advantage strengthens them on hard
+      ones. A custom game can pick any step, including <b>{advById['ADVANTAGE_HIGH'].name}</b> and
       <b>{advById['ADVANTAGE_VERY_HIGH'].name}</b>, which no preset uses.
     </p>
     <div class="adv__row">
@@ -229,7 +229,7 @@ const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
           {advUsedBy[a.id]?.length ? (
             <div class="advcard__used">used by {advUsedBy[a.id].join(', ')}</div>
           ) : (
-            <div class="advcard__used advcard__used--none">no preset — custom setup only</div>
+            <div class="advcard__used advcard__used--none">no preset, custom setup only</div>
           )}
           {a.effects.length === 0 ? (
             <div class="advcard__empty"><span class="cell__dash">—</span></div>

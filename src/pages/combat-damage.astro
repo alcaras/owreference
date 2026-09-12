@@ -35,14 +35,14 @@ const lookup = STR_AXIS.map(a => ({
     <h2 class="cd-h">The formula</h2>
     <div class="cd-formula">
       <div class="cd-line">
-        <span class="cd-eq">Damage = 6 × ATK / DEF&nbsp;&nbsp;— rounded in the stronger unit's favor, minimum 1</span>
+        <span class="cd-eq">Damage = 6 × ATK / DEF, rounded in the stronger unit's favor, minimum 1</span>
       </div>
       <p class="cd-note">
-        <code>ATK</code> = attacker's strength after all modifiers;
-        <code>DEF</code> = defender's. When ATK &gt; DEF the result rounds
-        <em>up</em>; otherwise it rounds down. An even fight deals exactly
-        <b>6</b> — three attacks to kill a 20 HP unit. The in-game UI shows
-        strength to one decimal, but the unrounded value is what's used.
+        <code>ATK</code> is the attacker's strength after all modifiers, and
+        <code>DEF</code> is the defender's. The result rounds <em>up</em> when
+        ATK is greater than DEF, and down otherwise. An even fight deals exactly
+        <b>6</b>, so it takes three attacks to kill a 20 HP unit. The in-game UI
+        shows strength to one decimal, but the game uses the unrounded value.
       </p>
     </div>
 
@@ -66,9 +66,9 @@ const lookup = STR_AXIS.map(a => ({
         </tbody>
       </table>
       <p class="cd-note">
-        Effective strengths land between these integers all the time — a
-        Hoplite attacking a Horseman in melee is ATK 9 (6 × 1.5 anti-mounted)
-        vs DEF 6 → <b>9 damage</b>.
+        Effective strengths often land between these integers. For example, a
+        Hoplite attacking a Horseman in melee is ATK 9, which is 6 × 1.5 for the
+        anti-mounted bonus, against DEF 6, for <b>9 damage</b>.
       </p>
     </div>
   </section>
@@ -81,24 +81,25 @@ const lookup = STR_AXIS.map(a => ({
       </div>
     </div>
     <p>
-      Modifiers are additive percentages, gathered separately for the
-      attacking and defending side (all values from the game's XML / source):
+      Modifiers are percentages that add together, and the game gathers them
+      separately for the attacking side and the defending side. Every value below
+      comes from the game's XML and source.
     </p>
     <ul class="cd-list">
-      <li><strong>Anti-trait bonuses</strong> — the unit's own effects vs the opponent's traits: e.g. Pikeman +100% vs Mounted (melee), Crossbowman +50% vs Melee, Ballista +100% <em>attacking</em> Infantry. These are the counters on the <a href={`${base}unit-counters`}>Unit Counters</a> page.</li>
-      <li><strong>Promotions &amp; general ratings</strong> — each promotion's strength/attack/defense percentages (see <a href={`${base}promotions`}>Promotions</a>); a general adds rating-driven bonuses.</li>
-      <li><strong>Terrain &amp; position</strong> — melee attacking across a river −50%; land↔water attacks −50%; per-unit urban/vegetation attack &amp; defense modifiers; fighting in own family territory +10%.</li>
-      <li><strong>State</strong> — siege that moved this turn (unlimbered) defends at −25%; attacking from hiding +10%; some units gain bonuses vs damaged or general-led targets.</li>
+      <li><strong>Anti-trait bonuses</strong> are the unit's own effects against the opponent's traits, e.g. Pikeman +100% against Mounted in melee, Crossbowman +50% against Melee, and Ballista +100% when <em>attacking</em> Infantry. They are the counters listed on the <a href={`${base}unit-counters`}>Unit Counters</a> page.</li>
+      <li><strong>Promotions and general ratings</strong> are each promotion's strength, attack and defense percentages, listed on <a href={`${base}promotions`}>Promotions</a>. A general adds further bonuses from his ratings.</li>
+      <li><strong>Terrain and position</strong> covers melee attacking across a river at −50%, attacks between land and water at −50%, each unit's own modifiers for urban tiles and vegetation, and +10% for fighting in your own family's territory.</li>
+      <li><strong>State</strong> covers a siege unit that moved this turn, which defends at −25%, attacking from hiding at +10%, and the bonuses some units get against damaged targets or targets led by a general.</li>
     </ul>
     <p class="cd-note">
-      Current HP does <em>not</em> scale strength — a 1 HP Pikeman hits as
-      hard as a fresh one (some attackers carry an explicit vs-damaged bonus
-      instead).
+      Current HP does <em>not</em> scale strength, so a Pikeman on 1 HP hits as
+      hard as a fresh one. Some attackers carry a stated bonus against damaged
+      units instead.
     </p>
   </section>
 
   <section class="cd-section">
-    <h2 class="cd-h">Worked example: Hoplite attacks Horseman</h2>
+    <h2 class="cd-h">A worked example, Hoplite against Horseman</h2>
     <div class="cd-table">
       <table>
         <tbody>
@@ -106,15 +107,15 @@ const lookup = STR_AXIS.map(a => ({
           <tr><td>+ Anti-Mounted II (melee, vs Mounted)</td><td>+50%</td></tr>
           <tr><td>Hoplite effective attack</td><td><strong>9</strong></td></tr>
           <tr><td>Horseman defense (no modifiers)</td><td><strong>6</strong></td></tr>
-          <tr><td>Damage: 6 × 9 / 6, rounded up</td><td><strong>9 HP</strong></td></tr>
+          <tr><td>Damage of 6 × 9 / 6, rounded up</td><td><strong>9 HP</strong></td></tr>
         </tbody>
       </table>
     </div>
     <p class="cd-note">
-      The Horseman drops from 20 to 11 HP. Reversed, the Horseman attacking
-      the Hoplite is 6 vs 9 (the anti-mounted bonus also defends in melee):
-      6 × 6 / 9 = <b>4 damage</b> — which is why "spear beats horse" is such
-      a hard rule.
+      The Horseman drops from 20 to 11 HP. In the other direction the Horseman
+      attacks at 6 against 9, because the anti-mounted bonus also applies when
+      the Hoplite defends in melee, so 6 × 6 / 9 is <b>4 damage</b>. The gap is
+      why a spear unit beats a horse unit so reliably.
     </p>
   </section>
 
@@ -122,8 +123,8 @@ const lookup = STR_AXIS.map(a => ({
     <h2 class="cd-h">Striking back</h2>
     <ul class="cd-list">
       <li><strong>Ranged attacks</strong> draw no return damage at all.</li>
-      <li><strong>Melee defenders</strong> deal a flat <b>1</b> counter damage per attack (not proportional) — plus 1 more against routed attackers.</li>
-      <li><strong>Tactician generals</strong> upgrade that to a full counterattack: 100% of the unit's own attack damage.</li>
+      <li><strong>Melee defenders</strong> deal a flat <b>1</b> counter damage per attack rather than a proportional amount, and 1 more against a routed attacker.</li>
+      <li><strong>Tactician generals</strong> raise that to a full counterattack of 100% of the unit's own attack damage.</li>
       <li><strong>Cities</strong> defend at <code>8 + 0.5 × citizens</code> (<code>CITY_STRENGTH_BASE/PER</code>) and units capture at 50% HP.</li>
     </ul>
   </section>
@@ -131,58 +132,58 @@ const lookup = STR_AXIS.map(a => ({
   <section class="cd-section">
     <h2 class="cd-h">Attack patterns (Pierce, Cleave, Splash, Circle)</h2>
     <p>
-      Some units carry an <em>attack pattern</em> on top of the main hit. These
-      are additional small attacks that resolve against adjacent / linear /
-      surrounding tiles. They use the same damage formula but with a reduced
-      effective strength, and the attacker doesn't take return damage from
-      those secondary hits.
+      Some units carry an <em>attack pattern</em> on top of the main hit. An
+      attack pattern is a set of smaller attacks that resolve against nearby
+      tiles, and it uses the same damage formula with a reduced effective
+      strength. The attacker takes no return damage from those extra hits.
     </p>
     <ul class="cd-list">
-      <li><strong>Pierce</strong> — Spearman / Pikeman line. Hits the primary target plus the tile behind it.</li>
-      <li><strong>Cleave</strong> — Axeman / Maceman line. Hits the primary plus the two flanking tiles.</li>
-      <li><strong>Splash</strong> — Catapult / Trebuchet. Hits a 7-tile cluster.</li>
-      <li><strong>Circle</strong> — Macedonian Companion / certain elephants. Hits all 6 adjacent tiles.</li>
+      <li><strong>Pierce</strong> belongs to the Spearman and Pikeman line, and it hits the main target plus the tile behind it.</li>
+      <li><strong>Cleave</strong> belongs to the Axeman and Maceman line, and it hits the main target plus the two tiles beside it.</li>
+      <li><strong>Splash</strong> belongs to the Catapult and Trebuchet, and it hits a cluster of 7 tiles.</li>
+      <li><strong>Circle</strong> belongs to the Macedonian Companion and certain elephants, and it hits all 6 adjacent tiles.</li>
     </ul>
     <p>
-      Per the game data, the secondary-hit strength is the unit's base
-      multiplied by a small percentage (e.g. <em>Pierce I</em> = +25% Pierce
-      damage on top of a flat +1 to the pattern's value).
+      In the game data the strength of an extra hit is the unit's base strength
+      multiplied by a small percentage, e.g. <em>Pierce I</em> adds +25% Pierce
+      damage on top of a flat +1 to the pattern's value.
     </p>
   </section>
 
   <section class="cd-section">
     <h2 class="cd-h">Rout and routed units</h2>
     <p>
-      A unit at 0 HP doesn't disappear — it <strong>routs</strong>, retreats
-      one tile, and becomes unable to attack until rallied. The standard
-      damage formula caps at HP remaining; the killing blow only does enough
-      damage to bring it to 0.
+      A unit at 0 HP does not disappear. It <strong>routs</strong>, retreats one
+      tile and cannot attack until you rally it. Damage is capped at the HP
+      remaining, so the final blow does only enough damage to bring the unit
+      to 0.
     </p>
     <ul class="cd-list">
-      <li>Units that can't retreat (surrounded, water) are destroyed instead. <a href={`${base}zone-of-control`}>Zone of control</a> is never consulted by attacks, routs or pushes.</li>
-      <li>A routed unit at 0 HP heals at the active-heal rate next turn (5 HP/turn) once safe.</li>
+      <li>A unit that cannot retreat, because it is surrounded or standing on water, is destroyed instead. Attacks, routs and pushes never consult <a href={`${base}zone-of-control`}>zone of control</a>.</li>
+      <li>A routed unit at 0 HP heals at the active rate of 5 HP per turn on the next turn, once it is safe.</li>
     </ul>
   </section>
 
   <section class="cd-section">
     <h2 class="cd-h">Constants pulled from XML</h2>
     <p class="cd-note">
-      These come straight from <code>globalsInt.xml</code> and apply to combat
-      math globally. Some are display-friendly multipliers; most are integers.
+      The constants below come straight from <code>globalsInt.xml</code> and
+      apply to combat everywhere. A few are multipliers used for display, and
+      most are plain integers.
     </p>
     <div class="cd-table">
       <table>
         <thead><tr><th>Constant</th><th>Value</th><th>Meaning</th></tr></thead>
         <tbody>
-          <tr><td><code>STRENGTH_MULTIPLIER</code></td><td>10</td><td>Game-internal strength is 10× the display value.</td></tr>
-          <tr><td><code>ACTIVE_HEAL</code></td><td>5</td><td>HP healed per turn when not moving / attacking.</td></tr>
+          <tr><td><code>STRENGTH_MULTIPLIER</code></td><td>10</td><td>Strength inside the game is 10 times the displayed value.</td></tr>
+          <tr><td><code>ACTIVE_HEAL</code></td><td>5</td><td>HP healed per turn when the unit neither moves nor attacks.</td></tr>
           <tr><td><code>IDLE_HEAL</code></td><td>1</td><td>HP healed per turn after moving but not attacking.</td></tr>
           <tr><td><code>UNIT_HEAL_COST</code></td><td>1</td><td>Cost per HP healed (in Training or Civics, depending).</td></tr>
           <tr><td><code>COUNTER_CITY_DAMAGE</code></td><td>1</td><td>Damage delivered to a city per attack against its garrison.</td></tr>
           <tr><td><code>COUNTER_ROUT_DAMAGE</code></td><td>1</td><td>Damage applied to a routed unit if attacked again.</td></tr>
           <tr><td><code>CITY_STRENGTH_BASE</code></td><td>80</td><td>Base garrison strength for an undamaged city.</td></tr>
           <tr><td><code>CITY_STRENGTH_PER</code></td><td>5</td><td>Bonus strength per city level.</td></tr>
-          <tr><td><code>CITY_HEAL_PERCENT_PER_TURN</code></td><td>5%</td><td>City HP healed per turn (peacetime).</td></tr>
+          <tr><td><code>CITY_HEAL_PERCENT_PER_TURN</code></td><td>5%</td><td>City HP healed per turn while at peace.</td></tr>
           <tr><td><code>CITY_CAPTURE_DAMAGE_PERCENT</code></td><td>50%</td><td>City damage taken on capture.</td></tr>
         </tbody>
       </table>
@@ -190,11 +191,11 @@ const lookup = STR_AXIS.map(a => ({
   </section>
 
   <section class="cd-section">
-    <h2 class="cd-h">What to read next</h2>
+    <h2 class="cd-h">Related pages</h2>
     <ul class="cd-list">
-      <li><a href={`${base}unit-damage`}>Unit Damage &amp; Counters</a> — full stat cards for every combat unit, including each unit's anti-trait modifiers.</li>
-      <li><a href={`${base}unit-counters`}>Unit Counters at-a-glance</a> — the rock-paper-scissors matrix that summarises this page in one grid.</li>
-      <li><a href={`${base}promotions`}>Promotions</a> — every numeric modifier you can stack onto effective strength.</li>
+      <li><a href={`${base}unit-damage`}>Unit Damage &amp; Counters</a> has full stat cards for every combat unit, including each unit's anti-trait modifiers.</li>
+      <li><a href={`${base}unit-counters`}>Unit Counters</a> has the grid of which unit type beats which.</li>
+      <li><a href={`${base}promotions`}>Promotions</a> lists every numeric modifier you can add to effective strength.</li>
     </ul>
   </section>
 

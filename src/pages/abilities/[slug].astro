@@ -47,7 +47,7 @@ const groups = [
   <section class="abil-sec">
     <h2 class="abil-sec__h">What it does</h2>
     {ability.lines.length === 0 ? (
-      <p class="abil-empty">A passive trait with no separate combat modifier — see the units that carry it below.</p>
+      <p class="abil-empty">A passive trait with no separate combat modifier. The units that carry it are listed below.</p>
     ) : (
       <ul class="abil-effects">
         {ability.lines.map((l: string) => <li class="abil-effect">{l}</li>)}

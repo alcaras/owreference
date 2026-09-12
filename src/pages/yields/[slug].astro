@@ -50,7 +50,7 @@ const byPage = refs.reduce<Record<string, typeof refs>>((acc, r) => {
     </h2>
 
     {refs.length === 0 ? (
-      <p style="color: var(--text-faint)">No references yet — more pages coming online.</p>
+      <p style="color: var(--text-faint)">No references yet, because more pages are still to come.</p>
     ) : (
       Object.entries(byPage).map(([page, list]) => (
         <div class="backlink-group">

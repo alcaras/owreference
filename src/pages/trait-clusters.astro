@@ -66,12 +66,12 @@ const quoted = (t: string) => !t ? '—' : /^[“"'‘]/.test(t) ? t : `“${t}�
   { label: 'events gated', value: clusters.reduce((n, c) => n + c.cmGates, 0) },
   { label: 'options unlocked', value: clusters.reduce((n, c) => n + c.cmOpts, 0) },
 ]}
-  description="Every named trait cluster in Old World's event system — Charming, Honorable, Terrifying and the rest — with the traits that satisfy each one and every event and choice it unlocks.">
+  description="Every named trait cluster in Old World's event system, such as Charming, Honorable and Terrifying, with the traits that satisfy each one and every event and choice it unlocks.">
 
   <p class="lede">
     Events almost never gate on a single trait. They gate on a <strong>cluster</strong>:
     a named group of traits where <em>any one member</em> satisfies the requirement.
-    These are the game's own names, not ours — each cluster is an <code>aeTraitAny</code>
+    The names below are the game's own rather than ours, because each cluster is an <code>aeTraitAny</code>
     subject in <code>subject.xml</code> with its own label, and Old World prints it
     verbatim in the choice tooltip as <span class="req">Requires Charming</span>.
     That is why an option can be locked to you and to four other traits at once.
@@ -88,7 +88,7 @@ const quoted = (t: string) => !t ? '—' : /^[“"'‘]/.test(t) ? t : `“${t}�
   </div>
 
   {[{ rows: personality, title: 'Personality & archetype', blurb: 'The clusters a leveling character can actually buy into.' },
-    { rows: role, title: 'Role & condition', blurb: 'Clusters built from statuses rather than personality — clergy, studies, wounds. Listed for completeness; you do not pick these.' },
+    { rows: role, title: 'Role & condition', blurb: 'Clusters built from a status rather than a personality, such as clergy, studies and wounds. They are listed for completeness, and you do not pick them.' },
    ].map(section => (
     <section class="csec">
       <h2 class="csec__h" id={section.title === 'Personality & archetype' ? 'personality' : 'role'}>{section.title}</h2>
@@ -100,11 +100,11 @@ const quoted = (t: string) => !t ? '—' : /^[“"'‘]/.test(t) ? t : `“${t}�
               <h3 class="ccard__name">{c.name}</h3>
               {c.alsoCalled.length > 0 && (
                 <span class="ccard__also" title="A second subject with an identical member list ships under this name too">
-                  also “{c.alsoCalled.join('”, “')}”
+                  also "{c.alsoCalled.join('", "')}"
                 </span>
               )}
               {c.unnamed && (
-                <span class="ccard__also" title="This cluster has no GenderedName — the game never shows the player a Requires line for it. Label derived from the subject id.">
+                <span class="ccard__also" title="This cluster has no GenderedName, so the game never shows the player a Requires line for it. The label here is derived from the subject id.">
                   no in-game label
                 </span>
               )}
@@ -143,10 +143,10 @@ const quoted = (t: string) => !t ? '—' : /^[“"'‘]/.test(t) ? t : `“${t}�
                         ? <a class="erow__name" href={evHref(g.s)}>{stories[g.s].n}</a>
                         : <span class="erow__name">{stories[g.s].n}</span>}
                       <span class="erow__meta">
-                        {g.trigger && <span class="tag tag--trig" title="This cluster is the event's trigger subject — it is what fires the event">trigger</span>}
+                        {g.trigger && <span class="tag tag--trig" title="This cluster is the event's trigger subject, so it is what fires the event">trigger</span>}
                         <span class="tag" title="Whose character has to be in the cluster">{OWNER_LABEL[g.owner]}</span>
                         {stories[g.s].trg && <span class="tag tag--q">{stories[g.s].trg}</span>}
-                        <span class="tag tag--w" title="iWeight — relative selection weight in the event pool">w{stories[g.s].w}</span>
+                        <span class="tag tag--w" title="iWeight, the relative selection weight in the event pool">w{stories[g.s].w}</span>
                         {!stories[g.s].cm && <span class="tag tag--nocm">not in CM</span>}
                       </span>
                     </li>
@@ -165,7 +165,7 @@ const quoted = (t: string) => !t ? '—' : /^[“"'‘]/.test(t) ? t : `“${t}�
                         {evHref(o.s)
                           ? <a class="orow__ev" href={evHref(o.s)}>{stories[o.s].n}</a>
                           : <span class="orow__ev">{stories[o.s].n}</span>}
-                        {o.hid && <span class="tag tag--hid" title="bHidePrereqs / bHideInvalid — the game hides this choice when you do not qualify, so you never learn you missed it">hidden when locked</span>}
+                        {o.hid && <span class="tag tag--hid" title="bHidePrereqs and bHideInvalid hide this choice when you do not qualify, so you never learn you missed it">hidden when locked</span>}
                         {!stories[o.s].cm && <span class="tag tag--nocm">not in CM</span>}
                       </div>
                       <div class="orow__text">{quoted(o.t)}</div>
@@ -179,7 +179,7 @@ const quoted = (t: string) => !t ? '—' : /^[“"'‘]/.test(t) ? t : `“${t}�
             )}
 
             {c.gates.length === 0 && c.opts.length === 0 && (
-              <p class="ccard__none">Defined but unused — no event in this patch gates on it.</p>
+              <p class="ccard__none">Defined but unused, because no event in this patch gates on it.</p>
             )}
           </article>
         ))}
@@ -192,8 +192,8 @@ const quoted = (t: string) => !t ? '—' : /^[“"'‘]/.test(t) ? t : `“${t}�
     (<code>aeTraitAny</code>), <code>eventStory.xml</code>
     (<code>aeSubjects</code> + <code>SubjectExtras</code>) and
     <code>eventOption.xml</code> (<code>LeaderSubject</code>). Duplicate subjects with
-    an identical member list — the <code>bHidden</code> twins, and the martial four
-    shipping as both “Martial” and “Military” — are merged so an event is listed once.
+    an identical member list, meaning the <code>bHidden</code> twins and the martial four
+    that ship as both "Martial" and "Military", are merged so an event is listed once.
   </p>
 </Base>
 

@@ -14,7 +14,7 @@ const fielded = data.trios.filter(t => t.nations.length).length;
   active="family-trios"
   pageMark="👪"
   pageFilter="Filter by nation or class…"
-  description={`Every trio of Old World family classes and which nations can play all three — a player starts at most ${data.maxFamilies} families (MAX_FAMILIES), so this is the set you actually play. From family.xml and globalsInt.xml.`}
+  description={`Every trio of Old World family classes and which nations can play all three. A player starts with at most ${data.maxFamilies} families (MAX_FAMILIES), so a trio is the set you actually play. From family.xml and globalsInt.xml.`}
   pageStats={[
     { label: 'classes', value: data.classes.length },
     { label: 'trios', value: data.trios.length },

@@ -70,7 +70,7 @@ const tieRows = [1, 2, 3].map((tied) => {
   const half = (pool: number) => Math.trunc(pool / tied);
   return {
     tied,
-    label: all ? '3 — all of them' : String(tied),
+    label: all ? '3, all of them' : String(tied),
     all,
     most: all ? '—' : `+${half(G.MOST_CITIES_OPINION)}`,
     fewest: all ? '—' : String(half(G.FEWEST_CITIES_OPINION)),
@@ -82,11 +82,11 @@ const tieRows = [1, 2, 3].map((tied) => {
 ---
 
 <Base
-  title="Envy & the City Split"
+  title="Envy and the City Split"
   active="family-envy"
   pageMark="😠"
   eyebrow="Family opinion"
-  description="How Most Cities, Fewest Cities and Envy move family opinion — with a calculator for any split of cities between your three families."
+  description="How Most Cities, Fewest Cities and Envy move family opinion, with a calculator for any split of cities between your three families."
   pageStats={[
     { label: 'most cities', value: `+${G.MOST_CITIES_OPINION}` },
     { label: 'fewest cities', value: G.FEWEST_CITIES_OPINION },
@@ -217,7 +217,7 @@ const tieRows = [1, 2, 3].map((tied) => {
         <ul>
           {famBrackets.map((b: any) => (
             <li><b>{b.label}</b> <span class="tag">{b.range}</span>
-              {' — '}{[...b.cityEffects, ...b.unitEffects].join(', ') || 'no effect'}</li>
+              {': '}{[...b.cityEffects, ...b.unitEffects].join(', ') || 'no effect'}</li>
           ))}
         </ul>
       </div>
@@ -433,7 +433,7 @@ const tieRows = [1, 2, 3].map((tied) => {
             `<b>${r.split[i]}</b><i>${sign(v)}</i></td>`;
         }).join('');
         const flags = (!fav.length && idx === 0 && !scored.slice(1).some(x => x.worst === r.worst && x.sum === r.sum) ? '<em class="rung__flag">best</em>' : '') +
-          (recommended && r.key === recommended.key ? '<em class="rung__flag" title="the most favoured cities while nobody drops into Angry from the city terms alone">recommended</em>' : '') +
+          (recommended && r.key === recommended.key ? '<em class="rung__flag" title="the most cities you can favour while nobody drops into Angry from the city terms alone">recommended</em>' : '') +
           (r.even ? '<em class="rung__flag rung__flag--even">even</em>' : '');
         return `<tr class="rung__r${r.key === selKey ? ' is-here' : ''}" data-split="${r.key}">` +
           `<td class="rowlabel rung__k">${r.key}${flags}</td>${cells}` +

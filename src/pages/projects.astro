@@ -40,7 +40,7 @@ const PREREQ_KIND_TITLE: Record<string, string> = {
     { label: 'buildable', value: buildable.length },
     { label: 'event-only', value: eventOnly.length },
   ]}
-  description={`All ${projects.length} city projects of Old World — ${buildable.length} buildable from the city production menu (Walls, Treasury, Forum, Festival, Decree…) plus ${eventOnly.length} event-granted projects, with cost per yield, tech/culture/family prerequisites, and humanized effects pulled straight from the game's project.xml.`}
+  description={`All ${projects.length} city projects of Old World, of which ${buildable.length} are buildable from the city production menu, such as Walls, Treasury, Forum, Festival and Decree, while ${eventOnly.length} are granted by events. Includes the cost per yield, the tech, culture and family prerequisites, and the effects in plain words, pulled from the game's project.xml.`}
 >
   <div class="legends">
     <div class="legend" id="avail-filter" role="group" aria-label="Filter by availability">
@@ -87,7 +87,7 @@ const PREREQ_KIND_TITLE: Record<string, string> = {
                   <div class="pname__text">
                     <span class="pname__name">{p.name}</span>
                     <div class="pname__meta">
-                      {p.eventOnly && <span class="chip chip--event" title="Granted by events or missions — not in the normal build menu">Event</span>}
+                      {p.eventOnly && <span class="chip chip--event" title="Granted by an event or a mission, so it is not in the normal build menu">Event</span>}
                       {p.dlc && <span class="chip chip--dlc" title={p.source}>DLC</span>}
                       {p.repeat && <span class="chip chip--trait" title="Can be built repeatedly">Repeatable</span>}
                       {p.unique && <span class="chip chip--trait" title="Once per player">Unique</span>}

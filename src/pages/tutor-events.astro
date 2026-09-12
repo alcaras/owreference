@@ -11,11 +11,11 @@ type Event = typeof events[number];
 // view the legacy "Study Events" sheet laid out by hand, here from XML
 // (the SUBJECT_STUDY_* subject-extra on each EVENTCLASS_STUDY entry).
 const COURSES: { key: string; label: string; glyph: string; blurb: string }[] = [
-  { key: 'Philosophy', label: 'Philosophy', glyph: '📜', blurb: 'Wisdom-leaning lessons — reason, faith, and the life of the mind.' },
-  { key: 'Politics',   label: 'Politics',   glyph: '🏛️', blurb: 'Rhetoric and statecraft — oration, law, and swaying the court.' },
-  { key: 'Tactics',    label: 'Tactics',    glyph: '⚔️', blurb: 'The martial education — combat training, command, and the field.' },
-  { key: 'Commerce',   label: 'Commerce',   glyph: '⚖️', blurb: 'Money management — trade, numbers, and the marketplace.' },
-  { key: 'Any',        label: 'Any Course', glyph: '🎓', blurb: 'Fires whatever the tutor teaches — not tied to one course.' },
+  { key: 'Philosophy', label: 'Philosophy', glyph: '📜', blurb: 'Lessons that lean on Wisdom, covering reason, faith and the life of the mind.' },
+  { key: 'Politics',   label: 'Politics',   glyph: '🏛️', blurb: 'Rhetoric and statecraft, covering oration, law and swaying the court.' },
+  { key: 'Tactics',    label: 'Tactics',    glyph: '⚔️', blurb: 'A martial education, covering combat training, command and the field.' },
+  { key: 'Commerce',   label: 'Commerce',   glyph: '⚖️', blurb: 'Money management, covering trade, numbers and the marketplace.' },
+  { key: 'Any',        label: 'Any Course', glyph: '🎓', blurb: 'Fires whatever the tutor teaches, because it is not tied to one course.' },
   { key: '',           label: 'No Course Set', glyph: '✶', blurb: 'Education events with no course-of-study requirement at all.' },
 ];
 
@@ -39,11 +39,12 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
 ]}>
   <p class="te-intro">
     Every <code>EVENTCLASS_STUDY</code> event, grouped by the <strong>course of
-    study</strong> a child's tutor sets. Each event is gated to one course —
-    or fires under <em>Any</em> — via its <code>SUBJECT_STUDY_*</code> subject
-    requirement. Rows show the prerequisites (age, nation, relationship), the
-    bonuses each option grants, and the weight × chance the event rolls. Pulled
-    from <code>eventStory.xml</code> and the BTT / SAP / WD / WoG packs.
+    study</strong> a child's tutor sets. Each event is gated to one course, or
+    fires under <em>Any</em>, through its <code>SUBJECT_STUDY_*</code> subject
+    requirement. Rows show the prerequisites of age, nation and relationship, the
+    bonuses each option grants, and the weight and chance the event rolls. The
+    data comes from <code>eventStory.xml</code> and the BTT, SAP, WD and WoG
+    packs.
   </p>
 
   <div id="te-grid">

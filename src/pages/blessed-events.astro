@@ -4,11 +4,11 @@ const base = import.meta.env.BASE_URL;
 ---
 <EventGroupPage sectionKey="blessed" title="Blessed Events" active="blessed-events" pageMark="✨">
   Everything the <strong>Blessed</strong> <a href={`${base}traits`}>trait</a> touches. The first group
-  <strong>requires</strong> it — these stories can only fire for a character who is already Blessed,
-  which is what makes the trait worth having: a steady drip of favourable harvests, trades, births and
-  truces. The rest <strong>grant</strong> it, from the Oracle and a pilgrimage to surviving a wildfire.
-  Blessed and <a href={`${base}cursed-events`}>Cursed</a> replace one another, so gaining one clears
-  the other. This is a <strong>cross-cut view</strong>: each story also appears under its own event
-  class or trigger on <a href={`${base}events`}>Story Events</a>. Weights are the XML knob, not real
-  in-game odds — character and empire conditions filter what's eligible.
+  <strong>requires</strong> the trait, so these stories fire only for a character who is already
+  Blessed, and they are what the trait is for, because they bring favourable harvests, trades, births
+  and truces. The rest <strong>grant</strong> the trait, through the Oracle, a pilgrimage or surviving
+  a wildfire. Blessed and <a href={`${base}cursed-events`}>Cursed</a> replace one another, so gaining
+  one clears the other. The page collects stories that also appear under their own event class or
+  trigger on <a href={`${base}events`}>Story Events</a>. A weight is the value in the XML rather than
+  a real in-game chance, because character and empire conditions filter what is eligible.
 </EventGroupPage>

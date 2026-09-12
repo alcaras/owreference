@@ -77,7 +77,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
 
   <div class="evt-filter">
     <input type="search" id="evt-search" class="evt-filter__search"
-           placeholder="Filter events — name, reward, condition…" autocomplete="off"
+           placeholder="Filter events by name, reward or condition…" autocomplete="off"
            aria-label="Filter events" />
     <div class="mode-toggle" role="radiogroup" aria-label="Detail level">
       <button type="button" class="mode-toggle__btn is-active" data-evmode="raw" role="radio" aria-checked="true">Raw XML</button>
@@ -87,7 +87,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
   <p class="evt-filter__note" id="evt-note" hidden></p>
 
   <p class="evt-caveat">⚠ <b>Weights are not in-game odds.</b> Each story is gated by character/empire conditions (some
-  hidden in-game), so its real frequency is filtered in ways the XML can't predict — community analytics differ a lot
+  hidden in game), so its real frequency is filtered in ways the XML cannot predict, and community analytics differ a lot
   from raw weights. Treat the weight as the XML knob, not a probability.</p>
 
   <div class="evt-list evtmode" data-mode="raw" id="evtmode">
@@ -107,14 +107,14 @@ const followups = sec.events.filter(e => e.isFollowup).length;
             {ev.dlc && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
             {(ev as any).followsFrom && (ev as any).followsFrom.length > 0
               ? <span class="chip--chain" title="Fires as a follow-up in a chain">⛓ follow-up</span>
-              : (ev.weight != null && <span class="evt__share" title="Raw iWeight — NOT a probability (see caveat above)">weight {ev.weight}</span>)}
+              : (ev.weight != null && <span class="evt__share" title="Raw iWeight, which is not a probability. See the caveat above.">weight {ev.weight}</span>)}
           </span>
         </summary>
         <div class="evt__body">
           {chainIndex[ev.id] && (
             <a class="evt__chainmap" href={`${base}events/chains/${chainIndex[ev.id].slug}#${ev.id}`}>
               <span class="evt__chainmap__ico">⛓</span>
-              <span>Part of the <b>{chainIndex[ev.id].title}</b> chain — {chainIndex[ev.id].size} events
+              <span>Part of the <b>{chainIndex[ev.id].title}</b> chain, {chainIndex[ev.id].size} events
                 {chainIndex[ev.id].branches > 0 ? `, ${chainIndex[ev.id].branches} branch point${chainIndex[ev.id].branches === 1 ? '' : 's'}` : ''}</span>
               <span class="evt__chainmap__go">view map →</span>
             </a>
@@ -179,7 +179,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
                   )}
                   {o.canLeadTo && o.canLeadTo.length > 0 && (
                     <div class="opt__leads opt__leads--maybe"
-                         title="This choice grants a memory these stories require — it makes them eligible, it does not guarantee they fire.">
+                         title="This choice grants a memory these stories require, which makes them eligible. It does not guarantee they fire.">
                       ◇ may enable:{' '}
                       {o.canLeadTo.map((t: any, i: number) => (
                         <>{i > 0 ? ', ' : ''}<a href={evHref(t)}>{t.name}</a></>
@@ -224,8 +224,8 @@ const followups = sec.events.filter(e => e.isFollowup).length;
         if (q) {
           note.hidden = false;
           note.textContent = shown === 0
-            ? 'No events match “' + search.value + '”.'
-            : shown + ' event' + (shown === 1 ? '' : 's') + ' match “' + search.value + '”.';
+            ? 'No events match "' + search.value + '".'
+            : shown + ' event' + (shown === 1 ? '' : 's') + ' match "' + search.value + '".';
         } else {
           note.hidden = true;
         }

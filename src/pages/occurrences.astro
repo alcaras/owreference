@@ -74,26 +74,27 @@ for (const o of eras) {
     { label: 'transformations', value: totals.transformations },
     { label: 'eras & crises', value: totals.eras },
   ]}
-  description={`All ${totals.occurrences} Occurrences in Old World — the Wrath of Gods Calamities (plague, drought, flood, hurricane, eruption…), world transformations, and the era and crisis occurrences from Behind the Throne and Empires of the Indus. Triggers, per-turn tile impact, terrain changes, character traits, and how each one ends, derived from occurrence.xml.`}
+  description={`All ${totals.occurrences} Occurrences in Old World, covering the Wrath of Gods Calamities such as plague, drought, flood, hurricane and eruption, the world transformations, and the era and crisis occurrences from Behind the Throne and Empires of the Indus. Includes triggers, the effect on tiles each turn, terrain changes, character traits and how each one ends, derived from occurrence.xml.`}
 >
   <div class="occ" id="occ-grid">
     <p class="occ__intro">
-      Occurrences are persistent world events that stay on the map for several turns. The headline
-      set — the <strong>Calamities</strong> — ships with the <strong>Wrath of Gods</strong> DLC and
-      strikes on its own clock; the era and crisis occurrences below are started by events. Every
-      number here is read straight from <code>occurrence.xml</code>.
+      An occurrence is a world event that stays on the map for several turns. The largest set is
+      the <strong>Calamities</strong>, which ship with the <strong>Wrath of Gods</strong> DLC and
+      strike on their own clock, while the era and crisis occurrences below are started by events.
+      Every number here is read straight from <code>occurrence.xml</code>.
     </p>
 
     {cls && (
       <section class="occ__section" id="frequency">
         <h2 class="occ__hdr">
-          <span class="occ__hdr-name">Calamity Frequency</span>
+          <span class="occ__hdr-name">Calamity frequency</span>
           <span class="occ__dlc" title="Requires the Wrath of Gods DLC">{cls.dlcLabel}</span>
         </h2>
         <p class="occ__note">
-          Chosen at game setup. At least <b>{cls.minRepeatPlayer}</b> turns pass between Calamities
-          for each player{cls.balanceDistribution && ', and the game balances both the calamity types and the players affected'}.
-          A pending Calamity expires if it can't strike within <b>{cls.maxPendingTurns}</b> turns.
+          You choose the frequency at game setup. At least <b>{cls.minRepeatPlayer}</b> turns pass
+          between Calamities for each player{cls.balanceDistribution && ', and the game balances both the calamity types and the players affected'}.
+          A pending Calamity expires when it cannot strike within <b>{cls.maxPendingTurns}</b>
+          turns.
         </p>
         <div class="occ__tablewrap">
           <table class="ntbl occ__levels">
@@ -146,7 +147,7 @@ for (const o of eras) {
               <header class="occard__hdr">
                 <h3 class="occard__name">{fam.name}</h3>
                 {fam.full?.flags.map((f: string) => (
-                  <span class="occard__flag" title={f}>{f.split(' — ')[0]}</span>
+                  <span class="occard__flag" title={f}>{f.split(': ')[0]}</span>
                 ))}
               </header>
               <div class={`occard__cols occard__cols--n${variants.length}`}>
@@ -158,7 +159,7 @@ for (const o of eras) {
                       </h4>
                     )}
                     {o.variant === 'Mitigated' && (
-                      <p class="occvar__mitnote">Strikes in place of the full calamity when it is mitigated — no independent trigger.</p>
+                      <p class="occvar__mitnote">Strikes in place of the full calamity when the calamity is mitigated, and it has no trigger of its own.</p>
                     )}
                     {FACETS.map((facet) => {
                       const lines: string[] = o[facet.key] || [];
@@ -198,12 +199,12 @@ for (const o of eras) {
 
     <section class="occ__section" id="transformations">
       <h2 class="occ__hdr">
-        <span class="occ__hdr-name">World Transformations</span>
+        <span class="occ__hdr-name">World transformations</span>
         <span class="occ__dlc" title="Requires the Wrath of Gods DLC">Wrath of Gods</span>
       </h2>
       <p class="occ__note">
-        Slow-burn occurrences used by scenarios and map scripts — they reshape terrain every turn
-        rather than striking once. Variants differ only in pace.
+        Scenarios and map scripts use these slow occurrences, which reshape terrain every turn
+        instead of striking once. The variants differ only in how fast they work.
       </p>
       <div class="occ__cards occ__cards--wide">
         {transformations.map((t) => {
@@ -214,7 +215,7 @@ for (const o of eras) {
               <header class="occard__hdr">
                 <h3 class="occard__name">{t.name}</h3>
                 {t.variants[0].flags.map((f: string) => (
-                  <span class="occard__flag" title={f}>{f.split(' — ')[0]}</span>
+                  <span class="occard__flag" title={f}>{f.split(': ')[0]}</span>
                 ))}
               </header>
               {t.variants[0].helpText && (
@@ -265,11 +266,11 @@ for (const o of eras) {
 
     <section class="occ__section" id="eras">
       <h2 class="occ__hdr">
-        <span class="occ__hdr-name">Eras &amp; Crises</span>
+        <span class="occ__hdr-name">Eras and crises</span>
       </h2>
       <p class="occ__note">
-        Event-driven occurrences — started and usually ended by story events rather than the
-        calamity clock.
+        Story events start these occurrences, and usually end them too, rather than the calamity
+        clock.
       </p>
       <div class="occ__cards occ__cards--eras">
         {eras.map((o) => (
@@ -280,7 +281,7 @@ for (const o of eras) {
             </header>
             {o.flags.length > 0 && (
               <div class="occard__flags">
-                {o.flags.map((f: string) => <span class="occard__flag" title={f}>{f.split(' — ')[0]}</span>)}
+                {o.flags.map((f: string) => <span class="occard__flag" title={f}>{f.split(': ')[0]}</span>)}
               </div>
             )}
             {o.helpText && <p class="occard__help"><LinkedText text={o.helpText} showIcons={false} /></p>}

@@ -545,7 +545,7 @@ def main() -> int:
         groups.append({
             "key": "event",
             "label": "Event and Scenario Goals",
-            "blurb": "Goals with no ambition class — granted by events, "
+            "blurb": "Goals with no ambition class, granted by events, "
                      "scenarios and quests rather than the ambition picker.",
             "goals": event_goals,
         })

@@ -258,7 +258,7 @@ def main() -> int:
         if is_strategic:
             effects.append("Enables while worked: " + ", ".join(units_by_resource[zt]))
         if is_lux:
-            effects.append("Luxury — city it is sent to gets " + ", ".join(lux_generic))
+            effects.append("Luxury: the city it is sent to gets " + ", ".join(lux_generic))
             effects.append("Sending it earns +20 Family Opinion (+40 for Players and Tribes)")
             for cls_name, lines in favorites.get(zt, []):
                 extra = f" (extra {', '.join(lines)})" if lines else ""

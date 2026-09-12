@@ -116,14 +116,15 @@ const SHRINE_GLYPH: Record<string, string> = {
 >
   <p class="lede">
     Every <LinkedText text="Pagan Religion" /> has a unique pool of
-    <b>Shrines</b> — one per <LinkedText text="deity" /> — that found and spread
-    that religion. Each shrine belongs to a <em>type</em> (War, Kingship,
-    Wisdom, …) which determines its signature yield and adjacency. With
-    <LinkedText text="Polytheism" /> a nation can build unlimited shrines.
+    <b>Shrines</b>, one per <LinkedText text="deity" />, and they found and
+    spread that religion. Each shrine belongs to a <em>type</em>, such as War,
+    Kingship or Wisdom, which sets its signature yield and its adjacency. With
+    <LinkedText text="Polytheism" /> a nation can build as many shrines as it
+    likes.
     {data.build && (
       <Fragment> All shrines cost <LinkedText text={data.build.costs.join(', ')} /> and take a
-      <LinkedText text="Worker" /> {data.build.turns} turns to build (base — terrain, hills and
-      out-of-family territory can add turns).</Fragment>
+      <LinkedText text="Worker" /> {data.build.turns} turns to build at base, and terrain, hills and
+      territory outside the family can add turns.</Fragment>
     )}
   </p>
 

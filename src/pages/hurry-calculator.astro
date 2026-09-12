@@ -33,13 +33,13 @@ const growthRows = [
     .filter((u: any) => !discipleRow || !u.buildReligion)
     .map((u: any) => ({
       value: u.id, production: u.production, productionCity: u.productionCity,
-      label: `${u.name} — ${u.production}`
+      label: `${u.name}, ${u.production}`
         + (u.productionCity ? ` · +${u.productionCity}/copy` : '')
         + (u.nation ? ` · ${u.nation.replace('NATION_', '').toLowerCase()}` : ''),
     })),
   ...(discipleRow ? [{
     value: 'DISCIPLE_ANY', production: discipleRow.production, productionCity: discipleRow.productionCity,
-    label: `Disciple / Brahmin — ${discipleRow.production} · +${discipleRow.productionCity}/copy · any religion`,
+    label: `Disciple or Brahmin, ${discipleRow.production}, +${discipleRow.productionCity} per copy, any religion`,
   }] : []),
 ].sort((a, b) => a.production - b.production || a.label.localeCompare(b.label));
 
@@ -114,14 +114,14 @@ const payload = {
   ]}
 >
   <p class="lede">
-    What <strong>Hurry Production</strong> costs, replaying the engine's own integer maths. Only four things
-    move the number: the <b>production still missing</b>, how many times you have already hurried
-    <b>that same channel in that city</b> (+10% each, and it never resets), whether the build is
-    <b>under 50% done</b> (up to +50%), and whether it is produced with
-    <b>Growth</b> rather than Training or Civics (+50%). The unit's identity never enters the
-    formula — only its production cost and production type — so the picker is a convenience over a
-    plain cost number. See <a href={`${base}hurrying`}>Hurrying Production</a> for which channels
-    you can actually unlock.
+    What <strong>Hurry Production</strong> costs, following the engine's own integer maths. Four
+    things move the number. They are the <b>production still missing</b>, how many times you have
+    already hurried <b>that same channel in that city</b>, which adds 10% each time and never
+    resets, whether the build is <b>under 50% done</b>, which adds up to 50%, and whether it is
+    produced with <b>Growth</b> rather than Training or Civics, which adds 50%. The unit's identity
+    never enters the formula, and only its production cost and production type do, so the picker
+    below is a convenience over typing a cost. See
+    <a href={`${base}hurrying`}>Hurrying Production</a> for which channels you can unlock.
   </p>
 
   <section class="asm">
@@ -134,7 +134,7 @@ const payload = {
               <optgroup label={`Strength ${g.strength}`}>
                 {g.units.map((u: any) => (
                   <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity} data-kind="unit">
-                    {u.name} — {u.production}
+                    {u.name}, {u.production}
                   </option>
                 ))}
               </optgroup>
@@ -142,11 +142,11 @@ const payload = {
             <optgroup label="Ships">
               {ships.map((u: any) => (
                 <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity} data-kind="unit">
-                  {u.name} — {u.production} · str {u.strength}
+                  {u.name}, {u.production}, str {u.strength}
                 </option>
               ))}
             </optgroup>
-            <optgroup label="Growth units — +50% hurry cost">
+            <optgroup label="Growth units, +50% hurry cost">
               {growthRows.map((r: any) => (
                 <option value={r.value} data-cost={r.production} data-pt="YIELD_GROWTH"
                         data-pc={r.productionCity} data-kind="unit">{r.label}</option>
@@ -155,11 +155,11 @@ const payload = {
             <optgroup label="Unique units">
               {uniqueBands.map((b: any) => (b.uniform
                 ? <option value={`UU_STR_${b.strength}`} data-cost={b.uniform} data-pt="YIELD_TRAINING" data-pc="0" data-kind="unit">
-                    Unique unit · str {b.strength} — {b.uniform} <span set:html="&nbsp;" />(all {b.members.length})
+                    Unique unit, str {b.strength}, {b.uniform} <span set:html="&nbsp;" />(all {b.members.length})
                   </option>
                 : b.members.map((u: any) => (
                     <option value={u.id} data-cost={u.production} data-pt={u.productionType} data-pc={u.productionCity} data-kind="unit">
-                      {u.name} — {u.production} · {u.nation.replace('NATION_', '').toLowerCase()}
+                      {u.name}, {u.production}, {u.nation.replace('NATION_', '').toLowerCase()}
                     </option>
                   ))
               ))}
@@ -170,25 +170,25 @@ const payload = {
                 Unlock-wise they share the Projects column of the matrix. */}
             <optgroup label="Specialists">
               <option value="SPEC_TIER_1" data-cost="40" data-pt="YIELD_CIVICS" data-pc="0" data-pcpct="5" data-kind="project">
-                Apprentice (urban I) / any rural — 40
+                Apprentice (urban I) or any rural, 40
               </option>
               <option value="SPEC_TIER_2" data-cost="60" data-pt="YIELD_CIVICS" data-pc="0" data-pcpct="5" data-kind="project">
-                Master (urban II) — 60
+                Master (urban II), 60
               </option>
               <option value="SPEC_TIER_3" data-cost="80" data-pt="YIELD_CIVICS" data-pc="0" data-pcpct="5" data-kind="project">
-                Elder (urban III) — 80
+                Elder (urban III), 80
               </option>
             </optgroup>
             <optgroup label="Projects">
               {genericTiers.map((r: any) => (
                 <option value={`PROJECT_TIER_${r.tier}`} data-cost={r.production}
                         data-pt={r.p.productionType} data-pc="0" data-kind="project">
-                  Project {r.tier} — {r.production}
+                  Project {r.tier}, {r.production}
                 </option>
               ))}
               {[...ownLadderProjects, ...untiered].map((p: any) => (
                 <option value={p.id} data-cost={p.production} data-pt={p.productionType} data-pc="0" data-kind="project">
-                  {p.name} — {p.production}
+                  {p.name}, {p.production}
                 </option>
               ))}
             </optgroup>
@@ -196,7 +196,7 @@ const payload = {
         </label>
         <label class="f"><span>Production cost <i>edit for custom</i></span>
           <input type="number" id="h-cost" value="80" min="1" max="2000" step="1" /></label>
-        <label class="f"><span>Already built here <i>Workers/Settlers/Disciples +10 · Specialists +5%</i></span>
+        <label class="f"><span>Already built here <i>Workers, Settlers and Disciples +10, Specialists +5%</i></span>
           <input type="number" id="h-copies" value="0" min="0" max="20" step="1" /></label>
         <label class="f--chk"><input type="checkbox" id="h-growth" />
           <span>Growth production <i>+50% hurry</i></span></label>
@@ -252,76 +252,83 @@ const payload = {
       <div>
         <h3>The escalation <span class="tag">per city, per channel</span></h3>
         <ul>
-          <li>Every hurry does <code>iCost *= (10 + count); iCost /= 10</code> — so the
-            <b>n</b>th repeat costs <b>(10+n)/10</b> of base. Ten prior Civics hurries in a city
-            means the eleventh costs double.</li>
+          <li>Every hurry runs <code>iCost *= (10 + count); iCost /= 10</code>, so the
+            <b>n</b>th repeat costs <b>(10+n)/10</b> of the base. After ten Civics hurries in a
+            city, the eleventh costs double.</li>
           <li>The counters are per <b>city</b> and per <b>channel</b>
             (<code>miHurryCivicsCount</code>, <code>miHurryTrainingCount</code>, …). Hurrying with
             Money never raises your Civics price.</li>
-          <li>Nothing in the code resets them — they are set to 0 when the city is created and only
-            ever incremented (<code>City.cs:283</code>, <code>incrementHurry*Count</code>).</li>
+          <li>Nothing in the code resets the counters. They are set to 0 when the city is created
+            and only ever increased (<code>City.cs:283</code>,
+            <code>incrementHurry*Count</code>).</li>
         </ul>
       </div>
       <div>
         <h3>Base cost per channel</h3>
         <ul>
-          <li><b>Civics / Training</b> — <code>1.5 × missing + 100</code>, rounded up to a
+          <li><b>Civics and Training</b> cost <code>1.5 × missing + 100</code>, rounded up to a
             multiple of 10.</li>
-          <li><b>Money</b> — <code>5 × missing + 10</code>, rounded up to 10.</li>
-          <li><b>Orders</b> — <code>missing/10 + 2</code>, not rounded.</li>
-          <li><b>Citizens</b> — the escalation hits the <i>missing production first</i>, then
-            <code>missing/80 + 1</code>. That base citizen is the one thing the repeat penalty
-            never touches — and because the division is integer, the escalation is usually
-            swallowed whole: Citizens is often the same price at nine prior hurries as at none.</li>
+          <li><b>Money</b> costs <code>5 × missing + 10</code>, rounded up to 10.</li>
+          <li><b>Orders</b> cost <code>missing/10 + 2</code>, with no rounding.</li>
+          <li><b>Citizens</b> are different, because the escalation applies to the <i>missing
+            production</i> first and the cost is then <code>missing/80 + 1</code>. The repeat
+            penalty never touches that one base citizen, and because the division is integer the
+            escalation usually disappears in the rounding, so Citizens often cost the same at nine
+            prior hurries as at none.</li>
         </ul>
       </div>
       <div>
         <h3>The two multipliers on top</h3>
         <ul>
-          <li><b>Under 50% done</b> — <code>getModifiedHurryCost</code> adds
-            <code>(50 − percent)%</code>. At 0% progress that is +50%; at 25% it is +25%; from 50%
-            up it is nothing. Hurrying something barely started is the expensive case.</li>
-          <li><b>Growth builds</b> — <code>YIELD_GROWTH</code> is the only yield carrying
-            <code>iHurryModifier</code> (+50). Workers, Settlers, Scouts and Disciples all hurry
-            half again dearer than a soldier of identical cost.</li>
+          <li><b>Under 50% done.</b> <code>getModifiedHurryCost</code> adds
+            <code>(50 − percent)%</code>, so 0% progress adds 50%, 25% adds 25%, and anything from
+            50% up adds nothing. Hurrying a build you have barely started is the expensive
+            case.</li>
+          <li><b>Growth builds.</b> <code>YIELD_GROWTH</code> is the only yield that carries
+            <code>iHurryModifier</code>, at +50. Workers, Settlers, Scouts and Disciples therefore
+            cost half again as much to hurry as a soldier of the same production cost.</li>
           <li>Both are applied <i>after</i> the repeat escalation, in that order.</li>
         </ul>
       </div>
       <div>
-        <h3>Discontent, and the gates</h3>
+        <h3>Discontent and the gates</h3>
         <ul>
-          <li>Every hurry adds <code>missing/100 + 10</code> Discontent regardless of channel, and
-            it does <b>not</b> escalate with the hurry count — but it does take both multipliers
-            above. <b>Monetary Reform</b> zeroes it (<code>iHurryDiscontentModifier −100</code>).
-            In practice that is a near-flat 10–18, not something that scales with the build.</li>
+          <li>Every hurry adds <code>missing/100 + 10</code> Discontent whatever the channel. The
+            amount does <b>not</b> escalate with the hurry count, although it does take both
+            multipliers above, and <b>Monetary Reform</b> removes it entirely
+            (<code>iHurryDiscontentModifier −100</code>). In practice it is close to a flat 10 to
+            18 rather than a figure that scales with the build.</li>
           <li>Because it does not escalate, a city that has already hurried nine times pays the
-            <b>same</b> Discontent as one that never has — only the yield price climbs.</li>
+            <b>same</b> Discontent as one that never has, and only the yield price climbs.</li>
           <li class="muted">The community <i>Rush Buy Rules Summary Table</i> in the official
-            manual (p.220) gives this one as <code>10 + mp/10</code>. That converts the base to
-            displayed Discontent but not the <code>mp</code> term: the engine holds Discontent in
-            tenths and the UI divides by 10 (<code>HelpText.cs:1316</code>), so the missing-production
-            term is <code>mp/100</code>. The same table's note that “Discontent … increases by 10%
-            base too” is also wrong — <code>getHurryDiscontent</code> has no count term, and all five
-            <code>hurry*Build</code> functions call it identically. Every other row matches the code.</li>
+            manual, on page 220, gives this figure as <code>10 + mp/10</code>. That converts the
+            base to displayed Discontent but not the <code>mp</code> term, because the engine holds
+            Discontent in tenths and the UI divides by 10 (<code>HelpText.cs:1316</code>), so the
+            term for missing production is <code>mp/100</code>. The same table's note that
+            "Discontent ... increases by 10% base too" is also wrong, because
+            <code>getHurryDiscontent</code> has no count term and all five
+            <code>hurry*Build</code> functions call it the same way. Every other row in that table
+            matches the code.</li>
           <li><code>canHurry</code> refuses outright when the city is <b>Damaged</b>, when the
             build would finish next turn anyway (<code>getBuildTurnsLeft == 1</code>), or below
             <b>Developing</b> culture (<code>HURRY_CULTURE</code>).</li>
-          <li>Three city effects switch hurrying off entirely: a <b>Furious family</b>
+          <li>Three city effects switch hurrying off entirely, namely a <b>Furious family</b>
             (<code>EFFECTCITY_OPINIONFAMILY_FURIOUS</code>), <b>Autonomous Rule</b> and
-            <b>Shared Power</b>. Anger your family and the whole lever disappears.</li>
+            <b>Shared Power</b>. If you anger your family you lose the option completely.</li>
           <li>Workers, Settlers and Disciples also cost <b>+10 production per copy already built
-            in that city</b> (<code>iProductionCity</code>) — a second, separate escalation that
-            feeds the missing-production figure above.</li>
+            in that city</b> (<code>iProductionCity</code>), which is a separate escalation that
+            feeds the missing production figure above.</li>
         </ul>
       </div>
     </div>
     <p class="fine">
-      Formulas from <b>City.cs</b> <code>getHurryCivicsCost</code>, <code>getHurryTrainingCost</code>,
-      <code>getHurryMoneyCost</code>, <code>getHurryOrdersCost</code>,
-      <code>getHurryPopulationCost</code> and <code>getModifiedHurryCost</code>; constants from
-      <code>globalsInt.xml</code>. Costs are charged with
-      <code>changeYieldStockpileWhole</code>, so every figure here is in whole displayed yield.
-      Integer truncation is reproduced exactly — the numbers should match the in-game tooltip.
+      The formulas come from <b>City.cs</b>, namely <code>getHurryCivicsCost</code>,
+      <code>getHurryTrainingCost</code>, <code>getHurryMoneyCost</code>,
+      <code>getHurryOrdersCost</code>, <code>getHurryPopulationCost</code> and
+      <code>getModifiedHurryCost</code>, and the constants come from <code>globalsInt.xml</code>.
+      Costs are charged with <code>changeYieldStockpileWhole</code>, so every figure here is in
+      whole displayed yield. Integer truncation is reproduced exactly, so the numbers should match
+      the in-game tooltip.
     </p>
   </section>
 </Base>
@@ -426,8 +433,8 @@ const payload = {
       setNotes(p ? p.kind : 'unit');
 
       $('h-sum').innerHTML = [
-        `<span><b>${mp}</b> production missing<i>of ${total}${(perCopy || perCopyPct) && copies ? ` — incl. ${perCopyPct ? `+${perCopyPct * copies}%` : `+${perCopy * copies}`} for ${copies} built here` : ''}</i></span>`,
-        `<span><b>${pct}%</b> done<i>${penalty ? `under half — +${penalty}% cost` : 'at or past half — no penalty'}</i></span>`,
+        `<span><b>${mp}</b> production missing<i>of ${total}${(perCopy || perCopyPct) && copies ? `, including ${perCopyPct ? `+${perCopyPct * copies}%` : `+${perCopy * copies}`} for ${copies} built here` : ''}</i></span>`,
+        `<span><b>${pct}%</b> done<i>${penalty ? `under half, +${penalty}% cost` : 'at or past half, no penalty'}</i></span>`,
         `<span><b>${growth ? '+50%' : 'none'}</b> production-type surcharge<i>${growth ? 'Growth build' : 'Training / Civics build'}</i></span>`,
       ].join('');
 

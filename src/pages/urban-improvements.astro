@@ -146,7 +146,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
   { label: 'lines',        value: chains.length },
 ]}>
   <section class="lines">
-    <h2 class="lines__title">Building Lines</h2>
+    <h2 class="lines__title">Building lines</h2>
     <p class="lines__sub">Most lines upgrade as the city's culture level rises; the Hamlet line develops on its own after a set number of turns. Names link to the full details below.</p>
     <div class="grid__scroll">
       <table class="ntbl">
@@ -179,7 +179,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
                     {members.map(m => (
                       <div class="tier">
                         {m.developAfter && (
-                          <div class="tier__develop" title="Ripens on its own — no worker, no build cost">
+                          <div class="tier__develop" title="Develops on its own, with no worker and no build cost">
                             ↓ develops after {developWindow(m.developAfter)}
                           </div>
                         )}

@@ -8,10 +8,10 @@ const base = import.meta.env.BASE_URL;
 type Trait = typeof traitData.strength[number];
 
 const CATEGORIES: { key: keyof typeof traitData; label: string; blurb: string }[] = [
-  { key: 'strength',   label: 'Strengths',   blurb: 'Personality strengths — rolled in childhood or granted by events.' },
-  { key: 'weakness',   label: 'Weaknesses',  blurb: 'Personality weaknesses — each replaces its opposing strengths when gained.' },
+  { key: 'strength',   label: 'Strengths',   blurb: 'Personality strengths, rolled in childhood or granted by events.' },
+  { key: 'weakness',   label: 'Weaknesses',  blurb: 'Personality weaknesses, each replacing its opposing strength when gained.' },
   { key: 'archetype',  label: 'Archetypes',  blurb: 'The ten leader archetypes (full detail on the Archetypes page).' },
-  { key: 'affliction', label: 'Afflictions', blurb: 'Wounds and illnesses — with recovery odds and death risk per mortality setting.' },
+  { key: 'affliction', label: 'Afflictions', blurb: 'Wounds and illnesses, with recovery odds and death risk for each mortality setting.' },
   { key: 'item',       label: 'Items',       blurb: 'Heirlooms and artifacts carried as traits, granted by events.' },
   { key: 'status',     label: 'Statuses',    blurb: 'Roles, clergy, story traits and other statuses the game tracks as traits.' },
 ];
@@ -92,11 +92,11 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
     Every character trait in <code>trait.xml</code>, grouped the way the game flags
     them. Rating columns show the trait's Wisdom / Charisma / Courage / Discipline
     contribution, with a separate Fallback column for ratings that apply only when that stat isn't already set another way.
-    Most traits are granted by events; the Acquired column lists only what the XML
-    states directly — minimum age, the childhood adjective and injury rolls, recovery
-    odds. Which child traits a parent can pass on lives on
-    <a href={`${base}trait-inheritance`}>Trait Inheritance</a>; the ten archetypes are
-    detailed on <a href={`${base}archetypes`}>Archetypes</a>.
+    Most traits are granted by events, and the Acquired column lists only what the XML
+    states directly, meaning the minimum age, the childhood adjective, the injury rolls
+    and the recovery odds. Which child traits a parent can pass on is covered on
+    <a href={`${base}trait-inheritance`}>Trait Inheritance</a>, and the ten archetypes
+    are covered on <a href={`${base}archetypes`}>Archetypes</a>.
   </p>
 
   <div class="tfilter" id="tfilter">
@@ -124,12 +124,12 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       <span class="tfilter__label">Options</span>
       <div class="tfilter__chips">
         <button type="button" class="dyn-toggle" id="core-toggle" aria-pressed="false"
-          title="Only the born-with personality pool — traits with a childhood adjective roll (the core set the leader customizer draws on). Excludes event-only strengths like Famous and all dynasty kits.">
+          title="Only the pool a character can be born with, meaning traits with a childhood adjective roll, which is the core set the leader customizer draws on. It excludes strengths that only events grant, such as Famous, and all dynasty kits.">
           <span class="dyn-toggle__box" aria-hidden="true"></span>
           Core personality only <span class="dyn-toggle__count">({childhoodCount})</span>
         </button>
         <button type="button" class="dyn-toggle" id="dyn-toggle" aria-pressed="false"
-          title="Character-kit traits tied to one historical leader (Wonders & Dynasties dynasty kits and scenario leaders) — marked with a 👑 name tag below">
+          title="Character kit traits tied to one historical leader, from the Wonders & Dynasties dynasty kits and the scenario leaders, marked with a 👑 name tag below">
           <span class="dyn-toggle__box" aria-hidden="true"></span>
           Hide dynasty traits <span class="dyn-toggle__count">({dynastyCount})</span>
         </button>
@@ -159,7 +159,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                       <img class="rating-hdr-ico" src={`${base}img/icons/ratings/${r.toLowerCase()}.png`} alt={r} />
                     </th>
                   ))}
-                  <th class="nhdr nhdr--family nhdr--rating" title="Fallback ratings — apply only when that stat is not already set another way">Fallback</th>
+                  <th class="nhdr nhdr--family nhdr--rating" title="Fallback ratings, which apply only when that stat is not already set another way">Fallback</th>
                   <th class="nhdr nhdr--family">Effects</th>
                   <th class="nhdr nhdr--family">Opinions</th>
                   <th class="nhdr nhdr--family">Replaces / Blocks</th>
@@ -208,7 +208,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
                             {fb.map(v => (
                               <span
                                 class={`rt ${v.value >= 0 ? 'rt--pos' : 'rt--neg'}`}
-                                title={`${v.rating} — fallback, applies only when ${v.rating} is not already set another way`}
+                                title={`${v.rating} fallback, which applies only when ${v.rating} is not already set another way`}
                               ><span class="rt__num">{v.value > 0 ? `+${v.value}` : `−${-v.value}`}</span
                               ><img class="rt__ico" src={`${base}img/icons/ratings/${RATING_ICON[v.rating] || v.rating.toLowerCase()}.png`} alt={v.rating} /></span>
                             ))}

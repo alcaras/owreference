@@ -82,7 +82,7 @@ const condPromos = promotions.filter(p => p.requiresAttack.length > 0);
   <section class="grid prom-matrix" aria-labelledby="prom-matrix-title">
     <h2 class="prom-tier__title" id="prom-matrix-title">
       Availability by unit class
-      <span class="prom-tier__count">✓ eligible · — not offered</span>
+      <span class="prom-tier__count">✓ eligible, blank not offered</span>
     </h2>
     <p class="grid__searchnote">
       On production and on each upgrade, a unit draws 4 random promotions from those it is eligible for.
@@ -138,7 +138,7 @@ const condPromos = promotions.filter(p => p.requiresAttack.length > 0);
                       class="cell pm-avail is-avail"
                       title={cond
                         ? `${p.name}: only units that already have a ${p.requiresAttack.join('/')} attack`
-                        : `${p.name} — available to ${c.label}${c.sub ? ` (${c.sub})` : ''}`}
+                        : `${p.name}, available to ${c.label}${c.sub ? ` (${c.sub})` : ''}`}
                     >{cond ? '✓*' : '✓'}</td>
                   ) : (
                     <td class="cell pm-avail is-empty"><span class="cell__dash">—</span></td>

@@ -79,7 +79,7 @@ const tip = (!isYield && Array.isArray(r.tip) && r.tip.length) ? r.tip.join('\n'
       return v;
     }
     function scaleHtml(d: any): string {
-      let h = `<h4>${esc(d.y)} reward — cities × turn</h4><table><thead><tr><th>cities</th>` +
+      let h = `<h4>${esc(d.y)} reward by cities and turn</h4><table><thead><tr><th>cities</th>` +
         TURNS.map((t) => `<th>t${t}</th>`).join('') + '</tr></thead><tbody>';
       for (const c of CITIES)
         h += `<tr><th>${c}</th>` + TURNS.map((t) => { const v = reward(d, c, t); return `<td>${v >= 0 ? '+' : ''}${v}</td>`; }).join('') + '</tr>';

@@ -38,7 +38,7 @@ const SECTIONS = [
 ---
 
 <Base title="Trait Acquisition" active="trait-acquisition" pageMark="🌱"
-  description="How to get a trait onto a character in Old World — every event option that grants it, every percentage roll and random pool that can produce it, and the age and blocking-trait limits that stop it. One page per trait."
+  description="How to get a trait onto a character in Old World. Covers every event option that grants it, every percentage roll and random pool that can produce it, and the age limits and blocking traits that stop it. One page per trait."
   pageStats={[
     { label: 'traits', value: data.counts.traits },
     { label: 'you can choose', value: pick.length },
@@ -46,12 +46,12 @@ const SECTIONS = [
   ]}>
 
   <p class="lede">
-    How to get a trait <em>onto</em> a character — the inverse of
-    <a href={`${base}trait-removal`}>Trait Removal</a>. Pick a trait for every event
-    that can grant it, split by how much control you have: an option you click, a
-    percentage roll resolved later, a draw from a random pool, or something the event
-    just does to you. Grants aimed at a <strong>rival's</strong> court are marked, since
-    those are not a route for you.
+    How to get a trait <em>onto</em> a character, which is the opposite of
+    <a href={`${base}trait-removal`}>Trait Removal</a>. Pick a trait to see every event
+    that can grant it, split by how much control you have. A grant can be an option you
+    click, a percentage roll resolved later, a draw from a random pool, or something the
+    event does to you. A grant aimed at a <strong>rival's</strong> court is marked,
+    because it is not a route for you.
   </p>
 
   <input id="tg-filter" class="tg__filter" type="search" placeholder="Filter traits…" autocomplete="off" />
@@ -79,11 +79,11 @@ const SECTIONS = [
   ))}
 
   <p class="tg__foot">
-    Grants are read from each option's bonus payload — <code>aeAddTraits</code>,
-    <code>aiTraitProbDelay</code>, <code>aeRandomTrait</code>/<code>aeRandomTraitDelay</code>,
-    <code>aeAddTraitReligion</code> — following nested <code>aeBonuses</code> and one
-    level of <code>aiEventOptionProb</code> variants. Who receives the trait is decided
-    by the bonus's <em>position</em>: <code>maeBonuses[iSubjectIndex]</code>
+    Grants are read from each option's bonus payload, namely <code>aeAddTraits</code>,
+    <code>aiTraitProbDelay</code>, <code>aeRandomTrait</code>, <code>aeRandomTraitDelay</code>
+    and <code>aeAddTraitReligion</code>, following nested <code>aeBonuses</code> and one
+    level of <code>aiEventOptionProb</code> variants. The bonus's <em>position</em> decides
+    who receives the trait, because <code>maeBonuses[iSubjectIndex]</code>
     (<code>PlayerEvent.cs:6710</code>) pairs slot <var>i</var> with the story's subject
     <var>i</var>, which is why one click can grant one trait to you and a different one
     to your rival.

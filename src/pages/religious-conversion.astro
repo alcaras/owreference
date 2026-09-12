@@ -73,18 +73,18 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   ]}
 >
   <p class="lede">
-    Religion spreads two ways in Old World. <b>World Religions</b> spread
-    passively via a per-turn % chance and actively via
-    <LinkedText text="Disciple" /> units. <b>Pagan Religions</b> spread only by
-    building <LinkedText text="Shrines" />.
+    <b>World Religions</b> spread on their own, through a percentage chance
+    rolled every turn, and they spread deliberately when you move a
+    <LinkedText text="Disciple" /> unit. <b>Pagan Religions</b> spread only when
+    you build <LinkedText text="Shrines" />.
   </p>
 
   <section class="rc-section">
-    <h2 class="rc-h2">Passive Spread — World Religions</h2>
+    <h2 class="rc-h2">Passive spread for World Religions</h2>
     <p>
-      Each turn, every World Religion rolls a <b>specific % chance</b> to spread
-      to one random City or Tribal Site. The base chance comes from
-      <code>iSpreadPercent</code> in <code>religion.xml</code>:
+      Every World Religion rolls its own percentage chance each turn to spread to
+      one random City or Tribal Site. The base chance is
+      <code>iSpreadPercent</code> in <code>religion.xml</code>, listed below.
     </p>
 
     <table class="rc-table">
@@ -122,28 +122,29 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
     </table>
 
     <p class="rc-fineprint">
-      A city is <b>more likely</b> to convert if it is close to the religion's
-      <LinkedText text="Holy City" /> and <b>less likely</b> if it already has
-      one or more religions present. Pagan religions don't roll passive spread
-      (<code>bNoSpread=1</code>); they require a new Shrine on each city.
+      A city is <b>more likely</b> to convert when it is close to the religion's
+      <LinkedText text="Holy City" />, and <b>less likely</b> when it already has
+      one or more religions present. Pagan Religions never roll for passive
+      spread (<code>bNoSpread=1</code>). Each city needs its own new Shrine.
     </p>
   </section>
 
   <section class="rc-section">
-    <h2 class="rc-h2">Active Spread — Disciples & Shrines</h2>
+    <h2 class="rc-h2">Active spread with Disciples and Shrines</h2>
     <div class="rc-twocol">
       <div class="rc-card">
         <h3 class="rc-h3"><LinkedText text="Disciple" /> (World Religions)</h3>
         <p>
-          Disciples can <b>spread</b> their religion to a settlement, build the
-          religion's <LinkedText text="Monastery" />, <LinkedText text="Temple" />,
-          <LinkedText text="Cathedral" />, and <LinkedText text="Holy Site" />,
-          and (with <LinkedText text="Orthodoxy" />) <b>Purge</b> rival religions.
+          A Disciple can <b>spread</b> its religion to a settlement, and it can
+          build the religion's <LinkedText text="Monastery" />,
+          <LinkedText text="Temple" />, <LinkedText text="Cathedral" /> and
+          <LinkedText text="Holy Site" />. With <LinkedText text="Orthodoxy" /> it
+          can also <b>Purge</b> a rival religion.
         </p>
         <p class="rc-fineprint">
-          A Disciple can only be trained in a city of its religion if the city is
-          the Holy City, the religion is your State Religion, or the nation has
-          <LinkedText text="Tolerance" />. Disciples are also used to establish
+          You can only train a Disciple in a city that follows its religion, and
+          only when the city is the Holy City, the religion is your State Religion,
+          or you have <LinkedText text="Tolerance" />. Disciples also establish
           <a href={`${base}theologies`}>Theologies</a>.
         </p>
       </div>
@@ -151,14 +152,14 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
       <div class="rc-card">
         <h3 class="rc-h3"><LinkedText text="Shrine" /> (Pagan Religions)</h3>
         <p>
-          Each nation has 4 unique Pagan Shrines drawn from a pool of 11 types
-          (War, Kingship, Wisdom, …). Building the <b>first</b> shrine founds
-          the nation's pagan religion; each subsequent shrine in another city
+          Each nation has 4 unique Pagan Shrines drawn from a pool of 11 types,
+          e.g. War, Kingship and Wisdom. The <b>first</b> shrine you build founds
+          the nation's pagan religion, and every later shrine in another city
           spreads it. See the full <a href={`${base}shrines`}>Shrines table</a>.
         </p>
         <p class="rc-fineprint">
-          <LinkedText text="Polytheism" /> removes the one-shrine-per-city
-          limit. <LinkedText text="Divine Rule" /> lets a pagan religion serve
+          <LinkedText text="Polytheism" /> removes the limit of one shrine per
+          city, and <LinkedText text="Divine Rule" /> lets a Pagan Religion serve
           as your State Religion.
         </p>
       </div>
@@ -166,11 +167,11 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   </section>
 
   <section class="rc-section">
-    <h2 class="rc-h2">Theology Spread Modifiers</h2>
+    <h2 class="rc-h2">Theology spread modifiers</h2>
     <p>
-      Establishing a Theology can permanently shift a World Religion's per-turn
-      spread chance, globally and for all followers. Effects compound across
-      tiers — pick aggressive theologies if you intend to evangelize.
+      Establishing a Theology permanently changes a World Religion's spread chance
+      per turn, everywhere and for every follower. The modifiers add up across
+      tiers, so a religion that takes several of them converts much faster.
     </p>
     <table class="rc-table rc-table--narrow">
       <thead>
@@ -199,22 +200,22 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   <section class="rc-section">
     <h2 class="rc-h2">State Religion</h2>
     <p>
-      You don't start with a state religion. Adopting one grants its
-      followers higher opinion, adds <LinkedText text="+1 Happiness" /> in
-      every city of that religion, and (for World Religions) <b>enables
-      Disciple training</b> there. Switching costs
-      <code>iCostBase</code> + <code>iCostPerChange</code> per previous
-      switch, per religion.
+      You don't start with a State Religion. Adopting one raises the opinion of
+      its followers and adds <LinkedText text="+1 Happiness" /> in every city of
+      that religion. For a World Religion it also <b>lets you train Disciples</b>
+      there. Each switch costs <code>iCostBase</code> plus
+      <code>iCostPerChange</code> for every switch you made before, counted per
+      religion.
     </p>
     <p class="rc-fineprint" style="font-style:normal">
-      Pagan religions can't be a state religion by default — you need the
-      <LinkedText text="Divine Rule" /> law to enact a pagan state religion
-      (see <code>bPaganStateReligion</code> in effectPlayer.xml).
+      A Pagan Religion cannot be your State Religion by default. You need the
+      <LinkedText text="Divine Rule" /> law to enact one (see
+      <code>bPaganStateReligion</code> in effectPlayer.xml).
     </p>
   </section>
 
   <section class="rc-section">
-    <h2 class="rc-h2">Worked example — Christianity spreads to Jerusalem</h2>
+    <h2 class="rc-h2">A worked example, Christianity spreading to Jerusalem</h2>
     <ol class="rc-steps">
       <li>
         Christianity is founded by the first nation with 3 Jewish cities + the
@@ -228,29 +229,31 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
       </li>
       <li>
         Once a city has Christianity, it can train <LinkedText text="Disciples" />
-        (provided the city qualifies — see above) which can spread Christianity
-        deterministically to new settlements and build religion buildings.
+        if the city qualifies, as described above, and a Disciple spreads
+        Christianity to new settlements without a roll and builds religion
+        buildings.
       </li>
       <li>
         With the religion as State Religion, the player can establish a
-        <LinkedText text="Theology" /> (e.g., <LinkedText text="Revelation" />) —
-        which then applies globally to every Christian player and locks that
+        <LinkedText text="Theology" /> such as <LinkedText text="Revelation" />,
+        which then applies to every Christian player everywhere and locks that
         theology slot for the rest of the game.
       </li>
     </ol>
   </section>
 
   <section class="rc-section">
-    <h2 class="rc-h2">Family Conversion</h2>
+    <h2 class="rc-h2">Family conversion</h2>
     <p>
       Source: <code>Player.cs::doFamilyReligion</code>. Starting turn
-      <b>{conversion.family.startTurn}</b>, each turn the game evaluates one
-      family slot — family <code>i</code> is checked when
+      <b>{conversion.family.startTurn}</b>, the game evaluates one family slot each
+      turn, because family <code>i</code> is checked when
       <code>turn % {conversion.family.rotation} == i % {conversion.family.rotation}</code>,
       so every family is reconsidered once every {conversion.family.rotation} turns.
-      Each religion is scored; a religion must score <b>{'>'} {conversion.family.threshold}</b>
-      to be eligible. Highest score wins (deterministic — the +50 current-religion
-      bonus is the tiebreaker that keeps families from praying to a different god every cycle).
+      Each religion is scored, and a religion must score more than
+      <b>{conversion.family.threshold}</b> to be eligible. The highest score wins, with
+      no random element, and the +50 bonus for the religion a family already follows is
+      what stops families from changing god every cycle.
     </p>
 
     <table class="rc-table rc-table--narrow rc-table--score">
@@ -272,7 +275,7 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   </section>
 
   <section class="rc-section">
-    <h2 class="rc-h2">Character Conversion</h2>
+    <h2 class="rc-h2">Character conversion</h2>
     <p>
       Source: <code>Character.cs::doReligion</code> (the trigger gate at line 7950)
       and <code>::chooseReligion</code> (the scoring at line 8509). Global constants
@@ -289,7 +292,7 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
 
     <div class="rc-twocol">
       <div class="rc-card">
-        <h3 class="rc-h3" style="margin-top:0">City points — with family</h3>
+        <h3 class="rc-h3" style="margin-top:0">City points with a family</h3>
         <p class="rc-fineprint" style="font-style:normal">{conversion.character.cityScoringWithFamily.note}</p>
         <table class="rc-table rc-table--narrow rc-table--score">
           <tbody>
@@ -304,7 +307,7 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
       </div>
 
       <div class="rc-card">
-        <h3 class="rc-h3" style="margin-top:0">City points — no family</h3>
+        <h3 class="rc-h3" style="margin-top:0">City points with no family</h3>
         <p class="rc-fineprint" style="font-style:normal">{conversion.character.cityScoringNoFamily.note}</p>
         <table class="rc-table rc-table--narrow rc-table--score">
           <tbody>
@@ -319,7 +322,7 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
       </div>
 
       <div class="rc-card">
-        <h3 class="rc-h3" style="margin-top:0">City points — tribe character</h3>
+        <h3 class="rc-h3" style="margin-top:0">City points for a tribe character</h3>
         <p class="rc-fineprint" style="font-style:normal">{conversion.character.cityScoringTribe.note}</p>
         <table class="rc-table rc-table--narrow rc-table--score">
           <tbody>

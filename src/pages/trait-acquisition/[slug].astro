@@ -26,15 +26,15 @@ const WHO: Record<string, string> = { you: 'your court', them: "a rival's court"
 // of agency, so they never get merged into one number.
 const ROUTES = [
   { key: 'choose', title: 'Pick this option',
-    note: "The option's bonus lists the trait in aeAddTraits — choose it and the character gains it." },
+    note: "The option's bonus lists the trait in aeAddTraits, so choosing it gives the character the trait." },
   { key: 'religion', title: 'Pick this option, if the character follows the right religion',
-    note: 'aeAddTraitReligion — the same click grants a different trait depending on the faith.' },
+    note: 'aeAddTraitReligion means the same click grants a different trait depending on the faith.' },
   { key: 'chance', title: 'Pick this option, then roll for it',
-    note: 'aiTraitProbDelay — the roll resolves on a later turn, not when you click.' },
+    note: 'aiTraitProbDelay means the roll resolves on a later turn rather than when you click.' },
   { key: 'random', title: 'Pick this option, draw from a pool',
-    note: 'aeRandomTrait / aeRandomTraitDelay — one trait is drawn from the pool. Character.doRandomTrait rolls for every pool member that currently passes canAddTrait and keeps the best, so the odds are one in the number still VALID, not one in the pool size — they improve as the character collects the rest of the pool.' },
+    note: 'aeRandomTrait and aeRandomTraitDelay draw one trait from the pool. Character.doRandomTrait rolls for every pool member that currently passes canAddTrait and keeps the best, so the odds are one in the number still valid rather than one in the pool size, and they improve as the character collects the rest of the pool.' },
   { key: 'automatic', title: 'The event does it to you',
-    note: "Granted by the story's own aeBonuses — no option involved, so there is nothing to choose." },
+    note: "Granted by the story's own aeBonuses, with no option involved, so there is nothing to choose." },
 ];
 
 const rows = (k: string) => (trait.routes[k] || []);
@@ -54,7 +54,7 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
 ---
 
 <Base title={`Getting ${trait.name}`} active="trait-acquisition" pageMark="🌱"
-  description={`Every way to put the ${trait.name} trait on a character in Old World — the event options that grant it, the rolls that can produce it, and the limits that block it.`}
+  description={`Every way to put the ${trait.name} trait on a character in Old World, covering the event options that grant it, the rolls that can produce it, and the limits that block it.`}
   pageStats={[
     { label: 'to choose', value: chooseYours },
     { label: 'by roll', value: rollYours },
@@ -63,9 +63,9 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
 
   <p class="lede">
     Every way to put <b>{trait.name}</b> on a character.
-    {chooseYours === 0 && hasAnyEvent && <> <b>No option grants it to your own court outright</b> — everything below is a roll, or lands on someone else.</>}
+    {chooseYours === 0 && hasAnyEvent && <> <b>No option grants it to your own court outright</b>, so everything below is a roll or lands on someone else.</>}
     {chooseYours > 0 && <> {chooseYours === 1 ? 'One option grants' : `${chooseYours} options grant`} it to your own court outright{rollYours > 0 && <>, and {rollYours} more can roll it up</>}.</>}
-    {!hasAnyEvent && <> <b>No event grants it at all</b> — it comes from character setup, the childhood roll or inheritance.</>}
+    {!hasAnyEvent && <> <b>No event grants it at all</b>, so it comes from character setup, the childhood roll or inheritance.</>}
     {' '}See <a href={`${base}traits#${trait.slug}`}>{trait.name}</a> for what it does,
     {removable.has(trait.slug) && <><a href={`${base}trait-removal/${trait.slug}`}> how to remove it</a>,</>}
     <a href={`${base}trait-acquisition`}> all traits</a>.
@@ -76,8 +76,8 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
       <h2 class="gate__h">Before any of this can land</h2>
       <p class="gate__note">
         Game.canAddTrait (<code>Game.cs:10506</code>) is checked first, and
-        PlayerBonus rejects the whole bonus if it fails — the option simply will not
-        appear.
+        PlayerBonus rejects the whole bonus when it fails, so the option does not
+        appear at all.
       </p>
       <ul class="gate__list">
         {gates.map(g => <li>{g}</li>)}
@@ -98,7 +98,7 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
       <h2 class="innate__h">Born with it</h2>
       <ul class="innate__list">{trait.innate.map((a: string) => <li>{a}</li>)}</ul>
       <p class="innate__note">
-        Children can also inherit it — see <a href={`${base}trait-inheritance`}>Trait Inheritance</a>.
+        Children can also inherit it, as described on <a href={`${base}trait-inheritance`}>Trait Inheritance</a>.
       </p>
     </section>
   )}
@@ -113,22 +113,22 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
             <div class="rt__hd">
               {evHref(r) ? <a class="rt__ev" href={evHref(r)}>{r.name}</a>
                          : <span class="rt__ev">{r.name}</span>}
-              <span class={`tag tag--who tag--${r.who}`} title="Which side's character receives the trait — decided by the bonus's position in aeBonuses">{WHO[r.who]}</span>
+              <span class={`tag tag--who tag--${r.who}`} title="Which side's character receives the trait, decided by the bonus's position in aeBonuses">{WHO[r.who]}</span>
               {r.pct && <span class="tag tag--pct">{r.pct}%</span>}
               {r.pool && <span class="tag tag--pool" title={`Pool: ${r.pool.join(', ')}`}>1 of {r.pool.length}</span>}
               {r.draw && (
                 <span class="tag tag--pct"
-                  title={`aiEventOptionProb: this branch carries ${r.draw[0]} of ${r.draw[1]} weight. One button, one branch fires. The real odds are better than this — PlayerBonus.canDoBonusSingle drops any branch whose trait the character cannot take (already has it, blocked, too young), so the weight is renormalised over the branches still valid.`}>
+                  title={`aiEventOptionProb: this branch carries ${r.draw[0]} of ${r.draw[1]} weight. One button fires one branch. The real odds are better than this figure, because PlayerBonus.canDoBonusSingle drops any branch whose trait the character cannot take, whether they already have it, are blocked or are too young, and the weight is then shared over the branches that remain valid.`}>
                   {(r.draw[0] * 100 / r.draw[1]).toFixed(r.draw[0] * 100 / r.draw[1] < 10 ? 1 : 0)}% draw
                 </span>
               )}
               {r.religion && <span class="tag tag--rel">{r.religion}</span>}
-              <span class="tag tag--w" title="iWeight — relative selection weight in the event pool">w{r.weight}</span>
+              <span class="tag tag--w" title="iWeight, the relative selection weight in the event pool">w{r.weight}</span>
               {!r.cm && <span class="tag tag--nocm">not in CM</span>}
               {r.dlc && <span class="tag tag--dlc">{r.dlc}</span>}
             </div>
-            {r.text && <div class="rt__text">“{r.text}”</div>}
-            {r.pool && <div class="rt__pool">pool: {r.pool.join(' · ')}</div>}
+            {r.text && <div class="rt__text">"{r.text}"</div>}
+            {r.pool && <div class="rt__pool">pool: {r.pool.join(', ')}</div>}
             {r.rewards && r.rewards.length > 0 && (
               <div class="rt__rw">
                 <span class="rt__rwl">{r.draw ? 'this branch:' : 'the option does:'}</span>
@@ -145,8 +145,8 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
     <section class="rt">
       <h2 class="rt__h">From another trait <span class="rt__n">{trait.routes.fromTrait.length}</span></h2>
       <p class="rt__note">
-        <code>aiTraitProb</code> on the source trait — holding it gives a per-check
-        chance of developing {trait.name}.
+        <code>aiTraitProb</code> on the source trait gives a character who holds it a
+        chance of developing {trait.name} at each check.
       </p>
       <ul class="rt__rows">
         {trait.routes.fromTrait.map((r: any) => (
@@ -164,7 +164,7 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
   {trait.routes.occurrence.length > 0 && (
     <section class="rt">
       <h2 class="rt__h">From an occurrence <span class="rt__n">{trait.routes.occurrence.length}</span></h2>
-      <p class="rt__note"><code>aiTraitProb</code> on the occurrence — a map event rolls for it.</p>
+      <p class="rt__note"><code>aiTraitProb</code> on the occurrence means a map event rolls for it.</p>
       <ul class="rt__rows">
         {trait.routes.occurrence.map((r: any) => (
           <li class="rt__row">

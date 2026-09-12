@@ -15,7 +15,7 @@ const milestones = converting[0]?.odds.map((o: any) => o.turnsAfter) ?? [];
   title="Barbarian Site Conversion"
   active="tribe-conversion"
   pageMark="🏕️"
-  description="How barbarian sites become tribal sites in Old World: from a set turn onward each barbarian settlement rolls a few percent per turn to be adopted by a tribe with a settlement within 12 tiles — but only if no player unit and no damaged barbarian is nearby. Start turns and per-turn odds by tribe level, transcribed from Tile.doTribeTurn."
+  description="How barbarian sites become tribal sites in Old World. From a set turn onward, each barbarian settlement rolls a few percent per turn to be adopted by a tribe that has a settlement within 12 tiles, and the roll only succeeds when no player unit and no damaged barbarian is nearby. Includes start turns and per-turn odds by tribe level, transcribed from Tile.doTribeTurn."
   pageStats={[
     { label: 'levels that convert', value: `${counts.convertingLevels} of ${levels.length}` },
     { label: 'to nearest settlement', value: `${search.range} tiles` },
@@ -23,43 +23,44 @@ const milestones = converting[0]?.odds.map((o: any) => o.turnsAfter) ?? [];
   ]}
 >
   <p class="lede">
-    Barbarian camps are not always barbarian forever. Once a game is past a certain turn, every
-    barbarian settlement rolls each turn to be <b>adopted by a nearby real tribe</b> — the site
-    changes hands, and the barbarians standing on it become that tribe's soldiers. It is rare
-    because the roll is a few percent and the site has to be <em>quiet</em> at that moment.
-    Transcribed from <code>Tile.doTribeTurn</code> and
-    <code>Game.findNearestSettlementTribe</code>; numbers from <code>tribeLevel.xml</code>.
+    A barbarian camp does not stay barbarian forever. Once a game is past a certain turn, every
+    barbarian settlement rolls each turn to be <b>adopted by a nearby real tribe</b>, which hands
+    the site to that tribe and turns the barbarians standing on it into that tribe's soldiers. It
+    happens rarely, because the roll is only a few percent and the site has to be <em>quiet</em>
+    at that moment. The rules are transcribed from <code>Tile.doTribeTurn</code> and
+    <code>Game.findNearestSettlementTribe</code>, and the numbers come from
+    <code>tribeLevel.xml</code>.
   </p>
 
   <section class="tc">
     <h2 class="tc__h">The roll, step by step</h2>
     <ol class="tc__steps">
       <li><b>Only barbarian sites are eligible.</b> The site's tribe must be one that
-        <em>cannot</em> do diplomacy — {barbarian.map((b: any) => b.name).join(', ')}. A site
-        already held by a real tribe never re-rolls.</li>
+        <em>cannot</em> do diplomacy, meaning {barbarian.map((b: any) => b.name).join(', ')}. A
+        site already held by a real tribe never rolls again.</li>
       <li><b>The clock has to have started.</b> Nothing happens until the turn passes the tribe
         level's start turn (below). Before that, the check is skipped entirely.</li>
       <li><b>Roll the percent</b>, once per site per turn.</li>
       <li><b>Find an adopter.</b> Two different distances are involved. To <em>qualify</em>, a
-        tribe must own a settlement within <b>{search.range} tiles</b> of this site in
-        straight-line hex distance — terrain-blind, so it counts across mountains and water.
-        Among every tribe that qualifies, the <em>winner</em> is the one whose settlement is
-        closest by actual <b>pathfinding</b> (land or water). No qualifying tribe, no
+        tribe must own a settlement within <b>{search.range} tiles</b> of this site in straight
+        line hex distance, which ignores terrain and so counts across mountains and water. Among
+        the tribes that qualify, the site goes to the one whose settlement is closest by actual
+        <b>pathfinding</b> over land or water. With no qualifying tribe there is no
         conversion.</li>
-      <li><b>The site must be quiet.</b> Scanning every tile within
-        <b>{converting[0]?.unitRange ?? 3}</b> of the site: if <em>any</em> player unit is
-        present, or any barbarian of that site is <em>damaged</em>, the conversion is
-        cancelled for that turn.</li>
-      <li><b>The flip.</b> The site becomes the new tribe's, trade networks rebuild, and each
-        barbarian in range is re-created under the new tribe — or, if it has a city to strike
-        from where it stands, converted straight into a <b>raider</b> against that city.</li>
+      <li><b>The site must be quiet.</b> The game scans every tile within
+        <b>{converting[0]?.unitRange ?? 3}</b> of the site, and it cancels the conversion for that
+        turn when <em>any</em> player unit is present, or when any barbarian of that site is
+        <em>damaged</em>.</li>
+      <li><b>The handover.</b> The site becomes the new tribe's, trade networks rebuild, and each
+        barbarian in range is recreated under the new tribe. A barbarian that has a city it can
+        strike from where it stands becomes a <b>raider</b> against that city instead.</li>
     </ol>
 
     <h2 class="tc__h">When it can happen, and how likely</h2>
     <p class="tc__intro">
-      Both the start turn and the per-turn chance come from the game's <b>Tribe Level</b>
-      setting. The cumulative columns are the odds that one undisturbed site has flipped after
-      that many eligible turns — <code>1 − (1 − p)ⁿ</code>.
+      Both the start turn and the chance per turn come from the game's <b>Tribe Level</b>
+      setting. The cumulative columns give the odds that one undisturbed site has converted after
+      that many eligible turns, which is <code>1 − (1 − p)ⁿ</code>.
     </p>
     <div class="grid"><div class="grid__scroll">
       <table class="ntbl tc__tbl">
@@ -94,17 +95,17 @@ const milestones = converting[0]?.odds.map((o: any) => o.turnsAfter) ?? [];
       </table>
     </div></div>
     <p class="tc__note">
-      Higher tribe levels convert <b>earlier and faster</b> — Raging starts 30 turns before
-      Weak does and rolls twice as often. On <b>Passive</b> and with tribes off, sites never
-      convert at all, which is why the mechanic is easy to play hundreds of hours without
-      noticing.
+      Higher tribe levels convert <b>earlier and faster</b>, and Raging starts 30 turns before
+      Weak does and rolls twice as often. On <b>Passive</b>, and with tribes off, sites never
+      convert at all, which is why you can play for hundreds of hours without meeting the
+      mechanic.
     </p>
 
     <h2 class="tc__h">Who can adopt a site</h2>
     <p class="tc__intro">
-      Only the {counts.adopters} tribes the game lets you negotiate with — the ones with a
-      <code>bDiplomacy</code> flag. Each must already have a settlement of its own within range
-      to reach out from.
+      Only the {counts.adopters} tribes you can negotiate with, meaning the ones with a
+      <code>bDiplomacy</code> flag, can adopt a site. Each one must already have a settlement of
+      its own within range to reach out from.
     </p>
     <div class="tc__tribes">
       {adopters.map((t: any) => (
@@ -113,26 +114,27 @@ const milestones = converting[0]?.odds.map((o: any) => o.turnsAfter) ?? [];
     </div>
     <h2 class="tc__h">Why the adopter can look far away</h2>
     <p class="tc__intro">
-      The {search.range} tiles are measured to <b>the tribe's nearest settlement</b>, not to
-      wherever you think that tribe lives. Two things follow, and together they explain
-      conversions that look impossible:
+      The {search.range} tiles are measured to <b>the tribe's nearest settlement</b> rather than
+      to wherever you think that tribe lives. The two points below follow from that, and together
+      they explain conversions that look impossible.
     </p>
     <ul class="tc__why">
-      <li><b>Tribes own scattered settlements.</b> A tribe's "home" cluster can sit 30 tiles
-        away while one outlying camp of theirs sits 9 tiles from the site being converted.
-        You see the name and colour of a distant tribe; the game measured to the near camp.</li>
-      <li><b>Conversions cascade.</b> Flipping a site registers it as a settlement of the new
-        tribe (<code>Tile.changeImprovement</code> → <code>addSettlement</code>). That fresh
-        settlement is itself a valid anchor, so it can pull the <em>next</em> barbarian camp
-        {search.range} tiles further out into range. A tribe can walk across the map one
-        adoption at a time, ending up owning sites nowhere near where it started.</li>
+      <li><b>Tribes own scattered settlements.</b> A tribe's main cluster can sit 30 tiles away
+        while one outlying camp of theirs sits 9 tiles from the site being converted. You see the
+        name and colour of a distant tribe, and the game measured to the near camp.</li>
+      <li><b>Conversions chain.</b> Handing over a site registers it as a settlement of the new
+        tribe (<code>Tile.changeImprovement</code> calls <code>addSettlement</code>), and the new
+        settlement is itself a valid anchor, so it can bring the <em>next</em> barbarian camp
+        {search.range} tiles further out into range. A tribe can cross the map one adoption at a
+        time and end up owning sites nowhere near where it started.</li>
     </ul>
 
     <p class="tc__note">
-      The practical consequence: a barbarian camp near an established tribe is on borrowed time,
-      and when it flips you gain a neighbour you can <em>talk to</em> — trade, truce, alliance —
-      where before there was only a permanent enemy. Keeping a unit parked next to the camp
-      blocks the conversion indefinitely, and so does leaving one of its defenders wounded.
+      In practice a barbarian camp near an established tribe will probably convert sooner or
+      later, and when it does you gain a neighbour you can negotiate with through trade, truce and
+      alliance, where before there was only a permanent enemy. Parking a unit next to the camp
+      blocks the conversion for as long as it stays, and so does leaving one of the camp's
+      defenders wounded.
     </p>
 
     <p class="tc__see">

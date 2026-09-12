@@ -52,17 +52,17 @@ const fmt = (n: number) => n.toLocaleString('en-US');
     { value: classes.length, label: 'classes' },
     { value: fmt(totalRefs), label: 'event references' },
   ]}
-  description="Every Subject template in Old World's event system — the casting roles that bind event stories, missions and occurrences to characters, players, cities, tiles and more, with each role's prerequisite filters humanized from the game's XML."
+  description="Every Subject template in Old World's event system. A subject is the role that binds an event story, mission or occurrence to a character, player, city, tile or other object, and each role's prerequisite filters are shown in plain words from the game's XML."
 >
   <p class="lede">
-    A <em>Subject</em> is how the event system casts its roles: every event
-    story, mission and occurrence fills slots like “an adult heir”, “a rival
-    at war with us” or “a river tile we own” from this catalog of
+    A <em>Subject</em> is how the event system fills its roles, because every
+    event story, mission and occurrence fills slots such as "an adult heir", "a
+    rival at war with us" or "a river tile we own" from this catalog of
     {fmt(subjects.length)} templates. Each subject is a class plus a stack of
-    prerequisite filters, shown here exactly as the XML defines them — the
-    {fmt(labeled)} that surface in-game prereq text use the game’s own wording.
-    (Not to be confused with vassal states — vassalage is event content that
-    <em>uses</em> these subjects.)
+    prerequisite filters, shown here exactly as the XML defines them, and the
+    {fmt(labeled)} that appear in the game's own prereq text use the game's
+    wording. A subject is not a vassal state, because vassalage is event content
+    that <em>uses</em> these subjects.
   </p>
 
   <div class="subj-controls">
@@ -106,7 +106,7 @@ const fmt = (n: number) => n.toLocaleString('en-US');
                     {s.label && <span class="subj-badge subj-badge--game" title="In-game prereq wording (from the game's text files)">game text</span>}
                     {s.dlc && <span class="subj-badge subj-badge--dlc" title={`Only referenced by ${s.dlc} content`}>{s.dlc}</span>}
                     {s.hidden && <span class="subj-badge" title="Hidden when the game lists prereqs">hidden</span>}
-                    {s.disabled && <span class="subj-badge" title="Never valid — disabled in data">disabled</span>}
+                    {s.disabled && <span class="subj-badge" title="Never valid, because it is disabled in the data">disabled</span>}
                   </span>
                   <span class="subj-name__id">{s.id}</span>
                 </th>
@@ -141,11 +141,11 @@ const fmt = (n: number) => n.toLocaleString('en-US');
     Sources: <code>subject.xml</code> (templates + designer comments),
     <code>subjectClass.xml</code> (the 15 classes),
     <code>subjectRelation.xml</code> (named relation predicates referenced
-    via “Relation to us / leader”), with labels from
-    <code>text-subject*.xml</code>. “Uses” counts references across
+    via "Relation to us / leader"), with labels from
+    <code>text-subject*.xml</code>. "Uses" counts references across
     <code>eventStory*</code>, <code>eventOption*</code>, <code>mission</code>,
     <code>goal</code>, <code>occurrence</code> and <code>globalsType</code>.
-    A DLC tag means the subject is referenced only by that pack’s content.
+    A DLC tag means the subject is referenced only by that pack's content.
   </p>
 </Base>
 

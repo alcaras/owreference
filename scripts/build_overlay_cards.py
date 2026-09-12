@@ -151,7 +151,7 @@ def main() -> int:
                 lines = ab.get("lines") or []
                 label = ab.get("label") or ""
                 if label and lines:
-                    c["lines"].append(f"{label} — {'; '.join(lines)}")
+                    c["lines"].append(f"{label}: {'; '.join(lines)}")
                 elif label:
                     c["lines"].append(label)
                 else:
@@ -393,7 +393,7 @@ def main() -> int:
                 t = r.get("text") or ""
                 tips = [str(x) for x in r.get("tip") or []][:2]
                 if t and tips:
-                    t = f"{t} — {'; '.join(tips)}"
+                    t = f"{t} ({'; '.join(tips)})"
             else:
                 t = str(r)
             if t:
@@ -443,7 +443,7 @@ def main() -> int:
                 continue
             t = g["text"]
             tips = [str(x) for x in g.get("tip") or []][:2]
-            gs.append(f"{t} — {'; '.join(tips)}" if tips else t)
+            gs.append(f"{t} ({'; '.join(tips)})" if tips else t)
         c["event"]["guaranteed"] = gs
         if ev.get("prob"):
             c["chips"].append(f"{ev['prob']}% · w{ev.get('weight') or 1}")
@@ -454,10 +454,10 @@ def main() -> int:
                 # attach to the reward line that grants it; else its own line
                 for i, r in enumerate(rewards):
                     if name in r and detail not in r:
-                        rewards[i] = f"{r} — {detail}"
+                        rewards[i] = f"{r} ({detail})"
                         break
                 else:
-                    rewards.append(f"{name} — {detail}")
+                    rewards.append(f"{name} ({detail})")
             o = {
                 "text": clean(opt.get("text") or ""),
                 "rewards": rewards,
@@ -469,7 +469,7 @@ def main() -> int:
             key = (o["text"], tuple(o["rewards"]), tuple(o["reqs"]))
             if key in seen_opts:
                 seen_opts[key]["_dupes"] += 1
-                seen_opts[key]["text"] = f"{seen_opts[key]['_dupes']} choices — {o['text']}"
+                seen_opts[key]["text"] = f"{seen_opts[key]['_dupes']} choices: {o['text']}"
                 continue
             o["_dupes"] = 1
             seen_opts[key] = o
@@ -494,7 +494,7 @@ def main() -> int:
     for ev in load("study_events.json"):
         ev = dict(ev)
         study = ev.get("study")
-        event_card(ev, f"Study — {study}" if study else "Study")
+        event_card(ev, f"Study: {study}" if study else "Study")
 
     # ── chain annotations from event-chains.json ─────────────────────────────
     chains_data = load("event-chains.json")

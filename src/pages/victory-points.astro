@@ -29,20 +29,20 @@ const culturesTotalVP = D.cultures.reduce((s: number, c: any) => s + c.vp, 0);
   ]}
 >
   <p class="lede">
-    How many <strong>Victory Points</strong> a game takes to win, replaying
-    <code>Game.cs&nbsp;·&nbsp;getVPToWin()</code>. The target is not a setting — the engine
-    sizes it from the <b>number of city sites on the map</b>, then trims it for the
-    player and team count and shifts it by the <b>Victory Point</b> setup option. Nothing
-    about who is playing enters it: every map with the same site count and setup has the
-    same target. Set up the game below (defaults are the tournament's — duel, High) and read
-    the row for your map; the breakdown shows where each point of the pool comes from.
+    How many <strong>Victory Points</strong> a game takes to win, following
+    <code>Game.cs getVPToWin()</code>. The target is not a setting. The engine sizes it from
+    the <b>number of city sites on the map</b>, then trims it for the player and team count,
+    and finally shifts it by the <b>Victory Point</b> setup option. Who is playing never
+    enters the calculation, so every map with the same site count and setup has the same
+    target. Set up the game below, where the defaults are the tournament's duel at High, and
+    read the row for your map. The breakdown shows where each point of the pool comes from.
   </p>
 
   <section class="asm">
     <div class="asm__row">
       <span class="asm__tag">Game</span>
       <div class="asm__fields">
-        <label class="f"><span>Players <i>humans + AI</i></span>
+        <label class="f"><span>Players <i>humans and AI</i></span>
           <input type="number" id="v-players" value={TOURNAMENT.players} min="1" max="12" step="1" /></label>
         <label class="f"><span>Teams</span>
           <input type="number" id="v-teams" value={TOURNAMENT.teams} min="1" max="12" step="1" /></label>
@@ -56,7 +56,7 @@ const culturesTotalVP = D.cultures.reduce((s: number, c: any) => s + c.vp, 0);
           </select>
         </label>
         <label class="f--chk"><input type="checkbox" id="v-characters" checked />
-          <span>Characters on <i>untick for No Characters mode</i></span></label>
+          <span>Characters on <i>untick for the No Characters mode</i></span></label>
       </div>
     </div>
     <div class="asm__row">
@@ -97,7 +97,7 @@ const culturesTotalVP = D.cultures.reduce((s: number, c: any) => s + c.vp, 0);
           <tr>
             <th class="rowlabel rowlabel--corner">City sites</th>
             <th class="nhdr nhdr--num">Pool<span class="vp__hdnote">before scaling</span></th>
-            <th class="nhdr nhdr--num">Base<span class="vp__hdnote">teams &amp; players</span></th>
+            <th class="nhdr nhdr--num">Base<span class="vp__hdnote">teams and players</span></th>
             {D.victoryPointOptions.map((o: any) => (
               <th class="nhdr nhdr--num vp__opt" data-option={o.id}>
                 {o.name}<span class="vp__hdnote">{o.modifier >= 0 ? '+' : ''}{o.modifier}%</span>
@@ -117,81 +117,91 @@ const culturesTotalVP = D.cultures.reduce((s: number, c: any) => s + c.vp, 0);
       <div>
         <h3>The pool <span class="tag">per map</span></h3>
         <ul>
-          <li><b>Culture</b> — for each of the {D.cultures.length} culture levels,
-            <code>sites × VP ÷ {D.cultures.length}</code>, each rounded down separately
+          <li><b>Culture</b> contributes <code>sites × VP ÷ {D.cultures.length}</code> for each
+            of the {D.cultures.length} culture levels, rounded down separately for each level
             ({D.cultures.map((c: any) => `${c.name} ${c.vp}`).join(', ')}). That is roughly
-            {culturesTotalVP}/{D.cultures.length} VP per site, but because each level truncates on
-            its own the total is not a clean multiple — 13 sites give 31, not 30. With
+            {culturesTotalVP}/{D.cultures.length} VP per site, and because each level truncates on
+            its own the total is not a clean multiple, so 13 sites give 31 rather than 30. With
             <b>No Characters</b> the divisor is {D.cultures.length + 1} instead.</li>
-          <li><b>Wonders</b> — every buildable wonder is worth its <code>EffectPlayer.iVP</code>
-            ({wonders[0].vp}) once, capped at one copy. But only
-            <code>AVAILABLE_WONDERS</code> = <b>{D.globals.AVAILABLE_WONDERS}</b> of the
-            {wonders.length} content-enabled wonders survive map placement
-            (<code>finishMapPlacement</code> disables the rest, and <code>getVPToWin</code> skips
-            disabled improvements) — so it is {D.globals.AVAILABLE_WONDERS} × {wonders[0].vp} whatever
-            DLC you own, unless a DLC-less install drops the enabled count below the cap.</li>
-          <li><b>Holy sites</b> — each religion's holy site
-            ({holySites.map((h: any) => h.name).join(', ')}) counts once: the improvement has a religion
-            prereq, so <code>iMaxCities</code> is 1 and <code>iMaxPlayerCount</code> = 1 closes it at one.</li>
-          <li><b>Projects</b> — a VP project counts <code>sites ÷ 4</code> times
-            (once per player if unique). Today that is only <b>{D.projects.map((p: any) => p.name).join(', ')}</b>
-            ({D.projects.map((p: any) => `${p.vp} VP, ${D.contents[p.content]?.dlcName}`).join('; ')}) — the “+1 per
-            four sites” bump people notice when Behind the Throne is on.</li>
-          {otherImps.length ? <li><b>Other improvements</b> — {otherImps.map((i: any) => i.name).join(', ')} also
-            carry VP and pass the gates; they are counted with their per-city/family/player caps.</li> : null}
+          <li><b>Wonders</b> each count their <code>EffectPlayer.iVP</code> of
+            {wonders[0].vp} once, capped at one copy. Only
+            <code>AVAILABLE_WONDERS</code>, which is <b>{D.globals.AVAILABLE_WONDERS}</b> of the
+            {wonders.length} wonders your content enables, survives map placement, because
+            <code>finishMapPlacement</code> disables the rest and <code>getVPToWin</code> skips a
+            disabled improvement. The wonder share is therefore
+            {D.globals.AVAILABLE_WONDERS} × {wonders[0].vp} whatever DLC you own, unless an install
+            without DLC drops the enabled count below the cap.</li>
+          <li><b>Holy sites</b>, one per religion
+            ({holySites.map((h: any) => h.name).join(', ')}), count once each, because the
+            improvement has a religion prereq, so <code>iMaxCities</code> is 1 and
+            <code>iMaxPlayerCount</code> of 1 holds it at one.</li>
+          <li><b>Projects</b> that carry VP count <code>sites ÷ 4</code> times, or once per
+            player when the project is unique. Today that is only
+            <b>{D.projects.map((p: any) => p.name).join(', ')}</b>
+            ({D.projects.map((p: any) => `${p.vp} VP, ${D.contents[p.content]?.dlcName}`).join(', ')}),
+            which is the extra point per four sites that players notice when Behind the Throne is
+            on.</li>
+          {otherImps.length ? <li><b>Other improvements</b>, namely {otherImps.map((i: any) => i.name).join(', ')},
+            also carry VP and pass the gates, and they are counted with their caps per city, family
+            and player.</li> : null}
         </ul>
       </div>
       <div>
         <h3>The scaling</h3>
         <ul>
-          <li><b>Teams</b> — <code>pool × 6 ÷ (3 + teams)</code>. Two teams keep 6/5 of the pool;
-            three keep exactly it; six keep two-thirds.</li>
-          <li><b>Players</b> — <code>× 2 ÷ 5</code> when there are <b>exactly two players</b>,
-            otherwise <code>÷ 2</code>. A duel is asked for 40% of its scaled pool, everyone else 50%.</li>
-          <li><b>Victory Point option</b> — <code>utils().modify(vp, iModifier)</code>:
+          <li><b>Teams</b> scale the pool by <code>pool × 6 ÷ (3 + teams)</code>. Two teams keep
+            6/5 of the pool, three keep exactly the pool, and six keep two thirds of it.</li>
+          <li><b>Players</b> scale it by <code>× 2 ÷ 5</code> when there are <b>exactly two
+            players</b>, and by <code>÷ 2</code> otherwise. A duel is asked for 40% of its scaled
+            pool, and every other game for 50%.</li>
+          <li><b>The Victory Point option</b> applies <code>utils().modify(vp, iModifier)</code>, with
             {D.victoryPointOptions.map((o: any, i: number) => (
               <span>{o.name} {o.modifier >= 0 ? '+' : ''}{o.modifier}%{i < D.victoryPointOptions.length - 1 ? ', ' : ''}</span>
-            ))} (<code>victoryPoint.xml</code>). Applied last, on the already-truncated number.</li>
-          <li>All four divisions are C# integer divisions — the order matters, and the table
-            reproduces it step by step (Pool → Base → option).</li>
+            ))} from <code>victoryPoint.xml</code>. It is applied last, to the number that has
+            already been truncated.</li>
+          <li>All four divisions are C# integer divisions, so the order matters, and the table
+            reproduces it step by step from Pool to Base to the option.</li>
         </ul>
       </div>
       <div>
-        <h3>What it doesn't count</h3>
+        <h3>What the target does not count</h3>
         <ul>
-          <li><b>Tech VPs</b> — the VP techs at the end of the tree feed your score
-            (<code>meSourceTech</code>) but never the target.</li>
-          <li><b>Legendary steps</b> — each culture step past Legendary is +1 VP for the city, but the
-            pool only ever sees one Legendary per site. That is why “max available VP” is not the
-            right way to think about it: the target is a fixed share of a nominal pool, and the
-            real ceiling is higher.</li>
-          <li><b>Nation and dynasty wonders</b> — anything with a <code>NationPrereq</code> or
-            <code>DynastyPrereq</code> is skipped; none of the current wonders have one.</li>
+          <li><b>Tech VPs.</b> The VP techs at the end of the tree feed your score through
+            <code>meSourceTech</code>, and they never feed the target.</li>
+          <li><b>Legendary steps.</b> Each culture step past Legendary is +1 VP for the city, but
+            the pool only ever counts one Legendary per site. The target is a fixed share of a
+            nominal pool rather than a share of the VP actually available, and the real ceiling is
+            higher.</li>
+          <li><b>Nation and dynasty wonders.</b> Anything with a <code>NationPrereq</code> or a
+            <code>DynastyPrereq</code> is skipped, and no current wonder has one.</li>
           {D.skippedImprovements.map((i: any) => (
-            <li><b>{i.name}</b> — carries {i.vp} VP but is {i.reason}
-              (<code>{i.id}</code>), so it is out.</li>
+            <li><b>{i.name}</b> carries {i.vp} VP but is {i.reason}
+              (<code>{i.id}</code>), so the pool leaves it out.</li>
           ))}
         </ul>
       </div>
       <div>
-        <h3>Reading the result</h3>
+        <h3>How to read the result</h3>
         <ul>
-          <li><b>Points victory</b> — the first team to reach the target wins
+          <li><b>Points victory</b> goes to the first team to reach the target
             (<code>VICTORY_POINTS</code>, 100% of it).</li>
-          <li><b>Double victory</b> — half the target <i>and</i> twice every opponent's VP
-            (<code>VICTORY_DOUBLE</code>: <code>iPercentVP</code> 50, <code>iOpponentMaxPointPercent</code> 200), rounded
-            half-up. The last column is the first half; the second half moves every turn.</li>
-          <li>City sites are the map's total — occupied and free, every nation's — not yours alone.
-            The tooltip on the score panel shows the live target, so a mismatch against this page
-            means a different site count or setting than you assumed.</li>
+          <li><b>Double victory</b> needs half the target <i>and</i> twice every opponent's VP
+            (<code>VICTORY_DOUBLE</code>, with <code>iPercentVP</code> 50 and
+            <code>iOpponentMaxPointPercent</code> 200), rounded half up. The last column is the
+            first of those two conditions, and the second one moves every turn.</li>
+          <li>City sites are the map's total, counting occupied and free sites for every nation
+            rather than yours alone. The tooltip on the score panel shows the live target, so a
+            number that does not match this page means the site count or a setting differs from
+            what you assumed.</li>
         </ul>
       </div>
     </div>
     <p class="fine">
-      Formula from <b>Game.cs</b> <code>getVPToWin</code> and <code>getVPToWinByVictory</code>; the
-      wonder cap from <code>finishMapPlacement</code>; constants from <code>globalsInt.xml</code>,
-      <code>culture.xml</code>, <code>victoryPoint.xml</code>, <code>victory.xml</code>; the VP-bearing
-      improvements and projects from <code>improvement.xml</code> / <code>project.xml</code> via their
+      The formula comes from <b>Game.cs</b> <code>getVPToWin</code> and
+      <code>getVPToWinByVictory</code>, and the wonder cap from <code>finishMapPlacement</code>.
+      Constants come from <code>globalsInt.xml</code>, <code>culture.xml</code>,
+      <code>victoryPoint.xml</code> and <code>victory.xml</code>. The improvements and projects that
+      carry VP come from <code>improvement.xml</code> and <code>project.xml</code> through their
       <code>EffectPlayer.iVP</code>. Integer truncation is reproduced exactly. See
       <a href={`${base}ambitions`}>Ambitions</a> for the victory conditions themselves.
     </p>
@@ -323,7 +333,7 @@ const culturesTotalVP = D.cultures.reduce((s: number, c: any) => s + c.vp, 0);
           (hint ? `<div class="brk__hint">${hint}</div>` : '') + `</div>`;
       }).join('');
 
-      // Maps scale with the player count (~4–16 sites each), so the table does too.
+      // Maps scale with the player count (about 4 to 16 sites each), so the table does too.
       const lo = s.players * 4, hi = s.players * 16;
       const rows = [];
       for (let n = lo; n <= hi; n++) {

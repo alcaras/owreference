@@ -39,14 +39,14 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
   ]}
 >
   <p class="lede">
-    <b>Row units attack column units and deal the damage in the cell</b> — the
-    game's own formula (<code>6 × ATK / DEF</code>, rounded in the stronger
-    unit's favor) with both sides' anti-trait modifiers. Baseline conditions:
-    full HP, open terrain, no promotions, terrain, flanking, or general
-    bonuses. <a href={`${base}combat-damage`}>How the formula works →</a>
-    Click a column header to rank attackers against that defender, a row
-    header to rank that unit's targets; click again to flip, a third time to
-    reset. Full unit stats live on the <a href={`${base}units`}>Units</a> page.
+    <b>Row units attack column units and deal the damage in the cell</b>, using
+    the game's own formula of <code>6 × ATK / DEF</code>, rounded in the stronger
+    unit's favor, with the anti-trait modifiers of both sides. The baseline
+    conditions are full HP and open terrain, with no promotions, terrain,
+    flanking or general bonuses. <a href={`${base}combat-damage`}>How the formula
+    works →</a> Click a column header to rank attackers against that defender, or
+    a row header to rank that unit's targets. Click again to reverse the order,
+    and a third time to reset. Full unit stats live on the <a href={`${base}units`}>Units</a> page.
   </p>
 
   <div class="natbar">
@@ -72,7 +72,7 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
             <span class="dmx__corner-big">Attacker ↓</span>
           </th>
           {matrixUnits.map((def, i) => (
-            <th class="dmx__col" scope="col" data-nation={def.nationLabel || ''} style={`z-index:${matrixUnits.length - i + 2}`} title={`${def.name} — STR ${def.strength / 10} — click to sort attackers`}>
+            <th class="dmx__col" scope="col" data-nation={def.nationLabel || ''} style={`z-index:${matrixUnits.length - i + 2}`} title={`${def.name}, STR ${def.strength / 10}. Click to sort attackers.`}>
               <span class="dmx__colname">{def.name}</span>
               <img class="dmx__icon" src={`${base}img/icons/units/${def.iconSlug}.png`} alt={def.name} loading="lazy" />
             </th>
@@ -82,7 +82,7 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
       <tbody>
         {damageRows.map(({ att, cells }) => (
           <tr data-nation={att.nationLabel || ''}>
-            <th class="dmx__row" scope="row" title={`${att.name} — click to sort targets`}>
+            <th class="dmx__row" scope="row" title={`${att.name}. Click to sort targets.`}>
               <div class="dmx__rowlink">
                 <img class="dmx__icon" src={`${base}img/icons/units/${att.iconSlug}.png`} alt="" loading="lazy" />
                 <span class="dmx__rowname">{att.name}</span>

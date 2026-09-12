@@ -41,7 +41,7 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
   title="Grand Vizier Rulership"
   active="grand-vizier"
   pageMark="📜"
-  description={`How Old World's Grand Vizier (${vizier.dlc}) runs every city without a Governor: which cities are affected, what "acting Governor" means, when the pick happens, and the exact AI planner that decides each build — candidate pools, danger and unit-cap filters, value math and the build-time discount — transcribed from PlayerAI.cs and City.cs.`}
+  description={`How Old World's Grand Vizier (${vizier.dlc}) runs every city that has no Governor. Covers which cities are affected, what an acting Governor does, when the planner picks a build, and the planner itself, including candidate pools, danger and unit cap filters, the value math and the discount for slow builds, transcribed from PlayerAI.cs and City.cs.`}
   pageStats={[
     { label: 'seat', value: vizier.name },
     { label: 'needs trait', value: vizier.traitPrereqs.map(t => t.name).join(' or ') },
@@ -50,12 +50,12 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
   ]}
 >
   <p class="lede">
-    Appoint a <b>{vizier.name}</b> ({vizier.dlc}) and every city that has no
-    <LinkedText text="Governor" /> gets the <b>{shared.name}</b> effect: the Vizier
-    becomes its <b>acting Governor</b>, its production queue is handed to the
-    game's own <b>AI city planner</b>, and you can no longer choose or hurry what it
-    builds. This page is that planner, function by function. Autonomous cities run a
-    similar planner without units — see <a href={`${base}autonomous-rule`}>Autonomous Rule</a>.
+Appoint a <b>{vizier.name}</b> ({vizier.dlc}) and every city that has no
+    <LinkedText text="Governor" /> gets the <b>{shared.name}</b> effect. The Vizier becomes the
+    city's <b>acting Governor</b>, the game's own <b>AI city planner</b> takes over the production
+    queue, and you can no longer choose or hurry what the city builds. The page below walks through
+    that planner, function by function. Autonomous cities run a similar planner that never builds
+    units, described on <a href={`${base}autonomous-rule`}>Autonomous Rule</a>.
   </p>
 
   <section class="cc-section">
@@ -68,30 +68,30 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
       </li>
       <li>
         <b>Appointing</b> gives the character <b>+{vizier.assignOpinion}</b> opinion of you and
-        <b>{vizier.xpPerTurn} XP</b> per turn, like other council seats — but the seat has
+        <b>{vizier.xpPerTurn} XP</b> per turn, as other council seats do. The seat pays
         <b>no rating yields</b> (see <a href={`${base}council`}>Council</a>) and sends no
         seat notifications (<code>bNoNotifications</code>).
       </li>
       <li>
-        <b>Its one effect</b>, <i>{vizier.effectPlayerName}</i>, is a player effect whose only
-        payload is <code>NoGovernorEffectCity</code> = <b>{shared.name}</b>: added to each of your
-        cities that has no Governor, removed the moment one is assigned
+        <b>Its one effect</b>, <i>{vizier.effectPlayerName}</i>, is a player effect that carries
+        nothing but <code>NoGovernorEffectCity</code> = <b>{shared.name}</b>. The game adds it to
+        each of your cities that has no Governor and removes it the moment one is assigned
         (<code>City.resetPlayerEffectCity</code>, <code>Player.changeEffectPlayerCount</code>).
-        In-game it reads “{vizier.help.citiesWithoutGovernor.replace('{0_cityEffectText}', shared.name)}”.
+        In game it reads "{vizier.help.citiesWithoutGovernor.replace('{0_cityEffectText}', shared.name)}".
       </li>
       <li>
-        <b>{shared.name}</b> carries three flags: <code>bAutoBuild</code> (the planner takes the
-        queue), <code>bNoHurry</code> (no hurrying) and <code>DefaultGovernor</code> = the Vizier
-        (“{vizier.help.actsAsGovernor.replace('{0_character}', 'The Vizier')}”).
+        <b>{shared.name}</b> carries three flags, which are <code>bAutoBuild</code> so the planner
+        takes the queue, <code>bNoHurry</code> so you cannot hurry, and <code>DefaultGovernor</code>
+        set to the Vizier ("{vizier.help.actsAsGovernor.replace('{0_character}', 'The Vizier')}").
       </li>
     </ul>
   </section>
 
   <section class="cc-section">
-    <h2 class="cc-h2">Which cities the Vizier runs — and how to take one back</h2>
+    <h2 class="cc-h2">Which cities the Vizier runs, and how to take one back</h2>
     <p>
-      The rule is mechanical: <b>no Governor → Vizier runs it</b>. There is no per-city
-      toggle, but there are three exits.
+      The rule is mechanical, because any city with <b>no Governor</b> is run by the Vizier. There
+      is no toggle for a single city, but the table below lists three ways out.
     </p>
     <table class="cc-table">
       <thead><tr><th>You want</th><th>Do this</th><th>Why it works</th></tr></thead>
@@ -99,7 +99,7 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
         <tr>
           <td>Manual control of <b>one</b> city</td>
           <td>Assign any <LinkedText text="Governor" /> to it</td>
-          <td>Shared Power is only added to cities with no Governor; assigning one removes it and unfreezes the queue immediately.</td>
+          <td>Shared Power is only added to cities with no Governor, so assigning one removes the effect and frees the queue immediately.</td>
         </tr>
         <tr>
           <td>Manual control of <b>all</b> cities</td>
@@ -108,8 +108,8 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
         </tr>
         <tr>
           <td>All cities back, <b>without</b> the dismissal</td>
-          <td>Reassign the Vizier to another job — Governor of one city, or General</td>
-          <td>A character holds one job at a time (<code>Character.clearJobs</code>): taking the new post vacates the council seat, so the effect ends without a dismissal and you keep the character working for you.</td>
+          <td>Reassign the Vizier to another job, such as Governor of one city or General</td>
+          <td>A character holds one job at a time (<code>Character.clearJobs</code>), so taking the new post vacates the council seat. The effect ends without a dismissal and you keep the character working for you.</td>
         </tr>
         <tr>
           <td>Keep it that way</td>
@@ -126,18 +126,20 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
   </section>
 
   <section class="cc-section">
-    <h2 class="cc-h2">Acting Governor: what the Vizier's character does to those cities</h2>
+    <h2 class="cc-h2">What the Vizier's character does to those cities</h2>
     <p>
       <code>City.governor()</code> returns the Vizier wherever no real Governor sits
-      (<code>updateDefaultGovernor</code>), so most Governor-keyed rules see him:
+      (<code>updateDefaultGovernor</code>), so most rules that look for a Governor find him. The
+      list below covers what that changes.
     </p>
     <ul class="cc-bullets">
       <li>
         <b>Trait Governor effects apply.</b> Every trait with a <code>GovernorEffectCity</code>
         that the Vizier has fires in <i>every</i> city he runs
         (<code>Character.resetAllTraitGovernorEffectCity</code>). {governorTraitCount} traits
-        carry one; the <a href={`${base}traits`}>Traits</a> page lists each trait's Governor effect,
-        so a Builder Vizier speeds improvements everywhere he rules, a Warlike one adds Training.
+        carry one, and the <a href={`${base}traits`}>Traits</a> page lists each trait's Governor
+        effect. A Builder Vizier speeds improvements everywhere he rules, and a Warlike one adds
+        Training.
       </li>
       <li>
         <b>Governor-opinion yields apply.</b> <code>calculateGovernorOpinionYield</code> turns the
@@ -147,17 +149,18 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
       <li>
         <b>The city counts as governed.</b> <code>canBuildProject</code> tests
         <code>isGoverned()</code>, which includes the acting Governor, so projects with
-        <code>bRequiresGovernor</code> become legal — currently the
-        {governorRequiredProjects.length} <b>Suppress Dissent</b> projects. The Vizier will
-        queue one whenever the city has the matching Dissent effect and the Training is in stock.
+        <code>bRequiresGovernor</code> become legal, which currently means the
+        {governorRequiredProjects.length} <b>Suppress Dissent</b> projects. The Vizier queues one
+        whenever the city has the matching Dissent effect and the Training is in stock.
       </li>
       <li>
-        <b>Not applied:</b> Governor Civics upkeep (there is none), leader-as-Governor bonuses
-        (<code>isGovernorLeader</code> is false) and rating yields (the seat defines none).
+        <b>Not applied:</b> Governor Civics upkeep, which does not exist, bonuses for a leader
+        acting as Governor, because <code>isGovernorLeader</code> is false, and rating yields,
+        because the seat defines none.
       </li>
     </ul>
 
-    <h3 class="cc-h3">Governor-gated projects that open up</h3>
+    <h3 class="cc-h3">Projects that need a Governor</h3>
     <table class="cc-table">
       <thead><tr><th>Project</th><th>Needs in the city</th><th>Cost</th><th>Content</th></tr></thead>
       <tbody>
@@ -177,26 +180,26 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
     <h2 class="cc-h2">When the Vizier decides</h2>
     <ul class="cc-bullets">
       <li>
-        <b>At the start of your turn</b>, before you can act:
+        <b>At the start of your turn</b>, before you can act, the game runs
         <code>Player.doTurn</code> → <code>processTurn</code> → <code>AI.doDecisions</code> →
         <b><code>AI.doAutomatedCityBuilds</code></b>. Whatever you see in the queue when the
         turn opens is already his choice.
       </li>
       <li>
-        <b>Your existing queue is frozen, not deleted.</b> The planner flags its own item and
-        moves it to slot 0 every turn; <code>hasBuildPlanned()</code> counts only flagged items,
-        so once it finishes the planner adds another in front. Your old entries wait forever
-        — until a Governor arrives.
+        <b>Your existing queue is frozen rather than deleted.</b> The planner flags its own item
+        and moves it to slot 0 every turn, and <code>hasBuildPlanned()</code> counts only flagged
+        items, so the planner adds another in front once the first one finishes. Your old entries
+        wait until a Governor arrives.
       </li>
       <li>
-        <b>Refused actions</b> (<code>Game.cs</code>): add a project, specialist or unit; move or
-        remove a queue entry; hurry. The tooltip reads
-        “{vizier.help.cannotChange.replace('{LIST}', shared.name)}”. Repeat-project flags are
-        ignored while autobuild is on (<code>City.finishBuild</code>).
+        <b>Refused actions</b> (<code>Game.cs</code>) are adding a project, specialist or unit,
+        moving or removing a queue entry, and hurrying. The tooltip reads
+        "{vizier.help.cannotChange.replace('{LIST}', shared.name)}". The game ignores the repeat
+        flag on a project while autobuild is on (<code>City.finishBuild</code>).
       </li>
       <li>
-        <b>Not refused:</b> buying tiles, laws, missions, religion, worker orders, assigning a
-        Governor — anything that is not the production queue.
+        <b>Not refused:</b> buying tiles, laws, missions, religion, worker orders and assigning a
+        Governor. Anything that is not the production queue still works.
       </li>
     </ul>
   </section>
@@ -205,44 +208,44 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
     <h2 class="cc-h2">How the pick is made</h2>
     <p>
       <code>doAutomatedCityBuilds</code> runs the AI's normal city planner for every autobuild
-      city, with buying switched off. In order:
+      city, with buying switched off. The steps below run in order.
     </p>
     <ol class="cc-steps">
       <li>
-        <b>Repairs first.</b> If the city's damage exceeds what it heals passively
-        (<code>shouldRepairCity</code>), the best project whose finish bonus restores city HP is
-        queued (<code>chooseRepairBuild</code>).
+        <b>Repairs come first.</b> When the city's damage exceeds what it heals on its own
+        (<code>shouldRepairCity</code>), the planner queues the best project whose finish bonus
+        restores city HP (<code>chooseRepairBuild</code>).
       </li>
       <li>
-        <b>Refresh the situation</b> (<code>evaluateTurn</code>): danger per city, border cities,
-        reachable tiles, target ship counts.
+        <b>Refresh the situation</b> with <code>evaluateTurn</code>, which recalculates danger per
+        city, border cities, reachable tiles and target ship counts.
       </li>
       <li>
         <b>Gather candidates</b> for each city that has no planned build
-        (<code>getBestBuild</code>): every legal project, the next specialist on every worked
-        tile, every unit that passes the need test (pools below). Each gets a value; the
-        highest wins that city — except that since 1.0.84658 candidates also carry a
-        <code>bLowPriority</code> flag, and a low-priority one loses to <em>every</em> ordinary
-        candidate no matter how the values compare. Emergency units (Militia, Conscripts) are
-        always flagged, and so is any land military unit once its relevant count already exceeds
+        (<code>getBestBuild</code>). The pool is every legal project, the next specialist on every
+        worked tile, and every unit that passes the need test described below. Each candidate gets
+        a value and the highest one wins the city. Since 1.0.84658 candidates also carry a
+        <code>bLowPriority</code> flag, and a flagged candidate loses to <em>every</em> ordinary
+        candidate no matter how the values compare. Emergency units such as Militia and Conscripts
+        are always flagged, and so is any land military unit once its relevant count already exceeds
         the plain military target.
       </li>
       <li>
         <b>Spend across the empire in value order.</b> Every city's winner becomes an
-        <i>expense</i>; <code>doYieldExpenses</code> pays them from best to worst, and only if the
+        <i>expense</i>, and <code>doYieldExpenses</code> pays them from best to worst, only when the
         yields are <b>already in stock</b> (<code>testCanSpendYields</code> with buying off). A
-        winner you can't afford is skipped and that yield is marked short, which can shelve
-        cheaper items too.
+        winner you cannot afford is skipped and that yield is marked short, which can also shelve
+        cheaper items.
       </li>
       <li>
-        <b>Nobody idles.</b> Any autobuild city still empty gets <code>chooseBuild</code>: the same
-        candidate search, again without buying, and it always queues <i>something</i>.
+        <b>No city is left idle.</b> Any autobuild city still empty gets <code>chooseBuild</code>,
+        which is the same candidate search without buying, and it always queues <i>something</i>.
       </li>
     </ol>
     <p class="cc-fineprint">
       Buying is off because <code>shouldBuyYields()</code> is false unless the AI is playing your
-      nation for you (<code>isAIAutoPlay</code>). Wonders and improvements never appear: they are
-      worker jobs, not queue items.
+      nation for you (<code>isAIAutoPlay</code>). Wonders and improvements never appear, because
+      they are worker jobs rather than queue items.
     </p>
   </section>
 
@@ -250,9 +253,9 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
     <h2 class="cc-h2">Candidate pools and their filters</h2>
     <p>
       A city is <b>in danger</b> when the AI's cached threat at the city exceeds
-      <code>AI_CITY_MIN_DANGER</code> ({C.AI_CITY_MIN_DANGER}) and exceeds the protection its own
-      tile enjoys (<code>isCityInDanger</code>). If the danger-filtered search finds nothing,
-      it is rerun with danger ignored.
+      <code>AI_CITY_MIN_DANGER</code> ({C.AI_CITY_MIN_DANGER}) and exceeds the protection of its
+      own tile (<code>isCityInDanger</code>). When the search that filters for danger finds nothing,
+      the planner runs it again with danger ignored.
     </p>
     <div class="cc-scroll">
       <table class="cc-table cc-table--wide">
@@ -263,12 +266,12 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
             <td>
               The city could build it in the menu: content, tech, culture gates, prerequisites,
               max count (including queued copies), family seat, Governor requirement, and the
-              goods are in stock. Every legal project counts — its value is floored at 1.
+              goods are in stock. Every legal project counts, and its value is floored at 1.
             </td>
             <td>
-              City in danger and the project is not <b>defensive</b>. Border city with a
-              defensive project available and this one is not defensive. Defensive =
-              its effect adds city HP or strength:
+              The city is in danger and the project is not <b>defensive</b>, or the city is a
+              border city with a defensive project available and this one is not defensive. A
+              project counts as defensive when its effect adds city HP or strength, namely
               {defensiveProjects.map((p, i) => (<>{i > 0 && ', '}<Term id={p.id} />{p.eventOnly && <span class="cc-dim"> (event)</span>}</>))}.
             </td>
           </tr>
@@ -278,45 +281,48 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
               Per territory tile with an active improvement: the tile's next specialist tier,
               taking the first specialist of that class the city may build.
             </td>
-            <td>City in danger → no specialists at all.</td>
+            <td>The city is in danger, in which case no specialist is eligible.</td>
           </tr>
           <tr>
             <td><b>Units</b><br /><span class="cc-dim">isBuildUnitValid</span></td>
             <td>
-              A spawn tile exists and <code>canBuildUnit</code> passes (this is where Autonomous
-              Rule's “{vizier.help.noUnits}” removes the whole pool). Then a need test —
-              <b>regular military</b> always passes; <b>workers</b> while below 1.5× a per-family
-              target of max(1, min({C.AI_MAX_NUM_WORKERS_PER_HUNDRED_CITIES / 100} × family cities,
-              {C.AI_MAX_NUM_WORKERS_PER_HUNDRED_ORDERS / 100} × Orders × family cities ÷ cities));
-              <b>disciples</b> likewise at {C.AI_MAX_NUM_DISCIPLES_PER_HUNDRED_CITIES}/100 cities and
-              {C.AI_MAX_NUM_DISCIPLES_PER_HUNDRED_ORDERS}/100 Orders, and only if there is somewhere
-              left to spread; <b>settlers</b> while reachable free or allied city sites exist;
-              <b>missionaries</b> if the religion is unspread and none exist; <b>scouts</b> while
-              fewer than cities ÷ 2; <b>emergency units</b> (militia-type) only in danger or when
-              under target with no up-to-date unit buildable.
+              A spawn tile exists and <code>canBuildUnit</code> passes, which is where Autonomous
+              Rule's "{vizier.help.noUnits}" removes the whole pool. A need test follows.
+              <b>Regular military</b> always passes. <b>Workers</b> pass while below 1.5 times a
+              per-family target of max(1, min({C.AI_MAX_NUM_WORKERS_PER_HUNDRED_CITIES / 100} ×
+              family cities, {C.AI_MAX_NUM_WORKERS_PER_HUNDRED_ORDERS / 100} × Orders × family
+              cities ÷ cities)). <b>Disciples</b> use the same shape at
+              {C.AI_MAX_NUM_DISCIPLES_PER_HUNDRED_CITIES}/100 cities and
+              {C.AI_MAX_NUM_DISCIPLES_PER_HUNDRED_ORDERS}/100 Orders, and only while somewhere is
+              left to spread to. <b>Settlers</b> pass while reachable free or allied city sites
+              exist, <b>missionaries</b> pass when the religion is unspread and none exist, and
+              <b>scouts</b> pass while there are fewer than cities ÷ 2. <b>Emergency units</b> of
+              the militia kind pass only in danger, or when you are under target with no current
+              unit available to build.
             </td>
             <td>
-              City in danger → only units that can fight. Otherwise the land-military cap, which
-              since 1.0.84658 is asymmetric: an <b>up-to-date regular</b> unit is blocked once your
-              count of up-to-date military passes <b>1.5×</b> the target, while an
-              <b>obsolete</b> one is measured against <em>all</em> your land military, and an
-              <b>emergency</b> unit (not <code>bRegular</code> — Militia, Conscripts) against all
-              land military versus the <b>plain</b> target, with no 1.5× headroom. Warships: when
-              the water area already has 1.5× its target (or a target of 0).
+              The city is in danger, in which case only units that can fight are eligible.
+              Otherwise the cap on land military applies, and since 1.0.84658 the cap is not
+              symmetric. A <b>current regular</b> unit is blocked once your count of current
+              military passes <b>1.5 times</b> the target. An <b>obsolete</b> unit is measured
+              against <em>all</em> your land military. An <b>emergency</b> unit, meaning one without
+              <code>bRegular</code> such as Militia and Conscripts, is measured against all land
+              military versus the <b>plain</b> target, with no extra headroom. A warship is blocked
+              when its water area already has 1.5 times its target, or a target of 0.
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <h3 class="cc-h3">The military target — and the Vizier's only trait lever</h3>
+    <h3 class="cc-h3">The military target, and the one trait that changes it</h3>
     <p>
-      <code>calculateTargetMilitaryUnitNumber</code> = max(10, 2.5 × cities) + your forts +
-      revealed tribal camps, then ±50% for how likely war looks with the players you have met
-      (+50% flat if you are not peaceful). Finally a <b>character modifier</b>: for a human
-      player it sums <code>iUnitBuildModifier</code> over the traits of council members whose
-      seat has <code>bTraitsAffectAutobuild</code> — and <b>only the {vizier.name} seat has that
-      flag</b>. Clamped to −50%…+100%.
+      <code>calculateTargetMilitaryUnitNumber</code> is max(10, 2.5 × cities) plus your forts and
+      revealed tribal camps, adjusted by up to 50% either way for how likely war looks with the
+      players you have met, with a flat +50% when you are not peaceful. A <b>character modifier</b>
+      is applied last. For a human player it sums <code>iUnitBuildModifier</code> over the traits of
+      council members whose seat has <code>bTraitsAffectAutobuild</code>, and <b>only the
+      {vizier.name} seat has that flag</b>. The result is clamped to the range −50% to +100%.
     </p>
     <table class="cc-table cc-table--narrow">
       <thead><tr><th>Vizier trait</th><th class="cc-num">Military target</th></tr></thead>
@@ -330,35 +336,39 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
       </tbody>
     </table>
     <p class="cc-fineprint">
-      That is the entire extent of “the Vizier's personality” in the picker. Everything else is
-      the same planner every AI nation uses. His traits still matter as Governor effects (above).
+      The modifier above is the only way the Vizier's own traits change the picker. Everything else
+      is the same planner every AI nation uses, and his traits still apply as Governor effects, as
+      described further up the page.
     </p>
   </section>
 
   <section class="cc-section">
-    <h2 class="cc-h2">Value, then the build-time discount</h2>
+    <h2 class="cc-h2">How each candidate is valued</h2>
     <p>
-      Each candidate gets a raw value from the AI's economy model, then is discounted by how long
-      the city needs to finish it.
+      Each candidate gets a raw value from the AI's economy model, and the planner then discounts
+      that value by how long the city needs to finish the item.
     </p>
     <ul class="cc-bullets">
       <li>
-        <b>Project</b> (<code>projectValue</code>): value of its city effect (skipped if the city
-        already has a one-per-city effect) + extra effect + player effect + finish-bonus value
-        + yield-modifier value + a bonus if an active <LinkedText text="Ambition" /> counts it
-        − value of projects it invalidates × copies owned − (production cost + goods cost)
-        weighted by the AI's yield prices + ½ the value of what it unlocks. Floored at 1.
-        Growth-costed projects are halved in a city with no citizens.
+        <b>Project</b> (<code>projectValue</code>) is the value of its city effect, skipped when
+        the city already has an effect limited to one per city, plus the extra effect, the player
+        effect, the finish bonus, the yield modifier and a bonus when an active
+        <LinkedText text="Ambition" /> counts it, minus the value of projects it invalidates times
+        the copies you own, minus production and goods cost weighted by the AI's yield prices, plus
+        half the value of what it unlocks. The result is floored at 1, and a project paid for with
+        Growth is halved in a city with no citizens.
       </li>
       <li>
-        <b>Unit</b> (<code>unitValue</code>): base unit value × a need modifier (city production
-        vs. empire average for that unit, this family's share of cities, target-vs-have gap,
-        city danger, family attitude to army size) + ambition bonuses − upkeep − cost. Halved
-        if the city's production for it is under {C.AI_NO_UNIT_BUILD_PERCENT}% of the average.
+        <b>Unit</b> (<code>unitValue</code>) is the base unit value times a need modifier, which
+        weighs city production against the empire average for that unit, this family's share of
+        cities, the gap between target and current count, city danger and the family's attitude to
+        army size. Ambition bonuses are added, and upkeep and cost are subtracted. The value is
+        halved when the city's production for that unit is under
+        {C.AI_NO_UNIT_BUILD_PERCENT}% of the average.
       </li>
       <li>
-        <b>Specialist</b> (<code>specialistValue</code>): its yields, border expansion and
-        unlocks, minus cost, at the city's Civics rate.
+        <b>Specialist</b> (<code>specialistValue</code>) is its yields, border expansion and
+        unlocks, minus cost, measured at the city's Civics rate.
       </li>
     </ul>
 
@@ -391,10 +401,10 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
       </table>
     </div>
     <p class="cc-fineprint">
-      Worked example: a {exCost}-Civics project in a city making {exRate} Civics per turn takes
-      {exTurns} turns, so it keeps {pct(exFactor)} of its raw value. The same project in a city
-      making 30 Civics finishes in 2 turns and keeps 100%. This is why the Vizier tends to put
-      civic projects where Civics is high and lets low-output cities grow specialists.
+      For example, a project costing {exCost} Civics in a city making {exRate} Civics per turn
+      takes {exTurns} turns, so it keeps {pct(exFactor)} of its raw value. The same project in a
+      city making 30 Civics finishes in 2 turns and keeps 100%. The discount is why the Vizier tends
+      to put civic projects where Civics is high and lets cities with low output grow specialists.
     </p>
   </section>
 
@@ -404,16 +414,16 @@ const exFactor = discount(exTurns, C.AI_MIN_PROJECT_BUILD_TURNS, C.AI_HALF_VALUE
   </section>
 
   <p class="cc-source">
-    Source: <code>PlayerAI.cs</code> — <code>doAutomatedCityBuilds</code>,
+    Source: <code>PlayerAI.cs</code>, namely <code>doAutomatedCityBuilds</code>,
     <code>doCityBuildPlanning</code>, <code>doYieldExpenses</code>, <code>getBestBuild</code>,
     <code>isBuildProjectValid</code>, <code>isBuildUnitValid</code>,
     <code>getValidBuildSpecialist</code>, <code>projectValue</code>, <code>unitValue</code>,
     <code>getBuildValue</code>, <code>calculateTargetMilitaryUnitNumber</code>,
-    <code>isCityInDanger</code>; <code>City.cs</code> — <code>isAutoBuild</code>,
+    <code>isCityInDanger</code>. <code>City.cs</code>, namely <code>isAutoBuild</code>,
     <code>updateDefaultGovernor</code>, <code>governor()</code>,
     <code>calculateGovernorOpinionYield</code>, <code>canBuildProject</code>,
-    <code>canBuildUnit</code>, <code>hasBuildPlanned</code>; <code>Game.cs</code> — the
-    <code>BUILD_*</code> action handlers; <code>Player.cs</code> — <code>doTurn</code>,
+    <code>canBuildUnit</code> and <code>hasBuildPlanned</code>. <code>Game.cs</code>, namely the
+    <code>BUILD_*</code> action handlers. <code>Player.cs</code>, namely <code>doTurn</code> and
     <code>foundCity</code>. Data: <code>council-btt.xml</code>, <code>effectPlayer.xml</code>,
     <code>effectCity.xml</code>, <code>trait.xml</code>, <code>globalsAI.xml</code>.
   </p>

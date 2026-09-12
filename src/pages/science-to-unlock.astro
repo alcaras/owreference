@@ -41,12 +41,12 @@ const techRows: TechRow[] = [...byTech.entries()].map(([tech, us]) => ({
 if (uuDev.length) techRows.push({
   cost: uuDev[0].techCost, beyond4: uuDev[0].techCostBeyond4, beyond7: uuDev[0].techCostBeyond7,
   unlock: 'any 4 laws', unlockSlug: null,
-  note: 'Developing-culture uniques — cheapest 4 law techs', units: uuDev,
+  note: 'Uniques at Developing culture, cheapest 4 law techs', units: uuDev,
 });
 if (uuStrong.length) techRows.push({
   cost: uuStrong[0].techCost, beyond4: uuStrong[0].techCostBeyond4, beyond7: uuStrong[0].techCostBeyond7,
   unlock: 'any 7 laws', unlockSlug: null,
-  note: 'Strong-culture uniques — cheapest 7 law techs', units: uuStrong,
+  note: 'Uniques at Strong culture, cheapest 7 law techs', units: uuStrong,
 });
 techRows.sort((a, b) => a.cost - b.cost || a.unlock.localeCompare(b.unlock));
 
@@ -70,10 +70,11 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
 >
   <p class="lede">
     <b>How much research it takes to field each unit.</b> Each row is one
-    unlock — a technology, or a law tier for the culture-gated unique units
-    (Developing needs ~4 laws, Strong ~7; succession laws need no tech and
-    don't count). Rows are sorted cheapest first, so reading top to bottom is
-    the order units become available on a minimal research path. Companion to
+    unlock, which is either a technology or a law tier for the unique units
+    gated by culture, where Developing needs about 4 laws and Strong about 7.
+    Succession laws need no tech and do not count. Rows are sorted cheapest
+    first, so reading from top to bottom gives the order units become available
+    on a minimal research path. See also
     <a href={`${base}unit-counters`}>Unit Counters</a>.
   </p>
 
@@ -81,13 +82,14 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
     <div class="legend">
       <span class="legend__label">Read it</span>
       <span>
-        <b>Total science</b> = research to get that unlock from a fresh start
-        (no starting techs), its tech plus every prerequisite, each counted
-        once. <b>Beyond 4 / 7 laws</b> = the extra science on top of the
-        cheapest 4-law or 7-law path (spelled out at the bottom of the page) —
-        0 means that path already includes it. On the right: every unit that
-        unlock lets you build; the gold number is the unit's <em>strength</em>
-        (Warrior 4, Hoplite 6…), and each links to its entry on the Units page.
+        <b>Total science</b> is the research needed to reach that unlock from a
+        fresh start with no starting techs, counting its tech and every
+        prerequisite once each. <b>Beyond 4 or 7 laws</b> is the extra science on
+        top of the cheapest 4-law or 7-law path, which is set out at the bottom of
+        the page, and 0 means that path already includes it. The right-hand column
+        lists every unit the unlock lets you build, where the gold number is the
+        unit's <em>strength</em>, such as 4 for a Warrior and 6 for a Hoplite, and
+        each unit links to its entry on the Units page.
       </span>
     </div>
   </div>
@@ -117,16 +119,16 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
         </colgroup>
         <thead>
           <tr>
-            <th class="nhdr nhdr--family" title="Research to get this unlock from a fresh start — its tech plus every prerequisite, no starting techs">
+            <th class="nhdr nhdr--family" title="Research to reach this unlock from a fresh start, meaning its tech plus every prerequisite, with no starting techs">
               <div class="nhdr__inner"><span class="nhdr__name">Total science</span></div>
             </th>
-            <th class="nhdr nhdr--family" title="Extra science on top of the cheapest 4-law path (Developing uniques) — 0 = already included in it">
+            <th class="nhdr nhdr--family" title="Extra science on top of the cheapest 4-law path used by Developing uniques, where 0 means that path already includes it">
               <div class="nhdr__inner"><span class="nhdr__name">beyond 4 laws</span></div>
             </th>
-            <th class="nhdr nhdr--family" title="Extra science on top of the cheapest 7-law path (Strong uniques) — 0 = already included in it">
+            <th class="nhdr nhdr--family" title="Extra science on top of the cheapest 7-law path used by Strong uniques, where 0 means that path already includes it">
               <div class="nhdr__inner"><span class="nhdr__name">beyond 7 laws</span></div>
             </th>
-            <th class="nhdr nhdr--family" title="Every land combat unit this unlock makes buildable — the gold number is the unit's strength">
+            <th class="nhdr nhdr--family" title="Every land combat unit this unlock makes buildable. The gold number is the unit's strength.">
               <div class="nhdr__inner"><span class="nhdr__name">Units unlocked <span class="nhdr__hint">(number = strength)</span></span></div>
             </th>
           </tr>
@@ -148,7 +150,7 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
               <td class="cell cell--picks">
                 <span class="cell__none cell__dash">none under current filters</span>
                 {r.units.map(u => (
-                  <a class="pick" data-nation={u.nationLabel || ''} href={`${base}units#${u.slug}`} title={`${u.name}${u.nationLabel ? ` (${u.nationLabel})` : ''} — STR ${u.strength / 10}`}>
+                  <a class="pick" data-nation={u.nationLabel || ''} href={`${base}units#${u.slug}`} title={`${u.name}${u.nationLabel ? ` (${u.nationLabel})` : ''}, STR ${u.strength / 10}`}>
                     <img class="pick__icon" src={`${base}img/icons/units/${u.iconSlug}.png`} alt="" loading="lazy" />
                     <span class="pick__name">{u.name}</span>
                     <span class="pick__dmg">{u.strength / 10}</span>
@@ -164,18 +166,18 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
 
   <h2 class="ctier__h ctier__h--matrix">How the law tiers are priced</h2>
   <p class="tcost__note">
-    Cheapest research path to have that many law classes unlocked, brute-forced
-    over every combination (shared prerequisites make the greedy pick wrong).
-    Which laws you actually adopt within each class doesn't matter — one law
-    per unlocked class.
+    The cheapest research path to have that many law classes unlocked, found by
+    checking every combination, because shared prerequisites make the greedy
+    choice wrong. Which laws you adopt within each class does not matter, because
+    each unlocked class gives one law.
   </p>
   <div class="legends">
     {lawTiers.map(t => (
       <div class="legend">
         <span class="legend__label">{t.title}</span>
         <span>
-          <b class="law__cost">{t.cost.toLocaleString('en-US')} science</b> —
-          {t.lawClasses.join(', ')} · via
+          <b class="law__cost">{t.cost.toLocaleString('en-US')} science</b> for
+          {t.lawClasses.join(', ')}, via
           {t.techs.map((tech, i) => (
             <>{i > 0 && ' + '}<a href={`${base}technologies#${tech.id.replace('TECH_', '').toLowerCase()}`}>{tech.label}</a> {tech.cost}</>
           ))}

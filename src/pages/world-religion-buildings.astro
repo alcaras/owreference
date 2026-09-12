@@ -36,10 +36,11 @@ function cellYield(cell: any): string {
   ]}
 >
   <p class="lede">
-    The four worship buildings of the <b>World Religions</b> — built by
-    <LinkedText text="Disciple" /> units once a city has the matching religion.
-    Monasteries provide Science, Temples give Orders + Culture, Cathedrals add
-    Legitimacy, and a Holy Site is unique to the religion's birthplace.
+    The four worship buildings of the <b>World Religions</b>, which
+    <LinkedText text="Disciple" /> units build once a city has the matching
+    religion. A Monastery provides Science, a Temple gives Orders and Culture, a
+    Cathedral adds Legitimacy, and a Holy Site is unique to the religion's
+    birthplace.
   </p>
 
   <div class="grid">
@@ -61,7 +62,7 @@ function cellYield(cell: any): string {
                 data-religion={r.slug}
                 id={r.slug}
                 title={r.paganNations?.length
-                  ? `${r.id} — pagan religion of ${r.paganNations.join(', ')}; never spreads, always adopts theologies`
+                  ? `${r.id}, the pagan religion of ${r.paganNations.join(', ')}, which never spreads and always adopts theologies`
                   : r.id}
               >
                 <div class="nhdr__inner">

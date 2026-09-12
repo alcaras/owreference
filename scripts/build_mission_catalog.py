@@ -109,14 +109,14 @@ PERFORMER_ORDER = [
 
 PERFORMER_BLURB = {
     "Leader": "Run by the ruler (incl. Diplomat/Judge/Scholar/Schemer leader variants and the Dictator).",
-    "Ambassador": "Your council Ambassador — diplomacy, synods, trade.",
+    "Ambassador": "Your council Ambassador, covering diplomacy, synods and trade.",
     "Chancellor": "Your council Chancellor.",
-    "Spymaster": "Your council Spymaster — the espionage network.",
+    "Spymaster": "Your council Spymaster, who runs the espionage network.",
     "Agent": "Spy network Agents operating in the field.",
     "Family Head": "The head of a family (matters under Oligarchy).",
     "Religious Head & Clergy": "The religion head or its clergy, by faith.",
-    "Any Character": "Any eligible courtier — non-leaders, tutors, envoys, marriageable characters.",
-    "Situational": "Characters in a particular state — imprisoned, captured, fugitive, bastard, infected.",
+    "Any Character": "Any eligible courtier, including tutors, envoys and marriageable characters, but not the leader.",
+    "Situational": "Characters in a particular state, such as imprisoned, captured, fugitive, bastard or infected.",
     "Unique Leader Powers": "Scripted abilities tied to specific named leaders / dynasties (DLC).",
     "Other": "Uncategorized.",
 }

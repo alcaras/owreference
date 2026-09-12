@@ -138,7 +138,7 @@ const costs: CostRow[] = [
     yieldKey: 'money',
     name: 'Money',
     formula: '10 + 5 × missing production',
-    notes: 'Steep per-production rate — cheapest when the item is nearly done.',
+    notes: 'Steep rate per unit of production, so it is cheapest when the item is nearly done.',
   },
   {
     yieldKey: 'orders',
@@ -164,19 +164,19 @@ const costs: CostRow[] = [
     <p>
       <strong>Hurry Production</strong> lets a City finish whatever it is building in one turn,
       paying a Yield (and always some <a href={`${base}yields/discontent`}>Discontent</a>) instead
-      of waiting for the production timer. A City may Hurry only if it has at least <em>Developing</em>
-      <a href={`${base}yields/culture`}>Culture</a>. The item is delivered on the <strong>following</strong>
-      turn — not instantly.
+      of waiting for the production timer. A City may Hurry only when it has at least <em>Developing</em>
+      <a href={`${base}yields/culture`}>Culture</a>, and the item arrives on the
+      <strong>following</strong> turn rather than instantly.
     </p>
     <p class="hurry-intro__note">
-      Every City can Hurry with Civics from the start (<code>build.xml</code> grants it to all
-      build types). The other resources unlock per build target — Units, Specialists, Projects —
-      through specific Laws, an archetype Leader, a Governor, or a themed Improvement, as wired in
-      <code>effectCity.xml</code>.
+      Every City can Hurry with Civics from the start, because <code>build.xml</code> grants it to
+      all build types. The other resources unlock separately for each build target, meaning Units,
+      Specialists and Projects, through specific Laws, a Leader of the right archetype, a Governor
+      or a themed Improvement, as set out in <code>effectCity.xml</code>.
     </p>
     <p class="hurry-intro__note">
-      For what a given Hurry actually costs — by build, by progress, and by how many times you have
-      already hurried that channel in that City — use the
+      To find what a given Hurry costs, by build, by progress and by how many times you have
+      already hurried that channel in that City, use the
       <a href={`${base}hurry-calculator`}>Hurry Production Calculator</a>.
     </p>
   </section>
@@ -214,10 +214,10 @@ const costs: CostRow[] = [
   </div>
   <p class="hurry-footnote">
     The Zealot Leader covers <strong>Units only</strong>
-    (<code>aeHurryTraining = BUILD_UNIT</code>) — Training hurry for Specialists and Projects
-    instead comes from a <LinkedText text="Cathedral" /> whose religion holds the Redemption theology.
-    Money splits the same way: the Holy War law unlocks Units, a Judge Governor unlocks
-    Specialists and Projects.
+    (<code>aeHurryTraining = BUILD_UNIT</code>), and Training hurry for Specialists and Projects
+    comes instead from a <LinkedText text="Cathedral" /> whose religion holds the Redemption
+    theology. Money splits the same way, because the Holy War law unlocks Units while a Judge
+    Governor unlocks Specialists and Projects.
   </p>
 
   <h2 class="hurry-h2">What it costs</h2>
@@ -251,7 +251,7 @@ const costs: CostRow[] = [
               <code class="formula">10 + missing production ÷ 100</code>
             </td>
             <td class="cell yield-misc">
-              <strong>Always added on top of the chosen resource</strong> — except under the
+              <strong>Always added on top of the chosen resource</strong>, except under the
               Monetary Reform Law, which removes it entirely.
             </td>
           </tr>
@@ -260,18 +260,18 @@ const costs: CostRow[] = [
     </div>
   </div>
   <p class="hurry-footnote">
-    <em>mp = missing production</em>: the item's total production cost minus production already
-    completed (overflow doesn't count). Constants from <code>globalsInt.xml</code>; arithmetic from
-    the engine's <code>City.cs</code>.
+    <em>mp</em> means missing production, which is the item's total production cost minus the
+    production already completed, and overflow does not count. Constants come from
+    <code>globalsInt.xml</code>, and the arithmetic comes from the engine's <code>City.cs</code>.
   </p>
 
   <section class="hurry-tips">
-    <h2>Cost modifiers (apply to every resource, Discontent included)</h2>
+    <h2>Cost modifiers, which apply to every resource including Discontent</h2>
     <ul>
-      <li>Items <strong>less than 50% complete</strong> cost extra: +(50 − %complete)%. An untouched item is +50%; anything half-done or better pays no surcharge.</li>
-      <li><strong>+10% per previous Hurry</strong> with that same resource in that City. The counter is per-resource and per-City — hurrying with Civics never makes Training hurries (or other Cities) more expensive.</li>
-      <li>Items produced with <strong>Growth</strong> (Settlers, Workers, Disciples) cost +50% to hurry.</li>
-      <li>You cannot Hurry: a damaged City, a City below Developing Culture, an item that finishes next turn anyway, or items flagged no-hurry (most decrees and event projects).</li>
+      <li>An item <strong>less than 50% complete</strong> costs +(50 − %complete)% extra. An untouched item pays +50%, and anything half done or better pays no surcharge.</li>
+      <li><strong>+10% per previous Hurry</strong> with that same resource in that City. The counter is kept per resource and per City, so hurrying with Civics never makes a Training hurry, or a hurry in another City, more expensive.</li>
+      <li>An item produced with <strong>Growth</strong>, such as a Settler, Worker or Disciple, costs +50% to hurry.</li>
+      <li>You cannot Hurry a damaged City, a City below Developing Culture, an item that finishes next turn anyway, or an item flagged as no-hurry, which covers most decrees and event projects.</li>
     </ul>
   </section>
 </Base>

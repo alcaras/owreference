@@ -23,36 +23,36 @@ for (const e of regents.events as any[]) {
   title="Regents"
   active="regents"
   pageMark="👶"
-  description="How regency works in Old World and who is picked: the candidate ladder (parent, grandparent, aunt/uncle, any elder courtier, then a family head), the age gates that trigger it, what the Regent trait does, and how the rightful heir takes the throne back."
+  description="How regency works in Old World and who is picked. Covers the candidate ladder, which runs from parent to grandparent, aunt or uncle, any elder courtier and finally a family head, the age gates that trigger it, what the Regent trait does, and how the rightful heir takes the throne back."
   pageStats={[
     { label: 'candidate rungs', value: rungs.length },
     { label: 'family opinion', value: `+${regents.regentTrait.familyOpinion}` },
   ]}
 >
   <p class="lede">
-    When a leader dies and the crown falls to a child, someone rules in their name. Regency is
-    not a job you assign — it is decided at the moment of succession by a <b>priority ladder</b>
-    of candidates, and the game takes the first rung it can fill. The regent genuinely becomes
-    your leader, plays as your leader, and is expected to hand the throne back.
-    Transcribed from <code>Character.makeRegent</code>, <code>Player.setLeader</code> and
-    <code>isSuccessionSkipRegent</code> in the game source; the ladder itself is
-    <code>eventStory.xml</code> priority + subject filters.
+    When a leader dies and the crown falls to a child, someone rules in their name. You do not
+    assign a regent. The game decides at the moment of succession, using a <b>priority ladder</b>
+    of candidates, and it takes the first rung it can fill. The regent becomes your leader in every
+    respect, plays as your leader, and is expected to hand the throne back. The rules are
+    transcribed from <code>Character.makeRegent</code>, <code>Player.setLeader</code> and
+    <code>isSuccessionSkipRegent</code> in the game source, and the ladder itself is the priority
+    and subject filters in <code>eventStory.xml</code>.
   </p>
 
   <section class="rg">
     <h2 class="rg__h">When a regency happens</h2>
     <p class="rg__intro">
-      On succession (a leader dying <em>or</em> abdicating), if the incoming leader is a minor
-      the regent events fire. The age gate differs by rung — a toddler under 7 gets a regent
-      whether you like it or not, while a 6–17 leader only gets one if a suitable relative
-      exists. From <b>18</b> the new leader simply rules.
+      The regent events fire on succession, whether the old leader died <em>or</em> abdicated,
+      when the incoming leader is a minor. The age gate differs by rung. A leader under 7 always
+      gets a regent, a leader aged 6 to 17 gets one only when a suitable relative exists, and from
+      <b>18</b> the new leader rules alone.
     </p>
 
     <h2 class="rg__h">Who is picked</h2>
     <p class="rg__intro">
-      Highest priority first. Each rung is an event whose subject filters must all be
-      satisfiable by someone in your court; if nobody fits, the game drops to the next rung.
-      The first three offer a <b>choice</b> — you may decline that candidate — while the last
+      The rungs run from highest priority down. Each rung is an event whose subject filters must
+      all be met by someone in your court, and when nobody fits, the game moves to the next rung.
+      The first three rungs offer a <b>choice</b>, so you may decline that candidate, and the last
       two are forced.
     </p>
 
@@ -67,7 +67,7 @@ for (const e of regents.events as any[]) {
               : <span class="rg__tag rg__tag--forced">forced</span>}
           </div>
           <div class="rg__meta">
-            <span class="rg__ev">“{r.name}”</span>
+            <span class="rg__ev">"{r.name}"</span>
             {r.candidateFilters.length > 0 && (
               <span class="rg__req">must be {r.candidateFilters.join(', ')}</span>
             )}
@@ -79,9 +79,10 @@ for (const e of regents.events as any[]) {
       ))}
     </ol>
     <p class="rg__note">
-      “Healthy” excludes characters the game considers unfit at that moment. Note the bottom
-      rung: if no relative qualifies, a <b>family head</b> takes the regency — an outsider with
-      their own family's interests, which is why the event is called “Power Play”.
+      "Healthy" excludes characters the game considers unfit at that moment. The bottom rung
+      matters most, because when no relative qualifies a <b>family head</b> takes the regency.
+      A family head is an outsider with their own family's interests, which is why the event is
+      called "Power Play".
     </p>
 
     <h2 class="rg__h">What being regent does</h2>
@@ -89,26 +90,26 @@ for (const e of regents.events as any[]) {
       <div>
         <h3 class="rg__sub">While regent</h3>
         <ul class="rg__list">
-          <li>They are your <b>leader</b> in every mechanical sense — their ratings, traits and
+          <li>They are your <b>leader</b> in every mechanical sense, so their ratings, traits and
             archetype drive your empire, and they take the <b>{regents.title}</b> title.</li>
           <li>They carry the <b>{regents.regentTrait.name}</b> trait, worth
             <b>{regents.regentTrait.familyOpinion > 0 ? `+${regents.regentTrait.familyOpinion}` : regents.regentTrait.familyOpinion} opinion</b>
-            with their own family — regency is a family-politics prize.</li>
-          <li>Their reign counts as a reign: cognomen stats accrue to them, and the
-            <code>STAT_YEARS_REGENT</code> counter tracks the time.</li>
+            with their own family, so the regency is a prize in family politics.</li>
+          <li>Their time on the throne counts as a reign, so cognomen stats accrue to them and
+            the <code>STAT_YEARS_REGENT</code> counter tracks the years.</li>
         </ul>
       </div>
       <div>
         <h3 class="rg__sub">Giving the throne back</h3>
         <ul class="rg__list">
-          <li>The rightful heir is remembered separately (the <b>Rightful Heir</b> trait), and
-            regents are <b>skipped by the succession list</b> —
-            <code>isSuccessionSkipRegent</code> removes them and their descendants as a
-            dynastic root, so a regency does not re-found your line through the regent's branch.</li>
+          <li>The game remembers the rightful heir separately through the <b>Rightful Heir</b>
+            trait, and the succession list <b>skips regents</b>, because
+            <code>isSuccessionSkipRegent</code> removes them and their descendants as a dynastic
+            root. A regency therefore does not refound your line through the regent's branch.</li>
           <li>When the throne passes on, a regent who still holds the trait converts to
             <b>{regents.formerRegentTrait.name}</b>
             {regents.formerRegentTrait.ratings.length > 0 && (
-              <> — <b>{regents.formerRegentTrait.ratings.map((r: string) => `+${r}`).join(', ')}</b></>
+              <>, worth <b>{regents.formerRegentTrait.ratings.map((r: string) => `+${r}`).join(', ')}</b></>
             )} for the rest of their life.</li>
           <li>If the regent dies while still holding power, a dedicated event returns the
             rightful heir to the throne.</li>
@@ -117,14 +118,14 @@ for (const e of regents.events as any[]) {
     </div>
 
     <p class="rg__note">
-      Regency can also arrive by event outside succession entirely — any event bonus carrying
+      A regency can also arrive by event outside succession, because any event bonus carrying
       <code>iRegentOfSubject</code> installs a regent over the named player, which is how some
       story chains put a foreign character in charge.
     </p>
 
     <p class="rg__see">
-      See also <a href={`${base}family-heads`}>Family Head Selection</a> — the other “who gets
-      picked” question, decided by a different rule entirely.
+      See also <a href={`${base}family-heads`}>Family Head Selection</a>, which answers the other
+      question about who gets picked and is decided by a different rule.
     </p>
   </section>
 </Base>

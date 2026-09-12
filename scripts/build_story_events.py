@@ -91,11 +91,11 @@ CLASS_LABEL_OVERRIDES = {
 
 SPECIAL_CATS = {
     "FOLLOWUP": ("follow-ups", "Chain Follow-ups",
-                 "Stories with no class or trigger of their own — they only fire as the "
+                 "Stories with no class or trigger of their own, so they only fire as the "
                  "next link of an event chain (EventLinkPrereq), set up by an earlier "
                  "story's choice."),
     "SCRIPTED": ("scripted", "Scripted & Special",
-                 "Stories with no class, trigger, or chain link in the XML — invoked "
+                 "Stories with no class, trigger or chain link in the XML, invoked "
                  "directly by game systems (tribe diplomacy, scenario scripts, traits, "
                  "and other engine hooks)."),
 }

@@ -79,7 +79,7 @@ function edgeTip(e: any): string {
               <text x={x + NODE_W - 23} y={y + 20}>×{n.count}</text>
             </g>
           )}
-          <title>{n.title}{n.count > 1 ? ` — ${n.count} variants` : ''}{n.dlc ? ` · ${n.dlc}` : ''}</title>
+          <title>{n.title}{n.count > 1 ? `, ${n.count} variants` : ''}{n.dlc ? `, ${n.dlc}` : ''}</title>
         </g>
       );
       return n.href

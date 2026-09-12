@@ -405,7 +405,7 @@ def ending_lines(e: ET.Element, labels: Labels) -> list[str]:
 def flag_chips(e: ET.Element) -> list[str]:
     out: list[str] = []
     if b(e, "bMajor"):
-        out.append("Major — only one major occurrence at a time")
+        out.append("Major: only one major occurrence at a time")
     if b(e, "bForceGlobal"):
         out.append("Global")
     if b(e, "bNoDuplicates"):

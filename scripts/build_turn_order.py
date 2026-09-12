@@ -150,7 +150,7 @@ LABELS = {
         'economy'),
     'game:doTurn': (
         'Every tile updates',
-        'Pillage timers, abandoned construction, resource regrowth, vegetation growth and spread, tribal camp raids — the per-tile sequence below.',
+        'Pillage timers, abandoned construction, resource regrowth, vegetation growth and spread, and tribal camp raids, in the per-tile sequence below.',
         'world'),
     'game:doBorderFill': (
         'Borders fill in',
@@ -261,7 +261,7 @@ LABELS = {
         'characters'),
     'player_process:doTribeTurn': (
         'Captured tribal cities flip',
-        'Tribal cities you finished capturing last turn now transfer (or raze) — see City Capture Mechanics; the per-city capture sequence below.',
+        'Tribal cities you finished capturing last turn now transfer, or are razed, as covered on City Capture Mechanics. The per-city capture sequence is below.',
         'cities'),
     'player_process:incrementGoalYieldsProduced': (
         'City output tallies toward goals',
@@ -277,7 +277,7 @@ LABELS = {
         'tech'),
     'player_process:processYield': (
         'Global yields bank',
-        'Non-city income plus every city\'s global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.',
+        'Non-city income plus every city\'s global yields (Money, Science, Civics, Training, Orders) reach the stockpiles, and Science goes straight into the current tech, which can complete it here.',
         'tech'),
     'player_process:doResearch': (
         'Research progresses / tech completes',
@@ -297,11 +297,11 @@ LABELS = {
         'economy'),
     'player_process:doBounceUnits': (
         'Stranded units bounce',
-        'Units standing where they can no longer be (e.g. lost territory) are pushed to a valid tile — or killed if there is none.',
+        'Units standing where they can no longer be, such as on territory you have lost, are pushed to a valid tile, or killed when there is none.',
         'units'),
     'player_process:doTurn': (
         'Units process',
-        'Each of your units takes its upkeep turn (wake checks, timers, work, healing, XP) — the per-unit sequence below.',
+        'Each of your units takes its upkeep turn, covering wake checks, timers, work, healing and XP, in the per-unit sequence below.',
         'units'),
     'player_process:makeDead': (
         'Doomed characters may die',
@@ -345,7 +345,7 @@ LABELS = {
         'diplomacy'),
     'player_process:doPlayerDiplomacy': (
         'AI player diplomacy',
-        'AI players (only) evaluate diplomacy toward every other player — humans are considered first.',
+        'AI players, and only AI players, evaluate diplomacy toward every other player, and humans are considered first.',
         'diplomacy'),
     'player_process:doEventTriggers': (
         'Story event rolls',
@@ -361,7 +361,7 @@ LABELS = {
         'goals'),
     'player_process:doMissionTurn': (
         'Missions complete',
-        'Missions whose duration has elapsed resolve — deliberately after character turns, so mid-event state changes (e.g. a suitor marrying) invalidate cleanly.',
+        'Missions whose duration has elapsed resolve, deliberately after character turns, so that a state change during an event, such as a suitor marrying, invalidates cleanly.',
         'court'),
     'player_process:doAllOccurrenceEffects': (
         'Occurrence effects apply',
@@ -411,7 +411,7 @@ LABELS = {
         'world'),
     'tile:doTribeTurn': (
         'Tribal camps act',
-        'A camp may launch a raid at a nearby city (raid-prob roll, blockable by the tribe-raid event), or — for non-diplomacy tribes — convert to a neighboring tribe.',
+        'A camp may launch a raid at a nearby city, from a raid probability roll that the tribe-raid event can block. A camp of a tribe without diplomacy may instead convert to a neighboring tribe.',
         'tribes'),
     'tile:incrementImprovementDevelopTurns': (
         'Improvements develop',
@@ -485,7 +485,7 @@ LABELS = {
         'cities'),
     'city:finishBuild': (
         'Build completes',
-        'If the current build\'s cost is now met, it finishes — the unit spawns / building, project or specialist takes effect immediately.',
+        'If the current build\'s cost is now met, it finishes, so the unit spawns, or the building, project or specialist takes effect immediately.',
         'cities'),
     'city:decayBuildQueue': (
         'Queued progress decays',
@@ -587,7 +587,7 @@ LABELS = {
     # ── Character.doTurn ────────────────────────────────────────────────────
     'character:doTurnYear': (
         'Yearly tick (the character\'s "birthday")',
-        'Runs only when turn % year-divisions matches the character\'s ID: aging, death rolls and life events — the sequence below.',
+        'Runs only when turn % year-divisions matches the character\'s ID, and covers aging, death rolls and life events, in the sequence below.',
         'characters'),
     'character:removeTrait': (
         'Expiring traits removed',
@@ -687,7 +687,7 @@ LINE_LABELS = {
         'units'),
     ('Character.cs', 8317): (
         'Death roll → leaders gain Doomed',
-        'If a death trait fires for a leader, they gain Doomed instead of dying instantly — a one-year warning.',
+        'If a death trait fires for a leader, they gain Doomed instead of dying instantly, which is a warning one year ahead.',
         'characters'),
     ('Character.cs', 8326): (
         'Death roll resolves',
@@ -1244,7 +1244,7 @@ def main():
     data = {
         '_meta': {
             'source': 'reference/Source/Base/Game/GameCore',
-            'note': 'Step order mirrors source order exactly — do not sort.',
+            'note': 'Step order mirrors source order exactly, so do not sort.',
             'unlabeled': sorted(unlabeled),
         },
         'bands': [

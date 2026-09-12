@@ -86,7 +86,7 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
   title="Turn Order"
   active="turn-order"
   pageMark="🔄"
-  description="What Old World actually does at turn start, in exact source order: the global turn rollover (occurrences, prices, tiles, tribes, religion) and each player's turn-start processing (cities, research, units, characters, events, ambitions) — extracted from Game.cs and Player.cs."
+  description="What Old World does at turn start, in exact source order. Covers the global turn rollover, which handles occurrences, prices, tiles, tribes and religion, and each player's turn-start processing, which handles cities, research, units, characters, events and ambitions, extracted from Game.cs and Player.cs."
   pageStats={[
     { label: 'rollover steps', value: countSteps(gameBand.steps) },
     { label: 'player steps', value: countSteps(playerBand.steps) },
@@ -94,27 +94,27 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
   ]}
 >
   <p class="lede">
-    Everything below is the game's own order of operations, extracted from the
-    <code>doTurn()</code> functions in the shipped source. When two things seem
-    to happen "at the same time" — a build finishing and a tech completing, a
-    character dying and an event firing — this page tells you which one the
-    engine actually resolves first. Step order is source order; every step
-    carries its <code>file:line</code>.
+    Everything below is the game's own order of operations, taken from the
+    <code>doTurn()</code> functions in the shipped source. When two things appear
+    to happen at the same time, such as a build finishing while a tech completes,
+    or a character dying while an event fires, the page tells you which one the
+    engine resolves first. Step order is source order, and every step carries its
+    <code>file:line</code>.
   </p>
 
   <section class="to-section">
     <h2 class="to-h2">How a round is structured</h2>
     <p>
       The engine advances turns from <code>Game.testTurn()</code>
-      (<code>Game.cs:3257</code>): once every currently-active player has ended
-      their turn (<code>shouldIncrementTurn</code>, <code>Game.cs:3359</code>),
+      (<code>Game.cs:3257</code>). Once every active player has ended their turn
+      (<code>shouldIncrementTurn</code>, <code>Game.cs:3359</code>),
       <code>nextTeamTurn()</code> (<code>Game.cs:4238</code>) moves play along. A
-      full round looks like this:
+      full round runs in the order below.
     </p>
     <ol class="to-cycle">
       <li>
-        <b>Players play</b>, team by team (or all at once in simultaneous
-        multiplayer). When a player's turn ends, their 0-HP units die and
+        <b>Players play</b>, team by team, or all at once in simultaneous
+        multiplayer. When a player's turn ends, their units on 0 HP die and
         stunned units drop to a normal cooldown
         (<code>processEndTurn</code>, <code>Player.cs:16906</code>).
       </li>
@@ -126,25 +126,26 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
       </li>
       <li>
         <b>The turn rollover.</b> When the tribe turn finishes,
-        <code>incrementTurn()</code> bumps the turn counter and runs
-        <code>Game.doTurn()</code> — the first band below — then checks game
-        over (<code>Game.cs:3175–3188</code>, <code>Game.cs:4247–4250</code>).
-        So the world updates <i>after the tribes act and before the first
-        player's new turn</i>.
+        <code>incrementTurn()</code> raises the turn counter, runs
+        <code>Game.doTurn()</code>, which is the first band below, and then checks
+        for game over (<code>Game.cs:3175 to 3188</code>,
+        <code>Game.cs:4247 to 4250</code>). The world therefore updates <i>after
+        the tribes act and before the first player's new turn</i>.
       </li>
       <li>
         <b>Each player's turn begins.</b> As a player becomes current,
-        <code>Player.doTurn()</code> — the second band below — runs before they
-        get control (<code>Game.cs:4316</code>).
+        <code>Player.doTurn()</code>, which is the second band below, runs before
+        they get control (<code>Game.cs:4316</code>).
       </li>
     </ol>
     <p class="to-fineprint">
-      Multiplayer nuances visible in the source: in <b>simultaneous</b> mode all
-      players' turn-start processing runs back-to-back in player-index order in
-      one pass (<code>Game.cs:4310–4322</code>); in <b>play-by-cloud / server</b>
-      games the save uploads and "your turn" notifications go out right after a
-      human's turn-start processing (<code>Game.cs:4324–4353</code>); hotseat
-      autosaves and switches the active player (<code>Game.cs:4354–4360</code>).
+      The source shows three multiplayer details. In <b>simultaneous</b> mode
+      every player's turn-start processing runs one after another in player index
+      order, in a single pass (<code>Game.cs:4310 to 4322</code>). In
+      <b>play by cloud</b> and server games the save uploads and the "your turn"
+      notifications go out immediately after a human's turn-start processing
+      (<code>Game.cs:4324 to 4353</code>). Hotseat autosaves and switches the
+      active player (<code>Game.cs:4354 to 4360</code>).
     </p>
   </section>
 
@@ -155,27 +156,28 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
         <dt>Does a build or a tech finish first?</dt>
         <dd>
           City production applies and builds finish at step
-          <a href={`#${rFinishBuild.id}`}>{rFinishBuild.num}</a>; Science is
-          banked right after at step
-          <a href={`#${rProcessYield.id}`}>{rProcessYield.num}</a> — where it
-          goes <i>straight into the current tech</i> and can complete it — with
-          any remainder flushed at step
-          <a href={`#${rDoResearch.id}`}>{rDoResearch.num}</a>. So builds
-          finish first, techs immediately after, both before your units and
+          <a href={`#${rFinishBuild.id}`}>{rFinishBuild.num}</a>. Science is
+          banked right after, at step
+          <a href={`#${rProcessYield.id}`}>{rProcessYield.num}</a>, where it goes
+          <i>straight into the current tech</i> and can complete it, and any
+          remainder is flushed at step
+          <a href={`#${rDoResearch.id}`}>{rDoResearch.num}</a>. Builds therefore
+          finish first and techs immediately after, both before your units and
           characters are processed.
         </dd>
       </div>
       <div class="to-qa__item">
         <dt>When are ambitions checked?</dt>
         <dd>
-          At the very end of turn-start processing: progress recomputes at step
+          Ambitions are checked at the very end of turn-start processing.
+          Progress is recomputed at step
           <a href={`#${rUpdateGoals.id}`}>{rUpdateGoals.num}</a>, expired
           ambitions fail at step
           <a href={`#${rRemoveAmbition.id}`}>{rRemoveAmbition.num}</a>, and new
           offers roll at step
-          <a href={`#${rDoAmbitions.id}`}>{rDoAmbitions.num}</a> — all after
-          that turn's event rolls
-          (step <a href={`#${rDoEventTriggers.id}`}>{rDoEventTriggers.num}</a>).
+          <a href={`#${rDoAmbitions.id}`}>{rDoAmbitions.num}</a>, all after that
+          turn's event rolls at step
+          <a href={`#${rDoEventTriggers.id}`}>{rDoEventTriggers.num}</a>.
           Whatever you finished last turn is already counted.
         </dd>
       </div>
@@ -183,31 +185,31 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
         <dt>Do characters die before or after events fire?</dt>
         <dd>
           Death rolls happen inside each character's yearly tick during step
-          <a href={`#${rCharTurn.id}`}>{rCharTurn.num}</a> — before the player's
-          story-event rolls at step
+          <a href={`#${rCharTurn.id}`}>{rCharTurn.num}</a>, before the player's
+          story event rolls at step
           <a href={`#${rDoEventTriggers.id}`}>{rDoEventTriggers.num}</a>. The
-          leader deliberately goes last (step
-          <a href={`#${rLeaderLast.id}`}>{rLeaderLast.num}</a>), and missions
-          resolve after all character turns (step
-          <a href={`#${rMissions.id}`}>{rMissions.num}</a>) so mid-event state
-          changes can't invalidate them.
+          leader goes last on purpose, at step
+          <a href={`#${rLeaderLast.id}`}>{rLeaderLast.num}</a>, and missions
+          resolve after all character turns, at step
+          <a href={`#${rMissions.id}`}>{rMissions.num}</a>, so a state change
+          during an event cannot invalidate them.
         </dd>
       </div>
       <div class="to-qa__item">
         <dt>When do my units heal?</dt>
         <dd>
-          During your turn-start unit processing (step
-          <a href={`#${rUnitTurn.id}`}>{rUnitTurn.num}</a>): healing applies at
+          Units heal during your turn-start unit processing, at step
+          <a href={`#${rUnitTurn.id}`}>{rUnitTurn.num}</a>. Healing applies at
           sub-step <a href={`#${rHealing.id}`}>{rHealing.num}</a>, and the idle
-          bonus only counts if the unit took no action <i>last</i> turn. Units
+          bonus counts only when the unit took no action <i>last</i> turn. Units
           heal before you move anything.
         </dd>
       </div>
       <div class="to-qa__item">
         <dt>When do tribes and raiders act?</dt>
         <dd>
-          Tribal units and cities act in their own turn slot after all players
-          (see "How a round is structured"). On top of that, camps roll raids
+          Tribal units and cities act in their own turn slot after all players,
+          as described under "How a round is structured". Camps also roll raids
           during the rollover at step
           <a href={`#${rCampRaids.id}`}>{rCampRaids.num}</a>, and each of your
           cities rolls for distant raids at step
@@ -217,11 +219,11 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
       <div class="to-qa__item">
         <dt>When does the market move?</dt>
         <dd>
-          Prices drift once per round during the rollover (step
-          <a href={`#${rPrices.id}`}>{rPrices.num}</a>), before any player's
-          turn. Forced debt sales (step
-          <a href={`#${rDebts.id}`}>{rDebts.num}</a>) therefore trade at the
-          already-adjusted price.
+          Prices move once per round during the rollover, at step
+          <a href={`#${rPrices.id}`}>{rPrices.num}</a>, before any player's turn.
+          A forced sale to cover debt, at step
+          <a href={`#${rDebts.id}`}>{rDebts.num}</a>, therefore trades at the
+          price that has already moved.
         </dd>
       </div>
     </dl>
@@ -231,11 +233,11 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
     <section class="to-section">
       <h2 class="to-band">{band.title}</h2>
       <p class="to-band__entry">
-        <code>{band.fn}()</code> — <code>{band.entry}</code>
+        <code>{band.fn}()</code> in <code>{band.entry}</code>
         {band.key === 'player' && (
           <span class="to-band__note">
-            Runs once per player as their turn begins; the bulk is inlined from
-            <code> processTurn()</code> (<code>Player.cs:16505</code>).
+            Runs once per player as their turn begins, and most of it is inlined
+            from <code>processTurn()</code> (<code>Player.cs:16505</code>).
           </span>
         )}
       </p>
@@ -259,7 +261,7 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
               {s.children && (
                 <details class="tl__sub">
                   <summary>
-                    {s.childFn}() sequence — {s.children.length} steps
+                    {s.childFn}() sequence, {s.children.length} steps
                     <span class="tl__src tl__src--inline">{s.childEntry}</span>
                   </summary>
                   <ol class="tl tl--nested">
@@ -282,7 +284,7 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
                           {c.children && (
                             <details class="tl__sub">
                               <summary>
-                                {c.childFn}() sequence — {c.children.length} steps
+                                {c.childFn}() sequence, {c.children.length} steps
                                 <span class="tl__src tl__src--inline">{c.childEntry}</span>
                               </summary>
                               <ol class="tl tl--nested">
@@ -322,23 +324,24 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
   ))}
 
   <section class="to-section">
-    <h2 class="to-h2">What this page does not pin down</h2>
+    <h2 class="to-h2">What this page does not cover</h2>
     <ul class="to-bullets">
       <li>
         <b>Which event fires.</b> The order of the event <i>rolls</i> is exact,
-        but event selection inside <code>doEventTrigger</code> is weighted and
-        subject-filtered — there is no fixed priority between individual events.
+        but the selection inside <code>doEventTrigger</code> is weighted and
+        filtered by subject, so individual events have no fixed priority.
       </li>
       <li>
         <b>AI decision details.</b> <code>AI.doDecisions</code>,
-        <code>doAutomatedCityBuilds</code> and the AI diplomacy passes delegate
-        into <code>PlayerAI.cs</code>; their internal ordering isn't part of the
-        turn skeleton shown here.
+        <code>doAutomatedCityBuilds</code> and the AI diplomacy passes hand off to
+        <code>PlayerAI.cs</code>, and their internal ordering is not part of the
+        turn structure shown here.
       </li>
       <li>
-        <b>Relative order between players.</b> Within one rollover, per-player
-        loops run in player-index order (host's setup order); in simultaneous
-        multiplayer that ordering is internal and not visible in-game.
+        <b>Relative order between players.</b> Within one rollover the per-player
+        loops run in player index order, which is the host's setup order. In
+        simultaneous multiplayer that ordering is internal and the game does not
+        show it.
       </li>
     </ul>
   </section>
@@ -348,9 +351,10 @@ const totalSteps = countSteps(gameBand.steps) + countSteps(playerBand.steps);
     / <code>nextTeamTurn()</code>, <code>Player.cs</code> <code>doTurn()</code>
     / <code>processTurn()</code>, plus the nested <code>Tile</code>,
     <code>Tribe</code>, <code>City</code>, <code>Unit</code> and
-    <code>Character</code> turn functions — extracted by
+    <code>Character</code> turn functions, extracted by
     <code>scripts/build_turn_order.py</code> into
-    <code>src/data/turn_order.json</code>. R = rollover step, P = player step.
+    <code>src/data/turn_order.json</code>. R marks a rollover step and P marks a
+    player step.
   </p>
 
   <script is:inline>

@@ -66,7 +66,7 @@ const { inline, blocks, has } = createProse({ raw: proseRaw, vars: VARS, listCla
 const SOURCES = [
   ['Unit.isValidMovementDirection', 'Unit.cs:7670-7695', 'the one rule: refused iff both tiles are in hostile ZOC; current tile tested with bIgnoreRiver = the step crosses a river (7689). Called from PathFinder.cs:914.'],
   ['Unit.canBeSwapped / canSwapUnits', 'Unit.cs:8252, 8287', 'swap refused when both tiles are in hostile ZOC. No other caller of isHostileZOC exists.'],
-  ['Unit.canAdvanceAfterAttack / canHaveRoutCooldown / canTargetFrom', 'Unit.cs:8342, 8389, 8508', 'Rout advance after a kill: bRout effect the defender is not immune to (getDefenderRoutEffectUnit 8420; EFFECTUNIT_POLEARM is immune), another target from the new tile, canOccupyTile — no zone test; the move is setTileID at Unit.cs:9711.'],
+  ['Unit.canAdvanceAfterAttack / canHaveRoutCooldown / canTargetFrom', 'Unit.cs:8342, 8389, 8508', 'Rout advance after a kill needs a bRout effect the defender is not immune to (getDefenderRoutEffectUnit 8420, where EFFECTUNIT_POLEARM is immune), another target reachable from the new tile, and canOccupyTile, with no zone test. The move itself is setTileID at Unit.cs:9711.'],
   ['Unit.getPushTile', 'Unit.cs:10031', 'Panic / Fireship push: the three tiles away from the attacker, tested with canUnitOccupy only.'],
   ['Unit.hasZOC / hasIgnoreZOC', 'Unit.cs:6983, 7008', 'unit type flag or any held effect.'],
   ['Unit.isUnitZoc', 'Unit.cs:4550', 'aeUnitTraitZOC: Polearm effects list Mounted.'],
@@ -93,7 +93,7 @@ const stats = [
   active="zone-of-control"
   pageMark="🛑"
   pageStats={stats}
-  description="How Old World's zone of control works: the one movement rule, who pins whom, and computed hex boards for walls, rivers, cities and water."
+  description="How zone of control works in Old World, covering the single movement rule, who pins whom, and computed hex boards for walls, rivers, cities and water."
 >
   {DEV && <meta name="prose-file" content={PROSE_FILE} />}
   {DEV && <meta name="prose-endpoint" content="http://127.0.0.1:4399/save" />}
@@ -268,7 +268,7 @@ const stats = [
           <tr><td>Hostile zone colour</td><td><code>{constants.colors.hostile}</code> (COLOR_HOSTILE_ZOC, used for the wash on this page)</td></tr>
           <tr><td>Neutral zone colour</td><td><code>{constants.colors.neutral}</code> (COLOR_NEUTRAL_ZOC, defined but unused by the source)</td></tr>
           <tr><td>Hotkeys</td><td><kbd>{hk.show.key}</kbd> hold: {hk.show.name}; <kbd>{hk.lock.key}</kbd>: {hk.lock.name}</td></tr>
-          <tr><td>Loading hint</td><td>“{texts.hint}”</td></tr>
+          <tr><td>Loading hint</td><td>"{texts.hint}"</td></tr>
           <tr><td>Hostile diplomacy states</td><td>{constants.hostileStates.join(', ')}</td></tr>
           <tr><td>AI valuation</td><td>exerting {constants.ai.zocValue}, ignoring {constants.ai.ignoreZocValue}, each trait-ZOC {constants.ai.traitZocValue} (AI_UNIT_ZOC_VALUE)</td></tr>
         </tbody>
@@ -278,9 +278,9 @@ const stats = [
     <h3 class="zc-h3" data-prose="appendix.sources.heading" set:html={inline('appendix.sources.heading')} />
     <ul class="zc-list zc-sources">
       {SOURCES.map(([fn, loc, what]) => (
-        <li><code>{fn}</code> <span class="zc-loc">{loc}</span> — {what}</li>
+        <li><code>{fn}</code> <span class="zc-loc">{loc}</span>: {what}</li>
       ))}
-      <li><code>scripts/build_zoc.py</code> — the port that computed every board above, with the assertions that fail the build if a rule drifts.</li>
+      <li><code>scripts/build_zoc.py</code>: the port that computed every board above, with the assertions that fail the build if a rule drifts.</li>
     </ul>
   </section>
 

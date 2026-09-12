@@ -1,46 +1,46 @@
-# Envy & the City Split — page prose
+# Family envy and the city split: page prose
 
-Every editable line of `/family-envy` lives here; `src/pages/family-envy.astro` reads
-this file at build time. Edit in place with `npm run edit` and
-http://localhost:4321/owreference/family-envy/?edit (⌘S saves back into this file), or edit
-the text below by hand and rebuild.
+Every editable line of `/family-envy` lives here, and `src/pages/family-envy.astro` reads
+this file at build time. You can edit in place with `npm run edit` and
+http://localhost:4321/owreference/family-envy/?edit, where ⌘S saves back into this file, or
+you can edit the text below by hand and rebuild.
 
 - Each `## key` heading is one text slot. Keep the keys; reword or delete the text under them.
 - Plain paragraphs, blank-line separated. Lines starting with `- ` become bullets.
   Inline markup: `**bold**`, `*emphasis*`, `` `code` ``, `[text](url)`.
-- `{placeholders}` are filled from the game data at build time (listed at the bottom);
-  they render as locked chips in the editor.
-- Not in this file: the calculator's own labels (headings with live numbers, table
-  headers, tooltips, the "N of M splits" line) and the "What lands where" bracket list,
-  which is generated from opinion.json.
+- `{placeholders}` are filled from the game data at build time and listed at the bottom.
+  They render as locked chips in the editor.
+- Some text is not in this file. The calculator's own labels (headings with live numbers,
+  table headers, tooltips and the "N of M splits" line) and the bracket list are generated
+  from opinion.json.
 
 ## lede
 
-**{mostCities}** (+{mostValue}, shared by families tied at the top), **{fewestCities}** ({fewestValue}, shared at the bottom) and **{envyName}** (nothing until two cities behind the leader, then {envyStep} × triangle) are the {opinionLink} terms that depend only on how many cities each family holds; **{landownersName}** feel both ends {landownersMost} harder. Pick your families and city total to rank every split, kindest first. Details below the calculator.
+Three {opinionLink} terms depend only on how many cities each family holds. **{mostCities}** pays +{mostValue}, shared by the families tied at the top, and **{fewestCities}** charges {fewestValue}, shared by the families tied at the bottom. **{envyName}** costs nothing until a family is two cities behind the leader, after which the penalty grows on a triangular scale in steps of {envyStep}, and **{landownersName}** feel both ends {landownersMost} harder. Pick your families and your city total below to rank every split, starting with the one that upsets your families least.
 
 ## rung.note
 
-Kindest split first: the one whose *unhappiest* family is least unhappy, then by the sum. Favouring a family lists one row per city count it could hold and marks the *recommended* trade-off: the most favoured cities before anyone drops into Angry. Click a row for the breakdown.
+Splits are ranked by their *unhappiest* family first, and ties are broken by the sum across all families. When you favour a family, the table lists one row per city count that family could hold, and it marks the *recommended* row, which is the most cities you can give it before another family drops into Angry. Click a row to see the breakdown.
 
 ## envy.heading
 
-The {envyName} curve
+How {envyName} grows
 
 ## envy.body
 
-`triangle(lead − yours − 1) × {envyStep}`, where *lead* is the most cities any one family holds. One city behind is free; after that each further city costs more than the last.
+The formula is `triangle(lead − yours − 1) × {envyStep}`, where *lead* is the most cities any one family holds. Being one city behind is free, and after that each further city costs more than the one before it.
 
 ## ties.heading
 
-Ties split the award
+How ties are handled
 
 ## ties.body
 
-{mostCities} and {fewestCities} are divided by the number of families tied at that end, truncating toward zero — and if *every* family is tied, neither term applies at all. That is why a perfectly even split is worth exactly nothing rather than being worth something to everyone.
+{mostCities} and {fewestCities} are each divided by the number of families tied at that end, truncating toward zero. When *every* family is tied, neither term applies at all, which is why a perfectly even split pays nothing to anyone instead of paying something to everyone.
 
 ## code.heading
 
-What the code says
+What the code does
 
 ## code.most.heading
 
@@ -48,9 +48,9 @@ What the code says
 
 ## code.most.body
 
-- Goes to the family holding **at least as many** cities as every other — a family that merely ties for the lead still qualifies.
-- The award is `({mostValue} + the class's own bonus) ÷ families tied at the top`, C# integer division.
-- Nothing is paid when **all** families are tied — a young empire where every family holds one city collects at neither end — and nothing in a 1-family game.
+- The award goes to any family holding **at least as many** cities as every other family, so a family that only ties for the lead still qualifies.
+- The amount is `({mostValue} + the class's own bonus) ÷ families tied at the top`, using C# integer division.
+- Nothing is paid when **all** families are tied. A young empire where every family holds one city collects at neither end, and a game with a single family pays nothing either.
 
 ## code.fewest.heading
 
@@ -58,9 +58,9 @@ What the code says
 
 ## code.fewest.body
 
-- The mirror image: charged to whoever holds **no more** cities than anyone else, split across everyone tied at the bottom.
-- Both ends can land on the same family only if the split is even — and an even split cancels both, so in practice no family ever takes both.
-- A family with **zero** cities is still counted; losing your last city to a rival leaves the family at the bottom of the table, not out of it.
+- The penalty is charged to any family holding **no more** cities than every other family, and it is split across everyone tied at the bottom.
+- Both ends can land on the same family only when the split is even, and an even split cancels both, so in practice no family takes both.
+- A family with **zero** cities still counts. Losing its last city to a rival leaves the family at the bottom of the table rather than out of it.
 
 ## code.envy.heading
 
@@ -68,39 +68,39 @@ What the code says
 
 ## code.envy.body
 
-- Compares every family against the **largest** family, not against the average, so one runaway family makes the other two miserable at once.
-- `(yours + 1) ≥ lead` pays nothing — the one-city grace is what makes a 4/3/3 split so much cheaper than 4/4/1.
-- Triangular, not linear: two behind is {envy2}, three is {envy3}, four is {envy4}, five is {envy5}. The fifth city of a gap costs as much as the first four together.
-- Unlike the other two it has no tie logic and no class modifier — every family reads the same ladder.
+- The term compares every family against the **largest** family rather than against the average, so one oversized family angers the other two at the same time.
+- A family with `(yours + 1) ≥ lead` pays nothing, and the free first city of the gap is what makes a 4/3/3 split so much cheaper than 4/4/1.
+- The cost is triangular rather than linear, so two cities behind is {envy2}, three is {envy3}, four is {envy4} and five is {envy5}. The fifth city of a gap costs as much as the first four together.
+- The term has no tie handling and no class modifier, so every family reads the same ladder.
 
 ## code.class.heading
 
-Class extras
+Family class modifiers
 
 ## code.class.body
 
-- **{landownersLink}** are the only class that bends these terms: `iMostCitiesOpinion` +{landownersMost} and `iFewestCitiesOpinion` {landownersFewest}, which **doubles** both — {landownersTop} at the top, {landownersBottom} at the bottom. Envy is unchanged.
-- **{championsLink}** run the same mechanic on *units* instead ({championsLargest} / {championsSmallest} for the largest and smallest military), and there the award is not divided on a tie — ties simply pay nothing.
-- Every other class contributes 0 to both, so their families read the flat globals.
+- **{landownersLink}** are the only class that changes these terms. They add `iMostCitiesOpinion` +{landownersMost} and `iFewestCitiesOpinion` {landownersFewest}, which **doubles** both ends to {landownersTop} at the top and {landownersBottom} at the bottom. {envyName} is unchanged.
+- **{championsLink}** run the same mechanic on *units* instead, paying {championsLargest} for the largest military and {championsSmallest} for the smallest. The award there is not divided on a tie, because a tie pays nothing at all.
+- Every other class contributes 0 to both terms, so their families use the flat global values.
 
 ## code.brackets.heading
 
-What lands where
+Which bracket each family lands in
 
 ## code.reading.heading
 
-Reading the result
+How to read the result
 
 ## code.reading.body
 
-- The city terms are only part of the sum. Leader traits, council seats, laws, luxuries, wonders, religion and memories all add into the same number before it is bracketed, so the bracket shown here is what the cities alone would earn.
-- Because it is recomputed rather than accumulated, **giving a city away fixes the number immediately**. There is no decay to wait out.
-- Founding a city is also previewed this way in-game: the found-city tooltip shows each family's Envy and Most/Fewest terms *before and after*, which is the same routine run with the new city already assigned.
-- The count is not the only way cities move opinion — `calculateFamilyOpinionCityDist` also rewards a family whose own cities sit **close together**, off the average distance between them and the map's minimum city-site spacing. Traders are the one class that wants the opposite (`bPrefersDistant`), and either way it is a bonus only, never a penalty. It is not modelled here.
+- The city terms are only part of the total. Leader traits, council seats, laws, luxuries, wonders, religion and memories all add into the same number before the game brackets it, so the bracket shown here is what the cities alone would earn.
+- The game recomputes the number instead of accumulating it, so **giving a city away fixes the number immediately**. There is no decay to wait out.
+- The game previews the same calculation when you found a city, because the found-city tooltip shows each family's {envyName}, {mostCities} and {fewestCities} terms before and after, using the same routine with the new city already assigned.
+- City count is not the only way cities move opinion. `calculateFamilyOpinionCityDist` also rewards a family whose own cities sit **close together**, measured from the average distance between them and the map's minimum spacing between city sites. Traders are the one class that wants the opposite (`bPrefersDistant`). Either way the distance term is a bonus and never a penalty, and the calculator here does not model it.
 
 ## fine
 
-Formulas from **PlayerOpinion.cs** — `calculateFamilyOpinionMostCities`, `calculateFamilyOpinionFewestCities`, `calculateFamilyOpinionEnvy`, summed by `calculateFamilyOpinionRate` and bracketed by `InfoHelpers.getOpinionFamilyFromRate`; `triangle` from **Utils.cs**. Constants from `globalsInt.xml` and `familyClass.xml`, brackets from `opinionFamily.xml`, family colors from `color.xml`. Integer truncation is reproduced exactly. See {familiesLink} for the rest of each class's opinion modifiers and {opinionLink} for the bracket effects in full.
+Formulas come from **PlayerOpinion.cs**, namely `calculateFamilyOpinionMostCities`, `calculateFamilyOpinionFewestCities` and `calculateFamilyOpinionEnvy`, which `calculateFamilyOpinionRate` sums and `InfoHelpers.getOpinionFamilyFromRate` brackets. The `triangle` function comes from **Utils.cs**. Constants come from `globalsInt.xml` and `familyClass.xml`, brackets from `opinionFamily.xml` and family colors from `color.xml`. Integer truncation is reproduced exactly. See {familiesLink} for the rest of each class's opinion modifiers, and {opinionLink} for the bracket effects in full.
 
 ---
 

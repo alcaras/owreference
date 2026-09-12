@@ -26,7 +26,7 @@ const grantors = [...new Set(trait.via.flatMap((r: any) => r.via))].sort();
   title={`Removing ${trait.name}`}
   active="trait-removal"
   pageMark="🧹"
-  description={`Every Old World event that can remove the ${trait.name} trait from a character — ${trait.direct.length} that remove it outright and ${trait.via.length} that displace it by granting an opposing trait.`}
+  description={`Every Old World event that can remove the ${trait.name} trait from a character, with ${trait.direct.length} that remove it outright and ${trait.via.length} that displace it by granting an opposing trait.`}
   pageStats={[
     { label: 'remove outright', value: trait.direct.length },
     { label: 'by replacement', value: trait.via.length },
@@ -35,8 +35,8 @@ const grantors = [...new Set(trait.via.flatMap((r: any) => r.via))].sort();
   <p class="lede">
     Every event that can take <b>{trait.name}</b> off a character.
     {trait.direct.length === 0 && (
-      <> There is <b>no event that removes it outright</b> — the only way is to gain an opposing
-      trait, below.</>
+      <> There is <b>no event that removes it outright</b>, so the only way is to gain an opposing
+      trait, listed below.</>
     )}
     {trait.direct.length > 0 && (
       <> {trait.direct.length === 1 ? 'One event removes' : `${trait.direct.length} events remove`} it

@@ -71,7 +71,7 @@ const eventGroups = mission.eventGroups || [];
         </span>
       ))}
       {(mission.opinionCost || []).map(c => (
-        <span class={`chip yield-${c.yield}`} title="Base amount — scales with the target's opinion of you">
+        <span class={`chip yield-${c.yield}`} title="The base amount, which scales with the target's opinion of you">
           <span class="chip__label">Cost (opinion-scaled)</span>
           <strong>{c.value} {c.label}</strong>
         </span>
@@ -154,9 +154,9 @@ const eventGroups = mission.eventGroups || [];
 
     {(mission.scaling || mission.scalingNote) ? (
       <p class="outcomes__legend">
-        <strong>Base</strong> is the flat reward; <strong>per City</strong> values stack with the size of your empire
-        (see Reward scaling below). The subject's character rating shifts the dice — e.g. Wisdom raises the
-        Steal Research success chance — but does not change the yield amounts.
+        <strong>Base</strong> is the flat reward, and a <strong>per City</strong> value grows with the size of your
+        empire, as covered under Reward scaling below. The subject's character rating shifts the dice, so Wisdom
+        raises the Steal Research success chance, but it does not change the yield amounts.
       </p>
     ) : (
       <p class="outcomes__legend">
@@ -260,7 +260,7 @@ const eventGroups = mission.eventGroups || [];
             {g.isEventResult ? (
               <p class="outcomes__sub evtgrp__intro">
                 <strong>{pct(g.probability)}</strong> of the time (a {g.weight}/{g.total} dice
-                result) the mission fires an <strong>event</strong> instead of its normal reward — then one of the
+                result) the mission fires an <strong>event</strong> instead of its normal reward, after which one of the
                 {' '}{g.events.length} stories below is drawn, and you pick a response.
                 Bracketed values like <code>[character]</code> are filled in with the actual names in-game.
               </p>
@@ -289,7 +289,7 @@ const eventGroups = mission.eventGroups || [];
                       : 'Excluded when Competitive Events is on (Competitive Mode tournaments)'}
                   >CM {(ev as any).cmEligible !== false ? '✓' : '✗'}</span>
                   {(ev as any).minTurns && <span class="chip--turn" title="Earliest turn this event can fire (its own minimum, or its event class's)">Turn {(ev as any).minTurns}+</span>}
-                  <span class="evt__share" title="Raw iWeight — NOT a probability (see caveat above)">weight {ev.weight}</span>
+                  <span class="evt__share" title="Raw iWeight, which is not a probability. See the caveat above.">weight {ev.weight}</span>
                   {ev.conditions.map((c: string) => <span class="chip chip--cond">{c}</span>)}
                 </span>
               </summary>
@@ -393,7 +393,7 @@ const eventGroups = mission.eventGroups || [];
         formulaEl.textContent =
           `${fmt(rawBase)} + ${fmt(rawPer)}×${cities} = ${fmt(pre)}` +
           (turn > infl ? `  ×${mult.toFixed(2)} (turn ${turn})` : `  (turn ≤ ${infl}: ×1)`) +
-          (cap != null && rw >= cap ? '  — capped' : '');
+          (cap != null && rw >= cap ? '  (capped)' : '');
 
         // Y domain from the tallest visible line at MAX_TURN.
         const yMax = Math.max(reward(Math.max(cities, 15), MAX_TURN), reward(15, MAX_TURN), 1) * 1.08;

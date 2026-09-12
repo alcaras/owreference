@@ -44,7 +44,7 @@ const scopeGroups = SCOPES
 <Base
   title={w.name}
   active="wonders"
-  description={`${w.name} — ${w.era} Culture wonder in Old World. ${w.location}. ${
+  description={`${w.name}, a ${w.era} Culture wonder in Old World. ${w.location}. ${
     w.culturePerTurn ? `+${w.culturePerTurn} Culture/turn. ` : ''
   }${w.effects.join('. ')}${w.effects.length ? '.' : ''} All data from the game's improvement.xml.`}
 >
@@ -89,7 +89,7 @@ const scopeGroups = SCOPES
 
   <div class="wgrid">
     <section class="wcard">
-      <h2 class="wcard__h">Build Cost</h2>
+      <h2 class="wcard__h">Build cost</h2>
       <ul class="costlist">
         {w.cost.length === 0 ? <li class="muted">—</li> : w.cost.map((c: any) => (
           <li class={`costlist__row yield-${c.yield}`}>
@@ -109,7 +109,7 @@ const scopeGroups = SCOPES
     </section>
 
     <section class="wcard">
-      <h2 class="wcard__h">Tile Output</h2>
+      <h2 class="wcard__h">Tile output</h2>
       {(w.culturePerTurn > 0 || w.otherOutput.length > 0) ? (
         <ul class="bullets">
           {w.culturePerTurn > 0 && (
@@ -144,7 +144,7 @@ const scopeGroups = SCOPES
 
   </div>
 
-  <p class="provenance">Every fact on this page — cost, culture tier, requirements, VP, per-turn yields, and the scope-grouped benefits — is derived from the game's <code>improvement.xml</code> (and its effect/bonus chains via the humanizer). The legacy spreadsheet is not consulted. The Wikipedia link is the only external reference.</p>
+  <p class="provenance">Every fact on this page, including cost, culture tier, requirements, VP, yields per turn and the benefits grouped by scope, is derived from the game's <code>improvement.xml</code> and its effect and bonus chains through the humanizer. The legacy spreadsheet is not consulted, and the Wikipedia link is the only external reference.</p>
 </Base>
 
 <style>

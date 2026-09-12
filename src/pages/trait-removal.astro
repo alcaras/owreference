@@ -12,7 +12,7 @@ const noDirect = traits.filter((t: any) => t.direct.length === 0);
   title="Trait Removal"
   active="trait-removal"
   pageMark="🧹"
-  description="How to get a trait off a character in Old World — every trait with the events that remove it outright and the events that displace it by granting an opposing trait. One page per trait."
+  description="How to get a trait off a character in Old World. Each trait lists the events that remove it outright and the events that displace it by granting an opposing trait. One page per trait."
   pageStats={[
     { label: 'traits', value: counts.traits },
     { label: 'remove outright', value: counts.direct },
@@ -20,10 +20,10 @@ const noDirect = traits.filter((t: any) => t.direct.length === 0);
   ]}
 >
   <p class="lede">
-    How to get a trait <em>off</em> a character. Two routes: an event can <b>remove it outright</b>,
-    or it can <b>grant an opposing trait</b>, which displaces it — the second is far more common, and
-    for most traits it is the only option. Pick a trait for its removal events and its replacement
-    events, listed separately.
+    How to get a trait <em>off</em> a character. There are two routes, because an event can
+    <b>remove the trait outright</b>, or it can <b>grant an opposing trait</b>, which displaces it.
+    The second route is far more common, and for most traits it is the only one. Pick a trait to see
+    its removal events and its replacement events, listed separately.
   </p>
 
   <input id="tri-filter" class="tri__filter" type="search" placeholder="Filter traits…" autocomplete="off" />
@@ -46,7 +46,7 @@ const noDirect = traits.filter((t: any) => t.direct.length === 0);
   <section class="tri">
     <h2 class="tri__h">Replacement only <span class="tri__n">{noDirect.length}</span></h2>
     <p class="tri__note">
-      No event removes these outright — the only way out is to gain the opposing trait.
+      No event removes these traits outright, so the only way out is to gain the opposing trait.
     </p>
     <div class="tri__grid">
       {noDirect.map((t: any) => (

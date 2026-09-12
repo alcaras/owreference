@@ -106,7 +106,7 @@ for (const n of nations) {
 <Base pageFilter
   title="Nations"
   active="nations"
-  description="All 13 Old World nations side-by-side: starting bonuses, shrines, unique units, families, starting techs, and leader/royal lineup. Pulled XML-canonical from the game's own files."
+  description="All 13 Old World nations side by side, with starting bonuses, shrines, unique units, families, starting techs and the royal lineup, pulled from the game's own files."
 >
   <div class="page-meta">
     <h1 class="page-title">Nations</h1>
@@ -202,7 +202,7 @@ for (const n of nations) {
                       data-hl={type ? `shrine:${type.toLowerCase()}` : undefined}
                     >
                       <div class="shrine">
-                        <a class="shrine__head" href={`${base}shrines#type-${type.toLowerCase()}`} title={`${typeLabel} shrine — open Shrines`}>
+                        <a class="shrine__head" href={`${base}shrines#type-${type.toLowerCase()}`} title={`${typeLabel} shrine. Open Shrines.`}>
                           {iconUrl && <img class="shrine__art" src={iconUrl} alt="" />}
                           <span class="shrine__type">{typeLabel}</span>
                           <span class="shrine__deity">{deity}</span>
@@ -246,7 +246,7 @@ for (const n of nations) {
                       class={`cell n-${n.slug} yield-${yieldKey} hl`}
                       data-nation={n.slug}
                       data-hl={v.classKey ? `family:${v.classKey}` : undefined}
-                      title={`${v.supremacy.name} — granted all game when ${v.name} is your capital's family`}
+                      title={`${v.supremacy.name}, granted all game when ${v.name} is your capital's family`}
                     >
                       <div class="shrine">
                         <div class="shrine__head">
