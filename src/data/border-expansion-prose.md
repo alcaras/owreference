@@ -110,7 +110,7 @@ Since red owns a tile on both sides of the tile, they get the tile.
 
 ## board.hole_which.caption
 
-You own both sides of this tile. It goes to the lower-left city because the game checks the three axes in a fixed order -- NW–SE, then NE–SW, then E–W -- and gives the tile to the city on the second-named side of the first axis where you own both ends. Here that is the NE–SW axis, so the city on the SW side wins.
+You own both sides of this tile. It'll go to the lower left city, because the game assigns tiles in priority order -- SE, SW, W. The lower left city owns the tile SW of this one, so it gets the tile.
 
 ## rules.water.heading
 
