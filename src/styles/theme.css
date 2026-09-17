@@ -14,6 +14,10 @@
   --border:       oklch(0.32 0.012 80);
   --border-strong:oklch(0.40 0.014 80);
   --border-faint: oklch(0.28 0.010 80);
+  /* Vertical rule between table columns — a touch stronger than the row
+     hairline (--border-faint) so a full-height line stays readable, but well
+     under --border so it never reads as a grid. */
+  --col-rule:     oklch(0.305 0.011 80);
 
   --text:         oklch(0.94 0.008 80);
   --text-soft:    oklch(0.82 0.010 80);
@@ -522,6 +526,19 @@ h1, h2, h3 {
 .ntbl col[data-target] { width: 10rem; }
 .ntbl thead th { font-weight: 500; }
 .ntbl th, .ntbl td { vertical-align: top; }
+
+/* Column separators — a hairline in the gutter BETWEEN every pair of columns.
+   Wide matrices put a right-aligned value hard against the next column's
+   left-aligned label (an opinion's "+40" sitting beside the neighbour's
+   "Defended Cities"), and readers pair them across the boundary. The rule
+   sits only between columns: never on the table's outer edges, and never
+   next to .rowlabel, which already draws its own sticky border-right. */
+.ntbl th + th,
+.ntbl th + td,
+.ntbl td + td,
+.ntbl td + th { border-left: 1px solid var(--col-rule); }
+.ntbl .rowlabel + th,
+.ntbl .rowlabel + td { border-left: 0; }
 
 /* Sticky row-label column — pinned-left during horizontal scroll. Bg is
    solid so cell content scrolling under it stays readable. */
