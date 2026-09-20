@@ -276,6 +276,28 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   its token, and `hints.astro` links exactly those (entity registry →
   `/concepts#slug`) with no `LinkedText` alias pass — alias matching mislinks
   words the game deliberately left plain ("each game" → the Game resource).
+- **DLC labels are derived, and AKSUM is Wrath of Gods.** `additionalContent.xml`
+  maps each store DLC to the GameContentType tokens it grants (`aeGameContent`)
+  and its `Name` to the marketed title in `text-misc.xml` (Empires of the Indus
+  resolves from `text-eoti.xml`). `scripts/dlc.py` builds that map once —
+  `dlc_by_content()` for display, `dlc_token_by_content()` for reading a SAVE,
+  which records `DLC_*` store tokens in `<GameContent>` while every info entry
+  names a content *type*. It lives outside build_missions/build_mission_catalog
+  because those two import each other.
+  Eleven hand-written maps across nine builders used to disagree, and four of
+  them called AKSUM "Sacred & the Profane (Aksum)" — it ships with
+  `DLC_CALAMITIES`, whose name is **Wrath of Gods**, and which also grants
+  CALAMITIES (one DLC, several content types; Heroes of the Aegean likewise
+  grants CAMPAIGN_GREECE *and* NATION_HITTITES). The guess survived three months
+  because nothing in the data contradicts it: Aksum's 69 entries sit in the BASE
+  xml files rather than a `-wog` one, and `bonus-event-sap.xml` really does
+  mention RELIGION_PAGAN_AKSUM.
+  `scripts/verify_dlc_labels.py` (run by `make audit`) keeps it fixed: it fails
+  when the derived map comes back EMPTY, when any `GameContentRequired` token in
+  the XML is granted by no DLC (a new pack, or a rename), when a builder
+  hardcodes a label against a known content token, or when a retired wrong label
+  reappears in generated data. Each of those four is proven to fail by
+  reintroducing the defect — a guard that cannot fail is not a guard.
 - **Mods folder (`reference/XML/Mods/`) is excluded from the repo** to keep size down. The pipeline only reads from `reference/XML/Infos/`.
 - **`reference/Graphics/` and `reference/Source/`** are excluded too (binary game assets, Unity controllers).
 - **Cognomen tracker OCR — the OCR is reliable; don't blame Tesseract.** On a real F5 capture Tesseract.js read **every digit correctly** (17/17 scoring stats, zero number errors). What looks "garbled" is *gutter noise*, not bad text: bullet glyphs (●) become `e`/`eo`/`®`/`¢`, the left UI rail bleeds in as `J{`/`U`/`|` prefixes, and right-edge game-world text appends junk like `54 C`, `5 in`, `1 Is`. The fix was always in the **parser**, never the image. Don't add OpenCV.js / heavier preprocessing on a hunch — diagnose against a real screenshot first.

@@ -11,6 +11,7 @@ patch: sync art data audit changelog build check
 audit:
 	@python3 scripts/audit_coverage.py
 	@python3 scripts/verify_source_constants.py
+	@python3 scripts/verify_dlc_labels.py
 
 # Post-build sanity: no broken internal links, no unresolved <Term>s.
 check:

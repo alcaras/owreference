@@ -37,6 +37,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 import build_missions as m  # noqa: E402  reuse the mission-event humanizer
 import wonder_events_util as weu  # noqa: E402  shared wonder-event definition
 import project_events_util as peu  # noqa: E402  shared project-event definition
@@ -79,19 +80,19 @@ TRIGGER_LABELS = {
 }
 
 # GameContentRequired token → DLC / content-pack name.
-DLC_LABELS = {
-    "EVENTPACK_RELIGION": "Religion event pack",
-    "EVENTPACK_SCANDAL": "Behind the Throne",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
-    "WONDERS_DYNASTIES": "Wonders & Dynasties",
-    "AKSUM": "Sacred & the Profane (Aksum)",
+# Display names come from additionalContent.xml (scripts/dlc.py). Only tokens
+# no DLC claims need a word here.
+DLC_LABEL_EXTRA = {
+    "EVENT_CONTENT_UNAVAILABLE": "Content not installed",
 }
 
 
 def dlc_label(token: str) -> str | None:
     if not token:
         return None
-    return DLC_LABELS.get(token, m._tok(token, "EVENTPACK_", "EVENTCLASS_"))
+    return (dlcmap.label(token)
+            or DLC_LABEL_EXTRA.get(token)
+            or m._tok(token, "EVENTPACK_", "EVENTCLASS_"))
 
 
 def trigger_label(trigger: str, link_prereq: str | None) -> str:

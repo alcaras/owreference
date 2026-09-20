@@ -33,6 +33,7 @@ from collections import OrderedDict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_player, render_effect_city,
     render_effect_unit, render_bonus, _lookup_name, fmt_decimal, yield_name,
@@ -45,12 +46,15 @@ OUT = ROOT / "src" / "data" / "occurrences.json"
 # GameContentRequired token → DLC display name (from additionalContent.xml,
 # hardcoded here because that file maps many tokens per DLC and these four
 # are stable).
-DLC_LABEL = {
-    "CALAMITIES":           "Wrath of Gods",
-    "EVENTPACK_SCANDAL":    "Behind the Throne",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
-    "BEHIND_THE_THRONE":    "Behind the Throne",
+# Display names come from additionalContent.xml (scripts/dlc.py). Only the
+# legacy token spellings that no longer appear in aeGameContent live here.
+DLC_LEGACY = {
+    "BEHIND_THE_THRONE": "Behind the Throne",
 }
+
+
+def dlc_label(token: str) -> str:
+    return dlcmap.label(token) or DLC_LEGACY.get(token, "") or ""
 
 # SUBJECT_TILE_* have no Name in subject.xml — small display map.
 SUBJECT_LABEL = {
@@ -528,7 +532,7 @@ def main() -> int:
             "id": cls_entry.findtext("zType"),
             "name": text.get(cls_entry.findtext("Name") or "", "Calamities"),
             "dlc": dlc,
-            "dlcLabel": DLC_LABEL.get(dlc, dlc.replace("_", " ").title()),
+            "dlcLabel": dlc_label(dlc) or dlc.replace("_", " ").title(),
             "minRepeatPlayer": i(cls_entry, "iMinRepeatPlayer"),
             "maxPendingTurns": i(cls_entry, "iMaxPendingTurns"),
             "balanceDistribution": b(cls_entry, "bBalanceDistribution"),
@@ -553,7 +557,7 @@ def main() -> int:
             "slug": zt.replace("OCCURRENCE_", "").lower().replace("_", "-"),
             "name": name,
             "dlc": dlc,
-            "dlcLabel": DLC_LABEL.get(dlc, dlc.replace("_", " ").title()) if dlc else "Base game",
+            "dlcLabel": (dlc_label(dlc) or dlc.replace("_", " ").title()) if dlc else "Base game",
             "classId": cls,
             "baseId": base_id,
             "variant": variant,

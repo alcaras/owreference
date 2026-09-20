@@ -33,6 +33,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, fmt_decimal, yield_name,
 )
@@ -42,13 +43,18 @@ XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "resources.json"
 IMG_DIR = ROOT / "public" / "img" / "icons" / "resources"
 
-DLC_NAMES = {
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
+# Display names come from additionalContent.xml (scripts/dlc.py); the legacy
+# spellings below predate the content-type tokens and are kept as fallbacks.
+DLC_LEGACY = {
     "SACRED_AND_PROFANE": "Sacred and Profane",
     "WONDERS_AND_DYNASTIES": "Wonders and Dynasties",
     "BEHIND_THE_THRONE": "Behind the Throne",
     "EDGE_OF_THE_ICE": "Edge of the Ice",
 }
+
+
+def dlc_name(token: str) -> str:
+    return dlcmap.label(token) or DLC_LEGACY.get(token, "") or ""
 
 
 def parse(name: str) -> ET.Element:
@@ -276,8 +282,7 @@ def main() -> int:
             "slug": slug,
             "name": name,
             "icon": resolve_icon(e, zt),
-            "dlc": DLC_NAMES.get(e.findtext("GameContentRequired") or "",
-                                 (e.findtext("GameContentRequired") or "").replace("_", " ").title()) or None,
+            "dlc": dlc_name(e.findtext("GameContentRequired") or "") or None,
             "category": category,
             "spawns": spawns,
             "spawnTerrain": terrains,

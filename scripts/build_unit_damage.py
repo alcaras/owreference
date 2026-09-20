@@ -24,6 +24,7 @@ from itertools import combinations
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, fmt_decimal,
 )
@@ -277,13 +278,18 @@ ERA_BY_CULTURE = {
 }
 
 # DLC tag → short source label, mirroring build_wonders.py.
-SOURCE_LABEL = {
-    "":                     "Base game",
-    "WONDERS_DYNASTIES":    "Wonders & Dynasties",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
+# Source facet: additionalContent.xml via scripts/dlc.py, with the legacy
+# token spellings kept as fallbacks and "" meaning the base game.
+SOURCE_LEGACY = {
     "SEARCH_AND_PROGRESS":  "Search & Progress",
     "BEHIND_THE_THRONE":    "Behind the Throne",
 }
+
+
+def source_label(token: str) -> str:
+    if not token:
+        return "Base game"
+    return dlcmap.label(token) or SOURCE_LEGACY.get(token) or token.replace("_", " ").title()
 
 
 def parse(name: str) -> ET.Element:
@@ -607,7 +613,7 @@ def main() -> int:
             "improvementObsolete": imp_obsolete,
             "improvementObsoleteLabel": imp_name.get(imp_obsolete, "") if imp_obsolete else "",
             "techLabel": token_title(entry.findtext("TechPrereq") or "", "TECH_"),
-            "source": SOURCE_LABEL.get(dlc, token_title(dlc) if dlc else "Base game"),
+            "source": source_label(dlc),
             "iconSlug": (entry.findtext("zIconName") or zt).replace("UNIT_", "").lower(),
             "techPrereq": entry.findtext("TechPrereq") or "",
             # Cumulative science to field the unit from a blank slate: full

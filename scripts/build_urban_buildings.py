@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, fmt_decimal, yield_name,
 )
@@ -34,13 +35,7 @@ ICON_ALIASES = {"ministry": "ministries"}
 
 # GameContentRequired token → content-pack display name (same table as
 # build_events.py / build_occurrences.py).
-DLC_LABELS = {
-    "CALAMITIES":           "Wrath of Gods",
-    "EVENTPACK_SCANDAL":    "Behind the Throne",
-    "BEHIND_THE_THRONE":    "Behind the Throne",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
-    "WONDERS_AND_DYNASTIES": "Wonders & Dynasties",
-}
+DLC_LABELS = dlcmap.dlc_by_content()  # derived; see scripts/dlc.py
 
 
 def slugify(s: str) -> str:

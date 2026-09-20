@@ -40,6 +40,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import load_xml_indexes, _lookup_name, yield_name, fmt_decimal  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -53,11 +54,7 @@ RATING_LABELS: dict[str, str] = {
     "RATING_DISCIPLINE": "Discipline",
 }
 
-DLC_LABELS: dict[str, str] = {
-    # EVENTPACK_SCANDAL is the internal id of the Behind the Throne event pack
-    # (council-btt.xml — "btt").
-    "EVENTPACK_SCANDAL": "Behind the Throne",
-}
+DLC_LABELS = dlcmap.dlc_by_content()  # derived; see scripts/dlc.py
 
 
 def parse(name: str) -> ET.Element:

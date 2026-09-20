@@ -37,6 +37,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_player, render_effect_city,
     render_effect_unit, render_bonus, fmt_decimal, yield_name, _lookup_name,
@@ -55,17 +56,8 @@ RATING_LABELS: dict[str, str] = {
     "RATING_DISCIPLINE": "Discipline",
 }
 
-# GameContentRequired token → the DLC / content pack it ships with, matching
-# the labels used site-wide (see build_events.DLC_LABELS). "" = base game.
-SOURCE_LABELS: dict[str, str] = {
-    "":                     "Base game",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
-    "WONDERS_DYNASTIES":    "Wonders & Dynasties",
-    "AKSUM":                "The Sacred and the Profane",
-    "EVENTPACK_RELIGION":   "Religion event pack",
-    "EVENTPACK_SCANDAL":    "Behind the Throne",
-    "CALAMITIES":           "Wrath of Gods",
-}
+# GameContentRequired token → the DLC it ships with, derived from
+# additionalContent.xml (scripts/dlc.py); "" is the base game.
 
 # UI placeholders in the archetype-picker, not real character traits.
 SKIP_IDS = {
@@ -680,7 +672,7 @@ def main() -> int:
             "childhood": childhood,
             "description": description,
             "dlc": nice_token(dlc) if dlc else "",
-            "source": SOURCE_LABELS.get(dlc, nice_token(dlc)) if dlc else "Base game",
+            "source": (dlcmap.label(dlc) or nice_token(dlc)) if dlc else "Base game",
             "dynastyOf": dynasty_of,
             "flags": flags,
             "generalEffects": general_effects,

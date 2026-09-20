@@ -26,6 +26,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, render_effect_player, render_bonus,
     condition_name, yield_name, _lookup_name,
@@ -52,16 +53,7 @@ PROJECT_FILES = [
 ]
 
 # GameContentRequired token → DLC / content-pack label. Mirrors
-# build_events.py's DLC_LABELS; CALAMITIES confirmed as "Wrath of Gods"
-# via TEXT_ADDITIONAL_CONTENT_DLC_CALAMITIES in text-misc.xml.
-DLC_LABELS = {
-    "EVENTPACK_RELIGION": "Religion event pack",
-    "EVENTPACK_SCANDAL": "Behind the Throne",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
-    "WONDERS_DYNASTIES": "Wonders & Dynasties",
-    "AKSUM": "Sacred & the Profane (Aksum)",
-    "CALAMITIES": "Wrath of Gods",
-}
+# DLC display names are derived from additionalContent.xml (scripts/dlc.py).
 
 CULTURE_LABELS = {
     "CULTURE_WEAK": "Weak Culture",
@@ -354,7 +346,7 @@ def main() -> int:
             "name": name,
             "sortName": name,
             "icon": resolve_icon((e.findtext("zIcon") or "").strip()),
-            "source": DLC_LABELS.get(gcr, nice_token(gcr)) if gcr else "Base game",
+            "source": (dlcmap.label(gcr) or nice_token(gcr)) if gcr else "Base game",
             "dlc": bool(gcr),
             "eventOnly": (e.findtext("bHidden") or "0") == "1",
             "repeat": (e.findtext("bRepeat") or "0") == "1",

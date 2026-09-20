@@ -24,6 +24,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_player, render_bonus,
     render_effect_city, render_effect_player_scalars,
@@ -304,13 +305,18 @@ def location_tags(entry: ET.Element) -> list[str]:
 
 
 # Short source label for the Source/DLC facet.
-SOURCE_LABEL = {
-    "":                     "Base game",
-    "WONDERS_DYNASTIES":    "Wonders & Dynasties",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
+# Source facet: additionalContent.xml via scripts/dlc.py, with the legacy
+# token spellings kept as fallbacks and "" meaning the base game.
+SOURCE_LEGACY = {
     "SEARCH_AND_PROGRESS":  "Search & Progress",
     "BEHIND_THE_THRONE":    "Behind the Throne",
 }
+
+
+def source_label(token: str) -> str:
+    if not token:
+        return "Base game"
+    return dlcmap.label(token) or SOURCE_LEGACY.get(token) or token.replace("_", " ").title()
 
 # Curated Wikipedia targets — the *historical* wonder, not the generic
 # term. Keyed by improvement zType. Anything not listed falls back to the
@@ -367,12 +373,10 @@ def output_lines(entry: ET.Element) -> list[dict]:
     return out
 
 
-DLC_LABEL = {
-    "WONDERS_DYNASTIES":  "Wonders & Dynasties DLC",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus DLC",
-    "SEARCH_AND_PROGRESS": "Search & Progress DLC",
-    "BEHIND_THE_THRONE":   "Behind the Throne DLC",
-}
+def dlc_label(token: str) -> str:
+    """Same names as the Source facet, with the DLC suffix the page uses."""
+    name = source_label(token)
+    return f"{name} DLC" if token else name
 
 
 def wonder_decision_events() -> dict[str, list[dict]]:
@@ -447,7 +451,7 @@ def main() -> int:
         build_turns = int(entry.findtext("iBuildTurns") or "0")
         vp = 0  # filled below from effect player
         dlc_tag = entry.findtext("GameContentRequired") or ""
-        dlc_label = DLC_LABEL.get(dlc_tag, dlc_tag.replace("_", " ").title() if dlc_tag else "")
+        dlc_label_text = dlc_label(dlc_tag)
 
         # Ongoing + scalar bonus via humanizer (chain through EffectPlayer)
         ep_id = (entry.findtext("EffectPlayer") or "").strip()
@@ -513,7 +517,7 @@ def main() -> int:
             "culturePrereq": culture,
             "location": location,
             "locationTags": location_tags(entry),
-            "source": SOURCE_LABEL.get(dlc_tag, dlc_tag.replace("_", " ").title() if dlc_tag else "Base game"),
+            "source": source_label(dlc_tag),
             "buildTurns": build_turns,
             "cost": cost,
             "costMap": cost_map,
@@ -527,7 +531,7 @@ def main() -> int:
             "oneTime": one_time,
             "scopes": scopes,
             "dlc": dlc_tag,
-            "dlcLabel": dlc_label,
+            "dlcLabel": dlc_label_text,
             "nation": "Any",     # All XML wonders are universal in OW
             "isHolyCity": (entry.findtext("bHolyCityValid") or "") == "1",
             "events": events_by_wonder.get(zt, []),

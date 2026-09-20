@@ -30,6 +30,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import _strip_link_templates  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -151,16 +152,7 @@ INTERNAL_EXACT = {
     "MISSION_TRIBE_DECLARE_WAR", "MISSION_TRIBE_BREAK_PEACE",
 }
 
-DLC_LABELS = {
-    "AKSUM": "Aksum",
-    "CALAMITIES": "Calamities",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
-    "EVENTPACK_RELIGION": "Religion Event Pack",
-    "EVENTPACK_SCANDAL": "Scandal Event Pack",
-    "WONDERS_DYNASTIES": "Wonders & Dynasties",
-    "BEHIND_THE_THRONE": "Behind the Throne",
-    "SACRED_AND_PROFANE": "Sacred & Profane",
-}
+DLC_LABELS = dlcmap.dlc_by_content()  # derived; see scripts/dlc.py
 
 
 def load_text(*filenames: str) -> dict[str, str]:

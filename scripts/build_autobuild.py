@@ -40,6 +40,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, _lookup_name, _first_form, yield_name, fmt_decimal,
 )
@@ -65,13 +66,7 @@ AI_CONSTANTS = [
     "AI_MAX_ALLOWED_EXPENSE_IN_SHORTAGE",
 ]
 
-DLC_LABELS = {
-    "EVENTPACK_RELIGION": "The Sacred and the Profane",
-    "EVENTPACK_SCANDAL": "Behind the Throne",
-    "EMPIRES_OF_THE_INDUS": "Empires of the Indus",
-    "WONDERS_DYNASTIES": "Wonders & Dynasties",
-    "CALAMITIES": "Wrath of Gods",
-}
+DLC_LABELS = dlcmap.dlc_by_content()  # derived; see scripts/dlc.py
 
 # The Autonomous Rule lifecycle is DETECTED, not listed: every event whose
 # options (transitively, through nested aeBonuses) add or remove
