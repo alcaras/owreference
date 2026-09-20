@@ -279,11 +279,43 @@ SUBJECT_LABELS = {
 }
 
 
+# ── How long a "…Recently" gate lasts ─────────────────────────────────────
+# A SUBJECT_*_RECENTLY token carries no duration of its own: subject.xml gives
+# it a MemoryPrereq, and the memory's lifetime is iTurns (memory_info() reads
+# it, taking memoryLevel.xml's value when the memory defers to a level —
+# InfoBase.cs:4274 MemoryInfo.turns). Player.doMemoryTurn (Player.cs:14573)
+# drops the memory once `turn >= added + iTurns`, so the gate means "within
+# the last N turns" and clears on turn added+N. Permanent memories
+# (…_FOREVER levels, no iTurns) report None and get no suffix.
+_SUBJECT_MEMORY_TURNS: dict[str, int] | None = None
+
+
+def subject_memory_turns() -> dict[str, int]:
+    """SUBJECT_* token → turns its gating memory lasts (expiring ones only)."""
+    global _SUBJECT_MEMORY_TURNS
+    if _SUBJECT_MEMORY_TURNS is None:
+        mem = memory_info()
+        _SUBJECT_MEMORY_TURNS = {}
+        for e in ET.parse(XML_DIR / "subject.xml").getroot().findall("Entry"):
+            z, prereq = e.findtext("zType"), (e.findtext("MemoryPrereq") or "").strip()
+            turns = (mem.get(prereq) or {}).get("turns")
+            if z and turns:
+                _SUBJECT_MEMORY_TURNS[z] = turns
+    return _SUBJECT_MEMORY_TURNS
+
+
+def turns_suffix(turns: int | None) -> str:
+    """' (2 turns)' / ' (1 turn)' / '' — for appending to a gate label."""
+    return f" ({turns} turn{'s' if turns != 1 else ''})" if turns else ""
+
+
 def subject_label(s: str) -> str:
     if s in SUBJECT_LABELS:
-        return SUBJECT_LABELS[s]
-    t = s.replace("SUBJECT_", "").replace("COGNOMEN_", "").replace("CHARACTER_", "")
-    return t.replace("_", " ").title()
+        label = SUBJECT_LABELS[s]
+    else:
+        t = s.replace("SUBJECT_", "").replace("COGNOMEN_", "").replace("CHARACTER_", "")
+        label = t.replace("_", " ").title()
+    return label + turns_suffix(subject_memory_turns().get(s))
 
 
 def pairs(e: ET.Element, tag: str) -> list[tuple[str, int]]:

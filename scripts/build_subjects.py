@@ -43,6 +43,8 @@ OUT = ROOT / "src" / "data" / "subjects.json"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import load_xml_indexes, load_text, _first_form  # noqa: E402
+# Memory lifetimes (how long "recently" is) — one resolver, shared.
+from build_missions import memory_info, turns_suffix  # noqa: E402
 
 # File-name suffix → DLC / content pack. Same set build_events.py reads.
 SUFFIX_DLC = {
@@ -309,6 +311,11 @@ def render_reqs(entry: ET.Element, schema: dict[str, str], resolve: Resolver) ->
         if val:
             label = REF_LABELS.get(tag, _camel_words(tag))
             pretty = resolve.name(val, ("SUBJECTRELATION_",))
+            # A memory gate only means something with its lifetime attached:
+            # the memory names the event, iTurns says how long it counts as
+            # "recent" (see build_missions.subject_memory_turns).
+            if tag.startswith("Memory"):
+                pretty += turns_suffix((memory_info().get(val) or {}).get("turns"))
             if label.endswith("≥") or label.endswith("≤"):
                 add(f"{label} {pretty}", tag)
             else:
