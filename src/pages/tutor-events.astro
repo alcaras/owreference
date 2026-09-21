@@ -241,7 +241,7 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
   /* Competitive-Mode eligibility (green/red) + earliest-fire turn markers */
   .chip--cm { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.02em; padding: 0.05rem 0.4rem; border-radius: 5px; border: 1px solid transparent; }
   .chip--cm-yes { color: #6ba368; background: color-mix(in srgb, #6ba368 14%, var(--bg-elev)); border-color: color-mix(in srgb, #6ba368 40%, transparent); }
-  .chip--cm-no  { color: #c25555; background: color-mix(in srgb, #c25555 14%, var(--bg-elev)); border-color: color-mix(in srgb, #c25555 40%, transparent); }
+  .chip--cm-no  { color: var(--ink-neg); background: color-mix(in srgb, #c25555 14%, var(--bg-elev)); border-color: color-mix(in srgb, #c25555 40%, transparent); }
   .chip--turn { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.02em; padding: 0.05rem 0.4rem; border-radius: 5px; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev)); border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent); }
   .se__author {
     display: block;
@@ -269,7 +269,7 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
     padding: 0.05rem 0.45rem;
     border-radius: 999px;
     font-size: 0.66rem;
-    background: var(--yield-bg, var(--bg-elev));
+    background: var(--yield-fill, var(--bg-elev));
     color: var(--yield-fg, var(--text));
     border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 60%, #000 40%);
   }

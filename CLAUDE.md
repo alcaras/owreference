@@ -31,6 +31,7 @@ make audit      scripts/audit_coverage.py → HARD GATE: any XML effect field th
 make changelog  scripts/changelog.py      → diffs EVERY src/data/*.json vs snapshot → CHANGELOG.md
 make build      npx astro build           → dist/
 make check      scripts/check_links.py    → no broken internal links / unresolved <Term>s
+make contrast   scripts/audit_contrast.mjs→ WCAG AA text contrast on the built site (headless Chrome)
 ```
 
 Per-patch flow: `make patch` (= sync art data audit changelog build check) → review CHANGELOG → `git push` → GH Actions deploys. New `build_*.py` outputs join the changelog automatically; new XML fields trip the audit until handled.
@@ -102,6 +103,17 @@ These came from the user, the design pass, and iteration. Don't relitigate:
 10. **Yield tokens (`theme.css`):** match the legacy spreadsheet Intro tab legend (Science purple, Civics peach, Training pink, etc.), adapted for dark mode.
 11. **Nation picker popover** on the page meta lets users hide/show specific nation columns; composes with the header search.
 12. **Fonts:** Cinzel for display, Inter for body, JetBrains Mono for footer labels / kbd badges.
+13. **Every piece of text clears WCAG AA (4.5:1) on the surface it actually sits on** —
+    `make contrast` (headless Chrome over `dist/`, `scripts/audit_contrast.mjs`) measures
+    it and fails on any miss. The palette is built for it: the `--text-*` ramp in
+    `theme.css` (`--text-faint` is real text — deity/family names, placeholders — so it is
+    L 0.66, not the old 0.48 that a reader called unreadable grey; `--text-ghost` is the
+    only quieter step and is for aria-hidden decoration), and per-yield tokens
+    `--yield-bg` (ink: bars, glyphs) / `--yield-fill` (surface under text) / `--yield-fg` /
+    `--yield-ink` (the yield as text on the dark base) / `--yield-tint` (a chip inside a
+    fill). Never paint text on `--yield-bg` directly, never dim text with `opacity`, and
+    never pick a foreground by luminance threshold — measure (`best_fg` in
+    `build_data.py` compares both candidates under the scrim the tag paints).
 
 ---
 

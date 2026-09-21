@@ -329,7 +329,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     /* Competitive-Mode eligibility badge (green = eligible, red = excluded) */
     .chip--cm { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.02em; padding: 0.06rem 0.42rem; border-radius: 5px; border: 1px solid transparent; }
     .chip--cm-yes { color: #6ba368; background: color-mix(in srgb, #6ba368 14%, var(--bg-elev)); border-color: color-mix(in srgb, #6ba368 40%, transparent); }
-    .chip--cm-no  { color: #c25555; background: color-mix(in srgb, #c25555 14%, var(--bg-elev)); border-color: color-mix(in srgb, #c25555 40%, transparent); }
+    .chip--cm-no  { color: var(--ink-neg); background: color-mix(in srgb, #c25555 14%, var(--bg-elev)); border-color: color-mix(in srgb, #c25555 40%, transparent); }
     /* Earliest-fire turn marker (promoted to the summary row) */
     .chip--turn { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev)); border-color: color-mix(in srgb, var(--accent) 38%, transparent); }
     .chip--cond { background: var(--bg-elev); color: var(--text-dim); border: 1px solid var(--border); padding: 0.06rem 0.42rem; font-size: 0.68rem; border-radius: 5px; }
@@ -386,7 +386,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     }
     /* Memory-eligibility hints, not guaranteed chains — dimmer than leadsTo. */
     .opt__leads--maybe { color: var(--text-faint); cursor: help; }
-    .opt__leads--dead { color: var(--text-faint); opacity: 0.75; font-style: italic; cursor: help; }
+    .opt__leads--dead { color: var(--text-faint); font-style: italic; cursor: help; }
     .opt__leads--maybe a { color: color-mix(in srgb, var(--accent) 70%, var(--text-faint)); }
   </style>
 </Base>

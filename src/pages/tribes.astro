@@ -225,7 +225,7 @@ const specialCount = combat.reduce(
               onerror="this.style.visibility='hidden'"
             />
             <span class="tribe-generic__name">{t.name}</span>
-            <span class="tribe-generic__sep">·</span>
+            <span class="tribe-generic__sep" aria-hidden="true">·</span>
             <span class="tribe-generic__dim">no diplomacy · no special unit</span>
           </li>
         ))}
@@ -362,6 +362,6 @@ const specialCount = combat.reduce(
     font-weight: 600;
     color: var(--text);
   }
-  .tribe-generic__sep { color: var(--border); }
+  .tribe-generic__sep { color: var(--text-ghost); }
   .tribe-generic__dim { color: var(--text-faint); font-size: 0.8rem; }
 </style>

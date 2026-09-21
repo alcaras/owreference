@@ -19,10 +19,24 @@
      under --border so it never reads as a grid. */
   --col-rule:     oklch(0.305 0.011 80);
 
+  /* Text ramp. Every step is real text somewhere (deity names, family names,
+     placeholders, footnotes), so every step must clear WCAG AA 4.5:1 on the
+     surfaces it sits on: --text-dim on --bg-elev-3 (5.9:1), --text-faint on
+     --bg-elev-2 (4.7:1). The old --text-faint (L 0.48) measured 2.9:1 on the
+     base background — the "grey text I can't read" report. Decoration that
+     carries no information (footer dots, empty-cell dashes) may go quieter
+     via --text-ghost, never via these. Audit: scripts/audit_contrast.mjs. */
   --text:         oklch(0.94 0.008 80);
   --text-soft:    oklch(0.82 0.010 80);
-  --text-dim:     oklch(0.62 0.012 80);
-  --text-faint:   oklch(0.48 0.012 80);
+  --text-dim:     oklch(0.72 0.012 80);
+  --text-faint:   oklch(0.66 0.012 80);
+  --text-ghost:   oklch(0.50 0.012 80);
+
+  /* Signed values as text on the dark surfaces (CM ✗ chips, negative deltas).
+     The raw Training red (#c25555) is 3.4:1 there; these clear 4.5:1 on every
+     elevation. */
+  --ink-neg:      #dd7878;
+  --ink-pos:      #7fb87c;
 
   --gold:         oklch(0.82 0.13 82);
   --gold-soft:    oklch(0.70 0.10 82);
@@ -92,35 +106,63 @@ h1, h2, h3 {
   color: var(--text);
 }
 
-/* ─── Yield tokens (used as 3px left-bar color on cells) ─── */
-.yield-science     { --yield-bg:#6b5ea6; }
-.yield-civics      { --yield-bg:#c98b46; }
-.yield-training    { --yield-bg:#c25555; }
-.yield-money       { --yield-bg:#d9b13a; }
-.yield-food        { --yield-bg:#5e8c43; }
-.yield-iron        { --yield-bg:#8a8a8e; }
-.yield-stone       { --yield-bg:#b3b3b8; }
-.yield-wood        { --yield-bg:#8a4a08; }
-.yield-culture     { --yield-bg:#4e84b8; }
-.yield-growth      { --yield-bg:#6ba368; }
-.yield-orders      { --yield-bg:#b8b8c0; }
-.yield-discontent  { --yield-bg:#7a6ea3; }
-.yield-happiness   { --yield-bg:#d9b13a; }
-.yield-influence   { --yield-bg:#c8c9d3; }
-.yield-intrigue    { --yield-bg:#735483; }
-.yield-legitimacy  { --yield-bg:#c9a04a; }
-.yield-maintenance { --yield-bg:#a35858; }
-.yield-divine_favor{ --yield-bg:#e3c45f; }
-.yield-wrath       { --yield-bg:#a83838; }
-.yield-misc        { --yield-bg: var(--border-strong); }
+/* ─── Yield tokens ───
+   --yield-bg   the yield's colour as INK: legend glyphs, 3px left bars, borders.
+   --yield-fill the same yield as a SURFACE under text (effect tiles, shrine
+                rails, hurry pills, role headers). Pages paint the fill and lay
+                their own scrim gradient (≤28% black / ≤8% white) on top.
+   --yield-fg   the text colour on that surface.
+   --yield-ink  the yield as TEXT on the dark base (a Science-purple number, a
+                law's upkeep): the token mixed toward white until it clears
+                4.6:1 on --bg-elev-3. The pale yields are already there.
+   --yield-tint a translucent chip laid INSIDE a fill (a tag on a theology
+                card): black on light-text fills, white on dark-text fills, so
+                it always moves the surface away from the text.
+   Mid-luminance yields (Civics, Growth, Food, Culture, Iron, Training…) clear
+   4.5:1 with NEITHER near-white nor near-black text on the raw token — Civics
+   measured 2.1–2.5:1 on shrine cards and hurry pills. So the fill is the token
+   deepened just enough that near-white text reaches ≥4.6:1 before any scrim
+   (the +8% white edge of a pill is the worst case); the six pale yields keep
+   their hue and take dark text, which stays ≥4.6:1 under a 28% black scrim.
+   Verified numerically in scripts/audit_contrast.mjs — re-run it if a value
+   here changes. */
+.yield-science     { --yield-bg:#6b5ea6; --yield-fill:#5e5392; --yield-ink:#948bbf; }
+.yield-civics      { --yield-bg:#c98b46; --yield-fill:#79532a; --yield-ink:#c98b46; }
+.yield-training    { --yield-bg:#c25555; --yield-fill:#974242; --yield-ink:#cf7979; }
+.yield-money       { --yield-bg:#d9b13a; --yield-fill:#d9b13a; --yield-ink:#d9b13a; }
+.yield-food        { --yield-bg:#5e8c43; --yield-fill:#446530; --yield-ink:#759c5d; }
+.yield-iron        { --yield-bg:#8a8a8e; --yield-fill:#5b5b5e; --yield-ink:#919195; }
+.yield-stone       { --yield-bg:#b3b3b8; --yield-fill:#b3b3b8; --yield-ink:#b3b3b8; }
+.yield-wood        { --yield-bg:#8a4a08; --yield-fill:#8a4a08; --yield-ink:#b3895e; }
+.yield-culture     { --yield-bg:#4e84b8; --yield-fill:#385f84; --yield-ink:#6795c2; }
+.yield-growth      { --yield-bg:#6ba368; --yield-fill:#426540; --yield-ink:#6ba368; }
+.yield-orders      { --yield-bg:#b8b8c0; --yield-fill:#b8b8c0; --yield-ink:#b8b8c0; }
+.yield-discontent  { --yield-bg:#7a6ea3; --yield-fill:#5f567f; --yield-ink:#958bb5; }
+.yield-happiness   { --yield-bg:#d9b13a; --yield-fill:#d9b13a; --yield-ink:#d9b13a; }
+.yield-influence   { --yield-bg:#c8c9d3; --yield-fill:#c8c9d3; --yield-ink:#c8c9d3; }
+.yield-intrigue    { --yield-bg:#735483; --yield-fill:#6e517e; --yield-ink:#a08bab; }
+.yield-legitimacy  { --yield-bg:#c9a04a; --yield-fill:#6f5829; --yield-ink:#c9a04a; }
+.yield-maintenance { --yield-bg:#a35858; --yield-fill:#8b4b4b; --yield-ink:#bb8383; }
+.yield-divine_favor{ --yield-bg:#e3c45f; --yield-fill:#e3c45f; --yield-ink:#e3c45f; }
+.yield-wrath       { --yield-bg:#a83838; --yield-fill:#a63737; --yield-ink:#c67e7e; }
+.yield-misc        { --yield-bg: var(--border-strong); --yield-fill: var(--border-strong); --yield-ink: var(--text-dim); }
 
-/* Light token backgrounds need dark text on filled .effect tiles — the
-   25% black scrim alone leaves near-white text at ~2.5:1 there. Pages
-   reference var(--yield-fg, var(--text)); dark tokens fall through to
-   the default near-white. */
+/* Text on a yield fill. Near-white by default; the six pale yields take dark
+   text. Pages reference var(--yield-fg, var(--text)) — the fallback only
+   matters for elements that carry no .yield-* class at all. */
+[class*="yield-"] {
+  --yield-fg: var(--text);
+  --yield-tint: rgba(0,0,0,0.22);
+  /* signed values (opinion +20 / −10) on a fill */
+  --on-fill-pos: #aef2c9;
+  --on-fill-neg: #f2aeae;
+}
 .yield-money, .yield-happiness, .yield-stone, .yield-orders,
 .yield-influence, .yield-divine_favor {
   --yield-fg: #16171c;
+  --yield-tint: rgba(255,255,255,0.28);
+  --on-fill-pos: #0a3a1c;
+  --on-fill-neg: #6e0f0f;
 }
 
 /* Legend chips */
@@ -221,7 +263,7 @@ h1, h2, h3 {
 .hdr__menu { position: relative; }
 .hdr__menu > summary { list-style: none; cursor: pointer; user-select: none; display: inline-block; }
 .hdr__menu > summary::-webkit-details-marker { display: none; }
-.hdr__caret { margin-left: 0.3em; font-size: 0.7em; opacity: 0.6; }
+.hdr__caret { margin-left: 0.3em; font-size: 0.7em; opacity: 0.85; }
 .hdr__menu[open] > summary { color: var(--text); background: var(--bg-elev); }
 .hdr__panel {
   position: absolute;
@@ -665,7 +707,9 @@ h1, h2, h3 {
 .cell.hl { cursor: default; transition: background 0.12s; }
 .cell.hl:hover { background: oklch(0.30 0.04 80 / 0.45); }
 .cell.is-related { background: var(--gold-glow); }
-.cell__dash { opacity: 0.3; font-family: var(--font-mono); }
+/* The empty-cell dash means "nothing here" — it must stay readable (≥3:1),
+   just quieter than data. Colour, not opacity, so the audit can see it. */
+.cell__dash { color: var(--text-faint); font-family: var(--font-mono); }
 
 /* Links inside cells — quiet, underline on hover only */
 .cell a, .cell .term {
@@ -905,7 +949,7 @@ a.shrine__head:hover .shrine__type { text-decoration: underline; text-underline-
 }
 .foot__val { color: var(--text); font-variant-numeric: tabular-nums; }
 .foot__val--dim { color: var(--text-dim); }
-.foot__dot { color: var(--text-faint); opacity: 0.6; }
+.foot__dot { color: var(--text-ghost); }
 .foot a { color: var(--text-soft); text-decoration: none; }
 .foot a:hover { color: var(--gold); text-decoration: underline; }
 

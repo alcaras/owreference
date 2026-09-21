@@ -386,7 +386,11 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
     margin-left: 0.25rem;
     font-family: var(--font-mono);
     font-size: 0.66rem;
-    color: var(--gold-soft, var(--text-faint));
+    /* Sits on a yield fill, so it takes the fill's own text colour; the
+       dotted underline is the "there is a tooltip" cue. */
+    color: inherit;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
     cursor: help;
   }
 

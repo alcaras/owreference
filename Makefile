@@ -1,4 +1,4 @@
-.PHONY: patch sync art data audit changelog dev build check preview clean install
+.PHONY: patch sync art data audit changelog dev build check contrast preview clean install
 
 # Full per-patch pipeline. Run this after the game updates.
 patch: sync art data audit changelog build check
@@ -16,6 +16,11 @@ audit:
 # Post-build sanity: no broken internal links, no unresolved <Term>s.
 check:
 	@python3 scripts/check_links.py
+
+# Text-contrast audit of dist/ in headless Chrome (WCAG AA). Sampled by
+# default; `node scripts/audit_contrast.mjs --all` for every page.
+contrast:
+	@node scripts/audit_contrast.mjs
 
 sync:
 	@bash scripts/sync_patch.sh

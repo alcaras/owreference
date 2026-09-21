@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import data from '../data/stat-scaling.json';
 import { yieldColors } from '../lib/entities';
+import { inkFor } from '../lib/color';
 
 const base = import.meta.env.BASE_URL;
 const yieldIcon = (key: string) => `${base}img/icons/yields/${key}.png`;
@@ -22,6 +23,10 @@ for (const s of stats as any[])
 // yieldColors is the same dark-mode-adapted registry the rest of the site uses.
 const statColor = (s: any): string =>
   (yieldColors as Record<string, string>)[String(s.yield).toUpperCase()] || s.color;
+// The same colour as TEXT on the dark base: Science purple is 3.1:1 raw, so
+// readouts and the stat heading use the lightened ink (graph strokes and
+// swatches keep the true colour — they are marks, not text).
+const statInk = (s: any): string => inkFor(statColor(s));
 
 // Format a Leader (flat-yield) value: signed, drop trailing .0.
 function fmtYield(v: number): string {
@@ -49,7 +54,7 @@ function fmtCell(role: any, v: number): string {
 const agentData = {
   stats: (stats as any[]).map((s) => ({
     slug: s.slug, name: s.name, yield: s.yield, yieldLabel: s.yieldLabel,
-    percent: s.baseRates.agent, color: statColor(s),
+    percent: s.baseRates.agent, color: statColor(s), ink: statInk(s),
   })),
   schemerModifier: agentCalc.schemerModifier,
   opinions: agentCalc.opinions,
@@ -58,7 +63,7 @@ const agentData = {
 const graphData = {
   ratings,
   stats: (stats as any[]).map((s) => ({
-    slug: s.slug, name: s.name, color: statColor(s), yield: s.yield,
+    slug: s.slug, name: s.name, color: statColor(s), ink: statInk(s), yield: s.yield,
     roles: s.roles.map((r: any) => ({ key: r.key, label: r.label, effect: r.effect, kind: r.kind })),
     base: Object.fromEntries(s.roles.map((r: any) => [r.key, s.base.map((row: any) => row[r.key])])),
     cm: Object.fromEntries(s.roles.map((r: any) => [r.key, s.cm.map((row: any) => row[r.key])])),
@@ -145,7 +150,7 @@ const graphData = {
       <section class={`scale-stat yield-${stat.yield}`}>
         <header class="scale-stat__hdr">
           <img class="scale-stat__ico" src={yieldIcon(stat.yield)} alt="" onerror="this.style.display='none'" />
-          <h2 class="scale-stat__name" style={`--stat-color:${statColor(stat)}`}>{stat.name}</h2>
+          <h2 class="scale-stat__name" style={`--stat-color:${statInk(stat)}`}>{stat.name}</h2>
           <span class="scale-stat__yield">signature yield: <b>{stat.yieldLabel}</b></span>
         </header>
         <div class="grid">
@@ -311,7 +316,7 @@ const graphData = {
 
         const fmt = (v) => (v > 0 ? '+' : '') + (Number.isInteger(v) ? v : v.toFixed(1));
         resultEl.innerHTML =
-          `<b style="color:${stat.color}">${fmt(y)} ${stat.yieldLabel}</b> per turn ` +
+          `<b style="color:${stat.ink}">${fmt(y)} ${stat.yieldLabel}</b> per turn ` +
           `<span class="ac-result__pct">(${pct}% of the city's base ${stat.yieldLabel})</span>`;
 
         let steps = `${stat.percent} × ${rating} (${stat.name})`;
@@ -428,7 +433,7 @@ const graphData = {
           g += `<circle cx="${mx}" cy="${yS(cmS[idx])}" r="4" class="cg-dot-cm" style="fill:${stat.color}"/>`;
           readoutEl.innerHTML =
             `Rating <b>${r > 0 ? '+' + r : r}</b> · ${role.label}: ` +
-            `Competitive <b style="color:${stat.color}">${fmt(role.kind, cmS[idx])}</b> · ` +
+            `Competitive <b style="color:${stat.ink}">${fmt(role.kind, cmS[idx])}</b> · ` +
             `Non-competitive <b>${fmt(role.kind, baseS[idx])}</b>`;
         }
         setSVG(svg, g);
@@ -516,8 +521,7 @@ const graphData = {
   .numval { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.82rem; }
   .cell--num.is-empty { background: var(--bg-elev); }
   .cell--num.is-empty .numval { color: var(--text-faint); }
-  .cell--num.is-neg .numval { opacity: 0.75; }
-  tr.is-zero { opacity: 0.6; }
+  tr.is-zero .numval,
   tr.is-zero .rowlabel--rate { color: var(--text-faint); }
 
   /* ── Interactive rating graph ── */

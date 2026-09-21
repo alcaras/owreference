@@ -255,9 +255,9 @@ for (const g of laws.groups) {
     border-radius: var(--radius-sm);
     font-size: 0.74rem;
     line-height: 1.3;
-    background: var(--yield-bg, var(--bg-elev));
+    background: var(--yield-fill, var(--bg-elev));
     color: var(--yield-fg, var(--text));
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.32));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.28));
     border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
   }
   .lawcard__effects .effect a {
@@ -289,11 +289,14 @@ for (const g of laws.groups) {
 
   /* Per-turn upkeep — colored by the yield it drains */
   .lawcard__upkeep {
-    background: color-mix(in srgb, var(--yield-bg, var(--bg-elev-3)) 22%, var(--bg-elev-3) 78%);
-    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 45%, transparent);
+    /* The yield lives in the border + the number's ink; a same-hued tint
+       under a same-hued number is what held these at ~4:1. */
+    color: var(--text-soft);
+    background: var(--bg-elev-2);
+    border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 55%, transparent);
   }
   .lawcard__upkeep b {
-    color: color-mix(in srgb, var(--yield-bg, var(--text)) 65%, #fff 35%);
+    color: var(--yield-ink, var(--text));
   }
 
   /* Faction opinion chips — who likes this law */

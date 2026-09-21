@@ -457,7 +457,7 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
     border-radius: var(--radius-sm);
     font-size: 0.74rem;
     line-height: 1.3;
-    background: var(--yield-bg, var(--bg-elev));
+    background: var(--yield-fill, var(--bg-elev));
     color: var(--yield-fg, var(--text));
     background-image: linear-gradient(180deg, #ffffff0d, #0003 60%, #00000052);
     border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
@@ -559,7 +559,11 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
     margin-left: 0.25rem;
     font-family: var(--font-mono);
     font-size: 0.66rem;
-    color: var(--gold-soft, var(--text-faint));
+    /* Sits on a yield fill, so it takes the fill's own text colour; the
+       dotted underline is the "there is a tooltip" cue. */
+    color: inherit;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
     cursor: help;
   }
 

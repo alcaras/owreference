@@ -279,9 +279,9 @@ function theologyYield(eff: string[]): string {
     gap: 0.5rem;
   }
   .theology {
-    background: var(--yield-bg, var(--bg-elev));
+    background: var(--yield-fill, var(--bg-elev));
     color: var(--yield-fg, var(--text));
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.34));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.28));
     border: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
     border-radius: 6px;
     padding: 0.55rem 0.7rem;
@@ -305,7 +305,6 @@ function theologyYield(eff: string[]): string {
   }
   .theology__prereq {
     font-size: 0.65rem;
-    opacity: 0.75;
     font-style: italic;
   }
   .theology__scope {
@@ -316,7 +315,6 @@ function theologyYield(eff: string[]): string {
        --text-faint grey — that token is tuned for the near-black site base and
        washes out on these tinted theology cards. */
     color: inherit;
-    opacity: 0.68;
     margin: 0.45rem 0 0.15rem;
   }
   .theology__effects {
@@ -333,7 +331,6 @@ function theologyYield(eff: string[]): string {
   }
   .theology__effect--empty {
     margin: 0;
-    opacity: 0.7;
     font-style: italic;
   }
   .theology__foot {
@@ -349,7 +346,7 @@ function theologyYield(eff: string[]): string {
     font-size: 0.66rem;
     padding: 0.1rem 0.45rem;
     border-radius: 999px;
-    background: rgba(0,0,0,0.22);
+    background: var(--yield-tint, rgba(0,0,0,0.22));
     display: inline-flex;
     align-items: baseline;
     gap: 0.25rem;
@@ -359,6 +356,6 @@ function theologyYield(eff: string[]): string {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
   }
-  .opinion-tag--pos b { color: #aef2c9; }
-  .opinion-tag--neg b { color: #f2aeae; }
+  .opinion-tag--pos b { color: var(--on-fill-pos, #aef2c9); }
+  .opinion-tag--neg b { color: var(--on-fill-neg, #f2aeae); }
 </style>

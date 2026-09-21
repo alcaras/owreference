@@ -109,7 +109,7 @@ function fmtCell(v: number | string | null, unit: 'flat' | 'pct' | 'raw'): strin
   .stat-curve { font-size: 0.78rem; }
 
   .stat-curve .nhdr--role {
-    background: var(--yield-bg, var(--bg-elev));
+    background: var(--yield-fill, var(--bg-elev));
     color: var(--yield-fg, var(--text));
     background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.22));
     text-align: center;
@@ -136,7 +136,7 @@ function fmtCell(v: number | string | null, unit: 'flat' | 'pct' | 'raw'): strin
 
   /* Sticky rating column on the left, tinted by the stat's own yield. */
   .stat-curve .rowlabel--rating {
-    background: var(--yield-bg);
+    background: var(--yield-fill);
     color: var(--yield-fg);
     background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.22));
     font-family: var(--font-mono);

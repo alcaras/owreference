@@ -90,12 +90,24 @@ def luminance(h: str) -> float:
     return 0.2126 * chan(r) + 0.7152 * chan(g) + 0.0722 * chan(b)
 
 
+def contrast(a: str, b: str) -> float:
+    """WCAG contrast ratio between two hex colours."""
+    la, lb = luminance(a), luminance(b)
+    return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
+
+
 def best_fg(bg: str) -> str:
-    """Pick black or white text for contrast against a tinted-down bg."""
-    # In our dark theme cells, we overlay a 0.35-alpha black scrim on the bg.
-    # That means the effective bg is darker than `bg` itself, so most colors want white text.
-    # Only very light bgs (luma > 0.7) get black-ish text.
-    return "#111418" if luminance(bg) > 0.65 else "#f5f6f8"
+    """Pick dark or light text for a nation-coloured tag.
+
+    Measured, not thresholded: the tags (.nation-tag, families.astro) lay a
+    10% black scrim over the nation colour, so compare both candidates against
+    that darkened surface and take the better one. The old luminance cut-off
+    (>0.65 → dark) left near-white text on Aksum pink and Babylonia green at
+    ~3:1; dark text is ~5:1 there."""
+    r, g, b = hex_to_rgb(bg)
+    scrimmed = "#%02x%02x%02x" % (round(r * 0.9), round(g * 0.9), round(b * 0.9))
+    dark, light = "#111418", "#f5f6f8"
+    return dark if contrast(dark, scrimmed) >= contrast(light, scrimmed) else light
 
 
 SHRINE_TYPE_PRIMARY_YIELD = {

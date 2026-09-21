@@ -528,9 +528,9 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
     border-radius: var(--radius-sm);
     font-size: 0.7rem;
     line-height: 1.3;
-    background: var(--yield-bg, var(--bg-elev));
+    background: var(--yield-fill, var(--bg-elev));
     color: var(--yield-fg, var(--text));
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.32));
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.28));
     border: 1px solid color-mix(in srgb, var(--yield-bg, var(--border)) 50%, #000 50%);
   }
 
@@ -625,7 +625,7 @@ function developWindow(d: NonNullable<Building['developsInto']>): string {
   .develop-req { font-style: italic; color: var(--text-dim); }
   /* Conditional output — only paid while the tile is on the trade network.
      The italic "on trade network" tag carries it; no border treatment. */
-  .effect__when { font-style: italic; opacity: 0.75; font-size: 0.9em; }
+  .effect__when { font-style: italic; font-size: 0.9em; }
   .develop-req a { color: var(--gold); text-decoration: none; }
   .develop-req a:hover { text-decoration: underline; }
   .nobuild { font-size: 0.7rem; font-style: italic; color: var(--text-dim); }

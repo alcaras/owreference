@@ -28,7 +28,7 @@ const unit = tribe.unit;
 >
   <nav class="crumbs">
     <a href={`${base}tribes`}>Tribes</a>
-    <span class="crumbs__sep">›</span>
+    <span class="crumbs__sep" aria-hidden="true">›</span>
     <span class="crumbs__here">{tribe.name}</span>
   </nav>
 
@@ -136,7 +136,7 @@ const unit = tribe.unit;
   }
   .crumbs a { color: var(--gold-soft); text-decoration: none; }
   .crumbs a:hover { color: var(--gold); }
-  .crumbs__sep { margin: 0 0.4rem; color: var(--border); }
+  .crumbs__sep { margin: 0 0.4rem; color: var(--text-ghost); }
   .crumbs__here { color: var(--text-soft); }
 
   .tribe-hero {

@@ -322,18 +322,18 @@ const updatedLabel = updatedAt
           <span class="foot__val">{buildLabel}</span>
           {updatedLabel && (
             <>
-              <span class="foot__dot">·</span>
+              <span class="foot__dot" aria-hidden="true">·</span>
               <span class="foot__val foot__val--dim">game updated {updatedLabel}</span>
             </>
           )}
-          <span class="foot__dot">·</span>
+          <span class="foot__dot" aria-hidden="true">·</span>
           <span class="foot__val foot__val--dim">synced {syncedLabel}</span>
         </div>
         <div class="foot__col foot__col--right">
           <a href="https://github.com/alcaras/owreference/blob/main/CHANGELOG.md">Changelog</a>
-          <span class="foot__dot">·</span>
+          <span class="foot__dot" aria-hidden="true">·</span>
           <a href="https://github.com/alcaras/owreference">Source</a>
-          <span class="foot__dot">·</span>
+          <span class="foot__dot" aria-hidden="true">·</span>
           <a href="https://mohawkgames.com/oldworld/" rel="noopener" target="_blank">Old World</a>
         </div>
       </footer>

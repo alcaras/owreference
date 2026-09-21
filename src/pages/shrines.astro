@@ -298,7 +298,7 @@ const SHRINE_GLYPH: Record<string, string> = {
      the grid. .rowlabel defaults to --bg, so paint the fill explicitly (black
      scrim for contrast; light tokens carry a dark --yield-fg). */
   .ntbl--shrinematrix .sm-type {
-    background: var(--yield-bg, var(--bg-elev));
+    background: var(--yield-fill, var(--bg-elev));
     background-image: linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28));
     color: var(--yield-fg, var(--text));
   }
@@ -349,7 +349,7 @@ const SHRINE_GLYPH: Record<string, string> = {
   .chip__glyph { margin-right: 0.2rem; font-size: 0.9em; }
   .chip__count {
     margin-left: 0.3rem;
-    opacity: 0.6;
+    color: var(--text-dim);
     font-family: var(--font-mono);
     font-size: 0.7em;
   }
@@ -365,13 +365,11 @@ const SHRINE_GLYPH: Record<string, string> = {
        grey — that token is tuned for the dark base and washes out on the
        yield-coloured rail. */
     color: inherit;
-    opacity: 0.7;
   }
   .sm-row--dynasty .rowlabel,
   .sm-row--dynasty .cell {
     border-top: 2px solid color-mix(in srgb, var(--gold) 35%, transparent);
   }
-  .sm-row--dynasty { opacity: 0.92; }
 
   /* ── Type reference grid (signature yields per shrine type) ── */
   .tref-head {
@@ -397,9 +395,9 @@ const SHRINE_GLYPH: Record<string, string> = {
     display: grid;
     grid-template-columns: 58px minmax(5.5rem, auto) 1fr;
     align-items: stretch;
-    background: var(--yield-bg, var(--bg-elev));
+    background: var(--yield-fill, var(--bg-elev));
     color: var(--yield-fg, var(--text));
-    background-image: linear-gradient(100deg, rgba(0,0,0,0.34), rgba(0,0,0,0.10) 38%, rgba(255,255,255,0.04));
+    background-image: linear-gradient(100deg, rgba(0,0,0,0.28), rgba(0,0,0,0.10) 38%, rgba(255,255,255,0.04));
     border: 1px solid color-mix(in srgb, var(--yield-bg, var(--bg-elev-2)) 50%, #000 50%);
     border-radius: 6px;
     overflow: hidden;
@@ -437,14 +435,12 @@ const SHRINE_GLYPH: Record<string, string> = {
     /* Inherit the card's --yield-fg and dim it, not the fixed --text-faint grey
        (tuned for the dark base) which washes out on the yield-coloured card. */
     color: inherit;
-    opacity: 0.7;
     margin-top: 0.05rem;
   }
   .tref__count {
     font-family: var(--font-mono);
     font-size: 0.56rem;
     letter-spacing: 0.03em;
-    opacity: 0.65;
   }
   .tref__fx {
     display: flex;

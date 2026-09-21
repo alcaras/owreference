@@ -221,7 +221,7 @@ function blob(r: Combo): string {
     color: var(--bg); background: var(--gold); border-color: var(--gold);
   }
   .fam-chip__icon { width: 1.1em; height: 1.1em; object-fit: contain; }
-  .fam-chip__n { font-family: var(--font-mono); font-size: 0.68rem; opacity: 0.65; }
+  .fam-chip__n { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-dim); }
   .fam-chip--clear { font-style: italic; }
 
   /* Fixed layout needs explicit column widths or the classes column crushes
@@ -254,20 +254,24 @@ function blob(r: Combo): string {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.15rem 0.5rem 0.15rem 0.3rem;
-    background: var(--nation-bg, var(--bg-elev));
-    color: var(--nation-fg, var(--text));
-    border: 1px solid color-mix(in srgb, var(--nation-bg) 60%, #000 40%);
+    padding: 0.15rem 0.5rem 0.15rem 0.45rem;
+    /* Nation colour as a stripe + faint wash (the nation-picker treatment),
+       not as the fill: Egypt orange, Persia red, Maurya purple and Yuezhi
+       ochre are mid-luminance, and NO text colour reaches 4.5:1 on them. */
+    background-color: var(--bg-elev-2);
+    background-image: linear-gradient(90deg, color-mix(in srgb, var(--nation-ingame, var(--nation-bg, transparent)) 28%, transparent), transparent 72%);
+    box-shadow: inset 3px 0 0 var(--nation-bg, var(--border-strong));
+    color: var(--text);
+    border: 1px solid color-mix(in srgb, var(--nation-bg, var(--border)) 45%, transparent);
     border-radius: 999px;
     text-decoration: none;
     font-size: 0.7rem;
     font-weight: 500;
-    background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2));
   }
   .nation-tag:hover { text-decoration: none; filter: brightness(1.12); }
   .nation-tag__crest { width: 14px; height: 14px; object-fit: contain; }
   .nation-tag__dlc {
-    font-family: var(--font-mono); font-size: 0.58rem; opacity: 0.75;
+    font-family: var(--font-mono); font-size: 0.58rem;
     border: 1px solid currentColor; border-radius: 3px; padding: 0 0.25em; line-height: 1.3;
   }
 </style>
