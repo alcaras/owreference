@@ -1,0 +1,326 @@
+---
+import Base from '../layouts/Base.astro';
+import D from '../data/specialist_cost.json';
+import proseRaw from '../data/specialist-cost-prose.md?raw';
+import editorJs from '../lib/prose-editor.js?raw';
+import { createProse, type ProseVar } from '../lib/prose';
+import { getEntity } from '../lib/entities';
+
+const PROSE_FILE = 'src/data/specialist-cost-prose.md';
+const DEV = import.meta.env.DEV;
+
+const base = import.meta.env.BASE_URL;
+
+const PER = D.global.perProduced;
+const bases = D.bases.map(b => b.civics);            // 40 / 60 / 80 today
+const [base1, base2, base3] = bases;
+
+// Player.getSpecialistBuildCost: one multiply through Utils.modify, which is a
+// truncating integer multiply, then a floor of 1.
+const priceAt = (baseCost: number, n: number, modifier = 0) =>
+  Math.max(1, Math.trunc((baseCost * (100 + PER * n + modifier)) / 100));
+
+const RAMP_MAX = 10;
+const rampRows = Array.from({ length: RAMP_MAX + 1 }, (_, n) => ({
+  n,
+  label: n === 0 ? 'none yet' : String(n),
+  modifier: PER * n,
+  costs: bases.map(b => ({ base: b, cost: priceAt(b, n), extra: priceAt(b, n) - b })),
+}));
+
+// The worked example in the prose: six produced, a Master (urban) specialist,
+// no urban modifier in play.
+const EX_N = 6;
+const exModifier = PER * EX_N;
+const exCost = priceAt(base2, EX_N);
+
+const civicsRows = D.modifiers.filter(m => m.target === 'civics');
+const yieldRows = D.modifiers.filter(m => m.target === 'yield');
+const landowners = civicsRows.find(m => m.value < 0 && m.scope === 'rural');
+
+const scopeLabel: Record<string, string> = {
+  rural: 'Rural specialists',
+  urban: 'Urban specialists',
+  all: 'All specialists',
+};
+
+// Carriers link by entity id, never by name: alias matching would link the word
+// "Temple" inside "Temple of the Statue" (same trap as the hints page). An id
+// with no page renders as plain text.
+const hrefFor = (id: string) => {
+  const e = getEntity(id);
+  if (!e || !e.page) return '';
+  return `${base}${e.page}${e.page.endsWith('/' + e.slug) ? '' : `#${e.slug}`}`;
+};
+
+const link = (href: string, text: string) => ({ html: `<a href="${href}">${text}</a>` });
+const VARS: Record<string, ProseVar> = {
+  perProduced: String(PER),
+  base1: String(base1),
+  base2: String(base2),
+  base3: String(base3),
+  rampMax: String(RAMP_MAX),
+  civicsLink: link(`${base}yields/civics`, 'Civics'),
+  ruralLink: link(`${base}rural-specialists`, 'Rural Specialists'),
+  urbanLink: link(`${base}urban-specialists`, 'Urban Specialists'),
+  landownersName: landowners?.name ?? 'Landowners',
+  landownersValue: String(landowners?.value ?? 0),
+  exampleModifier: `+${exModifier}`,
+  exampleMultiplier: ((100 + exModifier) / 100).toFixed(2),
+  exampleCost: String(exCost),
+};
+const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'specialist-cost-prose' });
+---
+
+<Base
+  title="Specialist Cost"
+  active="specialist-cost"
+  pageMark="💸"
+  eyebrow="Specialists"
+  description="Why a specialist costs more than the listed price: each one a city trains adds 5% of the base Civics cost, per city, for the rest of the game."
+  pageStats={[
+    { label: 'per specialist', value: `+${PER}%` },
+    { label: 'counter', value: 'per city' },
+    { label: 'base Civics', value: bases.join(' / ') },
+  ]}
+>
+  {DEV && <meta name="prose-file" content={PROSE_FILE} />}
+  {DEV && <meta name="prose-endpoint" content="http://127.0.0.1:4399/save" />}
+  {DEV && <script is:inline set:html={editorJs} />}
+
+  <p class="lede" data-prose="lede" set:html={inline('lede')} />
+
+  <section class="sc-sec">
+    <h2 class="sc-h" data-prose="formula.heading" set:html={inline('formula.heading')} />
+    <div class="fml">
+      <code class="fml__line">Civics = base × (100 + {PER}×n + city modifiers) ÷ 100</code>
+      <div class="fml__meta">truncated to a whole number, never below 1</div>
+    </div>
+    <div class="sc-body" data-prose="formula.note" data-prose-blocks set:html={blocks('formula.note')} />
+  </section>
+
+  <section class="sc-sec">
+    <h2 class="sc-h" data-prose="ramp.heading" set:html={inline('ramp.heading')} />
+    <p class="sc-note" data-prose="ramp.note" set:html={inline('ramp.note')} />
+    <div class="grid">
+      <div class="grid__scroll">
+        <table class="ntbl sc-t sc-t--ramp">
+          <colgroup>
+            <col style="width:12rem" /><col style="width:7rem" />
+            {bases.map(() => <col style="width:9rem" />)}
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="rowlabel rowlabel--corner">Specialists this city produced</th>
+              <th class="nhdr sc-num"><div class="nhdr__inner"><span class="nhdr__name">Modifier</span></div></th>
+              {bases.map(b => (
+                <th class="nhdr sc-num"><div class="nhdr__inner"><span class="nhdr__name">{b} base</span></div></th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rampRows.map(r => (
+              <tr>
+                <th class="rowlabel sc-n" scope="row">{r.label}</th>
+                <td class="cell sc-num sc-dim">{r.modifier === 0 ? '—' : `+${r.modifier}%`}</td>
+                {r.costs.map(c => (
+                  <td class="cell sc-num yield-civics">
+                    {c.cost}
+                    {c.extra > 0 && <span class="sc-extra">+{c.extra}</span>}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="sc-foot">Base prices: {D.bases.map(b => (
+      <span class="sc-chip">{b.civics} Civics
+        <i>{[b.ruralCount ? `${b.ruralCount} rural` : '', b.urbanCount ? `${b.urbanCount} urban` : '']
+          .filter(Boolean).join(', ')}</i>
+      </span>
+    ))}</p>
+  </section>
+
+  <section class="sc-sec sc-duo">
+    <div>
+      <h2 class="sc-h" data-prose="counts.heading" set:html={inline('counts.heading')} />
+      <p class="sc-note" data-prose="counts.note" set:html={inline('counts.note')} />
+      <ul class="sc-list sc-list--yes">
+        {D.code.counts.map(c => (
+          <li><span class="sc-list__what">{c.what}</span><code class="sc-cite">{c.where}</code></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2 class="sc-h" data-prose="ignores.heading" set:html={inline('ignores.heading')} />
+      <p class="sc-note" data-prose="ignores.note" set:html={inline('ignores.note')} />
+      <ul class="sc-list sc-list--no">
+        {D.code.ignores.map(c => (
+          <li><span class="sc-list__what">{c.what}</span><code class="sc-cite">{c.where}</code></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="sc-sec">
+    <h2 class="sc-h" data-prose="modifiers.heading" set:html={inline('modifiers.heading')} />
+    <p class="sc-note" data-prose="modifiers.note" set:html={inline('modifiers.note')} />
+    <div class="grid">
+      <div class="grid__scroll">
+        <table class="ntbl sc-t">
+          <colgroup>
+            <col style="width:13rem" /><col style="width:6rem" /><col style="width:11rem" />
+            <col style="width:9rem" /><col />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="rowlabel rowlabel--corner">Modifier</th>
+              <th class="nhdr sc-num"><div class="nhdr__inner"><span class="nhdr__name">Change</span></div></th>
+              <th class="nhdr"><div class="nhdr__inner"><span class="nhdr__name">Applies To</span></div></th>
+              <th class="nhdr"><div class="nhdr__inner"><span class="nhdr__name">Price It Moves</span></div></th>
+              <th class="nhdr"><div class="nhdr__inner"><span class="nhdr__name">Where It Comes From</span></div></th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...civicsRows, ...yieldRows].map(m => (
+              <tr>
+                <th class="rowlabel sc-mod" scope="row">{m.name}</th>
+                <td class={`cell sc-num ${m.value < 0 ? 'sc-good' : 'sc-bad'}`}>
+                  {m.value > 0 ? `+${m.value}%` : `${m.value}%`}
+                </td>
+                <td class="cell sc-plain">{scopeLabel[m.scope] ?? m.scope}</td>
+                <td class={`cell sc-plain ${m.target === 'civics' ? 'yield-civics' : 'yield-food'}`}>
+                  {m.target === 'civics' ? 'Civics build cost' : 'Food and Citizen'}
+                </td>
+                {m.carriers.length > 0 ? (
+                  <td class="cell sc-plain">
+                    {m.carriers.map(c => (
+                      <div class="sc-carrier">
+                        <span class="sc-carrier__kind">{c.kind}</span>
+                        {hrefFor(c.id)
+                          ? <a href={hrefFor(c.id)}>{c.name}</a>
+                          : <span>{c.name}</span>}
+                        {c.note && <i class="sc-carrier__note">{c.note}</i>}
+                      </div>
+                    ))}
+                  </td>
+                ) : (
+                  <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sc-sec sc-duo">
+    <div>
+      <h2 class="sc-h" data-prose="example.heading" set:html={inline('example.heading')} />
+      <div class="sc-body" data-prose="example.body" data-prose-blocks set:html={blocks('example.body')} />
+    </div>
+    <div>
+      <h2 class="sc-h" data-prose="code.heading" set:html={inline('code.heading')} />
+      <div class="sc-body" data-prose="code.body" data-prose-blocks set:html={blocks('code.body')} />
+    </div>
+  </section>
+</Base>
+
+<style is:global>
+  .lede { max-width: 120ch; color: var(--text-dim); font-size: 0.82rem; line-height: 1.5; margin: 0 0 0.9rem; }
+  .lede a { color: var(--accent); }
+  .lede b, .lede strong { color: var(--text); }
+  .lede em { color: var(--text-soft); font-style: italic; }
+
+  .sc-sec { margin: 0 0 1.5rem; }
+  .sc-h {
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.02rem;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding-bottom: 0.3rem;
+    margin: 0 0 0.45rem;
+  }
+  .sc-note { color: var(--text-faint); font-size: 0.76rem; line-height: 1.5; margin: 0 0 0.6rem; max-width: 110ch; }
+  .sc-note a, .sc-body a { color: var(--accent); }
+  .sc-body { color: var(--text-dim); font-size: 0.78rem; line-height: 1.55; max-width: 110ch; }
+  .sc-body p { margin: 0 0 0.5rem; }
+  .sc-body ul { margin: 0; padding-left: 1.1rem; }
+  .sc-body li { margin: 0 0 0.3rem; }
+  .sc-body strong { color: var(--text); }
+  .sc-body code, .sc-note code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--text-soft);
+  }
+
+  .sc-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 1.2rem; }
+
+  .fml {
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elev);
+    padding: 0.55rem 0.8rem;
+    margin: 0 0 0.7rem;
+  }
+  .fml__line { font-family: var(--font-mono); font-size: 0.86rem; color: var(--text); }
+  .fml__meta { color: var(--text-faint); font-size: 0.7rem; margin-top: 0.2rem; }
+
+  .sc-t--ramp { max-width: 46rem; }
+  .sc-t .sc-num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sc-t th.sc-num .nhdr__inner { justify-content: flex-end; }
+  .sc-t .sc-n { text-align: left; font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-dim); }
+  .sc-t .sc-mod { text-align: left; font-size: 0.76rem; color: var(--text); }
+  .sc-t .sc-plain { font-size: 0.74rem; color: var(--text-dim); }
+  .sc-t .sc-dim { color: var(--text-faint); font-size: 0.74rem; }
+  .sc-t .sc-good { color: #8fd18f; }
+  .sc-t .sc-bad { color: #e0917f; }
+  .sc-extra { color: var(--text-faint); font-size: 0.68rem; margin-left: 0.35rem; }
+
+  .sc-carrier { font-size: 0.74rem; padding: 0.06rem 0; }
+  .sc-carrier__kind {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.03em;
+    margin-right: 0.35rem;
+  }
+  .sc-carrier a { color: var(--text-dim); }
+  .sc-carrier a:hover { color: var(--accent); }
+  .sc-carrier__note { color: var(--text-faint); font-style: italic; margin-left: 0.3rem; }
+
+  .sc-foot { color: var(--text-faint); font-size: 0.72rem; margin: 0.5rem 0 0; }
+  .sc-chip {
+    display: inline-block;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.05rem 0.4rem;
+    margin: 0 0.3rem;
+    color: var(--text-dim);
+  }
+  .sc-chip i { color: var(--text-faint); font-style: italic; margin-left: 0.3rem; }
+
+  .sc-list { list-style: none; margin: 0; padding: 0; }
+  .sc-list li {
+    border-left: 2px solid var(--border-strong);
+    padding: 0.25rem 0 0.25rem 0.6rem;
+    margin: 0 0 0.4rem;
+  }
+  .sc-list--yes li { border-left-color: #6f8f6f; }
+  .sc-list--no li { border-left-color: #8f6f6f; }
+  .sc-list__what { display: block; color: var(--text); font-size: 0.78rem; line-height: 1.4; }
+  .sc-cite {
+    display: block;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    line-height: 1.4;
+    margin-top: 0.15rem;
+  }
+</style>

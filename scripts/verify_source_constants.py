@@ -48,6 +48,14 @@ WATCHED = [
      "family_heads.json weights (d1000 +400 elder +200 council +200 job) — family-heads page"),
     ("Base/Game/GameCore/Character.cs", "canHeadFamily", 60,
      "family_heads.json eligibility (adult/not-leader/not-religion-head/traits) — family-heads page"),
+    # Specialist price (specialist-cost page, build_specialist_cost.py). The ramp
+    # is one global times a per-city counter, so a patch that moves the multiply
+    # or the counter has to show up here.
+    ("Base/Game/GameCore/Player.cs", "getSpecialistBuildCost", 40,
+     "specialist_cost.json: the Civics ramp (SPECIALIST_COST_PRODUCED_MODIFIER x city produced "
+     "count, plus the rural/urban train-time modifiers) — specialist-cost page"),
+    ("Base/Game/GameCore/Player.cs", "getSpecialistYieldCost", 30,
+     "specialist_cost.json: the Food/Citizen price uses getSpecialistCostModifier, NOT the ramp"),
     ("Base/Game/GameCore/Tile.cs", "skipImprovementUnitTurns", 30,
      "tribe_camps.json pause rule (cap, no-raid-target halving, area cap) — camp-spawning page"),
     ("Base/Game/GameCore/Tile.cs", "resetImprovementUnitTurns", 35,

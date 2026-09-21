@@ -1,0 +1,686 @@
+{
+  "bases": [
+    {
+      "civics": 40,
+      "examples": [
+        "Farmer",
+        "Fisher",
+        "Gardener",
+        "Apprentice Acolyte",
+        "Apprentice Bishop",
+        "Apprentice Doctor"
+      ],
+      "ruralCount": 8,
+      "urbanCount": 10
+    },
+    {
+      "civics": 60,
+      "examples": [
+        "Master Acolyte",
+        "Master Bishop",
+        "Master Doctor"
+      ],
+      "ruralCount": 0,
+      "urbanCount": 10
+    },
+    {
+      "civics": 80,
+      "examples": [
+        "Elder Acolyte",
+        "Elder Bishop",
+        "Elder Doctor"
+      ],
+      "ruralCount": 0,
+      "urbanCount": 10
+    }
+  ],
+  "code": {
+    "buildCost": "Player.getSpecialistBuildCost (Player.cs:17828)",
+    "counter": "City.getSpecialistProducedCount (City.cs:3079)",
+    "counts": [
+      {
+        "what": "A specialist the city finishes from its build queue",
+        "where": "City.finishBuild → incrementSpecialistProducedCount (City.cs:8528)"
+      },
+      {
+        "what": "Each tier upgrade, so Apprentice, Master and Elder are three counts",
+        "where": "an upgrade is another SPECIALIST_BUILD on the tile (Tile.getNextSpecialist, Tile.cs:7053)"
+      },
+      {
+        "what": "Specialists the advanced-start setup drops into a new city",
+        "where": "City.develop (City.cs:7829), run from Player advanced start (Player.cs:16318)"
+      },
+      {
+        "what": "Specialists a city already holds when the game begins",
+        "where": "Player.start seeds each city's count to its specialist count (Player.cs:15923)"
+      }
+    ],
+    "formula": "civics = max(1, base * (100 + perProduced*n + cityModifier) / 100), integer truncation",
+    "ignores": [
+      {
+        "what": "A specialist granted by an event or any other bonus",
+        "where": "bonus SetSpecialist (PlayerBonus.cs:8579) and AddSpecialistClasses (PlayerBonus.cs:7267) place one with no increment"
+      },
+      {
+        "what": "Wonder free specialists, such as the Jerwan Aqueduct on adjacent Farms",
+        "where": "improvement AdjacentImprovementSpecialists → Tile.changeImprovementFreeSpecialists (Tile.cs:6637 and Tile.cs:7785), a free-specialist count on the tile rather than a build"
+      },
+      {
+        "what": "A specialist kept when a Worker upgrades the improvement under it",
+        "where": "Unit.cs:12059 sets the new improvement's specialist directly"
+      },
+      {
+        "what": "Removing a specialist, losing the tile, razing, or losing the city to a rival",
+        "where": "nothing decreases the counter: the only writers are the two increments above, Player.start and save loading"
+      },
+      {
+        "what": "Specialists trained in your other cities",
+        "where": "the counter lives on City, not Player (City.cs:181)"
+      }
+    ],
+    "modify": "Utils.modify (Utils.cs:58) — truncating integer multiply",
+    "yieldCost": "Player.getSpecialistYieldCost (Player.cs:17802)"
+  },
+  "global": {
+    "perProduced": 5,
+    "token": "SPECIALIST_COST_PRODUCED_MODIFIER"
+  },
+  "improvementExtra": [],
+  "modifiers": [
+    {
+      "carriers": [
+        {
+          "id": "FAMILYCLASS_LANDOWNERS",
+          "kind": "Family class",
+          "name": "Landowners",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_FAMILYCLASS_LANDOWNERS",
+      "name": "Landowners",
+      "scope": "rural",
+      "target": "civics",
+      "value": -50
+    },
+    {
+      "carriers": [
+        {
+          "id": "LAW_PHILOSOPHY",
+          "kind": "Law",
+          "name": "Philosophy",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_LAW_PHILOSOPHY",
+      "name": "Philosophy",
+      "scope": "urban",
+      "target": "civics",
+      "value": -20
+    },
+    {
+      "carriers": [
+        {
+          "id": "TRAIT_STEWARD_OF_THE_LAND",
+          "kind": "Trait",
+          "name": "Steward of the Land",
+          "note": "in cities they govern"
+        }
+      ],
+      "id": "EFFECTCITY_TRAIT_STEWARD_OF_THE_LAND",
+      "name": "Steward of the Land",
+      "scope": "rural",
+      "target": "civics",
+      "value": 20
+    },
+    {
+      "carriers": [
+        {
+          "id": "PROJECT_WARY_OF_THE_MOUNTAIN",
+          "kind": "Project",
+          "name": "Wary of the Mountain",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_PROJECT_WARY_OF_THE_MOUNTAIN",
+      "name": "Wary of the Mountain",
+      "scope": "rural",
+      "target": "civics",
+      "value": 25
+    },
+    {
+      "carriers": [
+        {
+          "id": "PROJECT_UNCOOPERATIVE_POPULACE",
+          "kind": "Project",
+          "name": "Uncooperative Populace",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_UNCOOPERATIVE_POPULACE",
+      "name": "Uncooperative Populace",
+      "scope": "rural",
+      "target": "civics",
+      "value": 30
+    },
+    {
+      "carriers": [
+        {
+          "id": "PROJECT_UNCOOPERATIVE_POPULACE",
+          "kind": "Project",
+          "name": "Uncooperative Populace",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_UNCOOPERATIVE_POPULACE",
+      "name": "Uncooperative Populace",
+      "scope": "urban",
+      "target": "civics",
+      "value": 30
+    },
+    {
+      "carriers": [
+        {
+          "id": "ADVANTAGE_VERY_HIGH",
+          "kind": "Advantage level",
+          "name": "Very High Advantage",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_ADVANTAGE_VERY_HIGH",
+      "name": "Very High Advantage",
+      "scope": "all",
+      "target": "yield",
+      "value": -50
+    },
+    {
+      "carriers": [
+        {
+          "id": "TRAIT_FAMOUS",
+          "kind": "Trait",
+          "name": "Famous",
+          "note": "in cities they govern"
+        }
+      ],
+      "id": "EFFECTCITY_TRAIT_FAMOUS",
+      "name": "Famous",
+      "scope": "urban",
+      "target": "yield",
+      "value": -25
+    },
+    {
+      "carriers": [
+        {
+          "id": "FAMILYCLASS_STATESMEN",
+          "kind": "Family class",
+          "name": "Statesmen",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_FAMILYCLASS_STATESMEN",
+      "name": "Statesmen",
+      "scope": "all",
+      "target": "yield",
+      "value": -25
+    },
+    {
+      "carriers": [
+        {
+          "id": "ADVANTAGE_HIGH",
+          "kind": "Advantage level",
+          "name": "High Advantage",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_ADVANTAGE_HIGH",
+      "name": "High Advantage",
+      "scope": "all",
+      "target": "yield",
+      "value": -20
+    },
+    {
+      "carriers": [
+        {
+          "id": "ADVANTAGE_MODERATE",
+          "kind": "Advantage level",
+          "name": "Moderate Advantage",
+          "note": ""
+        },
+        {
+          "id": "DIFFICULTYMODE_GREAT",
+          "kind": "Difficulty preset",
+          "name": "The Great",
+          "note": "sets the advantage level"
+        }
+      ],
+      "id": "EFFECTCITY_ADVANTAGE_MODERATE",
+      "name": "Moderate Advantage",
+      "scope": "all",
+      "target": "yield",
+      "value": -10
+    },
+    {
+      "carriers": [
+        {
+          "id": "IMPROVEMENT_PAGAN_STATUE_TEMPLE",
+          "kind": "Improvement",
+          "name": "Temple of the Statue",
+          "note": ""
+        }
+      ],
+      "id": "EFFECTCITY_IMPROVEMENT_PAGAN_STATUE_TEMPLE",
+      "name": "Temple of the Statue",
+      "scope": "all",
+      "target": "yield",
+      "value": -10
+    },
+    {
+      "carriers": [
+        {
+          "id": "ADVANTAGE_SMALL",
+          "kind": "Advantage level",
+          "name": "Small Advantage",
+          "note": ""
+        },
+        {
+          "id": "DIFFICULTYMODE_GLORIOUS",
+          "kind": "Difficulty preset",
+          "name": "The Glorious",
+          "note": "sets the advantage level"
+        },
+        {
+          "id": "DIFFICULTYMODE_MAGNIFICENT",
+          "kind": "Difficulty preset",
+          "name": "The Magnificent",
+          "note": "sets the advantage level"
+        }
+      ],
+      "id": "EFFECTCITY_ADVANTAGE_SMALL",
+      "name": "Small Advantage",
+      "scope": "all",
+      "target": "yield",
+      "value": -5
+    }
+  ],
+  "specialists": [
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_FARMER",
+      "food": 0,
+      "id": "SPECIALIST_FARMER",
+      "name": "Farmer",
+      "slug": "farmer",
+      "tier": 1,
+      "urban": false
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_MINER",
+      "food": 0,
+      "id": "SPECIALIST_MINER",
+      "name": "Miner",
+      "slug": "miner",
+      "tier": 1,
+      "urban": false
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_STONECUTTER",
+      "food": 0,
+      "id": "SPECIALIST_STONECUTTER",
+      "name": "Stonecutter",
+      "slug": "stonecutter",
+      "tier": 1,
+      "urban": false
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_WOODCUTTER",
+      "food": 0,
+      "id": "SPECIALIST_WOODCUTTER",
+      "name": "Woodcutter",
+      "slug": "woodcutter",
+      "tier": 1,
+      "urban": false
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_RANCHER",
+      "food": 20,
+      "id": "SPECIALIST_RANCHER",
+      "name": "Rancher",
+      "slug": "rancher",
+      "tier": 1,
+      "urban": false
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_TRAPPER",
+      "food": 20,
+      "id": "SPECIALIST_TRAPPER",
+      "name": "Trapper",
+      "slug": "trapper",
+      "tier": 1,
+      "urban": false
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_GARDENER",
+      "food": 20,
+      "id": "SPECIALIST_GARDENER",
+      "name": "Gardener",
+      "slug": "gardener",
+      "tier": 1,
+      "urban": false
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_FISHER",
+      "food": 20,
+      "id": "SPECIALIST_FISHER",
+      "name": "Fisher",
+      "slug": "fisher",
+      "tier": 1,
+      "urban": false
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_ACOLYTE",
+      "food": 40,
+      "id": "SPECIALIST_ACOLYTE_1",
+      "name": "Apprentice Acolyte",
+      "slug": "acolyte_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_ACOLYTE",
+      "food": 60,
+      "id": "SPECIALIST_ACOLYTE_2",
+      "name": "Master Acolyte",
+      "slug": "acolyte_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_ACOLYTE",
+      "food": 80,
+      "id": "SPECIALIST_ACOLYTE_3",
+      "name": "Elder Acolyte",
+      "slug": "acolyte_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_MONK",
+      "food": 40,
+      "id": "SPECIALIST_MONK_1",
+      "name": "Apprentice Monk",
+      "slug": "monk_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_MONK",
+      "food": 60,
+      "id": "SPECIALIST_MONK_2",
+      "name": "Master Monk",
+      "slug": "monk_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_MONK",
+      "food": 80,
+      "id": "SPECIALIST_MONK_3",
+      "name": "Elder Monk",
+      "slug": "monk_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_PRIEST",
+      "food": 40,
+      "id": "SPECIALIST_PRIEST_1",
+      "name": "Apprentice Priest",
+      "slug": "priest_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_PRIEST",
+      "food": 60,
+      "id": "SPECIALIST_PRIEST_2",
+      "name": "Master Priest",
+      "slug": "priest_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_PRIEST",
+      "food": 80,
+      "id": "SPECIALIST_PRIEST_3",
+      "name": "Elder Priest",
+      "slug": "priest_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_OFFICER",
+      "food": 40,
+      "id": "SPECIALIST_OFFICER_1",
+      "name": "Apprentice Officer",
+      "slug": "officer_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_OFFICER",
+      "food": 60,
+      "id": "SPECIALIST_OFFICER_2",
+      "name": "Master Officer",
+      "slug": "officer_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_OFFICER",
+      "food": 80,
+      "id": "SPECIALIST_OFFICER_3",
+      "name": "Elder Officer",
+      "slug": "officer_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_POET",
+      "food": 40,
+      "id": "SPECIALIST_POET_1",
+      "name": "Apprentice Poet",
+      "slug": "poet_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_POET",
+      "food": 60,
+      "id": "SPECIALIST_POET_2",
+      "name": "Master Poet",
+      "slug": "poet_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_POET",
+      "food": 80,
+      "id": "SPECIALIST_POET_3",
+      "name": "Elder Poet",
+      "slug": "poet_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_SCRIBE",
+      "food": 40,
+      "id": "SPECIALIST_SCRIBE_1",
+      "name": "Apprentice Scribe",
+      "slug": "scribe_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_SCRIBE",
+      "food": 60,
+      "id": "SPECIALIST_SCRIBE_2",
+      "name": "Master Scribe",
+      "slug": "scribe_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_SCRIBE",
+      "food": 80,
+      "id": "SPECIALIST_SCRIBE_3",
+      "name": "Elder Scribe",
+      "slug": "scribe_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_SHOPKEEPER",
+      "food": 40,
+      "id": "SPECIALIST_SHOPKEEPER_1",
+      "name": "Apprentice Shopkeeper",
+      "slug": "shopkeeper_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_SHOPKEEPER",
+      "food": 60,
+      "id": "SPECIALIST_SHOPKEEPER_2",
+      "name": "Master Shopkeeper",
+      "slug": "shopkeeper_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_SHOPKEEPER",
+      "food": 80,
+      "id": "SPECIALIST_SHOPKEEPER_3",
+      "name": "Elder Shopkeeper",
+      "slug": "shopkeeper_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_PHILOSOPHER",
+      "food": 40,
+      "id": "SPECIALIST_PHILOSOPHER_1",
+      "name": "Apprentice Philosopher",
+      "slug": "philosopher_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_PHILOSOPHER",
+      "food": 60,
+      "id": "SPECIALIST_PHILOSOPHER_2",
+      "name": "Master Philosopher",
+      "slug": "philosopher_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_PHILOSOPHER",
+      "food": 80,
+      "id": "SPECIALIST_PHILOSOPHER_3",
+      "name": "Elder Philosopher",
+      "slug": "philosopher_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_DOCTOR",
+      "food": 40,
+      "id": "SPECIALIST_DOCTOR_1",
+      "name": "Apprentice Doctor",
+      "slug": "doctor_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_DOCTOR",
+      "food": 60,
+      "id": "SPECIALIST_DOCTOR_2",
+      "name": "Master Doctor",
+      "slug": "doctor_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_DOCTOR",
+      "food": 80,
+      "id": "SPECIALIST_DOCTOR_3",
+      "name": "Elder Doctor",
+      "slug": "doctor_3",
+      "tier": 3,
+      "urban": true
+    },
+    {
+      "civics": 40,
+      "classId": "SPECIALISTCLASS_BISHOP",
+      "food": 40,
+      "id": "SPECIALIST_BISHOP_1",
+      "name": "Apprentice Bishop",
+      "slug": "bishop_1",
+      "tier": 1,
+      "urban": true
+    },
+    {
+      "civics": 60,
+      "classId": "SPECIALISTCLASS_BISHOP",
+      "food": 60,
+      "id": "SPECIALIST_BISHOP_2",
+      "name": "Master Bishop",
+      "slug": "bishop_2",
+      "tier": 2,
+      "urban": true
+    },
+    {
+      "civics": 80,
+      "classId": "SPECIALISTCLASS_BISHOP",
+      "food": 80,
+      "id": "SPECIALIST_BISHOP_3",
+      "name": "Elder Bishop",
+      "slug": "bishop_3",
+      "tier": 3,
+      "urban": true
+    }
+  ]
+}

@@ -35,6 +35,7 @@ data:
 	@python3 scripts/build_urban_buildings.py
 	@python3 scripts/build_rural_improvements.py
 	@python3 scripts/build_specialists.py
+	@python3 scripts/build_specialist_cost.py
 	@python3 scripts/build_harvest_events.py
 	@python3 scripts/build_theologies.py
 	@python3 scripts/build_world_religion_buildings.py

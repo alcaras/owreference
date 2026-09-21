@@ -34,6 +34,7 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
   { label: 'specialists', value: groups.length },
   { label: 'tiers', value: 3 },
 ]}>
+  <p class="costnote">Costs below are the base price. Each specialist a city trains adds 5% of it to the next one in that city: see <a href={`${base}specialist-cost`}>Specialist Cost</a>.</p>
   <div class="grid" id="us-grid">
     <div class="grid__scroll">
       <table class="ntbl">
@@ -169,6 +170,9 @@ for (const [slug, arr] of groups) searchBlobs[slug] = JSON.stringify(arr).toLowe
 </Base>
 
 <style>
+  .costnote { color: var(--text-faint); font-size: 0.74rem; margin: 0 0 0.6rem; }
+  .costnote a { color: var(--accent); }
+
   .nhdr--col {
     background: var(--bg-elev-2);
     color: var(--text);

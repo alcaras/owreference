@@ -250,6 +250,16 @@ export const TABS: Tab[] = [
     willContain: ['Each urban specialist class × tier yields and which buildings it slots into'],
   },
   {
+    slug: 'specialist-cost', icon: '💸', label: 'Specialist Cost', section: 'Cities',
+    status: 'built', sourceSheet: '',
+    summary: 'Why the next specialist costs more: +5% of the base Civics price per specialist the city has produced',
+    willContain: [
+      'The per-city produced count and the +5% ramp, with a price table per base cost',
+      'What the count includes, and the free specialists that never touch it',
+      'City modifiers on the Civics price and on the Food price',
+    ],
+  },
+  {
     slug: 'projects', icon: '🏗️', label: 'Projects', section: 'Cities',
     status: 'built', sourceSheet: '',
     summary: 'City projects, with cost, prerequisites and effects',

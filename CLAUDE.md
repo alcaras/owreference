@@ -277,6 +277,20 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   builders used to prettify the token themselves ("Fertile") and nothing defined the
   term anywhere, which is how the Rural Improvements page ended up saying "Fertile"
   with no explanation on `/terrain`.
+- **Specialist price rises 5% per specialist, per CITY** —
+  `globalsInt.xml SPECIALIST_COST_PRODUCED_MODIFIER` × `City.getSpecialistProducedCount()`,
+  added to the rural/urban `iSpecialistTrainTimeModifier` effects and multiplied into the
+  **Civics** price only (`Player.getSpecialistBuildCost`, Player.cs:17828; the Food/Citizen
+  price runs through `getSpecialistCostModifier` in `getSpecialistYieldCost` instead). The
+  counter only ever goes up, and only two things write it: a city finishing a SPECIALIST_BUILD
+  (City.cs:8528, which includes every tier upgrade) and the advanced-start `City.develop`
+  (City.cs:7829); `Player.start` seeds it from the city's existing specialists. So **free
+  specialists never raise it** — event/bonus grants (`PlayerBonus.cs:8579`/`:7267`),
+  Jerwan-style `AdjacentImprovementSpecialists` free specialists
+  (`Tile.changeImprovementFreeSpecialists`), and a specialist carried over by a Worker
+  improvement upgrade (Unit.cs:12059) all place one without touching the count — and nothing
+  lowers it, not removal, not losing the city. Page `/specialist-cost`, data
+  `scripts/build_specialist_cost.py`, watched in `verify_source_constants.py`.
 - **Culture gates**: `RequiresCulture` = exactly that level; `MinimumCulture` = at least. Past Legendary, each culture step costs 5,000×(step+1) and is +1 VP.
 - **Ambition "tier" = which ambition slot (1st–10th)** it can be offered as; goals have no per-goal reward fields (Legitimacy/VP flow indirectly).
 - **DLC event text lives in oddly named files**: Wonders & Dynasties → `text-wonders-dynasties-events.xml`, Wrath of Gods → `text-calamities-events.xml` (there is no `text-eventStory-wd/-wog.xml`). ~16 eventStory entries legitimately have no `Name` (hidden setup events); ~372 have no class/trigger (engine-invoked).
@@ -422,9 +436,11 @@ is the fastest regression check (see git history of commit `5c37ecd`).
 
 ## Page prose files + in-place editor
 
-Two pages keep every line of their prose in a markdown data file instead of
-the template: `src/data/zoc-prose.md` (`/zone-of-control`) and
-`src/data/border-expansion-prose.md` (`/border-expansion`). The page imports
+Four pages keep every line of their prose in a markdown data file instead of
+the template: `src/data/zoc-prose.md` (`/zone-of-control`),
+`src/data/border-expansion-prose.md` (`/border-expansion`),
+`src/data/family-envy-prose.md` (`/family-envy`) and
+`src/data/specialist-cost-prose.md` (`/specialist-cost`). The page imports
 the file with `?raw`, calls `createProse()` from `src/lib/prose.ts` and renders
 each `## key` slot with `data-prose="key" set:html={inline('key')}` (single
 line) or `data-prose-blocks set:html={blocks('key')}` (paragraphs, `- ` bullets,
