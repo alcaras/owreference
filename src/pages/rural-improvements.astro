@@ -6,6 +6,11 @@ import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
 
+// Terrain requirements name a terrain group (terrainTarget.xml). Each tag
+// links to the group's row on /terrain, which spells out the tiles it covers.
+type TerrainRef = { label: string; slug?: string; not?: boolean };
+const terrainTagText = (t: TerrainRef) => (t.not ? `not ${t.label}` : t.label);
+
 type Improvement = typeof improvements[number];
 
 type Col =
@@ -140,7 +145,11 @@ for (const it of improvements) {
 
               {it.terrains && it.terrains.length > 0 ? (
                 <td class="cell yield-misc">
-                  {it.terrains.map(t => <div class="terrain-tag">{t}</div>)}
+                  {it.terrains.map((t: TerrainRef) => t.slug ? (
+                    <a class="terrain-tag terrain-tag--link" href={`${base}terrain#group-${t.slug}`}>{terrainTagText(t)}</a>
+                  ) : (
+                    <div class="terrain-tag">{terrainTagText(t)}</div>
+                  ))}
                 </td>
               ) : (
                 <td class="cell is-empty"><span class="cell__dash">—</span></td>
@@ -321,6 +330,8 @@ for (const it of improvements) {
     color: var(--text-dim);
     background: var(--bg);
   }
+  .terrain-tag--link { text-decoration: none; }
+  .terrain-tag--link:hover { color: var(--accent); border-color: var(--accent); }
   .listitem { font-size: 0.72rem; padding: 0.06rem 0; }
   .nhdr.is-sortable { cursor: pointer; user-select: none; }
   .nhdr.is-sortable:hover { filter: brightness(1.12); }

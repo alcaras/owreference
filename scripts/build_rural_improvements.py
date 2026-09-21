@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, fmt_decimal, yield_name, condition_name,
 )
+from terrain_groups import load_groups, ref as terrain_ref  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -49,11 +50,6 @@ def load_text(*filenames: str) -> dict[str, str]:
 
 def parse(name: str) -> ET.Element:
     return ET.parse(XML_DIR / name).getroot()
-
-
-def fmt_terrain(token: str) -> str:
-    s = (token or "").replace("TERRAIN_TARGET_", "").replace("TERRAIN_", "")
-    return s.replace("_", " ").title() if s else ""
 
 
 def fmt_class(token: str) -> str:
@@ -90,6 +86,7 @@ def output_pairs(parent: ET.Element, tag: str, *, suffix: str = "") -> list[str]
 def main() -> int:
     text_imp = load_text("text-improvement.xml", "text-improvementClass.xml", "text-infos.xml")
     indexes = load_xml_indexes(XML_DIR)
+    groups = load_groups(XML_DIR, indexes["__text__"])
 
     class_root = parse("improvementClass.xml")
     class_index: dict[str, ET.Element] = {
@@ -162,19 +159,22 @@ def main() -> int:
                     specialist_slug = specialist_slug[: -len(suffix)]
                     break
 
-        # Terrain validity
-        terrain_tokens = [tv.text or "" for tv in e.findall("TerrainValid/zValue") if tv.text]
-        terrains = [fmt_terrain(t) for t in terrain_tokens]
+        # Terrain validity. TerrainValid / TerrainInvalid name a terrain
+        # *group* (terrainTarget.xml), so each tag carries the group's game
+        # name plus the /terrain anchor that defines it.
+        terrains = [terrain_ref(tv.text or "", groups)
+                    for tv in e.findall("TerrainValid/zValue") if tv.text]
         # River-edge improvements (Watermill) carry no TerrainValid — the
         # requirement is the bRiverValid / bRotateToRiverEdge flags instead.
+        # These two are tile features rather than groups, so they get no anchor.
         if (e.findtext("bRiverValid") or "0") == "1" or (e.findtext("bRotateToRiverEdge") or "0") == "1":
-            terrains.append("River")
+            terrains.append({"label": "River", "slug": ""})
         if (e.findtext("bCoastalValid") or "0") == "1" or (e.findtext("bCoast") or "0") == "1":
-            terrains.append("Coast")
-        # Some improvements explicitly exclude a terrain (Watermill: no Hill)
+            terrains.append({"label": "Coast", "slug": ""})
+        # Some improvements explicitly exclude a group (Watermill: no Hill)
         ti = e.findtext("TerrainInvalid") or ""
         if ti:
-            terrains.append(f"not {fmt_terrain(ti)}")
+            terrains.append(terrain_ref(ti, groups, negated=True))
 
         # Adjacency / yield modifiers
         adjacency: list[str] = []

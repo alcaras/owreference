@@ -44,6 +44,9 @@ reference/XML/Infos/*.xml            # synced from Steam install, DO NOT hand-ed
 scripts/
   humanize.py                        # XML effect tree → human strings (curated phrasing)
   effects.py                         # registry-driven completeness backstop (see below)
+  terrain_groups.py                  # terrainTarget.xml reader: the named terrain
+                                     #   groups every TerrainValid/TerrainInvalid
+                                     #   names (label + /terrain anchor slug)
   data/helptext_registry.json        # extracted from game source HelpText.*.cs:
                                      #   every field the game renders + its TEXT template
   audit_coverage.py                  # patch tripwire: populated vs renderable vs handled
@@ -261,6 +264,19 @@ Add new fields to the humanizer as you encounter them. Always test against the s
 - **Bonus-card tech zTypes lie about prereqs** (`TECH_FORESTRY_BONUS_SCIENTIST` requires Metaphysics) — always read `abTechPrereq`, never parse the zType.
 - **`resource.xml` has no category field** — luxury = union of `effectCity aeLuxuryResources`; strategic = unit `EffectCityPrereq` chains. Worked-resource yields live on `improvementClass.xml`, not `improvement.xml`. `zIconName` redirects shared art (Marble→stone.png, Ore→iron.png).
 - **Terrains have no base yields in XML** — tile yields come from improvements/resources; `aiDefendEffectUnit` is an *attack penalty into* the tile; `TerrainValid` targets are OR'd; `iRemoveCost` is Orders, not worker-turns.
+- **`TerrainValid` / `TerrainInvalid` never name a terrain — they name a terrain
+  *group*** (`terrainTarget.xml`): "Fertile Land" is Arid ∪ Temperate ∪ Lush at any
+  height, "Habitable Land" is those three plus Urban, "Peaks" is the Mountain ∪
+  Volcano *heights*. One group is an AND across the dimensions it constrains
+  (`Terrains` / `Heights` / `Vegetations`, each list an OR, an **empty list meaning
+  unconstrained**) plus optional `bFreshWaterAccess` and `AdjacentTerrain`
+  (`Tile.isTerrainTarget` → `TileData.isTerrainTarget`, TileData.cs:395). A
+  `<Vegetations>NONE` entry is the real constraint "tile must be bare", not an empty
+  list. Read them through `scripts/terrain_groups.py` so the site shows the game's own
+  label and links it to that group's row on `/terrain` (`#group-<slug>`); three
+  builders used to prettify the token themselves ("Fertile") and nothing defined the
+  term anywhere, which is how the Rural Improvements page ended up saying "Fertile"
+  with no explanation on `/terrain`.
 - **Culture gates**: `RequiresCulture` = exactly that level; `MinimumCulture` = at least. Past Legendary, each culture step costs 5,000×(step+1) and is +1 VP.
 - **Ambition "tier" = which ambition slot (1st–10th)** it can be offered as; goals have no per-goal reward fields (Legitimacy/VP flow indirectly).
 - **DLC event text lives in oddly named files**: Wonders & Dynasties → `text-wonders-dynasties-events.xml`, Wrath of Gods → `text-calamities-events.xml` (there is no `text-eventStory-wd/-wog.xml`). ~16 eventStory entries legitimately have no `Name` (hidden setup events); ~372 have no class/trigger (engine-invoked).

@@ -21,6 +21,7 @@ import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, fmt_decimal, yield_name,
 )
+from terrain_groups import load_groups, ref as terrain_ref  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -88,11 +89,6 @@ def render_yield_pairs(parent: ET.Element, tag: str, divide: bool = True, *, suf
     return out
 
 
-def fmt_terrain(token: str) -> str:
-    s = (token or "").replace("TERRAIN_TARGET_", "").replace("TERRAIN_", "")
-    return s.replace("_", " ").title() if s else ""
-
-
 def main() -> int:
     # text-misc-btt.xml carries the Behind the Throne strings (Slums' name
     # lives there, not in text-improvement.xml).
@@ -100,6 +96,7 @@ def main() -> int:
                          "text-infos.xml", "text-misc-btt.xml")
     text_specialist = load_text("text-infos.xml")
     indexes = load_xml_indexes(XML_DIR)
+    groups = load_groups(XML_DIR, indexes["__text__"])
 
     # Class → TechPrereq + class display name
     class_root = parse("improvementClass.xml")
@@ -284,9 +281,11 @@ def main() -> int:
             vs = f"{v:g}" if v != int(v) else f"{int(v)}"
             upkeep.append(f"{vs} {y}/turn")
 
-        # Terrain validity
-        terrain_tokens = [tv.text or "" for tv in e.findall("TerrainValid/zValue") if tv.text]
-        terrains = [fmt_terrain(t) for t in terrain_tokens]
+        # Terrain validity. TerrainValid names a terrain *group*
+        # (terrainTarget.xml), so each tag carries the group's game name plus
+        # the /terrain anchor that defines it.
+        terrains = [terrain_ref(tv.text or "", groups)
+                    for tv in e.findall("TerrainValid/zValue") if tv.text]
 
         # Restrictions
         restrictions: list[str] = []

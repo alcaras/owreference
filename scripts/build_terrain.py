@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """
-Build src/data/terrain.json from terrain.xml + vegetation.xml + height.xml.
+Build src/data/terrain.json from terrain.xml + vegetation.xml + height.xml
++ terrainTarget.xml.
 
-Three sections — terrains, vegetations, heights — each in XML file order
-(the game's canonical ordering). Cross-references:
+Four sections — terrains, vegetations, heights, groups — each in XML file order
+(the game's canonical ordering). "groups" is terrainTarget.xml as read by
+scripts/terrain_groups.py: the named terrain groups ("Fertile Land", "Habitable
+Land", "Peaks") that improvement, wonder and event requirements actually name,
+with the improvements that require or exclude each one. /terrain renders them as
+the definition table those requirement tags link to. Cross-references:
 
   * resources per terrain/height/vegetation come from resource.xml's
     abTerrainValid / abHeightValid / abVegetationValid maps.
@@ -30,18 +35,24 @@ tileTag.xml is an empty stub in the current patch — nothing to read there.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import load_xml_indexes  # noqa: E402
+from terrain_groups import load_groups  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OUT = ROOT / "src" / "data" / "terrain.json"
 
 MOVEMENT_MULTIPLIER = 9  # globalsInt.xml MOVEMENT_MULTIPLER
+
+# Game text embeds icon(TOKEN) markers in some names, e.g. the religion
+# buildings ("icon(RELIGION_JUDAISM)Jewish Cathedral").
+_ICON_RE = re.compile(r"icon\([A-Z_0-9]+\)")
 
 # Religious / urban-flair improvement classes excluded from the rural
 # improvement cross-reference (same set build_rural_improvements.py skips).
@@ -99,34 +110,14 @@ def main() -> int:
     def name_of(entry: ET.Element, strip: str) -> str:
         key = entry.findtext("Name") or ""
         zt = entry.findtext("zType") or ""
-        return text.get(key) or pretty_token(zt, strip)
+        return _ICON_RE.sub("", text.get(key) or pretty_token(zt, strip)).strip()
 
-    # ── terrainTarget.xml: target → constrained dimensions ─────────────
-    targets: dict[str, dict] = {}
-    for e in parse("terrainTarget.xml").findall("Entry"):
-        zt = e.findtext("zType") or ""
-        if not zt:
-            continue
-        targets[zt] = {
-            "terrains": list(dict.fromkeys(  # TERRAIN_TARGET_LAND lists ARID twice
-                v.text for v in e.findall("Terrains/zValue") if v.text)),
-            "heights": [v.text for v in e.findall("Heights/zValue") if v.text],
-            "vegetations": [v.text for v in e.findall("Vegetations/zValue")
-                            if v.text and v.text != "NONE"],
-            "adjacent": e.findtext("AdjacentTerrain") or "",
-        }
-
-    ADJ_LABELS = {  # friendlier renderings of adjacency-target tokens
-        "TERRAIN_TARGET_VOLCANO_MOUNTAIN": "Mountain/Volcano",
-        "TERRAIN_TARGET_SALT_WATER": "salt water",
-        "TERRAIN_TARGET_LAND": "land",
-    }
+    # ── terrainTarget.xml: the game's named terrain groups ─────────────
+    groups = load_groups(XML_DIR, text)
 
     def adjacency_note(target_id: str) -> str:
-        adj = targets.get(target_id, {}).get("adjacent", "")
-        if not adj:
-            return ""
-        return f"adj. {ADJ_LABELS.get(adj, pretty_token(adj, 'TERRAIN_TARGET_'))}"
+        adj = groups.get(target_id, {}).get("adjacent", "")
+        return f"adj. {adj}" if adj else ""
 
     # ── improvement.xml: rural buildables → reverse maps per dimension ──
     imp_by_terrain: dict[str, list[str]] = {}
@@ -144,16 +135,16 @@ def main() -> int:
             continue
         imp_name = name_of(e, "IMPROVEMENT_")
         for tv in e.findall("TerrainValid/zValue"):
-            tgt = targets.get(tv.text or "")
+            tgt = groups.get(tv.text or "")
             if not tgt:
                 continue
             note = adjacency_note(tv.text or "")
             label = f"{imp_name} ({note})" if note else imp_name
-            for t in tgt["terrains"]:
+            for t in tgt["terrainIds"]:
                 imp_by_terrain.setdefault(t, []).append(label)
-            for h in tgt["heights"]:
+            for h in tgt["heightIds"]:
                 imp_by_height.setdefault(h, []).append(label)
-            for v in tgt["vegetations"]:
+            for v in tgt["vegetationIds"]:
                 imp_by_vegetation.setdefault(v, []).append(label)
 
     # ── resource.xml: reverse maps per dimension ─────────────────────────
@@ -339,11 +330,48 @@ def main() -> int:
             "improvements": uniq(imp_by_height.get(zt, [])),
         })
 
-    data = {"terrains": terrains, "vegetations": vegetations, "heights": heights}
+    # ── terrain groups ───────────────────────────────────────────────────
+    # Which improvements name each group, so the group row shows where a
+    # player meets the term. Build-only entries; wonders and urban buildings
+    # are kept apart from rural improvements because the counts differ wildly
+    # (102 urban buildings require Habitable Land).
+    used: dict[str, dict[str, list[str]]] = {}
+    for e in parse("improvement.xml").findall("Entry"):
+        zt = e.findtext("zType") or ""
+        if not zt or (e.findtext("bBuild") or "0") != "1":
+            continue
+        if (e.findtext("bWonder") or "0") == "1":
+            kind = "wonders"
+        elif (e.findtext("bUrban") or "0") == "1":
+            kind = "urban"
+        else:
+            kind = "rural"
+        imp_name = name_of(e, "IMPROVEMENT_")
+        for tv in e.findall("TerrainValid/zValue"):
+            if tv.text in groups:
+                used.setdefault(tv.text, {}).setdefault(kind, []).append(imp_name)
+        ti = e.findtext("TerrainInvalid") or ""
+        if ti in groups:
+            used.setdefault(ti, {}).setdefault("excluded", []).append(imp_name)
+
+    group_rows: list[dict] = []
+    for gid, g in groups.items():
+        u = used.get(gid, {})
+        group_rows.append({
+            **g,
+            "rural": sorted(set(u.get("rural", []))),
+            "urban": sorted(set(u.get("urban", []))),
+            "wonders": sorted(set(u.get("wonders", []))),
+            "excluded": sorted(set(u.get("excluded", []))),
+        })
+
+    data = {"terrains": terrains, "vegetations": vegetations, "heights": heights,
+            "groups": group_rows}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(data, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"✓ wrote {OUT.relative_to(ROOT)} — "
-          f"{len(terrains)} terrains, {len(vegetations)} vegetations, {len(heights)} heights")
+          f"{len(terrains)} terrains, {len(vegetations)} vegetations, "
+          f"{len(heights)} heights, {len(group_rows)} groups")
     return 0
 
 

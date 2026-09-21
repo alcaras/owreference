@@ -6,7 +6,26 @@ import data from '../data/terrain.json';
 import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
-const { terrains, vegetations, heights } = data;
+const { terrains, vegetations, heights, groups } = data;
+
+// Terrain groups (terrainTarget.xml) are what improvement, wonder and event
+// requirements actually name. A list longer than this is summarised as a count
+// so the "Habitable Land" row doesn't run to 99 tags.
+const TAG_CAP = 8;
+type Group = typeof groups[number];
+// A group's member tiles link to their own row above. The anchor is the row
+// slug (VEGETATION_TREES_CUT -> trees_cut), so pair each name with its id
+// rather than slugifying the display name ("Trees (Cut)").
+const tileRefs = (ids: string[], names: string[], prefix: string) =>
+  ids.map((id, i) => ({ name: names[i] ?? id, slug: id.replace(prefix, '').toLowerCase() }));
+const groupSlug = (id: string) => id.replace('TERRAIN_TARGET_', '').toLowerCase();
+
+const usage = (g: Group) => [
+  { key: 'Rural',        names: g.rural,    page: 'rural-improvements', unit: 'rural improvements' },
+  { key: 'Urban',        names: g.urban,    page: 'urban-improvements', unit: 'urban improvements' },
+  { key: 'Wonders',      names: g.wonders,  page: 'wonders',            unit: 'wonders' },
+  { key: 'Ruled out for', names: g.excluded, page: '',                  unit: 'improvements' },
+].filter(u => u.names.length > 0);
 
 // One search blob per row, across all three tables (keys are prefixed so
 // slugs can't collide between sections).
@@ -14,12 +33,14 @@ const searchBlobs: Record<string, string> = {};
 for (const t of terrains) searchBlobs[`t-${t.slug}`] = JSON.stringify(t).toLowerCase();
 for (const v of vegetations) searchBlobs[`v-${v.slug}`] = JSON.stringify(v).toLowerCase();
 for (const h of heights) searchBlobs[`h-${h.slug}`] = JSON.stringify(h).toLowerCase();
+for (const g of groups) searchBlobs[`g-${g.slug}`] = JSON.stringify(g).toLowerCase();
 ---
 
 <Base pageFilter title="Terrain" active="terrain" pageMark="⛰️" pageStats={[
   { label: 'terrains', value: terrains.length },
   { label: 'vegetations', value: vegetations.length },
   { label: 'heights', value: heights.length },
+  { label: 'groups', value: groups.length },
 ]}>
   <div id="terrain-grid">
 
@@ -299,6 +320,101 @@ for (const h of heights) searchBlobs[`h-${h.slug}`] = JSON.stringify(h).toLowerC
       </div>
     </section>
 
+    <!-- ── Terrain groups ──────────────────────────────────────── -->
+    <section class="tsec" id="groups">
+      <h2 class="tsec__title">Terrain groups</h2>
+      <p class="tsec__note">Improvements, wonders and events state where they are allowed as one of these named groups, not as a single terrain. So a Farm asks for Fertile Land, which means any Arid, Temperate or Lush tile. A tile is in the group when it matches every column the group fills in, and a blank column is not checked at all. Where a requirement lists several groups, matching any one of them is enough.</p>
+      <div class="grid">
+        <div class="grid__scroll">
+          <table class="ntbl">
+            <thead>
+              <tr>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Group</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Terrain</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Height</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Vegetation</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Also Requires</span></div></th>
+                <th class="nhdr nhdr--col"><div class="nhdr__inner"><span class="nhdr__name">Used By</span></div></th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.map(g => (
+                <tr data-row={`g-${g.slug}`}>
+                  <th class="rowlabel rowlabel--item" scope="row" id={`group-${g.slug}`}>
+                    <div class="item__txt">
+                      <div class="item__name">{g.name}</div>
+                      <div class="item__sub">Terrain group</div>
+                    </div>
+                  </th>
+
+                  {g.terrains.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {tileRefs(g.terrainIds, g.terrains, 'TERRAIN_').map(t => (
+                        <a class="terrain-tag terrain-tag--link" href={`#${t.slug}`}>{t.name}</a>
+                      ))}
+                    </td>
+                  ) : (
+                    <td class="cell yield-misc"><span class="any">any terrain</span></td>
+                  )}
+
+                  {g.heights.length > 0 ? (
+                    <td class="cell yield-misc">
+                      {tileRefs(g.heightIds, g.heights, 'HEIGHT_').map(h => (
+                        <a class="terrain-tag terrain-tag--link" href={`#${h.slug}`}>{h.name}</a>
+                      ))}
+                    </td>
+                  ) : (
+                    <td class="cell yield-misc"><span class="any">any height</span></td>
+                  )}
+
+                  {g.vegetations.length > 0 || g.bare ? (
+                    <td class="cell yield-misc">
+                      {g.bare && <span class="terrain-tag">no vegetation</span>}
+                      {tileRefs(g.vegetationIds, g.vegetations, 'VEGETATION_').map(v => (
+                        <a class="terrain-tag terrain-tag--link" href={`#${v.slug}`}>{v.name}</a>
+                      ))}
+                    </td>
+                  ) : (
+                    <td class="cell yield-misc"><span class="any">any vegetation</span></td>
+                  )}
+
+                  {g.freshWater || g.adjacent ? (
+                    <td class="cell yield-misc">
+                      {g.freshWater && <div class="listitem">Fresh water access</div>}
+                      {g.adjacent && (
+                        <div class="listitem">Next to <a class="glist__link" href={`#group-${groupSlug(g.adjacentId)}`}>{g.adjacent}</a></div>
+                      )}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+
+                  {usage(g).length > 0 ? (
+                    <td class="cell yield-misc">
+                      {usage(g).map(u => (
+                        <div class="glist">
+                          <span class="glist__k">{u.key}</span>
+                          {u.names.length > TAG_CAP ? (u.page ? (
+                            <a class="terrain-tag terrain-tag--link" href={`${base}${u.page}`}>{u.names.length} {u.unit}</a>
+                          ) : (
+                            <span class="terrain-tag">{u.names.length} {u.unit}</span>
+                          )) : (
+                            u.names.map(n => <span class="terrain-tag"><LinkedText text={n} /></span>)
+                          )}
+                        </div>
+                      ))}
+                    </td>
+                  ) : (
+                    <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <script type="application/json" id="terrain-search-blobs" set:html={JSON.stringify(searchBlobs)}></script>
@@ -421,6 +537,19 @@ for (const h of heights) searchBlobs[`h-${h.slug}`] = JSON.stringify(h).toLowerC
     color: var(--text-dim);
     background: var(--bg);
   }
+  .terrain-tag--link { text-decoration: none; }
+  .terrain-tag--link:hover { color: var(--accent); border-color: var(--accent); }
+  .any { color: var(--text-faint); font-size: 0.7rem; font-style: italic; }
+  .glist { font-size: 0.7rem; padding: 0.08rem 0; }
+  .glist__k {
+    display: block;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+  .glist__link { color: var(--text-dim); }
+  .glist__link:hover { color: var(--accent); }
   .listitem { font-size: 0.72rem; padding: 0.06rem 0; }
   .cell--chips { max-width: 18rem; }
   .cell--chips :global(.term) { margin: 0.08rem 0.25rem 0.08rem 0; }
