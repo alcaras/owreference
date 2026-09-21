@@ -67,7 +67,9 @@ City modifiers
 ## modifiers.note
 
 These stack with the count inside the same multiply. The Civics rows move the build price; the
-Food rows move the Food and Citizen price instead, which the count never touches.
+Food rows move the up-front Food price instead, which the count never touches. Nothing here
+moves the Citizen: an urban specialist takes exactly one Citizen from the city, and only when
+the tile has no specialist to upgrade, so a percentage never applies to it.
 
 ## example.heading
 

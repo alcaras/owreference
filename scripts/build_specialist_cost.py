@@ -18,11 +18,14 @@ The ramp is one global and one per-city counter:
   Player.getSpecialistBuildCost (Player.cs:17828) does the multiply through
   Utils.modify (Utils.cs:58), which is integer truncation, and clamps to 1.
 
-The separate yield cost (Food, and the Citizen) is NOT part of the ramp: it
+The separate yield cost (Food only — aiYieldCost names no other yield) is NOT
+part of the ramp: it
 runs through City.getSpecialistCostModifier + getSpecialistUrbanCostModifier
 in Player.getSpecialistYieldCost (Player.cs:17802). Both sets of modifiers are
 emitted here, tagged by which cost they move, because "specialist cost" in
-conversation means both.
+conversation means both. The Citizen an urban specialist takes is neither: it is
+a flat 1, charged only when Tile.isSpecialistCostCitizen (no specialist on the
+tile to upgrade), outside getSpecialistYieldCost, so no modifier scales it.
 
 Costs are RAW integers, like the rest of the specialist data — no /10
 (same note as build_specialists.py).

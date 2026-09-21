@@ -192,7 +192,7 @@ const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'speci
                 </td>
                 <td class="cell sc-plain">{scopeLabel[m.scope] ?? m.scope}</td>
                 <td class={`cell sc-plain ${m.target === 'civics' ? 'yield-civics' : 'yield-food'}`}>
-                  {m.target === 'civics' ? 'Civics build cost' : 'Food and Citizen'}
+                  {m.target === 'civics' ? 'Civics build cost' : 'Food price'}
                 </td>
                 {m.carriers.length > 0 ? (
                   <td class="cell sc-plain">
