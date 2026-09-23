@@ -303,6 +303,17 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   improvement upgrade (Unit.cs:12059) all place one without touching the count — and nothing
   lowers it, not removal, not losing the city. Page `/specialist-cost`, data
   `scripts/build_specialist_cost.py`, watched in `verify_source_constants.py`.
+- **Pillage payout is `aiYieldPillage` × Utils.modify(Σ effectUnit `iPillageYieldModifier`)**,
+  whole yields (no ÷10 — `Player.processYieldWholeTile`), and the ONLY modifier in the game is
+  `EFFECTUNIT_ASSYRIA` +100 (reached through `EFFECTPLAYER_NATION_ASSYRIA <EffectUnit>`, so
+  every Assyrian unit exactly doubles). Culture (non-`bGlobal`) goes to the pillager's nearest
+  city, or nowhere. `Game.canPillageTile` needs `iPillageTurns ≠ 0`: wonders, tribe settlements,
+  holy sites, Pillar of Edicts and ruins have none; −1 (shrines, Estates, Slums) = pillageable
+  but never destroyed. Unfinished or `bRemovePillage` (Fort) improvements are cleared outright and
+  still pay. Countdown ticks in `Tile.doTurn`. `Game.razeCity` harvests raw `aiYieldPillage`
+  with no modifier. Burn = same tile change, no payout, no cooldown, `yield.xml iBurnCost`
+  (50 Training). Page `/pillage`, data `scripts/build_pillage.py`, watched in
+  `verify_source_constants.py`.
 - **Culture gates**: `RequiresCulture` = exactly that level; `MinimumCulture` = at least. Past Legendary, each culture step costs 5,000×(step+1) and is +1 VP.
 - **Ambition "tier" = which ambition slot (1st–10th)** it can be offered as; goals have no per-goal reward fields (Legitimacy/VP flow indirectly).
 - **DLC event text lives in oddly named files**: Wonders & Dynasties → `text-wonders-dynasties-events.xml`, Wrath of Gods → `text-calamities-events.xml` (there is no `text-eventStory-wd/-wog.xml`). ~16 eventStory entries legitimately have no `Name` (hidden setup events); ~372 have no class/trigger (engine-invoked).

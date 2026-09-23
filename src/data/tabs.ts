@@ -404,6 +404,16 @@ export const TABS: Tab[] = [
       'Turns-to-flip table; 50% HP on capture; raze conditions',
     ],
   },
+  {
+    slug: 'pillage', icon: '🔥', label: 'Pillage', section: 'Combat',
+    status: 'built', sourceSheet: '',
+    summary: 'What every improvement pays when pillaged, and how Assyria doubles it',
+    willContain: [
+      'Payout per improvement (aiYieldPillage), repair cost, destroy countdown',
+      "Assyria's +100% Pillage Yield worked through Utils.modify",
+      'What cannot be pillaged; occurrences, events, razing, burning; war score and events',
+    ],
+  },
 
   // ── Events ────────────────────────────────────────────────────────
   {

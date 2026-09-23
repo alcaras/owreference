@@ -1,0 +1,3179 @@
+{
+  "bonusPillageCount": 6,
+  "code": {
+    "aiRepairPriority": "UnitRoleManager.cs:5546",
+    "aiSkipsNoPayout": "PlayerAI.cs:9273",
+    "burn": "Unit.cs:11388",
+    "canBurn": "Unit.cs:11347",
+    "canPillageTile": "Game.cs:14812",
+    "doTurn": "Tile.cs:10979",
+    "familyOpinion": "PlayerOpinion.cs:4017",
+    "getPillageYield": "Unit.cs:11241",
+    "getRepairCost": "Player.cs:20143",
+    "loadPillaged": "Tile.cs:2737",
+    "modify": "Utils.cs:58",
+    "occurrencePillage": "Game.cs:8496",
+    "pillage": "Unit.cs:11272",
+    "pillageImprovement": "Tile.cs:2777",
+    "pillageModifier": "Unit.cs:11230",
+    "processYieldWholeTile": "Player.cs:17735",
+    "razeCity": "Game.cs:11021",
+    "repair": "Unit.cs:11492"
+  },
+  "cognomens": [
+    {
+      "id": "COGNOMEN_HUNTER",
+      "name": "the Hunter",
+      "value": 600
+    },
+    {
+      "id": "COGNOMEN_SCOURGE",
+      "name": "the Scourge",
+      "value": 600
+    }
+  ],
+  "events": [
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-us#EVENTSTORY_PILLAGED_TILE_PLUNDER_DUEL_US",
+      "id": "EVENTSTORY_PILLAGED_TILE_PLUNDER_DUEL_US",
+      "name": "A Matter of Honor",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_US",
+      "when": "you pillaged someone"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-us#EVENTSTORY_PILLAGED_TILE_LOOTERS_US",
+      "id": "EVENTSTORY_PILLAGED_TILE_LOOTERS_US",
+      "name": "Looters",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_US",
+      "when": "you pillaged someone"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-us#EVENTSTORY_PILLAGED_TILE_PLUNDER_US",
+      "id": "EVENTSTORY_PILLAGED_TILE_PLUNDER_US",
+      "name": "Pillage and Plunder",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_US",
+      "when": "you pillaged someone"
+    },
+    {
+      "dlc": "Behind the Throne",
+      "href": "events/on-improvement-pillaged-us#EVENTSTORY_SPOILS_OF_NATION",
+      "id": "EVENTSTORY_SPOILS_OF_NATION",
+      "name": "Spoils of [city]",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_US",
+      "when": "you pillaged someone"
+    },
+    {
+      "dlc": "Behind the Throne",
+      "href": "events/on-improvement-pillaged-us#EVENTSTORY_RISING_INITIATVE",
+      "id": "EVENTSTORY_RISING_INITIATVE",
+      "name": "[character] Gambit",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_US",
+      "when": "you pillaged someone"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-enemy#EVENTSTORY_PILLAGED_TILE",
+      "id": "EVENTSTORY_PILLAGED_TILE",
+      "name": "Pillaged Improvement",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_ENEMY",
+      "when": "a nation pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-enemy#EVENTSTORY_PILLAGED_TILE_COMPENSATION",
+      "id": "EVENTSTORY_PILLAGED_TILE_COMPENSATION",
+      "name": "Pillaged Industry",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_ENEMY",
+      "when": "a nation pillaged you"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "href": "events/on-improvement-pillaged-enemy#EVENTSTORY_STOLEN_GODS",
+      "id": "EVENTSTORY_STOLEN_GODS",
+      "name": "Stolen Gods",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_ENEMY",
+      "when": "a nation pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-enemy#EVENTSTORY_PILLAGED_TILE_TEMPLE",
+      "id": "EVENTSTORY_PILLAGED_TILE_TEMPLE",
+      "name": "Temple in Danger",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_ENEMY",
+      "when": "a nation pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-tribe#EVENTSTORY_TRAIT_BARBARIANS_AT_THE_GATE",
+      "id": "EVENTSTORY_TRAIT_BARBARIANS_AT_THE_GATE",
+      "name": "Barbarians at the Gate",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE",
+      "when": "a tribe pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-tribe#EVENTSTORY_FRONTIER_WALL",
+      "id": "EVENTSTORY_FRONTIER_WALL",
+      "name": "Frontier Wall",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE",
+      "when": "a tribe pillaged you"
+    },
+    {
+      "dlc": "Empires of the Indus",
+      "href": "events/on-improvement-pillaged-tribe#EVENTSTORY_GREAT_MIGRATIONS",
+      "id": "EVENTSTORY_GREAT_MIGRATIONS",
+      "name": "Great Migrations",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE",
+      "when": "a tribe pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-tribe#EVENTSTORY_PILLAGED_TILE_TRIBE",
+      "id": "EVENTSTORY_PILLAGED_TILE_TRIBE",
+      "name": "Insolent Tribesmen",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE",
+      "when": "a tribe pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-tribe#EVENTSTORY_PILLAGING_TRIBE",
+      "id": "EVENTSTORY_PILLAGING_TRIBE",
+      "name": "Pillaging Tribe",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE",
+      "when": "a tribe pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-tribe#EVENTSTORY_PILLAGED_TILE_COMPENSATION_TRIBE",
+      "id": "EVENTSTORY_PILLAGED_TILE_COMPENSATION_TRIBE",
+      "name": "Pillaging Tribesmen",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE",
+      "when": "a tribe pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-tribe#EVENTSTORY_PILLAGED_TILE_TEMPLE_TRIBE",
+      "id": "EVENTSTORY_PILLAGED_TILE_TEMPLE_TRIBE",
+      "name": "Temple in Danger",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE",
+      "when": "a tribe pillaged you"
+    },
+    {
+      "dlc": "",
+      "href": "events/on-improvement-pillaged-tribe#EVENTSTORY_THE_PRICE_OF_WAR",
+      "id": "EVENTSTORY_THE_PRICE_OF_WAR",
+      "name": "The Price of War",
+      "trigger": "EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE",
+      "when": "a tribe pillaged you"
+    }
+  ],
+  "familyOpinion": [
+    {
+      "id": "FAMILYCLASS_ARTISANS",
+      "name": "Artisans",
+      "value": -20
+    }
+  ],
+  "globals": {
+    "burnCost": {
+      "YIELD_TRAINING": 50
+    },
+    "pillageOrders": 1,
+    "repairOrders": 1,
+    "warScore": 5,
+    "warScoreContext": {
+      "captureCity": 100,
+      "captureUnit": 50,
+      "killUnit": 10
+    }
+  },
+  "goals": [
+    {
+      "id": "GOAL_IMPROVEMENTS_PILLAGED_FIVE",
+      "name": "Pillage Five Improvements"
+    },
+    {
+      "id": "GOAL_IMPROVEMENTS_PILLAGED_TEN",
+      "name": "Pillage Ten Improvements"
+    }
+  ],
+  "healOnPillage": [
+    {
+      "carriers": [
+        {
+          "id": "TRAIT_HERO_ARCHETYPE",
+          "kind": "archetype",
+          "name": "Hero",
+          "note": "as leader"
+        }
+      ],
+      "id": "EFFECTUNIT_HERO_ALL"
+    }
+  ],
+  "occurrences": [
+    {
+      "chance": 5,
+      "id": "OCCURRENCE_CIVIL_WAR",
+      "name": "Civil War",
+      "slug": ""
+    },
+    {
+      "chance": 20,
+      "id": "OCCURRENCE_HURRICANE",
+      "name": "Hurricane",
+      "slug": "hurricane"
+    },
+    {
+      "chance": 10,
+      "id": "OCCURRENCE_HURRICANE_MITIGATED",
+      "name": "Minor Hurricane",
+      "slug": "hurricane-mitigated"
+    },
+    {
+      "chance": 50,
+      "id": "OCCURRENCE_TSUNAMI",
+      "name": "Tsunami",
+      "slug": "tsunami"
+    },
+    {
+      "chance": 20,
+      "id": "OCCURRENCE_TSUNAMI_MITIGATED",
+      "name": "Minor Tsunami",
+      "slug": "tsunami-mitigated"
+    },
+    {
+      "chance": 20,
+      "id": "OCCURRENCE_FLOOD",
+      "name": "Flood",
+      "slug": "flood"
+    },
+    {
+      "chance": 10,
+      "id": "OCCURRENCE_FLOOD_MITIGATED",
+      "name": "Minor Flood",
+      "slug": "flood-mitigated"
+    },
+    {
+      "chance": 10,
+      "id": "OCCURRENCE_EARTHQUAKE",
+      "name": "Earthquake",
+      "slug": "earthquake"
+    },
+    {
+      "chance": 5,
+      "id": "OCCURRENCE_EARTHQUAKE_MITIGATED",
+      "name": "Minor Earthquake",
+      "slug": "earthquake-mitigated"
+    },
+    {
+      "chance": 100,
+      "id": "OCCURRENCE_WILDFIRE",
+      "name": "Wildfire",
+      "slug": "wildfire"
+    },
+    {
+      "chance": 50,
+      "id": "OCCURRENCE_WILDFIRE_MITIGATED",
+      "name": "Minor Wildfire",
+      "slug": "wildfire-mitigated"
+    },
+    {
+      "chance": 100,
+      "id": "OCCURRENCE_ERUPTION",
+      "name": "Volcanic Eruption",
+      "slug": "eruption"
+    },
+    {
+      "chance": 100,
+      "id": "OCCURRENCE_ERUPTION_MITIGATED",
+      "name": "Minor Volcanic Eruption",
+      "slug": "eruption-mitigated"
+    }
+  ],
+  "patchNote": "aiYieldPillage values are whole yields (no ÷10): Player.processYieldWholeTile.",
+  "payoutModifiers": [
+    {
+      "carriers": [
+        {
+          "id": "NATION_ASSYRIA",
+          "kind": "nation",
+          "name": "Assyria"
+        }
+      ],
+      "id": "EFFECTUNIT_ASSYRIA",
+      "value": 100
+    }
+  ],
+  "repairModifiers": [
+    {
+      "carriers": [
+        {
+          "dlc": "Wonders and Dynasties",
+          "id": "DYNASTY_STATEIRA",
+          "kind": "dynasty",
+          "name": "Stateira",
+          "nationId": "NATION_PERSIA",
+          "nationName": "Persia"
+        }
+      ],
+      "id": "EFFECTPLAYER_DYNASTY_STATEIRA",
+      "value": -50
+    }
+  ],
+  "rows": [
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_STONE": 40
+      },
+      "class": "IMPROVEMENTCLASS_FORT",
+      "className": "Fort",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_FORT",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/fort.png",
+      "id": "IMPROVEMENT_FORT",
+      "members": [],
+      "name": "Fort",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": true,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 20
+      },
+      "class": "IMPROVEMENTCLASS_FARM",
+      "className": "Farm",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_FARM",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/farm.png",
+      "id": "IMPROVEMENT_FARM",
+      "members": [],
+      "name": "Farm",
+      "payout": {
+        "YIELD_FOOD": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 20
+      },
+      "class": "IMPROVEMENTCLASS_MINE",
+      "className": "Mine",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_MINE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/mine.png",
+      "id": "IMPROVEMENT_MINE",
+      "members": [],
+      "name": "Mine",
+      "payout": {
+        "YIELD_IRON": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_IRON": 20
+      },
+      "class": "IMPROVEMENTCLASS_QUARRY",
+      "className": "Quarry",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_QUARRY",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/quarry.png",
+      "id": "IMPROVEMENT_QUARRY",
+      "members": [],
+      "name": "Quarry",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_IRON": 20
+      },
+      "class": "IMPROVEMENTCLASS_LUMBERMILL",
+      "className": "Lumbermill",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_LUMBERMILL",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/lumbermill.png",
+      "id": "IMPROVEMENT_LUMBERMILL",
+      "members": [],
+      "name": "Lumbermill",
+      "payout": {
+        "YIELD_WOOD": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 20
+      },
+      "class": "IMPROVEMENTCLASS_PASTURE",
+      "className": "Pasture",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_PASTURE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/pasture.png",
+      "id": "IMPROVEMENT_PASTURE",
+      "members": [],
+      "name": "Pasture",
+      "payout": {
+        "YIELD_FOOD": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 20
+      },
+      "class": "IMPROVEMENTCLASS_CAMP",
+      "className": "Camp",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_CAMP",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/camp.png",
+      "id": "IMPROVEMENT_CAMP",
+      "members": [],
+      "name": "Camp",
+      "payout": {
+        "YIELD_FOOD": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 20
+      },
+      "class": "IMPROVEMENTCLASS_GROVE",
+      "className": "Grove",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_GROVE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/grove.png",
+      "id": "IMPROVEMENT_GROVE",
+      "members": [],
+      "name": "Grove",
+      "payout": {
+        "YIELD_FOOD": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 20
+      },
+      "class": "IMPROVEMENTCLASS_NETS",
+      "className": "Nets",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_NETS",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/nets.png",
+      "id": "IMPROVEMENT_NETS",
+      "members": [],
+      "name": "Nets",
+      "payout": {
+        "YIELD_FOOD": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 40
+      },
+      "class": "IMPROVEMENTCLASS_HARBOR",
+      "className": "Harbor",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_HARBOR",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/harbor.png",
+      "id": "IMPROVEMENT_HARBOR",
+      "members": [],
+      "name": "Harbor",
+      "payout": {
+        "YIELD_WOOD": 30
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 40
+      },
+      "class": "IMPROVEMENTCLASS_GRANARY",
+      "className": "Granary",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_GRANARY",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/granary.png",
+      "id": "IMPROVEMENT_GRANARY",
+      "members": [],
+      "name": "Granary",
+      "payout": {
+        "YIELD_FOOD": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_WOOD": 40
+      },
+      "class": "IMPROVEMENTCLASS_WATERMILL",
+      "className": "Watermill",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_WATERMILL",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/watermill.png",
+      "id": "IMPROVEMENT_WATERMILL",
+      "members": [],
+      "name": "Watermill",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_STONE": 40
+      },
+      "class": "IMPROVEMENTCLASS_WINDMILL",
+      "className": "Windmill",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_WINDMILL",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/windmill.png",
+      "id": "IMPROVEMENT_WINDMILL",
+      "members": [],
+      "name": "Windmill",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "rural",
+      "buildCost": {
+        "YIELD_STONE": 100,
+        "YIELD_WOOD": 100
+      },
+      "class": "IMPROVEMENTCLASS_ESTATES",
+      "className": "Estates",
+      "count": 1,
+      "dlc": "Behind the Throne",
+      "entityId": "IMPROVEMENT_ESTATES",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/estates.png",
+      "id": "IMPROVEMENT_ESTATES",
+      "members": [],
+      "name": "Estates",
+      "payout": {
+        "YIELD_CULTURE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": -1,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 20
+      },
+      "class": "IMPROVEMENTCLASS_HAMLET",
+      "className": "Hamlet",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_HAMLET",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/hamlet.png",
+      "id": "IMPROVEMENT_HAMLET",
+      "members": [],
+      "name": "Hamlet",
+      "payout": {
+        "YIELD_MONEY": 10
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 20
+      },
+      "class": "IMPROVEMENTCLASS_HAMLET",
+      "className": "Hamlet",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_VILLAGE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/village.png",
+      "id": "IMPROVEMENT_VILLAGE",
+      "members": [],
+      "name": "Village",
+      "payout": {
+        "YIELD_MONEY": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 20
+      },
+      "class": "IMPROVEMENTCLASS_HAMLET",
+      "className": "Hamlet",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_TOWN",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/town.png",
+      "id": "IMPROVEMENT_TOWN",
+      "members": [],
+      "name": "Town",
+      "payout": {
+        "YIELD_MONEY": 40
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 40
+      },
+      "class": "IMPROVEMENTCLASS_BARRACKS",
+      "className": "Barracks",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_BARRACKS",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/barracks.png",
+      "id": "IMPROVEMENT_BARRACKS",
+      "members": [],
+      "name": "Barracks",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_WOOD": 40
+      },
+      "class": "IMPROVEMENTCLASS_RANGE",
+      "className": "Range",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_RANGE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/range.png",
+      "id": "IMPROVEMENT_RANGE",
+      "members": [],
+      "name": "Range",
+      "payout": {
+        "YIELD_WOOD": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 40
+      },
+      "class": "IMPROVEMENTCLASS_ODEON",
+      "className": "Odeon",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_ODEON",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/odeon.png",
+      "id": "IMPROVEMENT_THEATER_1",
+      "members": [],
+      "name": "Odeon",
+      "payout": {
+        "YIELD_CULTURE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 60
+      },
+      "class": "IMPROVEMENTCLASS_ODEON",
+      "className": "Odeon",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_THEATER_2",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/theater.png",
+      "id": "IMPROVEMENT_THEATER_2",
+      "members": [],
+      "name": "Theater",
+      "payout": {
+        "YIELD_CULTURE": 30
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 80
+      },
+      "class": "IMPROVEMENTCLASS_ODEON",
+      "className": "Odeon",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_AMPHITHEATER",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/amphitheater.png",
+      "id": "IMPROVEMENT_THEATER_3",
+      "members": [],
+      "name": "Amphitheater",
+      "payout": {
+        "YIELD_CULTURE": 40
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 40
+      },
+      "class": "IMPROVEMENTCLASS_BATHS",
+      "className": "Bath",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_BATHS_1",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/cold_baths.png",
+      "id": "IMPROVEMENT_BATHS_1",
+      "members": [],
+      "name": "Cold Baths",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 60
+      },
+      "class": "IMPROVEMENTCLASS_BATHS",
+      "className": "Bath",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_BATHS_2",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/warm_baths.png",
+      "id": "IMPROVEMENT_BATHS_2",
+      "members": [],
+      "name": "Warm Baths",
+      "payout": {
+        "YIELD_STONE": 30
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 80
+      },
+      "class": "IMPROVEMENTCLASS_BATHS",
+      "className": "Bath",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_BATHS_3",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/heated_baths.png",
+      "id": "IMPROVEMENT_BATHS_3",
+      "members": [],
+      "name": "Heated Baths",
+      "payout": {
+        "YIELD_STONE": 40
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_WOOD": 60
+      },
+      "class": "IMPROVEMENTCLASS_MARKET",
+      "className": "Market",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_MARKET",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/market.png",
+      "id": "IMPROVEMENT_MARKET_1",
+      "members": [],
+      "name": "Market",
+      "payout": {
+        "YIELD_MONEY": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_WOOD": 80
+      },
+      "class": "IMPROVEMENTCLASS_MARKET",
+      "className": "Market",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_MARKET_2",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/grocer.png",
+      "id": "IMPROVEMENT_MARKET_2",
+      "members": [],
+      "name": "Grocer",
+      "payout": {
+        "YIELD_MONEY": 40
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_WOOD": 100
+      },
+      "class": "IMPROVEMENTCLASS_MARKET",
+      "className": "Market",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_MARKET_3",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/fair.png",
+      "id": "IMPROVEMENT_MARKET_3",
+      "members": [],
+      "name": "Fair",
+      "payout": {
+        "YIELD_MONEY": 60
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 80
+      },
+      "class": "IMPROVEMENTCLASS_LIBRARY",
+      "className": "Library",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_LIBRARY",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/library.png",
+      "id": "IMPROVEMENT_LIBRARY_1",
+      "members": [],
+      "name": "Library",
+      "payout": {
+        "YIELD_SCIENCE": 10
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 100
+      },
+      "class": "IMPROVEMENTCLASS_LIBRARY",
+      "className": "Library",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_LIBRARY_2",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/academy.png",
+      "id": "IMPROVEMENT_LIBRARY_2",
+      "members": [],
+      "name": "Academy",
+      "payout": {
+        "YIELD_SCIENCE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 120
+      },
+      "class": "IMPROVEMENTCLASS_LIBRARY",
+      "className": "Library",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_UNIVERSITY",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/university.png",
+      "id": "IMPROVEMENT_LIBRARY_3",
+      "members": [],
+      "name": "University",
+      "payout": {
+        "YIELD_SCIENCE": 30
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 80
+      },
+      "class": "IMPROVEMENTCLASS_COURTHOUSE",
+      "className": "Courthouse",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_COURTHOUSE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/courthouse.png",
+      "id": "IMPROVEMENT_COURTHOUSE_1",
+      "members": [],
+      "name": "Courthouse",
+      "payout": {
+        "YIELD_CIVICS": 10
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 100
+      },
+      "class": "IMPROVEMENTCLASS_COURTHOUSE",
+      "className": "Courthouse",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_COURTHOUSE_2",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/ministries.png",
+      "id": "IMPROVEMENT_COURTHOUSE_2",
+      "members": [],
+      "name": "Ministry",
+      "payout": {
+        "YIELD_CIVICS": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 120
+      },
+      "class": "IMPROVEMENTCLASS_COURTHOUSE",
+      "className": "Courthouse",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_PALACE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/palace.png",
+      "id": "IMPROVEMENT_COURTHOUSE_3",
+      "members": [],
+      "name": "Palace",
+      "payout": {
+        "YIELD_CIVICS": 30
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 60
+      },
+      "class": "IMPROVEMENTCLASS_GARRISON",
+      "className": "Garrison",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_GARRISON_1",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/garrison_1.png",
+      "id": "IMPROVEMENT_GARRISON_1",
+      "members": [],
+      "name": "Garrison",
+      "payout": {
+        "YIELD_STONE": 40
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 80
+      },
+      "class": "IMPROVEMENTCLASS_GARRISON",
+      "className": "Garrison",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_GARRISON_2",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/garrison_2.png",
+      "id": "IMPROVEMENT_GARRISON_2",
+      "members": [],
+      "name": "Stronghold",
+      "payout": {
+        "YIELD_STONE": 50
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {
+        "YIELD_STONE": 100
+      },
+      "class": "IMPROVEMENTCLASS_GARRISON",
+      "className": "Garrison",
+      "count": 1,
+      "dlc": "",
+      "entityId": "IMPROVEMENT_GARRISON_3",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/garrison_3.png",
+      "id": "IMPROVEMENT_GARRISON_3",
+      "members": [],
+      "name": "Citadel",
+      "payout": {
+        "YIELD_STONE": 50
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "urban",
+      "buildCost": {},
+      "class": "IMPROVEMENTCLASS_SLUMS",
+      "className": "Slums",
+      "count": 1,
+      "dlc": "Behind the Throne",
+      "entityId": "IMPROVEMENT_SLUMS",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/camp.png",
+      "id": "IMPROVEMENT_SLUMS",
+      "members": [],
+      "name": "Slums",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": -1,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "religion",
+      "buildCost": {
+        "YIELD_WOOD": 60
+      },
+      "class": "IMPROVEMENTCLASS_MONASTERY",
+      "className": "Monastery",
+      "count": 6,
+      "dlc": "Empires of the Indus",
+      "entityId": "IMPROVEMENT_MONASTERY",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/zoroastrianism_monastery.png",
+      "id": "GROUP_IMPROVEMENTCLASS_MONASTERY_3",
+      "members": [
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_MONASTERY_ZOROASTRIANISM",
+          "name": "Zoroastrian Monastery"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_MONASTERY_JUDAISM",
+          "name": "Jewish Monastery"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_MONASTERY_CHRISTIANITY",
+          "name": "Christian Monastery"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_MONASTERY_MANICHAEISM",
+          "name": "Manichaean Monastery"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_MONASTERY_HINDUISM",
+          "name": "Hindu Monastery"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_MONASTERY_BUDDHISM",
+          "name": "Buddhist Monastery"
+        }
+      ],
+      "name": "Monasteries",
+      "payout": {
+        "YIELD_SCIENCE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "religion",
+      "buildCost": {
+        "YIELD_STONE": 60
+      },
+      "class": "IMPROVEMENTCLASS_TEMPLE",
+      "className": "Temple",
+      "count": 6,
+      "dlc": "Empires of the Indus",
+      "entityId": "IMPROVEMENT_TEMPLE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/temple.png",
+      "id": "GROUP_IMPROVEMENTCLASS_TEMPLE_4",
+      "members": [
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_TEMPLE_ZOROASTRIANISM",
+          "name": "Zoroastrian Temple"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_TEMPLE_JUDAISM",
+          "name": "Jewish Temple"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_TEMPLE_CHRISTIANITY",
+          "name": "Christian Temple"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_TEMPLE_MANICHAEISM",
+          "name": "Manichaean Temple"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_TEMPLE_HINDUISM",
+          "name": "Hindu Temple"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_TEMPLE_BUDDHISM",
+          "name": "Buddhist Temple"
+        }
+      ],
+      "name": "Temples",
+      "payout": {
+        "YIELD_ORDERS": 2
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "religion",
+      "buildCost": {
+        "YIELD_STONE": 100
+      },
+      "class": "IMPROVEMENTCLASS_CATHEDRAL",
+      "className": "Cathedral",
+      "count": 6,
+      "dlc": "Empires of the Indus",
+      "entityId": "IMPROVEMENT_CATHEDRAL",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "img/icons/improvements/cathedral.png",
+      "id": "GROUP_IMPROVEMENTCLASS_CATHEDRAL_5",
+      "members": [
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_CATHEDRAL_ZOROASTRIANISM",
+          "name": "Zoroastrian Cathedral"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_CATHEDRAL_JUDAISM",
+          "name": "Jewish Cathedral"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_CATHEDRAL_CHRISTIANITY",
+          "name": "Christian Cathedral"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_CATHEDRAL_MANICHAEISM",
+          "name": "Manichaean Cathedral"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_CATHEDRAL_HINDUISM",
+          "name": "Hindu Cathedral"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_CATHEDRAL_BUDDHISM",
+          "name": "Buddhist Cathedral"
+        }
+      ],
+      "name": "Cathedrals",
+      "payout": {
+        "YIELD_CULTURE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 20,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "shrine",
+      "buildCost": {
+        "YIELD_STONE": 40
+      },
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "className": "Shrine",
+      "count": 53,
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "shrines",
+      "icon": "",
+      "id": "GROUP_IMPROVEMENTCLASS_SHRINE_2",
+      "members": [
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_NINURTA",
+          "name": "Shrine of Ninurta"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_BELLONA",
+          "name": "Shrine of Bellona"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_NUSKA",
+          "name": "Shrine of Nuska"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ATAR",
+          "name": "Shrine of Atar"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_SOL",
+          "name": "Shrine of Sol"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_NABU",
+          "name": "Shrine of Nabu"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ATHENA",
+          "name": "Shrine of Athena"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_SHAMASH",
+          "name": "Shrine of Shamash"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_RA",
+          "name": "Shrine of Ra"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_HVAR_KHSHAITA",
+          "name": "Shrine of Hvar Khshaita"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_MELQART",
+          "name": "Shrine of Melqart"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_POSEIDON",
+          "name": "Shrine of Poseidon"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ANAHITA",
+          "name": "Shrine of Anahita"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ISHTAR",
+          "name": "Shrine of Ishtar"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_BAAL_HAMMON",
+          "name": "Shrine of Baal Hammon"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_FERONIA",
+          "name": "Shrine of Feronia"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ERESHKIGAL",
+          "name": "Shrine of Ereshkigal"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_OSIRIS",
+          "name": "Shrine of Osiris"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_HADES",
+          "name": "Shrine of Hades"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ESHMUN",
+          "name": "Shrine of Eshmun"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ISIS",
+          "name": "Shrine of Isis"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ASHUR",
+          "name": "Shrine of Ashur"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_MARDUK",
+          "name": "Shrine of Marduk"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ZEUS",
+          "name": "Shrine of Zeus"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_TANIT",
+          "name": "Shrine of Tanit"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_CERES",
+          "name": "Shrine of Ceres"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_NEITH",
+          "name": "Shrine of Neith"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_MITHRA",
+          "name": "Shrine of Mithra"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_TARHUN",
+          "name": "Shrine of Tarhun"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_ARINNITTI",
+          "name": "Shrine of Arinnitti"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_KAMRUSEPA",
+          "name": "Shrine of Kamrusepa"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_HALKI",
+          "name": "Shrine of Halki"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_SERAPIS",
+          "name": "Shrine of Serapis"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_AMUN",
+          "name": "Shrine of Amani"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_APEDEMEK",
+          "name": "Shrine of Apedemek"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_SEBIUMEKER",
+          "name": "Shrine of Sabomakal"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SHRINE_MANDULIS",
+          "name": "Shrine of Melul"
+        },
+        {
+          "dlc": "Wrath of Gods",
+          "id": "IMPROVEMENT_SHRINE_ASTAR",
+          "name": "Shrine of Astar"
+        },
+        {
+          "dlc": "Wrath of Gods",
+          "id": "IMPROVEMENT_SHRINE_MAHREM",
+          "name": "Shrine of Mahrem"
+        },
+        {
+          "dlc": "Wrath of Gods",
+          "id": "IMPROVEMENT_SHRINE_BEHER",
+          "name": "Shrine of Beher"
+        },
+        {
+          "dlc": "Wrath of Gods",
+          "id": "IMPROVEMENT_SHRINE_MEDR",
+          "name": "Shrine of Medr"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_YAMA",
+          "name": "Shrine of Yama"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_THE_MARUTS",
+          "name": "Shrine of Nasatya"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_INDRA",
+          "name": "Shrine of Indra"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_SURYA",
+          "name": "Shrine of Surya"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_ORLAGNO",
+          "name": "Shrine of Orlagno"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_OESHO",
+          "name": "Shrine of Oesho"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_NANA",
+          "name": "Shrine of Nana"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_ARDAKSHO",
+          "name": "Shrine of Ardaksho"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_MAYON",
+          "name": "Shrine of Mayon"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_TIRUMAL",
+          "name": "Shrine of Tirumal"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_MURUGAN",
+          "name": "Shrine of Murugan"
+        },
+        {
+          "dlc": "Empires of the Indus",
+          "id": "IMPROVEMENT_SHRINE_VARUNA",
+          "name": "Shrine of Varuna"
+        }
+      ],
+      "name": "Shrines",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": -1,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "unique",
+      "buildCost": {
+        "YIELD_STONE": 40
+      },
+      "class": "IMPROVEMENTCLASS_ALTAR_ATEN",
+      "className": "Altar of the Aten",
+      "count": 1,
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_ALTAR_ATEN",
+      "members": [],
+      "name": "Altar of the Aten",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": -1,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "unique",
+      "buildCost": {
+        "YIELD_STONE": 60
+      },
+      "class": "IMPROVEMENTCLASS_KUSHITE_PYRAMIDS",
+      "className": "Kushite Pyramids",
+      "count": 1,
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_KUSHITE_PYRAMIDS",
+      "members": [],
+      "name": "Kushite Pyramids",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "unique",
+      "buildCost": {
+        "YIELD_STONE": 100
+      },
+      "class": "IMPROVEMENTCLASS_AKSUM_STELE",
+      "className": "Aksumite Stele",
+      "count": 1,
+      "dlc": "Wrath of Gods",
+      "entityId": "IMPROVEMENT_STELE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_AKSUM_STELE_1",
+      "members": [],
+      "name": "Stele",
+      "payout": {
+        "YIELD_STONE": 40
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "unique",
+      "buildCost": {
+        "YIELD_STONE": 200
+      },
+      "class": "IMPROVEMENTCLASS_AKSUM_STELE",
+      "className": "Aksumite Stele",
+      "count": 1,
+      "dlc": "Wrath of Gods",
+      "entityId": "IMPROVEMENT_STELE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_AKSUM_STELE_2",
+      "members": [],
+      "name": "Grand Stele",
+      "payout": {
+        "YIELD_STONE": 80
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "unique",
+      "buildCost": {
+        "YIELD_STONE": 400
+      },
+      "class": "IMPROVEMENTCLASS_AKSUM_STELE",
+      "className": "Aksumite Stele",
+      "count": 1,
+      "dlc": "Wrath of Gods",
+      "entityId": "IMPROVEMENT_STELE",
+      "event": false,
+      "file": "improvement.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_AKSUM_STELE_3",
+      "members": [],
+      "name": "Legendary Stele",
+      "payout": {
+        "YIELD_STONE": 120
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "event",
+      "buildCost": {},
+      "class": "IMPROVEMENTCLASS_CULT",
+      "className": "Cult Shrines",
+      "count": 1,
+      "dlc": "The Sacred and the Profane",
+      "entityId": "",
+      "event": true,
+      "file": "improvement-event-sap.xml",
+      "href": "",
+      "icon": "",
+      "id": "GROUP_IMPROVEMENTCLASS_CULT_0",
+      "members": [
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_PAGAN_STATUE_TEMPLE",
+          "name": "Temple of the Statue"
+        }
+      ],
+      "name": "Temple of the Statue",
+      "payout": {
+        "YIELD_STONE": 40
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "event",
+      "buildCost": {},
+      "class": "IMPROVEMENTCLASS_CULT",
+      "className": "Cult Shrines",
+      "count": 13,
+      "dlc": "The Sacred and the Profane",
+      "entityId": "",
+      "event": true,
+      "file": "improvement-event-sap.xml",
+      "href": "",
+      "icon": "",
+      "id": "GROUP_IMPROVEMENTCLASS_CULT_1",
+      "members": [
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_SHRINE_OF_THE_HERO",
+          "name": "Hero Cult of the Protector"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_SHRINE_OF_THE_FALLEN_GODDESS",
+          "name": "Cult of the Fallen Goddess"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_CAVALRY_CULT",
+          "name": "Cavalry Cult"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_AMAZON_CULT",
+          "name": "Amazon Cult"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_MARTYR_CULT",
+          "name": "Cult of the Martyr"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_DUAL_CULT",
+          "name": "Cult of the Joined Gods"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_CULT_OF_THE_ANGELIC_DIVINE",
+          "name": "Cult of the Angelic Divine"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_ECSTATIC_CULT",
+          "name": "Ecstatic Cult"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_CULT_OF_THE_MOTHER",
+          "name": "Cult of the Mother"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_CULT_OF_ISIS_AND_SERAPIS",
+          "name": "Cult of Isis and Serapis"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_CULT_OF_MITHRAS",
+          "name": "Cult of Mithras"
+        },
+        {
+          "dlc": "The Sacred and the Profane",
+          "id": "IMPROVEMENT_CULT_OF_THE_HEALER",
+          "name": "Cult of the Healer"
+        },
+        {
+          "dlc": "",
+          "id": "IMPROVEMENT_SWORD_CULT",
+          "name": "Sword Cult"
+        }
+      ],
+      "name": "Cults",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "event",
+      "buildCost": {
+        "YIELD_WOOD": 20
+      },
+      "class": "IMPROVEMENTCLASS_MINE",
+      "className": "Mine",
+      "count": 1,
+      "dlc": "",
+      "entityId": "",
+      "event": true,
+      "file": "improvement-event.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_LAURION_MINE",
+      "members": [],
+      "name": "Laurion Mine",
+      "payout": {
+        "YIELD_IRON": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "event",
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "count": 1,
+      "dlc": "",
+      "entityId": "",
+      "event": true,
+      "file": "improvement-event.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_FOREST_FIRE_TOMB",
+      "members": [],
+      "name": "Ancient Tomb",
+      "payout": {
+        "YIELD_MONEY": 50
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "event",
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "count": 1,
+      "dlc": "",
+      "entityId": "",
+      "event": true,
+      "file": "improvement-event.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_FOREST_FIRE_MONUMENT",
+      "members": [],
+      "name": "National Monument",
+      "payout": {
+        "YIELD_MONEY": 50
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "bucket": "event",
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "count": 1,
+      "dlc": "",
+      "entityId": "",
+      "event": true,
+      "file": "improvement-event.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_GODS_CONSORT_SHRINE",
+      "members": [],
+      "name": "God's Consort Cult Shrine",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "bucket": "event",
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "count": 1,
+      "dlc": "",
+      "entityId": "",
+      "event": true,
+      "file": "improvement-event.xml",
+      "href": "",
+      "icon": "",
+      "id": "IMPROVEMENT_SHRINE_TRIBE_PAGANISM",
+      "members": [],
+      "name": "Tribal Shrine",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 10,
+      "urban": true,
+      "wonder": false
+    }
+  ],
+  "tribes": [
+    {
+      "id": "TRIBE_RAIDERS",
+      "name": "Raiders",
+      "priority": 2
+    }
+  ],
+  "units": {
+    "canPillage": 76,
+    "cannot": [
+      {
+        "id": "UNIT_BALLISTA",
+        "name": "Ballista"
+      },
+      {
+        "id": "UNIT_POLYBOLOS",
+        "name": "Polybolos"
+      },
+      {
+        "id": "UNIT_ONAGER",
+        "name": "Onager"
+      },
+      {
+        "id": "UNIT_MANGONEL",
+        "name": "Mangonel"
+      }
+    ]
+  },
+  "unpillageable": [
+    {
+      "buildCost": {},
+      "class": "IMPROVEMENTCLASS_CULT",
+      "className": "Cult Shrines",
+      "dlc": "The Sacred and the Profane",
+      "entityId": "",
+      "event": true,
+      "file": "improvement-event-sap.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_SHRINE_OF_VICTORY",
+      "name": "Shrine of Victory",
+      "payout": {
+        "YIELD_STONE": 20
+      },
+      "removeOnPillage": true,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_ANCIENT_RUINS",
+      "name": "Ancient Ruins",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_CITY_SITE",
+      "name": "City Site",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_RUINS_1",
+      "name": "Hovel Ruins",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_RUINS_2",
+      "name": "Outpost Ruins",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_RUINS_3",
+      "name": "Encampment Ruins",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_RUINS_4",
+      "name": "Bastion Ruins",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_SETTLEMENT_1",
+      "name": "Hovel",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": true,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_SETTLEMENT_2",
+      "name": "Outpost",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": true,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_SETTLEMENT_3",
+      "name": "Encampment",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": true,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_SETTLEMENT_4",
+      "name": "Bastion",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": true,
+      "turns": 0,
+      "urban": false,
+      "wonder": false
+    },
+    {
+      "buildCost": {},
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_MINOR_CITY",
+      "name": "Minor City",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 200
+      },
+      "class": "IMPROVEMENTCLASS_HOLY_SITE",
+      "className": "Holy Site",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/holy_site_zoroastrianism.png",
+      "id": "IMPROVEMENT_HOLY_SITE_ZOROASTRIANISM",
+      "name": "The Adur Burzen-Mihr",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 200
+      },
+      "class": "IMPROVEMENTCLASS_HOLY_SITE",
+      "className": "Holy Site",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/holy_site_judaism.png",
+      "id": "IMPROVEMENT_HOLY_SITE_JUDAISM",
+      "name": "The Temple of Solomon",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 200
+      },
+      "class": "IMPROVEMENTCLASS_HOLY_SITE",
+      "className": "Holy Site",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/holy_site_christianity.png",
+      "id": "IMPROVEMENT_HOLY_SITE_CHRISTIANITY",
+      "name": "The Church of the Holy Sepulchre",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 200
+      },
+      "class": "IMPROVEMENTCLASS_HOLY_SITE",
+      "className": "Holy Site",
+      "dlc": "",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/holy_site_manichaeism.png",
+      "id": "IMPROVEMENT_HOLY_SITE_MANICHAEISM",
+      "name": "The Cao'an",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 600
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_PYRAMIDS",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/pyramids.png",
+      "id": "IMPROVEMENT_PYRAMIDS",
+      "name": "The Pyramids",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 600
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_GREAT_ZIGGURAT",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/great_ziggurat.png",
+      "id": "IMPROVEMENT_GREAT_ZIGGURAT",
+      "name": "The Ziggurat",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_FOOD": 200,
+        "YIELD_STONE": 400
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_ORACLE",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/oracle.png",
+      "id": "IMPROVEMENT_ORACLE",
+      "name": "The Oracle",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 400,
+        "YIELD_WOOD": 200
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_HANGING_GARDENS",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/hanging_gardens.png",
+      "id": "IMPROVEMENT_HANGING_GARDENS",
+      "name": "The Hanging Gardens",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 900
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_NECROPOLIS",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/necropolis.png",
+      "id": "IMPROVEMENT_NECROPOLIS",
+      "name": "The Necropolis",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_IRON": 300,
+        "YIELD_STONE": 600
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_ISHTAR_GATE",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/ishtar_gate.png",
+      "id": "IMPROVEMENT_ISHTAR_GATE",
+      "name": "The Ishtar Gate",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_IRON": 300,
+        "YIELD_STONE": 600
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_LIGHTHOUSE",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/lighthouse.png",
+      "id": "IMPROVEMENT_LIGHTHOUSE",
+      "name": "The Lighthouse",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 900
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_APADANA",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/apadana.png",
+      "id": "IMPROVEMENT_APADANA",
+      "name": "The Apadana",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 300,
+        "YIELD_STONE": 1200
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_MAUSOLEUM",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/mausoleum.png",
+      "id": "IMPROVEMENT_MAUSOLEUM",
+      "name": "The Mausoleum",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 300,
+        "YIELD_STONE": 1200
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_ACROPOLIS",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_ACROPOLIS",
+      "name": "The Acropolis",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 300,
+        "YIELD_IRON": 800,
+        "YIELD_STONE": 400
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_COLOSSUS",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/colossus.png",
+      "id": "IMPROVEMENT_COLOSSUS",
+      "name": "The Colossus",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 300,
+        "YIELD_STONE": 800,
+        "YIELD_WOOD": 400
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_MUSAEUM",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/musaeum.png",
+      "id": "IMPROVEMENT_MUSAEUM",
+      "name": "The Musaeum",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 400,
+        "YIELD_FOOD": 600,
+        "YIELD_STONE": 1200
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_CIRCUS_MAXIMUS",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/circus_maximus.png",
+      "id": "IMPROVEMENT_CIRCUS_MAXIMUS",
+      "name": "The Circus Maximus",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 400,
+        "YIELD_STONE": 1800
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_PANTHEON",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/pantheon.png",
+      "id": "IMPROVEMENT_PANTHEON",
+      "name": "The Pantheon",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 400,
+        "YIELD_STONE": 1800
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_HAGIA_SOPHIA",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/hagia_sophia.png",
+      "id": "IMPROVEMENT_HAGIA_SOPHIA",
+      "name": "The Hagia Sophia",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 400,
+        "YIELD_STONE": 1200,
+        "YIELD_WOOD": 600
+      },
+      "class": "",
+      "className": "",
+      "dlc": "",
+      "entityId": "IMPROVEMENT_VIA_RECTA_SOUK",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_VIA_RECTA_SOUK",
+      "name": "The Via Recta Souk",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_IRON": 200,
+        "YIELD_STONE": 400
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Wonders and Dynasties",
+      "entityId": "IMPROVEMENT_JERWAN_AQUEDUCT",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/jerwan_aqueduct.png",
+      "id": "IMPROVEMENT_JERWAN_AQUEDUCT",
+      "name": "The Jerwan Aqueduct",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 600
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Wonders and Dynasties",
+      "entityId": "IMPROVEMENT_YAZILIKAYA",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/yazilikaya.png",
+      "id": "IMPROVEMENT_YAZILIKAYA",
+      "name": "The Yazilikaya",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 600,
+        "YIELD_WOOD": 300
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Wonders and Dynasties",
+      "entityId": "IMPROVEMENT_ROYAL_LIBRARY",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/royal_library.png",
+      "id": "IMPROVEMENT_ROYAL_LIBRARY",
+      "name": "The Royal Library",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 900
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Wonders and Dynasties",
+      "entityId": "IMPROVEMENT_JEBEL_BARKAL",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/jebel_barkal.png",
+      "id": "IMPROVEMENT_JEBEL_BARKAL",
+      "name": "The Jebel Barkal",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 300,
+        "YIELD_STONE": 1200
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Wonders and Dynasties",
+      "entityId": "IMPROVEMENT_AL_KHAZNEH",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/al_khazneh.png",
+      "id": "IMPROVEMENT_AL_KHAZNEH",
+      "name": "Al Khazneh",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 300,
+        "YIELD_STONE": 600,
+        "YIELD_WOOD": 600
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Wonders and Dynasties",
+      "entityId": "IMPROVEMENT_COTHON",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/cothon.png",
+      "id": "IMPROVEMENT_COTHON",
+      "name": "The Cothon",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": false,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 400,
+        "YIELD_STONE": 1800
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Wonders and Dynasties",
+      "entityId": "IMPROVEMENT_HELIOPOLIS",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/heliopolis.png",
+      "id": "IMPROVEMENT_HELIOPOLIS",
+      "name": "The Heliopolis",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 400,
+        "YIELD_FOOD": 600,
+        "YIELD_STONE": 1200
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Wonders and Dynasties",
+      "entityId": "IMPROVEMENT_COLOSSEUM",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/colosseum.png",
+      "id": "IMPROVEMENT_COLOSSEUM",
+      "name": "The Colosseum",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 400,
+        "YIELD_STONE": 400
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Empires of the Indus",
+      "entityId": "IMPROVEMENT_STUPA",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_STUPA",
+      "name": "The Great Stupa",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_STONE": 10
+      },
+      "class": "IMPROVEMENTCLASS_PILLAR_EDICTS",
+      "className": "Pillar Edicts",
+      "dlc": "Empires of the Indus",
+      "entityId": "IMPROVEMENT_PILLAR_EDICT",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/pillar_edict.png",
+      "id": "IMPROVEMENT_PILLAR_EDICT",
+      "name": "Pillar Edicts",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": false
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 900
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Empires of the Indus",
+      "entityId": "IMPROVEMENT_THE_MAHAVIHARA",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_THE_MAHAVIHARA",
+      "name": "The Mahavihara",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 300,
+        "YIELD_STONE": 1200
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Empires of the Indus",
+      "entityId": "IMPROVEMENT_MONUMENTAL_BUDDHAS",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/monumental_buddhas.png",
+      "id": "IMPROVEMENT_MONUMENTAL_BUDDHAS",
+      "name": "The Monumental Buddhas",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 400,
+        "YIELD_STONE": 1800
+      },
+      "class": "",
+      "className": "",
+      "dlc": "Empires of the Indus",
+      "entityId": "IMPROVEMENT_HILL_FORT",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "",
+      "id": "IMPROVEMENT_HILL_FORT",
+      "name": "The Chittorgarh",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": true
+    },
+    {
+      "buildCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 200
+      },
+      "class": "IMPROVEMENTCLASS_HOLY_SITE",
+      "className": "Holy Site",
+      "dlc": "Empires of the Indus",
+      "entityId": "",
+      "event": false,
+      "file": "improvement.xml",
+      "icon": "img/icons/improvements/buddhist_holy_site.png",
+      "id": "IMPROVEMENT_HOLY_SITE_BUDDHISM",
+      "name": "Mahabodhi Temple",
+      "payout": {},
+      "removeOnPillage": false,
+      "tribe": false,
+      "turns": 0,
+      "urban": true,
+      "wonder": false
+    }
+  ],
+  "yields": {
+    "YIELD_CIVICS": {
+      "global": true,
+      "name": "Civics"
+    },
+    "YIELD_CULTURE": {
+      "global": false,
+      "name": "Culture"
+    },
+    "YIELD_DISCONTENT": {
+      "global": false,
+      "name": "Discontent"
+    },
+    "YIELD_FOOD": {
+      "global": true,
+      "name": "Food"
+    },
+    "YIELD_GROWTH": {
+      "global": false,
+      "name": "Growth"
+    },
+    "YIELD_HAPPINESS": {
+      "global": false,
+      "name": "Happiness"
+    },
+    "YIELD_IRON": {
+      "global": true,
+      "name": "Iron"
+    },
+    "YIELD_MAINTENANCE": {
+      "global": true,
+      "name": "Maintenance"
+    },
+    "YIELD_MONEY": {
+      "global": true,
+      "name": "Money"
+    },
+    "YIELD_ORDERS": {
+      "global": true,
+      "name": "Orders"
+    },
+    "YIELD_SCIENCE": {
+      "global": true,
+      "name": "Science"
+    },
+    "YIELD_STONE": {
+      "global": true,
+      "name": "Stone"
+    },
+    "YIELD_TRAINING": {
+      "global": true,
+      "name": "Training"
+    },
+    "YIELD_WOOD": {
+      "global": true,
+      "name": "Wood"
+    }
+  }
+}

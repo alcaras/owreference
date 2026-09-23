@@ -1,0 +1,499 @@
+---
+import Base from '../layouts/Base.astro';
+import Term from '../components/Term.astro';
+import D from '../data/pillage.json';
+import proseRaw from '../data/pillage-prose.md?raw';
+import editorJs from '../lib/prose-editor.js?raw';
+import { createProse, type ProseVar } from '../lib/prose';
+import { getEntity } from '../lib/entities';
+
+const PROSE_FILE = 'src/data/pillage-prose.md';
+const DEV = import.meta.env.DEV;
+const base = import.meta.env.BASE_URL;
+
+type Row = (typeof D.rows)[number];
+type Payout = Record<string, number>;
+
+// Utils.modify: value × (100 + modifier) ÷ 100, integer truncation, floor 0.
+const modify = (value: number, modifier: number) =>
+  Math.trunc((value * Math.max(0, 100 + modifier)) / 100);
+
+const assyria = D.payoutModifiers.find(m => m.id === 'EFFECTUNIT_ASSYRIA');
+const ASSYRIA_MOD = assyria?.value ?? 0;
+const assyriaNation = assyria?.carriers.find(c => c.kind === 'nation');
+
+const yieldName = (id: string) => D.yields[id as keyof typeof D.yields]?.name ?? id.replace('YIELD_', '');
+const yieldKey = (id: string) => id.replace('YIELD_', '').toLowerCase();
+const yieldGlobal = (id: string) => D.yields[id as keyof typeof D.yields]?.global ?? true;
+
+const payoutEntries = (p: Payout) => Object.entries(p);
+const firstYield = (p: Payout) => Object.keys(p)[0] ?? '';
+
+const rowById = (id: string) => D.rows.find(r => r.id === id || r.members.some(m => m.id === id));
+const payOf = (id: string, yieldId: string) => rowById(id)?.payout[yieldId as never] ?? 0;
+const farmPay = payOf('IMPROVEMENT_FARM', 'YIELD_FOOD');
+const fairPay = payOf('IMPROVEMENT_MARKET_3', 'YIELD_MONEY');
+const stelePay = payOf('IMPROVEMENT_AKSUM_STELE_3', 'YIELD_STONE');
+
+const BUCKETS: { key: Row['bucket']; label: string; note?: string }[] = [
+  { key: 'rural', label: 'Rural improvements' },
+  { key: 'urban', label: 'Urban improvements' },
+  { key: 'religion', label: 'World religion buildings', note: 'one row per building type; every religion is identical' },
+  { key: 'shrine', label: 'Shrines', note: 'all pagan shrines pay the same' },
+  { key: 'unique', label: 'Nation-specific improvements' },
+  { key: 'event', label: 'Event improvements', note: 'placed by events; most cannot be built or repaired for a listed cost' },
+];
+
+// Member lists are worth reading for six religions, not for fifty-three shrines.
+const MEMBERS_MAX = 8;
+
+const leftAlone = (r: Row) => {
+  if (r.removeOnPillage) return { text: 'destroyed by the pillage itself', tone: 'gone' };
+  if (r.turns < 0) return { text: 'stays pillaged forever', tone: 'forever' };
+  return { text: `destroyed after ${r.turns} turns`, tone: 'clock' };
+};
+
+const notesFor = (r: Row): string[] => {
+  const out: string[] = [];
+  const nonGlobal = payoutEntries(r.payout as Payout).filter(([y]) => !yieldGlobal(y)).map(([y]) => yieldName(y));
+  if (nonGlobal.length) out.push(`${nonGlobal.join(', ')} goes to the pillager's nearest city`);
+  if (payoutEntries(r.payout as Payout).length === 0) out.push('pays nothing; the AI never targets it');
+  if (r.dlc) out.push(r.dlc);
+  return out;
+};
+
+// Link by entity id, never by name. Aggregate rows may carry a page href instead.
+const hrefFor = (r: Row) => {
+  if (r.entityId) {
+    const e = getEntity(r.entityId);
+    if (e?.page) return `${base}${e.page}${e.page.endsWith('/' + e.slug) ? '' : `#${e.slug}`}`;
+  }
+  if (r.href) return `${base}${r.href}`;
+  return '';
+};
+const hrefForEntity = (id: string) => {
+  const e = getEntity(id);
+  if (!e?.page) return '';
+  return `${base}${e.page}${e.page.endsWith('/' + e.slug) ? '' : `#${e.slug}`}`;
+};
+
+const wonders = D.unpillageable.filter(u => u.wonder);
+const tribeSites = D.unpillageable.filter(u => u.tribe);
+const holySites = D.unpillageable.filter(u => u.class === 'IMPROVEMENTCLASS_HOLY_SITE');
+const otherNever = D.unpillageable.filter(u => !u.wonder && !u.tribe && u.class !== 'IMPROVEMENTCLASS_HOLY_SITE' && (u.class || u.event));
+// Ruins, city sites and the minor-city marker: no class, no event file — map features.
+const mapFeatures = D.unpillageable.filter(u => !u.wonder && !u.tribe && !u.class && !u.event);
+
+const hero = D.healOnPillage.find(h => h.id === 'EFFECTUNIT_HERO_ALL');
+const heroCarrier = hero?.carriers[0];
+const stateira = D.repairModifiers[0];
+const stateiraCarrier = stateira?.carriers.find(c => c.kind === 'dynasty');
+const artisans = D.familyOpinion[0];
+const raiders = D.tribes[0];
+const hunter = D.cognomens.find(c => c.id === 'COGNOMEN_HUNTER');
+const scourge = D.cognomens.find(c => c.id === 'COGNOMEN_SCOURGE');
+const goalFive = D.goals.find(g => g.id.endsWith('_FIVE'));
+const goalTen = D.goals.find(g => g.id.endsWith('_TEN'));
+
+const turnsCommon = (() => {
+  const counts = new Map<number, number>();
+  for (const r of D.rows) if (r.turns > 0) counts.set(r.turns, (counts.get(r.turns) ?? 0) + r.count);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 10;
+})();
+const cathedralTurns = D.rows.find(r => r.class === 'IMPROVEMENTCLASS_CATHEDRAL')?.turns ?? 20;
+
+const eventsByTrigger = ['EVENTTRIGGER_IMPROVEMENT_PILLAGED_US', 'EVENTTRIGGER_IMPROVEMENT_PILLAGED_ENEMY', 'EVENTTRIGGER_IMPROVEMENT_PILLAGED_TRIBE']
+  .map(t => ({ trigger: t, when: D.events.find(e => e.trigger === t)?.when ?? '', events: D.events.filter(e => e.trigger === t) }));
+
+const link = (href: string, text: string) => ({ html: href ? `<a href="${href}">${text}</a>` : text });
+const VARS: Record<string, ProseVar> = {
+  assyriaLink: link(assyriaNation ? hrefForEntity(assyriaNation.id) : '', assyriaNation?.name ?? 'Assyria'),
+  assyriaMod: `+${ASSYRIA_MOD}% Pillage Yield`,
+  farmPay: String(farmPay),
+  farmAssyria: String(modify(farmPay, ASSYRIA_MOD)),
+  fairPay: String(fairPay),
+  fairAssyria: String(modify(fairPay, ASSYRIA_MOD)),
+  stelePay: String(stelePay),
+  steleAssyria: String(modify(stelePay, ASSYRIA_MOD)),
+  commonTurns: String(turnsCommon),
+  cathedralTurns: String(cathedralTurns),
+  pillageOrders: String(D.globals.pillageOrders),
+  repairOrders: String(D.globals.repairOrders),
+  warScore: String(D.globals.warScore),
+  killScore: String(D.globals.warScoreContext.killUnit),
+  captureUnitScore: String(D.globals.warScoreContext.captureUnit),
+  captureCityScore: String(D.globals.warScoreContext.captureCity),
+  eventCount: String(D.events.length),
+  bonusCount: String(D.bonusPillageCount),
+  burnTraining: String(D.globals.burnCost['YIELD_TRAINING' as keyof typeof D.globals.burnCost] ?? 0),
+  heroLink: link(heroCarrier ? hrefForEntity(heroCarrier.id) : '', heroCarrier?.name ?? 'Hero'),
+  stateiraName: stateiraCarrier?.name ?? 'Stateira',
+  stateiraNation: stateiraCarrier?.nationName ?? 'Persia',
+  stateiraValue: String(stateira?.value ?? -50),
+  siegeList: D.units.cannot.map(u => u.name).join(', '),
+  raidersLink: link(raiders ? hrefForEntity(raiders.id) : '', raiders?.name ?? 'Raiders'),
+  artisansLink: link(artisans ? hrefForEntity(artisans.id) : '', artisans?.name ?? 'Artisans'),
+  artisansValue: String(Math.abs(artisans?.value ?? 20)),
+  goalFive: goalFive?.name ?? 'Pillage Five Improvements',
+  goalTen: goalTen?.name ?? 'Pillage Ten Improvements',
+  hunterName: hunter?.name ?? 'the Hunter',
+  scourgeName: scourge?.name ?? 'the Scourge',
+  cognomenWeight: String(hunter?.value ?? 600),
+  cognomensLink: link(`${base}cognomens`, 'cognomens'),
+};
+const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'pillage-prose' });
+
+const codeList: { what: string; where: string }[] = [
+  { what: 'The pillage action: payout, tile change, cooldown, Orders, war score', where: `Unit.cs ${D.code.pillage.split(':')[1]} pillage` },
+  { what: 'Payout = aiYieldPillage × pillage modifier', where: `Unit.cs ${D.code.getPillageYield.split(':')[1]} getPillageYield · ${D.code.pillageModifier.split(':')[1]} pillageModifier` },
+  { what: 'Integer multiply behind every modifier', where: `${D.code.modify} Utils.modify` },
+  { what: 'Which tiles are legal targets', where: `${D.code.canPillageTile} Game.canPillageTile` },
+  { what: 'Unfinished or bRemovePillage → cleared; otherwise pillaged with a countdown', where: `${D.code.pillageImprovement} Tile.pillageImprovement` },
+  { what: 'Pillaged tile stops yielding, loses its specialist and luxury', where: `${D.code.loadPillaged} Tile.loadPillaged` },
+  { what: 'Countdown ticks and destroys at zero', where: `${D.code.doTurn} Tile.doTurn` },
+  { what: 'Global yields to the stockpile, Culture to the nearest city', where: `${D.code.processYieldWholeTile} Player.processYieldWholeTile` },
+  { what: 'Repair: instant, build cost × iRepairModifier', where: `${D.code.repair} Unit.repair · ${D.code.getRepairCost} Player.getRepairCost` },
+  { what: 'Burn: pillage without payout for a flat iBurnCost', where: `${D.code.burn} Unit.burn · ${D.code.canBurn} canBurn` },
+  { what: 'Razing harvests base payout with no modifier', where: `${D.code.razeCity} Game.razeCity` },
+  { what: 'Occurrence pillage rolls', where: `${D.code.occurrencePillage}` },
+  { what: 'Artisans opinion per pillaged tile', where: `${D.code.familyOpinion} calculateFamilyOpinionPillaged` },
+  { what: 'AI skips improvements with no payout', where: `${D.code.aiSkipsNoPayout}` },
+  { what: 'AI repair priority and the half-countdown threat', where: `${D.code.aiRepairPriority}` },
+];
+
+const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
+---
+
+<Base
+  title="Pillage"
+  active="pillage"
+  pageMark="🔥"
+  eyebrow="Combat"
+  description="What every improvement pays when pillaged, what a pillaged tile stops doing, how long it has before it is destroyed, and how Assyria's +100% Pillage Yield doubles all of it."
+  pageStats={[
+    { label: 'improvements', value: rowCount },
+    { label: 'Assyria', value: `+${ASSYRIA_MOD}%` },
+    { label: 'war score', value: `+${D.globals.warScore}` },
+    { label: 'cost', value: `${D.globals.pillageOrders} Order` },
+  ]}
+>
+  {DEV && <meta name="prose-file" content={PROSE_FILE} />}
+  {DEV && <meta name="prose-endpoint" content="http://127.0.0.1:4399/save" />}
+  {DEV && <script is:inline set:html={editorJs} />}
+
+  <p class="lede" data-prose="lede" set:html={inline('lede')} />
+
+  <section class="pl-sec">
+    <h2 class="pl-h" data-prose="how.heading" set:html={inline('how.heading')} />
+    <div class="fml">
+      <code class="fml__line">payout = aiYieldPillage × (100 + pillage modifier) ÷ 100</code>
+      <div class="fml__meta">truncated to a whole number · the only pillage modifier is Assyria's +{ASSYRIA_MOD}</div>
+    </div>
+    <div class="pl-body" data-prose="how.body" data-prose-blocks set:html={blocks('how.body')} />
+  </section>
+
+  <section class="pl-sec">
+    <h2 class="pl-h" data-prose="table.heading" set:html={inline('table.heading')} />
+    <p class="pl-note" data-prose="table.note" set:html={inline('table.note')} />
+    <div class="grid">
+      <div class="grid__scroll">
+        <table class="ntbl pl-t">
+          <colgroup>
+            <col style="width:15rem" /><col style="width:8rem" /><col style="width:8rem" />
+            <col style="width:9rem" /><col style="width:12rem" /><col />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="rowlabel rowlabel--corner">Improvement</th>
+              <th class="nhdr pl-num"><div class="nhdr__inner"><span class="nhdr__name">Pays</span></div></th>
+              <th class="nhdr pl-num"><div class="nhdr__inner"><span class="nhdr__name">Assyria</span></div></th>
+              <th class="nhdr pl-num"><div class="nhdr__inner"><span class="nhdr__name">Repair</span></div></th>
+              <th class="nhdr"><div class="nhdr__inner"><span class="nhdr__name">Left alone</span></div></th>
+              <th class="nhdr"><div class="nhdr__inner"><span class="nhdr__name">Notes</span></div></th>
+            </tr>
+          </thead>
+          <tbody>
+            {BUCKETS.map(b => {
+              const rows = D.rows.filter(r => r.bucket === b.key);
+              if (!rows.length) return null;
+              return (
+                <>
+                  <tr class="pl-group">
+                    <th class="rowlabel pl-group__label" scope="rowgroup" colspan="6">
+                      {b.label}
+                      {b.note && <i class="pl-group__note">{b.note}</i>}
+                    </th>
+                  </tr>
+                  {rows.map(r => {
+                    const pay = payoutEntries(r.payout as Payout);
+                    const cost = payoutEntries(r.buildCost as Payout);
+                    const left = leftAlone(r);
+                    const href = hrefFor(r);
+                    const notes = notesFor(r);
+                    const key = firstYield(r.payout as Payout);
+                    return (
+                      <tr id={r.id.toLowerCase().replace(/^group_/, '')}>
+                        <th class="rowlabel pl-name" scope="row">
+                          {r.icon && <img class="pl-ico" src={`${base}${r.icon}`} alt="" loading="lazy" />}
+                          {href ? <a href={href}>{r.name}</a> : <span>{r.name}</span>}
+                          {r.count > 1 && <span class="pl-count">×{r.count}</span>}
+                          {r.count > 1 && r.members.length > 1 && r.members.length <= MEMBERS_MAX && (
+                            <span class="pl-members">{r.members.map(m => m.name).join(' · ')}</span>
+                          )}
+                        </th>
+                        {pay.length ? (
+                          <td class={`cell pl-num yield-${yieldKey(key)}`}>
+                            {pay.map(([y, v]) => <div>{v} {yieldName(y)}</div>)}
+                          </td>
+                        ) : (
+                          <td class="cell pl-num is-empty"><span class="cell__dash">—</span></td>
+                        )}
+                        {pay.length ? (
+                          <td class={`cell pl-num pl-assyria yield-${yieldKey(key)}`}>
+                            {pay.map(([y, v]) => <div>{modify(v, ASSYRIA_MOD)} {yieldName(y)}</div>)}
+                          </td>
+                        ) : (
+                          <td class="cell pl-num is-empty"><span class="cell__dash">—</span></td>
+                        )}
+                        {cost.length ? (
+                          <td class={`cell pl-num pl-cost yield-${yieldKey(cost[0][0])}`}>
+                            {cost.map(([y, v]) => <div>{v} {yieldName(y)}</div>)}
+                          </td>
+                        ) : (
+                          <td class="cell pl-num is-empty"><span class="cell__dash">—</span></td>
+                        )}
+                        <td class={`cell pl-plain pl-left pl-left--${left.tone}`}>{left.text}</td>
+                        {notes.length ? (
+                          <td class="cell pl-plain pl-notes">{notes.map(n => <div>{n}</div>)}</td>
+                        ) : (
+                          <td class="cell is-empty"><span class="cell__dash">—</span></td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="pl-sec pl-duo">
+    <div>
+      <h2 class="pl-h" data-prose="assyria.heading" set:html={inline('assyria.heading')} />
+      <div class="pl-body" data-prose="assyria.body" data-prose-blocks set:html={blocks('assyria.body')} />
+    </div>
+    <div>
+      <h2 class="pl-h" data-prose="never.heading" set:html={inline('never.heading')} />
+      <p class="pl-note" data-prose="never.note" set:html={inline('never.note')} />
+      <ul class="pl-list pl-list--no">
+        <li>
+          <span class="pl-list__what"><a href={`${base}wonders`}>Wonders</a> <span class="pl-count">×{wonders.length}</span></span>
+          <span class="pl-cite">no iPillageTurns on any of them</span>
+        </li>
+        <li>
+          <span class="pl-list__what"><a href={`${base}tribes`}>Tribe settlements</a> <span class="pl-count">×{tribeSites.length}</span></span>
+          <span class="pl-cite">{tribeSites.map(t => t.name).join(', ')} — taken, not pillaged</span>
+        </li>
+        <li>
+          <span class="pl-list__what">
+            {getEntity('IMPROVEMENT_HOLY_SITE') ? <Term id="IMPROVEMENT_HOLY_SITE" label="Holy Sites" showIcon={false} /> : 'Holy Sites'}
+            <span class="pl-count">×{holySites.length}</span>
+          </span>
+          <span class="pl-cite">{holySites.map(t => t.name).join(', ')}</span>
+        </li>
+        {otherNever.map(u => (
+          <li>
+            <span class="pl-list__what">
+              {u.entityId && hrefForEntity(u.entityId) ? <a href={hrefForEntity(u.entityId)}>{u.name}</a> : u.name}
+              {u.dlc && <i class="pl-dlc">{u.dlc}</i>}
+            </span>
+            <span class="pl-cite">{u.event ? `event improvement (${u.file})` : u.className}</span>
+          </li>
+        ))}
+        <li>
+          <span class="pl-list__what">Ruins, city sites and minor cities <span class="pl-count">×{mapFeatures.length}</span></span>
+          <span class="pl-cite">{mapFeatures.map(t => t.name).join(', ')}</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="pl-sec pl-duo">
+    <div>
+      <h2 class="pl-h" data-prose="other.heading" set:html={inline('other.heading')} />
+      <div class="pl-body" data-prose="other.body" data-prose-blocks set:html={blocks('other.body')} />
+      <table class="ntbl pl-t pl-t--occ">
+        <colgroup><col style="width:14rem" /><col style="width:8rem" /></colgroup>
+        <thead>
+          <tr>
+            <th class="rowlabel rowlabel--corner">Occurrence</th>
+            <th class="nhdr pl-num"><div class="nhdr__inner"><span class="nhdr__name">Per tile</span></div></th>
+          </tr>
+        </thead>
+        <tbody>
+          {D.occurrences.map(o => (
+            <tr>
+              <th class="rowlabel pl-name" scope="row">
+                {o.slug ? <a href={`${base}occurrences#${o.slug}`}>{o.name}</a> : o.name}
+              </th>
+              <td class={`cell pl-num ${o.chance >= 100 ? 'pl-sure' : ''}`}>{o.chance >= 100 ? 'always' : `${o.chance}%`}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h2 class="pl-h" data-prose="who.heading" set:html={inline('who.heading')} />
+      <div class="pl-body" data-prose="who.body" data-prose-blocks set:html={blocks('who.body')} />
+      <h2 class="pl-h" data-prose="after.heading" set:html={inline('after.heading')} />
+      <div class="pl-body" data-prose="after.body" data-prose-blocks set:html={blocks('after.body')} />
+    </div>
+  </section>
+
+  <section class="pl-sec">
+    <h2 class="pl-h">Events that fire on a pillage</h2>
+    <div class="pl-trio">
+      {eventsByTrigger.map(g => (
+        <div>
+          <h3 class="pl-h3">When {g.when}</h3>
+          <ul class="pl-list pl-list--ev">
+            {g.events.map(e => (
+              <li>
+                <span class="pl-list__what">
+                  {e.href ? <a href={`${base}${e.href}`}>{e.name}</a> : e.name}
+                  {e.dlc && <i class="pl-dlc">{e.dlc}</i>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="pl-sec pl-duo">
+    <div>
+      <h2 class="pl-h" data-prose="ai.heading" set:html={inline('ai.heading')} />
+      <div class="pl-body" data-prose="ai.body" data-prose-blocks set:html={blocks('ai.body')} />
+    </div>
+    <div>
+      <h2 class="pl-h" data-prose="code.heading" set:html={inline('code.heading')} />
+      <div class="pl-body" data-prose="code.body" data-prose-blocks set:html={blocks('code.body')} />
+      <ul class="pl-list pl-list--yes">
+        {codeList.map(c => (
+          <li><span class="pl-list__what">{c.what}</span><code class="pl-cite">{c.where}</code></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style is:global>
+  .lede { max-width: 120ch; color: var(--text-dim); font-size: 0.82rem; line-height: 1.5; margin: 0 0 0.9rem; }
+  .lede a { color: var(--accent); }
+  .lede b, .lede strong { color: var(--text); }
+  .lede em { color: var(--text-soft); font-style: italic; }
+  .lede code { font-family: var(--font-mono); font-size: 0.92em; color: var(--text-soft); }
+
+  .pl-sec { margin: 0 0 1.5rem; }
+  .pl-h {
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.02rem;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding-bottom: 0.3rem;
+    margin: 0 0 0.45rem;
+  }
+  .pl-h + .pl-h, .pl-body + .pl-h { margin-top: 1rem; }
+  .pl-h3 {
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.86rem;
+    letter-spacing: 0.02em;
+    margin: 0 0 0.35rem;
+  }
+  .pl-note { color: var(--text-faint); font-size: 0.76rem; line-height: 1.5; margin: 0 0 0.6rem; max-width: 110ch; }
+  .pl-note a, .pl-body a { color: var(--accent); }
+  .pl-body { color: var(--text-dim); font-size: 0.78rem; line-height: 1.55; max-width: 110ch; }
+  .pl-body p { margin: 0 0 0.5rem; }
+  .pl-body ul { margin: 0 0 0.5rem; padding-left: 1.1rem; }
+  .pl-body li { margin: 0 0 0.3rem; }
+  .pl-body strong, .pl-note strong { color: var(--text); }
+  .pl-body code, .pl-note code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--text-soft);
+  }
+
+  .pl-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 1.2rem; }
+  .pl-trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.2rem; }
+
+  .fml {
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elev);
+    padding: 0.55rem 0.8rem;
+    margin: 0 0 0.7rem;
+  }
+  .fml__line { font-family: var(--font-mono); font-size: 0.86rem; color: var(--text); }
+  .fml__meta { color: var(--text-faint); font-size: 0.7rem; margin-top: 0.2rem; }
+
+  /* Yield as ink on the dark base (theme.css --yield-ink), never a filled box:
+     the dense-table convention shared with the unit pages. */
+  .pl-t .pl-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--yield-ink, var(--text)); }
+  .pl-t th.pl-num .nhdr__inner { justify-content: flex-end; }
+  .pl-t .pl-name { text-align: left; font-size: 0.78rem; color: var(--text); }
+  .pl-t .pl-name a { color: var(--text); }
+  .pl-t .pl-name a:hover { color: var(--accent); }
+  .pl-ico { width: 18px; height: 18px; vertical-align: -4px; margin-right: 0.35rem; }
+  .pl-count { color: var(--text-faint); font-family: var(--font-mono); font-size: 0.66rem; margin-left: 0.35rem; }
+  .pl-members { display: block; color: var(--text-faint); font-size: 0.66rem; font-style: italic; line-height: 1.35; margin-top: 0.1rem; white-space: normal; }
+  .pl-t .pl-plain { font-size: 0.74rem; color: var(--text-dim); }
+  .pl-t .pl-assyria { font-weight: 600; }
+  .pl-t .pl-cost { color: var(--yield-ink, var(--text-dim)); opacity: 1; font-weight: 400; }
+  .pl-t .pl-left--clock { color: var(--text-dim); }
+  .pl-t .pl-left--gone { color: #e0917f; }
+  .pl-t .pl-left--forever { color: var(--text-faint); font-style: italic; }
+  .pl-t .pl-notes div { line-height: 1.4; }
+  .pl-t .pl-sure { color: #e0917f; }
+  .pl-group__label {
+    text-align: left;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+    background: var(--bg-elev);
+    padding-top: 0.45rem;
+  }
+  .pl-group__note { color: var(--text-faint); font-family: var(--font-body); font-size: 0.68rem; font-style: italic; margin-left: 0.6rem; letter-spacing: 0; }
+  .pl-t--occ { max-width: 24rem; margin-top: 0.4rem; }
+
+  .pl-list { list-style: none; margin: 0; padding: 0; }
+  .pl-list li {
+    border-left: 2px solid var(--border-strong);
+    padding: 0.25rem 0 0.25rem 0.6rem;
+    margin: 0 0 0.4rem;
+  }
+  .pl-list--yes li { border-left-color: #6f8f6f; }
+  .pl-list--no li { border-left-color: #8f6f6f; }
+  .pl-list--ev li { border-left-color: var(--border-strong); padding: 0.15rem 0 0.15rem 0.6rem; margin: 0 0 0.25rem; }
+  .pl-list__what { display: block; color: var(--text); font-size: 0.78rem; line-height: 1.4; }
+  .pl-list__what a { color: var(--text); }
+  .pl-list__what a:hover { color: var(--accent); }
+  .pl-dlc { color: var(--text-faint); font-style: italic; font-size: 0.68rem; margin-left: 0.4rem; }
+  .pl-cite {
+    display: block;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    line-height: 1.4;
+    margin-top: 0.15rem;
+  }
+</style>

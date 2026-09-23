@@ -88,6 +88,7 @@ data:
 	@python3 scripts/build_resources.py
 	@python3 scripts/build_culture.py
 	@python3 scripts/build_entities.py
+	@python3 scripts/build_pillage.py     # pillage payouts — needs entities, rural/urban, occurrences, event-search json
 	@python3 scripts/build_backlinks.py
 	@python3 scripts/build_overlay_cards.py
 	@python3 scripts/build_search_index.py
