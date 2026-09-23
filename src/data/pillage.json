@@ -8,6 +8,7 @@
     "canPillageTile": "Game.cs:14812",
     "doTurn": "Tile.cs:10979",
     "familyOpinion": "PlayerOpinion.cs:4017",
+    "getBuildCost": "InfoHelpers.cs:817",
     "getPillageYield": "Unit.cs:11241",
     "getRepairCost": "Player.cs:20143",
     "loadPillaged": "Tile.cs:2737",
@@ -18,7 +19,8 @@
     "pillageModifier": "Unit.cs:11230",
     "processYieldWholeTile": "Player.cs:17735",
     "razeCity": "Game.cs:11021",
-    "repair": "Unit.cs:11492"
+    "repair": "Unit.cs:11492",
+    "repairBranch": "InfoHelpers.cs:897"
   },
   "cognomens": [
     {
@@ -182,6 +184,7 @@
       "YIELD_TRAINING": 50
     },
     "pillageOrders": 1,
+    "repairModifier": -50,
     "repairOrders": 1,
     "warScore": 5,
     "warScoreContext": {
@@ -345,6 +348,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": true,
+      "repairCost": {
+        "YIELD_STONE": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -371,6 +378,10 @@
         "YIELD_FOOD": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -397,6 +408,10 @@
         "YIELD_IRON": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -423,6 +438,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_IRON": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -449,6 +468,10 @@
         "YIELD_WOOD": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_IRON": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -475,6 +498,10 @@
         "YIELD_FOOD": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -501,6 +528,10 @@
         "YIELD_FOOD": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -527,6 +558,10 @@
         "YIELD_FOOD": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -553,6 +588,10 @@
         "YIELD_FOOD": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -579,6 +618,10 @@
         "YIELD_WOOD": 30
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -605,6 +648,10 @@
         "YIELD_FOOD": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -631,6 +678,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -657,6 +708,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -684,6 +739,11 @@
         "YIELD_CULTURE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 50,
+        "YIELD_WOOD": 50
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": -1,
       "urban": false,
@@ -710,6 +770,10 @@
         "YIELD_MONEY": 10
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -736,6 +800,10 @@
         "YIELD_MONEY": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -762,6 +830,10 @@
         "YIELD_MONEY": 40
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -788,6 +860,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -814,6 +890,10 @@
         "YIELD_WOOD": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -840,6 +920,10 @@
         "YIELD_CULTURE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -866,6 +950,10 @@
         "YIELD_CULTURE": 30
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 30
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -892,6 +980,10 @@
         "YIELD_CULTURE": 40
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 40
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -918,6 +1010,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -944,6 +1040,10 @@
         "YIELD_STONE": 30
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 30
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -970,6 +1070,10 @@
         "YIELD_STONE": 40
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 40
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -996,6 +1100,10 @@
         "YIELD_MONEY": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 30
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1022,6 +1130,10 @@
         "YIELD_MONEY": 40
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 40
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1048,6 +1160,10 @@
         "YIELD_MONEY": 60
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 50
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1074,6 +1190,10 @@
         "YIELD_SCIENCE": 10
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 40
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1100,6 +1220,10 @@
         "YIELD_SCIENCE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 50
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1126,6 +1250,10 @@
         "YIELD_SCIENCE": 30
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 60
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1152,6 +1280,10 @@
         "YIELD_CIVICS": 10
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 40
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1178,6 +1310,10 @@
         "YIELD_CIVICS": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 50
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1204,6 +1340,10 @@
         "YIELD_CIVICS": 30
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 60
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1230,6 +1370,10 @@
         "YIELD_STONE": 40
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 30
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1256,6 +1400,10 @@
         "YIELD_STONE": 50
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 40
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1282,6 +1430,10 @@
         "YIELD_STONE": 50
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 50
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1304,6 +1456,8 @@
       "name": "Slums",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": -1,
       "urban": true,
@@ -1361,6 +1515,10 @@
         "YIELD_SCIENCE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 30
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1418,6 +1576,10 @@
         "YIELD_ORDERS": 2
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 30
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1475,6 +1637,10 @@
         "YIELD_CULTURE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 50
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 20,
       "urban": true,
@@ -1767,6 +1933,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": -1,
       "urban": true,
@@ -1793,6 +1963,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 20
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": -1,
       "urban": true,
@@ -1819,6 +1993,10 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 30
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1845,6 +2023,10 @@
         "YIELD_STONE": 40
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 40
+      },
+      "repairModifier": -20,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1871,6 +2053,10 @@
         "YIELD_STONE": 80
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 50
+      },
+      "repairModifier": -50,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1897,6 +2083,10 @@
         "YIELD_STONE": 120
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 60
+      },
+      "repairModifier": -70,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -1927,6 +2117,8 @@
         "YIELD_STONE": 40
       },
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -2017,6 +2209,8 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -2043,6 +2237,10 @@
         "YIELD_IRON": 20
       },
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_WOOD": 10
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -2067,6 +2265,8 @@
         "YIELD_MONEY": 50
       },
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -2091,6 +2291,8 @@
         "YIELD_MONEY": 50
       },
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": false,
@@ -2115,6 +2317,8 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -2139,6 +2343,8 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 10,
       "urban": true,
@@ -2189,6 +2395,8 @@
         "YIELD_STONE": 20
       },
       "removeOnPillage": true,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2207,6 +2415,8 @@
       "name": "Ancient Ruins",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2225,6 +2435,8 @@
       "name": "City Site",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2243,6 +2455,8 @@
       "name": "Hovel Ruins",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2261,6 +2475,8 @@
       "name": "Outpost Ruins",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2279,6 +2495,8 @@
       "name": "Encampment Ruins",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2297,6 +2515,8 @@
       "name": "Bastion Ruins",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2315,6 +2535,8 @@
       "name": "Hovel",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": true,
       "turns": 0,
       "urban": false,
@@ -2333,6 +2555,8 @@
       "name": "Outpost",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": true,
       "turns": 0,
       "urban": false,
@@ -2351,6 +2575,8 @@
       "name": "Encampment",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": true,
       "turns": 0,
       "urban": false,
@@ -2369,6 +2595,8 @@
       "name": "Bastion",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": true,
       "turns": 0,
       "urban": false,
@@ -2387,6 +2615,8 @@
       "name": "Minor City",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {},
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2408,6 +2638,11 @@
       "name": "The Adur Burzen-Mihr",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 100
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2429,6 +2664,11 @@
       "name": "The Temple of Solomon",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 100
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2450,6 +2690,11 @@
       "name": "The Church of the Holy Sepulchre",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 100
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2471,6 +2716,11 @@
       "name": "The Cao'an",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 100
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2492,6 +2742,11 @@
       "name": "The Pyramids",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 50,
+        "YIELD_STONE": 300
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2513,6 +2768,11 @@
       "name": "The Ziggurat",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 50,
+        "YIELD_STONE": 300
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2535,6 +2795,12 @@
       "name": "The Oracle",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 50,
+        "YIELD_FOOD": 100,
+        "YIELD_STONE": 200
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2557,6 +2823,12 @@
       "name": "The Hanging Gardens",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 50,
+        "YIELD_STONE": 200,
+        "YIELD_WOOD": 100
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2578,6 +2850,11 @@
       "name": "The Necropolis",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 450
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2600,6 +2877,12 @@
       "name": "The Ishtar Gate",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_IRON": 150,
+        "YIELD_STONE": 300
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2622,6 +2905,12 @@
       "name": "The Lighthouse",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_IRON": 150,
+        "YIELD_STONE": 300
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2643,6 +2932,11 @@
       "name": "The Apadana",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 450
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2664,6 +2958,11 @@
       "name": "The Mausoleum",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 150,
+        "YIELD_STONE": 600
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2685,6 +2984,11 @@
       "name": "The Acropolis",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 150,
+        "YIELD_STONE": 600
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2707,6 +3011,12 @@
       "name": "The Colossus",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 150,
+        "YIELD_IRON": 400,
+        "YIELD_STONE": 200
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2729,6 +3039,12 @@
       "name": "The Musaeum",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 150,
+        "YIELD_STONE": 400,
+        "YIELD_WOOD": 200
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2751,6 +3067,12 @@
       "name": "The Circus Maximus",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_FOOD": 300,
+        "YIELD_STONE": 600
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2772,6 +3094,11 @@
       "name": "The Pantheon",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 900
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2793,6 +3120,11 @@
       "name": "The Hagia Sophia",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 900
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2815,6 +3147,12 @@
       "name": "The Via Recta Souk",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 600,
+        "YIELD_WOOD": 300
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2837,6 +3175,12 @@
       "name": "The Jerwan Aqueduct",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 50,
+        "YIELD_IRON": 100,
+        "YIELD_STONE": 200
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2858,6 +3202,11 @@
       "name": "The Yazilikaya",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 50,
+        "YIELD_STONE": 300
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2880,6 +3229,12 @@
       "name": "The Royal Library",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 300,
+        "YIELD_WOOD": 150
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2901,6 +3256,11 @@
       "name": "The Jebel Barkal",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 450
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2922,6 +3282,11 @@
       "name": "Al Khazneh",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 150,
+        "YIELD_STONE": 600
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2944,6 +3309,12 @@
       "name": "The Cothon",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 150,
+        "YIELD_STONE": 300,
+        "YIELD_WOOD": 300
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": false,
@@ -2965,6 +3336,11 @@
       "name": "The Heliopolis",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 900
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -2987,6 +3363,12 @@
       "name": "The Colosseum",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_FOOD": 300,
+        "YIELD_STONE": 600
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -3008,6 +3390,11 @@
       "name": "The Great Stupa",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 200
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -3028,6 +3415,10 @@
       "name": "Pillar Edicts",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_STONE": 5
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -3049,6 +3440,11 @@
       "name": "The Mahavihara",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 450
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -3070,6 +3466,11 @@
       "name": "The Monumental Buddhas",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 150,
+        "YIELD_STONE": 600
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -3091,6 +3492,11 @@
       "name": "The Chittorgarh",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 200,
+        "YIELD_STONE": 900
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,
@@ -3112,6 +3518,11 @@
       "name": "Mahabodhi Temple",
       "payout": {},
       "removeOnPillage": false,
+      "repairCost": {
+        "YIELD_CIVICS": 100,
+        "YIELD_STONE": 100
+      },
+      "repairModifier": 0,
       "tribe": false,
       "turns": 0,
       "urban": true,

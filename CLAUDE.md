@@ -312,8 +312,11 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   but never destroyed. Unfinished or `bRemovePillage` (Fort) improvements are cleared outright and
   still pay. Countdown ticks in `Tile.doTurn`. `Game.razeCity` harvests raw `aiYieldPillage`
   with no modifier. Burn = same tile change, no payout, no cooldown, `yield.xml iBurnCost`
-  (50 Training). Page `/pillage`, data `scripts/build_pillage.py`, watched in
-  `verify_source_constants.py`.
+  (50 Training). **Repair is NOT the build cost**: `InfoHelpers.getBuildCost(bExisting)`
+  applies `globalsInt IMPROVEMENT_REPAIR_MODIFIER` (−50) and then the improvement's own
+  `iRepairModifier` (only the Aksum Steles: −20/−50/−70, so a 400-Stone Legendary Stele
+  repairs for 60), floor 1; the player-level `iRepairModifier` (Stateira) comes after.
+  Page `/pillage`, data `scripts/build_pillage.py`, watched in `verify_source_constants.py`.
 - **Culture gates**: `RequiresCulture` = exactly that level; `MinimumCulture` = at least. Past Legendary, each culture step costs 5,000×(step+1) and is +1 VP.
 - **Ambition "tier" = which ambition slot (1st–10th)** it can be offered as; goals have no per-goal reward fields (Legitimacy/VP flow indirectly).
 - **DLC event text lives in oddly named files**: Wonders & Dynasties → `text-wonders-dynasties-events.xml`, Wrath of Gods → `text-calamities-events.xml` (there is no `text-eventStory-wd/-wog.xml`). ~16 eventStory entries legitimately have no `Name` (hidden setup events); ~372 have no class/trigger (engine-invoked).

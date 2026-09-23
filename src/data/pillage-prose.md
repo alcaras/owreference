@@ -42,8 +42,10 @@ What every improvement pays
 ## table.note
 
 **Pays** is the base payout for any unit. **Assyria** is the same unit under {assyriaLink}'s
-{assyriaMod}. **Repair** is the full build cost the owner has to pay to switch the improvement
-back on (city cost modifiers included), and **Left alone** is what happens if nobody repairs it.
+{assyriaMod}. **Repair** is what the owner pays to switch the improvement back on: {repairPct}% of the
+build cost (the global `IMPROVEMENT_REPAIR_MODIFIER`), then the improvement's own
+`iRepairModifier` if it has one, never below 1. City cost modifiers apply before that and are
+not shown. **Left alone** is what happens if nobody repairs it.
 A Fort has `bRemovePillage`, so pillaging it destroys it outright, but it still pays. An
 improvement that is still under construction is wiped by a pillage, and also still pays.
 
@@ -66,7 +68,7 @@ Nothing else in the game touches that field. No promotion, law, tech, trait or w
 effects exist and are worth knowing:
 
 - **{heroLink} leader: heal while pillaging.** `EFFECTUNIT_HERO_ALL` (from the Hero archetype's leader effect) sets `bHealPillage`, so every unit recovers an active heal's worth of HP on each pillage. It does not change the payout.
-- **{stateiraName} dynasty ({stateiraNation}): {stateiraValue}% repair cost.** The only `iRepairModifier` in the game. It makes your own repairs cheaper; it does nothing to pillage.
+- **{stateiraName} dynasty ({stateiraNation}): {stateiraValue}% repair cost.** The only player-level `iRepairModifier` in the game, applied after the improvement's own. It makes your own repairs cheaper; it does nothing to pillage.
 
 Razing a city harvests every improvement in its territory at the **base** payout with no
 modifier applied: `Game.razeCity` reads `aiYieldPillage` directly instead of going through
@@ -116,7 +118,7 @@ What follows a pillage
 - **Family opinion.** {artisansLink} families lose {artisansValue} opinion for every pillaged tile inside their cities, for as long as it stays pillaged. No other family class cares.
 - **Ambitions.** "{goalFive}" and "{goalTen}" count the `STAT_IMPROVEMENT_PILLAGED` lifetime stat, which every pillage by one of your units increments.
 - **Cognomens.** The same stat feeds "{hunterName}" and "{scourgeName}" on the {cognomensLink} page, weighted at {cognomenWeight} each.
-- **Repair.** A Worker (or any unit that could build the improvement) repairs it instantly for {repairOrders} Order plus the full build cost. If the owner is short on goods, the repair button offers to buy them. Repair resets the countdown.
+- **Repair.** A Worker (or any unit that could build the improvement) repairs it instantly for {repairOrders} Order plus {repairPct}% of the build cost, times the improvement's own `iRepairModifier`. Only the three Aksum Steles set one: a Legendary Stele costs {steleBuild} Stone to build and {steleRepair} to repair ({repairPct}% then {steleOwnRepair}%). If the owner is short on goods, the repair button offers to buy them. Repair resets the countdown.
 
 ## ai.heading
 

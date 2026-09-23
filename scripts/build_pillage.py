@@ -34,9 +34,13 @@ and ruins have no iPillageTurns, so they can never be pillaged. A −1 means
 "pillageable, but never destroyed" (shrines, Estates, Slums).
 
 Repair (Unit.repair, Unit.cs:11500) is instant, costs UNIT_REPAIR_COST Orders,
-and charges Player.getRepairCost = the full build cost through
-InfoHelpers.getBuildCost(bExisting: true) (city cost modifiers included) times
-any effectPlayer iRepairModifier. Burn (Unit.burn, Unit.cs:11383) is the same
+and charges Player.getRepairCost = InfoHelpers.getBuildCost(bExisting: true),
+which is the build cost (city cost modifiers included) × globalsInt
+IMPROVEMENT_REPAIR_MODIFIER (−50, so half) × the improvement's own
+iRepairModifier (only the three Aksum Steles set one: −20/−50/−70), floored
+at 1 — then × any effectPlayer iRepairModifier (Stateira −50). The first
+version of this page showed the full build cost; a Legendary Stele repairs for
+60 Stone, not 400. Burn (Unit.burn, Unit.cs:11383) is the same
 tile change with no payout, no cooldown, and a flat yield.xml iBurnCost.
 """
 from __future__ import annotations
@@ -222,6 +226,17 @@ def main() -> None:
             if t:
                 class_names[t] = clean_name(text.get(e.findtext("Name") or "", "")) or t.replace("IMPROVEMENTCLASS_", "").replace("_", " ").title()
 
+    gi = parse("globalsInt.xml")
+    assert gi is not None
+    gint = {e.findtext("zType"): int(e.findtext("iValue") or 0) for e in gi.findall("Entry") if e.findtext("zType")}
+    REPAIR_GLOBAL = gint.get("IMPROVEMENT_REPAIR_MODIFIER", 0)
+
+    def modify(value: int, modifier: int) -> int:
+        """Utils.modify: value × (100 + modifier) ÷ 100, integer, multiplier floored at 0."""
+        if value == 0 or modifier == 0:
+            return value
+        return int(value * max(0, 100 + modifier) / 100)
+
     # ---- every improvement, every file -------------------------------------
     raw_rows: list[dict] = []
     unpillageable: list[dict] = []
@@ -239,6 +254,14 @@ def main() -> None:
             payout = pairs(e, "aiYieldPillage")
             cls = e.findtext("Class") or ""
             content = e.findtext("GameContentRequired") or ""
+            build_cost = pairs(e, "aiYieldCost")
+            own_repair = int_of(e, "iRepairModifier")
+            # InfoHelpers.getBuildCost(bExisting: true): global −50, then the
+            # improvement's own modifier, then Math.Max(1, …). City cost
+            # modifiers apply before both and are not knowable here.
+            repair_cost = OrderedDict(
+                (y, max(1, modify(modify(v, REPAIR_GLOBAL), own_repair))) for y, v in build_cost.items()
+            )
             row = {
                 "id": imp_id,
                 "name": name_of(e),
@@ -253,7 +276,9 @@ def main() -> None:
                 "turns": turns,
                 "removeOnPillage": remove,
                 "payout": payout,
-                "buildCost": pairs(e, "aiYieldCost"),
+                "buildCost": build_cost,
+                "repairCost": repair_cost,
+                "repairModifier": own_repair,
                 "entityId": entity_for(imp_id),
                 "icon": icon_for(imp_id, cls),
             }
@@ -270,7 +295,7 @@ def main() -> None:
     rows: list[dict] = []
     for r in raw_rows:
         if r["class"] in AGGREGATE_CLASSES:
-            key = (r["class"], tuple(r["payout"].items()), r["turns"], r["removeOnPillage"], tuple(r["buildCost"].items()), r["event"])
+            key = (r["class"], tuple(r["payout"].items()), r["turns"], r["removeOnPillage"], tuple(r["repairCost"].items()), r["event"])
             g = groups.get(key)
             if g is None:
                 g = dict(r)
@@ -500,15 +525,13 @@ def main() -> None:
                     cid = e.findtext("zType") or ""
                     cognomens.append({"id": cid, "name": name_of(e, "COGNOMEN_"), "value": int(pr.findtext("iValue") or 0)})
 
-    gi = parse("globalsInt.xml")
-    assert gi is not None
-    gint = {e.findtext("zType"): int(e.findtext("iValue") or 0) for e in gi.findall("Entry") if e.findtext("zType")}
 
     data = {
         "patchNote": "aiYieldPillage values are whole yields (no ÷10): Player.processYieldWholeTile.",
         "globals": {
             "pillageOrders": gint.get("UNIT_PILLAGE_COST", 1),
             "repairOrders": gint.get("UNIT_REPAIR_COST", 1),
+            "repairModifier": REPAIR_GLOBAL,
             "warScore": 5,
             "warScoreContext": {"killUnit": 10, "captureUnit": 50, "captureCity": 100},
             "burnCost": {y["id"]: y["burnCost"] for y in yield_info.values() if y["burnCost"]},
@@ -537,6 +560,8 @@ def main() -> None:
             "loadPillaged": cite("Tile.cs", "public virtual void loadPillaged("),
             "repair": cite("Unit.cs", "public virtual void repair(Player pActingPlayer"),
             "getRepairCost": cite("Player.cs", "public virtual int getRepairCost("),
+            "getBuildCost": cite("InfoHelpers.cs", "public virtual int getBuildCost(ImprovementType"),
+            "repairBranch": cite("InfoHelpers.cs", "iCost = mInfos.utils().modify(iCost, mInfos.Globals.IMPROVEMENT_REPAIR_MODIFIER);"),
             "burn": cite("Unit.cs", "public virtual void burn(Player pActingPlayer)"),
             "canBurn": cite("Unit.cs", "public virtual bool canBurn("),
             "processYieldWholeTile": cite("Player.cs", "public virtual bool processYieldWholeTile("),

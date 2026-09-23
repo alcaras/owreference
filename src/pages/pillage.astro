@@ -58,6 +58,7 @@ const notesFor = (r: Row): string[] => {
   const nonGlobal = payoutEntries(r.payout as Payout).filter(([y]) => !yieldGlobal(y)).map(([y]) => yieldName(y));
   if (nonGlobal.length) out.push(`${nonGlobal.join(', ')} goes to the pillager's nearest city`);
   if (payoutEntries(r.payout as Payout).length === 0) out.push('pays nothing; the AI never targets it');
+  if (r.repairModifier) out.push(`repairs at ${r.repairModifier}% on top of the usual half`);
   if (r.dlc) out.push(r.dlc);
   return out;
 };
@@ -119,6 +120,10 @@ const VARS: Record<string, ProseVar> = {
   cathedralTurns: String(cathedralTurns),
   pillageOrders: String(D.globals.pillageOrders),
   repairOrders: String(D.globals.repairOrders),
+  repairPct: String(100 + D.globals.repairModifier),
+  steleRepair: String(rowById('IMPROVEMENT_AKSUM_STELE_3')?.repairCost['YIELD_STONE' as never] ?? 0),
+  steleOwnRepair: String(rowById('IMPROVEMENT_AKSUM_STELE_3')?.repairModifier ?? 0),
+  steleBuild: String(rowById('IMPROVEMENT_AKSUM_STELE_3')?.buildCost['YIELD_STONE' as never] ?? 0),
   warScore: String(D.globals.warScore),
   killScore: String(D.globals.warScoreContext.killUnit),
   captureUnitScore: String(D.globals.warScoreContext.captureUnit),
@@ -152,7 +157,7 @@ const codeList: { what: string; where: string }[] = [
   { what: 'Pillaged tile stops yielding, loses its specialist and luxury', where: `${D.code.loadPillaged} Tile.loadPillaged` },
   { what: 'Countdown ticks and destroys at zero', where: `${D.code.doTurn} Tile.doTurn` },
   { what: 'Global yields to the stockpile, Culture to the nearest city', where: `${D.code.processYieldWholeTile} Player.processYieldWholeTile` },
-  { what: 'Repair: instant, build cost × iRepairModifier', where: `${D.code.repair} Unit.repair · ${D.code.getRepairCost} Player.getRepairCost` },
+  { what: 'Repair: instant; build cost × IMPROVEMENT_REPAIR_MODIFIER (−50) × the improvement\'s iRepairModifier, floor 1, × player iRepairModifier', where: `${D.code.repair} Unit.repair · ${D.code.getRepairCost} Player.getRepairCost · ${D.code.repairBranch} getBuildCost(bExisting)` },
   { what: 'Burn: pillage without payout for a flat iBurnCost', where: `${D.code.burn} Unit.burn · ${D.code.canBurn} canBurn` },
   { what: 'Razing harvests base payout with no modifier', where: `${D.code.razeCity} Game.razeCity` },
   { what: 'Occurrence pillage rolls', where: `${D.code.occurrencePillage}` },
@@ -226,7 +231,7 @@ const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
                   </tr>
                   {rows.map(r => {
                     const pay = payoutEntries(r.payout as Payout);
-                    const cost = payoutEntries(r.buildCost as Payout);
+                    const cost = payoutEntries(r.repairCost as Payout);
                     const left = leftAlone(r);
                     const href = hrefFor(r);
                     const notes = notesFor(r);
