@@ -204,10 +204,20 @@ export const TABS: Tab[] = [
     willContain: ['Each theology tier with options and impact'],
   },
   {
+    slug: 'religious-spread', icon: '✨', label: 'Religious Spread', section: 'Religion',
+    status: 'built', sourceSheet: '',
+    summary: 'How a religion reaches a city: the per-turn chance, which city it picks by distance, connection and existing religions, Disciples, shrines, tribes and founding',
+    willContain: [
+      'Per-turn spread chance: base, map size, theologies, player bonuses',
+      'The target pick from Game.spreadReligion, with exact odds and a calculator',
+      'Disciples, tribal conversion, spreading improvements, blocking, founding',
+    ],
+  },
+  {
     slug: 'religious-conversion', icon: '🙏', label: 'Religious Conversion', section: 'Religion',
     status: 'built', sourceSheet: '🙏 Religious Conversion Mechani',
-    summary: 'How religion spreads between cities',
-    willContain: ['Spread formula, modifiers, examples'],
+    summary: 'How families and characters choose a religion, and adopting a State Religion',
+    willContain: ['State Religion cost and effects', 'Family conversion scoring', 'Character conversion scoring'],
   },
 
   // ── Cities ────────────────────────────────────────────────────────

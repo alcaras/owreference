@@ -43,6 +43,46 @@ def load_globals_int() -> dict[str, int]:
     return out
 
 
+def state_religion(gi: dict[str, int]) -> dict:
+    """What adopting a State Religion costs and gives, from religion.xml.
+
+    Cost: InfoHelpers.getAdoptReligionCost = iCostBase + iCostPerCity × cities
+    + iCostPerChange × Player.getStateReligionChangeCount() (ONE counter per
+    player, every adoption counts), rounded down to 10, capped at MAX_CIVICS.
+    City effect: EffectPlayerState → StateReligionEffectCity, applied to each of
+    the player's cities that follows the religion (City.cs). Opinion:
+    PlayerOpinion.calculateCharacterOpinionStateReligion, ±STATE_RELIGION_OPINION_CHARACTER,
+    halved against pagan followers, doubled for a religion head.
+    """
+    xml = ROOT / "reference" / "XML" / "Infos"
+    ep = {e.findtext("zType"): e for e in ET.parse(xml / "effectPlayer.xml").getroot().findall("Entry")}
+    ec = {e.findtext("zType"): e for e in ET.parse(xml / "effectCity.xml").getroot().findall("Entry")}
+    costs, per_city, city_yields, upkeep = set(), set(), set(), {}
+    for r in ET.parse(xml / "religion.xml").getroot().findall("Entry"):
+        rid = r.findtext("zType")
+        if not rid:
+            continue
+        costs.add((int(r.findtext("iCostBase") or 0), int(r.findtext("iCostPerChange") or 0)))
+        per_city.add(int(r.findtext("iCostPerCity") or 0))
+        state = ep.get(r.findtext("EffectPlayerState") or "")
+        city = ec.get(state.findtext("StateReligionEffectCity") or "") if state is not None else None
+        if city is not None:
+            city_yields.add(tuple((p.findtext("zIndex"), int(p.findtext("iValue") or 0))
+                                  for p in city.findall("aiYieldRate/Pair")))
+        upkeep[rid] = r.findtext("EffectPlayerUpkeep") or ""
+    assert len(costs) == 1 and per_city == {0}, f"state religion costs now differ by religion: {costs} {per_city}"
+    assert len(city_yields) == 1, f"state religion city yields now differ by religion: {city_yields}"
+    base, per_change = costs.pop()
+    return {
+        "costBase": base,
+        "costPerChange": per_change,
+        "maxCivics": gi.get("MAX_CIVICS", 0),
+        "opinion": gi.get("STATE_RELIGION_OPINION_CHARACTER", 0),
+        "cityYields": [{"yield": y, "value": v / 10} for y, v in city_yields.pop()],
+        "upkeepReligions": sorted(k for k, v in upkeep.items() if v),
+    }
+
+
 def main() -> int:
     data = yaml.safe_load(SRC.read_text())
     gi = load_globals_int()
@@ -57,6 +97,7 @@ def main() -> int:
             drift.append(f"{key}: yaml={yaml_val} xml={xml_val} (using xml)")
         data.setdefault("globals", {})[key] = xml_val
 
+    data["stateReligion"] = state_religion(gi)
     OUT.write_text(json.dumps(data, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
     print(f"✓ wrote {OUT.relative_to(ROOT)} (globals from globalsInt.xml)")
     for d in drift:

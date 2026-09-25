@@ -1,0 +1,1121 @@
+{
+  "blockers": [
+    {
+      "effectCity": "EFFECTCITY_LAW_ICONOGRAPHY_EXTRA",
+      "id": "LAW_ICONOGRAPHY",
+      "kind": "law",
+      "linked": true,
+      "name": "Iconography"
+    }
+  ],
+  "code": {
+    "canFoundCity": "City.cs:8943",
+    "canFoundGame": "Game.cs:13371",
+    "citySpread": "City.cs:6541",
+    "connection": "Game.cs:13633",
+    "disciple": "Unit.cs:14359",
+    "distance": "Utils.cs:163",
+    "doReligionSpread": "Game.cs:13325",
+    "doTurn": "Game.cs:12820",
+    "eligible": "City.cs:12312",
+    "found": "Game.cs:13413",
+    "foundValue": "Game.cs:13495",
+    "getReligionSpread": "Game.cs:13293",
+    "improvementSpread": "Tile.cs:6475",
+    "modify": "Utils.cs:58",
+    "noSpreadUnlock": "City.cs:5626",
+    "purge": "Unit.cs:14489",
+    "roll": "Game.cs:13639",
+    "spreadReligion": "Game.cs:13611",
+    "tileCarry": "Tile.cs:7641",
+    "tribeCost": "Unit.cs:14516",
+    "tribeDiplomacy": "Player.cs:22314",
+    "tribeSpread": "Unit.cs:14594"
+  },
+  "disciple": {
+    "anyReligion": [
+      {
+        "effectCity": "EFFECTCITY_FAMILYCLASS_CLERICS_SEAT",
+        "units": [
+          "Christianity",
+          "Manichaeism"
+        ]
+      }
+    ],
+    "production": 60,
+    "productionPerCity": 10,
+    "yield": "YIELD_GROWTH"
+  },
+  "dissent": [
+    {
+      "dlc": "Empires of the Indus",
+      "hidden": true,
+      "id": "PROJECT_DISSENT_HINDUISM",
+      "linked": true,
+      "name": "Hindu Dissent",
+      "religion": "RELIGION_HINDUISM"
+    },
+    {
+      "dlc": "Empires of the Indus",
+      "hidden": true,
+      "id": "PROJECT_DISSENT_BUDDHISM",
+      "linked": true,
+      "name": "Buddhist Dissent",
+      "religion": "RELIGION_BUDDHISM"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "hidden": true,
+      "id": "PROJECT_DISSENT_RELIGION",
+      "linked": true,
+      "name": "Religious Dissent",
+      "religion": ""
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "hidden": true,
+      "id": "PROJECT_DISSENT_ZOROASTRIANISM",
+      "linked": true,
+      "name": "Zoroastrian Dissent",
+      "religion": "RELIGION_ZOROASTRIANISM"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "hidden": true,
+      "id": "PROJECT_DISSENT_JUDAISM",
+      "linked": true,
+      "name": "Jewish Dissent",
+      "religion": "RELIGION_JUDAISM"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "hidden": true,
+      "id": "PROJECT_DISSENT_CHRISTIANITY",
+      "linked": true,
+      "name": "Christian Dissent",
+      "religion": "RELIGION_CHRISTIANITY"
+    },
+    {
+      "dlc": "The Sacred and the Profane",
+      "hidden": true,
+      "id": "PROJECT_DISSENT_MANICHAEISM",
+      "linked": true,
+      "name": "Manichaean Dissent",
+      "religion": "RELIGION_MANICHAEISM"
+    }
+  ],
+  "founding": {
+    "dynastyPreferences": [
+      {
+        "id": "DYNASTY_SHAPUR",
+        "linked": false,
+        "name": "Shapur",
+        "nation": "Persia",
+        "religion": "RELIGION_ZOROASTRIANISM",
+        "religionName": "Zoroastrianism"
+      }
+    ],
+    "weights": [
+      {
+        "key": "notHolyCity",
+        "text": "the city is not already the Holy City of any religion",
+        "value": 64000
+      },
+      {
+        "key": "noHolyCityOwner",
+        "text": "its owner has no world-religion Holy City yet",
+        "value": 32000
+      },
+      {
+        "key": "notCapital",
+        "text": "the city is not a capital",
+        "value": 16000
+      },
+      {
+        "key": "human",
+        "text": "its owner is a human player",
+        "value": 8000
+      },
+      {
+        "key": "dynasty",
+        "text": "its owner's dynasty prefers this religion",
+        "value": 4000
+      }
+    ]
+  },
+  "globals": {
+    "connectionModifier": -33,
+    "connectionMultiplier": 67,
+    "purgeOrders": 1,
+    "tribeSpreadBase": 500,
+    "tribeSpreadPer": 500
+  },
+  "mapSizes": [
+    {
+      "id": "MAPSIZE_SMALLEST",
+      "name": "Duel",
+      "spreadChange": 0
+    },
+    {
+      "id": "MAPSIZE_TINY",
+      "name": "Tiny",
+      "spreadChange": 0
+    },
+    {
+      "id": "MAPSIZE_SMALL",
+      "name": "Small",
+      "spreadChange": 2
+    },
+    {
+      "id": "MAPSIZE_MEDIUM",
+      "name": "Medium",
+      "spreadChange": 4
+    },
+    {
+      "id": "MAPSIZE_LARGE",
+      "name": "Large",
+      "spreadChange": 6
+    },
+    {
+      "id": "MAPSIZE_HUGE",
+      "name": "Huge",
+      "spreadChange": 8
+    },
+    {
+      "id": "MAPSIZE_RANDOM",
+      "name": "Random",
+      "spreadChange": 0
+    }
+  ],
+  "playerEffects": [
+    {
+      "carriers": [
+        {
+          "id": "LAW_PILGRIMAGE",
+          "kind": "law",
+          "linked": true,
+          "name": "Pilgrimage"
+        }
+      ],
+      "effectPlayer": "EFFECTPLAYER_LAW_PILGRIMAGE",
+      "scope": "state",
+      "value": 25
+    },
+    {
+      "carriers": [
+        {
+          "id": "TRAIT_PIOUS",
+          "kind": "trait",
+          "linked": true,
+          "name": "Pious",
+          "note": "while leader"
+        }
+      ],
+      "effectPlayer": "EFFECTPLAYER_TRAIT_PIOUS",
+      "scope": "state",
+      "value": 5
+    },
+    {
+      "carriers": [
+        {
+          "dlc": "Empires of the Indus",
+          "id": "OCCURRENCE_PAX_KUSHANA",
+          "kind": "occurrence",
+          "linked": false,
+          "name": "Pax Kushana"
+        }
+      ],
+      "effectPlayer": "EFFECTPLAYER_OCCURRENCE_PAX_KUSHANA",
+      "scope": "state",
+      "value": 5
+    },
+    {
+      "carriers": [
+        {
+          "dlc": "Empires of the Indus",
+          "id": "OCCURRENCE_RELIGIOUS_UPHEAVAL",
+          "kind": "occurrence",
+          "linked": false,
+          "name": "Religious Upheaval"
+        }
+      ],
+      "effectPlayer": "EFFECTPLAYER_OCCURRENCE_RELIGIOUS_UPHEAVAL",
+      "scope": "world",
+      "value": 10
+    }
+  ],
+  "religions": [
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_ZOROASTRIANISM",
+      "name": "Zoroastrianism",
+      "noSpread": false,
+      "pagan": false,
+      "prereqs": [
+        {
+          "count": 2,
+          "id": "SPECIALISTCLASS_ACOLYTE",
+          "kind": "specialist",
+          "linked": true,
+          "name": "Acolyte",
+          "text": "of your specialists (any tier)"
+        }
+      ],
+      "slug": "zoroastrianism",
+      "spreadPercent": 5,
+      "spreadUnit": "UNIT_ZOROASTRIANISM_DISCIPLE",
+      "world": true
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_JUDAISM",
+      "name": "Judaism",
+      "noSpread": false,
+      "pagan": false,
+      "prereqs": [
+        {
+          "count": 2,
+          "id": "SPECIALIST_RANCHER",
+          "kind": "specialist",
+          "linked": false,
+          "name": "Rancher",
+          "text": "of your specialists"
+        }
+      ],
+      "slug": "judaism",
+      "spreadPercent": 5,
+      "spreadUnit": "UNIT_JUDAISM_DISCIPLE",
+      "world": true
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_CHRISTIANITY",
+      "name": "Christianity",
+      "noSpread": false,
+      "pagan": false,
+      "prereqs": [
+        {
+          "count": 12,
+          "kind": "citizens",
+          "text": "Citizens across all your cities"
+        },
+        {
+          "count": 3,
+          "id": "RELIGION_JUDAISM",
+          "kind": "religionCities",
+          "linked": false,
+          "name": "Judaism",
+          "text": "cities anywhere on the map (any owner) following"
+        }
+      ],
+      "slug": "christianity",
+      "spreadPercent": 10,
+      "spreadUnit": "UNIT_CHRISTIANITY_DISCIPLE",
+      "world": true
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_MANICHAEISM",
+      "name": "Manichaeism",
+      "noSpread": false,
+      "pagan": false,
+      "prereqs": [
+        {
+          "id": "TECH_METAPHYSICS",
+          "kind": "tech",
+          "linked": true,
+          "name": "Metaphysics",
+          "text": "tech"
+        },
+        {
+          "count": 2,
+          "id": "RELIGION_ZOROASTRIANISM",
+          "kind": "religionCities",
+          "linked": false,
+          "name": "Zoroastrianism",
+          "text": "cities anywhere on the map (any owner) following"
+        },
+        {
+          "count": 2,
+          "id": "RELIGION_CHRISTIANITY",
+          "kind": "religionCities",
+          "linked": false,
+          "name": "Christianity",
+          "text": "cities anywhere on the map (any owner) following"
+        }
+      ],
+      "slug": "manichaeism",
+      "spreadPercent": 10,
+      "spreadUnit": "UNIT_MANICHAEISM_DISCIPLE",
+      "world": true
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_AKSUM",
+      "name": "Aksumite Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_aksum",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_ASSYRIA",
+      "name": "Assyrian Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_assyria",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_BABYLONIA",
+      "name": "Babylonian Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_babylonia",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_CARTHAGE",
+      "name": "Carthaginian Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_carthage",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_EGYPT",
+      "name": "Egyptian Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_egypt",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_GREECE",
+      "name": "Greek Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_greece",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_ROME",
+      "name": "Roman Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_rome",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_KUSH",
+      "name": "Kushite Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_kush",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_PERSIA",
+      "name": "Persian Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_persia",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_PAGAN_HITTITE",
+      "name": "Hittite Paganism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "pagan_hittite",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": null,
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_ATENISM",
+      "name": "Atenism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "atenism",
+      "spreadPercent": 0,
+      "spreadUnit": "",
+      "world": false
+    },
+    {
+      "dlc": "Empires of the Indus",
+      "foundingProject": "",
+      "hidden": true,
+      "id": "RELIGION_HINDUISM",
+      "name": "Hinduism",
+      "noSpread": true,
+      "pagan": true,
+      "prereqs": [],
+      "slug": "hinduism",
+      "spreadPercent": 0,
+      "spreadUnit": "UNIT_HINDUISM_DISCIPLE",
+      "world": false
+    },
+    {
+      "dlc": "Empires of the Indus",
+      "foundingProject": "",
+      "hidden": false,
+      "id": "RELIGION_BUDDHISM",
+      "name": "Buddhism",
+      "noSpread": false,
+      "pagan": false,
+      "prereqs": [
+        {
+          "id": "LAW_PHILOSOPHY",
+          "kind": "law",
+          "linked": true,
+          "name": "Philosophy",
+          "text": "law in force"
+        },
+        {
+          "count": 4,
+          "kind": "theologies",
+          "text": "Theologies established in the world, by any religion"
+        }
+      ],
+      "slug": "buddhism",
+      "spreadPercent": 10,
+      "spreadUnit": "UNIT_BUDDHISM_DISCIPLE",
+      "world": true
+    }
+  ],
+  "spreadImprovements": [
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_ASTAR",
+          "linked": true,
+          "name": "Astar"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_MAHREM",
+          "linked": true,
+          "name": "Mahrem"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_BEHER",
+          "linked": true,
+          "name": "Beher"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_MEDR",
+          "linked": true,
+          "name": "Medr"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_AKSUM",
+      "religionName": "Aksumite Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_NINURTA",
+          "linked": true,
+          "name": "Ninurta"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_NUSKA",
+          "linked": true,
+          "name": "Nuska"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_SHAMASH",
+          "linked": true,
+          "name": "Shamash"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ASHUR",
+          "linked": true,
+          "name": "Ashur"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_ASSYRIA",
+      "religionName": "Assyrian Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_NABU",
+          "linked": true,
+          "name": "Nabu"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ISHTAR",
+          "linked": true,
+          "name": "Ishtar"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ERESHKIGAL",
+          "linked": true,
+          "name": "Ereshkigal"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_MARDUK",
+          "linked": true,
+          "name": "Marduk"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_BABYLONIA",
+      "religionName": "Babylonian Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_MELQART",
+          "linked": true,
+          "name": "Melqart"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_BAAL_HAMMON",
+          "linked": true,
+          "name": "Baal Hammon"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ESHMUN",
+          "linked": true,
+          "name": "Eshmun"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_TANIT",
+          "linked": true,
+          "name": "Tanit"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_CARTHAGE",
+      "religionName": "Carthaginian Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_RA",
+          "linked": true,
+          "name": "Ra"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_OSIRIS",
+          "linked": true,
+          "name": "Osiris"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ISIS",
+          "linked": true,
+          "name": "Isis"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_NEITH",
+          "linked": true,
+          "name": "Neith"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_EGYPT",
+      "religionName": "Egyptian Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 5,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_ATHENA",
+          "linked": true,
+          "name": "Athena"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_POSEIDON",
+          "linked": true,
+          "name": "Poseidon"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_HADES",
+          "linked": true,
+          "name": "Hades"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ZEUS",
+          "linked": true,
+          "name": "Zeus"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_SERAPIS",
+          "linked": true,
+          "name": "Serapis"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_GREECE",
+      "religionName": "Greek Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 12,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_YAMA",
+          "linked": true,
+          "name": "Yama"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_THE_MARUTS",
+          "linked": true,
+          "name": "The_Maruts"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_INDRA",
+          "linked": true,
+          "name": "Indra"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_SURYA",
+          "linked": true,
+          "name": "Surya"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ORLAGNO",
+          "linked": true,
+          "name": "Orlagno"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_OESHO",
+          "linked": true,
+          "name": "Oesho"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_NANA",
+          "linked": true,
+          "name": "Nana"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ARDAKSHO",
+          "linked": true,
+          "name": "Ardaksho"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_MAYON",
+          "linked": true,
+          "name": "Mayon"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_TIRUMAL",
+          "linked": true,
+          "name": "Tirumal"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_MURUGAN",
+          "linked": true,
+          "name": "Murugan"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_VARUNA",
+          "linked": true,
+          "name": "Varuna"
+        }
+      ],
+      "religion": "RELIGION_HINDUISM",
+      "religionName": "Hinduism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_TARHUN",
+          "linked": true,
+          "name": "Tarhun"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ARINNITTI",
+          "linked": true,
+          "name": "Arinnitti"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_KAMRUSEPA",
+          "linked": true,
+          "name": "Kamrusepa"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_HALKI",
+          "linked": true,
+          "name": "Halki"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_HITTITE",
+      "religionName": "Hittite Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_AMUN",
+          "linked": true,
+          "name": "Amani"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_APEDEMEK",
+          "linked": true,
+          "name": "Apedemek"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_SEBIUMEKER",
+          "linked": true,
+          "name": "Sabomakal"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_MANDULIS",
+          "linked": true,
+          "name": "Melul"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_KUSH",
+      "religionName": "Kushite Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_ATAR",
+          "linked": true,
+          "name": "Atar"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_HVAR_KHSHAITA",
+          "linked": true,
+          "name": "Hvar Khshaita"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ANAHITA",
+          "linked": true,
+          "name": "Anahita"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_MITHRA",
+          "linked": true,
+          "name": "Mithra"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_PERSIA",
+      "religionName": "Persian Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_SHRINE",
+      "count": 4,
+      "members": [
+        {
+          "id": "IMPROVEMENT_SHRINE_BELLONA",
+          "linked": true,
+          "name": "Bellona"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_SOL",
+          "linked": true,
+          "name": "Sol"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_FERONIA",
+          "linked": true,
+          "name": "Feronia"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_CERES",
+          "linked": true,
+          "name": "Ceres"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_ROME",
+      "religionName": "Roman Paganism",
+      "wonder": false
+    },
+    {
+      "class": "IMPROVEMENTCLASS_ALTAR_ATEN",
+      "count": 1,
+      "members": [
+        {
+          "id": "IMPROVEMENT_ALTAR_ATEN",
+          "linked": false,
+          "name": "Altar of the Aten"
+        }
+      ],
+      "religion": "RELIGION_ATENISM",
+      "religionName": "Atenism",
+      "wonder": false
+    },
+    {
+      "class": "",
+      "count": 1,
+      "members": [
+        {
+          "id": "IMPROVEMENT_MONUMENTAL_BUDDHAS",
+          "linked": true,
+          "name": "The Monumental Buddhas"
+        }
+      ],
+      "religion": "RELIGION_BUDDHISM",
+      "religionName": "Buddhism",
+      "wonder": true
+    },
+    {
+      "class": "IMPROVEMENTCLASS_KUSHITE_PYRAMIDS",
+      "count": 1,
+      "members": [
+        {
+          "id": "IMPROVEMENT_KUSHITE_PYRAMIDS",
+          "linked": false,
+          "name": "Kushite Pyramids"
+        }
+      ],
+      "religion": "RELIGION_PAGAN_KUSH",
+      "religionName": "Kushite Paganism",
+      "wonder": false
+    }
+  ],
+  "suppress": [
+    {
+      "cost": [
+        {
+          "value": 100,
+          "yield": "YIELD_TRAINING"
+        }
+      ],
+      "id": "PROJECT_SUPPRESS_DISSENT_HINDUISM",
+      "requiresGovernor": true
+    },
+    {
+      "cost": [
+        {
+          "value": 100,
+          "yield": "YIELD_TRAINING"
+        }
+      ],
+      "id": "PROJECT_SUPPRESS_DISSENT_BUDDHISM",
+      "requiresGovernor": true
+    },
+    {
+      "cost": [
+        {
+          "value": 100,
+          "yield": "YIELD_TRAINING"
+        }
+      ],
+      "id": "PROJECT_SUPPRESS_DISSENT_ZOROASTRIANISM",
+      "requiresGovernor": true
+    },
+    {
+      "cost": [
+        {
+          "value": 100,
+          "yield": "YIELD_TRAINING"
+        }
+      ],
+      "id": "PROJECT_SUPPRESS_DISSENT_JUDAISM",
+      "requiresGovernor": true
+    },
+    {
+      "cost": [
+        {
+          "value": 100,
+          "yield": "YIELD_TRAINING"
+        }
+      ],
+      "id": "PROJECT_SUPPRESS_DISSENT_CHRISTIANITY",
+      "requiresGovernor": true
+    },
+    {
+      "cost": [
+        {
+          "value": 100,
+          "yield": "YIELD_TRAINING"
+        }
+      ],
+      "id": "PROJECT_SUPPRESS_DISSENT_MANICHAEISM",
+      "requiresGovernor": true
+    }
+  ],
+  "theologies": [
+    {
+      "id": "THEOLOGY_REVELATION",
+      "linked": true,
+      "name": "Revelation",
+      "spreadChange": 20,
+      "tier": 1
+    },
+    {
+      "id": "THEOLOGY_VENERATION",
+      "linked": true,
+      "name": "Veneration",
+      "spreadChange": 10,
+      "tier": 0
+    },
+    {
+      "id": "THEOLOGY_DUALISM",
+      "linked": true,
+      "name": "Dualism",
+      "spreadChange": 5,
+      "tier": 1
+    },
+    {
+      "id": "THEOLOGY_ENLIGHTENMENT",
+      "linked": true,
+      "name": "Enlightenment",
+      "spreadChange": 5,
+      "tier": 2
+    },
+    {
+      "id": "THEOLOGY_GNOSTICISM",
+      "linked": true,
+      "name": "Gnosticism",
+      "spreadChange": 5,
+      "tier": 1
+    },
+    {
+      "id": "THEOLOGY_LEGALISM",
+      "linked": true,
+      "name": "Legalism",
+      "spreadChange": 5,
+      "tier": 0
+    },
+    {
+      "id": "THEOLOGY_MYTHOLOGY",
+      "linked": true,
+      "name": "Mythology",
+      "spreadChange": 5,
+      "tier": 0
+    },
+    {
+      "id": "THEOLOGY_REDEMPTION",
+      "linked": true,
+      "name": "Redemption",
+      "spreadChange": 5,
+      "tier": 2
+    }
+  ],
+  "tribes": [
+    {
+      "id": "TRIBE_GAULS",
+      "linked": true,
+      "name": "Gauls"
+    },
+    {
+      "id": "TRIBE_VANDALS",
+      "linked": true,
+      "name": "Vandals"
+    },
+    {
+      "id": "TRIBE_DANES",
+      "linked": true,
+      "name": "Danes"
+    },
+    {
+      "id": "TRIBE_THRACIANS",
+      "linked": true,
+      "name": "Thracians"
+    },
+    {
+      "id": "TRIBE_SCYTHIANS",
+      "linked": true,
+      "name": "Scythians"
+    },
+    {
+      "id": "TRIBE_NUMIDIANS",
+      "linked": true,
+      "name": "Numidians"
+    },
+    {
+      "id": "TRIBE_HUNS",
+      "linked": true,
+      "name": "Huns"
+    }
+  ]
+}

@@ -59,6 +59,18 @@ WATCHED = [
     # Pillage (pillage page, build_pillage.py). The payout multiply, the tile
     # change and the countdown are three functions; a patch that adds a second
     # pillage modifier or a repair-on-tick has to trip one of them.
+    # Religious spread (religious-spread page, build_religious_spread.py). The
+    # target pick and the founding weights are code-only constants.
+    ("Base/Game/GameCore/Game.cs", "getReligionSpread", 32,
+     "religious_spread.json: chance = base + map size + theologies + Σ players' state/world spread changes — religious-spread page"),
+    ("Base/Game/GameCore/Game.cs", "spreadReligion", 90,
+     "religious_spread.json + src/lib/religion-spread.ts: D = dist (×connection) × (religions+1), score = D × rand(1..D), lowest wins, tribes after cities — religious-spread page"),
+    ("Base/Game/GameCore/City.cs", "isReligionSpreadEligible", 22,
+     "religious-spread page: eligibility (not present, not banned, world/own pagan, no-spread → state religion only)"),
+    ("Base/Game/GameCore/Game.cs", "getReligionCityFoundValue", 45,
+     "religious_spread.json FOUND_WEIGHTS (64000/32000/16000/8000/4000/2000/1000) — religious-spread page"),
+    ("Base/Game/GameCore/Unit.cs", "getSpreadReligionTribeCost", 5,
+     "religious-spread page: tribal conversion cost = base + per × all earlier tribal conversions"),
     ("Base/Game/GameCore/Unit.cs", "pillage", 70,
      "pillage.json: payout → stockpile/nearest city, PILLAGED cooldown, +5 war score, heal-on-pillage — pillage page"),
     ("Base/Game/GameCore/Unit.cs", "getPillageYield", 4,

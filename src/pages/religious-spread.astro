@@ -1,0 +1,646 @@
+---
+import Base from '../layouts/Base.astro';
+import D from '../data/religious_spread.json';
+import proseRaw from '../data/religious-spread-prose.md?raw';
+import editorJs from '../lib/prose-editor.js?raw';
+import { createProse, type ProseVar } from '../lib/prose';
+import { getEntity } from '../lib/entities';
+import { winOdds, effectiveD, type Candidate } from '../lib/religion-spread';
+
+const PROSE_FILE = 'src/data/religious-spread-prose.md';
+const DEV = import.meta.env.DEV;
+const base = import.meta.env.BASE_URL;
+
+const CONN = D.globals.connectionMultiplier;
+const rolling = D.religions.filter(r => r.world && !r.noSpread);
+const neverRoll = D.religions.filter(r => !r.pagan && r.noSpread || (r.pagan && !r.id.startsWith('RELIGION_PAGAN_')));
+const mapSizes = D.mapSizes.filter(m => m.id !== 'MAPSIZE_RANDOM');
+
+// Link by entity id; religions have no entity, they live on the buildings page.
+const hrefFor = (id: string) => {
+  const e = getEntity(id);
+  if (!e?.page) return '';
+  return `${base}${e.page}${e.page.endsWith('/' + e.slug) ? '' : `#${e.slug}`}`;
+};
+const religionHref = (id: string) => `${base}world-religion-buildings#${id.replace('RELIGION_', '').toLowerCase()}`;
+const a = (href: string, text: string) => (href ? `<a href="${href}">${text}</a>` : text);
+const linkRef = (r: { id: string; name: string }) => a(hrefFor(r.id), r.name);
+
+const pct = (p: number) => {
+  if (p <= 0) return 'never';
+  if (p >= 0.9995) return '100%';
+  if (p < 0.001) return '<0.1%';
+  return `${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`;
+};
+
+// ---- the per-turn chance, worked once -------------------------------------
+const exReligion = D.religions.find(r => r.id === 'RELIGION_CHRISTIANITY') ?? rolling[0];
+const exMap = mapSizes.find(m => m.id === 'MAPSIZE_MEDIUM') ?? mapSizes[0];
+const exTheology = D.theologies[0];
+const exTotal = exReligion.spreadPercent + exMap.spreadChange + exTheology.spreadChange;
+
+const pilgrimage = D.playerEffects.find(p => p.effectPlayer === 'EFFECTPLAYER_LAW_PILGRIMAGE');
+const iconography = D.blockers.find(b => b.id === 'LAW_ICONOGRAPHY');
+
+// ---- distance matrix: P(farther wins) between two candidates ---------------
+const NEAR = [3, 4, 5, 6, 8, 10, 12];
+const FAR = [4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40];
+const farWins = (dn: number, df: number) => winOdds([{ distance: dn }, { distance: df }], CONN)[1];
+// Cells built here, not in the template: a bare `<=` in template JSX trips the Astro compiler.
+const matrix = NEAR.map(n => ({
+  n,
+  cells: FAR.map(f => {
+    if (f <= n) return { na: true, text: '', cls: 'rs-na' };
+    const p = farWins(n, f);
+    return { na: false, text: pct(p), cls: p === 0 ? 'rs-never' : p >= 0.1 ? 'rs-hi' : 'rs-lo' };
+  }),
+}));
+
+// ---- worked examples --------------------------------------------------------
+type Ex = { key: string; cities: (Candidate & { name: string })[] };
+const EXAMPLES: Ex[] = [
+  { key: 'example.a', cities: [
+    { name: 'City A', distance: 6 }, { name: 'City B', distance: 9 }, { name: 'City C', distance: 14 },
+  ] },
+  { key: 'example.b', cities: [
+    { name: 'City A', distance: 6 }, { name: 'City B', distance: 9 }, { name: 'City C', distance: 14, connected: true },
+  ] },
+  { key: 'example.c', cities: [
+    { name: 'City A', distance: 6, religions: 1 }, { name: 'City B', distance: 9 }, { name: 'City C', distance: 14 },
+  ] },
+];
+const examples = EXAMPLES.map(ex => ({ ...ex, odds: winOdds(ex.cities, CONN) }));
+
+const VARS: Record<string, ProseVar> = {
+  conversionLink: { html: a(`${base}religious-conversion`, 'Religious Conversion') },
+  mapSizeList: mapSizes.map(m => `${m.name} +${m.spreadChange}`).join(', '),
+  pilgrimageLink: { html: pilgrimage ? linkRef(pilgrimage.carriers[0]) : 'Pilgrimage' },
+  pilgrimageValue: `+${pilgrimage?.value ?? 25}`,
+  noRollList: neverRoll.map(r => r.name).join(' and '),
+  exampleReligion: exReligion.name,
+  exampleMap: exMap.name,
+  exampleTheology: { html: linkRef(exTheology) },
+  exampleBase: String(exReligion.spreadPercent),
+  exampleMapValue: String(exMap.spreadChange),
+  exampleTheologyValue: String(exTheology.spreadChange),
+  exampleTotal: String(exTotal),
+  halfShareTurns: String(Math.round(1 / (0.5 * exTotal / 100))),
+  connPct: String(CONN),
+  tribeList: { html: D.tribes.map(linkRef).join(', ') },
+  iconographyLink: { html: iconography ? linkRef(iconography) : 'Iconography' },
+  sixTwelve: pct(farWins(6, 12)),
+  conn12: String(effectiveD({ distance: 12, connected: true }, CONN)),
+  tribeBase: String(D.globals.tribeSpreadBase),
+  tribePer: String(D.globals.tribeSpreadPer),
+  toleranceLink: { html: linkRef({ id: 'LAW_TOLERANCE', name: 'Tolerance' }) },
+  clericsNote: D.disciple.anyReligion.length
+    ? `A Clerics family seat can also train ${D.disciple.anyReligion.flatMap(x => x.units).join(' and ')} Disciples without following the religion.`
+    : '',
+  discipleCost: `${D.disciple.production} ${D.disciple.yield.replace('YIELD_', '').toLowerCase().replace(/^./, c => c.toUpperCase())}`,
+  disciplePer: String(D.disciple.productionPerCity),
+  dynastyList: D.founding.dynastyPreferences.map(d => `${d.name} (${d.nation}, ${d.religionName})`).join(', ') || 'no dynasty',
+};
+const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'religious-spread-prose' });
+
+const kindLabel: Record<string, string> = { law: 'law', trait: 'leader trait', occurrence: 'occurrence', dynasty: 'dynasty', nation: 'nation' };
+const scopeLabel = (s: string) => (s === 'state' ? 'to its holder\'s state religion' : 'to every world religion');
+
+const prereqHtml = (p: any) => {
+  const n = p.count ? `<b>${p.count}</b> ` : '';
+  switch (p.kind) {
+    case 'tech': return `${linkRef(p)} ${p.text}`;
+    case 'law': return `${linkRef(p)} ${p.text}`;
+    case 'religionCities': return `${n}${p.text} ${a(religionHref(p.id), p.name)}`;
+    case 'specialist': return `${n}${linkRef(p)} specialists${p.text.includes('any tier') ? ' (any tier)' : ''}, across all your cities`;
+    default: return `${n}${p.text}${p.name ? ' ' + linkRef(p) : ''}`;
+  }
+};
+
+const shrineRows = D.spreadImprovements.filter(r => r.class === 'IMPROVEMENTCLASS_SHRINE');
+const otherImps = D.spreadImprovements.filter(r => r.class !== 'IMPROVEMENTCLASS_SHRINE');
+const dissentDlcs = [...new Set(D.dissent.map(d => d.dlc).filter(Boolean))];
+const suppressCost = D.suppress[0]?.cost?.[0];
+
+const codeList: { what: string; where: string }[] = [
+  { what: 'Rolled once per game turn, then founding', where: `${D.code.doTurn} Game.doTurn` },
+  { what: 'Per-turn chance: base + map size + theologies + every player\'s bonuses', where: `${D.code.getReligionSpread} Game.getReligionSpread` },
+  { what: 'One roll per founded religion without bNoSpread', where: `${D.code.doReligionSpread} Game.doReligionSpread` },
+  { what: 'Target pick: distance × connection × (religions + 1) × random, lowest wins', where: `${D.code.spreadReligion} Game.spreadReligion · connection ${D.code.connection.split(':')[1]} · roll ${D.code.roll.split(':')[1]}` },
+  { what: 'Which cities may be picked', where: `${D.code.eligible} City.isReligionSpreadEligible` },
+  { what: 'bNoReligionSpread effects (Iconography, Dissent)', where: `${D.code.noSpreadUnlock}` },
+  { what: 'Hex distance; the integer multiply behind the connection discount', where: `${D.code.distance} Utils.distance · ${D.code.modify} Utils.modify` },
+  { what: 'Disciple spread: next to the territory, city lacks the religion', where: `${D.code.disciple} Unit.canSpreadReligion` },
+  { what: 'Purge removes the religion and bans it from the roll', where: `${D.code.purge} Unit.purgeReligion` },
+  { what: 'Tribal conversion cost and effect', where: `${D.code.tribeCost} getSpreadReligionTribeCost · ${D.code.tribeSpread} spreadReligionTribe · ${D.code.tribeDiplomacy} Player.canSpreadReligionTribe` },
+  { what: 'Finished improvement spreads (or founds) its religion', where: `${D.code.improvementSpread} Tile.doImprovementFinished` },
+  { what: 'A converted tile passes its religion to the city that gains it', where: `${D.code.tileCarry} Tile.setOwner` },
+  { what: 'Founding: requirements and the city pick', where: `${D.code.canFoundGame} Game.canFoundReligion · ${D.code.canFoundCity} City.canFoundReligion · ${D.code.found} doReligionFound · ${D.code.foundValue} getReligionCityFoundValue` },
+];
+
+const calcData = {
+  conn: CONN,
+  religions: rolling.map(r => ({ id: r.id, name: r.name, base: r.spreadPercent })),
+  maps: mapSizes.map(m => ({ id: m.id, name: m.name, change: m.spreadChange })),
+  defaultMap: exMap.id,
+};
+---
+
+<Base
+  title="Religious Spread"
+  active="religious-spread"
+  pageMark="✨"
+  eyebrow="Religion"
+  description="How a world religion spreads in Old World: the per-turn chance, and exactly how distance to the Holy City, trade connection and existing religions decide which city it lands in. With exact odds, a calculator, Disciples, shrines, tribes, blocking and founding."
+  pageStats={[
+    { label: 'rolling religions', value: rolling.length },
+    { label: 'connected distance', value: `×${CONN}%` },
+    { label: 'spread bonuses', value: D.theologies.length + D.playerEffects.length },
+  ]}
+>
+  {DEV && <meta name="prose-file" content={PROSE_FILE} />}
+  {DEV && <meta name="prose-endpoint" content="http://127.0.0.1:4399/save" />}
+  {DEV && <script is:inline set:html={editorJs} />}
+
+  <p class="lede" data-prose="lede" set:html={inline('lede')} />
+
+  <!-- ─── The roll ─────────────────────────────────────────────── -->
+  <section class="rs-sec" id="chance">
+    <h2 class="rs-h" data-prose="roll.heading" set:html={inline('roll.heading')} />
+    <div class="fml">
+      <code class="fml__line">chance per turn = base + map size + Σ theologies + Σ every player's bonuses</code>
+      <div class="fml__meta">one roll per founded world religion per turn · at most one new city per success</div>
+    </div>
+    <div class="rs-body" data-prose="roll.body" data-prose-blocks set:html={blocks('roll.body')} />
+    <p class="rs-note" data-prose="roll.note" set:html={inline('roll.note')} />
+
+    <div class="rs-quad">
+      <div>
+        <h3 class="rs-h3">Base chance</h3>
+        <table class="rs-t">
+          <thead><tr><th>Religion</th><th class="rs-num">% per turn</th></tr></thead>
+          <tbody>
+            {rolling.map(r => (
+              <tr id={`r-${r.slug}`}>
+                <td><a href={religionHref(r.id)}>{r.name}</a>{r.dlc && <i class="rs-dlc">{r.dlc}</i>}</td>
+                <td class="rs-num"><b>{r.spreadPercent}%</b></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="rs-h3">Map size</h3>
+        <table class="rs-t">
+          <thead><tr><th>Map</th><th class="rs-num">adds</th></tr></thead>
+          <tbody>
+            {mapSizes.map(m => (
+              <tr><td>{m.name}</td><td class="rs-num">{m.spreadChange ? <b>+{m.spreadChange}</b> : <span class="rs-faint">0</span>}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="rs-h3">Theologies</h3>
+        <table class="rs-t">
+          <thead><tr><th>Theology</th><th class="rs-num">adds</th></tr></thead>
+          <tbody>
+            {D.theologies.map(t => (
+              <tr><td set:html={linkRef(t)} /><td class="rs-num"><b>+{t.spreadChange}</b></td></tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="rs-cite">every religion that has established it, for as long as it has it</p>
+      </div>
+      <div>
+        <h3 class="rs-h3">Player bonuses</h3>
+        <table class="rs-t">
+          <thead><tr><th>Source</th><th class="rs-num">adds</th></tr></thead>
+          <tbody>
+            {D.playerEffects.map(p => (
+              <tr>
+                <td class="rs-multi">
+                  {p.carriers.map(c => <span set:html={linkRef(c)} />)}
+                  <span class="rs-cite">{p.carriers.map(c => [kindLabel[c.kind] ?? c.kind, (c as any).note, (c as any).dlc].filter(Boolean).join(', ')).join('; ')} · {scopeLabel(p.scope)}</span>
+                </td>
+                <td class="rs-num"><b>+{p.value}</b></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="rs-cite">summed over every player who has one</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── The pick ─────────────────────────────────────────────── -->
+  <section class="rs-sec" id="pick">
+    <h2 class="rs-h" data-prose="pick.heading" set:html={inline('pick.heading')} />
+    <div class="fml">
+      <code class="fml__line">D = distance{' '}<span class="rs-faint">(× {CONN}% if connected)</span>{' '}× (religions already there + 1)</code>
+      <code class="fml__line">score = D × random(1 … D) &nbsp;·&nbsp; lowest score wins</code>
+      <div class="fml__meta">tribal settlements: D = distance · cities are checked first and keep ties</div>
+    </div>
+    <div class="rs-body" data-prose="pick.body" data-prose-blocks set:html={blocks('pick.body')} />
+    <div class="rs-body" data-prose="pick.eligible" data-prose-blocks set:html={blocks('pick.eligible')} />
+  </section>
+
+  <!-- ─── Distance ─────────────────────────────────────────────── -->
+  <section class="rs-sec" id="distance">
+    <h2 class="rs-h" data-prose="distance.heading" set:html={inline('distance.heading')} />
+    <div class="rs-body" data-prose="distance.body" data-prose-blocks set:html={blocks('distance.body')} />
+    <div class="rs-scroll">
+      <table class="rs-t rs-matrix">
+        <thead>
+          <tr>
+            <th class="rs-corner">nearer D ↓ · farther D →</th>
+            {FAR.map(f => <th class="rs-num">{f}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {matrix.map(row => (
+            <tr>
+              <th class="rs-num rs-rowh">{row.n}</th>
+              {row.cells.map(c => c.na
+                ? <td class="rs-num rs-na"><span aria-hidden="true">·</span></td>
+                : <td class={`rs-num ${c.cls}`}>{c.text}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── Worked examples ──────────────────────────────────────── -->
+  <section class="rs-sec" id="examples">
+    <h2 class="rs-h" data-prose="examples.heading" set:html={inline('examples.heading')} />
+    <p class="rs-note" data-prose="examples.note" set:html={inline('examples.note')} />
+    <div class="rs-trio">
+      {examples.map((ex, i) => (
+        <div class="rs-card">
+          <h3 class="rs-h3">{String.fromCharCode(65 + i)}.</h3>
+          <p class="rs-note" data-prose={ex.key} set:html={inline(ex.key)} />
+          <table class="rs-t rs-odds">
+            <thead><tr><th>City</th><th class="rs-num">dist</th><th class="rs-num">D</th><th>picked</th></tr></thead>
+            <tbody>
+              {ex.cities.map((c, j) => (
+                <tr>
+                  <td>
+                    {c.name}
+                    {c.connected && <span class="rs-tag">connected</span>}
+                    {c.religions ? <span class="rs-tag">{c.religions} religion</span> : null}
+                  </td>
+                  <td class="rs-num">{c.distance}</td>
+                  <td class="rs-num">{effectiveD(c, CONN)}</td>
+                  <td class="rs-bar">
+                    <span class="rs-bar__fill" style={`width:${(ex.odds[j] * 100).toFixed(1)}%`} aria-hidden="true" />
+                    <span class="rs-bar__val">{pct(ex.odds[j])}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ─── Calculator ───────────────────────────────────────────── -->
+  <section class="rs-sec" id="calculator">
+    <h2 class="rs-h" data-prose="calc.heading" set:html={inline('calc.heading')} />
+    <p class="rs-note" data-prose="calc.note" set:html={inline('calc.note')} />
+    <div class="rs-calc" id="rs-calc">
+      <div class="rs-calc__chance">
+        <label>Religion
+          <select id="rs-rel">
+            {rolling.map(r => <option value={r.id} selected={r.id === exReligion.id}>{r.name} ({r.spreadPercent}%)</option>)}
+          </select>
+        </label>
+        <label>Map
+          <select id="rs-map">
+            {mapSizes.map(m => <option value={m.id} selected={m.id === exMap.id}>{m.name} (+{m.spreadChange})</option>)}
+          </select>
+        </label>
+        <label>Theologies and player bonuses
+          <input id="rs-extra" type="number" min="0" max="200" step="5" value="0" />
+        </label>
+        <div class="rs-calc__total">Chance per turn: <b id="rs-total">—</b></div>
+      </div>
+      <table class="rs-t rs-calc__t">
+        <thead>
+          <tr>
+            <th>Candidate</th><th class="rs-num">distance</th><th>connected</th><th class="rs-num">religions</th>
+            <th class="rs-num">D</th><th>picked when it rolls</th><th class="rs-num">per turn</th><th><span class="rs-sr">remove</span></th>
+          </tr>
+        </thead>
+        <tbody id="rs-rows"></tbody>
+      </table>
+      <div class="rs-calc__actions">
+        <button type="button" id="rs-add-city">Add city</button>
+        <button type="button" id="rs-add-tribe">Add tribal settlement</button>
+      </div>
+    </div>
+    <script type="application/json" id="rs-calc-data" set:html={JSON.stringify(calcData)}></script>
+  </section>
+
+  <!-- ─── Other ways in ────────────────────────────────────────── -->
+  <section class="rs-sec" id="other">
+    <h2 class="rs-h" data-prose="other.heading" set:html={inline('other.heading')} />
+    <div class="rs-duo">
+      <div>
+        <h3 class="rs-h3" data-prose="disciple.heading" set:html={inline('disciple.heading')} />
+        <div class="rs-body" data-prose="disciple.body" data-prose-blocks set:html={blocks('disciple.body')} />
+        <h3 class="rs-h3" data-prose="tribe.heading" set:html={inline('tribe.heading')} />
+        <div class="rs-body" data-prose="tribe.body" data-prose-blocks set:html={blocks('tribe.body')} />
+        <table class="rs-t rs-t--narrow">
+          <thead><tr><th>Your tribal conversion</th><th class="rs-num">Money</th></tr></thead>
+          <tbody>
+            {[1, 2, 3, 4, 5].map(k => (
+              <tr><td>{['1st', '2nd', '3rd', '4th', '5th'][k - 1]}</td><td class="rs-num"><b>{D.globals.tribeSpreadBase + (k - 1) * D.globals.tribeSpreadPer}</b></td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="rs-h3" data-prose="improvement.heading" set:html={inline('improvement.heading')} />
+        <div class="rs-body" data-prose="improvement.body" data-prose-blocks set:html={blocks('improvement.body')} />
+        <table class="rs-t">
+          <thead><tr><th>Improvement</th><th>Spreads</th></tr></thead>
+          <tbody>
+            {shrineRows.map(r => (
+              <tr>
+                <td><a href={`${base}shrines`}>Shrines</a> <span class="rs-count">×{r.count}</span></td>
+                <td>{r.religionName}</td>
+              </tr>
+            ))}
+            {otherImps.map(r => (
+              <tr>
+                <td class="rs-multi">{r.members.map(m => <span set:html={linkRef(m)} />)}</td>
+                <td>{r.religionName}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3 class="rs-h3">Keeping a religion out</h3>
+    <ul class="rs-list">
+      {D.blockers.map(b => (
+        <li>
+          <span class="rs-list__what" set:html={`${linkRef(b)} (law)`} />
+          <span class="rs-cite">every city of the player refuses the roll for any religion but their state religion · Disciples still work</span>
+        </li>
+      ))}
+      <li>
+        <span class="rs-list__what">Dissent <span class="rs-count">×{D.dissent.length}</span> <i class="rs-dlc">{dissentDlcs.join(', ')}</i></span>
+        <span class="rs-cite">
+          hidden city projects placed by events; same refusal as above while the city has one
+          {suppressCost && ` · removed by the Suppress Dissent project (${suppressCost.value} ${suppressCost.yield.replace('YIELD_', '').toLowerCase()}${D.suppress[0].requiresGovernor ? ', needs a governor' : ''})`}
+        </span>
+      </li>
+      <li>
+        <span class="rs-list__what" set:html={`Purge (${linkRef({ id: 'LAW_ORTHODOXY', name: 'Orthodoxy' })} law, a Disciple of another religion, ${D.globals.purgeOrders} Order)`} />
+        <span class="rs-cite">removes a non-pagan religion other than your state religion from one of your own cities (never from its Holy City) and bans it from returning by the roll · the Disciple survives on a cooldown · the city gains Discontent</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ─── Founding ─────────────────────────────────────────────── -->
+  <section class="rs-sec" id="founding">
+    <h2 class="rs-h" data-prose="found.heading" set:html={inline('found.heading')} />
+    <div class="rs-body" data-prose="found.body" data-prose-blocks set:html={blocks('found.body')} />
+    <table class="rs-t rs-t--wide">
+      <thead><tr><th>Religion</th><th>Requires</th></tr></thead>
+      <tbody>
+        {D.religions.filter(r => r.world && !r.hidden).map(r => (
+          <tr id={`found-${r.slug}`}>
+            <td><a href={religionHref(r.id)}>{r.name}</a>{r.dlc && <i class="rs-dlc">{r.dlc}</i>}</td>
+            <td>{r.prereqs.length ? r.prereqs.map(p => <div set:html={prereqHtml(p)} />) : <span class="rs-faint">nothing</span>}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="rs-note" data-prose="found.pick" set:html={inline('found.pick')} />
+    <table class="rs-t rs-t--narrow2">
+      <thead><tr><th class="rs-num">Weight</th><th>When</th></tr></thead>
+      <tbody>
+        {D.founding.weights.map(w => (
+          <tr><td class="rs-num"><b>{w.value.toLocaleString('en-US')}</b></td><td>{w.text}</td></tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="rs-note" data-prose="found.note" set:html={inline('found.note')} />
+  </section>
+
+  <section class="rs-sec">
+    <h2 class="rs-h" data-prose="code.heading" set:html={inline('code.heading')} />
+    <ul class="rs-list">
+      {codeList.map(c => (
+        <li><span class="rs-list__what">{c.what}</span><span class="rs-cite">{c.where}</span></li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<script>
+  import { winOdds, effectiveD, type Candidate } from '../lib/religion-spread';
+
+  const root = document.getElementById('rs-calc');
+  const dataEl = document.getElementById('rs-calc-data');
+  if (root && dataEl) {
+    const data = JSON.parse(dataEl.textContent || '{}') as {
+      conn: number; religions: { id: string; base: number }[]; maps: { id: string; change: number }[];
+    };
+    const rel = document.getElementById('rs-rel') as HTMLSelectElement;
+    const map = document.getElementById('rs-map') as HTMLSelectElement;
+    const extra = document.getElementById('rs-extra') as HTMLInputElement;
+    const total = document.getElementById('rs-total') as HTMLElement;
+    const body = document.getElementById('rs-rows') as HTMLTableSectionElement;
+
+    type Row = Candidate & { name: string };
+    const rows: Row[] = [
+      { name: 'City 1', distance: 6 },
+      { name: 'City 2', distance: 9 },
+      { name: 'City 3', distance: 14, connected: true },
+      { name: 'Settlement', distance: 8, tribe: true },
+    ];
+    let cityN = 3, tribeN = 1;
+
+    const pct = (p: number) => (p <= 0 ? 'never' : p >= 0.9995 ? '100%' : p < 0.001 ? '<0.1%' : `${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`);
+    const chance = () => {
+      const b = data.religions.find(r => r.id === rel.value)?.base ?? 0;
+      const m = data.maps.find(x => x.id === map.value)?.change ?? 0;
+      const e = Math.max(0, Number(extra.value) || 0);
+      return Math.min(100, b + m + e);
+    };
+
+    const render = () => {
+      const c = chance();
+      total.textContent = `${c}%`;
+      const odds = winOdds(rows, data.conn);
+      body.innerHTML = '';
+      rows.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        const tribe = !!r.tribe;
+        tr.innerHTML = `
+          <td>${r.name}${tribe ? ' <span class="rs-tag">tribe</span>' : ''}</td>
+          <td class="rs-num"><input type="number" min="1" max="200" value="${r.distance}" data-k="distance" aria-label="distance"></td>
+          <td>${tribe ? '<span class="rs-faint">n/a</span>' : `<input type="checkbox" data-k="connected" ${r.connected ? 'checked' : ''} aria-label="connected">`}</td>
+          <td class="rs-num">${tribe ? '<span class="rs-faint">0</span>' : `<input type="number" min="0" max="8" value="${r.religions ?? 0}" data-k="religions" aria-label="religions already there">`}</td>
+          <td class="rs-num">${effectiveD(r, data.conn)}</td>
+          <td class="rs-bar"><span class="rs-bar__fill" style="width:${(odds[i] * 100).toFixed(1)}%" aria-hidden="true"></span><span class="rs-bar__val">${pct(odds[i])}</span></td>
+          <td class="rs-num">${pct((odds[i] * c) / 100)}</td>
+          <td><button type="button" class="rs-x" data-k="remove" aria-label="remove ${r.name}">×</button></td>`;
+        tr.querySelectorAll<HTMLInputElement | HTMLButtonElement>('[data-k]').forEach(el => {
+          const k = el.dataset.k;
+          if (k === 'remove') {
+            el.addEventListener('click', () => { rows.splice(i, 1); render(); });
+          } else if (k === 'connected') {
+            el.addEventListener('change', () => { r.connected = (el as HTMLInputElement).checked; render(); });
+          } else {
+            el.addEventListener('change', () => {
+              const v = Math.max(k === 'distance' ? 1 : 0, Math.trunc(Number((el as HTMLInputElement).value) || 0));
+              (r as any)[k!] = v;
+              render();
+            });
+          }
+        });
+        body.appendChild(tr);
+      });
+    };
+
+    [rel, map, extra].forEach(el => el.addEventListener('change', render));
+    extra.addEventListener('input', render);
+    document.getElementById('rs-add-city')?.addEventListener('click', () => { rows.push({ name: `City ${++cityN}`, distance: 10 }); render(); });
+    document.getElementById('rs-add-tribe')?.addEventListener('click', () => { rows.push({ name: `Settlement ${++tribeN}`, distance: 10, tribe: true }); render(); });
+    render();
+  }
+</script>
+
+<style is:global>
+  .lede { max-width: 120ch; color: var(--text-dim); font-size: 0.82rem; line-height: 1.5; margin: 0 0 0.9rem; }
+  .lede a { color: var(--accent); }
+  .lede b, .lede strong { color: var(--text); }
+
+  .rs-sec { margin: 0 0 1.6rem; }
+  .rs-h {
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.02rem;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border) 70%);
+    padding-bottom: 0.3rem;
+    margin: 0 0 0.45rem;
+  }
+  .rs-h3 {
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.86rem;
+    letter-spacing: 0.02em;
+    margin: 0.6rem 0 0.35rem;
+  }
+  .rs-note { color: var(--text-faint); font-size: 0.76rem; line-height: 1.5; margin: 0 0 0.6rem; max-width: 110ch; }
+  .rs-note a, .rs-body a, .rs-t a, .rs-list a { color: var(--accent); }
+  .rs-body { color: var(--text-dim); font-size: 0.78rem; line-height: 1.55; max-width: 110ch; }
+  .rs-body p { margin: 0 0 0.5rem; }
+  .rs-body ul, .rs-body ol { margin: 0 0 0.6rem; padding-left: 1.2rem; }
+  .rs-body li { margin: 0 0 0.3rem; }
+  .rs-body strong, .rs-note strong, .rs-note b { color: var(--text); }
+  .rs-body code, .rs-note code, .rs-cite code { font-family: var(--font-mono); font-size: 0.92em; color: var(--text-soft); }
+
+  .rs-quad { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem 1.4rem; margin-top: 0.4rem; }
+  .rs-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 1.2rem; }
+  .rs-trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0.9rem; }
+  @media (max-width: 480px) { .rs-duo { grid-template-columns: 1fr; } }
+
+  .fml {
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elev);
+    padding: 0.55rem 0.8rem;
+    margin: 0 0 0.7rem;
+  }
+  .fml__line { display: block; font-family: var(--font-mono); font-size: 0.84rem; color: var(--text); line-height: 1.6; }
+  .fml__meta { color: var(--text-faint); font-size: 0.7rem; margin-top: 0.2rem; }
+
+  .rs-t { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+  .rs-t--narrow { max-width: 16rem; margin-top: 0.3rem; }
+  .rs-t--narrow2 { max-width: 34rem; margin: 0.3rem 0 0.6rem; }
+  .rs-t--wide { max-width: 60rem; margin: 0.3rem 0 0.7rem; }
+  .rs-t th {
+    text-align: left;
+    color: var(--text-dim);
+    font-weight: 500;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.45rem;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .rs-t td { padding: 0.3rem 0.45rem; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
+  .rs-t td b { color: var(--text); font-weight: 600; }
+  .rs-t .rs-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rs-faint { color: var(--text-faint); }
+  .rs-dlc { color: var(--text-faint); font-style: italic; font-size: 0.68rem; margin-left: 0.4rem; }
+  .rs-count { color: var(--text-faint); font-family: var(--font-mono); font-size: 0.66rem; margin-left: 0.3rem; }
+  .rs-cite { display: block; color: var(--text-faint); font-family: var(--font-mono); font-size: 0.66rem; line-height: 1.4; margin-top: 0.15rem; }
+  .rs-multi > span + span:not(.rs-cite)::before { content: ', '; }
+  .rs-tag {
+    display: inline-block;
+    color: var(--text-soft);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 0.64rem;
+    padding: 0 0.4rem;
+    margin-left: 0.35rem;
+  }
+
+  /* position: relative so absolutely placed children (bar fills, the sr-only label) scroll with the box instead of widening the page */
+  .rs-scroll { position: relative; overflow-x: auto; max-width: 100%; }
+  .rs-matrix { width: auto; min-width: 36rem; }
+  .rs-matrix th, .rs-matrix td { padding: 0.28rem 0.5rem; }
+  .rs-matrix .rs-corner { color: var(--text-faint); font-size: 0.66rem; font-weight: 400; }
+  .rs-matrix .rs-rowh { color: var(--text-dim); border-right: 1px solid var(--border-strong); }
+  .rs-matrix .rs-hi { color: var(--text); font-weight: 600; }
+  .rs-matrix .rs-lo { color: var(--text-dim); }
+  .rs-matrix .rs-never { color: var(--text-faint); font-style: italic; }
+  .rs-matrix .rs-na { color: var(--text-ghost); }
+
+  .rs-card { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-elev); padding: 0.55rem 0.75rem; }
+  .rs-card .rs-h3 { margin-top: 0; }
+  .rs-bar { position: relative; min-width: 7rem; }
+  .rs-bar__fill {
+    position: absolute; left: 0.45rem; top: 50%; height: 0.5rem; transform: translateY(-50%);
+    max-width: calc(100% - 3.6rem);
+    background: color-mix(in srgb, var(--accent) 55%, transparent);
+    border-radius: 2px;
+  }
+  .rs-bar__val { position: relative; display: block; text-align: right; color: var(--text); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  .rs-calc { position: relative; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elev); padding: 0.7rem 0.8rem; }
+  .rs-calc__chance { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: flex-end; margin-bottom: 0.6rem; }
+  .rs-calc label { display: flex; flex-direction: column; gap: 0.2rem; color: var(--text-dim); font-size: 0.7rem; }
+  .rs-calc select, .rs-calc input[type=number] {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: 4px; padding: 0.2rem 0.35rem; font: inherit; font-size: 0.76rem;
+  }
+  .rs-calc input[type=number] { width: 4.2rem; text-align: right; }
+  .rs-calc__total { color: var(--text-dim); font-size: 0.8rem; padding-bottom: 0.2rem; }
+  .rs-calc__total b { color: var(--accent); font-size: 0.95rem; }
+  .rs-calc__t { width: auto; min-width: 44rem; }
+  .rs-calc__t .rs-bar { min-width: 12rem; }
+  .rs-calc .rs-scroll, .rs-calc { overflow-x: auto; }
+  .rs-calc__actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+  .rs-calc button {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: 4px; padding: 0.25rem 0.6rem; font: inherit; font-size: 0.74rem; cursor: pointer;
+  }
+  .rs-calc button:hover { border-color: var(--accent); color: var(--accent); }
+  .rs-calc .rs-x { padding: 0 0.45rem; }
+  .rs-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  .rs-list { list-style: none; margin: 0; padding: 0; max-width: 110ch; }
+  .rs-list li { border-left: 2px solid var(--border-strong); padding: 0.25rem 0 0.25rem 0.6rem; margin: 0 0 0.4rem; }
+  .rs-list__what { display: block; color: var(--text); font-size: 0.78rem; line-height: 1.4; }
+</style>

@@ -1,245 +1,62 @@
 ---
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
-import theologyData from '../data/theologies.json';
-import worldRelData from '../data/world_religion_buildings.json';
+import Term from '../components/Term.astro';
 import conversion from '../data/conversion.json';
 
 const base = import.meta.env.BASE_URL;
-
-const { religions, tiers } = theologyData;
-
-// Theology spread modifiers — already in the theologies dataset; isolated
-// here as a quick reference next to the spread formula.
-const spreadModifiers = tiers
-  .flatMap(t => t.theologies.map(th => ({
-    name: th.name,
-    spread: th.spreadChange,
-    tier: t.label,
-  })))
-  .filter(s => s.spread !== 0)
-  .sort((a, b) => b.spread - a.spread);
-
-// Total worship buildings per religion — feeds the founding-prereq sidebar.
-const buildingCount: Record<string, number> = {};
-for (const row of worldRelData.rows) {
-  for (let i = 0; i < worldRelData.religions.length; i++) {
-    const r = worldRelData.religions[i];
-    if (row.cells[i]) {
-      buildingCount[r.slug] = (buildingCount[r.slug] || 0) + 1;
-    }
-  }
-}
-
-// Built-in foundation requirements — pulled from religion.xml via the
-// theology builder. Renders the founder's prerequisite as a chip list.
-function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 'citizens' | 'spec' | 'religion' }[] {
-  const out: { label: string; tone: any }[] = [];
-  if (r.requiresTech) {
-    out.push({ label: r.requiresTech.replace('TECH_', '').replace(/_/g, ' '), tone: 'tech' });
-  }
-  if (r.requiresLaw) {
-    out.push({ label: r.requiresLaw.replace('LAW_', '').replace(/_/g, ' '), tone: 'law' });
-  }
-  if (r.requiresTheologies > 0) {
-    out.push({ label: `${r.requiresTheologies} Theologies`, tone: 'theology' });
-  }
-  if (r.requiresCitizens > 0) {
-    out.push({ label: `${r.requiresCitizens} Citizens (city)`, tone: 'citizens' });
-  }
-  for (const s of r.requiresSpecialists) {
-    out.push({ label: `${s.count}× ${s.label}`, tone: 'spec' });
-  }
-  for (const rr of r.requiresReligions) {
-    const target = religions.find(x => x.id === rr.id);
-    out.push({
-      label: `${rr.count} cities w/ ${target?.name || rr.id.replace('RELIGION_', '').toLowerCase()}`,
-      tone: 'religion',
-    });
-  }
-  if (out.length === 0) out.push({ label: 'No prereqs', tone: 'spec' });
-  return out;
-}
+const sr = conversion.stateReligion;
+const cityYield = sr.cityYields.map(y => `+${y.value} ${y.yield.replace('YIELD_', '').toLowerCase().replace(/^./, c => c.toUpperCase())}`).join(', ');
 ---
 
 <Base
   title="Religious Conversion"
   active="religious-conversion"
   pageMark="🙏"
-  description="How religion spreads in Old World: passive city spread rates, Disciple/Shrine active spread, State Religion mechanics, and the exact family + character conversion scoring sourced from the game's source code."
+  eyebrow="Religion"
+  description="How Old World families and characters choose a religion, with the exact scoring from the game's source code, and what adopting a State Religion costs and gives."
   pageStats={[
-    { label: 'world religions', value: religions.length },
-    { label: 'spread modifiers', value: spreadModifiers.length },
+    { label: 'family cycle', value: `${conversion.family.rotation} turns` },
+    { label: 'character roll', value: `${conversion.globals.characterReligionProb}%` },
+    { label: 'state religion', value: `${sr.costBase}+ Civics` },
   ]}
 >
   <p class="lede">
-    <b>World Religions</b> spread on their own, through a percentage chance
-    rolled every turn, and they spread deliberately when you move a
-    <LinkedText text="Disciple" /> unit. <b>Pagan Religions</b> spread only when
-    you build <LinkedText text="Shrines" />.
+    This page is about <b>people</b>: how your nation picks a State Religion, and how
+    families and characters decide which faith to follow. How a religion gets into a
+    <b>city</b> in the first place (the spread roll, distance to the Holy City,
+    Disciples, shrines, founding) is on <a href={`${base}religious-spread`}>Religious Spread</a>.
   </p>
-
-  <section class="rc-section">
-    <h2 class="rc-h2">Passive spread for World Religions</h2>
-    <p>
-      Every World Religion rolls its own percentage chance each turn to spread to
-      one random City or Tribal Site. The base chance is
-      <code>iSpreadPercent</code> in <code>religion.xml</code>, listed below.
-    </p>
-
-    <table class="rc-table">
-      <thead>
-        <tr>
-          <th>Religion</th>
-          <th class="rc-num">Base %/turn</th>
-          <th class="rc-num">Cost (base + per&nbsp;change)</th>
-          <th>Founding prereqs</th>
-        </tr>
-      </thead>
-      <tbody>
-        {religions.map(r => (
-          <tr id={`r-${r.slug}`}>
-            <td>
-              <a href={`${base}world-religion-buildings#${r.slug}`} class="rc-religion">
-                {r.name}
-              </a>
-            </td>
-            <td class="rc-num"><b>{r.spreadPercent}%</b></td>
-            <td class="rc-num">
-              {r.costBase} + {r.costPerChange}
-              <span class="rc-dim"><LinkedText text="Civics" showIcons={false} /></span>
-            </td>
-            <td>
-              <div class="rc-chips">
-                {reqChips(r).map(c => (
-                  <span class={`rc-chip rc-chip--${c.tone}`}>{c.label}</span>
-                ))}
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-
-    <p class="rc-fineprint">
-      A city is <b>more likely</b> to convert when it is close to the religion's
-      <LinkedText text="Holy City" />, and <b>less likely</b> when it already has
-      one or more religions present. Pagan Religions never roll for passive
-      spread (<code>bNoSpread=1</code>). Each city needs its own new Shrine.
-    </p>
-  </section>
-
-  <section class="rc-section">
-    <h2 class="rc-h2">Active spread with Disciples and Shrines</h2>
-    <div class="rc-twocol">
-      <div class="rc-card">
-        <h3 class="rc-h3"><LinkedText text="Disciple" /> (World Religions)</h3>
-        <p>
-          A Disciple can <b>spread</b> its religion to a settlement, and it can
-          build the religion's <LinkedText text="Monastery" />,
-          <LinkedText text="Temple" />, <LinkedText text="Cathedral" /> and
-          <LinkedText text="Holy Site" />. With <LinkedText text="Orthodoxy" /> it
-          can also <b>Purge</b> a rival religion.
-        </p>
-        <p class="rc-fineprint">
-          You can only train a Disciple in a city that follows its religion, and
-          only when the city is the Holy City, the religion is your State Religion,
-          or you have <LinkedText text="Tolerance" />. Disciples also establish
-          <a href={`${base}theologies`}>Theologies</a>.
-        </p>
-      </div>
-
-      <div class="rc-card">
-        <h3 class="rc-h3"><LinkedText text="Shrine" /> (Pagan Religions)</h3>
-        <p>
-          Each nation has 4 unique Pagan Shrines drawn from a pool of 11 types,
-          e.g. War, Kingship and Wisdom. The <b>first</b> shrine you build founds
-          the nation's pagan religion, and every later shrine in another city
-          spreads it. See the full <a href={`${base}shrines`}>Shrines table</a>.
-        </p>
-        <p class="rc-fineprint">
-          <LinkedText text="Polytheism" /> removes the limit of one shrine per
-          city, and <LinkedText text="Divine Rule" /> lets a Pagan Religion serve
-          as your State Religion.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="rc-section">
-    <h2 class="rc-h2">Theology spread modifiers</h2>
-    <p>
-      Establishing a Theology permanently changes a World Religion's spread chance
-      per turn, everywhere and for every follower. The modifiers add up across
-      tiers, so a religion that takes several of them converts much faster.
-    </p>
-    <table class="rc-table rc-table--narrow">
-      <thead>
-        <tr>
-          <th>Theology</th>
-          <th>Tier</th>
-          <th class="rc-num">Spread %</th>
-        </tr>
-      </thead>
-      <tbody>
-        {spreadModifiers.map(m => (
-          <tr>
-            <td><LinkedText text={m.name} showIcons={false} /></td>
-            <td class="rc-dim">{m.tier}</td>
-            <td class="rc-num">
-              <b class={m.spread > 0 ? 'rc-pos' : 'rc-neg'}>
-                {m.spread > 0 ? '+' : ''}{m.spread}%
-              </b>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </section>
 
   <section class="rc-section">
     <h2 class="rc-h2">State Religion</h2>
     <p>
-      You don't start with a State Religion. Adopting one raises the opinion of
-      its followers and adds <LinkedText text="+1 Happiness" /> in every city of
-      that religion. For a World Religion it also <b>lets you train Disciples</b>
-      there. Each switch costs <code>iCostBase</code> plus
-      <code>iCostPerChange</code> for every switch you made before, counted per
-      religion.
+      You start with no State Religion. You can adopt any religion that at least one of
+      your cities follows. A pagan religion needs the <Term id="LAW_DIVINE_RULE" showIcon={false} />
+      law first, and it stops being your State Religion if that law ends.
     </p>
-    <p class="rc-fineprint" style="font-style:normal">
-      A Pagan Religion cannot be your State Religion by default. You need the
-      <LinkedText text="Divine Rule" /> law to enact one (see
-      <code>bPaganStateReligion</code> in effectPlayer.xml).
-    </p>
-  </section>
-
-  <section class="rc-section">
-    <h2 class="rc-h2">A worked example, Christianity spreading to Jerusalem</h2>
-    <ol class="rc-steps">
+    <ul class="rc-bullets">
       <li>
-        Christianity is founded by the first nation with 3 Jewish cities + the
-        <LinkedText text="Metaphysics" /> tech. The founding city becomes its
-        <LinkedText text="Holy City" />.
+        <b>Cost.</b> {sr.costBase} <LinkedText text="Civics" showIcons={false} />, plus
+        {sr.costPerChange} for every time you have adopted a State Religion before (one count for
+        all religions), rounded down to 10 and never more than {sr.maxCivics.toLocaleString('en-US')}.
       </li>
       <li>
-        Each turn that nation's Christianity rolls a <b>10%</b> chance to spread
-        to one random City or Tribal Site (modified by distance to the Holy
-        City and by theologies like <LinkedText text="Revelation" /> at +20%).
+        <b>Cities.</b> {cityYield} in each of your cities that follows it. A world religion
+        (and Hinduism) also carries a Civics upkeep while it is your State Religion; pagan ones do not.
       </li>
       <li>
-        Once a city has Christianity, it can train <LinkedText text="Disciples" />
-        if the city qualifies, as described above, and a Disciple spreads
-        Christianity to new settlements without a roll and builds religion
-        buildings.
+        <b>Characters.</b> +{sr.opinion} opinion from characters who follow it, −{sr.opinion} from
+        characters of any other religion (−{sr.opinion / 2} if theirs is pagan), doubled for a
+        religion's head. Other nations also judge you by your State Religion.
       </li>
       <li>
-        With the religion as State Religion, the player can establish a
-        <LinkedText text="Theology" /> such as <LinkedText text="Revelation" />,
-        which then applies to every Christian player everywhere and locks that
-        theology slot for the rest of the game.
+        <b>Disciples and theologies.</b> Your cities that follow it can train its Disciples, and only a
+        Disciple of your State Religion can establish a <a href={`${base}theologies`}>Theology</a>
+        (paying its Civics cost and using up the Disciple). What Disciples do is on
+        <a href={`${base}religious-spread#other`}>Religious Spread</a>.
       </li>
-    </ol>
+    </ul>
   </section>
 
   <section class="rc-section">
@@ -437,35 +254,8 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   .rc-num { text-align: right; font-variant-numeric: tabular-nums; }
   .rc-num.rc-num { font-family: var(--font-mono); }
   .rc-num b { color: var(--text); font-weight: 600; }
-  .rc-dim { color: var(--text-faint); margin-left: 0.2rem; font-size: 0.7em; }
 
-  .rc-religion {
-    font-family: var(--font-display);
-    font-weight: 600;
-    color: var(--text);
-    text-decoration: none;
-  }
-  .rc-religion:hover { color: var(--accent); }
 
-  .rc-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-  .rc-chip {
-    font-size: 0.68rem;
-    padding: 0.1rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--bg-elev);
-    color: var(--text-dim);
-  }
-  .rc-chip--tech     { color: #b1b3ff; border-color: rgba(177,179,255,0.3); }
-  .rc-chip--law      { color: #ffdc9a; border-color: rgba(255,220,154,0.3); }
-  .rc-chip--theology { color: #e4c46a; border-color: rgba(228,196,106,0.3); }
-  .rc-chip--citizens { color: #98d28a; border-color: rgba(152,210,138,0.3); }
-  .rc-chip--spec     { color: #c0c2cb; border-color: rgba(192,194,203,0.3); }
-  .rc-chip--religion { color: #d6a8e1; border-color: rgba(214,168,225,0.3); }
 
   .rc-fineprint {
     color: var(--text-faint) !important;
@@ -488,19 +278,7 @@ function reqChips(r: any): { label: string; tone: 'tech' | 'law' | 'theology' | 
   }
   .rc-card p { font-size: 0.8rem; margin: 0.3rem 0; }
 
-  .rc-steps {
-    list-style: decimal inside;
-    color: var(--text-dim);
-    font-size: 0.85rem;
-    line-height: 1.55;
-    max-width: 72ch;
-    padding: 0;
-    margin: 0.5rem 0;
-  }
-  .rc-steps li { padding: 0.25rem 0; }
 
-  .rc-pos { color: #aef2c9; }
-  .rc-neg { color: #f2aeae; }
 
   code {
     font-family: var(--font-mono);
