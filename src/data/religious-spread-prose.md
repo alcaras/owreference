@@ -59,7 +59,7 @@ one almost never does.
 
 1. **Distance.** Count the hexes from the Holy City to the city.
 2. **Connection.** If the city is on the same trade network as the Holy City (the road, river and sea network that decides whether a city is Connected, as seen by the Holy City's owner), multiply that distance by {connPct}% and drop the fraction.
-3. **Religions already there.** Multiply by one more than the number of religions the city already has. A city with one religion counts as twice as far away, a city with two as three times as far.
+3. **Religions already there.** Multiply by one more than the number of religions the city already has. **Every religion counts**: pagan religions, world religions, and the owner's own state religion alike. The game uses the city's plain religion count here, not the count that leaves out the state religion. A city with one religion (even just its nation's pagan faith) counts as twice as far away, a city with two as three times as far.
 4. **The roll.** Call the result D. The game draws a whole number from 1 to D and multiplies D by it. The score is anywhere from D to D × D.
 
 Tribal settlements join the same contest for world religions, but only settlements of the
