@@ -183,17 +183,10 @@ def clean_help(raw: str, labels: "Labels", text: dict[str, str]) -> str:
 # editing humanize.py (kept out of scope for this builder).
 
 def extra_effect_player_lines(ep: ET.Element) -> list[str]:
-    out: list[str] = []
-    v = i(ep, "iVisionChange")
-    if v:
-        out.append(f"{fmt_decimal(v)} Vision for all Units")
-    v = i(ep, "iFamilyOpinionChange")
-    if v:
-        out.append(f"{fmt_decimal(v)} Family Opinion")
-    v = i(ep, "iWorldReligionSpread")
-    if v:
-        out.append(f"+{v}% World Religion Spread Chance")
-    return out
+    # iVisionChange, iFamilyOpinionChange and iWorldReligionSpread used to be
+    # rendered here, but humanize's registry backstop now renders them too, so
+    # each showed twice ("-1 Vision Range" + "-1 Vision for all Units").
+    return []
 
 
 def extra_effect_city_lines(ec: ET.Element, labels: Labels, indexes: dict) -> list[str]:
@@ -618,7 +611,31 @@ def main() -> int:
     for o in occurrences:
         by_dlc[o["dlcLabel"]] = by_dlc.get(o["dlcLabel"], 0) + 1
 
+    # occurrence id → where its card is and what it does, for the event pages:
+    # an event that starts or ends an occurrence links here and shows these
+    # lines as a hover tip. The card slug is the one this page renders
+    # (a calamity family / transformation group shares one card).
+    card_slug: dict[str, str] = {}
+    for fam in families.values():
+        for o in (fam["full"], fam["mitigated"]):
+            if o:
+                card_slug[o["id"]] = fam["slug"]
+    for g in trans_groups.values():
+        for o in g["variants"]:
+            card_slug[o["id"]] = g["slug"]
+    for o in eras:
+        card_slug[o["id"]] = o["slug"]
+    anchors = {}
+    for o in occurrences:
+        tip = (o["effects"] + o["impact"] + o["traits"])[:6] + o["ending"][:2]
+        anchors[o["id"]] = {
+            "name": o["name"].split("~")[0],
+            "href": f"occurrences#{card_slug.get(o['id'], o['slug'])}",
+            "tip": tip,
+        }
+
     payload = {
+        "anchors": anchors,
         "calamityClass": calamity_class,
         "calamityFamilies": list(families.values()),
         "transformations": list(trans_groups.values()),

@@ -179,6 +179,7 @@ def timing(s: ET.Element) -> dict:
 def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[dict]:
     """Both option syntaxes → [{text, requirements, outcomes}]."""
     out: list[dict] = []
+    subs, aliases = m.story_subjects(s)
 
     def link_of(opt: ET.Element) -> list[str]:
         """Every event link this option adds: EventLinkAdd plus each
@@ -202,7 +203,7 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
         out.append({
             "text": m.clean_text(text.get(opt.findtext("Text") or "", "")),
             "requirements": m.option_requirements(opt),
-            "outcomes": m.option_outcomes(opt, eopt_idx, bonus_idx, text),
+            "outcomes": m.option_outcomes(opt, eopt_idx, bonus_idx, text, subs),
             "linkAdds": link_of(opt),
             "raw": m.option_raw(opt, eopt_idx, bonus_idx),
         })
@@ -211,7 +212,8 @@ def options(s: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[
     for opt in s.findall("EventOptions/EventOption"):
         rewards: list[dict] = []
         for p in opt.findall("SubjectBonuses/Pair"):
-            rewards += m.humanize_bonus(p.findtext("Second") or "", bonus_idx, text)
+            rewards += m.humanize_bonus(p.findtext("Second") or "", bonus_idx, text,
+                                        subjects=subs, slot=m.slot_of(p.findtext("First"), aliases))
         out.append({
             "text": m.clean_text(text.get(opt.findtext("Text") or "", "")),
             "requirements": m.option_requirements(opt),
@@ -229,10 +231,13 @@ def build_event(s: ET.Element, group_weight: int, eopt_idx: dict,
     weight = int(s.findtext("iWeight") or "0")
     link_prereq = s.findtext("EventLinkPrereq") or None
 
-    guaranteed: list[str] = []
-    for bz in s.findall("aeBonuses/zValue"):
+    # The event's own bonuses fire as it opens, one per subject slot, before
+    # any choice (PlayerEvent.doEventStory, PlayerEvent.cs:13818).
+    subs, _aliases = m.story_subjects(s)
+    guaranteed: list[dict] = []
+    for i, bz in enumerate(s.findall("aeBonuses/zValue")):
         if bz.text and bz.text != "NONE":
-            guaranteed += m.humanize_bonus(bz.text, bonus_idx, text)
+            guaranteed += m.humanize_bonus(bz.text, bonus_idx, text, subjects=subs, slot=i)
 
     url = (s.findtext("zEventURL") or "").strip() or None
     prob = s.findtext("iProb")

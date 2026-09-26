@@ -354,6 +354,25 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   hardcodes a label against a known content token, or when a retired wrong label
   reappears in generated data. Each of those four is proven to fail by
   reintroducing the defect — a guard that cannot fail is not a guard.
+- **Event bonuses have their own renderer and their own audit.** An event's
+  `aeBonuses` fire the moment it opens, **one bonus per subject slot, before any
+  choice** (`PlayerEvent.doEventStory`, PlayerEvent.cs:13818); an option's fire per
+  slot when picked (`SubjectBonuses` pairs name the slot by index or alias). The
+  game prints them via `HelpText.buildBonusHelpRolePlaying` (the event popup), which
+  the original registry extraction never enumerated, so every occurrence start/end
+  ("Starts Era of Peace", "Starts Civil War for you") and ~60 other fields were
+  silently dropped from event cards. Event/mission rewards go through
+  `build_missions.humanize_bonus` → `scripts/event_bonus.py` (occurrences, war/peace,
+  throne, state religion, laws, subject-aimed lines, phrased from each event's own
+  subject list) → registry backstop (`effects.extra_lines`). Lines that change the
+  whole nation carry `kind: occurrence|nationwide`; cards show them in the "As it
+  opens, before you choose" block (`EventOnOpen.astro`), badge them in the summary
+  (`EventNationBadge.astro`) and can filter to them. `/occurrences` lists the
+  events that start or end each one (`build_occurrence_events.py`).
+  `audit_coverage.py` fails if HelpText.Bonus.cs reads a bonus member the registry
+  lacks (fix: `python3 scripts/extract_bonus_help_fields.py`, which adds entries,
+  never removes) or if any populated bonus field renders no line. Its bonus glob is
+  `bonus-event*.xml`; the old `bonus-event-*.xml` skipped `bonus-event.xml` itself.
 - **Mods folder (`reference/XML/Mods/`) is excluded from the repo** to keep size down. The pipeline only reads from `reference/XML/Infos/`.
 - **`reference/Graphics/` and `reference/Source/`** are excluded too (binary game assets, Unity controllers).
 - **Cognomen tracker OCR — the OCR is reliable; don't blame Tesseract.** On a real F5 capture Tesseract.js read **every digit correctly** (17/17 scoring stats, zero number errors). What looks "garbled" is *gutter noise*, not bad text: bullet glyphs (●) become `e`/`eo`/`®`/`¢`, the left UI rail bleeds in as `J{`/`U`/`|` prefixes, and right-edge game-world text appends junk like `54 C`, `5 in`, `1 Is`. The fix was always in the **parser**, never the image. Don't add OpenCV.js / heavier preprocessing on a hunch — diagnose against a real screenshot first.

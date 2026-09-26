@@ -1,0 +1,51 @@
+---
+// "Started / ended by" backlinks on an occurrence card: the events whose
+// bonuses start or end this occurrence, and whether that happens as the event
+// opens (before any choice) or only for one option. Data: build_occurrence_events.py.
+import links from '../data/occurrence_events.json';
+
+const { ids = [] } = Astro.props as { ids: (string | undefined | null)[] };
+const base = import.meta.env.BASE_URL;
+// Several events share a title (four "The Civil War Continues", five
+// "[character] Reforms"); list each title once per verb/timing with a count,
+// linked to the first.
+const rows: any[] = [];
+const byKey = new Map<string, any>();
+const seenIds = new Set<string>();
+for (const id of ids) {
+  for (const r of ((links as any)[id || ''] || [])) {
+    if (seenIds.has(`${r.verb}|${r.id}`)) continue;
+    seenIds.add(`${r.verb}|${r.id}`);
+    const key = `${r.verb}|${r.when}|${r.name}`;
+    const hit = byKey.get(key);
+    if (hit) hit.count++;
+    else { const row = { ...r, count: 1 }; byKey.set(key, row); rows.push(row); }
+  }
+}
+const groups = [
+  { verb: 'starts', label: 'Started by' },
+  { verb: 'readies', label: 'Readied by' },
+  { verb: 'ends', label: 'Ended by' },
+].map(g => ({ ...g, rows: rows.filter(r => r.verb === g.verb) })).filter(g => g.rows.length);
+---
+{groups.length > 0 && (
+  <div class="occ-evts">
+    {groups.map(g => (
+      <p class="occ-evts__row">
+        <span class="occ-evts__label">{g.label}</span>
+        {g.rows.map((r: any, i: number) => (
+          <>{i > 0 ? ' · ' : ''}{r.href ? <a href={`${base}${r.href}`}>{r.name}</a> : r.name}{r.count > 1 ? ` ×${r.count}` : ''}
+          <span class="occ-evts__when">{r.when === 'opens' ? '(as it opens)' : '(one choice)'}</span></>
+        ))}
+      </p>
+    ))}
+  </div>
+)}
+
+<style is:global>
+  .occ-evts { margin-top: 0.6rem; padding-top: 0.45rem; border-top: 1px solid var(--border); font-size: 0.76rem; color: var(--text-dim); line-height: 1.5; }
+  .occ-evts__row { margin: 0 0 0.2rem; }
+  .occ-evts__label { color: var(--text); font-weight: 600; margin-right: 0.35rem; }
+  .occ-evts a { color: var(--accent); }
+  .occ-evts__when { color: var(--text-faint); font-size: 0.92em; margin-left: 0.2rem; }
+</style>

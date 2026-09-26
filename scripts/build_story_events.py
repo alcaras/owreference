@@ -242,10 +242,13 @@ def build_event(s: ET.Element, pack: str | None, eopt_idx: dict,
     link_prereq = link_prereq if link_prereq and link_prereq != "NONE" else None
     trig = (s.findtext("Trigger") or "").strip()
 
+    # The event's own bonuses fire as it opens, one per subject slot, before
+    # any choice (PlayerEvent.doEventStory, PlayerEvent.cs:13818).
+    subs, _aliases = m.story_subjects(s)
     guaranteed: list[dict] = []
-    for bz in s.findall("aeBonuses/zValue"):
+    for i, bz in enumerate(s.findall("aeBonuses/zValue")):
         if bz.text and bz.text != "NONE":
-            guaranteed += m.humanize_bonus(bz.text, bonus_idx, text)
+            guaranteed += m.humanize_bonus(bz.text, bonus_idx, text, subjects=subs, slot=i)
 
     subjects = [m.subject_label(z.text) for z in s.findall("aeSubjects/zValue") if z.text]
 

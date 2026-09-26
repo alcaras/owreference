@@ -367,6 +367,10 @@
                       {
                         "memory": "MEMORYTRIBE_OFFER",
                         "text": "Remembered: Tribe Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The tribe invade"
                       }
                     ],
                     "weight": null
@@ -412,6 +416,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "25% chance next turn: becomes Strict"
+                      },
+                      {
                         "text": "Gain trait: Slighted",
                         "tip": [
                           "-100 base opinion of this character",
@@ -419,6 +426,9 @@
                           "Cannot hold a job"
                         ],
                         "tipTitle": "Slighted trait"
+                      },
+                      {
+                        "text": "Leave Unit"
                       }
                     ],
                     "weight": null
@@ -570,7 +580,14 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "The unit gains Tracker"
+                      },
+                      {
+                        "text": "The unit gains Ranger"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -613,6 +630,12 @@
                       },
                       {
                         "text": "+20 XP to the character"
+                      },
+                      {
+                        "text": "The unit gains Tracker"
+                      },
+                      {
+                        "text": "The unit gains Ranger"
                       }
                     ],
                     "weight": null
@@ -672,6 +695,10 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "kind": "nationwide",
+                        "text": "Adopts the event's religion as state religion"
+                      },
                       {
                         "base": -60,
                         "per": -15,
@@ -848,6 +875,9 @@
                         "per": 0,
                         "text": "-5 Orders",
                         "yield": "orders"
+                      },
+                      {
+                        "text": "Acquire random Technology"
                       }
                     ],
                     "weight": null
@@ -981,6 +1011,9 @@
                           "Removed as leader"
                         ],
                         "tipTitle": "Ill trait"
+                      },
+                      {
+                        "text": "-10 HP to the unit"
                       }
                     ],
                     "weight": null
@@ -1313,6 +1346,9 @@
                     "rewards": [
                       {
                         "text": "+20 XP to the character"
+                      },
+                      {
+                        "text": "Send the resource to your family as a luxury"
                       }
                     ],
                     "weight": null
@@ -1353,6 +1389,9 @@
                         "memory": "MEMORYFAMILY_SACKED_SCIENTIST",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Sacked irresponsible scientist (+40 opinion for 20 turns)"
+                      },
+                      {
+                        "text": "Leaves Court"
                       }
                     ],
                     "weight": null
@@ -4470,7 +4509,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Add Improvement: Library"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -4572,7 +4615,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Acquire random Technology"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -4692,7 +4739,11 @@
             "conditions": [
               "High Wisdom"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "Acquire random Technology"
+              }
+            ],
             "id": "EVENTSTORY_STEAL_PLAYER_DISCOVERY",
             "minTurns": null,
             "name": "[rival] Discovery",
@@ -4810,6 +4861,11 @@
             "scope": "aiOtherYieldsPer",
             "value": 10,
             "yield": "science"
+          },
+          {
+            "label": "Gain from the target: +30 Science",
+            "scope": "Special",
+            "value": null
           }
         ],
         "weight": 3
@@ -4835,6 +4891,11 @@
           },
           {
             "label": "Remembered: Stole Research (-40 opinion for 40 turns)",
+            "scope": "Special",
+            "value": null
+          },
+          {
+            "label": "Gain from the target: +30 Science",
             "scope": "Special",
             "value": null
           }
@@ -4981,7 +5042,14 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your family head joins the council as Chancellor"
+                      },
+                      {
+                        "text": "Your character joins the council as Ambassador"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -5339,7 +5407,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on their heir (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -5587,7 +5659,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on their heir"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -5981,7 +6057,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Free theology: the event's theology"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -6169,6 +6249,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Influenced By"
+                      },
+                      {
+                        "text": "Tribute to the tribe: 50 Iron, 10 Iron per our city"
                       }
                     ],
                     "weight": null
@@ -6215,6 +6298,10 @@
                       {
                         "memory": "MEMORYTRIBE_OFFER",
                         "text": "Remembered: Tribe Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The tribe invade"
                       }
                     ],
                     "weight": null
@@ -6319,7 +6406,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your leader: no longer Disappointed With your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -6361,7 +6452,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your leader: no longer Estranged From your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -6403,7 +6498,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your leader: no longer Vengeful Against your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -6449,6 +6548,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Your leader: no longer Estranged From your leader's spouse"
+                      },
                       {
                         "text": "Gain trait: Loyal",
                         "tip": [
@@ -6944,6 +7046,9 @@
                         "tipTitle": "Ruthless trait"
                       },
                       {
+                        "text": "Your character joins the council as Ambassador"
+                      },
+                      {
                         "text": "Leader relationship: Influenced By"
                       },
                       {
@@ -7129,6 +7234,9 @@
                         "tipTitle": "Ruthless trait"
                       },
                       {
+                        "text": "Your character joins the council as Ambassador"
+                      },
+                      {
                         "text": "Leader relationship: Influenced By"
                       },
                       {
@@ -7312,6 +7420,9 @@
                           "+40 opinion with same-trait characters"
                         ],
                         "tipTitle": "Ruthless trait"
+                      },
+                      {
+                        "text": "Your character joins the council as Chancellor"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
@@ -7880,7 +7991,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your courtier joins the nation of the rival nation"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -14291,6 +14406,9 @@
                       },
                       {
                         "text": "Leader relationship: Influenced By"
+                      },
+                      {
+                        "text": "Your character becomes governor of your city"
                       }
                     ],
                     "weight": null
@@ -14591,6 +14709,9 @@
                         "text": "Leader relationship: Influenced By"
                       },
                       {
+                        "text": "Archetype becomes Zealot"
+                      },
+                      {
                         "text": "Converts to the target religion"
                       }
                     ],
@@ -14787,6 +14908,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Endeared To"
+                      },
+                      {
+                        "text": "Your leader gains the trait"
                       }
                     ],
                     "weight": null
@@ -15207,7 +15331,11 @@
             "conditions": [
               "Adult"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "The rival nation acquires the tech"
+              }
+            ],
             "id": "EVENTSTORY_TECH_INFLUENCE_OF_IDEAS",
             "minTurns": null,
             "name": "Influential Ideas",
@@ -15837,6 +15965,9 @@
                         "per": -35,
                         "text": "-100 Food (-35/city)",
                         "yield": "food"
+                      },
+                      {
+                        "text": "Archetype becomes Diplomat"
                       }
                     ],
                     "weight": null
@@ -16082,7 +16213,14 @@
               "Non Successor",
               "Religion"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "Your leader's child: In Love With the character"
+              },
+              {
+                "text": "The character: In Love With your leader's child"
+              }
+            ],
             "id": "EVENTSTORY_INTERCESSION_ELOPEMENT",
             "minTurns": null,
             "name": "Intercessional Elopement",
@@ -16259,6 +16397,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "Peace with the rival nation"
                       },
                       {
                         "memory": "MEMORYFAMILY_ACCEPTED_TRUCE",
@@ -16498,6 +16640,9 @@
                         "text": "Leader relationship: Influenced By"
                       },
                       {
+                        "text": "The character becomes head of the religion"
+                      },
+                      {
                         "text": "The character is killed"
                       },
                       {
@@ -16615,7 +16760,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on the character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -16844,6 +16993,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Interceded For"
+                      },
+                      {
+                        "text": "+1 Disciples of the religion"
                       }
                     ],
                     "weight": null
@@ -18845,7 +18997,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your leader: In Love With your family head"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -19233,6 +19389,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Influenced By"
+                      },
+                      {
+                        "text": "Carries out Assassinate on your family head"
                       }
                     ],
                     "weight": null
@@ -21286,6 +21445,9 @@
                         "per": -15,
                         "text": "-60 Civics (-15/city)",
                         "yield": "civics"
+                      },
+                      {
+                        "text": "The religion spreads to your city"
                       }
                     ],
                     "weight": null
@@ -21354,7 +21516,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "The religion spreads to your city"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -21925,6 +22091,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "The religion spreads to your city"
+                      },
+                      {
                         "base": -160,
                         "per": -40,
                         "text": "-160 Money (-40/city)",
@@ -22251,7 +22420,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Archetype becomes Zealot"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -22747,7 +22920,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Free theology: the event's theology"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -23097,7 +23274,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Archetype becomes Zealot"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -23123,7 +23304,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Archetype becomes Judge"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -24305,6 +24490,9 @@
                     "rewards": [
                       {
                         "text": "-1 Legitimacy"
+                      },
+                      {
+                        "text": "Your character is renamed Shadowlightning, Foe of the Unworthy"
                       }
                     ],
                     "weight": null
@@ -24577,6 +24765,9 @@
                         "memory": "MEMORYCHARACTER_GP_PROMOTION",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Promoted to a higher title (+40 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "Your leader's spouse is granted the title Overseer"
                       }
                     ],
                     "weight": null
@@ -24625,6 +24816,9 @@
                         "memory": "MEMORYCHARACTER_GP_PROMOTION",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Promoted to a higher title (+40 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "Your leader's spouse is granted the title Venerated"
                       }
                     ],
                     "weight": null
@@ -24669,6 +24863,9 @@
                         "memory": "MEMORYCHARACTER_GP_PROMOTION",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Promoted to a higher title (+40 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "Your leader's spouse is granted the title Steward"
                       }
                     ],
                     "weight": null
@@ -24983,6 +25180,9 @@
             "guaranteed": [
               {
                 "text": "The character is killed"
+              },
+              {
+                "text": "A new character joins your nation"
               }
             ],
             "id": "EVENTSTORY_LEGITIMIZE_BASTARDS_BODY",
@@ -25019,7 +25219,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "50% chance next turn: becomes Foolish"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -25212,6 +25416,9 @@
                     "rewards": [
                       {
                         "text": "+1 Wisdom"
+                      },
+                      {
+                        "text": "25% chance next turn: becomes Miserable"
                       }
                     ],
                     "weight": null
@@ -25348,7 +25555,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Abdicate Throne (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -25516,6 +25727,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Your leader marries your character"
+                      },
                       {
                         "text": "Leader relationship: Influenced By"
                       }
@@ -25823,6 +26037,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "You declare war on the rival nation"
                       }
                     ],
                     "weight": null
@@ -25882,6 +26100,9 @@
                     "rewards": [
                       {
                         "text": "The marriage is dissolved"
+                      },
+                      {
+                        "text": "Has an Illegitimate Child"
                       }
                     ],
                     "weight": null
@@ -26029,6 +26250,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Lover Of"
+                      },
+                      {
+                        "text": "The character marries your leader"
                       }
                     ],
                     "weight": null
@@ -26151,6 +26375,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Lover Of"
+                      },
+                      {
+                        "text": "The character marries your leader"
                       }
                     ],
                     "weight": null
@@ -26359,7 +26586,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your character marries your leader"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -26742,7 +26973,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -26807,6 +27042,10 @@
                       {
                         "memory": "MEMORYTRIBE_OFFER",
                         "text": "Remembered: Tribe Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The tribe invade"
                       }
                     ],
                     "weight": null
@@ -27508,7 +27747,11 @@
               "Low Wisdom",
               "Player Very Close"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "+8 border tiles"
+              }
+            ],
             "id": "EVENTSTORY_INFILTRATION_DOUBLE_AGENT",
             "minTurns": null,
             "name": "Double Agent",
@@ -27567,6 +27810,9 @@
                     "rewards": [
                       {
                         "text": "Reveals the target player's territory"
+                      },
+                      {
+                        "text": "+3 border tiles"
                       }
                     ],
                     "weight": null
@@ -28823,7 +29069,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Imprison on your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -28853,6 +29103,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Owes Favor To"
+                      },
+                      {
+                        "text": "Your leader: no longer Plotting Against your character"
                       }
                     ],
                     "weight": null
@@ -29661,6 +29914,10 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "kind": "nationwide",
+                        "text": "Your leader abdicates the throne"
+                      },
                       {
                         "text": "+40 XP to the character"
                       }
@@ -30539,7 +30796,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Tribute to the rival nation: 500 Money, 100 Money per our city"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -30573,6 +30834,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The rival nation declares war on you"
                       }
                     ],
                     "weight": null
@@ -30720,7 +30985,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on your character (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -31094,6 +31363,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Your leader: no longer Suspicious Of your character"
+                      },
+                      {
                         "text": "Gain trait: Cunning",
                         "tip": [
                           "As leader: +20 Foreign/Tribal Leader Opinions",
@@ -31252,6 +31524,9 @@
                         "memory": "MEMORYFAMILY_THE_LUTE_PLAYER",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Sent your condolences (+20 opinion for 20 turns)"
+                      },
+                      {
+                        "text": "Send the resource to your family as a luxury"
                       }
                     ],
                     "weight": null
@@ -31307,7 +31582,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on the character (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -31845,6 +32124,9 @@
                         "memory": "MEMORYPLAYER_SWAYED_OUR_AGENT",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Swayed our agent (-80 opinion for 20 turns)"
+                      },
+                      {
+                        "text": "Their character joins the nation of your leader"
                       }
                     ],
                     "weight": null
@@ -32173,6 +32455,9 @@
                       },
                       {
                         "text": "The character is killed"
+                      },
+                      {
+                        "text": "Their character: Assassinated By your agent"
                       },
                       {
                         "text": "Leader relationship: Suspicious Of"
@@ -32532,7 +32817,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your character becomes agent in their city"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -32625,6 +32914,9 @@
                           "Cannot hold a job"
                         ],
                         "tipTitle": "Slighted trait"
+                      },
+                      {
+                        "text": "Resign as Council"
                       }
                     ],
                     "weight": null
@@ -32654,7 +32946,11 @@
           {
             "cmEligible": null,
             "conditions": [],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "Leave role of Agent in City"
+              }
+            ],
             "id": "EVENTSTORY_TREACHERY_STEAL_AWAY",
             "minTurns": null,
             "name": "Steal Away",
@@ -32760,6 +33056,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Estranged From"
+                      },
+                      {
+                        "text": "Archetype becomes Diplomat"
                       }
                     ],
                     "weight": null
@@ -32923,6 +33222,9 @@
                     "rewards": [
                       {
                         "text": "+60 XP to the character"
+                      },
+                      {
+                        "text": "Carries out Assassinate on their character"
                       }
                     ],
                     "weight": null
@@ -32966,7 +33268,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Rally Troops (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -33163,7 +33469,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Their character joins the nation of you"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -33195,6 +33505,9 @@
                         "per": 10,
                         "text": "+40 Science (+10/city)",
                         "yield": "science"
+                      },
+                      {
+                        "text": "Their character joins the nation of you"
                       }
                     ],
                     "weight": null
@@ -33441,7 +33754,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Slander Nation on the rival nation"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -33551,7 +33868,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "1 improvement destroyed"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -33979,6 +34300,9 @@
                         "eachCity": 60,
                         "text": "+60 Discontent (city)",
                         "yield": "discontent"
+                      },
+                      {
+                        "text": "Your character joins the nation of the rival nation"
                       }
                     ],
                     "weight": null
@@ -34058,7 +34382,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Their character joins the nation of you"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -34172,6 +34500,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Their character joins the nation of you"
+                      },
+                      {
                         "text": "The character is killed"
                       }
                     ],
@@ -34209,6 +34540,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Their character joins the nation of you"
+                      },
                       {
                         "text": "Leader relationship: Terrified Of"
                       }
@@ -34706,7 +35040,14 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Leave role of Agent in City"
+                      },
+                      {
+                        "text": "Add Agent Network"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -34958,6 +35299,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Leave role of Agent in City"
+                      },
+                      {
                         "text": "Gain trait: Hero Armour"
                       }
                     ],
@@ -35058,6 +35402,9 @@
                         "memory": "MEMORYPLAYER_GIFTED_TECH",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Gave us new technology (+40 opinion for 40 turns)"
+                      },
+                      {
+                        "text": "The rival nation acquires the tech"
                       }
                     ],
                     "weight": null
@@ -35683,7 +36030,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Free theology: the event's theology"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -35733,6 +36084,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Starts ambition: Control Four Temple"
+                      },
                       {
                         "text": "Leader relationship: Influenced By"
                       }
@@ -35977,6 +36331,9 @@
                           "Cannot hold a job"
                         ],
                         "tipTitle": "Exiled trait"
+                      },
+                      {
+                        "text": "Your character becomes head of your state religion"
                       }
                     ],
                     "weight": null
@@ -36316,7 +36673,12 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "kind": "nationwide",
+                        "text": "Adopts the event's religion as state religion"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -36596,7 +36958,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "+1 Disciples of the religion"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -36625,6 +36991,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Endeared To"
+                      },
+                      {
+                        "text": "Starts ambition: Spread Religion Religion (x8)"
                       }
                     ],
                     "weight": null
@@ -36680,6 +37049,9 @@
                         "memory": "MEMORYRELIGION_RELIGION_OPINION_GOOD",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Honored our beliefs (+40 opinion for 40 turns)"
+                      },
+                      {
+                        "text": "Carries out National Peace on the rival nation"
                       }
                     ],
                     "weight": null
@@ -36767,6 +37139,9 @@
                         "memory": "MEMORYRELIGION_CONDEMNED_CADAVER",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Condemned the cadaver (+20 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "The late character is granted the title False Leader"
                       }
                     ],
                     "weight": null
@@ -37594,6 +37969,9 @@
                         "memory": "MEMORYFAMILY_GAVE_AWAY_CITY",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Gave away our City (-80 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "Your family gains your city"
                       }
                     ],
                     "weight": null
@@ -37730,6 +38108,9 @@
                         "memory": "MEMORYFAMILY_RECEIVED_GIFT",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Received gift from ruler (+20 opinion for 40 turns)"
+                      },
+                      {
+                        "text": "Send the resource to your family as a luxury"
                       }
                     ],
                     "weight": null
@@ -37945,6 +38326,9 @@
                           "Cannot hold a job"
                         ],
                         "tipTitle": "Slighted trait"
+                      },
+                      {
+                        "text": "Resign as Council"
                       },
                       {
                         "text": "Gain trait: Strict",
@@ -38923,6 +39307,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Your leader: no longer Plotting Against your character"
+                      },
+                      {
                         "eachCity": 60,
                         "text": "+60 Happiness (city)",
                         "yield": "happiness"
@@ -38998,7 +39385,14 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Free theology: the event's theology"
+                      },
+                      {
+                        "text": "Free Agent Network in all Holy Cities"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -39329,6 +39723,9 @@
                         "eachCity": 120,
                         "text": "+120 Happiness (city)",
                         "yield": "happiness"
+                      },
+                      {
+                        "text": "Leave Governorship of City"
                       }
                     ],
                     "weight": null
@@ -39634,6 +40031,9 @@
                         "eachCity": 80,
                         "text": "+80 Happiness (city)",
                         "yield": "happiness"
+                      },
+                      {
+                        "text": "Your character becomes governor of your city"
                       }
                     ],
                     "weight": null
@@ -40354,6 +40754,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Your character joins the nation of the rival nation"
+                      },
+                      {
                         "text": "-4 Legitimacy"
                       }
                     ],
@@ -40398,6 +40801,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "You declare war on the rival nation"
                       },
                       {
                         "text": "Gain trait: Imprisoned",
@@ -41596,6 +42003,9 @@
             "guaranteed": [
               {
                 "text": "+60 XP to the character"
+              },
+              {
+                "text": "Your character: Estranged From your heir"
               }
             ],
             "id": "EVENTSTORY_TUTOR_UNTEACHABLE",
@@ -41963,7 +42373,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Add Improvement: Courthouse"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -42688,7 +43102,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your character: Endeared To your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -43490,7 +43908,21 @@
             "conditions": [
               "Debauched"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "href": "occurrences#era-of-decadence",
+                "kind": "occurrence",
+                "occurrence": "OCCURRENCE_ERA_OF_DECADENCE",
+                "occurrenceVerb": "starts",
+                "text": "Starts Era of Decadence for you",
+                "tip": [
+                  "Characters: 2% chance/turn to become Debauched",
+                  "Characters: 3% chance/turn to become Drunk",
+                  "Chance to end grows by 2% each turn"
+                ],
+                "tipTitle": "Era of Decadence"
+              }
+            ],
             "id": "EVENTSTORY_ERA_OF_DECADENCE",
             "minTurns": null,
             "name": "Era of Decadence",
@@ -43580,6 +44012,10 @@
                       {
                         "memory": "MEMORYTRIBE_OFFER",
                         "text": "Remembered: Tribe Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "Alliance with the tribe"
                       }
                     ],
                     "weight": null
@@ -43761,6 +44197,9 @@
                         "text": "Loses trait: Stressed"
                       },
                       {
+                        "text": "Archetype becomes Zealot"
+                      },
+                      {
                         "text": "Gain a Court Minister"
                       }
                     ],
@@ -43915,7 +44354,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Divorce Spouse on your character (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -44126,6 +44569,10 @@
                     "rewards": [
                       {
                         "text": "Loses trait: Stressed"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "Your leader abdicates the throne"
                       }
                     ],
                     "weight": null
@@ -44184,6 +44631,10 @@
               {
                 "memory": "MEMORYPLAYER_OFFER",
                 "text": "Remembered: Player Offer (5 turns)"
+              },
+              {
+                "kind": "nationwide",
+                "text": "You declare war on the rival nation"
               },
               {
                 "text": "Steam achievement: Behind The Throne Whats The Worst That Happens"
@@ -44636,6 +45087,21 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "href": "occurrences#civil-war",
+                        "kind": "occurrence",
+                        "occurrence": "OCCURRENCE_CIVIL_WAR",
+                        "occurrenceVerb": "starts",
+                        "text": "Starts Civil War for you",
+                        "tip": [
+                          "-1 Vision Range",
+                          "+10% Rebel Chance",
+                          "5% chance to pillage each improvement on affected tiles",
+                          "Characters: 5% chance/turn to become Ambushed By Rebels",
+                          "Does not end on its own"
+                        ],
+                        "tipTitle": "Civil War"
+                      },
+                      {
                         "text": "Gain trait: The Uncrowned",
                         "tip": [
                           "Cannot hold a job"
@@ -44728,7 +45194,14 @@
             "conditions": [
               "Player Max Near"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "The rival nation gains your city"
+              },
+              {
+                "text": "Your character joins the nation of the rival nation"
+              }
+            ],
             "id": "EVENTSTORY_NEXT_BEST_THING",
             "minTurns": null,
             "name": "[rival] Interference",
@@ -44746,6 +45219,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The rival nation declares war on you"
                       }
                     ],
                     "weight": null
@@ -44839,7 +45316,12 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "kind": "nationwide",
+                        "text": "Your leader abdicates the throne"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -45056,6 +45538,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "50% chance next turn: becomes Blessed"
+                      },
+                      {
                         "text": "Converts to the target religion"
                       }
                     ],
@@ -45134,6 +45619,9 @@
                       {
                         "memory": "MEMORYCHARACTER_GRAND_VIZIER",
                         "text": "Remembered: Grand Vizier (88 turns)"
+                      },
+                      {
+                        "text": "The character joins the council as Grand Vizier"
                       }
                     ],
                     "weight": null
@@ -45203,6 +45691,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Add Improvement: Estates"
+                      },
                       {
                         "text": "Begin project: Bucolic Reputation"
                       },
@@ -45553,6 +46044,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "25% chance next turn: becomes Affable"
+                      },
                       {
                         "text": "Leader relationship: Owes Favor To"
                       }
@@ -46269,6 +46763,11 @@
             "label": "Remembered: Led a delegation to confer with me (+40 opinion for 20 turns) (no event currently keys off this)",
             "scope": "Special",
             "value": null
+          },
+          {
+            "label": "Gain from the target: +50 Science",
+            "scope": "Special",
+            "value": null
           }
         ],
         "weight": 1
@@ -46308,6 +46807,11 @@
             "label": "Remembered: Led a delegation to confer with me (+40 opinion for 20 turns) (no event currently keys off this)",
             "scope": "Special",
             "value": null
+          },
+          {
+            "label": "Gain from the target: +50 Civics",
+            "scope": "Special",
+            "value": null
           }
         ],
         "weight": 1
@@ -46345,6 +46849,11 @@
           },
           {
             "label": "Remembered: Led a delegation to confer with me (+40 opinion for 20 turns) (no event currently keys off this)",
+            "scope": "Special",
+            "value": null
+          },
+          {
+            "label": "Gain from the target: +200 Money",
             "scope": "Special",
             "value": null
           }

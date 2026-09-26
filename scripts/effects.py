@@ -106,7 +106,7 @@ def resolve_token(token: str, indexes: dict | None) -> str:
                 name_key = entry.findtext("Name") or entry.findtext("GenderedName") or ""
                 nice = text_idx.get(name_key, "")
                 if nice:
-                    return nice
+                    return _clean_text(nice)
     return _title_token(token)
 
 
@@ -237,6 +237,8 @@ def _fill_template(spec: dict, value: str) -> str | None:
     if "\x00" in out or "{" in out:  # bare un-hinted slot left — not safe
         return None
     out = _clean_text(out)
+    # A percent value filled into a "{0_value}%" slot would print "+10%%".
+    out = out.replace("%%", "%")
     return re.sub(r"\s{2,}", " ", out).strip() or None
 
 
@@ -260,6 +262,9 @@ def extra_lines(
         spec = reg[key]
         field = spec.get("xmlField") or key
         if field in seen_fields or field in exclude or field in SKIP_FIELDS.get(section, set()):
+            continue
+        if spec.get("qualifies"):
+            # Modifies another field's line (e.g. bIgnoreDelayTurns); no line of its own.
             continue
         seen_fields.add(field)
         el = entry.find(field)

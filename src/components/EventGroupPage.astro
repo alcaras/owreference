@@ -5,6 +5,9 @@
 // default slot so each page supplies its own intro copy.
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
+import EventOnOpen from './EventOnOpen.astro';
+import { nationSummary } from '../lib/event-effects';
+import EventNationBadge from './EventNationBadge.astro';
 import RewardChip from '../components/RewardChip.astro';
 import ScaleHelp from '../components/ScaleHelp.astro';
 import OptionRaw from '../components/OptionRaw.astro';
@@ -63,6 +66,7 @@ function searchBlob(ev: EventStory): string {
 }
 
 const followups = sec.events.filter(e => e.isFollowup).length;
+const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.length + n.inOptions.length > 0; };
 ---
 
 <Base title={title} active={active} pageMark={pageMark} pageStats={[
@@ -79,6 +83,12 @@ const followups = sec.events.filter(e => e.isFollowup).length;
     <input type="search" id="evt-search" class="evt-filter__search"
            placeholder="Filter events by name, reward or condition…" autocomplete="off"
            aria-label="Filter events" />
+    {sec.events.some(hasNation) && (
+      <label class="evt-filter__nation" title="Events that start or end an occurrence (Era of Peace, Civil War, a calamity), declare war or peace, change the throne, the state religion or a law">
+        <input type="checkbox" id="evt-nation" />
+        Only events that change the whole nation <span class="evt-filter__count">({sec.events.filter(hasNation).length})</span>
+      </label>
+    )}
     <div class="mode-toggle" role="radiogroup" aria-label="Detail level">
       <button type="button" class="mode-toggle__btn is-active" data-evmode="raw" role="radio" aria-checked="true">Raw XML</button>
       <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Humanized</button>
@@ -92,10 +102,12 @@ const followups = sec.events.filter(e => e.isFollowup).length;
 
   <div class="evt-list evtmode" data-mode="raw" id="evtmode">
     {sec.events.map(ev => (
-      <details class={`evt yield-${cardYield(ev)}`} id={ev.id} data-search={searchBlob(ev)}>
+      <details class={`evt yield-${cardYield(ev)}`} id={ev.id} data-search={searchBlob(ev)}
+               data-nation={hasNation(ev) ? '1' : undefined}>
         <summary class="evt__summary">
           <span class="evt__name">{ev.name}</span>
           <span class="evt__meta">
+            <EventNationBadge ev={ev} />
             <span class="chip--trigger">{ev.trigger}</span>
             <span
               class={`chip--cm ${(ev as any).cmEligible !== false ? 'chip--cm-yes' : 'chip--cm-no'}`}
@@ -139,12 +151,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
             </div>
           )}
 
-          {ev.guaranteed.length > 0 && (
-            <div class="evt__guaranteed">
-              <span class="evt__label">Always</span>
-              {ev.guaranteed.map((g: any) => <RewardChip reward={g} />)}
-            </div>
-          )}
+          <EventOnOpen rewards={ev.guaranteed || []} />
 
           {ev.options.length > 0 && (
             <ul class="evt__opts">
@@ -213,15 +220,20 @@ const followups = sec.events.filter(e => e.isFollowup).length;
       const search = document.getElementById('evt-search');
       const note = document.getElementById('evt-note');
       const cards = Array.from(document.querySelectorAll('.evt'));
+      const nationBox = document.getElementById('evt-nation');
       function apply() {
         const q = (search.value || '').trim().toLowerCase();
+        const nationOnly = !!(nationBox && nationBox.checked);
         let shown = 0;
         for (const card of cards) {
-          const ok = !q || (card.dataset.search || '').includes(q);
+          const ok = (!q || (card.dataset.search || '').includes(q)) && (!nationOnly || card.dataset.nation === '1');
           card.hidden = !ok;
           if (ok) shown++;
         }
-        if (q) {
+        if (nationOnly && !q) {
+          note.hidden = false;
+          note.textContent = shown + ' event' + (shown === 1 ? '' : 's') + ' change the whole nation.';
+        } else if (q) {
           note.hidden = false;
           note.textContent = shown === 0
             ? 'No events match "' + search.value + '".'
@@ -231,6 +243,7 @@ const followups = sec.events.filter(e => e.isFollowup).length;
         }
       }
       search.addEventListener('input', apply);
+      if (nationBox) nationBox.addEventListener('change', apply);
 
       // Deep links (#EVENTSTORY_…) land on a <details> card — open it so the
       // follow-up/lead-to link actually reveals the target event.
@@ -289,6 +302,8 @@ const followups = sec.events.filter(e => e.isFollowup).length;
       color: var(--text); padding: 0.5rem 0.8rem; font-size: 0.88rem; font-family: var(--font-body);
     }
     .evt-filter__search:focus { outline: none; border-color: var(--accent); }
+    .evt-filter__nation { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--text-dim); cursor: pointer; }
+    .evt-filter__count { color: var(--text-faint); }
     .evt-filter__note { font-size: 0.8rem; color: var(--text-faint); margin: 0 0 0.6rem; font-style: italic; }
 
     .evt-list { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.9rem; }

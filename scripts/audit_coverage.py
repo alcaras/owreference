@@ -36,7 +36,10 @@ FILES = {
     "effectCity": ["effectCity.xml"],
     "effectPlayer": ["effectPlayer.xml"],
     "effectUnit": ["effectUnit.xml"],
-    "bonus": ["bonus.xml"] + sorted(p.name for p in XML_DIR.glob("bonus-event-*.xml")),
+    # bonus-event*.xml, not bonus-event-*.xml: the plain bonus-event.xml (the
+    # largest event file, home of every BONUS_OCCURRENCE_* start/end) was
+    # outside the old glob.
+    "bonus": ["bonus.xml"] + sorted(p.name for p in XML_DIR.glob("bonus-event*.xml")),
 }
 
 # Bookkeeping fields that aren't effects at all.
@@ -86,6 +89,55 @@ def handled_fields() -> dict[str, set[str]]:
     return out
 
 
+def event_bonus_checks(registry: dict) -> int:
+    """Two checks for the event/mission reward path (build_missions.humanize_bonus),
+    which is a separate renderer from humanize.py and once dropped every
+    occurrence start/end ("Starts Era of Peace", "Ends Civil War") silently:
+
+    1. Registry completeness: every bonus member the game's help code reads
+       (HelpText.Bonus.cs, all renderers incl. the event popup's
+       buildBonusHelpRolePlaying) must have a registry entry, or nothing can
+       notice that we drop it. Fix: python3 scripts/extract_bonus_help_fields.py
+    2. Nothing unrendered: run humanize_bonus over every bonus; a populated
+       field that neither the curated code nor the registry backstop could
+       turn into a line is a drop.
+    """
+    import re
+    failures = 0
+    help_cs = ROOT / "reference" / "Source" / "Base" / "Game" / "GameCore" / "HelpText" / "HelpText.Bonus.cs"
+    print("── bonus (events & missions: build_missions.humanize_bonus)")
+    if help_cs.exists():
+        members = set(re.findall(r"bonus\(eBonus\)\.(m[a-zA-Z]+)", help_cs.read_text(errors="replace")))
+        missing = sorted(members - set(registry.get("bonus", {})))
+        if missing:
+            failures += len(missing)
+            print("  ✗ game help code reads bonus fields the registry lacks "
+                  "(run scripts/extract_bonus_help_fields.py):")
+            for mem in missing:
+                print(f"    {mem}")
+    else:
+        print("  · reference/Source missing — registry completeness not checked")
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import effects  # type: ignore
+    import build_missions as bm  # type: ignore
+    effects.UNRENDERED.clear()
+    bonus_idx = bm.bonus_index()
+    text = bm.load_text()
+    for z in bonus_idx:
+        bm.humanize_bonus(z, bonus_idx, text)
+    unrendered = sorted(f for f in effects.UNRENDERED.get("bonus", set()) if f not in bm.HANDLED_BONUS_FIELDS)
+    if unrendered:
+        failures += len(unrendered)
+        print("  ✗ populated bonus fields no renderer could turn into a line "
+              "(curate them in scripts/event_bonus.py):")
+        for f in unrendered:
+            print(f"    {f}")
+    if not failures:
+        print(f"  ✓ {len(bonus_idx)} bonuses render; registry covers every field HelpText.Bonus.cs reads")
+    return failures
+
+
 def main() -> int:
     warn_only = "--warn-only" in sys.argv
     registry = json.loads(REGISTRY.read_text()) if REGISTRY.exists() else {}
@@ -116,6 +168,8 @@ def main() -> int:
             print(f"  · not rendered by game either: {', '.join(hidden)}")
         if dead:
             print(f"  · handled but unused in current XML: {', '.join(dead)}")
+
+    failures += event_bonus_checks(registry)
 
     if not REGISTRY.exists():
         print("⚠ scripts/data/helptext_registry.json missing — ran in degraded mode "

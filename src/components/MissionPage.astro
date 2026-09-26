@@ -1,6 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
+import EventOnOpen from './EventOnOpen.astro';
+import { nationSummary } from '../lib/event-effects';
+import EventNationBadge from './EventNationBadge.astro';
 import RewardChip from '../components/RewardChip.astro';
 import OptionRaw from '../components/OptionRaw.astro';
 import { classifyYield, yieldColors } from '../lib/entities';
@@ -27,6 +30,7 @@ const durationLabel = instant
   ? 'Instant'
   : `${turnsLabel} turn${mission.turns === 1 && !mission.turnsScaled ? '' : 's'}`;
 const eventGroups = mission.eventGroups || [];
+const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.length + n.inOptions.length > 0; };
 ---
 
 <Base title={mission.name} active={active} pageMark={pageMark} pageStats={[
@@ -278,10 +282,11 @@ const eventGroups = mission.eventGroups || [];
             || ev.options.flatMap((o: any) => o.outcomes.flatMap((oc: any) => oc.rewards)).map(ry).find(Boolean)
             || 'misc').toLowerCase();
           return (
-            <details class={`evt yield-${evYield}`}>
+            <details class={`evt yield-${evYield}`} data-nation={hasNation(ev) ? '1' : undefined}>
               <summary class="evt__summary">
                 <span class="evt__name">{ev.name}</span>
                 <span class="evt__meta">
+                  <EventNationBadge ev={ev} />
                   <span
                     class={`chip--cm ${(ev as any).cmEligible !== false ? 'chip--cm-yes' : 'chip--cm-no'}`}
                     title={(ev as any).cmEligible !== false
@@ -294,12 +299,7 @@ const eventGroups = mission.eventGroups || [];
                 </span>
               </summary>
               <div class="evt__body">
-                {ev.guaranteed.length > 0 && (
-                  <div class="evt__guaranteed">
-                    <span class="evt__label">Always</span>
-                    {ev.guaranteed.map((g: any) => <RewardChip reward={g} />)}
-                  </div>
-                )}
+                <EventOnOpen rewards={ev.guaranteed || []} />
                 <ul class="evt__opts">
                   {ev.options.map((o: any) => (
                     <li class="opt">

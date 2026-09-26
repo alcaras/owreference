@@ -1,0 +1,30 @@
+---
+// The event's own bonuses: they fire the moment the event opens, one per
+// subject, before the player sees the options, whatever they then choose
+// (PlayerEvent.doEventStory). Shared by every event card template.
+import RewardChip from './RewardChip.astro';
+import { isNationwide } from '../lib/event-effects';
+
+const { rewards = [] } = Astro.props as { rewards: any[] };
+const nation = rewards.some(isNationwide);
+---
+{rewards.length > 0 && (
+  <div class={`evt__guaranteed evt-onopen${nation ? ' evt-onopen--nation' : ''}`}>
+    <span class="evt-onopen__label"
+          title="These happen as soon as the event appears, before you pick an option, whichever option you then choose.">
+      As it opens, before you choose
+    </span>
+    {rewards.map((g: any) => <RewardChip reward={g} />)}
+  </div>
+)}
+
+<style is:global>
+  .evt-onopen { border-left: 2px solid var(--border-strong); padding-left: 0.5rem; }
+  .evt-onopen--nation { border-left-color: var(--accent); }
+  .evt-onopen__label {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--text-dim);
+    margin-right: 0.2rem;
+  }
+</style>

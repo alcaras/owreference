@@ -30,6 +30,7 @@
     "yieldValueIconLink": "buildYieldValueIconLinkVariable -- yield icon + signed value link; \":rate\" suffix = bRate:true, \":percent\" suffix = bPercent:true; \"(CIVICS)\"/\"(TRAINING)\" = fixed yield"
   },
   "_meta": {
+    "bonusHelpFields": "bonus entries with a 'renderer' key were added by scripts/extract_bonus_help_fields.py: fields HelpText.Bonus.cs reads outside buildBonusHelp (mostly buildBonusHelpRolePlaying, the event popup), including the occurrence start/end fields the unmappedFields note below calls unrendered — the popup does render them",
     "crossReferenceRenders": [
       "effectCity: \"Can build <units>\" -- unit.xml entries whose prereq references the effectCity (TEXT_HELPTEXT_CAN_BUILD_UNITS)",
       "effectCity: \"Unlocks <project>\" -- project.xml meEffectCityPrereq reverse lookup (TEXT_HELPTEXT_EFFECT_CITY_HELP_NO_YIELDS_UNLOCKS_PROJECT)",
@@ -436,6 +437,26 @@
       "valueScale": 1,
       "xmlField": "aiLawOpinion"
     },
+    "maiOtherYieldsBase": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:28)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Gain from {0_opponent}: {1_yieldList}",
+      "textKey": "TEXT_HELPTEXT_BONUS_OTHER_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiOtherYieldsBase"
+    },
+    "maiOtherYieldsPer": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:29)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Gain from {0_opponent}: {1_yieldList}",
+      "textKey": "TEXT_HELPTEXT_BONUS_OTHER_YIELD",
+      "valueScale": 1,
+      "xmlField": "aiOtherYieldsPer"
+    },
     "maiRatings": {
       "args": [
         "signed"
@@ -548,6 +569,106 @@
       "textKey": "TEXT_GAME_DO_BONUS_YIELD_LEVELS",
       "valueScale": 1,
       "xmlField": "aiYieldLevels"
+    },
+    "maiYieldsSend": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:54)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Send to {0_opponent}: {1_yieldList}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SEND_TO",
+      "valueScale": 1,
+      "xmlField": "aiYieldsSend"
+    },
+    "maiYieldsSendBase": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:50)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiYieldsSendBase"
+    },
+    "maiYieldsSendPerThem": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:52)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Send to {0_opponent}: {1_yieldList}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SEND_TO",
+      "valueScale": 1,
+      "xmlField": "aiYieldsSendPerThem"
+    },
+    "maiYieldsSendPerUs": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:51)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Send to {0_opponent}: {1_yieldList}",
+      "textKey": "TEXT_HELPTEXT_BONUS_SEND_TO",
+      "valueScale": 1,
+      "xmlField": "aiYieldsSendPerUs"
+    },
+    "maiYieldsTradeBase": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:74)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiYieldsTradeBase"
+    },
+    "maiYieldsTradePerThem": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:76)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiYieldsTradePerThem"
+    },
+    "maiYieldsTradePerUs": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:75)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiYieldsTradePerUs"
+    },
+    "maiYieldsTributeBase": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:136)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "aiYieldsTributeBase"
+    },
+    "maiYieldsTributePerThem": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:138)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Tribute from {0_opponent}: {1_yieldList} for {2_years} {3_turnScale}",
+      "textKey": "TEXT_HELPTEXT_BONUS_TRIBUTE_FROM",
+      "valueScale": 1,
+      "xmlField": "aiYieldsTributePerThem"
+    },
+    "maiYieldsTributePerUs": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:137)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Tribute from {0_opponent}: {1_yieldList} for {2_years} {3_turnScale}",
+      "textKey": "TEXT_HELPTEXT_BONUS_TRIBUTE_FROM",
+      "valueScale": 1,
+      "xmlField": "aiYieldsTributePerUs"
     },
     "mbAbandonCity": {
       "args": [
@@ -817,6 +938,17 @@
       "valueScale": 1,
       "xmlField": "bHolyCityAgents"
     },
+    "mbIgnoreDelayTurns": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:430)",
+      "perEntry": "none",
+      "qualifies": "occurrence start: skip the occurrence's iDelayTurns ('in N turns')",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "bIgnoreDelayTurns"
+    },
     "mbKillCharacter": {
       "args": [],
       "notes": "",
@@ -886,6 +1018,17 @@
       "valueScale": 1,
       "xmlField": "bMercenaryUnit"
     },
+    "mbMissionFree": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:685)",
+      "perEntry": "none",
+      "qualifies": "Mission: the mission costs nothing",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Free",
+      "textKey": "TEXT_GAME_DO_BONUS_STARTS_MISSION_FREE",
+      "valueScale": 1,
+      "xmlField": "bMissionFree"
+    },
     "mbNoCourtier": {
       "args": [],
       "notes": "",
@@ -894,6 +1037,39 @@
       "textKey": "TEXT_HELPTEXT_BONUS_NO_COURTIER",
       "valueScale": 1,
       "xmlField": "bNoCourtier"
+    },
+    "mbOccurrenceSetPending": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:404)",
+      "perEntry": "none",
+      "qualifies": "occurrence start: add it as pending instead of starting it (debug-only line in game)",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "bOccurrenceSetPending"
+    },
+    "mbOccurrenceStart": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:428)",
+      "perEntry": "none",
+      "qualifies": "starts the event's own occurrence (eOccurrence from the trigger/subject)",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "bOccurrenceStart"
+    },
+    "mbOccurrenceStartPending": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:428)",
+      "perEntry": "none",
+      "qualifies": "activates the event's pending occurrence",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "bOccurrenceStartPending"
     },
     "mbOverrideDescription": {
       "args": [
@@ -1072,6 +1248,16 @@
       "valueScale": 1,
       "xmlField": "bSetFamilySupremacy"
     },
+    "mbStartLaw": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:762)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Start Law ({0_cost}): {1_law}",
+      "textKey": "TEXT_HELPTEXT_BONUS_START_LAW",
+      "valueScale": 1,
+      "xmlField": "bStartLaw"
+    },
     "mbStateReligion": {
       "args": [
         "religionLink"
@@ -1218,6 +1404,36 @@
       "valueScale": 1,
       "xmlField": "AddResource"
     },
+    "meAmbition": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:256)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "Ambition"
+    },
+    "meAmbitionFamily": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:875)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts link(CONCEPT_AMBITION) {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_AMBITION",
+      "valueScale": 1,
+      "xmlField": "AmbitionFamily"
+    },
+    "meAmbitionReligion": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:785)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts link(CONCEPT_AMBITION) {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_AMBITION",
+      "valueScale": 1,
+      "xmlField": "AmbitionReligion"
+    },
     "meCharacterName": {
       "args": [
         "nameText"
@@ -1309,6 +1525,26 @@
       "valueScale": 1,
       "xmlField": "EndLaw"
     },
+    "meFailGoal": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:372)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Fail Goal {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FAIL_GOAL",
+      "valueScale": 1,
+      "xmlField": "FailGoal"
+    },
+    "meFinishGoal": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:363)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Finish Goal {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_FINISH_GOAL",
+      "valueScale": 1,
+      "xmlField": "FinishGoal"
+    },
     "meForget": {
       "args": [
         "subjectLink",
@@ -1355,6 +1591,26 @@
       "textKey": "TEXT_HELPTEXT_BONUS_FREE_THEOLOGY",
       "valueScale": 1,
       "xmlField": "FreeTheology"
+    },
+    "meGoalAdd": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:238)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts Goal {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_GOAL",
+      "valueScale": 1,
+      "xmlField": "GoalAdd"
+    },
+    "meGoalForce": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:247)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts Goal {0_goalLink}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_GOAL",
+      "valueScale": 1,
+      "xmlField": "GoalForce"
     },
     "meMakeCourtier": {
       "args": [
@@ -1411,6 +1667,86 @@
       "textKey": "TEXT_HELPTEXT_BONUS_MEMORY_ALL_TRIBES_START",
       "valueScale": 1,
       "xmlField": "MemoryAllTribes"
+    },
+    "meMemoryLeader": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelp (HelpText.Bonus.cs:2938)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelp",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "MemoryLeader"
+    },
+    "meMission": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:545)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "Mission"
+    },
+    "meOccurrenceEnd": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:527)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Ends {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_ENDS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "OccurrenceEnd"
+    },
+    "meOccurrenceEndPlayer": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:536)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Ends {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_ENDS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "OccurrenceEndPlayer"
+    },
+    "meOccurrenceForce": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:489)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "OccurrenceForce"
+    },
+    "meOccurrenceForcePlayer": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:508)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "OccurrenceForcePlayer"
+    },
+    "meOccurrenceStart": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:443)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "OccurrenceStart"
+    },
+    "meOccurrenceStartPlayer": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:466)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Starts {0_occurrence}{true_1: for {2_player}:}",
+      "textKey": "TEXT_HELPTEXT_BONUS_STARTS_OCCURRENCE",
+      "valueScale": 1,
+      "xmlField": "OccurrenceStartPlayer"
     },
     "meRemoveLeaderRelationship": {
       "args": [
@@ -1997,6 +2333,16 @@
       "valueScale": 1,
       "xmlField": "iJoinSubject"
     },
+    "miLegitimacy": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelp (HelpText.Bonus.cs:1537)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelp",
+      "template": "{0}: {1}",
+      "textKey": "TEXT_HELPTEXT_ENTRY_COLON_SPACE_ONE",
+      "valueScale": 1,
+      "xmlField": "iLegitimacy"
+    },
     "miMarryAwaySubject": {
       "args": [
         "characterLink"
@@ -2018,6 +2364,27 @@
       "textKey": "TEXT_GAME_DO_BONUS_MARRIES",
       "valueScale": 1,
       "xmlField": "iMarrySubject"
+    },
+    "miMissionReverse": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:568)",
+      "perEntry": "none",
+      "qualifies": "Mission: swap actor and target",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iMissionReverse"
+    },
+    "miMissionSubject": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:553)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iMissionSubject"
     },
     "miMoveNetworkCitySubject": {
       "args": [
@@ -2041,6 +2408,17 @@
       "textKey": "TEXT_GAME_DO_BONUS_CRITICAL_CHANCE",
       "valueScale": 1,
       "xmlField": "iNextCritical"
+    },
+    "miOccurrenceTargetSubject": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:383)",
+      "perEntry": "none",
+      "qualifies": "which event subject the event's occurrence starts on",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": null,
+      "textKey": null,
+      "valueScale": 1,
+      "xmlField": "iOccurrenceTargetSubject"
     },
     "miPolyMarrySubject": {
       "args": [
@@ -2195,6 +2573,17 @@
       "textKey": null,
       "valueScale": 1,
       "xmlField": "iTradeTurns"
+    },
+    "miTributeTurns": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelpRolePlaying (HelpText.Bonus.cs:149)",
+      "perEntry": "none",
+      "qualifies": "aiYieldsTribute*: how many turns the tribute lasts",
+      "renderer": "buildBonusHelpRolePlaying",
+      "template": "Tribute from {0_opponent}: {1_yieldList} for {2_years} {3_turnScale}",
+      "textKey": "TEXT_HELPTEXT_BONUS_TRIBUTE_FROM",
+      "valueScale": 1,
+      "xmlField": "iTributeTurns"
     },
     "miXPCharacter": {
       "args": [

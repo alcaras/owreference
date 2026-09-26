@@ -1,0 +1,40 @@
+---
+// Summary-row badge for an event that changes the whole nation, so it shows
+// while the card is still collapsed. Before-choice effects read plainly;
+// choice-dependent ones say so.
+import { nationSummary } from '../lib/event-effects';
+
+const { ev } = Astro.props as { ev: any };
+const { onOpen, inOptions } = nationSummary(ev);
+const MAX = 2;
+const shown = onOpen.slice(0, MAX);
+const more = onOpen.length - shown.length;
+---
+{shown.map((r: any) => (
+  <span class="chip--nation" title="Happens as soon as the event appears, before you choose">
+    <span aria-hidden="true">⚑</span> {r.text}
+  </span>
+))}
+{more > 0 && <span class="chip--nation chip--nation-more">+{more} more</span>}
+{onOpen.length === 0 && inOptions.length > 0 && (
+  <span class="chip--nation chip--nation-opt" title="Only if you pick the option that does it">
+    <span aria-hidden="true">⚑</span> one choice: {inOptions[0].text}{inOptions.length > 1 ? ` (+${inOptions.length - 1})` : ''}
+  </span>
+)}
+
+<style is:global>
+  .chip--nation {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    color: var(--text);
+    border: 1px solid var(--accent);
+    background: var(--bg-elev);
+    white-space: nowrap;
+  }
+  .chip--nation-opt { border-style: dashed; color: var(--text-dim); }
+  .chip--nation-more { color: var(--text-dim); }
+</style>

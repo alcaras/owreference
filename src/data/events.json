@@ -87,6 +87,9 @@
                   {
                     "memory": "MEMORYCHARACTER_REJECTED_CHILD_RECENTLY",
                     "text": "Remembered: Rejected Child Recently (17 turns)"
+                  },
+                  {
+                    "text": "5% chance next turn: becomes Doomed"
                   }
                 ],
                 "weight": null
@@ -150,6 +153,9 @@
                       "+20 opinion with same-trait characters"
                     ],
                     "tipTitle": "Vigilant trait"
+                  },
+                  {
+                    "text": "25% chance next turn: becomes Cursed"
                   }
                 ],
                 "weight": null
@@ -312,7 +318,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Set Resource: Sorghum"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -1129,7 +1139,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Reveals the map within 5 tiles"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -1370,11 +1384,17 @@
                 "probability": 1.0,
                 "rewards": [
                   {
+                    "text": "The unit gains Adept"
+                  },
+                  {
                     "text": "+1 Citizen",
                     "yield": "growth"
                   },
                   {
                     "text": "Converts to the target religion"
+                  },
+                  {
+                    "text": "The religion spreads to your city"
                   }
                 ],
                 "weight": null
@@ -1420,6 +1440,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
+                  {
+                    "text": "Reveals the map within 4 tiles"
+                  },
                   {
                     "memory": "MEMORYRELIGION_SHARED_BREAD",
                     "note": "no event currently keys off this",
@@ -1644,7 +1667,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "The unit gains Shieldbearer"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -1677,7 +1704,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "The unit gains Swift"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -1710,7 +1741,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "The unit gains Eagle Eye"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -2500,6 +2535,9 @@
                 "probability": 0.009000900090009001,
                 "rewards": [
                   {
+                    "text": "Your leader: no longer Vengeful Against your family head"
+                  },
+                  {
                     "text": "Gain a random trait"
                   }
                 ],
@@ -2509,6 +2547,9 @@
                 "label": "Interference Option 1 Estranged",
                 "probability": 0.9000900090009001,
                 "rewards": [
+                  {
+                    "text": "Your leader: no longer Estranged From your family head"
+                  },
                   {
                     "text": "Gain a random trait"
                   }
@@ -2520,6 +2561,9 @@
                 "probability": 0.0009000900090009,
                 "rewards": [
                   {
+                    "text": "Your leader: no longer Plotting Against your family head"
+                  },
+                  {
                     "text": "Gain a random trait"
                   }
                 ],
@@ -2529,6 +2573,9 @@
                 "label": "Interference Option 1 Disappointed",
                 "probability": 0.09000900090009001,
                 "rewards": [
+                  {
+                    "text": "Your leader: no longer Disappointed With your family head"
+                  },
                   {
                     "text": "Gain a random trait"
                   }
@@ -3357,7 +3404,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Acquire random Technology"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -3555,6 +3606,9 @@
                   {
                     "text": "+2 Citizens",
                     "yield": "growth"
+                  },
+                  {
+                    "text": "Add Improvement: Slums"
                   }
                 ],
                 "weight": 1000
@@ -3953,7 +4007,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "The unit gains Guard I, Tough"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -5366,6 +5424,9 @@
                     "per": 0,
                     "text": "-7 Orders",
                     "yield": "orders"
+                  },
+                  {
+                    "text": "Acquire random Technology"
                   }
                 ],
                 "weight": null
@@ -5974,6 +6035,15 @@
                     "per": -15,
                     "text": "-50 Iron (-15/city)",
                     "yield": "iron"
+                  },
+                  {
+                    "text": "Set Resource: Gold"
+                  },
+                  {
+                    "text": "Set Resource: Gold"
+                  },
+                  {
+                    "text": "Set Resource: Gold"
                   }
                 ],
                 "weight": null
@@ -6694,6 +6764,9 @@
                 "rewards": [
                   {
                     "text": "+60 XP to the character"
+                  },
+                  {
+                    "text": "Archetype becomes Scholar"
                   }
                 ],
                 "weight": null
@@ -7085,6 +7158,9 @@
                   {
                     "text": "+20–200 Culture (by city tier)",
                     "yield": "culture"
+                  },
+                  {
+                    "text": "The religion spreads to your city"
                   }
                 ],
                 "weight": null
@@ -7166,6 +7242,9 @@
         "dlc": null,
         "followsFrom": [],
         "guaranteed": [
+          {
+            "text": "+5 HP to the unit"
+          },
           {
             "base": 20,
             "per": 5,
@@ -7515,6 +7594,9 @@
                     "memory": "MEMORYPLAYER_RECOGNIZED_CLAIM",
                     "note": "no event currently keys off this",
                     "text": "Remembered: Did not contradict expeditions claims of ownership (+20 opinion for 20 turns)"
+                  },
+                  {
+                    "text": "Archetype becomes Diplomat"
                   }
                 ],
                 "weight": null
@@ -7613,7 +7695,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts an ambition for your family"
+                  },
+                  {
+                    "text": "Starts the event's ambition"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -7640,7 +7729,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts an ambition for your family"
+                  },
+                  {
+                    "text": "Starts the event's ambition"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -7667,7 +7763,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts an ambition for your family"
+                  },
+                  {
+                    "text": "Starts the event's ambition"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -8024,7 +8127,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Leader stat Local Cult: +1"
+                  },
+                  {
+                    "text": "Add Improvement: Amazon Cult"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -8595,7 +8705,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Archetype becomes Scholar"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -8705,6 +8819,9 @@
                 "rewards": [
                   {
                     "text": "+1 Worker"
+                  },
+                  {
+                    "text": "Add Improvement: Slums"
                   }
                 ],
                 "weight": 1000
@@ -8796,7 +8913,11 @@
         "conditions": [],
         "dlc": "Empires of the Indus",
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "-3 Moves"
+          }
+        ],
         "id": "EVENTSTORY_THE_JUNGLE_DEPTHS",
         "isFollowup": false,
         "linkPrereq": null,
@@ -8847,7 +8968,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "The unit gains Sapper"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -9237,7 +9362,14 @@
         ],
         "dlc": null,
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "+40 XP to the unit"
+          },
+          {
+            "text": "+5 HP to the unit"
+          }
+        ],
         "id": "EVENTSTORY_RUINS_THREE_DAYS_OF_SOLACE",
         "isFollowup": false,
         "linkPrereq": null,
@@ -9267,6 +9399,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
+                  {
+                    "text": "+20 XP to the unit"
+                  },
                   {
                     "base": -2,
                     "per": 0,
@@ -9368,7 +9503,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "-10 HP to the unit"
+                  },
+                  {
+                    "text": "+1 Import Resources / Exotic Furs"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -9817,6 +9959,9 @@
                 "rewards": [
                   {
                     "text": "+2 Legitimacy"
+                  },
+                  {
+                    "text": "Set Resource: Gems"
                   }
                 ],
                 "weight": null
@@ -10568,7 +10713,11 @@
             "name": "The Watchers"
           }
         ],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "2 improvements destroyed"
+          }
+        ],
         "id": "EVENTSTORY_RUINS_WRATH_OF_THE_WATCHERS",
         "isFollowup": true,
         "linkPrereq": "EVENTLINK_RUINS_THE_WATCHERS",
@@ -10658,6 +10807,10 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
+                  {
+                    "kind": "nationwide",
+                    "text": "Your leader abdicates the throne"
+                  },
                   {
                     "text": "+2 Wisdom"
                   }
@@ -10976,6 +11129,10 @@
                       "Cannot hold a job"
                     ],
                     "tipTitle": "Returning trait"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Found a world religion in the city"
                   },
                   {
                     "base": -80,
@@ -12111,6 +12268,9 @@
                     "memory": "MEMORYRELIGION_SUPPORTED_FAITH",
                     "note": "no event currently keys off this",
                     "text": "Remembered: Gave support (+40 opinion for 40 turns)"
+                  },
+                  {
+                    "text": "The religion spreads to your city"
                   }
                 ],
                 "weight": null
@@ -12531,6 +12691,9 @@
                 "probability": 0.1,
                 "rewards": [
                   {
+                    "text": "Archetype becomes Zealot"
+                  },
+                  {
                     "text": "Loses trait: Exploring",
                     "tip": [
                       "Cannot hold a job"
@@ -12567,6 +12730,10 @@
                       "Cannot hold a job"
                     ],
                     "tipTitle": "Exploring trait"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Found the event's religion"
                   }
                 ],
                 "weight": 1000
@@ -12806,6 +12973,9 @@
                 "probability": 0.1,
                 "rewards": [
                   {
+                    "text": "Archetype becomes Zealot"
+                  },
+                  {
                     "text": "Loses trait: Exploring",
                     "tip": [
                       "Cannot hold a job"
@@ -12842,6 +13012,10 @@
                       "Cannot hold a job"
                     ],
                     "tipTitle": "Exploring trait"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Found the event's religion"
                   }
                 ],
                 "weight": 1000
@@ -13137,6 +13311,9 @@
                 "probability": 0.1,
                 "rewards": [
                   {
+                    "text": "Archetype becomes Zealot"
+                  },
+                  {
                     "text": "Loses trait: Exploring",
                     "tip": [
                       "Cannot hold a job"
@@ -13173,6 +13350,10 @@
                       "Cannot hold a job"
                     ],
                     "tipTitle": "Exploring trait"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Found the event's religion"
                   }
                 ],
                 "weight": 1000
@@ -13412,6 +13593,9 @@
                 "probability": 0.1,
                 "rewards": [
                   {
+                    "text": "Archetype becomes Zealot"
+                  },
+                  {
                     "text": "Loses trait: Exploring",
                     "tip": [
                       "Cannot hold a job"
@@ -13448,6 +13632,10 @@
                       "Cannot hold a job"
                     ],
                     "tipTitle": "Exploring trait"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Found the event's religion"
                   }
                 ],
                 "weight": 1000
@@ -13774,6 +13962,9 @@
                       "As general: Adjacent Effect Unit: Sentinel"
                     ],
                     "tipTitle": "Bulwark Cuirass trait"
+                  },
+                  {
+                    "text": "Memory All Tribes: Memorytribe Disturbed The Dead"
                   }
                 ],
                 "weight": null
@@ -14380,6 +14571,9 @@
                   },
                   {
                     "text": "+2 Courage"
+                  },
+                  {
+                    "text": "5% chance next turn: becomes Doomed"
                   }
                 ],
                 "weight": null
@@ -14544,6 +14738,9 @@
                       "As general: Upon the unit's death, the General will move to the nearest eligible unit."
                     ],
                     "tipTitle": "Unyielding Banner trait"
+                  },
+                  {
+                    "text": "20% chance: becomes Wounded"
                   }
                 ],
                 "weight": null
@@ -14583,7 +14780,11 @@
         ],
         "dlc": null,
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Reveals the map within 2 tiles"
+          }
+        ],
         "id": "EVENTSTORY_DISTANT_CITY_EXPLORATION",
         "isFollowup": false,
         "linkPrereq": null,
@@ -14642,6 +14843,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
+                  {
+                    "text": "10% chance next turn: becomes Ill"
+                  },
                   {
                     "text": "Gain trait: Pathfinder",
                     "tip": [
@@ -14723,7 +14927,11 @@
         "conditions": [],
         "dlc": "Empires of the Indus",
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Make contact with the rival nation"
+          }
+        ],
         "id": "EVENTSTORY_FIRST_VOYAGE",
         "isFollowup": true,
         "linkPrereq": "EVENTLINK_TRADE_VENTURE",
@@ -14737,6 +14945,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
+                    "text": "Your character joins the nation of the rival nation"
+                  },
+                  {
                     "text": "Loses trait: Exploring",
                     "tip": [
                       "Cannot hold a job"
@@ -14746,6 +14957,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Peace with the rival nation"
                   }
                 ],
                 "weight": null
@@ -14818,6 +15033,9 @@
                   {
                     "memory": "MEMORYPLAYER_TRADE_DEAL",
                     "text": "Remembered: New Trade Deal (+40 opinion for 20 turns)"
+                  },
+                  {
+                    "text": "Trade with the rival nation: +500 Money, -10 Orders"
                   }
                 ],
                 "weight": null
@@ -18179,7 +18397,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "The tech goes to your discard pile"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -18500,6 +18722,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
+                    "text": "Add Improvement: Academy"
+                  },
+                  {
                     "base": -50,
                     "per": -15,
                     "text": "-50 Stone (-15/city)",
@@ -18617,6 +18842,9 @@
                       "Cannot hold a job"
                     ],
                     "tipTitle": "Slighted trait"
+                  },
+                  {
+                    "text": "Your leader becomes governor of your city"
                   }
                 ],
                 "weight": null
@@ -18808,7 +19036,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "25% chance next turn: becomes Slothful"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -18982,6 +19214,9 @@
                       "-40 base opinion of this character"
                     ],
                     "tipTitle": "Miserable trait"
+                  },
+                  {
+                    "text": "50% chance next turn: becomes Uncouth"
                   }
                 ],
                 "weight": null
@@ -19127,6 +19362,9 @@
                     "per": 0,
                     "text": "-4 Orders",
                     "yield": "orders"
+                  },
+                  {
+                    "text": "Starts the festival that matches the city's culture level"
                   }
                 ],
                 "weight": null
@@ -19162,7 +19400,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Your character becomes governor of your city"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -19465,7 +19707,23 @@
         ],
         "dlc": null,
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "href": "occurrences#plague",
+            "kind": "occurrence",
+            "occurrence": "OCCURRENCE_PLAGUE",
+            "occurrenceVerb": "starts",
+            "text": "Starts Plague",
+            "tip": [
+              "-50% Growth",
+              "Units in territory: 50% chance/turn to be Plagued (3 damage/turn, -1 Fatigue, spreads on contact)",
+              "Characters: 10% chance/turn to become Infected",
+              "Lasts 2–4 turns",
+              "10% chance per turn to end, +10% each turn"
+            ],
+            "tipTitle": "Plague"
+          }
+        ],
         "id": "EVENTSTORY_CALAMITIES_PLAGUE_FESTIVAL",
         "isFollowup": false,
         "linkPrereq": null,
@@ -19791,6 +20049,9 @@
                     "per": -15,
                     "text": "-60 Civics (-15/city)",
                     "yield": "civics"
+                  },
+                  {
+                    "text": "The religion spreads to your city"
                   }
                 ],
                 "weight": null
@@ -20089,6 +20350,9 @@
                     "eachCity": 80,
                     "text": "+80 Happiness (city)",
                     "yield": "happiness"
+                  },
+                  {
+                    "text": "The religion spreads to your city"
                   }
                 ],
                 "weight": null
@@ -20519,6 +20783,10 @@
                     "text": "Remembered: Tribe Offer (5 turns)"
                   },
                   {
+                    "kind": "nationwide",
+                    "text": "Truce with the tribe"
+                  },
+                  {
                     "text": "-2 Legitimacy"
                   }
                 ],
@@ -20531,6 +20799,10 @@
                   {
                     "memory": "MEMORYTRIBE_OFFER",
                     "text": "Remembered: Tribe Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Peace with the tribe"
                   },
                   {
                     "text": "-2 Legitimacy"
@@ -20587,7 +20859,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Archetype becomes Schemer"
+                  },
+                  {
+                    "text": "Carries out Assassinate on the tribe's leader"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -20619,6 +20898,10 @@
                   {
                     "memory": "MEMORYTRIBE_OFFER",
                     "text": "Remembered: Tribe Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "The tribe invade"
                   }
                 ],
                 "weight": null
@@ -21959,7 +22242,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Add Improvement: Sword Cult"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -22605,7 +22892,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Pillage Improvement on Tile"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -22681,6 +22972,11 @@
                 "rewards": [
                   {
                     "text": "Leader relationship: Disappointed With"
+                  },
+                  {
+                    "eachCity": 30,
+                    "text": "+30 Growth (city) (every family's cities)",
+                    "yield": "growth"
                   }
                 ],
                 "weight": null
@@ -22787,6 +23083,9 @@
                 "rewards": [
                   {
                     "text": "Progress ambition: Six Camps"
+                  },
+                  {
+                    "text": "Archetype becomes Builder"
                   },
                   {
                     "memory": "MEMORYFAMILY_SUPPORTED_PEASANTS",
@@ -24159,7 +24458,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Carries out High Synod on the religion (free)"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -24187,7 +24490,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts an ambition for the religion"
+                  },
+                  {
+                    "text": "Starts the event's ambition"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -25154,7 +25464,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Set Specialist: Fisher"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -26706,6 +27020,9 @@
                     "memory": "MEMORYRELIGION_BANNED_FROM_BATHS",
                     "note": "no event currently keys off this",
                     "text": "Remembered: Banned us from the baths (-20 opinion for 80 turns)"
+                  },
+                  {
+                    "text": "Set Specialist: Master Doctor"
                   }
                 ],
                 "weight": null
@@ -27403,6 +27720,9 @@
                 "probability": 1.0,
                 "rewards": [
                   {
+                    "text": "Add Improvement: Estates"
+                  },
+                  {
                     "base": -80,
                     "per": -20,
                     "text": "-80 Money (-20/city)",
@@ -27443,7 +27763,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "25% chance next turn: becomes Bitter"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -27606,7 +27930,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_ARTISANS_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -27621,6 +27949,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Tactics Student"
+                  },
+                  {
+                    "text": "Archetype becomes Schemer"
                   },
                   {
                     "text": "Gain trait: Corrupt",
@@ -28016,6 +28347,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -28110,6 +28445,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -28266,6 +28605,10 @@
                     "text": "Remembered: Tribe Offer (5 turns)"
                   },
                   {
+                    "kind": "nationwide",
+                    "text": "The tribe declare war on you"
+                  },
+                  {
                     "memory": "MEMORYFAMILY_WENT_TO_WAR",
                     "note": "no event currently keys off this",
                     "text": "Remembered: Took our advice and attacked barbarians (+40 opinion for 20 turns)"
@@ -28321,6 +28664,10 @@
                   {
                     "memory": "MEMORYTRIBE_OFFER",
                     "text": "Remembered: Tribe Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "The tribe declare war on you"
                   },
                   {
                     "memory": "MEMORYFAMILY_WENT_TO_WAR",
@@ -28416,19 +28763,31 @@
               {
                 "label": "Restless Oligarchs Champions 6 Tribes",
                 "probability": 0.3333333333333333,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Clear Six Tribal Sites"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Restless Oligarchs Champions 15 Kills",
                 "probability": 0.3333333333333333,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Kill 15 Military Units"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Restless Oligarchs Champions 20 Kills",
                 "probability": 0.3333333333333333,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Kill 20 Military Units"
+                  }
+                ],
                 "weight": 1000
               }
             ],
@@ -28470,25 +28829,41 @@
               {
                 "label": "Restless Oligarchs Riders Mounted",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Five Mounted Units"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Restless Oligarchs Riders Cities",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Capture Two Foreign Cities"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Restless Oligarchs Riders Capital",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Capture a Foreign Capital"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Restless Oligarchs Riders Circus",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Build Circus Maximus"
+                  }
+                ],
                 "weight": 1000
               }
             ],
@@ -28589,6 +28964,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
+                  {
+                    "text": "Starts ambition: Control Five Infantry, Five Ship, Five Siege, Five Horse, and Five Elephant Units"
+                  },
                   {
                     "base": 80,
                     "per": 20,
@@ -28718,6 +29096,12 @@
                     "memory": "MEMORYFAMILY_MILITARY_TECH",
                     "note": "no event currently keys off this",
                     "text": "Remembered: Shared military technology with our rivals (-20 opinion for 40 turns)"
+                  },
+                  {
+                    "text": "The rival nation acquires the tech"
+                  },
+                  {
+                    "text": "You acquire the tech"
                   }
                 ],
                 "weight": null
@@ -28822,6 +29206,9 @@
                     "per": -60,
                     "text": "-240 Money (-60/city)",
                     "yield": "money"
+                  },
+                  {
+                    "text": "You acquire the tech"
                   }
                 ],
                 "weight": null
@@ -29035,7 +29422,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_CHAMPIONS_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -29050,6 +29441,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Philosophy Student"
+                  },
+                  {
+                    "text": "Archetype becomes Builder"
                   },
                   {
                     "text": "Gain trait: Intolerant",
@@ -29608,6 +30002,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -29702,6 +30100,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -30457,6 +30859,12 @@
                 "probability": 1.0,
                 "rewards": [
                   {
+                    "text": "Leader stat Local Cult: +1"
+                  },
+                  {
+                    "text": "Add Improvement: Cult Of Mithras"
+                  },
+                  {
                     "base": -120,
                     "per": -30,
                     "text": "-120 Training (-30/city)",
@@ -30669,7 +31077,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Discover Barding and Infantry Square"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -30695,7 +31107,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Discover Cohorts and Martial Code"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -30933,6 +31349,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -31016,7 +31436,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_CLERICS_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -31031,6 +31455,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Politics Student"
+                  },
+                  {
+                    "text": "Archetype becomes Zealot"
                   },
                   {
                     "text": "Gain trait: Superstitious",
@@ -31145,6 +31572,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -31373,6 +31804,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -31685,25 +32120,41 @@
               {
                 "label": "Wisdom Of The Oligarchs Sages Scribes",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Two Scribe 3"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Wisdom Of The Oligarchs Sages Library 1",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Four Library 1"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Wisdom Of The Oligarchs Sages Library 2",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Four Library 2"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Wisdom Of The Oligarchs Sages Library 3",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Three Library 3"
+                  }
+                ],
                 "weight": 1000
               }
             ],
@@ -31753,25 +32204,41 @@
               {
                 "label": "Wisdom Of The Oligarchs Clerics Shrines",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Eight Shrine"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Wisdom Of The Oligarchs Clerics Monasteries",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Four Monastery"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Wisdom Of The Oligarchs Clerics Temples",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Four Temple"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Wisdom Of The Oligarchs Clerics Cathedrals",
                 "probability": 0.25,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts ambition: Control Three Cathedral"
+                  }
+                ],
                 "weight": 1000
               }
             ],
@@ -31889,13 +32356,27 @@
               {
                 "label": "Calamities Drought End Food Stockpile Goal 2000",
                 "probability": 0.9090909090909091,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts an ambition for your family"
+                  },
+                  {
+                    "text": "Starts the event's ambition"
+                  }
+                ],
                 "weight": 1000
               },
               {
                 "label": "Calamities Drought End Food Stockpile Goal 4000",
                 "probability": 0.09090909090909091,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Starts an ambition for your family"
+                  },
+                  {
+                    "text": "Starts the event's ambition"
+                  }
+                ],
                 "weight": 100
               }
             ],
@@ -32341,6 +32822,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -32390,7 +32875,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_HUNTERS_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -32405,6 +32894,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Commerce Student"
+                  },
+                  {
+                    "text": "Archetype becomes Tactician"
                   },
                   {
                     "text": "Gain trait: Uncouth",
@@ -32688,6 +33180,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -32782,6 +33278,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -33289,6 +33789,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -33386,7 +33890,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Add Improvement: Estates"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -33412,7 +33920,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Add Improvement: Farm"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -33459,7 +33971,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_LANDOWNER_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -33474,6 +33990,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Philosophy Student"
+                  },
+                  {
+                    "text": "Archetype becomes Builder"
                   },
                   {
                     "text": "Gain trait: Intolerant",
@@ -33590,6 +34109,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -33684,6 +34207,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -34010,6 +34537,9 @@
                     "per": 30,
                     "text": "+120 Money (+30/city)",
                     "yield": "money"
+                  },
+                  {
+                    "text": "Send the resource to your family as a luxury"
                   }
                 ],
                 "weight": null
@@ -34051,6 +34581,9 @@
                     "memory": "MEMORYFAMILY_GEM_SEEKERS_GIFT",
                     "note": "no event currently keys off this",
                     "text": "Remembered: Gave us a luxury (+40 opinion for 20 turns)"
+                  },
+                  {
+                    "text": "Send the resource to your family as a luxury"
                   }
                 ],
                 "weight": null
@@ -34139,7 +34672,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_PATRONS_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -34154,6 +34691,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Tactics Student"
+                  },
+                  {
+                    "text": "Archetype becomes Orator"
                   },
                   {
                     "text": "Gain trait: Debauched",
@@ -34270,6 +34810,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -34364,6 +34908,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -34469,6 +35017,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -34578,6 +35130,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -34723,7 +35279,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_RIDERS_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -34738,6 +35298,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Philosophy Student"
+                  },
+                  {
+                    "text": "Archetype becomes Zealot"
                   },
                   {
                     "text": "Gain trait: Drunk",
@@ -34853,6 +35416,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -34947,6 +35514,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -35470,6 +36041,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -35579,6 +36154,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -35757,6 +36336,10 @@
                 "rewards": [
                   {
                     "text": "Free law: Tyranny"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "End law: Freedom"
                   }
                 ],
                 "weight": null
@@ -35821,7 +36404,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Add Improvement: Estates"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -35900,7 +36487,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_SAGES_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -35915,6 +36506,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Tactics Student"
+                  },
+                  {
+                    "text": "Archetype becomes Scholar"
                   },
                   {
                     "text": "Gain trait: Timid",
@@ -36085,6 +36679,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -36347,6 +36945,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -36437,7 +37039,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Acquire random Technology"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -37125,6 +37731,10 @@
                     "memory": "MEMORYFAMILY_BLAMED_FOR_LAWS",
                     "note": "no event currently keys off this",
                     "text": "Remembered (all families): Blamed for harsh laws (-20 opinion for 20 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Start law: Tyranny"
                   }
                 ],
                 "weight": null
@@ -37303,6 +37913,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -37412,6 +38026,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -37521,6 +38139,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -37604,7 +38226,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_STATESMEN_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -37619,6 +38245,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Tactics Student"
+                  },
+                  {
+                    "text": "Archetype becomes Judge"
                   },
                   {
                     "text": "Gain trait: Slothful",
@@ -37951,6 +38580,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -38045,6 +38678,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -38322,6 +38959,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "You declare war on the rival nation"
                   }
                 ],
                 "weight": null
@@ -38417,6 +39058,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
+                  {
+                    "text": "Add Improvement: Estates"
+                  },
                   {
                     "text": "Begin project: Sewer System"
                   },
@@ -38519,7 +39163,11 @@
           ]
         },
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your family head: Endeared To your heir"
+          }
+        ],
         "id": "EVENTSTORY_STUDY_TRADERS_SWAY",
         "isFollowup": false,
         "linkPrereq": null,
@@ -38534,6 +39182,9 @@
                 "rewards": [
                   {
                     "text": "Loses trait: Tactics Student"
+                  },
+                  {
+                    "text": "Archetype becomes Diplomat"
                   },
                   {
                     "text": "Gain trait: Deceitful",
@@ -38749,6 +39400,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -38843,6 +39498,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   }
                 ],
                 "weight": null
@@ -38932,7 +39591,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "The tech goes to your discard pile"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -39376,7 +40039,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Acquire random Technology"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -39549,7 +40216,12 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "kind": "nationwide",
+                    "text": "Found a world religion in the city"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -39592,6 +40264,9 @@
                       "+40 opinion with same-trait characters"
                     ],
                     "tipTitle": "Righteous trait"
+                  },
+                  {
+                    "text": "Archetype becomes Zealot"
                   }
                 ],
                 "weight": null
@@ -39714,6 +40389,10 @@
                   {
                     "memory": "MEMORYPLAYER_OFFER",
                     "text": "Remembered: Player Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Truce with the rival nation"
                   },
                   {
                     "text": "+20 XP to the character"
@@ -39906,7 +40585,11 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "+4 border tiles"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -39975,6 +40658,9 @@
                   {
                     "text": "+1 Citizen",
                     "yield": "growth"
+                  },
+                  {
+                    "text": "+8 border tiles"
                   }
                 ],
                 "weight": null
@@ -40030,7 +40716,11 @@
         ],
         "dlc": null,
         "followsFrom": [],
-        "guaranteed": [],
+        "guaranteed": [
+          {
+            "text": "Your leader's spouse has a child with your leader"
+          }
+        ],
         "id": "EVENTSTORY_MIRACLE_BIRTH",
         "isFollowup": false,
         "linkPrereq": null,
@@ -40617,6 +41307,9 @@
                     "tipTitle": "Romantic trait"
                   },
                   {
+                    "text": "Has an Illegitimate Child"
+                  },
+                  {
                     "text": "Leader relationship: Influenced By"
                   }
                 ],
@@ -41014,6 +41707,9 @@
                 "label": null,
                 "probability": 1.0,
                 "rewards": [
+                  {
+                    "text": "Your character marries your leader"
+                  },
                   {
                     "text": "Leader relationship: Disappointed With"
                   }
@@ -41473,7 +42169,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Your family head joins the council as Chancellor"
+                  },
+                  {
+                    "text": "Your character joins the council as Ambassador"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -43635,6 +44338,10 @@
                     "text": "Remembered: Tribe Offer (5 turns)"
                   },
                   {
+                    "kind": "nationwide",
+                    "text": "Truce with the tribe"
+                  },
+                  {
                     "text": "-2 Legitimacy"
                   }
                 ],
@@ -43647,6 +44354,10 @@
                   {
                     "memory": "MEMORYTRIBE_OFFER",
                     "text": "Remembered: Tribe Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Peace with the tribe"
                   },
                   {
                     "text": "-2 Legitimacy"
@@ -43703,7 +44414,14 @@
               {
                 "label": null,
                 "probability": 1.0,
-                "rewards": [],
+                "rewards": [
+                  {
+                    "text": "Archetype becomes Schemer"
+                  },
+                  {
+                    "text": "Carries out Assassinate on the tribe's leader"
+                  }
+                ],
                 "weight": null
               }
             ],
@@ -43735,6 +44453,10 @@
                   {
                     "memory": "MEMORYTRIBE_OFFER",
                     "text": "Remembered: Tribe Offer (5 turns)"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "The tribe invade"
                   }
                 ],
                 "weight": null
@@ -44186,6 +44908,9 @@
                 "probability": 0.5,
                 "rewards": [
                   {
+                    "text": "Your leader: no longer Vengeful Against the character"
+                  },
+                  {
                     "text": "-6 Legitimacy"
                   }
                 ],
@@ -44195,6 +44920,9 @@
                 "label": "Cursed Option 2 Plotting",
                 "probability": 0.5,
                 "rewards": [
+                  {
+                    "text": "Your leader: no longer Plotting Against the character"
+                  },
                   {
                     "text": "-6 Legitimacy"
                   }
@@ -44669,6 +45397,10 @@
                   },
                   {
                     "text": "Loses trait: Monkey Paw"
+                  },
+                  {
+                    "kind": "nationwide",
+                    "text": "Your leader abdicates the throne"
                   },
                   {
                     "text": "Gain trait: Cursed"

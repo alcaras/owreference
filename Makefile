@@ -65,16 +65,17 @@ data:
 	@python3 scripts/build_cognomens.py
 	@python3 scripts/build_hurry.py
 	@python3 scripts/build_victory_points.py
+	@python3 scripts/build_occurrences.py   # before the event builders: they link occurrence cards (anchors)
 	@python3 scripts/build_missions.py
 	@python3 scripts/build_mission_catalog.py
 	@python3 scripts/build_story_events.py
 	@python3 scripts/build_events.py
 	@python3 scripts/build_event_search.py  # global index — needs the four above
+	@python3 scripts/build_occurrence_events.py  # occurrence ← event backlinks — needs event-search.json
 	@python3 scripts/build_autobuild.py     # Vizier/Autonomous Rule — needs projects, council, event-search json
 	@python3 scripts/build_event_chains.py  # chain graphs — needs event-search.json
 	@python3 scripts/build_trait_events.py  # trait/cluster gates — needs event-search.json
 	@python3 scripts/build_trait_gain.py    # trait acquisition — needs event-search.json + traits.json
-	@python3 scripts/build_occurrences.py
 	@python3 scripts/build_diplomacy.py
 	@python3 scripts/build_regents.py
 	@python3 scripts/build_tribe_conversion.py

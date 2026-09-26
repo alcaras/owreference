@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
+import OccurrenceEvents from '../components/OccurrenceEvents.astro';
 import data from '../data/occurrences.json';
 import { classifyYield } from '../lib/entities';
 
@@ -191,6 +192,7 @@ for (const o of eras) {
                   </div>
                 ))}
               </div>
+              <OccurrenceEvents ids={[fam.full?.id, fam.mitigated?.id]} />
             </article>
           );
         })}
@@ -258,6 +260,7 @@ for (const o of eras) {
                   </tbody>
                 </table>
               </div>
+              <OccurrenceEvents ids={t.variants.map((v: any) => v.id)} />
             </article>
           );
         })}
@@ -312,6 +315,7 @@ for (const o of eras) {
                 </div>
               );
             })}
+            <OccurrenceEvents ids={[o.id]} />
           </article>
         ))}
       </div>

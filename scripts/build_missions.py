@@ -25,6 +25,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
+import effects  # noqa: E402  registry backstop for bonus fields nothing else renders
+import event_bonus as evb  # noqa: E402  occurrences, nationwide changes, subject-aimed lines
 # Shared curation: readable SubjectCharacter labels + DLC display names.
 from build_mission_catalog import WHO_LABELS, DLC_LABELS  # noqa: E402
 
@@ -602,10 +604,18 @@ def _trait_tip(token: str) -> list[str]:
     return _TRAIT_TIPS.get(token, [])
 
 
-def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None = None) -> list[dict]:
+def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None = None,
+                   *, subjects: list[str] | None = None, slot: int | None = None) -> list[dict]:
     """Structured reward list for an event/mission bonus (see schema above).
     Yields are display-scale (shown raw in-game) — no /10. Recurses into nested
-    bonus containers; resolves the actual effect rather than a token fallback."""
+    bonus containers; resolves the actual effect rather than a token fallback.
+
+    `subjects` is the event's SUBJECT_* list and `slot` the subject this bonus
+    lands on (event and option bonuses are one per subject slot), so lines
+    aimed at "subject N" can name it. Fields covered by neither this function
+    nor event_bonus fall through to the registry backstop (effects.extra_lines),
+    so a field the game renders is never silently dropped (audit_coverage.py
+    checks this path too)."""
     if not bonus_id or bonus_id == "NONE":
         return []
     _seen = _seen or set()
@@ -728,8 +738,9 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
     if hp:
         out.append(_txt(f"{'+' if hp > 0 else ''}{hp} HP to the city"))
 
+    merc = " (mercenary)" if (b.findtext("bMercenaryUnit") or "0") == "1" else ""
     for u, v in pairs(b, "aiUnits"):
-        out.append(_txt(f"+{v} {_named(text, u, 'UNIT_')}"))
+        out.append(_txt(f"+{v} {_named(text, u, 'UNIT_')}{merc}"))
     for u, v in pairs(b, "aiBonusUnits"):
         out.append(_txt(f"+{v} {_tok(u, 'BONUSUNITCLASS_')} unit"))
     reb = int(b.findtext("iRebelUnits") or "0")
@@ -765,11 +776,21 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
 
     # Nested bonus containers (BONUS_*_OPTION_* often wrap several payloads).
     for bz in b.findall("aeBonuses/zValue"):
-        out += humanize_bonus(bz.text or "", bonus_idx, text, _seen)
+        out += humanize_bonus(bz.text or "", bonus_idx, text, _seen, subjects=subjects, slot=slot)
     for bz in b.findall("aeAllCityBonuses/zValue"):
-        out += [{**r, "text": r["text"] + " (every city)"} for r in humanize_bonus(bz.text or "", bonus_idx, text, _seen)]
+        out += [{**r, "text": r["text"] + " (every city)"}
+                for r in humanize_bonus(bz.text or "", bonus_idx, text, _seen, subjects=subjects, slot=slot)]
     for p in b.findall("aeReligionBonuses/Pair"):
-        out += [{**r, "text": r["text"] + " (by religion)"} for r in humanize_bonus(p.findtext("Second") or "", bonus_idx, text, _seen)]
+        out += [{**r, "text": r["text"] + " (by religion)"}
+                for r in humanize_bonus(p.findtext("Second") or "", bonus_idx, text, _seen, subjects=subjects, slot=slot)]
+    for bz in b.findall("aeFamilyBonuses/zValue"):
+        out += [{**r, "text": r["text"] + " (every family's cities)"}
+                for r in humanize_bonus(bz.text or "", bonus_idx, text, _seen, subjects=subjects, slot=slot)]
+
+    # Occurrences, nationwide state changes, subject-aimed effects.
+    out += evb.render(b, evb.Ctx(text=text, subjects=list(subjects or []), slot=slot))
+    # Anything still uncovered: the game's own template, generically filled.
+    out += [_txt(line) for line in effects.extra_lines(b, "bonus", exclude=HANDLED_BONUS_FIELDS, indexes=_backstop_indexes(text))]
 
     # A bonus we DID find but can't surface any tangible effect for is treated as
     # a no-op (no chip), rather than a misleading "Affects a …". The fallback
@@ -777,26 +798,84 @@ def humanize_bonus(bonus_id: str, bonus_idx: dict, text: dict, _seen: set | None
     return out
 
 
-def option_outcomes(opt: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict) -> list[dict]:
+# Bonus fields humanize_bonus renders itself (its own blocks above, plus
+# event_bonus). Everything else goes to the registry backstop. Keep this in
+# step with the code: audit_coverage.py reads it to prove no event/mission
+# bonus field the game shows is dropped.
+HANDLED_BONUS_FIELDS: frozenset[str] = frozenset({
+    "aiGlobalYieldsBase", "aiGlobalYieldsPer", "aiGlobalYields", "aiCityYields", "aaiCultureYield",
+    "iXPCharacter", "iLegitimacy", "iHappinessLevels", "iCitizens", "iCultureLevels", "FreeTheology",
+    "aiRatings", "aeAddTraits", "aeRemoveTraits", "aeRandomTraitDelay", "aeRandomTrait",
+    "aeRandomLeaderRelationshipDelay", "aeRandomLeaderRelationship", "MakeCourtier", "bRandomCourtier",
+    "AddCourtier", "aeAddSpecialistClasses", "aeAddProjects", "SetImprovement", "AddResource",
+    "bKillUnit", "bKillCharacter", "iConvertReligionSubject", "iConvertedBySubject",
+    "iAdoptedBySubject", "iDivorcedBySubject", "iMoveNetworkCitySubject", "bConvertStateReligion",
+    "bChosenHeir", "bRevealTerritory", "bExposeAgentNetwork", "bLoseAgentNetwork", "iHPCity",
+    "aiUnits", "aiBonusUnits", "iRebelUnits", "AddLeaderRelationship", "Ambition",
+    "Memory", "MemoryAllFamilies", "MemoryAllPlayers", "MemoryLeader", "FreeLaw", "iMarrySubject",
+    "aeTechs", "aiLawOpinion", "Achievement", "AchievementIfHeir", "AchievementIfOtherLeader",
+    "aeBonuses", "aeAllCityBonuses", "aeReligionBonuses", "aeFamilyBonuses",
+}) | evb.CURATED_FIELDS
+
+_BACKSTOP_IDX: dict | None = None
+
+
+def _backstop_indexes(text: dict) -> dict:
+    """humanize.load_xml_indexes, loaded once — effects.resolve_token uses it
+    to turn tokens into their in-game names."""
+    global _BACKSTOP_IDX
+    if _BACKSTOP_IDX is None:
+        from humanize import load_xml_indexes
+        _BACKSTOP_IDX = load_xml_indexes(XML_DIR)
+    return _BACKSTOP_IDX
+
+
+def story_subjects(s: ET.Element) -> tuple[list[str], dict[str, int]]:
+    """An event's SUBJECT_* list (old aeSubjects or new Subjects/Subject
+    syntax) and the new syntax's alias → index map, for placing bonus slots."""
+    subs = [z.text or "" for z in s.findall("aeSubjects/zValue")]
+    aliases: dict[str, int] = {}
+    if not subs:
+        for i, sub in enumerate(s.findall("Subjects/Subject")):
+            subs.append(sub.findtext("Type") or "")
+            if sub.get("alias"):
+                aliases[sub.get("alias")] = i
+    return subs, aliases
+
+
+def slot_of(first: str | None, aliases: dict[str, int]) -> int | None:
+    """SubjectBonuses/First: a subject index, or an alias from Subjects."""
+    if first is None:
+        return None
+    first = first.strip()
+    if first.lstrip("-").isdigit():
+        return int(first)
+    return aliases.get(first)
+
+
+def option_outcomes(opt: ET.Element, eopt_idx: dict, bonus_idx: dict, text: dict,
+                    subjects: list[str] | None = None) -> list[dict]:
     """An option resolves to guaranteed bonuses, or a weighted roll between
-    sub-options (aiEventOptionProb)."""
+    sub-options (aiEventOptionProb). Each aeBonuses entry lands on the event
+    subject in the same position (eventOption.xml: "awarded to each Event
+    Subject in order")."""
+    def slots(o: ET.Element) -> list[dict]:
+        got: list[dict] = []
+        for i, bz in enumerate(o.findall("aeBonuses/zValue")):
+            got += humanize_bonus(bz.text or "", bonus_idx, text, subjects=subjects, slot=i)
+        return got
+
     prob_pairs = pairs(opt, "aiEventOptionProb")
     if prob_pairs:
         total = sum(v for _, v in prob_pairs) or 1
         outs = []
         for sub_id, w in prob_pairs:
             sub = eopt_idx.get(sub_id)
-            rewards: list[str] = []
-            if sub is not None:
-                for bz in sub.findall("aeBonuses/zValue"):
-                    rewards += humanize_bonus(bz.text or "", bonus_idx, text)
+            rewards: list[dict] = slots(sub) if sub is not None else []
             outs.append({"probability": w / total, "weight": w, "rewards": rewards,
                          "label": _tok(sub_id, "EVENTOPTION_")})
         return outs
-    rewards = []
-    for bz in opt.findall("aeBonuses/zValue"):
-        rewards += humanize_bonus(bz.text or "", bonus_idx, text)
-    return [{"probability": 1.0, "weight": None, "rewards": rewards, "label": None}]
+    return [{"probability": 1.0, "weight": None, "rewards": slots(opt), "label": None}]
 
 
 def _subject_kind(tok: str) -> str:
@@ -917,9 +996,10 @@ def build_events(event_result_id: str, story_idx: dict, eopt_idx: dict,
         weight = int(s.findtext("iWeight") or "0")
         conditions = [subject_label(p.findtext("Second") or "")
                       for p in s.findall("SubjectExtras/Pair") if p.findtext("Second")]
-        guaranteed: list[str] = []
-        for bz in s.findall("aeBonuses/zValue"):
-            guaranteed += humanize_bonus(bz.text or "", bonus_idx, text)
+        subs, _aliases = story_subjects(s)
+        guaranteed: list[dict] = []
+        for i, bz in enumerate(s.findall("aeBonuses/zValue")):
+            guaranteed += humanize_bonus(bz.text or "", bonus_idx, text, subjects=subs, slot=i)
 
         options = []
         for oz in s.findall("aeOptions/zValue"):
@@ -930,7 +1010,7 @@ def build_events(event_result_id: str, story_idx: dict, eopt_idx: dict,
                 "id": oz.text,
                 "text": clean_text(text.get(opt.findtext("Text") or "", "")),
                 "requirements": option_requirements(opt),
-                "outcomes": option_outcomes(opt, eopt_idx, bonus_idx, text),
+                "outcomes": option_outcomes(opt, eopt_idx, bonus_idx, text, subs),
                 "raw": option_raw(opt, eopt_idx, bonus_idx),
             })
 
