@@ -4,6 +4,10 @@ Build src/data/stat-scaling.json — the four character ratings (Wisdom,
 Charisma, Courage, Discipline) and how each role's effect scales with the
 rating value, computed PURELY from the game's own formula (no spreadsheet).
 
+Agent yields on /stat-scaling (cited here, not on the page): City.calculateAgentYield
+and InfoHelpers.getRatingYieldAgentPercent, applied to City.getBaseYieldNet (the
+city's yield before percentage modifiers).
+
 Source of truth (all XML + the decompiled C# the formula lives in):
   rating.xml   → per-rating base rates:
                    aiYieldCourtRate     (Leader flat yield, the signature yield)

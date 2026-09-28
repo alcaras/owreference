@@ -75,7 +75,7 @@ const graphData = {
   title="Stat Scaling"
   active="stat-scaling"
   pageMark="📈"
-  description="How each character rating, meaning Wisdom, Charisma, Courage and Discipline, turns into yields and combat bonuses by role and rating value, from +25 down to −5, computed from the game's own formula. Includes the Chancellor, Spymaster and Ambassador council seats and a calculator for agent yields, and compares the triangular scaling of normal play with the linear scaling of Competitive Mode. Every number is derived from rating.xml, council.xml and yield.xml through the triangle formula in the game code, rather than from the legacy spreadsheet."
+  description="How each character rating, meaning Wisdom, Charisma, Courage and Discipline, turns into yields and combat bonuses by role and rating value, from +25 down to −5, computed from the game's own formula. Includes the Chancellor, Spymaster and Ambassador council seats and a calculator for agent yields, and compares the triangular scaling of normal play with the linear scaling of Competitive Mode."
   pageStats={[
     { label: 'stats', value: stats.length },
     { label: 'roles', value: allRoles.length },
@@ -85,31 +85,25 @@ const graphData = {
 >
   <section class="scale-intro">
     <p>
-      A character's <b>rating</b> in a skill turns into ongoing effects that depend on the
-      <b>role</b> they hold. The amounts come from the game's rating formula, which applies a
-      triangular curve (<code>triangleOffset</code> and <code>triangleBoost</code>) to each
-      rating's base rate in <code>rating.xml</code>. <b>Competitive Mode</b>, which is the
-      <i>Lower Character Yields</i> option, replaces the triangular curve with a <b>linear</b> one
-      through an equivalent rating of {ratingEquivalent}, which reduces the payoff of extreme
-      ratings.
+      What a character's <b>rating</b> is worth depends on the <b>role</b> they hold. This page
+      shows the payout for every rating in every role. Normally high ratings pay off on a
+      triangular curve. <b>Competitive Mode</b> (the <i>Lower Character Yields</i> option) makes it
+      a <b>linear</b> one, through an equivalent rating of {ratingEquivalent}, so extreme ratings
+      pay less.
     </p>
     <ul class="scale-roles">
-      <li><b>Leader</b> gives a flat amount of the stat's signature yield, using that yield's own <code>iTriangleOffset</code>.</li>
+      <li><b>Leader</b> gives a flat amount of the stat's signature yield, with that yield's own triangle offset.</li>
       <li><b>Governor</b> gives a percentage boost to that yield, scaled by the triangle.</li>
       <li><b>Agent</b> gives a percentage boost to that yield, rising linearly with the rating. See the <a href="#agent-calc">calculator below</a>.</li>
       <li><b>General</b> gives a combat bonus to Crit, Defense, Attack or Unit XP, scaled by the triangle.</li>
-      <li><b>Council seats</b>, meaning <b>Chancellor</b>, <b>Spymaster</b> and <b>Ambassador</b>, each turn
-        specific ratings into flat yields (<code>council.xml</code>), scaled by the triangle of the rating
-        with <b>the seat yield's own <code>iTriangleOffset</code></b>. Patch 1.0.84658 extended the offsets
-        here, because seats used to scale at offset 0, which is what reduced Ambassador Culture and
-        Spymaster Science. Some seat yields are empire-wide per turn and some are <i>per city</i>, marked
-        <code>/city</code> in the column header. The Grand Vizier seat grants no rating yields, and it runs
-        ungoverned cities instead, as described on <a href={`${base}grand-vizier`}>Grand Vizier Rulership</a>.</li>
+      <li><b>Council seats</b> (<b>Chancellor</b>, <b>Spymaster</b>, <b>Ambassador</b>) turn
+        specific ratings into flat yields, scaled by the triangle with <b>the yield's own offset</b>.
+        Since patch 1.0.84658 seats use these offsets, which reduced Ambassador Culture and Spymaster
+        Science. Some seat yields are empire-wide and some are <i>per city</i>, marked /city in the
+        column header. The Grand Vizier seat grants no rating yields; it runs ungoverned cities instead
+        (see <a href={`${base}grand-vizier`}>Grand Vizier Rulership</a>).</li>
     </ul>
-    <p class="scale-note">
-      The numbers below are the raw output of the game formula, so they can differ from the
-      normalised display in the legacy spreadsheet. <b>Competitive Mode is shown by default.</b>
-    </p>
+    <p class="scale-note"><b>Competitive Mode is shown by default.</b></p>
   </section>
 
   <section class="sg-panel" id="sg-panel">
@@ -204,26 +198,23 @@ const graphData = {
     <div class="scale-intro">
       <p>
         Agents become available once a <b>Spymaster</b> sits on your council. You can send courtiers,
-        characters with the <b>Hero</b> or <b>Schemer</b> archetype, and clergy of a world religion into
-        a foreign city as agents, although clergy can only enter cities that follow their religion.
-        Taking the job gives the character +20 opinion of you.
+        <b>Hero</b> and <b>Schemer</b> characters, and clergy of a world religion into a foreign city.
+        Clergy can only enter cities that follow their religion. Taking the job gives the character
+        +20 opinion of you.
       </p>
       <p>
-        Each turn the agent skims the <b>target city's base yields</b>
-        (<code>City.calculateAgentYield</code> / <code>InfoHelpers.getRatingYieldAgentPercent</code>):
-        every rating contributes <b>rating × 5%</b> of the city's base signature yield, and all four
-        run at once, with Wisdom giving Science, Charisma giving Civics, Courage giving Training and
-        Discipline giving Money. That percentage is scaled by the <b>agent's opinion of you</b>, which
-        runs from −200% at Furious to +100% at Friendly, so a Friendly agent yields double and an Angry
-        one yields nothing. A <b>Schemer</b> then adds a flat
-        <b>+{agentCalc.schemerModifier} percentage points</b> per yield, applied <i>after</i> the opinion
-        scaling, so the Schemer bonus is never reduced and it works even at rating 0.
+        Each turn the agent skims the <b>target city's base yields</b>. Every rating takes
+        <b>rating × 5%</b> of its signature yield, all four at once: Wisdom takes Science, Charisma
+        Civics, Courage Training and Discipline Money. The <b>agent's opinion of you</b> scales that
+        percentage, from −200% at Furious to +100% at Friendly: a Friendly agent yields double, an
+        Angry one nothing. A <b>Schemer</b> then adds a flat
+        <b>+{agentCalc.schemerModifier} percentage points</b> per yield <i>after</i> opinion, so it is
+        never reduced and works even at rating 0.
       </p>
       <p>
-        "Base" here means <code>getBaseYieldNet</code>, which is the city's yield <i>before its
-        percentage modifiers</i>, so the owner's percentage buildings, governor and specialists do not
-        multiply what you take. Agent scaling is already linear, so Competitive Mode does not change
-        it.
+        "Base" means the city's yield <i>before percentage modifiers</i>, so the owner's percentage
+        buildings, governor and specialists do not multiply what you take. Agent scaling is already
+        linear, so Competitive Mode does not change it.
       </p>
     </div>
 
@@ -261,9 +252,9 @@ const graphData = {
       <p class="ac-result" id="ac-result"></p>
       <p class="ac-breakdown" id="ac-breakdown"></p>
       <p class="scale-note">
-        The maths is the game's integer maths, where percentages truncate toward zero and the yield is
-        truncated to a tenth. With a negative rating the opinion scaling changes sign, so when the rating
-        is a penalty a hostile agent hurts less and a friendly one helps less.
+        As in the game, percentages and the yield (to a tenth) truncate toward zero. With a
+        negative rating the opinion scaling flips: a hostile agent hurts less and a friendly one helps
+        less.
       </p>
     </div>
   </section>
@@ -477,7 +468,6 @@ const graphData = {
 <style>
   .scale-intro { max-width: 60rem; margin: 0 0 1.25rem; color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
   .scale-intro p { margin: 0 0 0.6rem; }
-  .scale-intro code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-elev-2); padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
   .scale-roles { margin: 0 0 0.6rem; padding-left: 1.1rem; display: grid; gap: 0.2rem; }
   .scale-roles b { color: var(--text); }
   .scale-note { font-size: 0.82rem; color: var(--text-faint); font-style: italic; }

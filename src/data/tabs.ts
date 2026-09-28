@@ -36,7 +36,7 @@ export const TABS: Tab[] = [
     summary: 'When barbarian sites are adopted by a real tribe, with start turns, odds per turn and what blocks it',
     willContain: [
       'The per-turn roll and its start turn by tribe level',
-      'The 12-tile pathfound search for an adopting tribe',
+      'The 12-tile search for an adopting tribe',
       'Why a nearby player unit or a wounded defender cancels it',
     ],
   },
@@ -76,7 +76,7 @@ export const TABS: Tab[] = [
   {
     slug: 'archetype-tendencies', icon: '🎲', label: 'Archetype Tendencies', section: 'Families',
     status: 'built', sourceSheet: '👑👪🎓 Nations, Families, and Archetype Tendencies',
-    summary: 'Which families of each nation roll which archetypes (×10/×5 weights)',
+    summary: 'Which archetypes each nation\'s families tend to roll',
   },
 
   // ── Characters ────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ export const TABS: Tab[] = [
   {
     slug: 'stat-scaling', icon: '📈', label: 'Stat Scaling', section: 'Characters',
     status: 'built', sourceSheet: '🟣 Wisdom Base / CM (+ Charisma, Courage, Discipline)',
-    summary: 'Per-rating yield/combat scaling by role, Non-competitive vs Competitive',
+    summary: 'What each rating point gives a leader, governor, agent or general, with and without Competitive Mode',
     willContain: ['All 4 stats, rating −3..+15, Leader/Governor/Agent/General, both modes'],
   },
   {
@@ -126,7 +126,7 @@ export const TABS: Tab[] = [
   {
     slug: 'cognomens', icon: '👑', label: 'Cognomens', section: 'Characters',
     status: 'built', sourceSheet: '👑Cognomens',
-    summary: 'Title/cognomen unlock conditions',
+    summary: 'What earns each cognomen',
     willContain: ['All cognomens with unlock triggers and bonuses'],
   },
   {
@@ -151,12 +151,12 @@ export const TABS: Tab[] = [
   {
     slug: 'council', icon: '🏛️', label: 'Council & Courtiers', section: 'Court',
     status: 'built', sourceSheet: '',
-    summary: 'Council seats (triangular rating yields) and the four courtier types',
+    summary: 'Council seats, what each rating yields there, and the four courtier types',
   },
   {
     slug: 'grand-vizier', icon: '📜', label: 'Grand Vizier Rulership', section: 'Court',
     status: 'built', sourceSheet: '',
-    summary: 'How the Grand Vizier picks what every ungoverned city builds, with the AI planner, its filters and its value math',
+    summary: 'How the Grand Vizier picks what every city without a governor builds',
   },
   {
     slug: 'missions', icon: '🎯', label: 'Missions', section: 'Court',
@@ -206,10 +206,10 @@ export const TABS: Tab[] = [
   {
     slug: 'religious-spread', icon: '✨', label: 'Religious Spread', section: 'Religion',
     status: 'built', sourceSheet: '',
-    summary: 'How a religion reaches a city: the per-turn chance, which city it picks by distance, connection and existing religions, Disciples, shrines, tribes and founding',
+    summary: 'How a religion spreads: the chance each turn, which city it picks, and the other ways it arrives',
     willContain: [
       'Per-turn spread chance: base, map size, theologies, player bonuses',
-      'The target pick from Game.spreadReligion, with exact odds and a calculator',
+      'Which city a spread picks, with exact odds and a calculator',
       'Disciples, tribal conversion, spreading improvements, blocking, founding',
     ],
   },
@@ -230,8 +230,8 @@ export const TABS: Tab[] = [
   {
     slug: 'border-expansion', icon: '🗺️', label: 'Border Expansion', section: 'Cities',
     status: 'built', sourceSheet: '',
-    summary: 'How city territory is created and grows: the four spread rules, chains, founding, buying, growth bonuses',
-    willContain: ['The four spread rules from the territory code', 'Founding, minor cities, buying tiles, growth bonuses', 'Computed hex boards with the grab order numbered'],
+    summary: 'The rules that expand your borders: founding, specialists, urban tiles, buying and growth bonuses',
+    willContain: ['The rules that add tiles to your territory', 'Founding, minor cities, buying tiles, growth bonuses', 'Hex boards showing the order tiles join'],
   },
   {
     slug: 'urban-improvements', icon: '🏡', label: 'Urban Improvements', section: 'Cities',
@@ -277,7 +277,7 @@ export const TABS: Tab[] = [
   {
     slug: 'autonomous-rule', icon: '🗽', label: 'Autonomous Rule', section: 'Cities',
     status: 'built', sourceSheet: '',
-    summary: 'Autonomous cities, covering what they can and cannot build, how they choose, and the events that grant and end autonomy',
+    summary: 'What autonomous cities can build, how they choose, and the events that grant and end autonomy',
   },
   {
     slug: 'hurrying', icon: '⏩', label: 'Hurrying Production', section: 'Cities',
@@ -390,7 +390,7 @@ export const TABS: Tab[] = [
     slug: 'zone-of-control', icon: '🛑', label: 'Zone of Control', section: 'Combat',
     status: 'built', sourceSheet: '',
     summary: 'Which tiles enemy units control and the one step they refuse',
-    willContain: ['The ZOC rule from the movement code', 'Who exerts, who ignores, who is pinned', 'Computed hex boards: walls, rivers, cities, water'],
+    willContain: ['The zone of control rule', 'Who exerts, who ignores, who is pinned', 'Hex boards: walls, rivers, cities, water'],
   },
   {
     slug: 'unit-counters', icon: '⚔️', label: 'Unit Counters at-a-glance', section: 'Combat',
@@ -419,7 +419,7 @@ export const TABS: Tab[] = [
     status: 'built', sourceSheet: '',
     summary: 'What every improvement pays when pillaged, and how Assyria doubles it',
     willContain: [
-      'Payout per improvement (aiYieldPillage), repair cost, destroy countdown',
+      'Payout per improvement, repair cost, destroy countdown',
       "Assyria's +100% Pillage Yield worked through Utils.modify",
       'What cannot be pillaged; occurrences, events, razing, burning; war score and events',
     ],
@@ -522,7 +522,7 @@ export const TABS: Tab[] = [
   {
     slug: 'subjects', icon: '🤝', label: 'Subjects', section: 'Events',
     status: 'built', sourceSheet: '',
-    summary: 'The casting roles of the event system, covering 2,062 subject templates and their filters',
+    summary: 'The roles events cast characters into, and the filters on each',
   },
 
   // ── Concepts ──────────────────────────────────────────────────────
@@ -539,7 +539,7 @@ export const TABS: Tab[] = [
   {
     slug: 'turn-order', icon: '🔄', label: 'Turn Order', section: 'Concepts',
     status: 'built', sourceSheet: '',
-    summary: 'The exact order of operations at turn start, for the rollover and for each player, from the game code',
+    summary: 'What happens at the start of a turn, in order, for the game and for each player',
   },
   {
     slug: 'difficulty', icon: '🎚️', label: 'Difficulty & Advantages', section: 'Concepts',
@@ -561,7 +561,7 @@ export const TABS: Tab[] = [
   {
     slug: 'streamer', icon: '🎙️', label: 'Streamer Overlay', section: 'Tools',
     status: 'built', sourceSheet: '',
-    summary: 'Push reference cards to an OBS overlay, covering units, techs, traits and events',
+    summary: 'Show reference cards on stream through an OBS overlay',
     willContain: [
       'Search across all entities and events, live preview of the overlay card',
       'OBS setup: Browser Source overlay + Custom Browser Dock controls',
@@ -583,7 +583,7 @@ export const TABS: Tab[] = [
     status: 'built', sourceSheet: '',
     summary: 'How many VP a game takes to win, by city sites, players, teams and the setup option',
     willContain: [
-      'The engine\'s own routine (Game.cs getVPToWin) replayed for any setup',
+      'The game\'s own VP target calculation, for any setup',
       'Sites → target table for all four Victory Point options, tournament defaults',
       'Pool breakdown: culture levels, the 13-wonder cap, holy sites, projects',
     ],
@@ -591,10 +591,10 @@ export const TABS: Tab[] = [
   {
     slug: 'cognomens-tracker', icon: '🧮', label: 'Cognomens Tracker', section: 'Tools',
     status: 'built', sourceSheet: '👑Cognomens (Tracker)',
-    summary: 'Interactive calculator: which title your leader earns',
+    summary: 'Which cognomen your leader earns, from your F5 stats',
     willContain: [
-      'Per-stat inputs replaying the exact in-game award routine',
-      'Ruler-number and game-speed threshold scaling (from game source)',
+      'Per-stat inputs run through the game\'s own award rules',
+      'Thresholds scaled by ruler number and game speed',
       'Per-track progress to the next title',
     ],
   },
@@ -606,7 +606,7 @@ export const TABS: Tab[] = [
   {
     slug: 'patch-notes', icon: '🛠', label: 'Patch notes', section: 'Tools',
     status: 'built', sourceSheet: '',
-    summary: "Mohawk's official build notes per release, plus the XML changes we detected",
+    summary: "Mohawk's official build notes for each release, plus the data changes we found",
   },
 ];
 

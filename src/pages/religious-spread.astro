@@ -121,22 +121,6 @@ const otherImps = D.spreadImprovements.filter(r => r.class !== 'IMPROVEMENTCLASS
 const dissentDlcs = [...new Set(D.dissent.map(d => d.dlc).filter(Boolean))];
 const suppressCost = D.suppress[0]?.cost?.[0];
 
-const codeList: { what: string; where: string }[] = [
-  { what: 'Rolled once per game turn, then founding', where: `${D.code.doTurn} Game.doTurn` },
-  { what: 'Per-turn chance: base + map size + theologies + every player\'s bonuses', where: `${D.code.getReligionSpread} Game.getReligionSpread` },
-  { what: 'One roll per founded religion without bNoSpread', where: `${D.code.doReligionSpread} Game.doReligionSpread` },
-  { what: 'Target pick: distance × connection × (religions + 1) × random, lowest wins', where: `${D.code.spreadReligion} Game.spreadReligion · connection ${D.code.connection.split(':')[1]} · roll ${D.code.roll.split(':')[1]}` },
-  { what: 'Which cities may be picked', where: `${D.code.eligible} City.isReligionSpreadEligible` },
-  { what: 'bNoReligionSpread effects (Iconography, Dissent)', where: `${D.code.noSpreadUnlock}` },
-  { what: 'Hex distance; the integer multiply behind the connection discount', where: `${D.code.distance} Utils.distance · ${D.code.modify} Utils.modify` },
-  { what: 'Disciple spread: next to the territory, city lacks the religion', where: `${D.code.disciple} Unit.canSpreadReligion` },
-  { what: 'Purge removes the religion and bans it from the roll', where: `${D.code.purge} Unit.purgeReligion` },
-  { what: 'Tribal conversion cost and effect', where: `${D.code.tribeCost} getSpreadReligionTribeCost · ${D.code.tribeSpread} spreadReligionTribe · ${D.code.tribeDiplomacy} Player.canSpreadReligionTribe` },
-  { what: 'Finished improvement spreads (or founds) its religion', where: `${D.code.improvementSpread} Tile.doImprovementFinished` },
-  { what: 'A converted tile passes its religion to the city that gains it', where: `${D.code.tileCarry} Tile.setOwner` },
-  { what: 'Founding: requirements and the city pick', where: `${D.code.canFoundGame} Game.canFoundReligion · ${D.code.canFoundCity} City.canFoundReligion · ${D.code.found} doReligionFound · ${D.code.foundValue} getReligionCityFoundValue` },
-];
-
 const calcData = {
   conn: CONN,
   religions: rolling.map(r => ({ id: r.id, name: r.name, base: r.spreadPercent })),
@@ -432,14 +416,6 @@ const calcData = {
     <p class="rs-note" data-prose="found.note" set:html={inline('found.note')} />
   </section>
 
-  <section class="rs-sec">
-    <h2 class="rs-h" data-prose="code.heading" set:html={inline('code.heading')} />
-    <ul class="rs-list">
-      {codeList.map(c => (
-        <li><span class="rs-list__what">{c.what}</span><span class="rs-cite">{c.where}</span></li>
-      ))}
-    </ul>
-  </section>
 </Base>
 
 <script>
@@ -548,7 +524,6 @@ const calcData = {
   .rs-body ul, .rs-body ol { margin: 0 0 0.6rem; padding-left: 1.2rem; }
   .rs-body li { margin: 0 0 0.3rem; }
   .rs-body strong, .rs-note strong, .rs-note b { color: var(--text); }
-  .rs-body code, .rs-note code, .rs-cite code { font-family: var(--font-mono); font-size: 0.92em; color: var(--text-soft); }
 
   .rs-quad { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem 1.4rem; margin-top: 0.4rem; }
   .rs-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 1.2rem; }

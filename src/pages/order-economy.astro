@@ -7,6 +7,17 @@
 //
 // Tile densities default to measured values from owtournamentatlas (128 map
 // configs): Horse 0.43 / city site, Camel+Elephant 0.31, all pastures 0.93.
+//
+// Grounding (kept off the page): Yuezhi's Horse is BONUS_NATION_YUEZHI
+// FoundBonus. Shrines are iMaxPlayerCount 1; LAW_POLYTHEISM sets
+// abNoImprovementClassMax for Shrines (checked at City.cs:10277). Kush is
+// EFFECTCITY_NATION_KUSH aiImprovementClassModifier SHRINE +50; the per-wonder
+// output is scaled too because Tile.cs:13608 adds maiAdjacentWonderYieldOutput
+// into the total getImprovementModifierForGovernor modifies (Tile.cs:13717 ->
+// City.cs:4365). Legitimacy -> Orders is YIELD_ORDERS iPerLegitimacy 1 in
+// yield.xml, added unconditionally in Player.calculateNonCityYield. Schemer
+// conversion is CONVERT_LEGITIMACY. Decree prereqs are ORed at City.cs:9914;
+// RequiresCulture is an exact culture level.
 import Base from '../layouts/Base.astro';
 import data from '../data/order_economy.json';
 
@@ -39,13 +50,9 @@ const payload = {
   ]}
 >
   <p class="lede">
-    <b>Orders per turn that differ by nation</b>, at <b id="l-cities">9</b> cities, of which
-    <span id="l-cpf">3</span> sit in each Orders family. Only the sources that vary by nation are
-    counted, e.g. family classes, that nation's <b>starting techs</b>, its own Sun shrine and its
-    national effect. Garrisons, citizens, the Pyramids wonder and a plain temple's base Orders are the
-    same for everyone, so they would move every row equally and are left out. Tile densities are
-    <b>measured</b> from <a href="https://alcaras.github.io/owtournamentatlas/">owtournamentatlas</a>
-    across 128 map configurations.
+    Which nations get the most Orders per turn from what sets them apart: family classes,
+    starting techs, their own shrine and their national effect. Shown at
+    <b id="l-cities">9</b> cities, with <span id="l-cpf">3</span> in each Orders family.
   </p>
 
   <section class="asm">
@@ -109,7 +116,7 @@ const payload = {
   </div>
 
   <section class="rates">
-    <h2 class="rates__h">What the XML says</h2>
+    <h2 class="rates__h">What gives Orders</h2>
     <div class="rates__cols">
       <div>
         <h3>Family classes that give Orders</h3>
@@ -120,8 +127,8 @@ const payload = {
           <li><b>Clerics</b>: temples +{D.classes.FAMILYCLASS_CLERICS.templeModifier}%, which doubles a
             temple's Orders in its cities. With <b>Revelation</b> a temple makes
             {D.buildings.templeWorldReligion.orders} + {D.buildings.revelationTemple.orders} =
-            {D.buildings.templeWorldReligion.orders + D.buildings.revelationTemple.orders} Orders, and a
-            Clerics family doubles that larger number, so each extra temple is worth more to them.</li>
+            {D.buildings.templeWorldReligion.orders + D.buildings.revelationTemple.orders} Orders, and
+            Clerics double that.</li>
           <li>The other six classes give no Orders.</li>
         </ul>
       </div>
@@ -132,9 +139,8 @@ const payload = {
           <li><b>Camp</b>: +{D.tiles.camp.byResource.Camel} on <b>Camel and Elephant only</b>, and it needs {D.tiles.camp.techName} ({D.techs.TECH_TRAPPING.cost} sci, no prereq)</li>
           <li>Cattle, Sheep, Pig and Goat pastures and Game and Fur camps give <b>no</b> Orders.</li>
           <li><b>Persia</b> adds +0.5 to <i>every</i> pasture on any resource, so a horse pasture pays 1.0.</li>
-          <li><b>Yuezhi</b> founds every city with a <b>Horse</b> resource
-            (<code>BONUS_NATION_YUEZHI</code> FoundBonus), so it gains +0.5 Orders per city on top of
-            the map's horses, and it starts with Husbandry to use them.</li>
+          <li><b>Yuezhi</b> founds every city with a <b>Horse</b> resource, so it gains +0.5 Orders per
+            city on top of the map's horses, and it starts with Husbandry to use them.</li>
         </ul>
       </div>
       <div>
@@ -146,33 +152,26 @@ const payload = {
               {n.shrineModifier ? <i> (incl. this nation's +{n.shrineModifier}% Shrines)</i> : null}</li>
           ))}
           <li class="muted"><b>Sun</b> shrines pay a flat +0.5, and <b>Kingship</b> shrines pay
-            +1 <i>per adjacent Wonder</i>, so Babylonia and Greece do have an Orders shrine, as long as
-            you place a Wonder beside it. A player normally gets <b>one shrine of a type</b>
-            (<code>iMaxPlayerCount 1</code>), but <b>Polytheism</b> removes the cap
-            (<code>LAW_POLYTHEISM</code> sets <code>abNoImprovementClassMax</code> for Shrines, checked
-            at <code>City.cs:10277</code>), so tick it and you can run one in every city. Shrines need
-            Divination. The other eight nations' pantheons have no Sun shrine at all.</li>
-          <li class="muted"><b>Kush multiplies both of its shrines by 1.5</b>, because
-            <code>EFFECTCITY_NATION_KUSH</code> carries <code>aiImprovementClassModifier</code>
-            SHRINE +50, so Melul pays 0.75 flat and Amani 1.5 per adjacent Wonder. The output per
-            wonder is scaled as well, because <code>Tile.cs:13608</code> adds
-            <code>maiAdjacentWonderYieldOutput</code> into the same total that
-            <code>getImprovementModifierForGovernor</code> modifies
-            (<code>Tile.cs:13717</code> → <code>City.cs:4365</code>).</li>
+            +1 <i>per adjacent Wonder</i>, so Babylonia and Greece have an Orders shrine if you place a
+            Wonder beside it.</li>
+          <li class="muted">You normally get <b>one shrine of each type</b>. <b>Polytheism</b> removes
+            that limit, so you can run one in every city.</li>
+          <li class="muted">Shrines need Divination. The other eight nations' pantheons have no Sun
+            shrine.</li>
+          <li class="muted"><b>Kush multiplies both of its shrines by 1.5</b>: Melul pays 0.75 flat and
+            Amani 1.5 per adjacent Wonder.</li>
         </ul>
       </div>
       <div>
         <h3>Legitimacy → Orders</h3>
         <ul>
-          <li><b>{D.buildings.legitimacyPerOrder} Orders per Legitimacy</b>, always on. It is
-            <code>iPerLegitimacy 1</code> in <code>yield.xml</code>, applied without any condition in
-            <code>Player.calculateNonCityYield</code>, and the game fixes the rate rather than exposing
-            it as a setting.</li>
+          <li><b>{D.buildings.legitimacyPerOrder} Orders per Legitimacy</b>, always on, so 100
+            Legitimacy is +10 Orders per turn.</li>
           <li><b>Kush</b>: Kushite Pyramids +4 Legitimacy, one per city</li>
           <li><b>Aksum</b>: Mint Coin +20 (Strong) rising to +40 (Legendary), upgrading in place</li>
-          <li class="muted">A Schemer leader can also spend Legitimacy for a one-off
-            +10 Orders (<code>CONVERT_LEGITIMACY</code>, costing 2 Legitimacy and rising +1 per use,
-            once a turn). The option depends on the leader, so it is not scored here.</li>
+          <li class="muted">A Schemer leader can also spend Legitimacy for a one-off +10 Orders, once a
+            turn. It costs 2 Legitimacy, rising by 1 per use. It depends on the leader, so it is not
+            scored here.</li>
         </ul>
       </div>
       <div>
@@ -182,29 +181,25 @@ const payload = {
             <li>{d.name}: {d.civics} Civics for <b>{d.orders} Orders</b> <i>({d.culture})</i></li>
           ))}
         </ul>
-        <p class="fine">Decree converts Civics into Orders as often as you can pay for it, and it
-        yields nothing per turn, so it sits outside the table. The seat on its own unlocks it, and
-        Constitution is an alternative route rather than a requirement, because
-        <code>City.cs:9914</code> ORs the prereqs. <code>RequiresCulture</code> asks for an exact
-        culture level, so you get one tier at a time.</p>
+        <p class="fine">Decree turns Civics into Orders as often as you can pay, but gives nothing
+        per turn, so it is not in the table. The seat alone unlocks it; Constitution also does. Each
+        tier needs one exact culture level, so you get one tier at a time.</p>
       </div>
     </div>
     <p class="fine">
-      <b>Legitimacy pays Orders directly.</b> <code>YIELD_ORDERS</code> carries
-      <code>iPerLegitimacy 1</code>, and <code>Player.calculateNonCityYield</code> adds
-      <code>getLegitimacy() × iPerLegitimacy</code> to the rate with no condition attached, so every
-      point of Legitimacy is <b>+0.1 Orders per turn</b> and <b>100 Legitimacy is +10 Orders</b>.
-      <b>Kushite Pyramids</b> (+4 each, one per city) and <b>Aksum's Mint Coin</b> (+20 at Strong and
-      +40 at Legendary, each tier replacing the last) are therefore Orders sources, and both are scored
-      in the Legit column from Mid onward.
-      Some sources are <b>left out on purpose</b>, because they are the same for every nation. They are
-      garrisons +0.5, citizens +0.1 each, the Pyramids wonder +1, a plain temple's +0.5, and laws such
-      as Serfdom (+5 flat).
-      <b>Assyria's +2 per kill</b> is scored from a <b>measured</b> rate of 0.55 military kills per
-      player per turn, taken from 639 player games in the owglick save corpus. The median is 0.53 and
-      the middle half of games falls between 0.39 and 0.71, while games past turn 60 run a little higher
-      at 0.59. <b>Tamil's +1 per Harbor</b> is scored once you have Cartography, which is tier 5 and so
-      late game only.
+      The Kushite Pyramids and Aksum's Mint Coin are scored in the Legit column from Mid onward.
+    </p>
+    <p class="fine">
+      Sources that are the same for every nation are <b>left out</b>: garrisons +0.5, citizens +0.1
+      each, the Pyramids wonder +1, a plain temple's +0.5, and laws such as Serfdom (+5 flat).
+    </p>
+    <p class="fine">
+      Tile densities are <b>measured</b> from
+      <a href="https://alcaras.github.io/owtournamentatlas/">owtournamentatlas</a> across 128 map
+      configurations. <b>Assyria's +2 per kill</b> uses a measured 0.55 military kills per player per
+      turn, from 639 player games in the owglick save corpus (median 0.53, middle half 0.39 to 0.71,
+      0.59 past turn 60). <b>Tamil's +1 per Harbor</b> counts once you have Cartography, which is tier
+      5, so late game only.
     </p>
   </section>
 
@@ -458,7 +453,6 @@ const payload = {
     border-radius: 8px; padding: 0.28rem 0.65rem; margin: 0 0 0.8rem; }
   .lede { max-width: 84ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
   .lede a { color: var(--accent); }
-  .lede code, .fine code, .rates code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-elev-2); padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
 
   .asm { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elev); padding: 0.2rem 0.9rem 0.6rem; margin: 0 0 1.1rem; }
   .asm__row { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.55rem 0; }

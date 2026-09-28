@@ -95,6 +95,19 @@ const channels = [
 ];
 const availability = Object.fromEntries(channels.map(c => [c.key, { unit: c.unit, project: c.project }]));
 
+// Grounding (kept off the page): City.cs getHurryCivicsCost / getHurryTrainingCost /
+// getHurryMoneyCost / getHurryOrdersCost / getHurryPopulationCost /
+// getModifiedHurryCost; escalation `iCost *= (10 + count); iCost /= 10` with
+// per-city per-channel counters miHurry*Count, zeroed at City.cs:283 and only
+// raised by incrementHurry*Count. Growth surcharge is yield.xml YIELD_GROWTH
+// iHurryModifier +50. Discontent is getHurryDiscontent (no count term; all five
+// hurry*Build call it the same way), stored in tenths, UI divides by 10
+// (HelpText.cs:1316); Monetary Reform is iHurryDiscontentModifier -100. Gates are
+// canHurry: Damaged, getBuildTurnsLeft == 1, HURRY_CULTURE; switched off by
+// EFFECTCITY_OPINIONFAMILY_FURIOUS, Autonomous Rule, Shared Power. Per-copy
+// escalation is iProductionCity. Costs are charged with changeYieldStockpileWhole
+// (whole displayed yield). Constants from globalsInt.xml.
+//
 // Everything the client needs to replay City.cs integer arithmetic exactly.
 const payload = {
   globals: D.globals,
@@ -114,14 +127,9 @@ const payload = {
   ]}
 >
   <p class="lede">
-    What <strong>Hurry Production</strong> costs, following the engine's own integer maths. Four
-    things move the number. They are the <b>production still missing</b>, how many times you have
-    already hurried <b>that same channel in that city</b>, which adds 10% each time and never
-    resets, whether the build is <b>under 50% done</b>, which adds up to 50%, and whether it is
-    produced with <b>Growth</b> rather than Training or Civics, which adds 50%. The unit's identity
-    never enters the formula, and only its production cost and production type do, so the picker
-    below is a convenience over typing a cost. See
-    <a href={`${base}hurrying`}>Hurrying Production</a> for which channels you can unlock.
+    What it costs to <strong>Hurry Production</strong> in each yield, and how that cost climbs
+    each time you hurry again in the same city. See
+    <a href={`${base}hurrying`}>Hurrying Production</a> for how to unlock each yield.
   </p>
 
   <section class="asm">
@@ -247,88 +255,64 @@ const payload = {
   </div>
 
   <section class="rates">
-    <h2 class="rates__h">What the code says</h2>
+    <h2 class="rates__h">How the cost is worked out</h2>
     <div class="rates__cols">
       <div>
-        <h3>The escalation <span class="tag">per city, per channel</span></h3>
+        <h3>Repeat hurries <span class="tag">per city, per yield</span></h3>
         <ul>
-          <li>Every hurry runs <code>iCost *= (10 + count); iCost /= 10</code>, so the
-            <b>n</b>th repeat costs <b>(10+n)/10</b> of the base. After ten Civics hurries in a
-            city, the eleventh costs double.</li>
-          <li>The counters are per <b>city</b> and per <b>channel</b>
-            (<code>miHurryCivicsCount</code>, <code>miHurryTrainingCount</code>, …). Hurrying with
-            Money never raises your Civics price.</li>
-          <li>Nothing in the code resets the counters. They are set to 0 when the city is created
-            and only ever increased (<code>City.cs:283</code>,
-            <code>incrementHurry*Count</code>).</li>
+          <li>Each earlier hurry adds 10% to the base cost. After ten Civics hurries in a city, the
+            eleventh costs double.</li>
+          <li>The count is kept per <b>city</b> and per <b>yield</b>. Hurrying with Money never
+            raises your Civics price.</li>
+          <li>The count never goes down.</li>
         </ul>
       </div>
       <div>
         <h3>Base cost per channel</h3>
         <ul>
-          <li><b>Civics and Training</b> cost <code>1.5 × missing + 100</code>, rounded up to a
+          <li><b>Civics and Training</b> cost 1.5 × missing production + 100, rounded up to a
             multiple of 10.</li>
-          <li><b>Money</b> costs <code>5 × missing + 10</code>, rounded up to 10.</li>
-          <li><b>Orders</b> cost <code>missing/10 + 2</code>, with no rounding.</li>
-          <li><b>Citizens</b> are different, because the escalation applies to the <i>missing
-            production</i> first and the cost is then <code>missing/80 + 1</code>. The repeat
-            penalty never touches that one base citizen, and because the division is integer the
-            escalation usually disappears in the rounding, so Citizens often cost the same at nine
-            prior hurries as at none.</li>
+          <li><b>Money</b> costs 5 × missing production + 10, rounded up to 10.</li>
+          <li><b>Orders</b> cost missing production ÷ 10 + 2, with no rounding.</li>
+          <li><b>Citizens</b> cost missing production ÷ 80 + 1, rounded down. The repeat penalty
+            applies to the missing production, not to the extra citizen, and usually vanishes in the
+            rounding. So Citizens often cost the same after nine hurries as after none.</li>
         </ul>
       </div>
       <div>
         <h3>The two multipliers on top</h3>
         <ul>
-          <li><b>Under 50% done.</b> <code>getModifiedHurryCost</code> adds
-            <code>(50 − percent)%</code>, so 0% progress adds 50%, 25% adds 25%, and anything from
-            50% up adds nothing. Hurrying a build you have barely started is the expensive
-            case.</li>
-          <li><b>Growth builds.</b> <code>YIELD_GROWTH</code> is the only yield that carries
-            <code>iHurryModifier</code>, at +50. Workers, Settlers, Scouts and Disciples therefore
-            cost half again as much to hurry as a soldier of the same production cost.</li>
-          <li>Both are applied <i>after</i> the repeat escalation, in that order.</li>
+          <li><b>Under 50% done.</b> The cost goes up by 50% minus the percent done: 0% done adds 50%,
+            25% adds 25%, and 50% or more adds nothing.</li>
+          <li><b>Growth builds.</b> Workers, Settlers, Scouts and Disciples cost 50% more to hurry
+            than a soldier of the same production cost.</li>
+          <li>Both apply after the repeat penalty, in that order.</li>
         </ul>
       </div>
       <div>
         <h3>Discontent and the gates</h3>
         <ul>
-          <li>Every hurry adds <code>missing/100 + 10</code> Discontent whatever the channel. The
-            amount does <b>not</b> escalate with the hurry count, although it does take both
-            multipliers above, and <b>Monetary Reform</b> removes it entirely
-            (<code>iHurryDiscontentModifier −100</code>). In practice it is close to a flat 10 to
-            18 rather than a figure that scales with the build.</li>
-          <li>Because it does not escalate, a city that has already hurried nine times pays the
-            <b>same</b> Discontent as one that never has, and only the yield price climbs.</li>
-          <li class="muted">The community <i>Rush Buy Rules Summary Table</i> in the official
-            manual, on page 220, gives this figure as <code>10 + mp/10</code>. That converts the
-            base to displayed Discontent but not the <code>mp</code> term, because the engine holds
-            Discontent in tenths and the UI divides by 10 (<code>HelpText.cs:1316</code>), so the
-            term for missing production is <code>mp/100</code>. The same table's note that
-            "Discontent ... increases by 10% base too" is also wrong, because
-            <code>getHurryDiscontent</code> has no count term and all five
-            <code>hurry*Build</code> functions call it the same way. Every other row in that table
-            matches the code.</li>
-          <li><code>canHurry</code> refuses outright when the city is <b>Damaged</b>, when the
-            build would finish next turn anyway (<code>getBuildTurnsLeft == 1</code>), or below
-            <b>Developing</b> culture (<code>HURRY_CULTURE</code>).</li>
-          <li>Three city effects switch hurrying off entirely, namely a <b>Furious family</b>
-            (<code>EFFECTCITY_OPINIONFAMILY_FURIOUS</code>), <b>Autonomous Rule</b> and
-            <b>Shared Power</b>. If you anger your family you lose the option completely.</li>
+          <li>Every hurry adds missing production ÷ 100 + 10 Discontent, whatever the yield. Both
+            multipliers above apply to it, so in practice it is about 10 to 18.</li>
+          <li>It does <b>not</b> grow with repeat hurries: your tenth hurry in a city causes the
+            <b>same</b> Discontent as your first.</li>
+          <li><b>Monetary Reform</b> removes it.</li>
+          <li class="muted">The <i>Rush Buy Rules Summary Table</i> in the official manual (page 220)
+            gives this as 10 + missing ÷ 10. The real figure is missing ÷ 100. Its note that
+            "Discontent ... increases by 10% base too" is also wrong. The rest of that table is
+            right.</li>
+          <li>You can't hurry in a <b>Damaged</b> city, below <b>Developing</b> culture, or when the
+            build would finish next turn anyway.</li>
+          <li>A <b>Furious family</b>, <b>Autonomous Rule</b> or <b>Shared Power</b> turns hurrying
+            off in that city.</li>
           <li>Workers, Settlers and Disciples also cost <b>+10 production per copy already built
-            in that city</b> (<code>iProductionCity</code>), which is a separate escalation that
-            feeds the missing production figure above.</li>
+            in that city</b>, which raises the missing production above.</li>
         </ul>
       </div>
     </div>
     <p class="fine">
-      The formulas come from <b>City.cs</b>, namely <code>getHurryCivicsCost</code>,
-      <code>getHurryTrainingCost</code>, <code>getHurryMoneyCost</code>,
-      <code>getHurryOrdersCost</code>, <code>getHurryPopulationCost</code> and
-      <code>getModifiedHurryCost</code>, and the constants come from <code>globalsInt.xml</code>.
-      Costs are charged with <code>changeYieldStockpileWhole</code>, so every figure here is in
-      whole displayed yield. Integer truncation is reproduced exactly, so the numbers should match
-      the in-game tooltip.
+      Every figure is in whole yield, rounded the way the game rounds, so it should match the
+      in-game tooltip.
     </p>
   </section>
 </Base>
@@ -486,8 +470,6 @@ const payload = {
   .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1rem; }
   .lede a { color: var(--accent); }
   .lede b, .lede strong { color: var(--text); }
-  .lede code, .fine code, .rates code { font-family: var(--font-mono); font-size: 0.82em;
-    background: var(--bg-elev-2); padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
 
   .asm { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-elev);
     padding: 0.2rem 0.9rem 0.6rem; margin: 0 0 1.1rem; }

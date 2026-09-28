@@ -31,7 +31,8 @@ SEARCH_SOURCE = "Tile.cs — findNearestSettlementTribe(this, 12)"
 # NOTE the two metrics: the range filter is straight-line hex distance
 # (Tile.distanceTile → Utils.distance) to that tribe's nearest SETTLEMENT tile,
 # while the winner among qualifiers is chosen by findPathDistance. Conversions
-# also register the flipped site as a settlement of the new tribe, so they can
+# also register the flipped site as a settlement of the new tribe
+# (Tile.changeImprovement calls addSettlement), so they can
 # cascade outward from each newly-taken camp.
 
 

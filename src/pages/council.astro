@@ -271,18 +271,16 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
   <div class="legends">
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
-      A seat multiplies its base by the <em>triangle</em> of the seated character's rating, not the rating
-      itself, so with no offset a rating of 1, 2, 3, 4 or 5 multiplies by 1, 3, 6, 10 or 15. Reading
-      the yield as a flat amount per point understates high ratings.
+      A seat multiplies its base by the <em>triangle</em> of the character's rating: with no offset,
+      a rating of 1, 2, 3, 4 or 5 multiplies by 1, 3, 6, 10 or 15. High ratings pay far more than a
+      flat amount per point.
     </div>
     <div class="legend">
       <span class="legend__label">△ offsets</span>
-      Each yield carries its own triangle offset ({offsetList}), and the multiplier is
-      tri(R + offset) − offset, falling back to plain R while R + offset ≤ 0. Money therefore ramps
-      earlier, and Civics, Culture and Science ramp later. Patch 1.0.84658 extended these offsets from
-      court income to <em>council seats</em> as well, where they used to scale at offset 0, and gave
-      Culture its −2, which is what reduced Ambassador culture and Spymaster science. Opinions still
-      scale at offset 0.
+      Each yield has its own offset ({offsetList}). For rating R the multiplier is
+      tri(R + offset) − offset, or plain R while R + offset ≤ 0. So Money ramps up earlier, and
+      Civics, Culture and Science later. Since patch 1.0.84658 council seats use these offsets too,
+      which is what reduced Ambassador culture and Spymaster science. Opinions ignore them.
     </div>
     {meta.notes.map(n => (
       <div class="legend"><span class="legend__label">Note</span><LinkedText text={n} showIcons={false} /></div>
@@ -293,9 +291,9 @@ for (const c of courtiers) searchBlobs[`courtier-${c.slug}`] = JSON.stringify(c)
     </div>
     <div class="legend">
       <span class="legend__label">See also</span>
-      <a href={`${base}jobs`}>Jobs</a> for council seats alongside General/Governor/Agent/Explorer slots,
-      <a href={`${base}archetypes`}>Archetypes</a> for what each eligible archetype does, and
-      <a href={`${base}grand-vizier`}>Grand Vizier Rulership</a> for how the Vizier picks builds in every ungoverned city.
+      <a href={`${base}jobs`}>Jobs</a> for council seats next to General, Governor, Agent and Explorer;
+      <a href={`${base}archetypes`}>Archetypes</a> for what each archetype does;
+      <a href={`${base}grand-vizier`}>Grand Vizier Rulership</a> for how the Vizier picks builds.
     </div>
   </div>
 

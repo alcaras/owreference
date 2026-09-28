@@ -4,6 +4,10 @@ import LinkedText from '../components/LinkedText.astro';
 
 // Constants from reference/XML/Infos/globalsInt.xml and culture.xml; mechanic
 // transcribed from City.cs (getCaptureThreshold / setCaptureTurns / doTribeTurn).
+// Counter: +1 per turn while isUnitCapturingCity (changeCaptureTurns(1)), -1 per
+// turn otherwise, reset by setCaptureTurns(0) on ownership change. Founder test is
+// getCaptureTeam() != getFirstTeam(). Razing on capture (setCaptureTurns): a tribe
+// with GAMEOPTION_ALLOW_CITY_RAZING, or a player at isCityMaxReached().
 //
 //   CITY_BASE_CAPTURE_TURNS      = 2
 //   CITY_CAPTURE_DAMAGE_PERCENT  = 50   (HP the city is left at after it flips)
@@ -32,56 +36,50 @@ const rows = cultures.map(c => ({
   title="City Capture Mechanics"
   active="city-capture-mechanics"
   pageMark="🏰"
-  description="How long a city takes to change hands after you occupy it in Old World. Covers the capture turns counter, the threshold formula of base plus enemy culture level plus the bonus for being the original founder, and the rules for gaining and losing progress each turn, transcribed from City.cs."
+  description="How long a city takes to change hands after you occupy it in Old World: the capture counter, how culture level and founding change the turns needed, and how progress is lost."
   pageStats={[
     { label: 'base turns', value: BASE_TURNS },
     { label: 'capture HP left', value: '50%' },
   ]}
 >
   <p class="lede">
-    Taking a city is not instant. When your unit occupies an enemy city, a
-    hidden <b>capture turns counter</b> rises each turn you hold it, and the city
-    changes hands only when the counter reaches its <b>threshold</b>. If you leave
-    or are pushed off before then, the progress unwinds. The threshold depends on
-    the city's <b>culture level</b> and on whether you founded it yourself.
+    How many turns you must hold an enemy city before it becomes yours, and what
+    happens if you are pushed off early.
   </p>
 
   <section class="cc-section">
     <h2 class="cc-h2">How the counter works</h2>
     <ul class="cc-bullets">
       <li>
-        Each turn your unit is actively occupying the city
-        (<code>isUnitCapturingCity</code>), the counter increases by
-        <b>+1</b> (<code>changeCaptureTurns(1)</code>).
+        Each turn your unit occupies the city, a hidden capture counter goes up
+        by <b>1</b>.
       </li>
       <li>
-        The city changes hands the moment the counter reaches
-        <code>getCaptureThreshold()</code>, and the city is left
-        <b>damaged to 50% HP</b> (<code>CITY_CAPTURE_DAMAGE_PERCENT</code>).
+        When the counter reaches the number of turns needed, the city is yours,
+        left at <b>50% HP</b>.
       </li>
       <li>
-        While no one is occupying it, the counter falls by <b>1</b> per turn back
-        to 0, so an interrupted capture is undone. You must hold the city
-        <b>continuously</b> for the full count.
+        While no one occupies it, the counter falls by <b>1</b> per turn back to
+        0. You must hold the city for the full count without a break.
       </li>
       <li>
-        A recapture or a liberation also resets the counter to 0 when ownership
-        changes (<code>setCaptureTurns(0)</code>).
+        The counter resets to 0 whenever the city changes owner, including a
+        recapture or a liberation.
       </li>
     </ul>
   </section>
 
   <section class="cc-section">
-    <h2 class="cc-h2">The threshold formula</h2>
+    <h2 class="cc-h2">Turns needed</h2>
     <div class="cc-formula">
       <div class="cc-line">
-        <span class="cc-eq">turns = CITY_BASE_CAPTURE_TURNS&nbsp;(2)</span>
+        <span class="cc-eq">turns = {BASE_TURNS}</span>
       </div>
       <div class="cc-line">
-        <span class="cc-eq cc-add">+ culture(highest&nbsp;enemy&nbsp;culture).iExtraCaptureTurns</span>
+        <span class="cc-eq cc-add">+ extra turns for the city's culture</span>
       </div>
       <div class="cc-line">
-        <span class="cc-eq cc-add">+ 1&nbsp;&nbsp;if you are not the city's original founder</span>
+        <span class="cc-eq cc-add">+ 1&nbsp;&nbsp;if your team did not found the city</span>
       </div>
       <div class="cc-line cc-min">
         <span class="cc-eq">→ minimum 1</span>
@@ -89,10 +87,8 @@ const rows = cultures.map(c => ({
     </div>
 
     <p>
-      The culture term uses the <b>highest culture level of any team other than
-      the capturer</b> that has culture in the city, which is how deeply the
-      defender is established there. The values come from
-      <code>iExtraCaptureTurns</code> in <code>culture.xml</code>.
+      The culture that counts is the highest culture level any other team has in
+      the city.
     </p>
 
     <table class="cc-table cc-table--narrow">
@@ -110,20 +106,13 @@ const rows = cultures.map(c => ({
     </table>
 
     <p class="cc-fineprint">
-      The <b>+1 for not being the founder</b> term is <code>getCaptureTeam() !=
-      getFirstTeam()</code>, and it applies when you take a city your team did
-      <b>not</b> found. <b>Retaking a city you once held is one turn faster</b>,
-      and the test is the team that originally founded the city, even when an
-      enemy captured and grew it since.
+      <b>Retaking a city your team founded is one turn faster</b>, even if an
+      enemy has held and grown it since.
     </p>
   </section>
 
   <section class="cc-section">
     <h2 class="cc-h2">Turns to flip</h2>
-    <p>
-      The table gives the hold time you need, by the city's culture level and by
-      whether you founded it.
-    </p>
     <table class="cc-table">
       <thead>
         <tr>
@@ -143,64 +132,49 @@ const rows = cultures.map(c => ({
       </tbody>
     </table>
     <p class="cc-fineprint">
-      A newly founded enemy outpost therefore changes hands after <b>3</b> turns
-      of unbroken occupation, and an old <LinkedText text="Legendary" /> enemy
-      capital takes <b>6</b>. Liberating one of your own cities takes a turn off
-      each of those.
+      A new enemy city changes hands after <b>3</b> turns, and an old
+      <LinkedText text="Legendary" /> enemy capital takes <b>6</b>. Liberating
+      one of your own cities takes a turn off each.
     </p>
   </section>
 
   <section class="cc-section">
     <h2 class="cc-h2">When a captured city is razed instead</h2>
-    <p>
-      The city normally transfers when the counter reaches the threshold. It is
-      <b>razed</b> instead in the two cases below (<code>setCaptureTurns</code>).
-    </p>
+    <p>A captured city is <b>razed</b> instead of changing hands when:</p>
     <ul class="cc-bullets">
       <li>
-        A <LinkedText text="Tribe" /> captures it and the
-        <code>GAMEOPTION_ALLOW_CITY_RAZING</code> option is on.
+        a <LinkedText text="Tribe" /> captures it and the city razing game option
+        is on, or
       </li>
       <li>
-        A player captures it while already at their <b>city cap</b>
-        (<code>isCityMaxReached()</code>), so they cannot hold another and the city
-        burns.
+        a player captures it while already at their <b>city cap</b>.
       </li>
     </ul>
   </section>
 
   <section class="cc-section">
-    <h2 class="cc-h2">Worked example</h2>
+    <h2 class="cc-h2">Example</h2>
     <ol class="cc-steps">
       <li>
-        You assault a rival's <LinkedText text="Strong" />-culture city (you did
-        not found it). Threshold = 2 (base) + 2 (Strong) + 1 (not founder) =
-        <b>5</b>.
+        You attack a rival's <LinkedText text="Strong" />-culture city that you
+        did not found. You need 2 + 2 (Strong) + 1 (not your city) = <b>5</b>
+        turns.
       </li>
       <li>
-        Your unit occupies the city, and the counter rises through 1, 2, 3, 4 and
-        5 at the end of each turn it holds.
+        Your unit occupies the city, and the counter rises by 1 at the end of
+        each turn it holds.
       </li>
       <li>
-        If a relief force evicts your unit on turn 3, with the counter at 3, the
-        counter falls by 1 per turn back toward 0 and you have to start over.
+        If a relief force pushes you out with the counter at 3, it falls by 1 per
+        turn back toward 0 and you start over.
       </li>
       <li>
-        Hold all 5 turns and the city passes to you at <b>50% HP</b>. Had the same
-        city originally been <i>yours</i>, it would have passed to you in
-        <b>4</b>.
+        Hold all 5 turns and the city is yours at <b>50% HP</b>. If your team
+        had founded it, it would take <b>4</b>.
       </li>
     </ol>
   </section>
 
-  <p class="cc-source">
-    Source: <code>City.cs</code>, namely <code>getCaptureThreshold()</code> for
-    the formula, <code>setCaptureTurns()</code> for the transfer, the razing and
-    the 50% damage, and the counter changes in <code>doTribeTurn()</code>.
-    Constants come from <code>globalsInt.xml</code>
-    (<code>CITY_BASE_CAPTURE_TURNS</code>, <code>CITY_CAPTURE_DAMAGE_PERCENT</code>)
-    and <code>culture.xml</code> (<code>iExtraCaptureTurns</code>).
-  </p>
 </Base>
 
 <style>
@@ -211,7 +185,6 @@ const rows = cultures.map(c => ({
     max-width: 72ch;
     margin: 0.4rem 0 1.5rem;
   }
-  .lede b { color: var(--text); }
 
   .cc-section { margin-top: 2rem; }
   .cc-h2 {
@@ -306,21 +279,4 @@ const rows = cultures.map(c => ({
     max-width: 72ch;
   }
   .cc-fineprint b { color: var(--text-dim); }
-
-  .cc-source {
-    margin-top: 2.2rem;
-    color: var(--text-faint);
-    font-size: 0.75rem;
-    line-height: 1.5;
-    max-width: 80ch;
-  }
-
-  code {
-    font-family: var(--font-mono);
-    font-size: 0.78em;
-    background: var(--bg-elev);
-    padding: 0 0.25rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-  }
 </style>

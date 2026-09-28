@@ -46,7 +46,7 @@ const scopeGroups = SCOPES
   active="wonders"
   description={`${w.name}, a ${w.era} Culture wonder in Old World. ${w.location}. ${
     w.culturePerTurn ? `+${w.culturePerTurn} Culture/turn. ` : ''
-  }${w.effects.join('. ')}${w.effects.length ? '.' : ''} All data from the game's improvement.xml.`}
+  }${w.effects.join('. ')}${w.effects.length ? '.' : ''}`}
 >
   <p class="crumb"><a href={`${base}wonders`}>← All Wonders</a></p>
 
@@ -144,7 +144,6 @@ const scopeGroups = SCOPES
 
   </div>
 
-  <p class="provenance">Every fact on this page, including cost, culture tier, requirements, VP, yields per turn and the benefits grouped by scope, is derived from the game's <code>improvement.xml</code> and its effect and bonus chains through the humanizer. The legacy spreadsheet is not consulted, and the Wikipedia link is the only external reference.</p>
 </Base>
 
 <style>
@@ -201,6 +200,4 @@ const scopeGroups = SCOPES
   .dscope--localCity .dscope__glyph { color: #b79bd8; }
   .dscope--tile      .dscope__glyph { color: #86c08a; }
 
-  .provenance { margin: 1.5rem 0 0; font-size: 0.76rem; color: var(--text-faint); line-height: 1.5; }
-  .provenance code { font-family: var(--font-mono); color: var(--text-dim); }
 </style>

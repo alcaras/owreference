@@ -19,6 +19,21 @@ for any split of cities the reader types in.
 Only Landowners carry class extras today (+40 / -40, doubling both terms); the
 Champions pair (largest/smallest military) is the same mechanic on unit counts
 and is emitted alongside for context.
+
+Game-source citations (these used to be the page's fine print):
+  PlayerOpinion.cs  calculateFamilyOpinionMostCities / FewestCities / Envy,
+                    summed by calculateFamilyOpinionRate and bracketed by
+                    InfoHelpers.getOpinionFamilyFromRate. Most/Fewest are C#
+                    integer division by the tie count (truncation reproduced
+                    exactly on the page). The found-city tooltip previews the
+                    same routine with the new city assigned.
+  PlayerOpinion.cs  calculateFamilyOpinionCityDist: a bonus for a family whose
+                    cities sit close together (average distance vs the map's
+                    minimum city-site spacing); Traders invert it via
+                    bPrefersDistant. Not modelled by the calculator.
+  Utils.cs          triangle().
+  XML               globalsInt.xml (constants), familyClass.xml (class extras),
+                    opinionFamily.xml (brackets), color.xml (family colours).
 """
 from __future__ import annotations
 

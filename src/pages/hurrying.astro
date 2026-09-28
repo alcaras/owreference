@@ -126,7 +126,7 @@ const costs: CostRow[] = [
     yieldKey: 'civics',
     name: 'Civics',
     formula: '100 + 1.5 × missing production',
-    notes: 'The default channel: scales with the cost of what is left to build.',
+    notes: 'Always available. Scales with what is left to build.',
   },
   {
     yieldKey: 'training',
@@ -138,7 +138,7 @@ const costs: CostRow[] = [
     yieldKey: 'money',
     name: 'Money',
     formula: '10 + 5 × missing production',
-    notes: 'Steep rate per unit of production, so it is cheapest when the item is nearly done.',
+    notes: 'Steep per point of production, so it is cheapest when the item is nearly done.',
   },
   {
     yieldKey: 'orders',
@@ -150,7 +150,7 @@ const costs: CostRow[] = [
     yieldKey: 'growth',
     name: 'Citizens',
     formula: '1 + missing production ÷ 80',
-    notes: 'Spends actual Citizens from the City. Emergency lever.',
+    notes: 'Spends Citizens from the City.',
   },
 ];
 ---
@@ -162,21 +162,20 @@ const costs: CostRow[] = [
 ]}>
   <section class="hurry-intro">
     <p>
-      <strong>Hurry Production</strong> lets a City finish whatever it is building in one turn,
-      paying a Yield (and always some <a href={`${base}yields/discontent`}>Discontent</a>) instead
-      of waiting for the production timer. A City may Hurry only when it has at least <em>Developing</em>
-      <a href={`${base}yields/culture`}>Culture</a>, and the item arrives on the
-      <strong>following</strong> turn rather than instantly.
+      Which yields you can spend to <strong>Hurry Production</strong>, what unlocks each one, and
+      what it costs.
     </p>
     <p class="hurry-intro__note">
-      Every City can Hurry with Civics from the start, because <code>build.xml</code> grants it to
-      all build types. The other resources unlock separately for each build target, meaning Units,
-      Specialists and Projects, through specific Laws, a Leader of the right archetype, a Governor
-      or a themed Improvement, as set out in <code>effectCity.xml</code>.
+      Hurrying finishes a build on the <strong>following</strong> turn. You pay a yield, and always
+      some <a href={`${base}yields/discontent`}>Discontent</a>. The City needs at least
+      <em>Developing</em> <a href={`${base}yields/culture`}>Culture</a>.
     </p>
     <p class="hurry-intro__note">
-      To find what a given Hurry costs, by build, by progress and by how many times you have
-      already hurried that channel in that City, use the
+      Every City can hurry with Civics from the start. The other yields unlock separately for Units,
+      Specialists and Projects, through Laws, a Leader, a Governor or a Cathedral.
+    </p>
+    <p class="hurry-intro__note">
+      For the exact cost of a given hurry, use the
       <a href={`${base}hurry-calculator`}>Hurry Production Calculator</a>.
     </p>
   </section>
@@ -213,11 +212,10 @@ const costs: CostRow[] = [
     </div>
   </div>
   <p class="hurry-footnote">
-    The Zealot Leader covers <strong>Units only</strong>
-    (<code>aeHurryTraining = BUILD_UNIT</code>), and Training hurry for Specialists and Projects
-    comes instead from a <LinkedText text="Cathedral" /> whose religion holds the Redemption
-    theology. Money splits the same way, because the Holy War law unlocks Units while a Judge
-    Governor unlocks Specialists and Projects.
+    A Zealot Leader unlocks Training for <strong>Units only</strong>. For Specialists and Projects,
+    Training comes from a <LinkedText text="Cathedral" /> whose religion has the Redemption
+    theology. Money splits the same way: the Holy War law covers Units, a Judge Governor covers
+    Specialists and Projects.
   </p>
 
   <h2 class="hurry-h2">What it costs</h2>
@@ -260,18 +258,17 @@ const costs: CostRow[] = [
     </div>
   </div>
   <p class="hurry-footnote">
-    <em>mp</em> means missing production, which is the item's total production cost minus the
-    production already completed, and overflow does not count. Constants come from
-    <code>globalsInt.xml</code>, and the arithmetic comes from the engine's <code>City.cs</code>.
+    Missing production is the item's production cost minus the production already done. Overflow
+    does not count.
   </p>
 
   <section class="hurry-tips">
-    <h2>Cost modifiers, which apply to every resource including Discontent</h2>
+    <h2>What makes a hurry cost more</h2>
     <ul>
-      <li>An item <strong>less than 50% complete</strong> costs +(50 − %complete)% extra. An untouched item pays +50%, and anything half done or better pays no surcharge.</li>
-      <li><strong>+10% per previous Hurry</strong> with that same resource in that City. The counter is kept per resource and per City, so hurrying with Civics never makes a Training hurry, or a hurry in another City, more expensive.</li>
-      <li>An item produced with <strong>Growth</strong>, such as a Settler, Worker or Disciple, costs +50% to hurry.</li>
-      <li>You cannot Hurry a damaged City, a City below Developing Culture, an item that finishes next turn anyway, or an item flagged as no-hurry, which covers most decrees and event projects.</li>
+      <li>An item <strong>less than 50% complete</strong> costs 50% minus the percent done extra. An untouched item pays +50%, and anything half done or better pays nothing extra.</li>
+      <li><strong>+10% per previous hurry</strong> with the same yield in the same City. Hurrying with Civics never makes a Training hurry, or a hurry in another City, more expensive.</li>
+      <li>An item built with <strong>Growth</strong>, such as a Settler, Worker or Disciple, costs +50% to hurry.</li>
+      <li>You cannot hurry in a damaged City or a City below Developing Culture, an item that finishes next turn anyway, or most decrees and event projects.</li>
     </ul>
   </section>
 </Base>
@@ -286,14 +283,6 @@ const costs: CostRow[] = [
   }
   .hurry-intro p { margin: 0 0 0.6rem; }
   .hurry-intro__note { font-size: 0.82rem; color: var(--text-faint); }
-  .hurry-intro code, .hurry-footnote code {
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 0.05rem 0.4rem;
-    color: var(--text);
-    font-size: 0.9em;
-  }
   .formula {
     background: transparent;
     border: 0;

@@ -37,6 +37,18 @@ Game.doTurn (after the war scores, before founding):
 
 The scoring and the founding weights are code, not XML; they are recorded here
 with their line numbers and watched by verify_source_constants.py.
+
+Other citations (these used to be the page's "Where this comes from" list; the
+line numbers are re-derived into religious_spread.json `code`): Utils.distance
+and Utils.modify (hex distance, the integer multiply behind the connection
+discount); Unit.canSpreadReligion (Disciple: next to the territory, city lacks
+the religion); Unit.purgeReligion (removes the religion and bans it from the
+roll); getSpreadReligionTribeCost / spreadReligionTribe /
+Player.canSpreadReligionTribe (tribal conversion); Tile.doImprovementFinished
+(a finished improvement spreads or founds its religion); Tile.setOwner (a
+converted tile passes its religion to the city that gains it);
+Game.canFoundReligion / City.canFoundReligion / doReligionFound /
+getReligionCityFoundValue (founding requirements and the city pick).
 """
 from __future__ import annotations
 

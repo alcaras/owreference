@@ -37,7 +37,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
   { label: 'turns', value: instant ? 'instant' : turnsLabel },
   { label: 'outcomes', value: mission.outcomes.length },
   ...(eventGroups.length > 0
-    ? [{ label: 'event stories', value: eventGroups.reduce((n, g) => n + g.events.length, 0) }]
+    ? [{ label: 'events', value: eventGroups.reduce((n, g) => n + g.events.length, 0) }]
     : []),
 ]}>
   <section class="mission-overview">
@@ -81,9 +81,9 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
         </span>
       ))}
       {eventGroups.length > 0 && (
-        <a class="chip chip--neutral" href="#events" title="Jump to the event stories this mission can fire">
+        <a class="chip chip--neutral" href="#events" title="Jump to the events this mission can fire">
           <span class="chip__label">Events</span>
-          <strong>{eventGroups.reduce((n, g) => n + g.events.length, 0)} stories ↓</strong>
+          <strong>{eventGroups.reduce((n, g) => n + g.events.length, 0)} events ↓</strong>
         </a>
       )}
     </div>
@@ -98,8 +98,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
   <section class="outcomes">
     <h2 class="outcomes__title">Outcomes</h2>
     <p class="outcomes__sub">
-      A {mission.totalDiceWeight}-sided die rolls when the mission completes; results are weighted as shown.
-      Subject character ratings (e.g., Wisdom on Steal Research) shift the roll.
+      When the mission completes, a {mission.totalDiceWeight}-sided die picks one result, weighted as shown.
     </p>
 
     <div class="outcome-grid">
@@ -158,14 +157,14 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
 
     {(mission.scaling || mission.scalingNote) ? (
       <p class="outcomes__legend">
-        <strong>Base</strong> is the flat reward, and a <strong>per City</strong> value grows with the size of your
-        empire, as covered under Reward scaling below. The subject's character rating shifts the dice, so Wisdom
-        raises the Steal Research success chance, but it does not change the yield amounts.
+        <strong>Base</strong> is the flat reward, and a <strong>per City</strong> value grows with your empire
+        (see Reward scaling below). The character's rating shifts the dice, so Wisdom raises the Steal Research
+        success chance, but it does not change the reward amounts.
       </p>
     ) : (
       <p class="outcomes__legend">
-        The subject's character rating shifts the dice where a <strong>Rating influence</strong> is shown,
-        but does not change the reward amounts.
+        The character's rating shifts the dice where a <strong>Rating influence</strong> is shown, but does
+        not change the reward amounts.
       </p>
     )}
   </section>
@@ -183,8 +182,8 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
       <p class="outcomes__sub">
         The base reward is <strong>{mission.scaling.base} {mission.scaling.label}</strong>
         {mission.scaling.per ? <> plus <strong>{mission.scaling.per} {mission.scaling.label} per {(mission.scaling.citiesLabel || 'city').toLowerCase().replace('your ', '').replace('rival cities', 'rival city')}</strong></> : null},
-        so it grows with {mission.scaling.citiesLabel === 'Rival cities' ? "the rival's empire (you steal more from larger rivals)" : 'your empire'}. The game then scales it up further as the match goes on
-        (a turn/price multiplier that depends on game state, the same in both modes). <strong>Competitive Mode does not change mission rewards.</strong>
+        so it grows with {mission.scaling.citiesLabel === 'Rival cities' ? "the rival's empire (you steal more from larger rivals)" : 'your empire'}. The game then scales it up further as the match goes on.
+        <strong>Competitive Mode does not change mission rewards.</strong>
       </p>
       <table class={`ntbl scale-tbl yield-${mission.scaling.yield}`}>
         <thead>
@@ -209,7 +208,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
           </tr>
         </tbody>
       </table>
-      <p class="outcomes__legend">Reward at base game-yield rate (turns 0–{mission.scaling.inflationTurns}). After turn {mission.scaling.inflationTurns} the reward grows in proportion to the turn number.</p>
+      <p class="outcomes__legend">Rewards up to turn {mission.scaling.inflationTurns}. After that, the reward grows in proportion to the turn number.</p>
 
       <div
         class={`calc yield-${mission.scaling.yield}`}
@@ -241,7 +240,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
           <span class="calc__formula" id="calc-formula"></span>
         </div>
         <svg id="calc-graph" class="calc__graph" viewBox="0 0 640 300" role="img" aria-label="Reward versus turn"></svg>
-        <p class="calc__hint">Drag the sliders, or scrub across the graph to set the turn. Faint lines show other city counts. Competitive Mode does not change these rewards.</p>
+        <p class="calc__hint">Drag the sliders, or scrub across the graph to set the turn. Faint lines show other city counts.</p>
       </div>
     </section>
   )}
@@ -249,13 +248,13 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
   {eventGroups.length > 0 && (
     <section class="events" id="events">
       <h2 class="outcomes__title">Events</h2>
-      <p class="evt-caveat">⚠ <b>Story weights are not in-game odds.</b> Each story is gated by character/empire
-      conditions (some hidden), so real frequency is filtered in ways the XML can't predict. The weight is the raw
-      XML knob, not a probability.</p>
+      <p class="evt-caveat">⚠ <b>Weights are not in-game odds.</b> Each event also needs its character and empire
+      conditions to hold, and some of those are hidden in game, so how often it really fires can differ a lot from
+      its weight.</p>
 
       <div class="mode-toggle" role="radiogroup" aria-label="Detail level">
         <button type="button" class="mode-toggle__btn is-active" data-evmode="raw" role="radio" aria-checked="true">Raw XML</button>
-        <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Humanized</button>
+        <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Readable</button>
       </div>
 
       <div class="evt-list evtmode" data-mode="raw" id="evtmode">
@@ -264,16 +263,15 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
             {g.isEventResult ? (
               <p class="outcomes__sub evtgrp__intro">
                 <strong>{pct(g.probability)}</strong> of the time (a {g.weight}/{g.total} dice
-                result) the mission fires an <strong>event</strong> instead of its normal reward, after which one of the
-                {' '}{g.events.length} stories below is drawn, and you pick a response.
-                Bracketed values like <code>[character]</code> are filled in with the actual names in-game.
+                result) the mission fires an <strong>event</strong> instead of its normal reward: one of the
+                {' '}{g.events.length} events below is drawn, and you pick a response.
+                Bracketed names like <code>[character]</code> show the real names in game.
               </p>
             ) : (
               <p class="outcomes__sub evtgrp__intro">
                 After the <strong>{g.outcomeName}</strong> result (a {g.weight}/{g.total} dice result, {pct(g.probability)}),
-                {g.events.length === 1 ? ' this follow-up story' : ` one of the ${g.events.length} follow-up stories below`} can
-                fire, conditions permitting. Bracketed values like <code>[character]</code> are filled in with the
-                actual names in-game.
+                {g.events.length === 1 ? ' this follow-up event' : ` one of the ${g.events.length} follow-up events below`} can
+                fire if its conditions are met. Bracketed names like <code>[character]</code> show the real names in game.
               </p>
             )}
             {g.events.map(ev => {
@@ -294,7 +292,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
                       : 'Excluded when Competitive Events is on (Competitive Mode tournaments)'}
                   >CM {(ev as any).cmEligible !== false ? '✓' : '✗'}</span>
                   {(ev as any).minTurns && <span class="chip--turn" title="Earliest turn this event can fire (its own minimum, or its event class's)">Turn {(ev as any).minTurns}+</span>}
-                  <span class="evt__share" title="Raw iWeight, which is not a probability. See the caveat above.">weight {ev.weight}</span>
+                  <span class="evt__share" title="Not a chance to fire. See the warning above.">weight {ev.weight}</span>
                   {ev.conditions.map((c: string) => <span class="chip chip--cond">{c}</span>)}
                 </span>
               </summary>

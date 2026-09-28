@@ -46,17 +46,16 @@ const payload = {
   { label: 'inputs', value: calculator.inputStats.length },
 ]}>
   <p class="cog-intro">
-    Enter what your leader has done, taken from the timeline screen by pressing
-    <kbd>F5</kbd> and hovering the leader's portrait, to see which regnal title
-    they hold now and how far away the next one is. The page runs the game's own
-    award routine (<code>Character.cs updateCognomen()</code>), where the score is
-    the sum of each stat times its weight, and the title you hold is the one with
-    the highest legitimacy whose scaled threshold you have cleared. Thresholds
-    scale by <strong>ruler number</strong> and <strong>game speed</strong>, and
-    both are modelled from the source. The quickest way to fill this in is to
-    <strong>paste the F5 leader panel</strong> straight in, because the labels map
-    to the game's own <code>text-stat.xml</code> strings, including the Indus DLC
-    stats. Your inputs stay in your browser.
+    Enter what your leader has done to see which cognomen they hold now and how far
+    away the next one is.
+  </p>
+  <p class="cog-intro">
+    The numbers are on the timeline screen: press <kbd>F5</kbd>
+    and hover your leader's portrait. The quickest way to fill this in is to
+    <strong>paste that panel</strong> straight in. Your score is each stat times its
+    weight, and you hold the title with the highest Legitimacy whose threshold you have
+    reached. Thresholds rise with <strong>ruler number</strong> and
+    <strong>game speed</strong>. Your inputs stay in your browser.
   </p>
 
   <div class="calc">
@@ -98,7 +97,7 @@ const payload = {
         </label>
         <label class="calc__check">
           <input id="cf-bad" type="checkbox" />
-          <span>Allow bad cognomens<span class="calc__hint"> (ALLOW_BAD_COGNOMENS option)</span></span>
+          <span>Allow bad cognomens<span class="calc__hint"> (game option)</span></span>
         </label>
         <label class="calc__check">
           <input id="cf-dlc" type="checkbox" checked />
@@ -700,7 +699,7 @@ const payload = {
     max-width: 880px; color: var(--text-dim); font-size: 0.86rem;
     margin: 0 0 1.25rem; line-height: 1.6;
   }
-  .cog-intro code, .cog-intro kbd {
+  .cog-intro kbd {
     background: var(--bg-elev); padding: 0.05rem 0.4rem;
     border-radius: 3px; border: 1px solid var(--border);
     font-family: var(--font-mono); font-size: 0.78em;

@@ -22,11 +22,9 @@ const authors = Array.from(new Set(events.map(e => e.author).filter(Boolean))).s
   { label: 'authors', value: authors.length },
 ]}>
   <p class="se-intro">
-    Every <code>EVENTCLASS_STUDY</code> event in the game files, which are the
-    heir education scenes that fire while a child is being tutored. Each row
-    lists the event's prerequisites, meaning study type, age and parent
-    relationship, and the bonuses each option grants. The data comes from
-    <code>eventStory.xml</code> and the BTT, SAP, WD and WoG content packs.
+    The heir education events that fire while a child is being tutored. Each row lists what
+    the event needs, such as study type, age and relationship to the parent, and what each
+    option grants.
   </p>
 
   <div class="grid" id="se-grid">
@@ -141,12 +139,6 @@ const authors = Array.from(new Set(events.map(e => e.author).filter(Boolean))).s
     font-size: 0.86rem;
     margin: 0 0 1rem;
     line-height: 1.55;
-  }
-  .se-intro code {
-    background: var(--bg-elev);
-    padding: 0.05rem 0.4rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
   }
 
   .se__markers { display: flex; gap: 0.3rem; flex-wrap: wrap; margin: 0.2rem 0; }

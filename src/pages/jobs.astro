@@ -143,9 +143,9 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
 ]}>
   <h2 class="mx-h">Jobs at-a-glance</h2>
   <p class="mx-sub">
-    What each rating pays in each role, which archetypes can hold it, and how heir education
-    funnels into archetypes. Council payouts scale by the triangle of the rating (×△);
-    Governor / Agent / General payouts follow the
+    Use this to decide who to put in which job: what each rating pays in each role, which
+    archetypes can hold it, and which archetypes each heir course leads to. Council payouts
+    scale by the triangle of the rating (×△); Governor, Agent and General payouts follow the
     <a href={`${base}stat-scaling`}>rating formula</a>.
   </p>
 
@@ -286,16 +286,14 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
   <div class="legends mx-legends">
     <div class="legend">
       <span class="legend__label">● Fit</span>
-      The archetype can hold the role, following the trait prereqs in <code>trait.xml</code> and the
-      council seat prereqs. On an education row it marks the course's graduation archetype pool
-      instead.
+      The archetype can hold the role. On an education row, the course can graduate into that
+      archetype.
     </div>
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
-      Council payouts multiply their base by the triangle of the seat holder's rating, where
-      tri(R) = R·(R+1)/2, so a rating of 1, 2, 3, 4 or 5 multiplies by 1, 3, 6, 10 or 15. A superscript on
-      the marker is that yield's triangle offset
-      (1.0.84658 applied these to council seats): the multiplier becomes tri(R + offset) − offset.
+      Council payouts multiply their base by the triangle of the holder's rating, tri(R) = R·(R+1)/2:
+      a rating of 1, 2, 3, 4 or 5 multiplies by 1, 3, 6, 10 or 15. A superscript is that yield's offset, and the
+      multiplier becomes tri(R + offset) − offset.
     </div>
   </div>
 
@@ -397,12 +395,11 @@ const toneBySlug = Object.fromEntries(RATING_ORDER.map((slug) => [slug, `yield-$
   <div class="legends">
     <div class="legend">
       <span class="legend__label">×△ Triangular scaling</span>
-      Council yields and opinions multiply their base by tri(R) = R·(R+1)/2 of the assigned character's
-      rating, so a rating of 1, 2, 3, 4 or 5 multiplies by 1, 3, 6, 10 or 15. Since 1.0.84658 a yield with
-      a triangle offset, shown as a superscript, scales by tri(R + offset) − offset instead, which is why
-      Culture and Science ramp later.
-      Opinions keep offset 0 and are rounded out to the nearest 5.
-      See <a href={`${base}council`}>Council</a> for the full breakdown.
+      Council yields and opinions multiply their base by the triangle of the character's rating: 1,
+      3, 6, 10 or 15 for a rating of 1 to 5. Since 1.0.84658 a yield with an offset (the superscript)
+      scales by tri(R + offset) − offset, which is why Culture and Science ramp later. Opinions
+      ignore offsets and round to the nearest 5.
+      See <a href={`${base}council`}>Council</a> for more.
     </div>
   </div>
 

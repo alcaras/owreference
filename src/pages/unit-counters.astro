@@ -152,12 +152,15 @@ const fmtNet = (n: number) => (n > 0 ? `+${n}` : `${n}`);
   ]}
 >
   <p class="lede">
-    <b>If you are facing a unit, build these.</b> They are ranked by the trade rather than by raw damage.
-    Each pick reads <span class="key"><b class="k-str">STR</b> · unit · <b class="k-deal">dealt</b>/<b class="k-take">taken</b> · <b class="k-net">net</b></span>,
-    where <i>dealt</i> is your damage attacking it and <i>taken</i> is its damage attacking you
-    (<code>6 × StrAtt / StrDef</code>, both sides' anti-trait modifiers, full HP, open terrain,
-    no promotions, which are the same numbers as on <a href={`${base}unit-damage`}>Unit Damage</a>).
-    Research costs live on <a href={`${base}science-to-unlock`}>Total Science to Unlock</a>.
+    <b>If you are facing a unit, build these.</b> They are ranked by who wins the trade, not by
+    raw damage.
+  </p>
+  <p class="lede">
+    Each pick reads <span class="key"><b class="k-str">STR</b> · unit · <b class="k-deal">dealt</b>/<b class="k-take">taken</b> · <b class="k-net">net</b></span>.
+    <i>Dealt</i> is your damage when you attack it; <i>taken</i> is its damage when it attacks you.
+    The numbers are the same as on <a href={`${base}unit-damage`}>Unit Damage</a>: full HP, open
+    ground, no promotions. Research costs are on
+    <a href={`${base}science-to-unlock`}>Total Science to Unlock</a>.
   </p>
 
   <div class="natbar">
@@ -306,7 +309,7 @@ const fmtNet = (n: number) => (n > 0 ? `+${n}` : `${n}`);
   <div class="legends">
     <div class="legend">
       <span class="legend__label">Read it</span>
-      <span>Row = which class is attacking. Column = the defender's trait. A "+50% vs Mounted" cell means Polearm units (Spearman etc.) get +50% strength when fighting any Mounted-trait unit. Green = advantage, red = penalty.</span>
+      <span>The row is the attacking class and the column is the defender's type. A +50% cell in the Mounted column means those Polearm units (Spearman and others) get +50% strength against any Mounted unit. Green is a bonus, red a penalty.</span>
     </div>
   </div>
 
@@ -404,12 +407,6 @@ const fmtNet = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       margin: 0 0 1rem;
       font-size: 0.84rem;
       line-height: 1.5;
-    }
-    .lede code {
-      background: var(--bg-elev);
-      padding: 0.05rem 0.35rem;
-      border-radius: 3px;
-      border: 1px solid var(--border);
     }
     .ctier { margin: 0 0 1.1rem; }
     .ctier__h {

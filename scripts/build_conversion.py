@@ -7,6 +7,12 @@ so per the source-of-truth rules those are read from XML here (XML wins),
 and the yaml values are only a fallback that triggers a drift warning.
 Code-derived constants (scoring points, thresholds) stay yaml-maintained;
 scripts/verify_source_constants.py tripwires those against game source.
+
+Game source behind the /religious-conversion page prose (cited here and in the
+yaml header, not on the page): Player.cs doFamilyReligion (family slot i is
+checked when turn % rotation == i % rotation), Character.cs doReligion (the
+trigger gate) and chooseReligion (the scoring; strict > threshold, then
+× randomNext(10)+5, strict > best so the first of equal scores keeps it).
 """
 from pathlib import Path
 import json

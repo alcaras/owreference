@@ -7,6 +7,7 @@ import { classifyYield } from '../lib/entities';
 const base = import.meta.env.BASE_URL;
 
 const { religions, tiers } = data;
+const hybridNations = (religions.find(r => r.forceTheologies)?.paganNations || []).join(', ');
 
 // Pre-classify each theology's primary yield color so each card gets a
 // deterministic background. Falls through to `misc` when an effect doesn't
@@ -31,11 +32,10 @@ function theologyYield(eff: string[]): string {
   ]}
 >
   <p class="lede">
-    Theologies are a shared pool of 8 picks across all <b>World Religions</b>.
-    To establish a theology you must adopt the religion as your State Religion
-    and spend a <LinkedText text="Disciple" /> on the founding mission. The
-    effect then applies <em>globally</em> to every nation following that
-    religion, and the slot locks, so no other player can pick it.
+    Theologies are a shared pool of {data.totals.theologies} picks across all <b>World Religions</b>.
+    To establish one, make the religion your State Religion and spend a
+    <LinkedText text="Disciple" /> on the founding mission. Its effect then applies to every
+    nation that follows the religion, and no other player can pick it.
   </p>
 
   <div class="legend legend--audience">
@@ -56,7 +56,7 @@ function theologyYield(eff: string[]): string {
   </div>
   <p class="note note--hybrid">
     <LinkedText text="Hinduism" showIcons={false} /> is a hybrid: the pagan religion of the
-    Empires of the Indus nations (Maurya, Yuezhi, Tamil). It never spreads to other
+    Empires of the Indus nations ({hybridNations}). It never spreads to other
     players, but it builds the full worship chain and <em>always</em> adopts theologies.
   </p>
 

@@ -16,7 +16,7 @@ const base = import.meta.env.BASE_URL;
   title="Family Head Selection"
   active="family-heads"
   pageMark="👑"
-  description={`How Old World picks a family head. The sitting head keeps the job while eligible. Otherwise the job goes to the first eligible family member in your dynastic line of succession, and otherwise to the winner of a weighted random roll of d${heads.weights.roll}, with +${heads.weights.overAge} over age ${heads.preferredMinAge}, +${heads.weights.council} on the Council and +${heads.weights.job} with a job, modified by traits such as Power Hungry. Transcribed from Player.updateFamilyHead in the game source.`}
+  description={`How Old World picks a family head. The sitting head keeps the job while eligible. Otherwise the job goes to the first eligible family member in your dynastic line of succession, and otherwise to the winner of a weighted random roll of d${heads.weights.roll}, with +${heads.weights.overAge} over age ${heads.preferredMinAge}, +${heads.weights.council} on the Council and +${heads.weights.job} with a job, modified by traits such as Power Hungry.`}
   pageStats={[
     { label: 'random roll', value: `d${heads.weights.roll}` },
     { label: 'trait modifiers', value: heads.traitModifiers.length },
@@ -24,40 +24,32 @@ const base = import.meta.env.BASE_URL;
   ]}
 >
   <p class="lede">
-    A family needs a new head when the old one dies, becomes leader, takes
-    charge of a religion or is imprisoned, and the game does not simply crown the
-    eldest member. The selection follows a strict order, and only the last step is
-    random. The rules are transcribed from <code>Player.updateFamilyHead</code>
-    and <code>Character.canHeadFamily</code> in the game source, and the numbers
-    come from <code>trait.xml</code> and <code>globalsInt.xml</code>.
+    When a family needs a new head, the game does not simply crown the eldest.
+    This page shows the order it follows and the random roll at the end.
   </p>
 
   <section class="fh-section">
     <h2 class="fh-h2">The selection order</h2>
     <ol class="fh-steps">
       <li>
-        <b>The sitting head keeps the job</b> for as long as they remain
-        eligible. There is no re-election, and a head is replaced only when
-        something disqualifies them, such as death, becoming leader, taking
+        <b>The sitting head keeps the job</b> while eligible. There is no
+        re-election. A head is replaced only on death, becoming leader, taking
         charge of a religion, imprisonment or exile.
       </li>
       <li>
-        <b>Royal succession claims the job first.</b> The game walks your
-        dynastic line of succession in order, following your succession law's
-        gender rules, and the <em>first</em> person in it who belongs to the
-        family and is eligible becomes head, ahead of every ordinary family
-        member.
+        <b>Your line of succession comes next.</b> The <em>first</em> person in
+        it (by your succession law) who belongs to the family and is eligible
+        becomes head, ahead of every other member.
       </li>
       <li>
-        <b>Otherwise the game runs a weighted random roll</b> among all eligible
-        members. Each one rolls 1 to {heads.weights.roll} and then adds the
-        following.
+        <b>Otherwise, a weighted roll</b> among all eligible members. Each rolls
+        1 to {heads.weights.roll}, then adds:
         <ul class="fh-weights">
           <li><b>+{heads.weights.overAge}</b> if older than {heads.preferredMinAge}</li>
           <li><b>+{heads.weights.council}</b> if seated on the Council</li>
           <li><b>+{heads.weights.job}</b> if holding a job (governor, general, agent, …)</li>
         </ul>
-        The total is then scaled by trait modifiers, and the highest total wins.
+        Trait modifiers then scale the total. Highest total wins.
       </li>
     </ol>
   </section>
@@ -65,8 +57,7 @@ const base = import.meta.env.BASE_URL;
   <section class="fh-section">
     <h2 class="fh-h2">Trait modifiers</h2>
     <p class="fh-note">
-      A trait modifier applies as a percentage to the character's final total in
-      step 3, so a schemer or an ambitious character reaches the front.
+      These scale a character's total in the roll above.
     </p>
     <table class="fh-tbl">
       <thead><tr><th>Trait</th><th>Selection weight</th></tr></thead>
@@ -83,16 +74,13 @@ const base = import.meta.env.BASE_URL;
 
   <section class="fh-section">
     <h2 class="fh-h2">Who is eligible</h2>
-    <p class="fh-note">
-      Every check below comes from <code>Character.canHeadFamily</code>, and a
-      candidate must pass all of them.
-    </p>
+    <p class="fh-note">A candidate must be all of these:</p>
     <ul class="fh-elig">
       <li>An <b>adult</b> member of that family, alive and in your court</li>
       <li>Not your <b>current leader</b></li>
       <li>Not the <b>head of a religion</b></li>
-      <li>Carrying none of the disqualifying status traits below</li>
-      <li>Not mortally ill, because a character with a trait that carries a death chance is skipped when the game picks a <em>new</em> head, although a sitting head who falls ill is not removed</li>
+      <li>Without any of the disqualifying traits below</li>
+      <li>Not mortally ill (a trait with a death chance). This only blocks a <em>new</em> head; a sitting head who falls ill stays</li>
     </ul>
     <div class="fh-blocked">
       <div class="fh-blocked__hd">Disqualifying traits ({heads.blockedTraits.length})</div>
@@ -103,14 +91,7 @@ const base = import.meta.env.BASE_URL;
   </section>
 
   <p class="provenance">
-    The mechanic is transcribed from <code>Player.updateFamilyHead</code> and
-    <code>Character.canHeadFamily</code> in the game source. The age preference
-    (<code>FAMILY_HEAD_PREFERRED_MIN_AGE</code>), the trait weights
-    (<code>iFamilyHeadModifier</code>) and the disqualifying traits
-    (<code>bNoFamilyHead</code>) are read from the game's XML each patch. This
-    site hashes both source functions, so a patch that changes the weights raises
-    an alarm here. See also
-    <a href={`${base}families`}>Families</a>.
+    See also <a href={`${base}families`}>Families</a>.
   </p>
 </Base>
 
@@ -119,9 +100,6 @@ const base = import.meta.env.BASE_URL;
     font-family: var(--font-display); font-style: italic;
     font-size: 1rem; line-height: 1.55; color: var(--text-soft);
     max-width: 70ch; margin: 0.5rem 0 1.5rem;
-  }
-  .lede code, .fh-note code, .provenance code {
-    font-family: var(--font-mono); font-style: normal; font-size: 0.82em; color: var(--text-dim);
   }
 
   .fh-section { margin-bottom: 1.8rem; }

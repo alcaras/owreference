@@ -91,8 +91,7 @@ for (const h of hints) {
     <section class="hints__group" id="improvement-hints">
       <h2 class="hints__grouplabel">Improvement hints</h2>
       <p class="hints__note">
-        Shown on the improvement's own tooltip in-game (<code>improvement.xml</code> → <code>Hint</code>),
-        not on the loading screen.
+        Shown on the improvement's own tooltip in-game, not on the loading screen.
       </p>
       <ol class="hints__list">
         {improvementHints.map(i => (
@@ -252,7 +251,6 @@ for (const h of hints) {
     font-size: 0.75rem;
     color: var(--text-faint);
   }
-  .hints__note code { font-family: var(--font-mono); font-size: 0.92em; }
 
   .hints__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
 

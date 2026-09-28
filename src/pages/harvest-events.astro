@@ -55,12 +55,8 @@ const resourceCount = sections.filter(s => s.icon).length;
 ]}>
   <section class="he-intro">
     <p>
-      A <strong>Harvest Event</strong> can fire when a Worker finishes gathering a tile Resource. The
-      tile yields its stockpile, and a short story asks the leader what to do with the windfall. Each
-      option grants different rewards to the player, the city or the family. These events are flagged
-      in <code>eventStory*.xml</code> with <code>Class=EVENTCLASS_HARVESTING</code> and trigger on
-      <code>EVENTTRIGGER_RESOURCE_HARVESTED</code>, and the reward chips below are the
-      <code>bonus*.xml</code> payloads in plain words.
+      The events that can fire when a Worker harvests a tile Resource, grouped by resource. Each choice
+      pays out differently, to you, the city or a family.
     </p>
   </section>
 
@@ -101,7 +97,7 @@ const resourceCount = sections.filter(s => s.icon).length;
                     : 'Excluded when Competitive Events is on (Competitive Mode tournaments)'}
                 >CM {(ev as any).cmEligible !== false ? '✓' : '✗'}</span>
                 {(ev as any).minTurns && <span class="chip--turn" title="Earliest turn this event can fire (its own minimum, or its event class's)">Turn {(ev as any).minTurns}+</span>}
-                {ev.oncePerGame && <span class="ev-card__once" title="iRepeatTurns = −1, so this event can only fire once per game">once per game</span>}
+                {ev.oncePerGame && <span class="ev-card__once" title="This event can only fire once per game">once per game</span>}
               </h3>
               {chainIndex[ev.id] && (
                 <a class="ev-card__chain" href={`${base}events/chains/${chainIndex[ev.id].slug}#${ev.id}`}>
@@ -177,14 +173,6 @@ const resourceCount = sections.filter(s => s.icon).length;
     font-size: 0.92rem;
     line-height: 1.55;
     color: var(--text-dim);
-  }
-  .he-intro code {
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 0.05rem 0.4rem;
-    color: var(--text);
-    font-size: 0.86em;
   }
 
   /* Resource jump bar */

@@ -30,6 +30,24 @@ Also exported:
   • the count of traits with a <GovernorEffectCity> (the Vizier's own traits apply in every
     city he runs; the Traits page lists them, so only the count is exported);
   • the Autonomous Rule event lifecycle (grant / end) with option outcomes.
+
+Game source behind the /grand-vizier and /autonomous-rule page prose (cited here,
+not on the pages): council-btt.xml abTraitPrereq / bNoNotifications;
+EFFECTCITY_SHARED_POWER bAutoBuild / bNoHurry / DefaultGovernor; City.governor()
++ updateDefaultGovernor (acting governor); Character.clearJobs (one job at a time);
+Player.foundCity → AI.chooseBuild (first build of a new city);
+Character.resetAllTraitGovernorEffectCity (trait GovernorEffectCity in every city);
+City.calculateGovernorOpinionYield + yield maiOpinionCharacterRate; City.isGoverned /
+isGovernorLeader; Player.doTurn → processTurn → AI.doDecisions →
+AI.doAutomatedCityBuilds; hasBuildPlanned (flagged items only); Game.cs BUILD_*
+handlers; City.finishBuild (repeat ignored under autobuild); shouldRepairCity /
+chooseRepairBuild; evaluateTurn; BuildValue.bLowPriority (1.0.84658);
+doYieldExpenses + testCanSpendYields; chooseBuild; shouldBuyYields / isAIAutoPlay;
+isCityInDanger (AI_CITY_MIN_DANGER); projectValue / unitValue / specialistValue;
+getBuildValue; calculateTargetMilitaryUnitNumber (iUnitBuildModifier,
+bTraitsAffectAutobuild). Autonomous Rule: project iMaxCount, bHidden,
+aeAddProjects / aeRemoveProjects, bCaptureDestroy, bNoBuildUnits →
+City.canBuildUnit, effectCity aiYieldRatePopulation (Science 10, Money 20 ÷10).
 """
 from __future__ import annotations
 

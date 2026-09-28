@@ -79,15 +79,14 @@ function blob(r: Combo): string {
 ---
 
 <p class="fc-lede">
-  <LinkedText text={introA} />
-  {' '}<code>MAX_FAMILIES</code> in <code>globalsInt.xml</code>, enforced by
-  <code>Player.canFoundCityFamily</code> and shown on the found-city widget as
-  <q>Max Families: 0/{max}</q>, <LinkedText text={introB} />
-  {' '}<LinkedText text={introC} />
+  <LinkedText text={introC} />
   {' '}<a href={`${base}${sibling.slug}`}>{sibling.label}</a>.
+</p>
+<p class="fc-lede">
+  <LinkedText text={introA} />
+  {' '}the found-city widget shows <q>Max Families: 0/{max}</q>, <LinkedText text={introB} />
   {' '}<LinkedText text={introD} />
-  {' '}(<code>GAMEOPTION_RANDOMIZE_FAMILIES</code>, <code>Game.setupNew</code>)
-  <LinkedText text={introE} />
+  {' '}<LinkedText text={introE} />
 </p>
 
 <div class="fc-tools">

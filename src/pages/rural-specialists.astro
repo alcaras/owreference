@@ -2,9 +2,11 @@
 import Base from '../layouts/Base.astro';
 import LinkedText from '../components/LinkedText.astro';
 import specialists from '../data/specialists.json';
+import specialistCost from '../data/specialist_cost.json';
 import { classifyYield } from '../lib/entities';
 
 const base = import.meta.env.BASE_URL;
+const perProduced = specialistCost.global.perProduced;
 const civicsIco = 'img/icons/yields/civics.png';
 const foodIco = 'img/icons/yields/food.png';
 
@@ -23,7 +25,7 @@ for (const s of rural) searchBlobs[s.classSlug] = JSON.stringify(s).toLowerCase(
 <Base pageFilter title="Rural Specialists" active="rural-specialists" pageMark="🌾" pageStats={[
   { label: 'specialists', value: rural.length },
 ]}>
-  <p class="costnote">Costs below are the base price. Each specialist a city trains adds 5% of it to the next one in that city: see <a href={`${base}specialist-cost`}>Specialist Cost</a>.</p>
+  <p class="costnote">Costs below are base prices. Each specialist a city trains adds {perProduced}% of the base price to the next one in that city (see <a href={`${base}specialist-cost`}>Specialist Cost</a>).</p>
   <div class="grid" id="rs-grid">
     <div class="grid__scroll">
       <table class="ntbl">

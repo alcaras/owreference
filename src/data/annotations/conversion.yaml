@@ -27,34 +27,35 @@ family:
   threshold: 100                   # iValue must exceed 100 to be eligible
   scoring:
     - { points: 100, label: "Each family character following that religion" }
-    - { points: 100, label: "Family head (additional, on top of the +100 above → +200 total)" }
-    - { points: 20,  label: "Council members (additional — stacks with the job bonus → +40 for a council job)" }
-    - { points: 20,  label: "Has a job — governor / general / agent / council (additional)" }
-    - { points: 50,  label: "Current religion bonus (tiebreaker so families don't churn)" }
+    - { points: 100, label: "Family head (on top of the +100 above, so +200 in all)" }
+    - { points: 20,  label: "Council member (stacks with the job bonus, so +40 for a council job)" }
+    - { points: 20,  label: "Has a job: Governor, General, Agent or council" }
+    - { points: 50,  label: "The religion the family already follows" }
 
 character:
-  # The trigger gate before chooseReligion() is even called
+  # The trigger gate before chooseReligion() is even called.
+  # Code: human leader skip = isHuman() && isLeader(); religion skip = hasReligion();
+  # age gate = TUTORS_AGE; turn gate = CHARACTER_RELIGION_DELAY_TURNS;
+  # roll = CHARACTER_RELIGION_PROB; child chance = 1 / (ADULT_AGE − age + 1).
   whoRolls:
-    - "Leader characters of human players never auto-convert (`isHuman() && isLeader()`)."
-    - "Anyone who already has a religion is skipped (`hasReligion()` check)."
-    - "Religion heads, characters with NoReligion trait, and anyone under age 10 (TUTORS_AGE) are ineligible."
-    - "Non-leaders with a 'locked religion' trait can only convert to that locked religion."
-    - "No conversion before turn 10 of the game (CHARACTER_RELIGION_DELAY_TURNS)."
-    - "Per turn, each eligible character rolls a 10% chance (CHARACTER_RELIGION_PROB)."
+    - "Your own leader never converts on their own."
+    - "Anyone who already has a religion is skipped."
+    - "Religion heads, characters with the No Religion trait, and anyone under 10 cannot convert."
+    - "A non-leader with a locked-religion trait can only convert to that religion."
+    - "No one converts before turn 10."
+    - "Each turn, each eligible character has a 10% chance to try."
     - >-
-      Adults always proceed after the 10% gate. Children (age < 18) proceed
-      with probability 1 / (ADULT_AGE − age + 1). At age 10 that's 1/9;
-      at 17, 1/2. Adulthood = 18.
+      An adult who passes the 10% roll goes ahead. A child under 18 goes
+      ahead with a chance of 1 in (19 − age): 1 in 9 at age 10, 1 in 2 at 17.
 
   threshold:
     description: >-
-      A random integer 1..3 is drawn at the start of evaluation. Each
-      religion's city-based + role-based score must be **strictly greater
-      than** the threshold to be eligible. The highest post-modifier
-      score among eligible religions wins; ties go nowhere.
+      The game rolls a threshold from 1 to 3. A religion is a candidate
+      only if its city points plus role points are more than the
+      threshold. The candidate with the highest final score wins.
 
   cityScoringWithFamily:
-    note: "Family characters: only their family's cities (player-owned and family-aligned) count."
+    note: "For family characters, only the family's own cities count."
     rules:
       - { points: 4, label: "Family seat is the holy city of this religion" }
       - { points: 3, label: "Any other family city is the holy city" }
@@ -62,20 +63,20 @@ character:
       - { points: 1, label: "Religion present in other family cities (not as holy city)" }
 
   cityScoringNoFamily:
-    note: "Characters without a family (initial rulers, foreigners, etc.). All player cities count, weighted less."
+    note: "For characters without a family, such as your first ruler or foreigners, all your cities count, for fewer points."
     rules:
       - { points: 2, label: "Player owns the holy city of this religion" }
       - { points: 1, label: "Religion present in any other player city" }
 
   cityScoringTribe:
-    note: "Tribe characters score off tribe settlements (cities + tribe sites)."
+    note: "Tribe characters count the tribe's cities and sites."
     rules:
       - { points: 4, label: "Tribe city is the holy city" }
       - { points: 3, label: "Tribe city has the religion (not holy)" }
       - { points: 2, label: "Tribe site has the religion" }
 
   roleScoring:
-    note: "Role bonuses stack on top of city/family scoring, regardless of family affiliation."
+    note: "Role points add to city points, family or not."
     rules:
       - { points: 3, label: "Governor of the holy city" }
       - { points: 2, label: "Governor of a city with this religion (not the holy city)" }
@@ -83,9 +84,9 @@ character:
       - { points: 1, label: "Agent in a city with this religion (not the holy city)" }
 
   postThreshold:
-    note: "Only religions whose pre-mod score cleared the threshold get these. Then the random multiplier picks the winner."
+    note: "Only candidates that cleared the threshold get these."
     rules:
-      - { points: 3, label: "Religion is a Pagan religion (has a `mePaganNation`)" }
-      - { points: "0–4", label: "max(0, 4 − total_characters_following) — boosts small religions" }
+      - { points: 3, label: "It is a pagan religion" }
+      - { points: "0–4", label: "4 minus the number of characters who follow it (never below 0), which helps small religions" }
 
-  randomization: "Final score = sum × random integer in [5, 14]. Highest score wins."
+  randomization: "Each candidate's total is multiplied by a random number from 5 to 14. The highest result wins."

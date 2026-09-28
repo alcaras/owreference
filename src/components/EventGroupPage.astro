@@ -91,14 +91,14 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
     )}
     <div class="mode-toggle" role="radiogroup" aria-label="Detail level">
       <button type="button" class="mode-toggle__btn is-active" data-evmode="raw" role="radio" aria-checked="true">Raw XML</button>
-      <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Humanized</button>
+      <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Readable</button>
     </div>
   </div>
   <p class="evt-filter__note" id="evt-note" hidden></p>
 
-  <p class="evt-caveat">⚠ <b>Weights are not in-game odds.</b> Each story is gated by character/empire conditions (some
-  hidden in game), so its real frequency is filtered in ways the XML cannot predict, and community analytics differ a lot
-  from raw weights. Treat the weight as the XML knob, not a probability.</p>
+  <p class="evt-caveat">⚠ <b>Weights are not in-game odds.</b> Each event also needs its character and empire
+  conditions to hold, and some of those are hidden in game, so how often it really fires can differ a lot from its
+  weight. Community tracking bears this out.</p>
 
   <div class="evt-list evtmode" data-mode="raw" id="evtmode">
     {sec.events.map(ev => (
@@ -119,7 +119,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
             {ev.dlc && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
             {(ev as any).followsFrom && (ev as any).followsFrom.length > 0
               ? <span class="chip--chain" title="Fires as a follow-up in a chain">⛓ follow-up</span>
-              : (ev.weight != null && <span class="evt__share" title="Raw iWeight, which is not a probability. See the caveat above.">weight {ev.weight}</span>)}
+              : (ev.weight != null && <span class="evt__share" title="Not a chance to fire. See the warning above.">weight {ev.weight}</span>)}
           </span>
         </summary>
         <div class="evt__body">
@@ -141,7 +141,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
           )}
           {(ev.prob || ev.conditions.length > 0 || (ev.timing && (ev.timing.repeat || ev.timing.maxTurns || ev.timing.minLeader || ev.timing.law || ev.timing.minOpponentLevel))) && (
             <div class="evt__tags">
-              {ev.prob && <span class="chip--time" title="Chance this story is added to the pool on an eligible turn">{ev.prob}% to appear</span>}
+              {ev.prob && <span class="chip--time" title="Chance this event joins the pool on an eligible turn">{ev.prob}% to appear</span>}
               {ev.timing.repeat && <span class="chip--time">{ev.timing.repeat}</span>}
               {ev.timing.maxTurns && <span class="chip--time">Before turn {ev.timing.maxTurns}</span>}
               {ev.timing.minLeader && <span class="chip--time">Leader {ev.timing.minLeader}+</span>}
@@ -186,7 +186,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
                   )}
                   {o.canLeadTo && o.canLeadTo.length > 0 && (
                     <div class="opt__leads opt__leads--maybe"
-                         title="This choice grants a memory these stories require, which makes them eligible. It does not guarantee they fire.">
+                         title="This choice gives a memory these events need. They can fire, but are not sure to.">
                       ◇ may enable:{' '}
                       {o.canLeadTo.map((t: any, i: number) => (
                         <>{i > 0 ? ', ' : ''}<a href={evHref(t)}>{t.name}</a></>
@@ -196,8 +196,8 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
                   {!(o.canLeadTo && o.canLeadTo.length > 0) &&
                     (o.outcomes || []).some((oc: any) => (oc.rewards || []).some((r: any) => r.note)) && (
                     <div class="opt__leads opt__leads--dead"
-                         title="The game shows '[Could lead to future Events]' for any memory grant, but no event in the current data requires this memory.">
-                      ◇ grants a memory no event currently keys off
+                         title="The game says '[Could lead to future Events]', but no event needs this memory.">
+                      ◇ grants a memory no event uses
                     </div>
                   )}
                 </li>

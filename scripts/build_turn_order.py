@@ -10,6 +10,18 @@ Steps whose call is itself a doTurn-family function (Tile/Tribe/City/Unit/
 Character) embed that function's extracted steps as children. Calls without
 a curated label still emit (prettified title) and are collected in
 _meta.unlabeled — the audit pattern; they are printed at build time.
+
+The page (/turn-order) no longer prints file:line refs; the round structure
+it describes comes from: Game.testTurn (Game.cs:3257), shouldIncrementTurn
+(Game.cs:3359), nextTeamTurn (Game.cs:4238); end of turn in
+Player.processEndTurn (Player.cs:16906); tribe turn in playCurrentTurn
+(Game.cs:3269-3314) with tribal characters at Game.cs:4381; rollover in
+incrementTurn -> Game.doTurn then game-over check (Game.cs:3175-3188,
+4247-4250); Player.doTurn per player (Game.cs:4316), mostly inlined from
+processTurn (Player.cs:16505); simultaneous / cloud / hotseat handling at
+Game.cs:4310-4322, 4324-4353, 4354-4360. Event pick is weighted inside
+doEventTrigger; AI order lives in AI.doDecisions, doAutomatedCityBuilds and
+PlayerAI.cs.
 """
 
 import json

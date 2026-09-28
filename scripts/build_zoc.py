@@ -24,6 +24,45 @@ page declares only terrain, units and a candidate path; which tiles are in ZOC
 and which steps are legal is COMPUTED here and asserted, so a rules regression
 fails `make data` rather than silently drawing the wrong arrow.
 
+Game-source citations (reference/Source/Base/Game/GameCore; these used to be the
+page's "Sources" list):
+  Unit.isValidMovementDirection  Unit.cs:7670-7695  the one rule: refused iff both
+      tiles are in hostile ZOC; current tile tested with bIgnoreRiver = the step
+      crosses a river (7689). Called from PathFinder.cs:914.
+  Unit.canBeSwapped / canSwapUnits  Unit.cs:8252, 8287  swap refused when both tiles
+      are in hostile ZOC. No other caller of isHostileZOC exists.
+  Unit.canAdvanceAfterAttack / canHaveRoutCooldown / canTargetFrom  Unit.cs:8342,
+      8389, 8508  Rout advance after a kill needs a bRout effect the defender is not
+      immune to (getDefenderRoutEffectUnit 8420, EFFECTUNIT_POLEARM is immune),
+      another target reachable from the new tile, and canOccupyTile; no zone test.
+      The move itself is setTileID at Unit.cs:9711.
+  Unit.getPushTile  Unit.cs:10031  Panic / Fireship push: the three tiles away from
+      the attacker, tested with canUnitOccupy only.
+  Unit.hasZOC / hasIgnoreZOC  Unit.cs:6983, 7008  unit type flag or any held effect.
+  Unit.isUnitZoc  Unit.cs:4550  aeUnitTraitZOC: Polearm effects list Mounted.
+  Tile.isDirectionHostileZOC  Tile.cs:9991-10058  same medium only; hostile cities
+      on land; hidden exerters and hidden movers; embarked units cannot ignore ship
+      ZOC; ignore test, then the trait test.
+  Tile.isHostileZOC  Tile.cs:10061-10096  impassable and city tiles never in ZOC;
+      improvement bIgnoreZOC (unset everywhere); river edges skipped unless
+      bIgnoreRiver.
+  Tile.isInUnitZOC  Tile.cs:9974  the selected-unit overlay test: no river check.
+  Game.isHostile  Game.cs:14753  diplomacy.xml bHostile: only DIPLOMACY_WAR.
+  Tile.canUnitPass  Tile.cs:10152, 10272  a hostile unit fills its tile only if its
+      type has bBlocks; land units need water control (isWaterMovement,
+      Tile.cs:8027) to enter water.
+  Tile.canUnitOccupy / canBothUnitsOccupy  Tile.cs:10479, 10382  a move may not end
+      on a tile with any hostile unit, blocking or not.
+  Tile.canUnitTypeOccupy  Tile.cs:10524  ending on water needs a water unit
+      (Game.isWaterUnit, Game.cs:14267: bWater, bAmphibious, or an aeWaterUnit
+      player effect) or bTerritoryWater on own-territory water.
+  ClientRenderer  ClientRenderer.cs:1641, 1854, 1880  hold-X overlay calls
+      isHostileZOC with bIgnoreRiver: true; the selected-unit overlay uses
+      isInUnitZOC.
+  PlayerAI  PlayerAI.cs:9358-9365, 10679-10686, 10953  AI_UNIT_ZOC_VALUE: exerting,
+      ignore-ZOC and per-trait-ZOC values.
+  color.xml COLOR_NEUTRAL_ZOC is defined but unused by the source.
+
 Port assumptions (the scenarios never exercise the rest of the game state):
   * no unit has an attack cooldown, claims a city site or is building an
     improvement — the three early-outs in Unit.isHiddenTileFrom (Unit.cs:3509)

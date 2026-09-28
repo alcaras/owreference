@@ -39,11 +39,9 @@ for (const n of chain.nodes) for (const id of n.ids) idToKey[id] = n.key;
   <p class="crumb"><a href={`${base}events/chains`}>← All event chains</a></p>
 
   <p class="lede">
-    The <strong>{chain.title}</strong> chain — {chain.size} event{chain.size === 1 ? '' : 's'} linked by
-    the game's EventLink graph, where a choice in one event makes the next eligible. Boxes are events
-    (click to open the card); arrows are transitions (hover for the choice that triggers them). Structurally
-    identical variants — the same event per rival/nation — are collapsed into one box with an
-    <span class="x">×N</span> count.
+    The <strong>{chain.title}</strong> chain: {chain.size} event{chain.size === 1 ? '' : 's'} where a choice
+    in one makes the next eligible. Click a box to open the event. Hover an arrow to see the choice behind it.
+    The same event for each rival or nation shares one box, with an <span class="x">×N</span> count.
     {chain.dlc.length > 0 && <> Content: {chain.dlc.join(', ')}.</>}
   </p>
 

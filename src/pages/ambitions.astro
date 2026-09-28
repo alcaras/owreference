@@ -83,20 +83,19 @@ const GROUP_GLYPH: Record<string, string> = {
   { label: 'victory types', value: victories.length },
 ]}>
   <p class="amb-intro">
-    Ambitions are the game's ladder of goals. Each new leader is offered goals
-    drawn from <code>goal.xml</code>, filtered by <strong>tier</strong>, which is
-    the slot the goal can fill, meaning how many ambitions you have already
-    completed plus one. Completing {globals.maxAmbitions} of them wins an
-    Ambition victory, and one of those must be a
-    <strong>National Ambition</strong>, which is the tier
-    {globals.maxAmbitions} goal. The XML has no reward field on a goal. Each
-    finished ambition counts toward the {globals.maxAmbitions}, raises
-    Legitimacy through the cognomen system
-    (<code>STAT_AMBITION_ACHIEVED</code>), and can fire follow-up events. A new
-    ambition is offered no sooner than {globals.ambitionDelayTurns} turns after
-    the last was completed, and a National Ambition can arrive early once
-    you're {globals.nationalOfferThresholdPercent}% of the way there. Tier
-    logic verified against <code>PlayerGoal.cs · isGoalTierValid()</code>.
+    Ambitions are the game's ladder of goals, and this page lists them.
+  </p>
+  <p class="amb-intro">
+    Each goal has a <strong>tier</strong>:
+    the slot it can fill, which is how many ambitions you have already completed plus
+    one. Completing {globals.maxAmbitions} of them wins an Ambition victory, and one
+    of those must be a <strong>National Ambition</strong>, the tier
+    {globals.maxAmbitions} goal. Goals carry no reward of their own. Each one you
+    finish counts toward the {globals.maxAmbitions}, raises Legitimacy through your
+    cognomen, and can fire follow-up events. A new ambition is offered no sooner than
+    {globals.ambitionDelayTurns} turns after the last was completed, and a National
+    Ambition can arrive early once you're {globals.nationalOfferThresholdPercent}% of
+    the way there.
   </p>
 
   <section class="amb-victory" id="victories">
@@ -139,11 +138,9 @@ const GROUP_GLYPH: Record<string, string> = {
       </table>
     </div></div>
     <p class="amb-vpnote">
-      The Victory Point target is computed for each map, because every city site,
-      buildable VP improvement and project on the map feeds it
-      (<code>Game.cs getVPToWin()</code>). The result is scaled down by the team
-      count and then shifted by the Victory Point option in game setup, which
-      offers
+      The Victory Point target differs by map, because every city site, buildable VP
+      improvement and project on the map feeds it. It is then scaled down by the
+      number of teams and shifted by the Victory Point option in game setup:
       {victoryPointOptions.map((o, i) => (
         <span class="amb-vpopt">{o.name} {o.modifier >= 0 ? `+${o.modifier}` : o.modifier}%{i < victoryPointOptions.length - 1 ? ' · ' : ''}</span>
       ))}.
@@ -350,13 +347,6 @@ const GROUP_GLYPH: Record<string, string> = {
     margin: 0 0 1rem;
     line-height: 1.55;
   }
-  .amb-intro code, .amb-vpnote code {
-    background: var(--bg-elev);
-    padding: 0.05rem 0.4rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-  }
-
   .amb-tools {
     display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem;
     margin: 0 0 0.9rem;

@@ -39,14 +39,15 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
   ]}
 >
   <p class="lede">
-    <b>Row units attack column units and deal the damage in the cell</b>, using
-    the game's own formula of <code>6 × ATK / DEF</code>, rounded in the stronger
-    unit's favor, with the anti-trait modifiers of both sides. The baseline
-    conditions are full HP and open terrain, with no promotions, terrain,
-    flanking or general bonuses. <a href={`${base}combat-damage`}>How the formula
-    works →</a> Click a column header to rank attackers against that defender, or
-    a row header to rank that unit's targets. Click again to reverse the order,
-    and a third time to reset. Full unit stats live on the <a href={`${base}units`}>Units</a> page.
+    How much damage each land unit deals to every other. <b>The row unit attacks
+    the column unit.</b> Both sides' bonuses against unit types are counted; the
+    units are at full HP on open ground, with no promotions, flanking or generals.
+    <a href={`${base}combat-damage`}>How damage works →</a>
+  </p>
+  <p class="lede">
+    Click a column header to rank attackers against that defender, or a row
+    header to rank that unit's targets. Click again to reverse, and a third time
+    to reset. Full unit stats are on the <a href={`${base}units`}>Units</a> page.
   </p>
 
   <div class="natbar">
@@ -220,12 +221,6 @@ const nationOptions = [...new Set((units as Unit[]).map(u => u.nationLabel).filt
     margin: 0 0 1rem;
     font-size: 0.84rem;
     line-height: 1.5;
-  }
-  .lede code {
-    background: var(--bg-elev);
-    padding: 0.05rem 0.35rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
   }
   .lede a { color: var(--accent); }
 

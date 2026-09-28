@@ -117,6 +117,63 @@ These came from the user, the design pass, and iteration. Don't relitigate:
 
 ---
 
+## Writing rules (LOAD-BEARING)
+
+Learned the way Meta's "Unslopping AI" (RL-XAR, facebookresearch.github.io/RAM/blogs/unslop)
+learns a writing rubric: from the gap between expert text and model text. The expert
+text here is the owner's hand revision of the model-written `/border-expansion` prose
+(commit `521dbf5`); every rule below is a change that revision made. The article's own
+findings agree: good sections own one job rather than miniaturising the whole, and
+disciplined, on-scope selection beats breadth.
+
+1. **Each section owns one job.** The lede says what the page is for, in one or two
+   sentences. It is not a compressed copy of the page. No "if you only read one
+   paragraph" summary that restates later sections.
+   *Model:* "Your border does not creep outward by itself. Land joins your Territory
+   only within range of something you do: founding a city takes everything within 2
+   tiles, a specialist…" (a whole page in one paragraph).
+   *Expert:* "This page outlines the simple rules that the game uses to expand your
+   borders, whether through a Border Boost card, urban expansion, or buying tiles."
+2. **Select for the player.** Keep a detail only if it changes a decision or explains
+   something the player sees. Cut code internals: function names, "passes" and queues,
+   "asserted", dead code, lists that are empty in the data, flags no entry uses, and
+   help-text-versus-code discrepancies unless the in-game text would mislead. Of the
+   edge cases, keep the two or three that bite; the owner cut nine "gotchas" to three.
+3. **The player's words and viewpoint.** "You", "your borders", the in-game names. No
+   pseudo-variables ("for an owned tile T and an unowned neighbour N"); describe the
+   tiles. A formula appears only when the reader computes with it, followed by what it
+   means in words.
+   *Model:* "Resource pull. N has a resource and T has none."
+   *Expert:* "Your borders will expand to a tile neighboring one of your tiles that has
+   a resource when your tile doesn't have a resource."
+4. **Captions: one sentence, what happened and why.** A second note line only when the
+   board cannot be read without it (the revision deleted almost every `.note`).
+   *Model:* "Only the horses join: the wheat touches only the marble tile and the sheep
+   only the horse tile." + a note on range 2.
+   *Expert:* "Your borders only expand to the horses, since you can't 'chain' resources
+   from another resource tile."
+5. **Plain labels and headings** that name the thing: "Tiles", "Tile acquisition
+   rules", "What can expand borders", "a buyable tile", "starting tile".
+6. **Show, then generalise.** "Let's use Border Boost as an example." "Here's an event
+   that grabs +2 tiles." Bullets for separate rules, one rule per bullet, rather than
+   one bullet packed with five clauses.
+7. **Economy.** One idea per sentence. No restating, no hedges or filler ("note that",
+   "exactly", "simply", "in other words"), no similes, no flourishes, no "not X but Y"
+   for effect. A friendly direct tone is fine ("Same deal with the fish.").
+8. **Grounding stays in the pipeline, not on the page.** Source citations
+   (`File.cs:line`, function names) live in the builder's docstring, the commit message
+   and this file. Reader pages carry no "Where this comes from" list; the revision
+   deleted `/border-expansion`'s. Numbers on the page still come from the data through
+   placeholders, never typed by hand.
+
+`scripts/audit_prose.py` (run by `make check`) checks the mechanical tells in the built
+pages: it fails on a source citation (`Game.cs:123`) or a "Where this comes from"
+section in visible text, and warns on ledes over 60 words and code vocabulary
+("asserted", `getFoo()`). Judgement calls (selection, scope, voice) are not
+machine-checkable; the before/after pairs above are the reference.
+
+---
+
 ## How to build a new tab page
 
 Pattern, in order:

@@ -49,7 +49,7 @@ for (const g of actionGroups) {
   title="Diplomacy"
   active="diplomacy"
   pageMark="🕊️"
-  description="Diplomacy in Old World, taken from the game's XML. Covers the four diplomatic states and their opinion effects, war score and war states, and every action that changes a state, including truces, peace, alliances, tribute and third-party wars, with costs and requirements."
+  description="Diplomacy in Old World: the four diplomatic states and their opinion effects, war score and war states, and every action that changes a state, including truces, peace, alliances, tribute and third-party wars, with costs and requirements."
   pageStats={[
     { label: 'states', value: counts.states },
     { label: 'war states', value: counts.warStates },
@@ -59,14 +59,17 @@ for (const g of actionGroups) {
   ]}
 >
   <div class="dip">
+    <p class="dip__intro">
+      What each diplomatic state does, how war score and the AI's view of you work, and what every
+      diplomatic action costs.
+    </p>
 
     <!-- ── Diplomatic states ─────────────────────────────────────── -->
     <section class="dip__sec" id="states">
       <h2 class="dip__h">Diplomatic states</h2>
       <p class="dip__intro">
-        Your relationship with every Nation and Tribe sits in one of the states below. War, Truce
-        and Peace move one step at a time through the actions listed further down, and Team is
-        fixed when the game starts.
+        You are in one of these states with every Nation and Tribe. War, Truce and Peace move one
+        step at a time through the actions below. Team is fixed when the game starts.
       </p>
       <div class="states">
         {states.map(s => (
@@ -107,8 +110,8 @@ for (const g of actionGroups) {
               <tr>
                 <th>State</th>
                 <th>Score diff</th>
-                <th title="Modifier on the chance a tribe offers or accepts a truce (Tribe.getTrucePercent)">Truce chance</th>
-                <th title="Scales the Money the AI offers or demands in war diplomacy (PlayerAI.getDiplomacyMoney)">AI money in deals</th>
+                <th title="Modifier on the chance a tribe offers or accepts a truce">Truce chance</th>
+                <th title="Scales the Money the AI offers or demands in war diplomacy">AI money in deals</th>
               </tr>
             </thead>
             <tbody>
@@ -125,7 +128,7 @@ for (const g of actionGroups) {
         </div>
 
         <div class="warcol">
-          <h3 class="dip__sub">War score events <span class="dip__subnote">from the game source</span></h3>
+          <h3 class="dip__sub">War score events</h3>
           <table class="dtbl">
             <thead>
               <tr><th>vs Nations</th><th class="dtbl__num">Score</th></tr>
@@ -156,10 +159,10 @@ for (const g of actionGroups) {
     <section class="dip__sec" id="rivals">
       <h2 class="dip__h">How rivals are described</h2>
       <p class="dip__intro">
-        The diplomacy screen shows a word rather than a rival's science or army size. Each word is
-        a band, and both comparisons are <b>ratios of them to you</b>, so the same rival changes
-        description as <em>you</em> grow. The distance bands and the war chance modifiers below are
-        what the AI acts on.
+        The diplomacy screen describes a rival's science and army with a word, not a number. Each
+        word is a range of <b>their total compared with yours</b>, so the same rival's word changes
+        as <em>you</em> grow. The AI acts on the distance words and the war chance modifiers
+        below.
       </p>
 
       <div class="warwrap">
@@ -177,10 +180,9 @@ for (const g of actionGroups) {
             </tbody>
           </table>
           <p class="dip__note">
-            The band counts <b>all Science ever earned</b>, which is the running total rather than
-            the techs you know or your current rate, so it moves slowly and never falls. The code is
-            <code>Player.calculateKnowledgeOf</code>. The band is informational only, and no AI
-            modifier depends on it.
+            This counts <b>all Science ever earned</b>, not the techs you know or your current rate,
+            so it moves slowly and never falls. It is for information only; no AI modifier depends
+            on it.
           </p>
         </div>
 
@@ -209,10 +211,9 @@ for (const g of actionGroups) {
             </tbody>
           </table>
           <p class="dip__note">
-            Strength is the sum of every unit's base strength
-            (<code>Unit.getStrengthRating</code>), where a damaged unit still counts in full and a
-            ship counts for less on a map with little water. An AI considers declaring war only from
-            <b>Similar</b> upward, and a <b>Much Weaker</b> tribe never accepts peace.
+            Army strength is the sum of every unit's base strength. A damaged unit counts in full,
+            and a ship counts for less on a map with little water. An AI considers declaring war
+            only from <b>Similar</b> upward, and a <b>Much Weaker</b> tribe never accepts peace.
           </p>
         </div>
       </div>
@@ -240,9 +241,8 @@ for (const g of actionGroups) {
         </tbody>
       </table>
       <p class="dip__note">
-        Proximity is the harshest of the three bands. A <b>Very Close</b> neighbour takes a
-        standing <b>−60</b> opinion of you simply for being nearby, and only the two farthest bands
-        stop tribes from declaring war outright.
+        A <b>Very Close</b> neighbour has <b>−60</b> opinion of you just for being nearby. Only the
+        two farthest bands stop tribes from declaring war outright.
       </p>
     </section>
 
@@ -250,9 +250,8 @@ for (const g of actionGroups) {
     <section class="dip__sec" id="actions">
       <h2 class="dip__h">Diplomacy actions</h2>
       <p class="dip__intro">
-        Costs are paid from your stockpile. A cost marked as scaled by opinion changes with the
-        opinion the performing character holds of you, from −50% at Friendly up to +100% at
-        Furious.
+        Costs are paid from your stockpile. A cost marked ± changes with the performing
+        character's opinion of you, from −50% at Friendly up to +100% at Furious.
       </p>
 
       {actionGroups.map(group => (
@@ -513,7 +512,6 @@ for (const g of actionGroups) {
   .dtbl--wide { width: 100%; }
   .dip__note { font-size: 0.76rem; color: var(--text-faint); line-height: 1.55; margin: 0.5rem 0 0; max-width: 70ch; }
   .dip__note b { color: var(--text-dim); }
-  .dip__note code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 4px; padding: 0.03rem 0.28rem; }
   .dtbl__name { font-family: var(--font-display); font-weight: 600; color: var(--text); white-space: nowrap; }
   .dtbl__mono { font-family: var(--font-mono); font-size: 0.72rem; }
   .dtbl__num { text-align: right; }

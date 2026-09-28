@@ -29,6 +29,13 @@ tile to upgrade), outside getSpecialistYieldCost, so no modifier scales it.
 
 Costs are RAW integers, like the rest of the specialist data — no /10
 (same note as build_specialists.py).
+
+The counter is a field on the city (City.miSpecialistProducedCount), written in
+only two places, so the "ignores" list is everything else that can put a
+specialist on a tile. The `where` strings in code.counts / code.ignores carry the
+game-source citation for each list item; the page renders only `what`.
+scripts/verify_source_constants.py watches both cost functions, so a patch that
+changes the formula is flagged instead of quietly making the page wrong.
 """
 from __future__ import annotations
 

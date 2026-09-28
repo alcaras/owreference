@@ -40,7 +40,7 @@ const byPage = refs.reduce<Record<string, typeof refs>>((acc, r) => {
 >
   <div class={`yield-card yield-${entity.slug}`}>
     <p class="yield-card__desc">
-      Yield / concept used across the game. {refs.length} reference{refs.length === 1 ? '' : 's'} in the reference site.
+      Referenced {refs.length} time{refs.length === 1 ? '' : 's'} across this site.
     </p>
   </div>
 
@@ -50,7 +50,7 @@ const byPage = refs.reduce<Record<string, typeof refs>>((acc, r) => {
     </h2>
 
     {refs.length === 0 ? (
-      <p style="color: var(--text-faint)">No references yet, because more pages are still to come.</p>
+      <p style="color: var(--text-faint)">No references yet.</p>
     ) : (
       Object.entries(byPage).map(([page, list]) => (
         <div class="backlink-group">

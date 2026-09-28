@@ -19,9 +19,9 @@ const specialCats = cats.filter(c => c.kind === 'special');
 
 const DEDICATED = [
   { href: 'ruin-events', mark: '🏚️', label: 'Ruin Events', count: meta.excludedCovered['ruin-events'],
-    blurb: 'Exploring a Ruins tile (incl. chain follow-ups)' },
+    blurb: 'Exploring Ruins, and what follows' },
   { href: 'expedition-events', mark: '🧭', label: 'Expedition Events', count: meta.excludedCovered['expedition-events'],
-    blurb: 'The "send a character exploring distant lands" chains' },
+    blurb: 'Sending a character to explore distant lands' },
   { href: 'harvest-events', mark: '🌾', label: 'Harvest Events', count: meta.excludedCovered['harvest-events'],
     blurb: 'Harvesting a resource, grouped by resource' },
   { href: 'study-events', mark: '🎓', label: 'Study Events', count: meta.excludedCovered['study-events'],
@@ -50,20 +50,15 @@ function schedHint(c: any): string | null {
   { label: 'on dedicated pages', value: meta.excludedCovered.total },
 ]}>
   <p class="lede">
-    Every narrative event story in the game's XML, which is {meta.totalStories} across the base
-    game and the DLC, arranged by the game's own grouping. The groups are the <strong>event
-    class</strong> pools that roll each turn (eventClass.xml) and the <strong>triggers</strong>
-    that fire the rest (eventTrigger.xml). Each category page shows the full card, with the gating
-    conditions, every option and its requirements, the raw XML payloads and the chain links, and it
-    leaves the story text for you to find in game. The {meta.excludedCovered.total} stories already
-    covered by the dedicated pages below are linked there rather than repeated here, and the search
-    box above covers <em>every</em> event on the site, including those dedicated pages, and takes
-    you straight to the card.
+    Every story event in the game, {meta.totalStories} across the base game and the DLC, grouped
+    the way the game groups them. Each card shows when the event can fire, every option with its
+    requirements, and what it leads to. The story text is left for you to find in game. Search
+    covers every event, including the dedicated pages below.
   </p>
 
   <div class="ev-search">
     <input type="search" id="ev-q" class="ev-search__input"
-           placeholder="Search every event by name, including expedition, ruin, harvest and study…" autocomplete="off"
+           placeholder="Search every event by name…" autocomplete="off"
            aria-label="Search every event" />
     <p class="ev-search__note" id="ev-q-note" hidden></p>
     <ol class="ev-search__results" id="ev-q-results" hidden></ol>
@@ -73,7 +68,7 @@ function schedHint(c: any): string | null {
     <span class="ev-chainscta__ico">⛓</span>
     <span class="ev-chainscta__body">
       <span class="ev-chainscta__t">Event Chains</span>
-      <span class="ev-chainscta__d">Events that link into one another, drawn as a flow diagram for each chain, with its branches and follow-ups.</span>
+      <span class="ev-chainscta__d">Events that lead into one another, drawn as one diagram per chain.</span>
     </span>
     <span class="ev-chainscta__go">browse →</span>
   </a>

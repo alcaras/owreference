@@ -28,25 +28,24 @@ const base = import.meta.env.BASE_URL;
   pageStats={[{ label: tab.section.toLowerCase(), value: 'section' }]}
 >
   <div class="placeholder">
-    <div class="placeholder__badge">Placeholder</div>
+    <div class="placeholder__badge">Coming soon</div>
     <p class="placeholder__summary">{tab.summary}</p>
 
     {tab.willContain && tab.willContain.length > 0 && (
       <section>
-        <h2>Will contain</h2>
+        <h2>What it will cover</h2>
         <ul>
           {tab.willContain.map(item => <li>{item}</li>)}
         </ul>
       </section>
     )}
 
-    <section>
-      <h2>Provenance</h2>
-      <p>
-        Source sheet: <code>{tab.sourceSheet}</code><br />
-        Canonical XML: <code>reference/XML/Infos/</code>
-      </p>
-    </section>
+    {tab.sourceSheet && (
+      <section>
+        <h2>From the spreadsheet</h2>
+        <p>Tab: {tab.sourceSheet}</p>
+      </section>
+    )}
 
     <p style="margin-top: 2rem">
       <a href={base}>← Back to index</a>
@@ -89,10 +88,4 @@ const base = import.meta.env.BASE_URL;
   }
   .placeholder ul { margin: 0; padding-left: 1.2rem; }
   .placeholder li { margin: 0.25rem 0; }
-  .placeholder code {
-    background: var(--bg);
-    padding: 0.05rem 0.4rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-  }
 </style>

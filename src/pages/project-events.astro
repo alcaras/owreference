@@ -3,12 +3,8 @@ import EventGroupPage from '../components/EventGroupPage.astro';
 const base = import.meta.env.BASE_URL;
 ---
 <EventGroupPage sectionKey="projects" title="Project Events" active="project-events" pageMark="🏗️">
-  The decisions that appear when a city finishes a production <strong>Project</strong>. There are two
-  kinds. A <strong>one-time building project</strong>, such as the
-  <a href={`${base}urban-improvements`}>Archive</a>, Forum, Walls, Treasury, Sangam or Opulence, fires
-  one specific decision, much as a <a href={`${base}wonder-events`}>wonder event</a> does. A
-  <strong>repeatable project</strong>, meaning the Festival, Hunt and Olympiad, rolls one story from a
-  weighted pool every time you run it, and the Festival draws on the largest pool. Each card shows what
-  triggers it and what every choice grants. A weight is the value in the XML rather than a real in-game
-  chance, because character and empire conditions filter which stories are eligible.
+  The choices that appear when a city finishes a <strong>Project</strong>. A one-time project, such as
+  the <a href={`${base}urban-improvements`}>Archive</a>, Forum, Walls, Treasury, Sangam or Opulence, has its own
+  event, like a <a href={`${base}wonder-events`}>wonder event</a>. A repeatable project (Festival, Hunt, Olympiad)
+  rolls one event from a weighted pool each time you run it. The Festival has the largest pool.
 </EventGroupPage>

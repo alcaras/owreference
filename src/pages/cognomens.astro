@@ -38,15 +38,16 @@ for (const c of cognomens) searchBlobs[c.slug] = JSON.stringify(c).toLowerCase()
   { label: 'tracks', value: tracks.length },
 ]}>
   <p class="cog-intro">
-    A regnal title has a single gate, which is a cumulative score of each stat
-    times its weight (<code>aiStatValue</code>), and that score must clear the
-    title's threshold (<code>iMinValue</code>, scaled up by ruler number and game
-    speed). <code>iLegitimacy</code> is the rank rather than a second threshold,
-    so among every title whose score you have cleared you hold the one with the
-    highest legitimacy. The Main Line rewards a broad reign and the side tracks
-    reward specialists. The data comes from <code>cognomen.xml</code>, and the
-    award logic is verified against <code>Character.cs updateCognomen()</code>.
-    To see which title you would earn, use the
+    Every cognomen your leader can earn, grouped by track.
+  </p>
+  <p class="cog-intro">
+    Each title has one
+    requirement: a running score, each stat times its weight in the Earned by
+    column, must reach the title's Min Score, which rises with ruler number and
+    game speed. Legitimacy is not a second requirement. Among all the titles whose
+    score you have reached, you hold the one with the highest Legitimacy. The Main
+    Line rewards a broad reign and the side tracks reward specialists. To see which
+    title you would earn, use the
     <a href={`${import.meta.env.BASE_URL}cognomens-tracker`}>tracker</a>.
   </p>
 
@@ -152,12 +153,6 @@ for (const c of cognomens) searchBlobs[c.slug] = JSON.stringify(c).toLowerCase()
     font-size: 0.86rem;
     margin: 0 0 1rem;
     line-height: 1.55;
-  }
-  .cog-intro code {
-    background: var(--bg-elev);
-    padding: 0.05rem 0.4rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
   }
 
   .cog-tracks {

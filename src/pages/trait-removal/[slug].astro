@@ -40,7 +40,7 @@ const grantors = [...new Set(trait.via.flatMap((r: any) => r.via))].sort();
     )}
     {trait.direct.length > 0 && (
       <> {trait.direct.length === 1 ? 'One event removes' : `${trait.direct.length} events remove`} it
-      directly; the rest displace it by granting the opposite.</>
+      directly. The rest replace it by granting the opposite.</>
     )}
     {grantors.length > 0 && (
       <> Gaining <b>{grantors.join(' or ')}</b> clears it.</>
@@ -53,8 +53,7 @@ const grantors = [...new Set(trait.via.flatMap((r: any) => r.via))].sort();
     <section class="trp">
       <h2 class="trp__h">Removal events <span class="trp__n">{trait.direct.length}</span></h2>
       <p class="trp__note">
-        These take {trait.name} off directly (the option's bonus lists it in
-        <code>aeRemoveTraits</code>).
+        These take {trait.name} off directly.
       </p>
       <ul class="trp__rows">
         {trait.direct.map((r: any) => (
@@ -68,9 +67,9 @@ const grantors = [...new Set(trait.via.flatMap((r: any) => r.via))].sort();
       </ul>
       {trait.direct.some((r: any) => r.variant) && (
         <p class="trp__note">
-          A <b>rolled variant</b> is not a gamble: the game only offers the variant matching a trait
-          the character actually has (<code>PlayerBonus.canDoBonusSingle</code> rejects the others),
-          so for a character whose only such trait is {trait.name}, it is a targeted cure.
+          A <b>rolled variant</b> is not a gamble. The game only offers the variant matching a trait
+          the character has, so for a character whose only such trait is {trait.name}, it is a
+          targeted cure.
         </p>
       )}
     </section>
@@ -80,8 +79,7 @@ const grantors = [...new Set(trait.via.flatMap((r: any) => r.via))].sort();
     <section class="trp">
       <h2 class="trp__h">Replacement events <span class="trp__n">{trait.via.length}</span></h2>
       <p class="trp__note">
-        These grant a trait that displaces {trait.name} (<code>aeTraitReplaces</code>). The arrow
-        names the trait gained.
+        These grant a trait that replaces {trait.name}. The arrow names the trait gained.
       </p>
       <ul class="trp__rows">
         {trait.via.map((r: any) => (
@@ -116,8 +114,6 @@ const grantors = [...new Set(trait.via.flatMap((r: any) => r.via))].sort();
   .trp__n { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); }
   .trp__note { max-width: 84ch; font-size: 0.76rem; color: var(--text-faint); line-height: 1.55; margin: 0.35rem 0 0.6rem; }
   .trp__note b { color: var(--text-dim); }
-  .trp__note code { font-family: var(--font-mono); font-size: 0.9em; background: var(--bg-elev);
-    border: 1px solid var(--border); border-radius: 4px; padding: 0.02rem 0.28rem; }
 
   .trp__rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.18rem; }
   .trp__row { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; font-size: 0.84rem; }

@@ -5,7 +5,8 @@ import regents from '../data/regents.json';
 
 // Mechanic transcribed from Character.makeRegent / isSuccessionSkipRegent,
 // Player.setLeader (the handover) and PlayerBonus.cs (miRegentOfSubject, the
-// bonus that actually crowns one). The candidate ladder is data: eventStory.xml
+// bonus that actually crowns one; iRegentOfSubject in event bonuses). Reign
+// years are tracked by STAT_YEARS_REGENT. The candidate ladder is data: eventStory.xml
 // iPriority + SubjectExtras, resolved in build_regents.py.
 const base = import.meta.env.BASE_URL;
 
@@ -30,30 +31,22 @@ for (const e of regents.events as any[]) {
   ]}
 >
   <p class="lede">
-    When a leader dies and the crown falls to a child, someone rules in their name. You do not
-    assign a regent. The game decides at the moment of succession, using a <b>priority ladder</b>
-    of candidates, and it takes the first rung it can fill. The regent becomes your leader in every
-    respect, plays as your leader, and is expected to hand the throne back. The rules are
-    transcribed from <code>Character.makeRegent</code>, <code>Player.setLeader</code> and
-    <code>isSuccessionSkipRegent</code> in the game source, and the ladder itself is the priority
-    and subject filters in <code>eventStory.xml</code>.
+    When the crown falls to a child, someone rules in their name. You do not pick the regent;
+    the game does. This page shows who it picks and how the throne goes back to the heir.
   </p>
 
   <section class="rg">
     <h2 class="rg__h">When a regency happens</h2>
     <p class="rg__intro">
-      The regent events fire on succession, whether the old leader died <em>or</em> abdicated,
-      when the incoming leader is a minor. The age gate differs by rung. A leader under 7 always
-      gets a regent, a leader aged 6 to 17 gets one only when a suitable relative exists, and from
-      <b>18</b> the new leader rules alone.
+      On succession, by death <em>or</em> abdication, when the new leader is a minor. A leader
+      under 7 always gets a regent. A leader aged 6 to 17 gets one only when a suitable relative
+      exists. From <b>18</b> the new leader rules alone.
     </p>
 
     <h2 class="rg__h">Who is picked</h2>
     <p class="rg__intro">
-      The rungs run from highest priority down. Each rung is an event whose subject filters must
-      all be met by someone in your court, and when nobody fits, the game moves to the next rung.
-      The first three rungs offer a <b>choice</b>, so you may decline that candidate, and the last
-      two are forced.
+      The game goes down this list and takes the first candidate someone in your court fits. You
+      may decline the first three; the last two are forced.
     </p>
 
     <ol class="rg__ladder">
@@ -79,10 +72,8 @@ for (const e of regents.events as any[]) {
       ))}
     </ol>
     <p class="rg__note">
-      "Healthy" excludes characters the game considers unfit at that moment. The bottom rung
-      matters most, because when no relative qualifies a <b>family head</b> takes the regency.
-      A family head is an outsider with their own family's interests, which is why the event is
-      called "Power Play".
+      When no relative qualifies, a <b>family head</b> takes the regency: an outsider with their
+      own family's interests, hence "Power Play".
     </p>
 
     <h2 class="rg__h">What being regent does</h2>
@@ -90,22 +81,20 @@ for (const e of regents.events as any[]) {
       <div>
         <h3 class="rg__sub">While regent</h3>
         <ul class="rg__list">
-          <li>They are your <b>leader</b> in every mechanical sense, so their ratings, traits and
-            archetype drive your empire, and they take the <b>{regents.title}</b> title.</li>
+          <li>They are your <b>leader</b>: their ratings, traits and archetype drive your empire,
+            and they take the <b>{regents.title}</b> title.</li>
           <li>They carry the <b>{regents.regentTrait.name}</b> trait, worth
             <b>{regents.regentTrait.familyOpinion > 0 ? `+${regents.regentTrait.familyOpinion}` : regents.regentTrait.familyOpinion} opinion</b>
-            with their own family, so the regency is a prize in family politics.</li>
-          <li>Their time on the throne counts as a reign, so cognomen stats accrue to them and
-            the <code>STAT_YEARS_REGENT</code> counter tracks the years.</li>
+            with their own family.</li>
+          <li>Their time on the throne counts as a reign, so cognomen stats accrue to them.</li>
         </ul>
       </div>
       <div>
         <h3 class="rg__sub">Giving the throne back</h3>
         <ul class="rg__list">
-          <li>The game remembers the rightful heir separately through the <b>Rightful Heir</b>
-            trait, and the succession list <b>skips regents</b>, because
-            <code>isSuccessionSkipRegent</code> removes them and their descendants as a dynastic
-            root. A regency therefore does not refound your line through the regent's branch.</li>
+          <li>The heir keeps the <b>Rightful Heir</b> trait, and the succession list <b>skips
+            regents</b> and their descendants. A regency does not move your line to the regent's
+            branch.</li>
           <li>When the throne passes on, a regent who still holds the trait converts to
             <b>{regents.formerRegentTrait.name}</b>
             {regents.formerRegentTrait.ratings.length > 0 && (
@@ -118,14 +107,12 @@ for (const e of regents.events as any[]) {
     </div>
 
     <p class="rg__note">
-      A regency can also arrive by event outside succession, because any event bonus carrying
-      <code>iRegentOfSubject</code> installs a regent over the named player, which is how some
-      story chains put a foreign character in charge.
+      Some story events also install a regent outside succession, sometimes a foreign character.
     </p>
 
     <p class="rg__see">
-      See also <a href={`${base}family-heads`}>Family Head Selection</a>, which answers the other
-      question about who gets picked and is decided by a different rule.
+      See also <a href={`${base}family-heads`}>Family Head Selection</a>, which follows a different
+      rule.
     </p>
   </section>
 </Base>
@@ -133,8 +120,6 @@ for (const e of regents.events as any[]) {
 <style>
   .lede { max-width: 88ch; color: var(--text-dim); font-size: 0.86rem; line-height: 1.6; margin: 0 0 1.4rem; }
   .lede b { color: var(--text); }
-  .lede code, .rg code { font-family: var(--font-mono); font-size: 0.85em; background: var(--bg-elev);
-    border: 1px solid var(--border); border-radius: 4px; padding: 0.03rem 0.3rem; color: var(--text-soft); }
 
   .rg__h { font-family: var(--font-display); font-size: 1.1rem; color: var(--accent);
     margin: 1.6rem 0 0.5rem; }

@@ -34,7 +34,6 @@ const VARS: Record<string, ProseVar> = {
   envyStep: String(G.ENVY_OPINION),
   envy2: String(1 * G.ENVY_OPINION), envy3: String(3 * G.ENVY_OPINION),
   envy4: String(6 * G.ENVY_OPINION), envy5: String(10 * G.ENVY_OPINION),
-  landownersName: lo.name,
   landownersLink: link(`${base}families/${lo.slug}`, lo.name),
   landownersMost: String(lo.mostCities),
   landownersFewest: String(lo.fewestCities),
@@ -692,7 +691,6 @@ const tieRows = [1, 2, 3].map((tied) => {
   .rates em { color: var(--text-soft); font-style: italic; }
   .fine { font-size: 0.7rem; color: var(--text-faint); line-height: 1.55; margin: 0.6rem 0 0; max-width: 90ch; }
   .fine a { color: var(--gold-soft); }
-  .fine b { color: var(--text-dim); }
   code { font-family: var(--font-mono); font-size: 0.82em; background: var(--bg-elev-2);
     padding: 0.05rem 0.3rem; border-radius: 4px; color: var(--text); }
 

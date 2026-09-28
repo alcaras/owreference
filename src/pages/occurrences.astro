@@ -75,14 +75,13 @@ for (const o of eras) {
     { label: 'transformations', value: totals.transformations },
     { label: 'eras & crises', value: totals.eras },
   ]}
-  description={`All ${totals.occurrences} Occurrences in Old World, covering the Wrath of Gods Calamities such as plague, drought, flood, hurricane and eruption, the world transformations, and the era and crisis occurrences from Behind the Throne and Empires of the Indus. Includes triggers, the effect on tiles each turn, terrain changes, character traits and how each one ends, derived from occurrence.xml.`}
+  description={`All ${totals.occurrences} Occurrences in Old World, covering the Wrath of Gods Calamities such as plague, drought, flood, hurricane and eruption, the world transformations, and the era and crisis occurrences from Behind the Throne and Empires of the Indus. Includes triggers, the effect on tiles each turn, terrain changes, character traits and how each one ends.`}
 >
   <div class="occ" id="occ-grid">
     <p class="occ__intro">
       An occurrence is a world event that stays on the map for several turns. The largest set is
       the <strong>Calamities</strong>, which ship with the <strong>Wrath of Gods</strong> DLC and
-      strike on their own clock, while the era and crisis occurrences below are started by events.
-      Every number here is read straight from <code>occurrence.xml</code>.
+      strike on their own clock. Events start the era and crisis occurrences.
     </p>
 
     {cls && (
@@ -272,8 +271,7 @@ for (const o of eras) {
         <span class="occ__hdr-name">Eras and crises</span>
       </h2>
       <p class="occ__note">
-        Story events start these occurrences, and usually end them too, rather than the calamity
-        clock.
+        Story events start these occurrences, and usually end them too.
       </p>
       <div class="occ__cards occ__cards--eras">
         {eras.map((o) => (
@@ -366,7 +364,6 @@ for (const o of eras) {
     line-height: 1.55;
     margin: 0;
   }
-  .occ__intro code { font-family: var(--font-mono); font-size: 0.78em; color: var(--accent-2); }
 
   .occ__section { display: flex; flex-direction: column; gap: 0.6rem; }
   .occ__hdr {

@@ -149,7 +149,7 @@ const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'speci
       <p class="sc-note" data-prose="counts.note" set:html={inline('counts.note')} />
       <ul class="sc-list sc-list--yes">
         {D.code.counts.map(c => (
-          <li><span class="sc-list__what">{c.what}</span><code class="sc-cite">{c.where}</code></li>
+          <li><span class="sc-list__what">{c.what}</span></li>
         ))}
       </ul>
     </div>
@@ -158,7 +158,7 @@ const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'speci
       <p class="sc-note" data-prose="ignores.note" set:html={inline('ignores.note')} />
       <ul class="sc-list sc-list--no">
         {D.code.ignores.map(c => (
-          <li><span class="sc-list__what">{c.what}</span><code class="sc-cite">{c.where}</code></li>
+          <li><span class="sc-list__what">{c.what}</span></li>
         ))}
       </ul>
     </div>
@@ -217,15 +217,9 @@ const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'speci
     </div>
   </section>
 
-  <section class="sc-sec sc-duo">
-    <div>
-      <h2 class="sc-h" data-prose="example.heading" set:html={inline('example.heading')} />
-      <div class="sc-body" data-prose="example.body" data-prose-blocks set:html={blocks('example.body')} />
-    </div>
-    <div>
-      <h2 class="sc-h" data-prose="code.heading" set:html={inline('code.heading')} />
-      <div class="sc-body" data-prose="code.body" data-prose-blocks set:html={blocks('code.body')} />
-    </div>
+  <section class="sc-sec">
+    <h2 class="sc-h" data-prose="example.heading" set:html={inline('example.heading')} />
+    <div class="sc-body" data-prose="example.body" data-prose-blocks set:html={blocks('example.body')} />
   </section>
 </Base>
 
@@ -253,11 +247,6 @@ const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'speci
   .sc-body ul { margin: 0; padding-left: 1.1rem; }
   .sc-body li { margin: 0 0 0.3rem; }
   .sc-body strong { color: var(--text); }
-  .sc-body code, .sc-note code {
-    font-family: var(--font-mono);
-    font-size: 0.92em;
-    color: var(--text-soft);
-  }
 
   .sc-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 1.2rem; }
 
@@ -315,12 +304,4 @@ const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'speci
   .sc-list--yes li { border-left-color: #6f8f6f; }
   .sc-list--no li { border-left-color: #8f6f6f; }
   .sc-list__what { display: block; color: var(--text); font-size: 0.78rem; line-height: 1.4; }
-  .sc-cite {
-    display: block;
-    color: var(--text-faint);
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    line-height: 1.4;
-    margin-top: 0.15rem;
-  }
 </style>

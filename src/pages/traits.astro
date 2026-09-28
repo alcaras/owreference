@@ -89,14 +89,17 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
   { label: 'items',      value: traitData.item.length },
 ]}>
   <p class="traits-intro">
-    Every character trait in <code>trait.xml</code>, grouped the way the game flags
-    them. Rating columns show the trait's Wisdom / Charisma / Courage / Discipline
-    contribution, with a separate Fallback column for ratings that apply only when that stat isn't already set another way.
-    Most traits are granted by events, and the Acquired column lists only what the XML
-    states directly, meaning the minimum age, the childhood adjective, the injury rolls
-    and the recovery odds. Which child traits a parent can pass on is covered on
-    <a href={`${base}trait-inheritance`}>Trait Inheritance</a>, and the ten archetypes
-    are covered on <a href={`${base}archetypes`}>Archetypes</a>.
+    Every character trait in the game, grouped by type. The rating columns show what
+    each trait adds to Wisdom, Charisma, Courage and Discipline.
+  </p>
+  <p class="traits-intro">
+    The Fallback column
+    holds ratings that apply only when that stat isn't already set another way.
+    Most traits come from events, so the Acquired column lists only what the game data
+    states: the minimum age, the childhood adjective, injury rolls and recovery odds.
+    For what parents pass to children, see
+    <a href={`${base}trait-inheritance`}>Trait Inheritance</a>. For the ten archetypes,
+    see <a href={`${base}archetypes`}>Archetypes</a>.
   </p>
 
   <div class="tfilter" id="tfilter">
@@ -124,7 +127,7 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
       <span class="tfilter__label">Options</span>
       <div class="tfilter__chips">
         <button type="button" class="dyn-toggle" id="core-toggle" aria-pressed="false"
-          title="Only the pool a character can be born with, meaning traits with a childhood adjective roll, which is the core set the leader customizer draws on. It excludes strengths that only events grant, such as Famous, and all dynasty kits.">
+          title="Only the traits a character can be born with: those with a childhood adjective roll, the set the leader customizer draws on. Excludes strengths only events grant, such as Famous, and all dynasty kits.">
           <span class="dyn-toggle__box" aria-hidden="true"></span>
           Core personality only <span class="dyn-toggle__count">({childhoodCount})</span>
         </button>
@@ -445,12 +448,6 @@ const EFFECT_GROUPS: { key: 'leaderEffects' | 'governorEffects' | 'generalEffect
     font-size: 0.86rem;
     margin: 0 0 1rem;
     line-height: 1.55;
-  }
-  .traits-intro code {
-    background: var(--bg-elev);
-    padding: 0.05rem 0.4rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
   }
 
   .tcat { margin: 1.6rem 0; }

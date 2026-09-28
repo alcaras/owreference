@@ -43,14 +43,14 @@ const PERFORMER_BLURB: Record<string, string> = {
   'Leader': 'Run by the ruler, including the Diplomat, Judge, Scholar and Schemer leader archetypes and the Dictator.',
   'Ambassador': 'Your council Ambassador, covering diplomacy, synods and trade missions.',
   'Chancellor': 'Your council Chancellor.',
-  'Spymaster': 'Your council Spymaster, who runs the espionage network.',
+  'Spymaster': 'Your council Spymaster, who runs your spy network.',
   'Agent': 'Spy-network Agents operating in the field.',
   'Family Head': 'The head of a family (matters most under Oligarchy).',
   'Religious Head & Clergy': 'The religion head or its clergy, by faith.',
   'Any Character': 'Any eligible courtier, including tutors, envoys and marriageable characters, but not the leader.',
   'Situational': 'Characters in a particular state, such as imprisoned, captured, fugitive, bastard or infected.',
-  'Unique Leader Powers': 'Scripted abilities tied to specific named leaders / dynasties (DLC).',
-  'Other': 'Diplomacy plumbing with no single character actor.',
+  'Unique Leader Powers': 'Abilities of specific named leaders and dynasties (DLC).',
+  'Other': 'Diplomatic actions that no single character performs.',
 };
 
 type Mission = typeof catalog[number];
@@ -83,7 +83,7 @@ for (const m of catalog) {
   title="Missions"
   active="missions"
   pageMark="📜"
-  description="Every mission in Old World, organised by who can perform it, whether Leader, Ambassador, Chancellor, Spymaster, Agent, Family Head, clergy or another role, with costs, time, requirements and outcomes, pulled from the game's own files."
+  description="Every mission in Old World, grouped by who can perform it, with costs, time, requirements and outcomes."
   pageStats={[
     { label: 'missions', value: totalPlayer },
     { label: 'performer roles', value: grouped.length },
@@ -144,7 +144,7 @@ for (const m of catalog) {
                     <a
                       class="mdetail"
                       href={detailMeta[m.id].stories ? `${detailMeta[m.id].href}#events` : detailMeta[m.id].href}
-                      title="Dice odds, scaled rewards, and every event story this mission can fire"
+                      title="Dice odds, scaled rewards, and every event this mission can fire"
                     >
                       {detailMeta[m.id].outcomes} outcomes{detailMeta[m.id].stories ? ` · ${detailMeta[m.id].stories} events` : ''} →
                     </a>

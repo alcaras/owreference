@@ -42,6 +42,21 @@ at 1 — then × any effectPlayer iRepairModifier (Stateira −50). The first
 version of this page showed the full build cost; a Legendary Stele repairs for
 60 Stone, not 400. Burn (Unit.burn, Unit.cs:11383) is the same
 tile change with no payout, no cooldown, and a flat yield.xml iBurnCost.
+
+Citations that used to be the page's "Where this comes from" list (line numbers
+are re-derived each build into pillage.json `code`): the
+effects in Tile.loadPillaged (pillaged tile stops yielding, loses its specialist
+and luxury); Game.razeCity harvests raw aiYieldPillage with no modifier;
+occurrence pillage rolls in Game.cs; Artisans opinion per pillaged tile in
+PlayerOpinion calculateFamilyOpinionPillaged; the AI skips improvements whose
+maiYieldPillage is empty (PlayerAI and UnitAI); AI repair priority scales a
+tile's value by iPillageTurns ÷ turns left and past half the countdown the tile
+is a Priority threat (UnitRoleManager). XML read: improvement.xml
+(aiYieldPillage, iPillageTurns, bRemovePillage, aiYieldCost), effectUnit.xml
+(iPillageYieldModifier, bHealPillage, bPillage), effectPlayer.xml
+(iRepairModifier), yield.xml (iBurnCost, bGlobal), globalsInt.xml
+(UNIT_PILLAGE_COST, UNIT_REPAIR_COST), occurrence.xml, familyClass.xml,
+tribe.xml. The functions are watched by verify_source_constants.py.
 """
 from __future__ import annotations
 

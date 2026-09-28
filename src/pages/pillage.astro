@@ -148,24 +148,6 @@ const VARS: Record<string, ProseVar> = {
 };
 const { inline, blocks } = createProse({ raw: proseRaw, vars: VARS, name: 'pillage-prose' });
 
-const codeList: { what: string; where: string }[] = [
-  { what: 'The pillage action: payout, tile change, cooldown, Orders, war score', where: `Unit.cs ${D.code.pillage.split(':')[1]} pillage` },
-  { what: 'Payout = aiYieldPillage × pillage modifier', where: `Unit.cs ${D.code.getPillageYield.split(':')[1]} getPillageYield · ${D.code.pillageModifier.split(':')[1]} pillageModifier` },
-  { what: 'Integer multiply behind every modifier', where: `${D.code.modify} Utils.modify` },
-  { what: 'Which tiles are legal targets', where: `${D.code.canPillageTile} Game.canPillageTile` },
-  { what: 'Unfinished or bRemovePillage → cleared; otherwise pillaged with a countdown', where: `${D.code.pillageImprovement} Tile.pillageImprovement` },
-  { what: 'Pillaged tile stops yielding, loses its specialist and luxury', where: `${D.code.loadPillaged} Tile.loadPillaged` },
-  { what: 'Countdown ticks and destroys at zero', where: `${D.code.doTurn} Tile.doTurn` },
-  { what: 'Global yields to the stockpile, Culture to the nearest city', where: `${D.code.processYieldWholeTile} Player.processYieldWholeTile` },
-  { what: 'Repair: instant; build cost × IMPROVEMENT_REPAIR_MODIFIER (−50) × the improvement\'s iRepairModifier, floor 1, × player iRepairModifier', where: `${D.code.repair} Unit.repair · ${D.code.getRepairCost} Player.getRepairCost · ${D.code.repairBranch} getBuildCost(bExisting)` },
-  { what: 'Burn: pillage without payout for a flat iBurnCost', where: `${D.code.burn} Unit.burn · ${D.code.canBurn} canBurn` },
-  { what: 'Razing harvests base payout with no modifier', where: `${D.code.razeCity} Game.razeCity` },
-  { what: 'Occurrence pillage rolls', where: `${D.code.occurrencePillage}` },
-  { what: 'Artisans opinion per pillaged tile', where: `${D.code.familyOpinion} calculateFamilyOpinionPillaged` },
-  { what: 'AI skips improvements with no payout', where: `${D.code.aiSkipsNoPayout}` },
-  { what: 'AI repair priority and the half-countdown threat', where: `${D.code.aiRepairPriority}` },
-];
-
 const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
 ---
 
@@ -191,7 +173,7 @@ const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
   <section class="pl-sec">
     <h2 class="pl-h" data-prose="how.heading" set:html={inline('how.heading')} />
     <div class="fml">
-      <code class="fml__line">payout = aiYieldPillage × (100 + pillage modifier) ÷ 100</code>
+      <code class="fml__line">payout = base payout × (100 + pillage modifier) ÷ 100</code>
       <div class="fml__meta">truncated to a whole number · the only pillage modifier is Assyria's +{ASSYRIA_MOD}</div>
     </div>
     <div class="pl-body" data-prose="how.body" data-prose-blocks set:html={blocks('how.body')} />
@@ -296,7 +278,6 @@ const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
       <ul class="pl-list pl-list--no">
         <li>
           <span class="pl-list__what"><a href={`${base}wonders`}>Wonders</a> <span class="pl-count">×{wonders.length}</span></span>
-          <span class="pl-cite">no iPillageTurns on any of them</span>
         </li>
         <li>
           <span class="pl-list__what"><a href={`${base}tribes`}>Tribe settlements</a> <span class="pl-count">×{tribeSites.length}</span></span>
@@ -315,7 +296,7 @@ const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
               {u.entityId && hrefForEntity(u.entityId) ? <a href={hrefForEntity(u.entityId)}>{u.name}</a> : u.name}
               {u.dlc && <i class="pl-dlc">{u.dlc}</i>}
             </span>
-            <span class="pl-cite">{u.event ? `event improvement (${u.file})` : u.className}</span>
+            <span class="pl-cite">{u.event ? 'event improvement' : u.className}</span>
           </li>
         ))}
         <li>
@@ -379,20 +360,9 @@ const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
     </div>
   </section>
 
-  <section class="pl-sec pl-duo">
-    <div>
-      <h2 class="pl-h" data-prose="ai.heading" set:html={inline('ai.heading')} />
-      <div class="pl-body" data-prose="ai.body" data-prose-blocks set:html={blocks('ai.body')} />
-    </div>
-    <div>
-      <h2 class="pl-h" data-prose="code.heading" set:html={inline('code.heading')} />
-      <div class="pl-body" data-prose="code.body" data-prose-blocks set:html={blocks('code.body')} />
-      <ul class="pl-list pl-list--yes">
-        {codeList.map(c => (
-          <li><span class="pl-list__what">{c.what}</span><code class="pl-cite">{c.where}</code></li>
-        ))}
-      </ul>
-    </div>
+  <section class="pl-sec">
+    <h2 class="pl-h" data-prose="ai.heading" set:html={inline('ai.heading')} />
+    <div class="pl-body" data-prose="ai.body" data-prose-blocks set:html={blocks('ai.body')} />
   </section>
 </Base>
 
@@ -401,7 +371,6 @@ const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
   .lede a { color: var(--accent); }
   .lede b, .lede strong { color: var(--text); }
   .lede em { color: var(--text-soft); font-style: italic; }
-  .lede code { font-family: var(--font-mono); font-size: 0.92em; color: var(--text-soft); }
 
   .pl-sec { margin: 0 0 1.5rem; }
   .pl-h {
@@ -430,11 +399,6 @@ const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
   .pl-body ul { margin: 0 0 0.5rem; padding-left: 1.1rem; }
   .pl-body li { margin: 0 0 0.3rem; }
   .pl-body strong, .pl-note strong { color: var(--text); }
-  .pl-body code, .pl-note code {
-    font-family: var(--font-mono);
-    font-size: 0.92em;
-    color: var(--text-soft);
-  }
 
   .pl-duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 1.2rem; }
   .pl-trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.2rem; }
@@ -486,7 +450,6 @@ const rowCount = D.rows.reduce((n, r) => n + r.count, 0);
     padding: 0.25rem 0 0.25rem 0.6rem;
     margin: 0 0 0.4rem;
   }
-  .pl-list--yes li { border-left-color: #6f8f6f; }
   .pl-list--no li { border-left-color: #8f6f6f; }
   .pl-list--ev li { border-left-color: var(--border-strong); padding: 0.15rem 0 0.15rem 0.6rem; margin: 0 0 0.25rem; }
   .pl-list__what { display: block; color: var(--text); font-size: 0.78rem; line-height: 1.4; }

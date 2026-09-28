@@ -4,6 +4,10 @@ import { rawDamage, damageTone } from '../lib/combat';
 
 const base = import.meta.env.BASE_URL;
 
+// Grounding (kept off the page): damage is InfoHelpers.getAttackDamage;
+// strength modifiers are Unit.attackUnitStrength / defendUnitStrength;
+// constants come from globalsInt.xml (CITY_STRENGTH_BASE/PER etc.).
+
 // ATK × DEF damage lookup (display strengths; internal values are ×10).
 const STR_AXIS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 const lookup = STR_AXIS.map(a => ({
@@ -24,11 +28,8 @@ const lookup = STR_AXIS.map(a => ({
   ]}
 >
   <p class="lede">
-    How an attack's damage is computed, straight from the game code
-    (<code>InfoHelpers.getAttackDamage</code>, <code>Unit.attackUnitStrength</code> /
-    <code>defendUnitStrength</code>) with every constant from
-    <code>globalsInt.xml</code>. The full per-unit results are on
-    <a href={`${base}unit-damage`}>Unit Damage &amp; Counters</a>.
+    How much damage an attack does, and what raises or lowers it. Every unit's
+    results are on <a href={`${base}unit-damage`}>Unit Damage &amp; Counters</a>.
   </p>
 
   <section class="cd-section">
@@ -38,11 +39,11 @@ const lookup = STR_AXIS.map(a => ({
         <span class="cd-eq">Damage = 6 × ATK / DEF, rounded in the stronger unit's favor, minimum 1</span>
       </div>
       <p class="cd-note">
-        <code>ATK</code> is the attacker's strength after all modifiers, and
-        <code>DEF</code> is the defender's. The result rounds <em>up</em> when
-        ATK is greater than DEF, and down otherwise. An even fight deals exactly
-        <b>6</b>, so it takes three attacks to kill a 20 HP unit. The in-game UI
-        shows strength to one decimal, but the game uses the unrounded value.
+        ATK is the attacker's strength after all modifiers, and DEF is the
+        defender's. The result rounds up when the attacker is stronger, and down
+        otherwise. An even fight deals <b>6</b>, so it takes three attacks to
+        kill a 20 HP unit. The game shows strength to one decimal but uses the
+        unrounded value.
       </p>
     </div>
 
@@ -81,9 +82,8 @@ const lookup = STR_AXIS.map(a => ({
       </div>
     </div>
     <p>
-      Modifiers are percentages that add together, and the game gathers them
-      separately for the attacking side and the defending side. Every value below
-      comes from the game's XML and source.
+      Modifiers are percentages that add together. The attacker and the defender
+      each add up their own.
     </p>
     <ul class="cd-list">
       <li><strong>Anti-trait bonuses</strong> are the unit's own effects against the opponent's traits, e.g. Pikeman +100% against Mounted in melee, Crossbowman +50% against Melee, and Ballista +100% when <em>attacking</em> Infantry. They are the counters listed on the <a href={`${base}unit-counters`}>Unit Counters</a> page.</li>
@@ -92,14 +92,13 @@ const lookup = STR_AXIS.map(a => ({
       <li><strong>State</strong> covers a siege unit that moved this turn, which defends at −25%, attacking from hiding at +10%, and the bonuses some units get against damaged targets or targets led by a general.</li>
     </ul>
     <p class="cd-note">
-      Current HP does <em>not</em> scale strength, so a Pikeman on 1 HP hits as
-      hard as a fresh one. Some attackers carry a stated bonus against damaged
-      units instead.
+      Current HP does not change strength, so a Pikeman on 1 HP hits as hard as a
+      fresh one.
     </p>
   </section>
 
   <section class="cd-section">
-    <h2 class="cd-h">A worked example, Hoplite against Horseman</h2>
+    <h2 class="cd-h">Example: Hoplite against Horseman</h2>
     <div class="cd-table">
       <table>
         <tbody>
@@ -112,10 +111,9 @@ const lookup = STR_AXIS.map(a => ({
       </table>
     </div>
     <p class="cd-note">
-      The Horseman drops from 20 to 11 HP. In the other direction the Horseman
-      attacks at 6 against 9, because the anti-mounted bonus also applies when
-      the Hoplite defends in melee, so 6 × 6 / 9 is <b>4 damage</b>. The gap is
-      why a spear unit beats a horse unit so reliably.
+      The Horseman drops from 20 to 11 HP. When the Horseman attacks back it is
+      6 against 9, because the anti-mounted bonus also works when the Hoplite
+      defends in melee: 6 × 6 / 9 is <b>4 damage</b>.
     </p>
   </section>
 
@@ -123,19 +121,18 @@ const lookup = STR_AXIS.map(a => ({
     <h2 class="cd-h">Striking back</h2>
     <ul class="cd-list">
       <li><strong>Ranged attacks</strong> draw no return damage at all.</li>
-      <li><strong>Melee defenders</strong> deal a flat <b>1</b> counter damage per attack rather than a proportional amount, and 1 more against a routed attacker.</li>
-      <li><strong>Tactician generals</strong> raise that to a full counterattack of 100% of the unit's own attack damage.</li>
-      <li><strong>Cities</strong> defend at <code>8 + 0.5 × citizens</code> (<code>CITY_STRENGTH_BASE/PER</code>) and units capture at 50% HP.</li>
+      <li><strong>Melee defenders</strong> deal a flat <b>1</b> damage back per attack, and 1 more against a routed attacker.</li>
+      <li><strong>Tactician generals</strong> raise that to 100% of the unit's own attack damage.</li>
+      <li><strong>Cities</strong> defend at 8 + 0.5 × citizens, and units capture at 50% HP.</li>
     </ul>
   </section>
 
   <section class="cd-section">
     <h2 class="cd-h">Attack patterns (Pierce, Cleave, Splash, Circle)</h2>
     <p>
-      Some units carry an <em>attack pattern</em> on top of the main hit. An
-      attack pattern is a set of smaller attacks that resolve against nearby
-      tiles, and it uses the same damage formula with a reduced effective
-      strength. The attacker takes no return damage from those extra hits.
+      Some units also hit nearby tiles when they attack. These extra hits use the
+      same damage formula at a lower strength, and the attacker takes no damage
+      back from them.
     </p>
     <ul class="cd-list">
       <li><strong>Pierce</strong> belongs to the Spearman and Pikeman line, and it hits the main target plus the tile behind it.</li>
@@ -144,33 +141,27 @@ const lookup = STR_AXIS.map(a => ({
       <li><strong>Circle</strong> belongs to the Macedonian Companion and certain elephants, and it hits all 6 adjacent tiles.</li>
     </ul>
     <p>
-      In the game data the strength of an extra hit is the unit's base strength
-      multiplied by a small percentage, e.g. <em>Pierce I</em> adds +25% Pierce
-      damage on top of a flat +1 to the pattern's value.
+      An extra hit's strength is a small percentage of the unit's base strength.
+      For example, <em>Pierce I</em> adds +25% Pierce damage on top of a flat +1.
     </p>
   </section>
 
   <section class="cd-section">
     <h2 class="cd-h">Rout and routed units</h2>
     <p>
-      A unit at 0 HP does not disappear. It <strong>routs</strong>, retreats one
-      tile and cannot attack until you rally it. Damage is capped at the HP
-      remaining, so the final blow does only enough damage to bring the unit
-      to 0.
+      A unit at 0 HP <strong>routs</strong>: it retreats one tile and cannot
+      attack until you rally it. The final blow never does more damage than the
+      unit's remaining HP.
     </p>
     <ul class="cd-list">
-      <li>A unit that cannot retreat, because it is surrounded or standing on water, is destroyed instead. Attacks, routs and pushes never consult <a href={`${base}zone-of-control`}>zone of control</a>.</li>
-      <li>A routed unit at 0 HP heals at the active rate of 5 HP per turn on the next turn, once it is safe.</li>
+      <li>A unit that cannot retreat, because it is surrounded or on water, is destroyed instead.</li>
+      <li><a href={`${base}zone-of-control`}>Zone of control</a> never stops an attack, a rout or a push.</li>
+      <li>A routed unit heals 5 HP per turn from the next turn, once it is safe.</li>
     </ul>
   </section>
 
   <section class="cd-section">
-    <h2 class="cd-h">Constants pulled from XML</h2>
-    <p class="cd-note">
-      The constants below come straight from <code>globalsInt.xml</code> and
-      apply to combat everywhere. A few are multipliers used for display, and
-      most are plain integers.
-    </p>
+    <h2 class="cd-h">Combat constants</h2>
     <div class="cd-table">
       <table>
         <thead><tr><th>Constant</th><th>Value</th><th>Meaning</th></tr></thead>
@@ -193,9 +184,9 @@ const lookup = STR_AXIS.map(a => ({
   <section class="cd-section">
     <h2 class="cd-h">Related pages</h2>
     <ul class="cd-list">
-      <li><a href={`${base}unit-damage`}>Unit Damage &amp; Counters</a> has full stat cards for every combat unit, including each unit's anti-trait modifiers.</li>
-      <li><a href={`${base}unit-counters`}>Unit Counters</a> has the grid of which unit type beats which.</li>
-      <li><a href={`${base}promotions`}>Promotions</a> lists every numeric modifier you can add to effective strength.</li>
+      <li><a href={`${base}unit-damage`}>Unit Damage &amp; Counters</a>: stats and counters for every combat unit.</li>
+      <li><a href={`${base}unit-counters`}>Unit Counters</a>: which unit type beats which.</li>
+      <li><a href={`${base}promotions`}>Promotions</a>: every modifier you can add to strength.</li>
     </ul>
   </section>
 
@@ -206,12 +197,6 @@ const lookup = STR_AXIS.map(a => ({
       margin: 0 0 1.5rem;
       font-size: 0.92rem;
       line-height: 1.55;
-    }
-    .lede code {
-      background: var(--bg-elev);
-      padding: 0.05rem 0.35rem;
-      border-radius: 3px;
-      border: 1px solid var(--border);
     }
     .cd-section {
       margin: 1.6rem 0;

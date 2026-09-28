@@ -16,6 +16,7 @@ audit:
 # Post-build sanity: no broken internal links, no unresolved <Term>s.
 check:
 	@python3 scripts/check_links.py
+	@python3 scripts/audit_prose.py   # writing rules: no source citations on pages, lede length (CLAUDE.md)
 
 # Text-contrast audit of dist/ in headless Chrome (WCAG AA). Sampled by
 # default; `node scripts/audit_contrast.mjs --all` for every page.

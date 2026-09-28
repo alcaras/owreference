@@ -26,15 +26,15 @@ const WHO: Record<string, string> = { you: 'your court', them: "a rival's court"
 // of agency, so they never get merged into one number.
 const ROUTES = [
   { key: 'choose', title: 'Pick this option',
-    note: "The option's bonus lists the trait in aeAddTraits, so choosing it gives the character the trait." },
+    note: 'Choosing the option gives the character the trait.' },
   { key: 'religion', title: 'Pick this option, if the character follows the right religion',
-    note: 'aeAddTraitReligion means the same click grants a different trait depending on the faith.' },
+    note: 'The same option grants a different trait depending on the character\'s religion.' },
   { key: 'chance', title: 'Pick this option, then roll for it',
-    note: 'aiTraitProbDelay means the roll resolves on a later turn rather than when you click.' },
+    note: 'The roll happens on a later turn, not when you click.' },
   { key: 'random', title: 'Pick this option, draw from a pool',
-    note: 'aeRandomTrait and aeRandomTraitDelay draw one trait from the pool. Character.doRandomTrait rolls for every pool member that currently passes canAddTrait and keeps the best, so the odds are one in the number still valid rather than one in the pool size, and they improve as the character collects the rest of the pool.' },
+    note: 'The option draws one trait from a pool. Only traits the character can still take are in the draw, so your odds are one in the number still valid, and they improve as the character collects the rest of the pool.' },
   { key: 'automatic', title: 'The event does it to you',
-    note: "Granted by the story's own aeBonuses, with no option involved, so there is nothing to choose." },
+    note: 'The event grants it whichever option you pick.' },
 ];
 
 const rows = (k: string) => (trait.routes[k] || []);
@@ -73,11 +73,9 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
 
   {(gates.length > 0 || p.blockedBy) && (
     <section class="gate">
-      <h2 class="gate__h">Before any of this can land</h2>
+      <h2 class="gate__h">Who can get it</h2>
       <p class="gate__note">
-        Game.canAddTrait (<code>Game.cs:10506</code>) is checked first, and
-        PlayerBonus rejects the whole bonus when it fails, so the option does not
-        appear at all.
+        If the character fails any of these, the option that would grant it does not appear.
       </p>
       <ul class="gate__list">
         {gates.map(g => <li>{g}</li>)}
@@ -113,17 +111,17 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
             <div class="rt__hd">
               {evHref(r) ? <a class="rt__ev" href={evHref(r)}>{r.name}</a>
                          : <span class="rt__ev">{r.name}</span>}
-              <span class={`tag tag--who tag--${r.who}`} title="Which side's character receives the trait, decided by the bonus's position in aeBonuses">{WHO[r.who]}</span>
+              <span class={`tag tag--who tag--${r.who}`} title="Which side's character receives the trait">{WHO[r.who]}</span>
               {r.pct && <span class="tag tag--pct">{r.pct}%</span>}
               {r.pool && <span class="tag tag--pool" title={`Pool: ${r.pool.join(', ')}`}>1 of {r.pool.length}</span>}
               {r.draw && (
                 <span class="tag tag--pct"
-                  title={`aiEventOptionProb: this branch carries ${r.draw[0]} of ${r.draw[1]} weight. One button fires one branch. The real odds are better than this figure, because PlayerBonus.canDoBonusSingle drops any branch whose trait the character cannot take, whether they already have it, are blocked or are too young, and the weight is then shared over the branches that remain valid.`}>
+                  title={`This branch carries ${r.draw[0]} of ${r.draw[1]} weight, and one click fires one branch. The real odds are better than this figure: branches whose trait the character cannot take (already has it, blocked, too young) are dropped, and the weight is shared over the rest.`}>
                   {(r.draw[0] * 100 / r.draw[1]).toFixed(r.draw[0] * 100 / r.draw[1] < 10 ? 1 : 0)}% draw
                 </span>
               )}
               {r.religion && <span class="tag tag--rel">{r.religion}</span>}
-              <span class="tag tag--w" title="iWeight, the relative selection weight in the event pool">w{r.weight}</span>
+              <span class="tag tag--w" title="Selection weight in the event pool">w{r.weight}</span>
               {!r.cm && <span class="tag tag--nocm">not in CM</span>}
               {r.dlc && <span class="tag tag--dlc">{r.dlc}</span>}
             </div>
@@ -145,8 +143,7 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
     <section class="rt">
       <h2 class="rt__h">From another trait <span class="rt__n">{trait.routes.fromTrait.length}</span></h2>
       <p class="rt__note">
-        <code>aiTraitProb</code> on the source trait gives a character who holds it a
-        chance of developing {trait.name} at each check.
+        A character with one of these traits has a chance of developing {trait.name} at each check.
       </p>
       <ul class="rt__rows">
         {trait.routes.fromTrait.map((r: any) => (
@@ -164,7 +161,7 @@ if (p.dlc) gates.push(`requires ${p.dlc}`);
   {trait.routes.occurrence.length > 0 && (
     <section class="rt">
       <h2 class="rt__h">From an occurrence <span class="rt__n">{trait.routes.occurrence.length}</span></h2>
-      <p class="rt__note"><code>aiTraitProb</code> on the occurrence means a map event rolls for it.</p>
+      <p class="rt__note">A map event rolls for it.</p>
       <ul class="rt__rows">
         {trait.routes.occurrence.map((r: any) => (
           <li class="rt__row">

@@ -15,8 +15,8 @@ const COURSES: { key: string; label: string; glyph: string; blurb: string }[] = 
   { key: 'Politics',   label: 'Politics',   glyph: '🏛️', blurb: 'Rhetoric and statecraft, covering oration, law and swaying the court.' },
   { key: 'Tactics',    label: 'Tactics',    glyph: '⚔️', blurb: 'A martial education, covering combat training, command and the field.' },
   { key: 'Commerce',   label: 'Commerce',   glyph: '⚖️', blurb: 'Money management, covering trade, numbers and the marketplace.' },
-  { key: 'Any',        label: 'Any Course', glyph: '🎓', blurb: 'Fires whatever the tutor teaches, because it is not tied to one course.' },
-  { key: '',           label: 'No Course Set', glyph: '✶', blurb: 'Education events with no course-of-study requirement at all.' },
+  { key: 'Any',        label: 'Any Course', glyph: '🎓', blurb: 'Fires whatever the tutor teaches.' },
+  { key: '',           label: 'No Course Set', glyph: '✶', blurb: 'Education events that need no course.' },
 ];
 
 const byCourse = (key: string) =>
@@ -38,13 +38,10 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
   { label: 'courses', value: courseCount },
 ]}>
   <p class="te-intro">
-    Every <code>EVENTCLASS_STUDY</code> event, grouped by the <strong>course of
-    study</strong> a child's tutor sets. Each event is gated to one course, or
-    fires under <em>Any</em>, through its <code>SUBJECT_STUDY_*</code> subject
-    requirement. Rows show the prerequisites of age, nation and relationship, the
-    bonuses each option grants, and the weight and chance the event rolls. The
-    data comes from <code>eventStory.xml</code> and the BTT, SAP, WD and WoG
-    packs.
+    The heir education events, grouped by the <strong>course of study</strong> a child's
+    tutor sets. Each event needs one course, or fires under <em>Any</em>. Rows show what
+    the event needs (age, nation, relationship), what each option grants, and the weight
+    and chance it rolls.
   </p>
 
   <div id="te-grid">
@@ -174,13 +171,7 @@ const courseCount = sections.filter(s => s.key && s.key !== 'Any').length;
     margin: 0 0 1.4rem;
     line-height: 1.55;
   }
-  .te-intro code, .te-intro strong { color: var(--text); }
-  .te-intro code {
-    background: var(--bg-elev);
-    padding: 0.05rem 0.4rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-  }
+  .te-intro strong { color: var(--text); }
 
   .te-course { margin: 0 0 2.4rem; }
   .te-course.is-hidden { display: none; }

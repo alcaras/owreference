@@ -17,7 +17,7 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
   title="Camp Unit Spawning"
   active="camp-spawning"
   pageMark="🏕️"
-  description={`When tribal camps in Old World spawn units and when they do not. Covers the spawn countdown, which is ${camps.baseUnitTurns} turns at base and ${camps.levels.map((l: any) => l.interval).join(', ')} turns by the Tribal Strength setting, the pause rule that freezes a full camp's countdown, and the develop timer that upgrades the camp's tier. Transcribed from Tile.cs in the game source. Patch ${camps.code.killAccelRemovedIn} removed the old kill acceleration.`}
+  description={`When tribal camps in Old World spawn units and when they do not. Covers the spawn countdown, which is ${camps.baseUnitTurns} turns at base and ${camps.levels.map((l: any) => l.interval).join(', ')} turns by the Tribal Strength setting, the pause rule that freezes a full camp's countdown, and the develop timer that upgrades the camp's tier. Patch ${camps.code.killAccelRemovedIn} removed the old kill acceleration.`}
   pageStats={[
     { label: 'base interval', value: `${camps.baseUnitTurns}t` },
     { label: 'camp tiers', value: camps.settlements.length },
@@ -25,13 +25,9 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
   ]}
 >
   <p class="lede">
-    Every tribal settlement runs a <b>spawn countdown</b>. The countdown falls
-    each turn <em>only while the camp is not already full</em>, and when it
-    reaches zero a unit appears and the countdown resets. The only way to slow a
-    camp down is to keep its garrison at the cap, which freezes the timer. The
-    rules come from <code>Tile.skipImprovementUnitTurns</code> and
-    <code>resetImprovementUnitTurns</code> in the game source, and the numbers
-    come from <code>improvement.xml</code> and <code>tribeLevel.xml</code>.
+    Every tribal camp counts down to its next unit, but only while it is not
+    already full. This page explains when that countdown runs and when it
+    freezes.
   </p>
 
   <section class="cs-section">
@@ -43,37 +39,36 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
       <div class="cs-formula">cap = camp tier (+1 to +4) + Tribal Strength bonus (+0 to +4)</div>
       <ul class="cs-rule__mods">
         <li><b>Camp tier</b> is the settlement's level, from Hovel at +1 up to Bastion at +4, as listed in the table below.</li>
-        <li><b>Tribal Strength</b> is the option in advanced setup, running from Passive to Raging, and called Tribal Level in the game files. Each step adds a flat bonus to every camp's cap, from Passive +0 through Weak +1, Normal +2 and Strong +3 to Raging +4, and it also shortens the spawn interval.</li>
+        <li><b>Tribal Strength</b> is the option in advanced setup, running from Passive to Raging. Each step adds a flat bonus to every camp's cap, from Passive +0 through Weak +1, Normal +2 and Strong +3 to Raging +4, and it also shortens the spawn interval.</li>
         <li>The cap is <b>halved</b>, rounded up, when no city the tribe could raid is within its raid range.</li>
         <li>The cap is never more than a third of the tiles on the landmass, so a small island caps low.</li>
       </ul>
-      Killing a unit near a full camp no longer shortens the timer, because patch
-      {camps.code.killAccelRemovedIn} removed that. What a kill does is drop the
-      garrison below the cap, which restarts the countdown.
+      Keeping a camp at its cap is the only way to slow it down. Killing a unit
+      near a full camp no longer shortens the timer (patch
+      {camps.code.killAccelRemovedIn} removed that); it drops the garrison below
+      the cap, which restarts the countdown.
     </div>
   </section>
 
   <section class="cs-section">
     <h2 class="cs-h2">Reading the two timers on a camp</h2>
     <p class="cs-body">
-      A camp shows two counters. The first is the <b>next unit timer</b>, and
-      below it is the <b>develop timer</b>, which is the time until the camp
-      upgrades to its next tier. In the code only three things move the next unit
-      timer. It falls by <b>1</b> per turn while running, and the tile tooltip adds
-      <em>"(PAUSED)"</em> while the camp sits at its cap. It gains <b>2</b> turns
-      when the camp develops, and it <b>resets to full</b> when a unit spawns.
-      Since patch {camps.code.killAccelRemovedIn}, unit deaths do not move it.
+      A camp shows two counters: the <b>next unit timer</b> and, below it, the
+      <b>develop timer</b>, the time until the camp upgrades to its next tier.
+      The next unit timer falls by <b>1</b> each turn while running (the tile
+      tooltip shows <em>"(PAUSED)"</em> while the camp is at its cap), gains
+      <b>2</b> turns when the camp develops, and <b>resets to full</b> when a unit
+      spawns. Unit deaths don't move it.
     </p>
     <ul class="cs-notes">
       <li>
-        <b>The develop timer</b> counts up toward the tier's threshold, and each
-        camp also rolls a random head start of up to 10 turns when it is placed,
-        scaled down at lower Tribal Strength settings. The timer <b>pauses while a
-        foreign unit stands on the camp tile</b>. When the camp upgrades it starts
-        rolling the stronger tier's units, and its next unit timer gains 2 turns.
+        <b>The develop timer</b> counts up toward the tier's threshold. Each camp
+        starts with a random head start of up to 10 turns, smaller at lower Tribal
+        Strength settings. When the camp upgrades it starts spawning the stronger
+        tier's units.
       </li>
       <li>
-        Movement changes the freeze as often as combat does, whether raiders
+        Movement starts and stops the freeze as often as combat does: raiders
         leave or return, units cross the ring of {range} tiles, or a nearby city
         becomes raidable, which doubles the cap.
       </li>
@@ -122,24 +117,17 @@ const range = camps.levels[0]?.maxUnitsRange ?? 3;
   </section>
 
   <section class="cs-section">
-    <h2 class="cs-h2">What follows from the rules</h2>
+    <h2 class="cs-h2">What this means in play</h2>
     <ul class="cs-notes">
       <li><b>A camp near your borders keeps producing.</b> With a city it can raid in range, it holds <b>twice the standing force</b> before it pauses.</li>
-      <li><b>Raiders do not count.</b> Units that leave to raid stop counting against the cap, so a camp keeps spawning while its warband is away.</li>
-      <li><b>Standing on a camp stops its upgrade</b>, because the develop timer does not run while a foreign unit occupies the camp tile. Occupation does not affect the next unit timer, which only the cap governs.</li>
+      <li><b>Standing on a camp stops its upgrade</b>, because the develop timer does not run while a foreign unit occupies the camp tile. It does not affect the next unit timer.</li>
       <li>The very first countdown of the game is <b>halved on turn 1</b>.</li>
       <li>In co-op multiplayer, where every player is on one team, intervals scale by 4/(3+players), so more players mean faster camps.</li>
     </ul>
   </section>
 
   <p class="provenance">
-The mechanic is transcribed from <code>Tile.doTurn</code>, which calls
-    <code>skipImprovementUnitTurns</code>, <code>resetImprovementUnitTurns</code>
-    and <code>countTribeAvailableUnits</code> in the game source. Intervals, camp
-    tiers and the Tribal Level settings are read from the game's XML each patch.
-    This site hashes those source functions, so a patch that changes the pause
-    rule raises an alarm here. See also
-    <a href={`${base}tribes`}>Tribes</a>.
+    See also <a href={`${base}tribes`}>Tribes</a>.
   </p>
 </Base>
 
@@ -150,9 +138,6 @@ The mechanic is transcribed from <code>Tile.doTurn</code>, which calls
     max-width: 70ch; margin: 0.5rem 0 1.5rem;
   }
   .lede b { color: var(--text); }
-  .lede code, .cs-rule code, .provenance code {
-    font-family: var(--font-mono); font-style: normal; font-size: 0.82em; color: var(--text-dim);
-  }
 
   .cs-section { margin-bottom: 1.8rem; }
   .cs-h2 {

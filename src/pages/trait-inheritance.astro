@@ -33,19 +33,18 @@ for (const r of inheritance) searchBlobs[`inh-${r.parent.slug}`] = JSON.stringif
   { label: 'strengths', value: strengths.length },
   { label: 'weaknesses', value: weaknesses.length },
 ]}>
-  <h2 class="ti-h2">Inheritance, from a parent trait to the possible child traits</h2>
+  <h2 class="ti-h2">Traits passed from parent to child</h2>
   <p class="trait-intro">
-    Derived from the <code>EVENTCLASS_TRAIT_INHERITANCE</code> events in
-    <code>eventStory.xml</code> ("Like father, like son"). Each event needs a
-    living parent with the trait who is not the leader, and it can fire on that
-    parent's child in the line of succession at the listed age, with a 5%
-    eligibility roll per turn through <code>iProb</code>. The single option grants
-    <em>one</em> of the three candidate traits, picked at random among those the
-    child can legally gain (<code>Character.doRandomTrait</code>), and trait 1 is
-    always the parent's own trait. The "Mother's Disposition" and "Father's
-    Disposition" <a href={`${base}study-events`}>Study Events</a> are a different
-    mechanic, because they pass on <em>ratings</em> such as ±1 Charisma rather
-    than traits.
+    A parent's trait can pass to a child through the "Like father, like son" events.
+  </p>
+  <p class="trait-intro">
+    Each needs a living parent with the trait who is not the leader. It can fire on
+    that parent's child in the line of succession at the listed age, with a 5% chance
+    each turn. The child gets <em>one</em> of the three traits, picked at random among
+    those the child can still gain. Trait 1 is always the parent's own trait.
+    The "Mother's Disposition" and "Father's Disposition"
+    <a href={`${base}study-events`}>Study Events</a> are different: they pass on
+    <em>ratings</em>, such as ±1 Charisma, not traits.
   </p>
 
   <div class="grid" id="inherit-grid">
@@ -96,9 +95,8 @@ for (const r of inheritance) searchBlobs[`inh-${r.parent.slug}`] = JSON.stringif
 
   <h2 class="ti-h2">Personality matrix</h2>
   <p class="trait-intro">
-    The personality matrix as it ships in <code>trait.xml</code>. Each trait shows
-    its polar opposite (which it overwrites if granted), the character rating it
-    shifts, and the modifiers it applies, including the opinion bump toward
+    Each personality trait is listed with its opposite (which it replaces when gained),
+    the rating it shifts, and its modifiers. These include the opinion bonus toward
     becoming family head, so you can see which traits help a courtier rise to head
     their family.
   </p>
@@ -261,12 +259,6 @@ for (const r of inheritance) searchBlobs[`inh-${r.parent.slug}`] = JSON.stringif
     font-size: 0.86rem;
     margin: 0 0 1rem;
     line-height: 1.55;
-  }
-  .trait-intro code {
-    background: var(--bg-elev);
-    padding: 0.05rem 0.4rem;
-    border-radius: 3px;
-    border: 1px solid var(--border);
   }
 
   .trait__name {

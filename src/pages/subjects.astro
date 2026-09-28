@@ -52,17 +52,14 @@ const fmt = (n: number) => n.toLocaleString('en-US');
     { value: classes.length, label: 'classes' },
     { value: fmt(totalRefs), label: 'event references' },
   ]}
-  description="Every Subject template in Old World's event system. A subject is the role that binds an event story, mission or occurrence to a character, player, city, tile or other object, and each role's prerequisite filters are shown in plain words from the game's XML."
+  description="Every Subject template in Old World's event system. A subject is the role that binds an event story, mission or occurrence to a character, player, city, tile or other object, and each role's prerequisite filters are shown in plain words."
 >
   <p class="lede">
-    A <em>Subject</em> is how the event system fills its roles, because every
-    event story, mission and occurrence fills slots such as "an adult heir", "a
-    rival at war with us" or "a river tile we own" from this catalog of
-    {fmt(subjects.length)} templates. Each subject is a class plus a stack of
-    prerequisite filters, shown here exactly as the XML defines them, and the
-    {fmt(labeled)} that appear in the game's own prereq text use the game's
-    wording. A subject is not a vassal state, because vassalage is event content
-    that <em>uses</em> these subjects.
+    Every event story, mission and occurrence fills its roles, such as "an adult heir", "a
+    rival at war with us" or "a river tile we own", from this catalog of
+    {fmt(subjects.length)} <em>Subjects</em>. Each subject is a class plus a stack of
+    prerequisite filters, and {fmt(labeled)} use the game's own wording. A subject is not a
+    vassal state.
   </p>
 
   <div class="subj-controls">
@@ -138,13 +135,7 @@ const fmt = (n: number) => n.toLocaleString('en-US');
   </div>
 
   <p class="subj-foot">
-    Sources: <code>subject.xml</code> (templates + designer comments),
-    <code>subjectClass.xml</code> (the 15 classes),
-    <code>subjectRelation.xml</code> (named relation predicates referenced
-    via "Relation to us / leader"), with labels from
-    <code>text-subject*.xml</code>. "Uses" counts references across
-    <code>eventStory*</code>, <code>eventOption*</code>, <code>mission</code>,
-    <code>goal</code>, <code>occurrence</code> and <code>globalsType</code>.
+    "Uses" counts how often events, missions, goals and occurrences reference the subject.
     A DLC tag means the subject is referenced only by that pack's content.
   </p>
 </Base>
@@ -301,10 +292,5 @@ const fmt = (n: number) => n.toLocaleString('en-US');
     color: var(--text-faint);
     max-width: 80ch;
     line-height: 1.5;
-  }
-  .subj-foot code {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--text-soft);
   }
 </style>

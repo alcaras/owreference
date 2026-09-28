@@ -37,6 +37,9 @@ come from the local game source (reference/Source/Base/Game/GameCore):
                             (opinionCharacter.xml iMissionCostModifier)
   Player.isMinTreatyTurns — MIN_TREATY_TURNS gates re-declarations after a
                             war/peace change (and the first turns of the game)
+  Player.calculateKnowledgeOf — the knowledge band compares lifetime Science
+  Unit.getStrengthRating  — the power band sums each unit's base strength
+                            (damage ignored; ships discounted on dry maps)
 
 Mission costs are STOCKPILE costs stored 1:1 (same convention as
 build_mission_catalog.py) — Peace really costs 200 Civics.

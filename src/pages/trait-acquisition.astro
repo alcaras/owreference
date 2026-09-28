@@ -29,11 +29,11 @@ const neither = traits.filter(t => yoursChoose(t) === 0 && yoursRoll(t) === 0);
 
 const SECTIONS = [
   { rows: pick, id: 'choose', title: 'You can choose it',
-    note: 'At least one event option grants the trait outright to your own court. The list you want when you are shopping for a trait.' },
+    note: 'At least one event option gives the trait to someone in your court.' },
   { rows: roll, id: 'roll', title: 'Only by roll or circumstance',
-    note: 'No option hands it to you directly. It arrives on a percentage roll, out of a random pool, from another trait, or the event simply does it to you.' },
+    note: 'No option gives it to you directly. It comes from a percentage roll, a random pool, another trait, or an event that applies it without asking.' },
   { rows: neither, id: 'innate', title: 'Born with it, or not at all',
-    note: 'Nothing in the event system grants these. They come from the childhood roll, character setup, inheritance or an archetype.' },
+    note: 'No event grants these. They come from the childhood roll, character setup, inheritance or an archetype.' },
 ];
 ---
 
@@ -46,12 +46,9 @@ const SECTIONS = [
   ]}>
 
   <p class="lede">
-    How to get a trait <em>onto</em> a character, which is the opposite of
-    <a href={`${base}trait-removal`}>Trait Removal</a>. Pick a trait to see every event
-    that can grant it, split by how much control you have. A grant can be an option you
-    click, a percentage roll resolved later, a draw from a random pool, or something the
-    event does to you. A grant aimed at a <strong>rival's</strong> court is marked,
-    because it is not a route for you.
+    How to get a trait onto a character. Pick a trait to see every event that can
+    grant it, sorted by how much control you have. For taking traits off, see
+    <a href={`${base}trait-removal`}>Trait Removal</a>.
   </p>
 
   <input id="tg-filter" class="tg__filter" type="search" placeholder="Filter traits…" autocomplete="off" />
@@ -78,16 +75,6 @@ const SECTIONS = [
     </section>
   ))}
 
-  <p class="tg__foot">
-    Grants are read from each option's bonus payload, namely <code>aeAddTraits</code>,
-    <code>aiTraitProbDelay</code>, <code>aeRandomTrait</code>, <code>aeRandomTraitDelay</code>
-    and <code>aeAddTraitReligion</code>, following nested <code>aeBonuses</code> and one
-    level of <code>aiEventOptionProb</code> variants. The bonus's <em>position</em> decides
-    who receives the trait, because <code>maeBonuses[iSubjectIndex]</code>
-    (<code>PlayerEvent.cs:6710</code>) pairs slot <var>i</var> with the story's subject
-    <var>i</var>, which is why one click can grant one trait to you and a different one
-    to your rival.
-  </p>
 </Base>
 
 <script is:inline>
@@ -107,7 +94,6 @@ const SECTIONS = [
 
 <style>
   .lede { max-width: 72ch; color: var(--text-dim); line-height: 1.6; margin-bottom: 1.2rem; }
-  .lede strong { color: var(--text); }
   .tg__filter {
     background: var(--bg-elev); border: 1px solid var(--border-strong, var(--bg-elev-3));
     border-radius: 6px; padding: 0.45rem 0.7rem; color: var(--text); font: inherit;
@@ -134,5 +120,4 @@ const SECTIONS = [
   .tg__counts b { color: var(--gold-soft); font-family: var(--font-mono); font-weight: 500; }
   .tg__none { font-style: italic; }
   .tg__gate { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint); }
-  .tg__foot { margin-top: 2.5rem; font-size: 0.78rem; color: var(--text-faint); max-width: 72ch; line-height: 1.6; }
 </style>

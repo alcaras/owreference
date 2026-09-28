@@ -15,6 +15,11 @@ Sources:
   trait.xml        — TRAIT_REGENT / TRAIT_FORMER_REGENT effects
   globalsType.xml  — REGENT_TRAIT, FORMER_REGENT_TRAIT, REGENT_TITLE
   text-*.xml       — names and the events' own prose
+
+Game source behind the /regents page prose: Character.makeRegent,
+Player.setLeader (the handover), Character.isSuccessionSkipRegent (succession
+skips regents and their descendants as a dynastic root), PlayerBonus.cs
+miRegentOfSubject (event regency outside succession), STAT_YEARS_REGENT.
 """
 from __future__ import annotations
 

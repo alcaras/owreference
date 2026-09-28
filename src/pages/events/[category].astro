@@ -74,11 +74,11 @@ function evHref(t: any): string {
 const sched = cat.schedule || null;
 const schedBits: string[] = [];
 if (sched) {
-  if (sched.levelProb) schedBits.push(`${sched.levelProb}% chance per turn (scaled by the Event Level game option)`);
+  if (sched.levelProb) schedBits.push(`${sched.levelProb}% chance per turn, scaled by the Event Level option`);
   if (sched.playerProb) schedBits.push(`${sched.playerProb}% chance per turn`);
   if (sched.characterProb) schedBits.push(`${sched.characterProb}% chance per character per turn`);
   if (sched.minTurns) schedBits.push(`not before turn ${sched.minTurns}`);
-  if (sched.minRepeat) schedBits.push(`at most one event of this class every ${sched.minRepeat} turns`);
+  if (sched.minRepeat) schedBits.push(`at most one every ${sched.minRepeat} turns`);
 }
 
 const followups = events.filter((e: any) => e.isFollowup).length;
@@ -94,10 +94,10 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
   <p class="lede">
     <a href={`${base}events`}>← All story events</a>
     <span class="lede__kind">{KIND_LABEL[cat.kind]}</span>
-    {cat.kind === 'trigger' && <>Stories that fire on the <strong>{cat.label}</strong> trigger.</>}
-    {cat.kind === 'class' && <>Stories drawn from the <strong>{cat.label}</strong> event pool.</>}
+    {cat.kind === 'trigger' && <>Events that fire on the <strong>{cat.label}</strong> trigger.</>}
+    {cat.kind === 'class' && <>Events drawn from the <strong>{cat.label}</strong> pool.</>}
     {cat.blurb && <LinkedText text={cat.blurb} />}
-    {schedBits.length > 0 && <> Scheduling ({'eventClass.xml'}): {schedBits.join(' · ')}.</>}
+    {schedBits.length > 0 && <> How often: {schedBits.join(' · ')}.</>}
   </p>
 
   {cat.parts.length > 1 && (
@@ -124,14 +124,14 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
     )}
     <div class="mode-toggle" role="radiogroup" aria-label="Detail level">
       <button type="button" class="mode-toggle__btn is-active" data-evmode="raw" role="radio" aria-checked="true">Raw XML</button>
-      <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Humanized</button>
+      <button type="button" class="mode-toggle__btn" data-evmode="human" role="radio" aria-checked="false">Readable</button>
     </div>
   </div>
   <p class="evt-filter__note" id="evt-note" hidden></p>
 
-  <p class="evt-caveat">⚠ <b>Weights are not in-game odds.</b> Character and empire conditions gate each story, and some
-  of them are hidden in game, so the real frequency is filtered in ways the XML cannot predict, and community analytics
-  differ a lot from the raw weights. Read the weight as a value in the XML rather than a probability.</p>
+  <p class="evt-caveat">⚠ <b>Weights are not in-game odds.</b> Each event also needs its character and empire
+  conditions to hold, and some of those are hidden in game, so how often it really fires can differ a lot from its
+  weight. Community tracking bears this out.</p>
 
   <div class="evt-list evtmode" data-mode="raw" id="evtmode">
     {events.map((ev: any) => (
@@ -153,7 +153,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
             {ev.dlc && ev.dlc !== ev.pack && <span class="chip--dlc" title="Requires DLC / content pack">{ev.dlc}</span>}
             {ev.followsFrom && ev.followsFrom.length > 0
               ? <span class="chip--chain" title="Fires as a follow-up in a chain">⛓ follow-up</span>
-              : (ev.weight != null && <span class="evt__share" title="Raw iWeight, which is not a probability. See the caveat above.">weight {ev.weight}</span>)}
+              : (ev.weight != null && <span class="evt__share" title="Not a chance to fire. See the warning above.">weight {ev.weight}</span>)}
           </span>
         </summary>
         <div class="evt__body">
@@ -175,13 +175,13 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
           )}
           {(ev.prob || ev.subjects?.length || ev.conditions?.length || (ev.timing && (ev.timing.repeat || ev.timing.maxTurns || ev.timing.minLeader || ev.timing.law || ev.timing.minOpponentLevel))) && (
             <div class="evt__tags">
-              {ev.prob && <span class="chip--time" title="Chance this story is added to the pool on an eligible turn">{ev.prob}% to appear</span>}
+              {ev.prob && <span class="chip--time" title="Chance this event joins the pool on an eligible turn">{ev.prob}% to appear</span>}
               {ev.timing?.repeat && <span class="chip--time">{ev.timing.repeat}</span>}
               {ev.timing?.maxTurns && <span class="chip--time">Before turn {ev.timing.maxTurns}</span>}
               {ev.timing?.minLeader && <span class="chip--time">Leader {ev.timing.minLeader}+</span>}
               {ev.timing?.law && <span class="chip--time">Law: {ev.timing.law}</span>}
               {ev.timing?.minOpponentLevel && <span class="chip--time">{ev.timing.minOpponentLevel}+</span>}
-              {(ev.subjects || []).map((s: string) => <span class="chip--subj" title="Subject the story needs (aeSubjects)">{s}</span>)}
+              {(ev.subjects || []).map((s: string) => <span class="chip--subj" title="Who or what the event needs">{s}</span>)}
               {(ev.conditions || []).map((c: string) => <span class="chip--cond">{c}</span>)}
             </div>
           )}
@@ -221,7 +221,7 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
                   )}
                   {o.canLeadTo && o.canLeadTo.length > 0 && (
                     <div class="opt__leads opt__leads--maybe"
-                         title="This choice grants a memory these stories require, which makes them eligible. It does not guarantee they fire.">
+                         title="This choice gives a memory these events need. They can fire, but are not sure to.">
                       ◇ may enable:{' '}
                       {o.canLeadTo.map((t: any, i: number) => (
                         <>{i > 0 ? ', ' : ''}<a href={evHref(t)}>{t.name}</a></>
@@ -231,8 +231,8 @@ const hasNation = (ev: any) => { const n = nationSummary(ev); return n.onOpen.le
                   {!(o.canLeadTo && o.canLeadTo.length > 0) &&
                     (o.outcomes || []).some((oc: any) => (oc.rewards || []).some((r: any) => r.note)) && (
                     <div class="opt__leads opt__leads--dead"
-                         title="The game shows '[Could lead to future Events]' for any memory grant, but no event in the current data requires this memory.">
-                      ◇ grants a memory no event currently keys off
+                         title="The game says '[Could lead to future Events]', but no event needs this memory.">
+                      ◇ grants a memory no event uses
                     </div>
                   )}
                 </li>

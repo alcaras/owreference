@@ -115,16 +115,14 @@ const SHRINE_GLYPH: Record<string, string> = {
   ]}
 >
   <p class="lede">
-    Every <LinkedText text="Pagan Religion" /> has a unique pool of
-    <b>Shrines</b>, one per <LinkedText text="deity" />, and they found and
-    spread that religion. Each shrine belongs to a <em>type</em>, such as War,
-    Kingship or Wisdom, which sets its signature yield and its adjacency. With
-    <LinkedText text="Polytheism" /> a nation can build as many shrines as it
-    likes.
+    Every <LinkedText text="Pagan Religion" /> has its own <b>Shrines</b>, one per
+    <LinkedText text="deity" />, which found and spread that religion. A shrine's type sets its
+    signature yield and its adjacency bonus. With
+    <LinkedText text="Polytheism" /> you can build as many as you like.
     {data.build && (
-      <Fragment> All shrines cost <LinkedText text={data.build.costs.join(', ')} /> and take a
-      <LinkedText text="Worker" /> {data.build.turns} turns to build at base, and terrain, hills and
-      territory outside the family can add turns.</Fragment>
+      <Fragment> Every shrine costs <LinkedText text={data.build.costs.join(', ')} /> and takes a
+      <LinkedText text="Worker" /> {data.build.turns} turns; terrain, hills and land outside the
+      family's territory can add turns.</Fragment>
     )}
   </p>
 
@@ -199,9 +197,8 @@ const SHRINE_GLYPH: Record<string, string> = {
 
   <h2 class="tref-head">Shrine type reference</h2>
   <p class="tref-sub">
-    What every shrine of each type yields and the adjacencies it rewards.
-    All shrines cost <b>40 <LinkedText text="Stone" /></b>, take an
-    <b>Acolyte</b> specialist, and are unlimited under <LinkedText text="Polytheism" />.
+    What each shrine type yields and the adjacencies it rewards. Every shrine takes an
+    <b>Acolyte</b> specialist.
   </p>
 
   <div id="shrines-grid" class="tref-grid">
