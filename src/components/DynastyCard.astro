@@ -1,0 +1,160 @@
+---
+// One playable dynasty (a leader on the single-player setup screen): who you
+// start as, what their traits do, what only they unlock, their starting court
+// and the events written for them. Data: src/data/leaders.json
+// (scripts/build_leaders.py). Used by /leaders and each /nations/<slug> page.
+import Term from './Term.astro';
+import GameText from './GameText.astro';
+import { getEntity } from '../lib/entities';
+
+interface Props { d: any; nationName?: string; showNation?: boolean }
+const { d } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const arch = d.archetype;
+const archSlug = arch ? arch.replace('TRAIT_', '').replace('_ARCHETYPE', '').toLowerCase() : '';
+const roles: [string, string][] = [['leader', 'As leader'], ['governor', 'As governor'], ['general', 'As general']];
+---
+<li class="dyn" id={d.slug}>
+  {d.portrait ? (
+    <img class="dyn__portrait" src={`${base}${d.portrait}`} alt={d.name} loading="lazy" />
+  ) : (
+    <div class="dyn__portrait dyn__portrait--none" aria-hidden="true">{d.name?.[0] || '?'}</div>
+  )}
+  <div class="dyn__body">
+    <header class="dyn__head">
+      <a class="dyn__name" href={`${base}leaders#${d.slug}`}>{d.name}</a>
+      {arch && (
+        <span class="dyn__arch">
+          <img src={`${base}img/icons/traits/${archSlug}.png`} alt="" />
+          <Term id={arch} showIcon={false} />
+        </span>
+      )}
+      {d.leader?.age && <span class="dyn__meta">age {d.leader.age}</span>}
+      {d.isDefault && <span class="dyn__tag" title="The leader you get when the setup screen is left on the nation's default">Default</span>}
+      {d.dlc && <span class="dyn__tag dyn__tag--dlc">{d.dlc}</span>}
+    </header>
+    {d.founder && <div class="dyn__founder">Dynasty of <em>{d.founder}</em></div>}
+
+    {d.description?.length > 0 && (
+      <p class="dyn__desc"><GameText segments={d.description} /></p>
+    )}
+
+    {d.traits?.length > 0 && (
+      <ul class="dyn__traits">
+        {d.traits.map((t: any) => {
+          const lines = roles.filter(([k]) => t[k]?.length);
+          return (
+            <li class="dyn__trait">
+              <span class="dyn__trait-name"><Term id={t.id} label={t.name} showIcon={false} /></span>
+              {t.ratings.length > 0 && <span class="dyn__ratings">{t.ratings.join(', ')}</span>}
+              {lines.map(([k, label]) => (
+                <div class="dyn__role"><span class="dyn__role-label">{label}:</span> {t[k].join(' · ')}</div>
+              ))}
+            </li>
+          );
+        })}
+      </ul>
+    )}
+
+    {(d.bonus?.length > 0 || d.unlocks?.length > 0 || d.capital || d.religion) && (
+      <ul class="dyn__facts">
+        {d.bonus.map((b: string) => <li>{b}</li>)}
+        {d.unlocks.map((u: any) => <li>Unlocks {u.kind.toLowerCase()} {getEntity(u.id) ? <Term id={u.id} label={u.name} /> : <b>{u.name}</b>}</li>)}
+        {d.capital && <li>Capital founded as <em>{d.capital}</em></li>}
+        {d.religion && <li>Preferred religion: {d.religion.name}</li>}
+      </ul>
+    )}
+
+    {d.court?.length > 0 && (
+      <div class="dyn__court">
+        <span class="dyn__label">Court at start</span>
+        <ul>
+          {d.court.map((c: any) => (
+            <li>
+              <span class="dyn__court-name">{c.name}</span>
+              <span class="dyn__court-meta">{c.relation}, {c.age}{c.traits.length > 0 && <>, {c.traits.join(' ')}</>}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {d.events?.length > 0 && (
+      <div class="dyn__events">
+        <span class="dyn__label">Events <span class="dyn__count">{d.events.length}</span></span>
+        <ul>
+          {d.events.map((ev: any) => (
+            <li><a href={`${base}${ev.href}`}>{ev.name}</a> <span class="dyn__trigger">{ev.trigger}</span></li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {d.leader?.url && <a class="dyn__wiki" href={d.leader.url} target="_blank" rel="noopener">Wikipedia ↗</a>}
+  </div>
+</li>
+
+<style>
+  .dyn {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem 0.7rem 0.65rem;
+    background: var(--bg-elev);
+    border-left: 3px solid var(--gold-deep);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    scroll-margin-top: 5rem;
+  }
+  .dyn:target { outline: 1px solid var(--gold-soft); }
+  .dyn__portrait {
+    width: 84px; height: 84px;
+    object-fit: cover; object-position: center top;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .dyn__portrait--none {
+    display: grid; place-items: center;
+    background: var(--bg-elev-2); color: var(--text-faint);
+    font-family: var(--font-display); font-size: 1.6rem; font-weight: 600;
+  }
+  .dyn__body { min-width: 0; font-size: 0.8rem; line-height: 1.45; color: var(--text-soft); }
+  .dyn__head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.55rem; }
+  .dyn__name {
+    font-family: var(--font-display); font-weight: 600; font-size: 1.2rem;
+    color: var(--text); text-decoration: none;
+  }
+  .dyn__name:hover { color: var(--gold); }
+  .dyn__arch { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; }
+  .dyn__arch img { width: 1.25rem; height: 1.25rem; object-fit: contain; }
+  .dyn__meta { font-size: 0.72rem; color: var(--text-dim); }
+  .dyn__tag {
+    font-size: 0.68rem; padding: 0.05rem 0.4rem;
+    border: 1px solid var(--border-strong); border-radius: 999px; color: var(--text-dim);
+  }
+  .dyn__tag--dlc { border-color: var(--border); }
+  .dyn__founder { font-size: 0.74rem; color: var(--text-dim); }
+  .dyn__founder em { color: var(--text-soft); }
+  .dyn__desc { margin: 0.35rem 0 0.45rem; color: var(--text-soft); }
+  .dyn__traits, .dyn__facts, .dyn__court ul, .dyn__events ul { list-style: none; margin: 0; padding: 0; }
+  .dyn__traits { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.45rem; }
+  .dyn__trait-name { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; }
+  .dyn__ratings { margin-left: 0.45rem; font-size: 0.74rem; color: var(--text-dim); }
+  .dyn__role { font-size: 0.76rem; padding-left: 0.6rem; }
+  .dyn__role-label { color: var(--text-dim); }
+  .dyn__facts { margin-bottom: 0.45rem; }
+  .dyn__facts li::before { content: '· '; color: var(--text-ghost); }
+  .dyn__label { display: block; font-size: 0.72rem; color: var(--gold-soft); margin: 0.35rem 0 0.1rem; }
+  .dyn__count { color: var(--text-dim); }
+  .dyn__court ul { display: flex; flex-wrap: wrap; gap: 0.1rem 0.9rem; }
+  .dyn__court-name { color: var(--text); }
+  .dyn__court-meta { margin-left: 0.3rem; font-size: 0.72rem; color: var(--text-dim); }
+  .dyn__events li { font-size: 0.77rem; }
+  .dyn__events a { color: var(--text); }
+  .dyn__trigger { font-size: 0.7rem; color: var(--text-dim); margin-left: 0.3rem; }
+  .dyn__wiki { display: inline-block; margin-top: 0.4rem; font-size: 0.72rem; color: var(--text-dim); }
+  @media (max-width: 520px) {
+    .dyn { grid-template-columns: 56px 1fr; }
+    .dyn__portrait { width: 56px; height: 56px; }
+  }
+</style>

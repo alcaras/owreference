@@ -510,13 +510,6 @@ def _format_id_name(zt: str, prefix: str) -> str:
     return " ".join(p if p in _ROMAN else p.title() for p in s.split("_"))
 
 
-def _format_dlc(tag: str) -> str:
-    """WONDERS_DYNASTIES → 'Wonders & Dynasties'."""
-    if not tag:
-        return ""
-    return tag.replace("_", " & ").title()
-
-
 def load_unit_traits() -> dict[str, str]:
     """For each unit id, return the slug of its primary unit-trait glyph
     (lowercase, e.g. UNIT_HOPLITE → 'infantry'). The glyph is the white
@@ -1028,16 +1021,19 @@ def find_portrait(character_name: str, char_id: str = "", preferred_portrait: st
     return None
 
 
-def load_royal_courts() -> dict[str, dict]:
-    """XML-canonical start royal family per nation: the DefaultDynasty's
-    FirstRuler plus the living members of that dynasty in character.xml.
+def load_dynasty_courts(structured: bool = False) -> dict[str, dict]:
+    """XML-canonical start royal family per dynasty: its FirstRuler plus the
+    living members of that dynasty in character.xml. Keyed by DYNASTY_*.
 
     Emits the same shape the yaml used: {name, spouse, heir1, heir2, ...},
     each as '<Traits> <Archetype> (<age>)' — e.g. 'Pious Commander (22)' —
     so the Nations table renders unchanged.
 
     Notes on derivation (all plain character.xml facts, no game-logic guess):
-      - membership: aePlayerDynasties contains the DefaultDynasty;
+    structured=True returns {"spouses": [char], "kin": [char + relation]}
+    per dynasty instead (char = the raw character dict below), for /leaders.
+
+      - membership: aePlayerDynasties contains the dynasty;
         characters with iYearsDead are dead at start and skipped.
       - spouse(s): Spouse link with the leader (Maurya has two).
       - 'heirs' are the remaining living members, labeled by family relation
@@ -1092,12 +1088,9 @@ def load_royal_courts() -> dict[str, dict]:
         return c["gender"] == "GENDER_FEMALE"
 
     out: dict[str, dict] = {}
-    for entry in parse("nation.xml").findall("Entry"):
-        nation = entry.findtext("zType") or ""
-        dd = entry.findtext("DefaultDynasty") or ""
-        leader_id = dyn_ruler.get(dd, "")
+    for dd, leader_id in dyn_ruler.items():
         leader = chars.get(leader_id)
-        if not nation.startswith("NATION_") or leader is None:
+        if leader is None:
             continue
         members = [c for c in chars.values()
                    if dd in c["dynasties"] and c["id"] != leader_id]
@@ -1138,6 +1131,10 @@ def load_royal_courts() -> dict[str, dict]:
         keyed = sorted(((rel(c), c) for c in heirs),
                        key=lambda rc: (rc[0][0], -rc[1]["age"], rc[1]["id"]))
 
+        if structured:
+            out[dd] = {"spouses": spouses,
+                       "kin": [{**c, "relation": relation} for (_, relation), c in keyed]}
+            continue
         court: dict[str, str] = {"name": desc(leader)}
         if spouses:
             court["spouse"] = " / ".join(desc(c) for c in spouses)
@@ -1145,50 +1142,19 @@ def load_royal_courts() -> dict[str, dict]:
             flavors_or_arch = [t for t in c["traits"]]
             court[f"heir{i}"] = (f"{relation}, {desc(c)}" if flavors_or_arch
                                  else f"{relation} ({c['age']})")
-        out[nation] = court
+        out[dd] = court
     return out
 
 
-def load_dynasties(characters: dict[str, dict], portrait_map: dict[str, str]) -> dict[str, list[dict]]:
-    """Return {nation_id: [dynasty_dict, ...]} from dynasty.xml. Each dynasty
-    is enriched with its founder character's traits and portrait."""
-    text_infos = load_text("text-infos.xml")
-    out: dict[str, list[dict]] = {}
-    if not (XML_DIR / "dynasty.xml").exists():
-        return out
-    for entry in parse("dynasty.xml").findall("Entry"):
-        zt = entry.findtext("zType") or ""
-        if not zt.startswith("DYNASTY_"):
-            continue
-        nation = entry.findtext("Nation") or ""
-        if not nation:
-            continue
-        name = text_infos.get(entry.findtext("Name") or "", _format_id_name(zt, "DYNASTY_"))
-        desc = text_infos.get(entry.findtext("Description") or "", "")
-        founder_id = entry.findtext("Founder") or ""
-        first_ruler_id = entry.findtext("FirstRuler") or ""
-        founder = characters.get(founder_id) if founder_id else None
-        first_ruler = characters.get(first_ruler_id) if first_ruler_id else None
-        # Prefer the FirstRuler for portrait + traits — the dynasty's playable
-        # leader at game start. Fall back to founder.
-        primary = first_ruler or founder
-        primary_name = first_ruler["name"] if first_ruler else (founder["name"] if founder else "")
-        primary_id = first_ruler_id if first_ruler else founder_id
-        preferred = primary["preferredPortrait"] if primary else ""
-        portrait = find_portrait(primary_name, primary_id, preferred, portrait_map) if (primary_name or primary_id) else None
-        out.setdefault(nation, []).append({
-            "id": zt,
-            "slug": zt.replace("DYNASTY_", "").lower(),
-            "name": name,
-            "description": desc,
-            "founder": founder["name"] if founder else None,
-            "firstRuler": first_ruler["name"] if first_ruler else None,
-            "leaderAge": primary["age"] if primary else None,
-            "leaderTraits": primary["traits"] if primary else [],
-            "leaderUrl": primary["url"] if primary else "",
-            "portrait": portrait,
-            "gameContent": _format_dlc(entry.findtext("GameContentRequired") or ""),
-        })
+def load_royal_courts() -> dict[str, dict]:
+    """Start royal family per nation: its DefaultDynasty's court."""
+    courts = load_dynasty_courts()
+    out: dict[str, dict] = {}
+    for entry in parse("nation.xml").findall("Entry"):
+        nation = entry.findtext("zType") or ""
+        dd = entry.findtext("DefaultDynasty") or ""
+        if nation.startswith("NATION_") and dd in courts:
+            out[nation] = courts[dd]
     return out
 
 
@@ -1201,13 +1167,10 @@ def load_nations() -> list[dict]:
     xml_indexes = load_xml_indexes(XML_DIR)
     shrines_by_nation = load_shrines(xml_indexes)
     unique_improvements = load_unique_improvements(xml_indexes)
-    characters = load_characters(xml_indexes)
-    portrait_map = load_portrait_map()
     unit_traits = load_unit_traits()
     unit_name_to_id = load_unit_name_map()
     unique_units = load_unique_units(unit_traits, xml_indexes)
     royal_courts = load_royal_courts()
-    dynasties_by_nation = load_dynasties(characters, portrait_map)
     text_cityname = load_text("text-cityname.xml") if (XML_DIR / "text-cityname.xml").exists() else {}
     text_name = load_text("text-name.xml") if (XML_DIR / "text-name.xml").exists() else {}
     text_unit_for_starts = load_text("text-unit.xml") if (XML_DIR / "text-unit.xml").exists() else {}
@@ -1377,7 +1340,6 @@ def load_nations() -> list[dict]:
             "startingTech": starting_tech,
             "startingLaw": starting_law,
             "dynasties": dynasties,
-            "dynastyDetails": dynasties_by_nation.get(zt, []),
             "families": fams,
             "shrineXml": nation_shrines,
             "shrines": shrine_pairs,

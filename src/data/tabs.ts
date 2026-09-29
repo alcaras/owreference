@@ -26,6 +26,11 @@ export const TABS: Tab[] = [
     summary: 'Bonuses, shrines, unique units, families, leaders',
   },
   {
+    slug: 'leaders', icon: '🏛️', label: 'Leaders & Dynasties', section: 'Nations & Tribes',
+    status: 'built', sourceSheet: '',
+    summary: 'Every leader on the setup screen: traits, unlocks, starting court and their events',
+  },
+  {
     slug: 'tribes', icon: '🏕️', label: 'Tribes', section: 'Nations & Tribes',
     status: 'built', sourceSheet: '',
     summary: 'Barbarian tribes, with their levels, units, sites and diplomacy',

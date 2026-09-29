@@ -1,0 +1,24 @@
+---
+// Game prose written in link(TOKEN) markup, pre-split into segments by the
+// builder (build_hints.segment). The game itself says which words are
+// references, so we link exactly those: entity registry first, then the
+// concepts page's own anchors, else plain text. No LinkedText alias pass —
+// alias matching mislinks words the game deliberately left plain.
+import Term from './Term.astro';
+import concepts from '../data/concepts.json';
+import { getEntity } from '../lib/entities';
+
+type Segment = { text: string; ref?: string };
+interface Props { segments: Segment[] }
+
+const { segments } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const conceptSlug = new Map((concepts as any).concepts.map((c: any) => [c.id, c.slug]));
+---
+{segments.map(s => {
+  if (!s.ref) return s.text;
+  if (getEntity(s.ref)) return <Term id={s.ref} label={s.text} showIcon={false} />;
+  const cs = conceptSlug.get(s.ref);
+  if (cs) return <a class="gametext__concept" href={`${base}concepts#${cs}`}>{s.text}</a>;
+  return s.text;
+})}

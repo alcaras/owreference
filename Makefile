@@ -77,6 +77,7 @@ data:
 	@python3 scripts/build_event_chains.py  # chain graphs — needs event-search.json
 	@python3 scripts/build_trait_events.py  # trait/cluster gates — needs event-search.json
 	@python3 scripts/build_trait_gain.py    # trait acquisition — needs event-search.json + traits.json
+	@python3 scripts/build_leaders.py       # dynasties — needs nations, traits, event-search json
 	@python3 scripts/build_diplomacy.py
 	@python3 scripts/build_regents.py
 	@python3 scripts/build_tribe_conversion.py

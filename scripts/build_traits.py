@@ -38,9 +38,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
+import effects as _effects  # noqa: E402  registry backstop (to drop its duplicates)
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_player, render_effect_city,
     render_effect_unit, render_bonus, fmt_decimal, yield_name, _lookup_name,
+    _strip_link_templates,
 )
 from build_promotions import render_promotion_effect  # noqa: E402  (full EffectUnit coverage)
 
@@ -196,9 +198,9 @@ UNIT_EXTRA_SCALARS: list[tuple[str, str, str]] = [
     ("bSurviveDeath",          "Cannot die with >1 HP",          "bool"),
     ("bLastStand",             "Last Stand",                     "bool"),
     ("bCriticalImmune",        "Immune to criticals",            "bool"),
-    ("bRout",                  "Can Rout",                       "bool"),
+    ("bRout",                  "Can Rout (attack again after defeating a unit)", "bool"),
     ("bZOC",                   "Exerts Zone of Control",         "bool"),
-    ("bGeneralHopping",        "General can swap units",         "bool"),
+    ("bGeneralHopping",        "General moves to the nearest eligible unit when its unit dies", "bool"),
     ("bBuildRoad",             "Can build Roads",                "bool"),
     ("bHarvest",               "Can Harvest",                    "bool"),
     ("bMultiTeams",            "Stacks with allied units",       "bool"),
@@ -291,11 +293,27 @@ def render_bonus_full(b: ET.Element, indexes: dict) -> list[str]:
     return out
 
 
+def backstop_lines(entry: ET.Element, section: str, fields, indexes: dict) -> set[str]:
+    """The registry backstop's generic lines for `fields` of `entry`.
+
+    render_effect_player / render_effect_unit end with effects.extra_lines, so
+    a field this file phrases itself (TRAIT_EP_SCALARS, UNIT_EXTRA_SCALARS)
+    also comes out once in generic words ("-50% Governor Cost" next to
+    "Governor assignment cost: -50%"). Callers drop these to keep one line.
+    """
+    reg = _effects.REGISTRY.get(section, {})
+    wanted = set(fields)
+    others = {spec.get("xmlField") or key for key, spec in reg.items()} - wanted
+    return set(_effects.extra_lines(entry, section, exclude=frozenset(others), indexes=indexes))
+
+
 def render_trait_effect_unit(eu: ET.Element, indexes: dict) -> list[str]:
     """Full EffectUnit rendering: humanize + promotions renderer + trait extras."""
     out: list[str] = []
     out.extend(render_effect_unit(eu))
     out.extend(render_promotion_effect(eu))
+    dup = backstop_lines(eu, "effectUnit", [t for t, _, _ in UNIT_EXTRA_SCALARS], indexes)
+    out = [x for x in out if x not in dup]
     for tag, label, kind in UNIT_EXTRA_SCALARS:
         v = eu.findtext(tag)
         if v is None or v == "" or v == "0":
@@ -336,6 +354,8 @@ def render_trait_effect_player(ep_id: str, indexes: dict) -> list[str]:
     if ep is None:
         return out
 
+    dup = backstop_lines(ep, "effectPlayer", [t for t, _, _ in TRAIT_EP_SCALARS], indexes)
+    out = [x for x in out if x not in dup]
     for tag, label, kind in TRAIT_EP_SCALARS:
         v = ep.findtext(tag)
         if v is None or v == "" or v == "0":
@@ -348,7 +368,11 @@ def render_trait_effect_player(ep_id: str, indexes: dict) -> list[str]:
         else:
             out.append(f"{sgn(int(v))} {label}")
 
-    # Stat-triggered bonuses (Diligent: Orders on Improvement Finished)
+    # Stat-triggered bonuses (Diligent: Orders on Improvement Finished). The
+    # backstop phrases StatBonus as "Stat Bonus: …"; the "On <stat>:" lines
+    # below cover every pair, so drop the generic form.
+    if ep.findall("StatBonus/Pair"):
+        out = [x for x in out if not x.startswith("Stat Bonus: ")]
     for pair in ep.findall("StatBonus/Pair"):
         stat = nice_token(pair.findtext("First") or "", "STAT_")
         b = indexes.get("bonus.xml", {}).get(pair.findtext("Second") or "")
@@ -468,6 +492,11 @@ def main() -> int:
         "text-trait.xml", "text-trait-btt.xml", "text-trait-sap.xml",
         "text-trait-wog.xml", "text-infos.xml",
     )
+    # DLC trait names live in their pack's misc file (Wonders & Dynasties'
+    # TEXT_TRAIT_DARIUS_LEADER "Government Reformer" is in
+    # text-wonders-dynasties-misc.xml), so fall back to every text file.
+    for k, v in load_text(*sorted(p.name for p in XML_DIR.glob("text-*.xml"))).items():
+        text.setdefault(k, v)
     gendered = load_gendered_text()
 
     root = parse("trait.xml")
@@ -480,7 +509,7 @@ def main() -> int:
         gkey = (e.findtext("GenderedName") if e is not None else "") or f"GENDERED_TEXT_{tid}"
         tkey = gendered.get(gkey, "")
         if tkey and tkey in text:
-            return text[tkey]
+            return _strip_link_templates(text[tkey])
         return nice_token(tid, "TRAIT_")
 
     categories: dict[str, list[dict]] = {

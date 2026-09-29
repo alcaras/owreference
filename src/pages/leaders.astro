@@ -1,0 +1,110 @@
+---
+// Leaders & Dynasties — every leader on the single-player setup screen,
+// grouped by nation. Data: src/data/leaders.json (scripts/build_leaders.py ←
+// dynasty.xml, nation.xml, character.xml, traits.json, subject.xml +
+// eventStory*.xml for the events cast for each dynasty).
+import Base from '../layouts/Base.astro';
+import DynastyCard from '../components/DynastyCard.astro';
+import data from '../data/leaders.json';
+
+const base = import.meta.env.BASE_URL;
+const nations = data.nations as any[];
+const total = nations.reduce((n, x) => n + x.dynasties.length, 0);
+const events = nations.reduce((n, x) => n + x.dynasties.reduce((m: number, d: any) => m + d.events.length, 0), 0);
+---
+
+<Base
+  title="Leaders & Dynasties"
+  active="leaders"
+  pageMark="🏛️"
+  pageFilter="Filter leaders…"
+  description="Every leader you can pick when starting a single-player game of Old World, grouped by nation: their archetype and traits and what those do, what only they unlock, their starting court, and the events written for them."
+  pageStats={[
+    { label: 'leaders', value: total },
+    { label: 'nations', value: nations.length },
+    { label: 'leader events', value: events },
+  ]}
+>
+  <p class="lede">
+    Every leader you can pick on the game setup screen, grouped by nation. Each card shows what
+    the leader's traits do, what only they unlock, who is at court when you start, and the events
+    written for them.
+  </p>
+
+  <p class="ld-setup">
+    The setup screen also offers
+    {data.setupOptions.map((o: any, i: number) => (
+      <>{i > 0 && (i === data.setupOptions.length - 1 ? ' and ' : ', ')}<b>{o.name}</b> ({o.description.charAt(0).toLowerCase() + o.description.slice(1)})</>
+    ))}.
+  </p>
+
+  <nav class="ld-rail" aria-label="Nations">
+    {nations.map(n => (
+      <a href={`#nation-${n.slug}`}>
+        <img src={`${base}img/crests/${n.slug}.png`} alt="" />
+        {n.name} <span class="ld-rail__n">{n.dynasties.length}</span>
+      </a>
+    ))}
+  </nav>
+
+  {nations.map(n => (
+    <section class="ld-nation" id={`nation-${n.slug}`} style={`--nation:${n.color?.bg || 'var(--gold-deep)'}`}>
+      <h2 class="ld-nation__h">
+        <img src={`${base}img/crests/${n.slug}.png`} alt="" />
+        <a href={`${base}nations/${n.slug}`}>{n.name}</a>
+        <span class="ld-nation__n">{n.dynasties.length} leaders</span>
+      </h2>
+      <ul class="ld-grid">
+        {n.dynasties.map((d: any) => <DynastyCard d={d} />)}
+      </ul>
+    </section>
+  ))}
+</Base>
+
+<script>
+  // Header filter: match a card's text (name, traits, court, events) or its nation.
+  const input = document.getElementById('page-filter') as HTMLInputElement | null;
+  const sections = Array.from(document.querySelectorAll<HTMLElement>('.ld-nation'));
+  input?.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    for (const sec of sections) {
+      const nation = (sec.querySelector('.ld-nation__h')?.textContent || '').toLowerCase();
+      let shown = 0;
+      for (const card of Array.from(sec.querySelectorAll<HTMLElement>('.ld-grid > li'))) {
+        const hit = !q || nation.includes(q) || (card.textContent || '').toLowerCase().includes(q);
+        card.hidden = !hit;
+        if (hit) shown++;
+      }
+      sec.hidden = shown === 0;
+    }
+  });
+</script>
+
+<style>
+  .ld-setup { color: var(--text-soft); font-size: 0.86rem; max-width: 60rem; }
+  .ld-rail {
+    display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem;
+    margin: 0.8rem 0 1.2rem; font-size: 0.85rem;
+  }
+  .ld-rail a { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--text-soft); text-decoration: none; }
+  .ld-rail a:hover { color: var(--gold); }
+  .ld-rail img { width: 1.1rem; height: 1.1rem; object-fit: contain; }
+  .ld-rail__n { color: var(--text-dim); font-size: 0.75rem; }
+  .ld-nation { margin: 1.6rem 0 0; scroll-margin-top: 4.5rem; }
+  .ld-nation__h {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: var(--font-display); font-size: 1.4rem; font-weight: 600;
+    margin: 0 0 0.6rem; padding-bottom: 0.3rem;
+    border-bottom: 2px solid var(--nation);
+  }
+  .ld-nation__h img { width: 1.6rem; height: 1.6rem; object-fit: contain; }
+  .ld-nation__h a { color: var(--text); text-decoration: none; }
+  .ld-nation__h a:hover { color: var(--gold); }
+  .ld-nation__n { font-family: var(--font-ui); font-size: 0.78rem; font-weight: 400; color: var(--text-dim); }
+  .ld-grid :global(> li[hidden]) { display: none; }
+  .ld-grid {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; gap: 0.7rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+  }
+</style>

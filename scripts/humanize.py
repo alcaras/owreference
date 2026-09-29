@@ -419,7 +419,7 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | 
 
     # Per-improvement-class yield (Persia: +0.5 Orders/Pastures)
     for pair in e.findall("aaiImprovementClassYield/Pair"):
-        imp = (pair.findtext("zIndex") or "").replace("IMPROVEMENTCLASS_", "").title()
+        imp = (pair.findtext("zIndex") or "").replace("IMPROVEMENTCLASS_", "").replace("_", " ").title()
         for sp in pair.findall("SubPair"):
             y = yield_name(sp.findtext("zSubIndex"))
             v = int(sp.findtext("iValue") or "0") / 10
@@ -427,7 +427,7 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | 
 
     # Improvement-class % modifier (Kush: +50% Shrines)
     for pair in e.findall("aiImprovementClassModifier/Pair"):
-        imp = (pair.findtext("zIndex") or "").replace("IMPROVEMENTCLASS_", "").title()
+        imp = (pair.findtext("zIndex") or "").replace("IMPROVEMENTCLASS_", "").replace("_", " ").title()
         v = int(pair.findtext("iValue") or "0")
         out.append(f"{fmt_decimal(v)}% {imp}")
 
@@ -620,7 +620,7 @@ def render_effect_unit(e: ET.Element) -> list[str]:
     return out
 
 
-def render_effect_player_scalars(e: ET.Element) -> list[str]:
+def render_effect_player_scalars(e: ET.Element, indexes: dict | None = None) -> list[str]:
     """Render simple scalar fields directly on an EffectPlayer entry."""
     out: list[str] = []
     for tag, label, kind in SCALAR_LABELS:
@@ -675,7 +675,10 @@ def render_effect_player_scalars(e: ET.Element) -> list[str]:
 
     # Units that can move on water (Exploration → Scout)
     for u in e.findall("aeWaterUnit/zValue"):
-        unit = (u.text or "").replace("UNIT_", "").title()
+        uid = u.text or ""
+        # unit.xml names every unit TEXT_<zType> (Hanno's scout is "Explorer").
+        unit = (_lookup_name(indexes or {}, f"TEXT_{uid}")
+                or uid.replace("UNIT_", "").replace("_", " ").title())
         if unit:
             out.append(f"{unit}s can move on Water")
 
@@ -765,7 +768,7 @@ def render_nation_effects(
         return []
 
     lines: list[str] = []
-    lines.extend(render_effect_player_scalars(ep))
+    lines.extend(render_effect_player_scalars(ep, indexes))
 
     # Per-city effect
     ec_id = ep.findtext("EffectCity")
@@ -844,7 +847,7 @@ def render_effect_player(
         return []
 
     lines: list[str] = []
-    lines.extend(render_effect_player_scalars(ep))
+    lines.extend(render_effect_player_scalars(ep, indexes))
 
     # Per-city effect
     ec_id = ep.findtext("EffectCity")

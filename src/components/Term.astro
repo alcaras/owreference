@@ -27,6 +27,7 @@ const NAV_TYPES = new Set([
   'nation', 'family', 'yield', 'tech', 'unit', 'law',
   'resource', 'improvement', 'project', 'promotion',
   'shrine', 'wonder', 'theology', 'tribe', 'archetype', 'trait', 'specialist',
+  'dynasty',
 ]);
 const isLinkable = e && NAV_TYPES.has(e.type) && !!e.page;
 // Append the #slug deep-link anchor unless the page IS the item's detail route

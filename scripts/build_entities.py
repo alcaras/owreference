@@ -558,6 +558,13 @@ def build() -> dict:
                 entity["icon"] = row["icon"]
             entities.append(entity)
 
+    # Dynasties (the setup screen's leaders) → /leaders, one card per dynasty.
+    register_rows(
+        [{"id": d["id"], "slug": d["slug"], "name": d["name"], "icon": d.get("portrait")}
+         for n in (load_data("leaders.json") or {}).get("nations") or []
+         for d in n["dynasties"]],
+        "leaders", "dynasty")
+
     for filename, page, etype in (
         ("urban_improvements.json", "urban-improvements", "improvement"),
         ("rural_improvements.json", "rural-improvements", "improvement"),
