@@ -107,6 +107,10 @@ def resolve_token(token: str, indexes: dict | None) -> str:
                 nice = text_idx.get(name_key, "")
                 if nice:
                     return _clean_text(nice)
+        # Infos files not in the index (courtier.xml) still name entries TEXT_<zType>.
+        nice = text_idx.get(f"TEXT_{token}", "")
+        if nice:
+            return _clean_text(nice)
     return _title_token(token)
 
 
@@ -176,6 +180,10 @@ def _render_field(el: ET.Element, field: str, spec: dict, indexes: dict | None) 
                 out.append(f"{label}: {name}")
             elif zv:
                 out.append(f"{label}: {name} → {resolve_token(zv, indexes)}")
+            elif name:
+                # Bare <First> list (AddCourtier: the pair names the thing granted).
+                line = _fill_template(spec, name)
+                out.append(line if line else f"{label}: {name}")
         return out
 
     zvals = [z.text for z in el.findall("zValue") if z.text]

@@ -25,7 +25,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, render_effect_unit,
-    render_effect_player_scalars, render_nation_effects,
+    render_effect_player_scalars, render_nation_effects, _lookup_name,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -75,25 +75,6 @@ ARCHETYPE_ORDER = [
 ]
 
 
-# Archetype-specific EffectPlayer scalar fields not yet covered by the general
-# humanizer. Captioned for the page.
-ARCHETYPE_SCALAR_LABELS: list[tuple[str, str, str]] = [
-    ("iXPAllTurn",                  "XP/Turn for all Units",          "int"),
-    ("iVisionChange",               "Vision Range",                    "int"),
-    ("iLeaderReligionOpinionChange","Opinion for Leader's Religion",   "pct"),
-    ("iReligionOpinionChange",      "All Religion Opinion",            "pct"),
-    ("iLeaderOpinionChange",        "Foreign/Tribal Leader Opinion",   "pct"),
-    ("bRecruitMercenaries",         "Recruit Tribal Mercs",            "bool"),
-    ("bRedrawTechs",                "Redraw Techs",                    "bool"),
-    ("bAddUrban",                   "Add Urban Tile for Stone",        "bool"),
-    ("bMultipleWorkers",            "Multiple Workers per Construction", "bool"),
-    ("bLegitimacyOrders",           "Spend Legitimacy for Orders",     "bool"),
-    ("bMoveAlliedUnits",            "Can Move Allied Units",           "bool"),
-    ("iSwitchLawMaximum",           "Civics to Switch Laws",           "int"),
-    ("bUpgradeImprovement",         "Can Upgrade Improvements",        "bool"),
-]
-
-
 def render_archetype_effect_player(ep: ET.Element | None, indexes: dict) -> list[str]:
     """Render an EFFECTPLAYER_TRAIT_*_ARCHETYPE entry, including fields the
     standard humanizer doesn't cover yet."""
@@ -101,57 +82,27 @@ def render_archetype_effect_player(ep: ET.Element | None, indexes: dict) -> list
         return []
     out: list[str] = []
 
-    # Pull in the standard renderer's coverage first
-    out.extend(render_effect_player_scalars(ep))
+    # The shared renderer (curated + registry backstop) covers every scalar on
+    # these entries — opinion changes, mercenaries, war yields, invisible units.
+    # A second archetype-only pass here used to print each of them twice.
+    # aeEffectUnitTrait is the exception: the backstop can only name the bundle
+    # ("Commander Infantry"), so it is expanded below instead.
+    out.extend(
+        line for line in render_effect_player_scalars(ep, indexes)
+        if not line.startswith("Effect Unit Trait:")
+    )
 
-    # Archetype-specific scalars
-    for tag, label, kind in ARCHETYPE_SCALAR_LABELS:
-        v = ep.findtext(tag)
-        if v is None or v == "" or v == "0":
-            continue
-        if kind == "bool" and v == "1":
-            out.append(label)
-        elif kind == "pct":
-            iv = int(v)
-            sign = "+" if iv > 0 else ""
-            out.append(f"{sign}{iv}% {label}")
-        elif kind == "int":
-            iv = int(v)
-            sign = "+" if iv > 0 else ""
-            out.append(f"{sign}{iv} {label}")
-
-    # War yields (Schemer: +1 Orders/War/Year)
-    for pair in ep.findall("aiWarYield/Pair"):
-        y = (pair.findtext("zIndex") or "").replace("YIELD_", "").title()
-        v = int(pair.findtext("iValue") or "0") / 10
-        out.append(f"+{v} {y}/Year per War")
-
-    # Invisible units (Schemer: Scouts invisible)
-    for u in ep.findall("aeInvisibleUnit/zValue"):
-        if u.text:
-            name = u.text.replace("UNIT_", "").title()
-            out.append(f"{name}s are Invisible")
-
-    # Per-unit-trait effect bundles (Commander: +x to Infantry; Tactician: +x to Ranged)
+    # Per-unit-trait effect bundles (Commander: Infantry +10% Defense;
+    # Tactician: Ranged hidden in Trees/Jungle)
     for pair in ep.findall("aeEffectUnitTrait/Pair"):
-        ut = (pair.findtext("zIndex") or "").replace("UNITTRAIT_", "").title()
-        eu_id = pair.findtext("zValue") or ""
-        eu = indexes.get("effectUnit.xml", {}).get(eu_id)
+        ut_id = pair.findtext("zIndex") or ""
+        ut = (_lookup_name(indexes, f"TEXT_{ut_id}")
+              or ut_id.replace("UNITTRAIT_", "").title())
+        eu = indexes.get("effectUnit.xml", {}).get(pair.findtext("zValue") or "")
         if eu is None:
             continue
-        sm = eu.findtext("iStrengthModifier") or "0"
-        if sm and sm != "0":
-            sign = "+" if int(sm) > 0 else ""
-            out.append(f"{ut} units {sign}{sm}% Strength")
-        am = eu.findtext("iAdjacentModifier") or "0"
-        if am and am != "0":
-            sign = "+" if int(am) > 0 else ""
-            out.append(f"{ut} units {sign}{am}% with adjacent ally")
-        # Heal / hidden flags
-        if (eu.findtext("bHealNeutral") or "0") == "1":
-            out.append(f"{ut} units heal in neutral territory")
-        if (eu.findtext("bHiddenForest") or "0") == "1":
-            out.append(f"{ut} units hidden in forest")
+        for line in render_effect_unit(eu):
+            out.append(f"{ut} units: {line}")
 
     # The EffectCity attached to a leader-only EffectPlayer (Builder, Orator, Scholar)
     ec_id = ep.findtext("EffectCity") or ""

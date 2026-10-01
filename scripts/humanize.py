@@ -362,7 +362,14 @@ def render_effect_city(e: ET.Element, *, per_city: bool = True, indexes: dict | 
         out.append(f"{fmt_decimal(v)}% {y}")
 
     for pair in e.findall("aaiEffectCityYieldRate/Pair"):
-        cond = condition_name(pair.findtext("zIndex"))
+        zi = pair.findtext("zIndex") or ""
+        cond = condition_name(zi)
+        if zi not in CONDITION_LABELS and indexes:
+            # The game names the condition EffectCity (OPINIONFAMILY_FRIENDLY →
+            # "Friendly Family"); title-casing the token gave "Opinionfamily Friendly".
+            ce = indexes.get("effectCity.xml", {}).get(zi)
+            cond = _lookup_name(indexes, ce.findtext("Name") or "") if ce is not None else ""
+            cond = _strip_link_templates(cond) if cond else condition_name(zi)
         for sp in pair.findall("SubPair"):
             y = yield_name(sp.findtext("zSubIndex"))
             v = int(sp.findtext("iValue") or "0") / 10
