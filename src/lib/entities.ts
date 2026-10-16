@@ -43,6 +43,9 @@ export function getEntityBySlug(type: Entity['type'], slug: string): Entity | un
 
 // Pre-compiled regex matching any known alias. Word-bounded, case-insensitive
 // so lowercase yaml phrasings like "(+money +legitimacy)" also iconize.
+// Only yields and concepts keep that leniency (see linkify): every other
+// entity is a proper name, and its lowercase form is usually ordinary English
+// ("each game", "make gold go farther", "should be mine").
 // Sorted longest-first so "Heavy Cavalry" beats "Cavalry".
 const aliasPattern: RegExp = (() => {
   const escaped = data.aliasIndex.map(a => a.alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
@@ -59,6 +62,9 @@ const aliasToEntity: Map<string, Entity> = (() => {
   return m;
 })();
 
+const exactAliases: Set<string> = new Set(data.aliasIndex.map(a => a.alias));
+const CASE_LENIENT_TYPES = new Set(['yield', 'concept']);
+
 export interface LinkedSegment {
   text: string;
   entity?: Entity;
@@ -73,10 +79,11 @@ export function linkify(text: string): LinkedSegment[] {
   aliasPattern.lastIndex = 0;
   let match: RegExpExecArray | null;
   while ((match = aliasPattern.exec(text)) !== null) {
+    const e = aliasToEntity.get(match[0].toLowerCase());
+    if (e && !CASE_LENIENT_TYPES.has(e.type) && !exactAliases.has(match[0])) continue;
     if (match.index > lastIdx) {
       segments.push({ text: text.slice(lastIdx, match.index) });
     }
-    const e = aliasToEntity.get(match[0].toLowerCase());
     segments.push({ text: match[0], entity: e });
     lastIdx = match.index + match[0].length;
   }
