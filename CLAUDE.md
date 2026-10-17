@@ -34,6 +34,13 @@ make check      scripts/check_links.py    → no broken internal links / unresol
 make contrast   scripts/audit_contrast.mjs→ WCAG AA text contrast on the built site (headless Chrome)
 ```
 
+Setup: `make install`. Python runs from a uv venv at `~/.venvs/owreference` (pinned
+3.14, `requirements.txt`) that the Makefile picks up as `$(PYTHON)`; a Homebrew Python
+upgrade once stripped PyYAML from bare `python3`, and `build_data.py` then silently
+dropped the yaml bonuses. The repo lives in Dropbox, so `scripts/dropbox_ignore.sh`
+(run by `make install` / `make build`) flags `node_modules`, `dist` and `.astro` as
+not synced; a synced `node_modules` fills with "foo 2" conflict copies.
+
 Per-patch flow: `make patch` (= sync art data audit changelog build check) → review CHANGELOG → `git push` → GH Actions deploys. New `build_*.py` outputs join the changelog automatically; new XML fields trip the audit until handled.
 
 ---

@@ -611,7 +611,7 @@ def build() -> dict:
     for e in deduped:
         if not e.get("scan", True):
             continue  # registered for explicit <Term> use, but never free-text scanned
-        for alias in {e["name"], *e["aliases"]}:
+        for alias in sorted({e["name"], *e["aliases"]}):  # set order varies per run
             if alias and len(alias) >= 2:
                 alias_pairs.append((alias, e["id"]))
     alias_pairs.sort(key=lambda p: -len(p[0]))
