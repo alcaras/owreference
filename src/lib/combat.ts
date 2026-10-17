@@ -28,7 +28,8 @@ export interface CombatUnit {
   id: string;
   name: string;
   slug: string;
-  iconSlug: string;
+  iconSlug: string;   // portrait (zPortraitName)
+  glyphSlug: string;  // map glyph (zIconName)
   strength: number;   // ×10 internal scale
   traits: string[];
   isMelee: boolean;

@@ -614,7 +614,13 @@ def main() -> int:
             "improvementObsoleteLabel": imp_name.get(imp_obsolete, "") if imp_obsolete else "",
             "techLabel": token_title(entry.findtext("TechPrereq") or "", "TECH_"),
             "source": source_label(dlc),
-            "iconSlug": (entry.findtext("zIconName") or zt).replace("UNIT_", "").lower(),
+            # Portrait art (icons/units/) follows zPortraitName; the white map
+            # glyph (icons/unit_glyphs/) follows zIconName. They differ for the
+            # Hanno Navigator and the Hindu/Buddhist Disciples, whose zIconName
+            # sprite is the glyph (InfoUnit.cs reads both fields).
+            "iconSlug": (entry.findtext("zPortraitName") or entry.findtext("zIconName")
+                         or zt).replace("UNIT_", "").lower(),
+            "glyphSlug": (entry.findtext("zIconName") or zt).replace("UNIT_", "").lower(),
             "techPrereq": entry.findtext("TechPrereq") or "",
             # Cumulative science to field the unit from a blank slate: full
             # tech-prereq closure; for culture-gated uniques, the min science
