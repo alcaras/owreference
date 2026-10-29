@@ -22,6 +22,7 @@ from humanize import (  # noqa: E402
     render_effect_player, render_effect_city, fmt_decimal, yield_name,
     _lookup_name,
 )
+from link_names import with_dlc  # noqa: E402
 try:  # registry backstop (used to de-dup curated trait scalars)
     import effects as _effects  # noqa: E402
 except ImportError:
@@ -46,13 +47,14 @@ def first_form(s: str | None) -> str:
 
 
 def load_text(filename: str) -> dict[str, str]:
-    """Read a text-*.xml, return {zType: en-US first form}."""
+    """Read a text-*.xml and its DLC siblings, return {zType: en-US first form}."""
     out: dict[str, str] = {}
-    for entry in parse(filename).findall("Entry"):
-        z = entry.findtext("zType")
-        en = entry.findtext("en-US")
-        if z and en:
-            out[z] = first_form(en)
+    for fn in with_dlc([filename]):
+        for entry in parse(fn).findall("Entry"):
+            z = entry.findtext("zType")
+            en = entry.findtext("en-US")
+            if z and en:
+                out[z] = first_form(en)
     return out
 
 

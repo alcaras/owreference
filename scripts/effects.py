@@ -21,6 +21,8 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from link_names import resolve_links
+
 _REG_PATH = Path(__file__).resolve().parent / "data" / "helptext_registry.json"
 REGISTRY: dict = json.loads(_REG_PATH.read_text()) if _REG_PATH.exists() else {}
 
@@ -39,18 +41,14 @@ _TEXT_FIELDS = {"Description", "ExtraHelp"}
 
 # Minimal copy of the game-string markup cleanup (humanize has the full
 # version; we can't import it — humanize imports us). link() resolves to
-# the token's name; icon() is an inline glyph and is dropped outright
+# the game's name for the token (link_names); icon() is an inline glyph and is dropped outright
 # (the surrounding text already carries the word, e.g. "icon(...)Legitimacy").
-_LINK_MARKUP_RE = re.compile(r"\{?(?:lowercase:)?link\(([A-Z0-9_]+)(?:,\d+)?\)\}?")
 _ICON_MARKUP_RE = re.compile(r"\{?icon\([A-Z0-9_]+(?:,\d+)?\)\}?")
 
 
 def _clean_text(s: str) -> str:
-    def repl(m: "re.Match[str]") -> str:
-        parts = m.group(1).split("_")
-        return " ".join(p.title() for p in (parts[1:] or parts))
     s = _ICON_MARKUP_RE.sub("", s.split("~")[0])
-    return _LINK_MARKUP_RE.sub(repl, s).strip()
+    return resolve_links(s).strip()
 
 # What the audit may count as covered by this module.
 HANDLED_FIELDS: dict[str, set[str]] = {

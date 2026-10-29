@@ -42,6 +42,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from link_names import with_dlc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -65,7 +66,7 @@ def load_text(*filenames: str) -> tuple[dict[str, str], dict[str, list[str]]]:
     """Returns ({key: first form}, {key: all ~-separated forms})."""
     first: dict[str, str] = {}
     forms: dict[str, list[str]] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue

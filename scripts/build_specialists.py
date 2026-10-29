@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import (  # noqa: E402
     load_xml_indexes, fmt_decimal, yield_name, render_effect_city,
 )
+from link_names import with_dlc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -68,7 +69,7 @@ OUT = ROOT / "src" / "data" / "specialists.json"
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue

@@ -31,6 +31,7 @@ from humanize import (  # noqa: E402
     render_effect_city_state_religion, render_effect_city_capital,
     fmt_decimal, yield_name,
 )
+from link_names import with_dlc  # noqa: E402
 
 
 def _nice_token(token: str) -> str:
@@ -259,7 +260,7 @@ def parse(name: str) -> ET.Element:
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue

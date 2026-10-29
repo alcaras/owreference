@@ -15,6 +15,8 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from link_names import with_dlc
+
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 PUBLIC = ROOT / "public" / "img"
@@ -33,14 +35,14 @@ def first_form(s: str | None) -> str:
 
 def text_lookup(filenames: list[str]) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         if not (XML_DIR / fn).exists():
             continue
         for entry in parse(fn).findall("Entry"):
             z = entry.findtext("zType") or ""
             en = first_form(entry.findtext("en-US"))
             if z and en:
-                out[z] = en
+                out.setdefault(z, en)
     return out
 
 
@@ -148,14 +150,17 @@ def build() -> dict:
         if not zt.startswith("NATION_"):
             continue
         gendered = entry.findtext("GenderedName") or ""
-        name = text_nation.get(gendered.replace("GENDERED_", ""), zt.replace("NATION_", "").title())
+        token_name = zt.replace("NATION_", "").title()
+        name = text_nation.get(gendered.replace("GENDERED_", ""), token_name)
         slug = zt.replace("NATION_", "").lower()
         entities.append({
             "id": zt,
             "slug": slug,
             "type": "nation",
             "name": name,
-            "aliases": [name],
+            # The game calls NATION_HITTITE "Hatti"; site and game text still
+            # say "Hittite", so keep the zType word linking too.
+            "aliases": [name] + ([token_name] if token_name != name else []),
             "page": f"nations/{slug}",   # dedicated detail page
             "icon": icon_url(f"crests/{slug}.png"),
         })

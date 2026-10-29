@@ -29,16 +29,17 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from link_names import game_name, resolve_links
+
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
 OCC_JSON = ROOT / "src" / "data" / "occurrences.json"
 
 _ICON_RE = re.compile(r"\{?icon\([A-Z0-9_]+(?:,\d+)?\)\}?")
-_LINK_RE = re.compile(r"\{?(?:lowercase:)?link\(([A-Z0-9_]+)(?:,\d+)?\)\}?")
 
 
 def _tok(token: str, prefix: str) -> str:
-    return token.replace(prefix, "", 1).replace("_", " ").title()
+    return game_name(token) or token.replace(prefix, "", 1).replace("_", " ").title()
 
 
 _NAME_KEYS: dict[str, str] | None = None
@@ -97,7 +98,7 @@ class Ctx:
         raw = next((t.get(k) for t in (self.text, all_text()) for k in keys if k and t.get(k)), "") or ""
         raw = raw.split("~")[0]
         raw = _ICON_RE.sub("", raw)
-        raw = _LINK_RE.sub(lambda m: _tok(m.group(1), m.group(1).split("_")[0] + "_"), raw).strip()
+        raw = resolve_links(raw).strip()
         return raw or _tok(token, prefix)
 
     def subj(self, k: int | str | None) -> str:

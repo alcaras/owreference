@@ -54,6 +54,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates, load_xml_indexes, render_bonus  # noqa: E402
+from link_names import with_dlc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -106,7 +107,7 @@ def index(name: str) -> dict[str, ET.Element]:
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue

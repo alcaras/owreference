@@ -32,6 +32,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import dlc as dlcmap  # noqa: E402  DLC names from additionalContent.xml
 from humanize import _strip_link_templates  # noqa: E402
+from link_names import with_dlc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -157,7 +158,7 @@ DLC_LABELS = dlcmap.dlc_by_content()  # derived; see scripts/dlc.py
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue

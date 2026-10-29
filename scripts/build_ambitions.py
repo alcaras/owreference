@@ -41,6 +41,7 @@ OUT = ROOT / "src" / "data" / "ambitions.json"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import load_xml_indexes, _first_form  # noqa: E402
+from link_names import resolve_links  # noqa: E402
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -65,6 +66,8 @@ def clean_text(s: str, resolver=None) -> str:
     """Strip the game's icon(...) / digit-bearing link(...) markup
     (plain link(...) is already handled by humanize._first_form) and
     collapse whitespace. `resolver` maps a raw token to a display name."""
+    if resolver is None:
+        s = resolve_links(s)  # the game's own names, in the link's form
     fix = resolver or _prettify
     s = _LINK_DIGIT_RE.sub(lambda m: fix(m.group(1)), s)
     s = _ICON_RE.sub(lambda m: fix(m.group(1)), s)

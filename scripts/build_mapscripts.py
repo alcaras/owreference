@@ -21,6 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
+from link_names import with_dlc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -59,7 +60,7 @@ def first(s: str | None) -> str:
 
 def load_text(*names: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for n in names:
+    for n in with_dlc(names):
         p = XML_DIR / n
         if not p.exists():
             continue

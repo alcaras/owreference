@@ -17,6 +17,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Callable
 
+from link_names import resolve_links, with_dlc
+
 # Registry-driven completeness backstop: fields the game's own help system
 # renders but the curated renderers below don't cover yet get a generic
 # line appended via effects.extra_lines(). See scripts/effects.py.
@@ -85,17 +87,11 @@ _LINK_RE = re.compile(r"\{?lowercase:link\(([A-Z0-9_]+)(?:,\d+)?\)\}?|link\(([A-
 
 
 def _strip_link_templates(s: str) -> str:
-    """The game's strings use {lowercase:link(TOKEN,2)} markup. Replace with
-    a title-cased rendering of the final word in TOKEN — e.g.
-    link(RELIGION_BUDDHISM) → Buddhism."""
-    def repl(m: "re.Match[str]") -> str:
-        token = m.group(1) or m.group(2) or ""
-        # Drop leading category (RELIGION_, CONCEPT_, etc.) — keep the rest
-        parts = token.split("_")
-        if len(parts) > 1:
-            parts = parts[1:]
-        return " ".join(p.title() for p in parts)
-    return _LINK_RE.sub(repl, s)
+    """The game's strings use {lowercase:link(TOKEN,2)} markup. Replace each
+    with the name the game shows (link_names.resolve_links): the entry's own
+    Name text in the N-th form, so link(UNIT_HITTITE_CHARIOT_1,2) → Heavy
+    Chariots, not the token's words."""
+    return resolve_links(s)
 
 
 def _first_form(s: str | None) -> str:
@@ -106,7 +102,7 @@ def _first_form(s: str | None) -> str:
 def load_text(xml_dir: Path, *filenames: str) -> dict[str, str]:
     """Build a {TEXT_KEY: en-US first form} map from any text-*.xml files."""
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = xml_dir / fn
         if not p.exists():
             continue
@@ -127,7 +123,7 @@ def world_religions(xml_dir: Path) -> list[tuple[str, str, dict]]:
     DLC adds members (Hinduism ships with Empires of the Indus).
 
     Returns (id, display name, quirks) in religion.xml order."""
-    text = load_text(xml_dir, "text-religion.xml", "text-religion-hittite.xml")
+    text = load_text(xml_dir, "text-religion.xml")
     out: list[tuple[str, str, dict]] = []
     for e in ET.parse(xml_dir / "religion.xml").getroot().findall("Entry"):
         rid = e.findtext("zType") or ""

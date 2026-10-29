@@ -437,6 +437,13 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   lacks (fix: `python3 scripts/extract_bonus_help_fields.py`, which adds entries,
   never removes) or if any populated bonus field renders no line. Its bonus glob is
   `bonus-event*.xml`; the old `bonus-event-*.xml` skipped `bonus-event.xml` itself.
+- **Names come from the game's text, never from the zType.** `link(TOKEN,N)` markup
+  resolves through `scripts/link_names.py` (the entry's `Name` text, N-th `~` form,
+  as `HelpLinkParser.GetHelpLink` does), and every text loader reads a file's DLC
+  siblings through `with_dlc()` (`text-unit.xml` + `text-unit-hittite.xml`). Title-
+  casing tokens looked right while zTypes matched names, then shipped "Hittite
+  Chariot 1" for the Heavy Chariot and "Library 3" for University. The game calls
+  NATION_HITTITE **Hatti**; "Hittite" stays an alias.
 - **Mods folder (`reference/XML/Mods/`) is excluded from the repo** to keep size down. The pipeline only reads from `reference/XML/Infos/`.
 - **`reference/Graphics/` and `reference/Source/`** are excluded too (binary game assets, Unity controllers).
 - **Cognomen tracker OCR — the OCR is reliable; don't blame Tesseract.** On a real F5 capture Tesseract.js read **every digit correctly** (17/17 scoring stats, zero number errors). What looks "garbled" is *gutter noise*, not bad text: bullet glyphs (●) become `e`/`eo`/`®`/`¢`, the left UI rail bleeds in as `J{`/`U`/`|` prefixes, and right-edge game-world text appends junk like `54 C`, `5 in`, `1 Is`. The fix was always in the **parser**, never the image. Don't add OpenCV.js / heavier preprocessing on a hunch — diagnose against a real screenshot first.

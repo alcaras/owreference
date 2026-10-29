@@ -19,6 +19,7 @@ from humanize import (  # noqa: E402
     load_xml_indexes, fmt_decimal, yield_name, condition_name,
 )
 from terrain_groups import load_groups, ref as terrain_ref  # noqa: E402
+from link_names import with_dlc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -36,7 +37,7 @@ def resolve_icon(ztype: str) -> str:
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue

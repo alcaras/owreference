@@ -27,6 +27,7 @@ from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, render_effect_unit,
     render_effect_player_scalars, render_nation_effects, _lookup_name,
 )
+from link_names import with_dlc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -47,7 +48,7 @@ def parse(name: str) -> ET.Element:
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue

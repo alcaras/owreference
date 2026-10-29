@@ -19,6 +19,7 @@ from humanize import (  # noqa: E402
     load_xml_indexes, render_effect_city, render_effect_unit, render_bonus,
     _lookup_name, fmt_decimal, _strip_link_templates,
 )
+from link_names import with_dlc  # noqa: E402
 
 
 def granted_traits(ec: ET.Element | None, indexes: dict) -> list[dict]:
@@ -137,7 +138,7 @@ def parse(name: str) -> ET.Element:
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue

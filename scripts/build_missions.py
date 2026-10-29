@@ -25,10 +25,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from humanize import _strip_link_templates  # noqa: E402
+from link_names import game_name, link_name  # noqa: E402
 import effects  # noqa: E402  registry backstop for bonus fields nothing else renders
 import event_bonus as evb  # noqa: E402  occurrences, nationwide changes, subject-aimed lines
 # Shared curation: readable SubjectCharacter labels + DLC display names.
 from build_mission_catalog import WHO_LABELS, DLC_LABELS  # noqa: E402
+from link_names import with_dlc  # noqa: E402
 
 
 # Event/option prose is full of runtime template vars the static site can't
@@ -47,10 +49,8 @@ _LINK_BARE_RE = re.compile(r"\blink\(([A-Z0-9_]+?)(?:\s*,\s*\d+)?\)")
 
 
 def _link_bare(m: "re.Match") -> str:
-    """bare link(MISSION_HOLD_COURT) → 'Hold Court' (drop the category prefix)."""
-    parts = m.group(1).split("_")
-    words = parts[1:] if len(parts) > 1 else parts
-    return " ".join(w.capitalize() for w in words)
+    """bare link(MISSION_HOLD_COURT) → 'Hold Court', the game's own name."""
+    return link_name(m.group(1))
 
 
 def _repl_token(m: "re.Match") -> str:
@@ -187,7 +187,7 @@ def parse(name: str) -> ET.Element:
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue
@@ -325,6 +325,13 @@ def pairs(e: ET.Element, tag: str) -> list[tuple[str, int]]:
 
 
 def _tok(token: str, *prefixes: str) -> str:
+    """The game's name for the token (GOAL_THREE_LIBRARY_3 → Three
+    Universities), else its words. Event options, stories and bonuses are
+    excluded: their "name" is a whole sentence, and callers try text first."""
+    if not token.startswith(("EVENTOPTION_", "EVENTSTORY_", "BONUS_")):
+        name = game_name(token)
+        if name:
+            return name
     for p in prefixes:
         token = token.replace(p, "", 1)
     return token.replace("_", " ").title()

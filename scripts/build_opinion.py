@@ -18,6 +18,7 @@ import json
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from link_names import with_dlc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -69,7 +70,7 @@ def parse(name: str) -> ET.Element:
 
 def load_text(*filenames: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    for fn in filenames:
+    for fn in with_dlc(filenames):
         p = XML_DIR / fn
         if not p.exists():
             continue
