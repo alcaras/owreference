@@ -1,0 +1,671 @@
+[
+  {
+    "brackets": [
+      {
+        "bracket": "FURIOUS",
+        "cityEffects": [
+          "-20% Civics",
+          "-20% Training",
+          "+50% Maintenance",
+          "Cannot hurry production",
+          "+10% Rebel Chance"
+        ],
+        "label": "Furious",
+        "range": "≤ -200",
+        "scalars": [],
+        "threshold": -200,
+        "unitEffects": [
+          "-20% Unit Strength"
+        ]
+      },
+      {
+        "bracket": "ANGRY",
+        "cityEffects": [
+          "-10% Civics",
+          "-10% Training",
+          "+20% Maintenance",
+          "+5% Rebel Chance"
+        ],
+        "label": "Angry",
+        "range": "-199 / -100",
+        "scalars": [],
+        "threshold": -100,
+        "unitEffects": [
+          "-10% Unit Strength"
+        ]
+      },
+      {
+        "bracket": "UPSET",
+        "cityEffects": [
+          "+10% Maintenance"
+        ],
+        "label": "Upset",
+        "range": "-99 / -1",
+        "scalars": [],
+        "threshold": -1,
+        "unitEffects": [
+          "-5% Unit Strength"
+        ]
+      },
+      {
+        "bracket": "CAUTIOUS",
+        "cityEffects": [],
+        "label": "Cautious",
+        "range": "0 / 99",
+        "scalars": [],
+        "threshold": 99,
+        "unitEffects": []
+      },
+      {
+        "bracket": "PLEASED",
+        "cityEffects": [
+          "-10% Maintenance"
+        ],
+        "label": "Pleased",
+        "range": "100 / 199",
+        "scalars": [],
+        "threshold": 199,
+        "unitEffects": [
+          "+5% Unit Strength"
+        ]
+      },
+      {
+        "bracket": "FRIENDLY",
+        "cityEffects": [
+          "-20% Maintenance"
+        ],
+        "label": "Friendly",
+        "range": "≥ 200",
+        "scalars": [],
+        "threshold": null,
+        "unitEffects": [
+          "+10% Unit Strength"
+        ]
+      }
+    ],
+    "kind": "Family",
+    "label": "Family"
+  },
+  {
+    "brackets": [
+      {
+        "bracket": "FURIOUS",
+        "cityEffects": [],
+        "label": "Furious",
+        "range": "≤ -200",
+        "scalars": [
+          {
+            "field": "iEndAlliancePercent",
+            "label": "End Alliance %",
+            "value": "+20%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+100%"
+          },
+          {
+            "field": "iRaidDistModifier",
+            "label": "Raid Distance",
+            "value": "-30%"
+          },
+          {
+            "field": "iMercenaryCostModifier",
+            "label": "Mercenary Cost",
+            "value": "+100%"
+          },
+          {
+            "field": "iSettleCostModifier",
+            "label": "Settle Cost",
+            "value": "+100%"
+          }
+        ],
+        "threshold": -200,
+        "unitEffects": []
+      },
+      {
+        "bracket": "ANGRY",
+        "cityEffects": [],
+        "label": "Angry",
+        "range": "-199 / -100",
+        "scalars": [
+          {
+            "field": "iEndAlliancePercent",
+            "label": "End Alliance %",
+            "value": "+15%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+20%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+80%"
+          },
+          {
+            "field": "iRaidDistModifier",
+            "label": "Raid Distance",
+            "value": "-20%"
+          },
+          {
+            "field": "iMercenaryCostModifier",
+            "label": "Mercenary Cost",
+            "value": "+50%"
+          },
+          {
+            "field": "iSettleCostModifier",
+            "label": "Settle Cost",
+            "value": "+50%"
+          }
+        ],
+        "threshold": -100,
+        "unitEffects": []
+      },
+      {
+        "bracket": "UPSET",
+        "cityEffects": [],
+        "label": "Upset",
+        "range": "-99 / -1",
+        "scalars": [
+          {
+            "field": "iEndAlliancePercent",
+            "label": "End Alliance %",
+            "value": "+10%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+40%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+60%"
+          },
+          {
+            "field": "iRaidDistModifier",
+            "label": "Raid Distance",
+            "value": "-10%"
+          },
+          {
+            "field": "iMercenaryCostModifier",
+            "label": "Mercenary Cost",
+            "value": "+25%"
+          },
+          {
+            "field": "iSettleCostModifier",
+            "label": "Settle Cost",
+            "value": "+25%"
+          }
+        ],
+        "threshold": -1,
+        "unitEffects": []
+      },
+      {
+        "bracket": "CAUTIOUS",
+        "cityEffects": [],
+        "label": "Cautious",
+        "range": "0 / 99",
+        "scalars": [
+          {
+            "field": "iEndAlliancePercent",
+            "label": "End Alliance %",
+            "value": "+5%"
+          },
+          {
+            "field": "iPeacePercent",
+            "label": "Peace %",
+            "value": "+10%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+60%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+40%"
+          }
+        ],
+        "threshold": 99,
+        "unitEffects": []
+      },
+      {
+        "bracket": "PLEASED",
+        "cityEffects": [],
+        "label": "Pleased",
+        "range": "100 / 199",
+        "scalars": [
+          {
+            "field": "iStartAlliancePercent",
+            "label": "Start Alliance %",
+            "value": "+10%"
+          },
+          {
+            "field": "iPeacePercent",
+            "label": "Peace %",
+            "value": "+20%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+80%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+20%"
+          },
+          {
+            "field": "iRaidDistModifier",
+            "label": "Raid Distance",
+            "value": "+20%"
+          },
+          {
+            "field": "iMercenaryCostModifier",
+            "label": "Mercenary Cost",
+            "value": "-10%"
+          },
+          {
+            "field": "iSettleCostModifier",
+            "label": "Settle Cost",
+            "value": "-10%"
+          }
+        ],
+        "threshold": 199,
+        "unitEffects": []
+      },
+      {
+        "bracket": "FRIENDLY",
+        "cityEffects": [],
+        "label": "Friendly",
+        "range": "≥ 200",
+        "scalars": [
+          {
+            "field": "iStartAlliancePercent",
+            "label": "Start Alliance %",
+            "value": "+20%"
+          },
+          {
+            "field": "iPeacePercent",
+            "label": "Peace %",
+            "value": "+30%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+100%"
+          },
+          {
+            "field": "iRaidDistModifier",
+            "label": "Raid Distance",
+            "value": "+40%"
+          },
+          {
+            "field": "iMercenaryCostModifier",
+            "label": "Mercenary Cost",
+            "value": "-25%"
+          },
+          {
+            "field": "iSettleCostModifier",
+            "label": "Settle Cost",
+            "value": "-25%"
+          }
+        ],
+        "threshold": null,
+        "unitEffects": []
+      }
+    ],
+    "kind": "Tribe",
+    "label": "Tribe"
+  },
+  {
+    "brackets": [
+      {
+        "bracket": "FURIOUS",
+        "cityEffects": [],
+        "label": "Furious",
+        "range": "≤ -200",
+        "scalars": [
+          {
+            "field": "iBirthModifier",
+            "label": "Birth %",
+            "value": "-100%"
+          },
+          {
+            "field": "iMissionCostModifier",
+            "label": "Mission Cost",
+            "value": "+100%"
+          },
+          {
+            "field": "iRateModifier",
+            "label": "Job Yield %",
+            "value": "-200%"
+          },
+          {
+            "field": "iStrengthModifier",
+            "label": "Unit Strength %",
+            "value": "-20%"
+          }
+        ],
+        "threshold": -200,
+        "unitEffects": []
+      },
+      {
+        "bracket": "ANGRY",
+        "cityEffects": [],
+        "label": "Angry",
+        "range": "-199 / -100",
+        "scalars": [
+          {
+            "field": "iBirthModifier",
+            "label": "Birth %",
+            "value": "-50%"
+          },
+          {
+            "field": "iMissionCostModifier",
+            "label": "Mission Cost",
+            "value": "+50%"
+          },
+          {
+            "field": "iRateModifier",
+            "label": "Job Yield %",
+            "value": "-100%"
+          },
+          {
+            "field": "iStrengthModifier",
+            "label": "Unit Strength %",
+            "value": "-10%"
+          }
+        ],
+        "threshold": -100,
+        "unitEffects": []
+      },
+      {
+        "bracket": "UPSET",
+        "cityEffects": [],
+        "label": "Upset",
+        "range": "-99 / -1",
+        "scalars": [
+          {
+            "field": "iBirthModifier",
+            "label": "Birth %",
+            "value": "-25%"
+          },
+          {
+            "field": "iMissionCostModifier",
+            "label": "Mission Cost",
+            "value": "+25%"
+          },
+          {
+            "field": "iRateModifier",
+            "label": "Job Yield %",
+            "value": "-50%"
+          },
+          {
+            "field": "iStrengthModifier",
+            "label": "Unit Strength %",
+            "value": "-5%"
+          }
+        ],
+        "threshold": -1,
+        "unitEffects": []
+      },
+      {
+        "bracket": "CAUTIOUS",
+        "cityEffects": [],
+        "label": "Cautious",
+        "range": "0 / 99",
+        "scalars": [],
+        "threshold": 99,
+        "unitEffects": []
+      },
+      {
+        "bracket": "PLEASED",
+        "cityEffects": [],
+        "label": "Pleased",
+        "range": "100 / 199",
+        "scalars": [
+          {
+            "field": "iBirthModifier",
+            "label": "Birth %",
+            "value": "+25%"
+          },
+          {
+            "field": "iMissionCostModifier",
+            "label": "Mission Cost",
+            "value": "-25%"
+          },
+          {
+            "field": "iRateModifier",
+            "label": "Job Yield %",
+            "value": "+50%"
+          },
+          {
+            "field": "iStrengthModifier",
+            "label": "Unit Strength %",
+            "value": "+5%"
+          }
+        ],
+        "threshold": 199,
+        "unitEffects": []
+      },
+      {
+        "bracket": "FRIENDLY",
+        "cityEffects": [],
+        "label": "Friendly",
+        "range": "≥ 200",
+        "scalars": [
+          {
+            "field": "iBirthModifier",
+            "label": "Birth %",
+            "value": "+50%"
+          },
+          {
+            "field": "iMissionCostModifier",
+            "label": "Mission Cost",
+            "value": "-50%"
+          },
+          {
+            "field": "iRateModifier",
+            "label": "Job Yield %",
+            "value": "+100%"
+          },
+          {
+            "field": "iStrengthModifier",
+            "label": "Unit Strength %",
+            "value": "+10%"
+          }
+        ],
+        "threshold": null,
+        "unitEffects": []
+      }
+    ],
+    "kind": "Character",
+    "label": "Character"
+  },
+  {
+    "brackets": [
+      {
+        "bracket": "FURIOUS",
+        "cityEffects": [],
+        "label": "Furious",
+        "range": "≤ -200",
+        "scalars": [
+          {
+            "field": "iEndAlliancePercent",
+            "label": "End Alliance %",
+            "value": "+50%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+60%"
+          },
+          {
+            "field": "bDeclareWar",
+            "label": "Can Declare War",
+            "value": "Yes"
+          }
+        ],
+        "threshold": -200,
+        "unitEffects": []
+      },
+      {
+        "bracket": "ANGRY",
+        "cityEffects": [],
+        "label": "Angry",
+        "range": "-199 / -100",
+        "scalars": [
+          {
+            "field": "iEndAlliancePercent",
+            "label": "End Alliance %",
+            "value": "+30%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+10%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+40%"
+          },
+          {
+            "field": "bDeclareWar",
+            "label": "Can Declare War",
+            "value": "Yes"
+          }
+        ],
+        "threshold": -100,
+        "unitEffects": []
+      },
+      {
+        "bracket": "UPSET",
+        "cityEffects": [],
+        "label": "Upset",
+        "range": "-99 / -1",
+        "scalars": [
+          {
+            "field": "iEndAlliancePercent",
+            "label": "End Alliance %",
+            "value": "+15%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+20%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+30%"
+          },
+          {
+            "field": "bDeclareWar",
+            "label": "Can Declare War",
+            "value": "Yes"
+          }
+        ],
+        "threshold": -1,
+        "unitEffects": []
+      },
+      {
+        "bracket": "CAUTIOUS",
+        "cityEffects": [],
+        "label": "Cautious",
+        "range": "0 / 99",
+        "scalars": [
+          {
+            "field": "iEndAlliancePercent",
+            "label": "End Alliance %",
+            "value": "+5%"
+          },
+          {
+            "field": "iPeacePercent",
+            "label": "Peace %",
+            "value": "+10%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+30%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+20%"
+          },
+          {
+            "field": "bDeclareWar",
+            "label": "Can Declare War",
+            "value": "Yes"
+          }
+        ],
+        "threshold": 99,
+        "unitEffects": []
+      },
+      {
+        "bracket": "PLEASED",
+        "cityEffects": [],
+        "label": "Pleased",
+        "range": "100 / 199",
+        "scalars": [
+          {
+            "field": "iStartAlliancePercent",
+            "label": "Start Alliance %",
+            "value": "+15%"
+          },
+          {
+            "field": "iPeacePercent",
+            "label": "Peace %",
+            "value": "+20%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+40%"
+          },
+          {
+            "field": "iWarPercent",
+            "label": "War %",
+            "value": "+10%"
+          }
+        ],
+        "threshold": 199,
+        "unitEffects": []
+      },
+      {
+        "bracket": "FRIENDLY",
+        "cityEffects": [],
+        "label": "Friendly",
+        "range": "≥ 200",
+        "scalars": [
+          {
+            "field": "iStartAlliancePercent",
+            "label": "Start Alliance %",
+            "value": "+30%"
+          },
+          {
+            "field": "iPeacePercent",
+            "label": "Peace %",
+            "value": "+30%"
+          },
+          {
+            "field": "iTrucePercent",
+            "label": "Truce %",
+            "value": "+50%"
+          }
+        ],
+        "threshold": null,
+        "unitEffects": []
+      }
+    ],
+    "kind": "Player",
+    "label": "Player"
+  }
+]

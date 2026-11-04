@@ -24,6 +24,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from link_names import text_files
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -33,7 +34,7 @@ OUT = ROOT / "src" / "data" / "concepts.json"
 def load_full_text_index() -> dict[str, str]:
     """{TEXT_KEY: raw en-US} across every text-*.xml (first definition wins)."""
     out: dict[str, str] = {}
-    for p in sorted(XML_DIR.glob("text-*.xml")):
+    for p in text_files():
         try:
             root = ET.parse(p).getroot()
         except ET.ParseError:
@@ -41,7 +42,7 @@ def load_full_text_index() -> dict[str, str]:
         for e in root.findall("Entry"):
             k = e.findtext("zType") or ""
             v = e.findtext("en-US")
-            if k and v is not None and k not in out:
+            if k and v is not None:
                 out[k] = v
     return out
 

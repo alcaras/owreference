@@ -43,10 +43,10 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Begin project: Repair"
+                        "text": "Begin project: Repair Damage"
                       },
                       {
-                        "text": "Begin project: Repair"
+                        "text": "Begin project: Repair Damage"
                       }
                     ],
                     "weight": null
@@ -367,6 +367,10 @@
                       {
                         "memory": "MEMORYTRIBE_OFFER",
                         "text": "Remembered: Tribe Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The tribe invade"
                       }
                     ],
                     "weight": null
@@ -412,13 +416,19 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "25% chance next turn: becomes Strict"
+                      },
+                      {
                         "text": "Gain trait: Slighted",
                         "tip": [
                           "-100 base opinion of this character",
                           "Removed as leader",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Slighted — trait"
+                        "tipTitle": "Slighted trait"
+                      },
+                      {
+                        "text": "Leave Unit"
                       }
                     ],
                     "weight": null
@@ -534,7 +544,7 @@
                   {
                     "label": "Warrior / Brave / Valiant",
                     "tip": [
-                      "The leader must have one of: Warrior (a cognomen — an earned leader title); Brave (a cognomen — an earned leader title); Valiant (a cognomen — an earned leader title)"
+                      "The leader must have one of: Warrior (a cognomen, an earned leader title); Brave (a cognomen, an earned leader title); Valiant (a cognomen, an earned leader title)"
                     ]
                   }
                 ],
@@ -570,7 +580,14 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "The unit gains Tracker"
+                      },
+                      {
+                        "text": "The unit gains Ranger"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -613,6 +630,12 @@
                       },
                       {
                         "text": "+20 XP to the character"
+                      },
+                      {
+                        "text": "The unit gains Tracker"
+                      },
+                      {
+                        "text": "The unit gains Ranger"
                       }
                     ],
                     "weight": null
@@ -672,6 +695,10 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "kind": "nationwide",
+                        "text": "Adopts the event's religion as state religion"
+                      },
                       {
                         "base": -60,
                         "per": -15,
@@ -848,6 +875,9 @@
                         "per": 0,
                         "text": "-5 Orders",
                         "yield": "orders"
+                      },
+                      {
+                        "text": "Acquire random Technology"
                       }
                     ],
                     "weight": null
@@ -973,14 +1003,17 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Drunk — trait"
+                        "tipTitle": "Drunk trait"
                       },
                       {
                         "text": "Gain trait: Ill",
                         "tip": [
                           "Removed as leader"
                         ],
-                        "tipTitle": "Ill — trait"
+                        "tipTitle": "Ill trait"
+                      },
+                      {
+                        "text": "-10 HP to the unit"
                       }
                     ],
                     "weight": null
@@ -1047,7 +1080,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Inspiring — trait"
+                        "tipTitle": "Inspiring trait"
                       }
                     ],
                     "weight": null
@@ -1313,6 +1346,9 @@
                     "rewards": [
                       {
                         "text": "+20 XP to the character"
+                      },
+                      {
+                        "text": "Send the resource to your family as a luxury"
                       }
                     ],
                     "weight": null
@@ -1353,6 +1389,9 @@
                         "memory": "MEMORYFAMILY_SACKED_SCIENTIST",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Sacked irresponsible scientist (+40 opinion for 20 turns)"
+                      },
+                      {
+                        "text": "Leaves Court"
                       }
                     ],
                     "weight": null
@@ -1499,7 +1538,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Inspiring — trait"
+                        "tipTitle": "Inspiring trait"
                       },
                       {
                         "text": "Begin project: National Holiday"
@@ -1640,7 +1679,7 @@
                         "tip": [
                           "-100 base opinion of this character"
                         ],
-                        "tipTitle": "Excluded from Succession — trait"
+                        "tipTitle": "Excluded from Succession trait"
                       },
                       {
                         "text": "Gain trait: Slighted",
@@ -1649,7 +1688,7 @@
                           "Removed as leader",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Slighted — trait"
+                        "tipTitle": "Slighted trait"
                       }
                     ],
                     "weight": null
@@ -2410,11 +2449,11 @@
                       {
                         "text": "Gain trait: Famous",
                         "tip": [
-                          "As leader: +40 Opinion Family",
+                          "As leader: +40 Family Opinions",
                           "As governor: -25% Specialist Goods Costs",
                           "+1 Charisma"
                         ],
-                        "tipTitle": "Famous — trait"
+                        "tipTitle": "Famous trait"
                       }
                     ],
                     "weight": null
@@ -3563,7 +3602,7 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Progress ambition: Professional Army"
+                        "text": "Progress ambition: Enact Professional Army"
                       },
                       {
                         "base": 40,
@@ -3606,7 +3645,7 @@
                         "yield": "money"
                       },
                       {
-                        "text": "Begin project: Festival 2"
+                        "text": "Begin project: Festival II"
                       }
                     ],
                     "weight": null
@@ -3707,7 +3746,7 @@
                   "gates": []
                 },
                 "requirements": [],
-                "text": "Appoint [character] to the position of Minister right away. Spare no expense!"
+                "text": "Appoint [character] to the position of Court Minister right away. Spare no expense!"
               },
               {
                 "id": "EVENTOPTION_HOLD_COURT_NEW_COURTIER_OPTION_1",
@@ -4011,7 +4050,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Exiled — trait"
+                        "tipTitle": "Exiled trait"
                       },
                       {
                         "text": "Leader relationship: Estranged From"
@@ -4470,7 +4509,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Add Improvement: Library"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -4523,7 +4566,7 @@
                           "Removed as leader",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Incubated — trait"
+                        "tipTitle": "Incubated trait"
                       }
                     ],
                     "weight": null
@@ -4559,7 +4602,7 @@
                 "tip": [
                   "Cannot hold a job"
                 ],
-                "tipTitle": "Fugitive — trait"
+                "tipTitle": "Fugitive trait"
               }
             ],
             "id": "EVENTSTORY_STEAL_SELLING_SECRETS",
@@ -4572,7 +4615,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Acquire random Technology"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -4692,7 +4739,11 @@
             "conditions": [
               "High Wisdom"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "Acquire random Technology"
+              }
+            ],
             "id": "EVENTSTORY_STEAL_PLAYER_DISCOVERY",
             "minTurns": null,
             "name": "[rival] Discovery",
@@ -4810,6 +4861,11 @@
             "scope": "aiOtherYieldsPer",
             "value": 10,
             "yield": "science"
+          },
+          {
+            "label": "Gain from the target: +30 Science",
+            "scope": "Special",
+            "value": null
           }
         ],
         "weight": 3
@@ -4835,6 +4891,11 @@
           },
           {
             "label": "Remembered: Stole Research (-40 opinion for 40 turns)",
+            "scope": "Special",
+            "value": null
+          },
+          {
+            "label": "Gain from the target: +30 Science",
             "scope": "Special",
             "value": null
           }
@@ -4942,7 +5003,7 @@
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Fugitive — trait"
+                        "tipTitle": "Fugitive trait"
                       },
                       {
                         "text": "The character is killed"
@@ -4981,7 +5042,14 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your family head joins the council as Chancellor"
+                      },
+                      {
+                        "text": "Your character joins the council as Ambassador"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -5029,7 +5097,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "text": "+4 Legitimacy"
@@ -5154,10 +5222,10 @@
                         "text": "Leader relationship: Assassinated By"
                       },
                       {
-                        "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                        "text": "Steam achievement (if the target is an heir): Future Regicide"
                       },
                       {
-                        "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                        "text": "Steam achievement (if the target leads a rival nation): Regicide"
                       },
                       {
                         "memory": "MEMORYPLAYER_ASSASSINATION_EXPOSED",
@@ -5240,7 +5308,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
@@ -5339,7 +5407,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on their heir (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -5587,7 +5659,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on their heir"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -5901,7 +5977,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Humble — trait"
+                        "tipTitle": "Humble trait"
                       }
                     ],
                     "weight": null
@@ -5981,7 +6057,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Free theology: the event's theology"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -6169,6 +6249,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Influenced By"
+                      },
+                      {
+                        "text": "Tribute to the tribe: 50 Iron, 10 Iron per our city"
                       }
                     ],
                     "weight": null
@@ -6215,6 +6298,10 @@
                       {
                         "memory": "MEMORYTRIBE_OFFER",
                         "text": "Remembered: Tribe Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The tribe invade"
                       }
                     ],
                     "weight": null
@@ -6319,7 +6406,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your leader: no longer Disappointed With your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -6361,7 +6452,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your leader: no longer Estranged From your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -6403,7 +6498,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your leader: no longer Vengeful Against your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -6450,12 +6549,15 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Your leader: no longer Estranged From your leader's spouse"
+                      },
+                      {
                         "text": "Gain trait: Loyal",
                         "tip": [
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Loyal — trait"
+                        "tipTitle": "Loyal trait"
                       }
                     ],
                     "weight": null
@@ -6500,7 +6602,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Debauched — trait"
+                        "tipTitle": "Debauched trait"
                       },
                       {
                         "text": "+2 Charisma"
@@ -6542,7 +6644,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Romantic — trait"
+                        "tipTitle": "Romantic trait"
                       }
                     ],
                     "weight": null
@@ -6941,7 +7043,10 @@
                           "+1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ruthless — trait"
+                        "tipTitle": "Ruthless trait"
+                      },
+                      {
+                        "text": "Your character joins the council as Ambassador"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
@@ -6998,7 +7103,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Loyal — trait"
+                        "tipTitle": "Loyal trait"
                       },
                       {
                         "text": "Leader relationship: Vengeful Against"
@@ -7057,7 +7162,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       },
                       {
                         "text": "Leader relationship: Conspiring With"
@@ -7126,7 +7231,10 @@
                           "+1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ruthless — trait"
+                        "tipTitle": "Ruthless trait"
+                      },
+                      {
+                        "text": "Your character joins the council as Ambassador"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
@@ -7183,7 +7291,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Loyal — trait"
+                        "tipTitle": "Loyal trait"
                       },
                       {
                         "text": "Leader relationship: Vengeful Against"
@@ -7242,7 +7350,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       },
                       {
                         "text": "Leader relationship: Conspiring With"
@@ -7311,7 +7419,10 @@
                           "+1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ruthless — trait"
+                        "tipTitle": "Ruthless trait"
+                      },
+                      {
+                        "text": "Your character joins the council as Chancellor"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
@@ -7368,7 +7479,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Loyal — trait"
+                        "tipTitle": "Loyal trait"
                       },
                       {
                         "text": "Leader relationship: Vengeful Against"
@@ -7427,7 +7538,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       },
                       {
                         "text": "Leader relationship: Conspiring With"
@@ -7657,7 +7768,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Fierce — trait"
+                        "tipTitle": "Fierce trait"
                       },
                       {
                         "text": "-1 Discipline"
@@ -7698,7 +7809,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Humble — trait"
+                        "tipTitle": "Humble trait"
                       }
                     ],
                     "weight": null
@@ -7880,7 +7991,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your courtier joins the nation of the rival nation"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -8012,7 +8127,7 @@
                           "+1 Courage",
                           "-40 base opinion of this character"
                         ],
-                        "tipTitle": "Proud — trait"
+                        "tipTitle": "Proud trait"
                       }
                     ],
                     "weight": null
@@ -8246,7 +8361,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Bold — trait"
+                        "tipTitle": "Bold trait"
                       }
                     ],
                     "weight": null
@@ -8446,7 +8561,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Affable — trait"
+                        "tipTitle": "Affable trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -8539,7 +8654,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Eloquent — trait"
+                        "tipTitle": "Eloquent trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -8632,7 +8747,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Warlike — trait"
+                        "tipTitle": "Warlike trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -8725,7 +8840,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Inspiring — trait"
+                        "tipTitle": "Inspiring trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -8818,7 +8933,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Intelligent — trait"
+                        "tipTitle": "Intelligent trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -8911,7 +9026,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Prosperous — trait"
+                        "tipTitle": "Prosperous trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9004,7 +9119,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Frugal — trait"
+                        "tipTitle": "Frugal trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9097,7 +9212,7 @@
                           "+1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Righteous — trait"
+                        "tipTitle": "Righteous trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9190,7 +9305,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cruel — trait"
+                        "tipTitle": "Cruel trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9283,7 +9398,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Intolerant — trait"
+                        "tipTitle": "Intolerant trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9376,7 +9491,7 @@
                           "-1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Slothful — trait"
+                        "tipTitle": "Slothful trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9469,7 +9584,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Uncouth — trait"
+                        "tipTitle": "Uncouth trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9562,7 +9677,7 @@
                           "-1 Wisdom",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Foolish — trait"
+                        "tipTitle": "Foolish trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9655,7 +9770,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Extravagant — trait"
+                        "tipTitle": "Extravagant trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9748,7 +9863,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Corrupt — trait"
+                        "tipTitle": "Corrupt trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9842,7 +9957,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Debauched — trait"
+                        "tipTitle": "Debauched trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -9935,7 +10050,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Robust — trait"
+                        "tipTitle": "Robust trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10026,7 +10141,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Vigilant — trait"
+                        "tipTitle": "Vigilant trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10119,7 +10234,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Strict — trait"
+                        "tipTitle": "Strict trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10212,7 +10327,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Equestrian — trait"
+                        "tipTitle": "Equestrian trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10307,7 +10422,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Carpenter — trait"
+                        "tipTitle": "Carpenter trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10402,7 +10517,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Pathfinder — trait"
+                        "tipTitle": "Pathfinder trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10497,7 +10612,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cultivator — trait"
+                        "tipTitle": "Cultivator trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10592,7 +10707,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Naturalist — trait"
+                        "tipTitle": "Naturalist trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10687,7 +10802,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Delver — trait"
+                        "tipTitle": "Delver trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10780,7 +10895,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10874,7 +10989,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Tracker — trait"
+                        "tipTitle": "Tracker trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -10967,7 +11082,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Swift — trait"
+                        "tipTitle": "Swift trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11060,7 +11175,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Besieger — trait"
+                        "tipTitle": "Besieger trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11153,7 +11268,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Tough — trait"
+                        "tipTitle": "Tough trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11246,7 +11361,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Bloodthirsty — trait"
+                        "tipTitle": "Bloodthirsty trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11339,7 +11454,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Heckler — trait"
+                        "tipTitle": "Heckler trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11432,7 +11547,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Herbalist — trait"
+                        "tipTitle": "Herbalist trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11525,7 +11640,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Steadfast — trait"
+                        "tipTitle": "Steadfast trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11618,7 +11733,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Highlander — trait"
+                        "tipTitle": "Highlander trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11713,7 +11828,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ranger — trait"
+                        "tipTitle": "Ranger trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11806,7 +11921,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Brave — trait"
+                        "tipTitle": "Brave trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11899,7 +12014,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Shieldbearer — trait"
+                        "tipTitle": "Shieldbearer trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -11992,7 +12107,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Fierce — trait"
+                        "tipTitle": "Fierce trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12085,7 +12200,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Horsebane — trait"
+                        "tipTitle": "Horsebane trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12179,7 +12294,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Engineer — trait"
+                        "tipTitle": "Engineer trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12270,7 +12385,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Loyal — trait"
+                        "tipTitle": "Loyal trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12361,7 +12476,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Bold — trait"
+                        "tipTitle": "Bold trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12452,7 +12567,7 @@
                           "-1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Timid — trait"
+                        "tipTitle": "Timid trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12543,7 +12658,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Gracious — trait"
+                        "tipTitle": "Gracious trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12634,7 +12749,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Greedy — trait"
+                        "tipTitle": "Greedy trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12725,7 +12840,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Romantic — trait"
+                        "tipTitle": "Romantic trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12816,7 +12931,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Bitter — trait"
+                        "tipTitle": "Bitter trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12907,7 +13022,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Educated — trait"
+                        "tipTitle": "Educated trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -12998,7 +13113,7 @@
                           "-1 Wisdom",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Superstitious — trait"
+                        "tipTitle": "Superstitious trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13089,7 +13204,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Compassionate — trait"
+                        "tipTitle": "Compassionate trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13180,7 +13295,7 @@
                           "+1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ruthless — trait"
+                        "tipTitle": "Ruthless trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13272,7 +13387,7 @@
                           "+1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Pious — trait"
+                        "tipTitle": "Pious trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13364,7 +13479,7 @@
                           "+1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Wanton — trait"
+                        "tipTitle": "Wanton trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13455,7 +13570,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Humble — trait"
+                        "tipTitle": "Humble trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13546,7 +13661,7 @@
                           "+1 Courage",
                           "-40 base opinion of this character"
                         ],
-                        "tipTitle": "Proud — trait"
+                        "tipTitle": "Proud trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13723,7 +13838,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Spoiled — trait"
+                        "tipTitle": "Spoiled trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13814,7 +13929,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Witty — trait"
+                        "tipTitle": "Witty trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -13906,7 +14021,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Drunk — trait"
+                        "tipTitle": "Drunk trait"
                       },
                       {
                         "text": "Leader relationship: Owes Favor To"
@@ -14169,7 +14284,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "text": "Gain trait: Timid",
@@ -14177,7 +14292,7 @@
                           "-1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Timid — trait"
+                        "tipTitle": "Timid trait"
                       }
                     ],
                     "weight": null
@@ -14219,14 +14334,14 @@
                         "tip": [
                           "Removed as leader"
                         ],
-                        "tipTitle": "Wounded — trait"
+                        "tipTitle": "Wounded trait"
                       },
                       {
                         "text": "Gain trait: Wounded",
                         "tip": [
                           "Removed as leader"
                         ],
-                        "tipTitle": "Wounded — trait"
+                        "tipTitle": "Wounded trait"
                       }
                     ],
                     "weight": null
@@ -14287,10 +14402,13 @@
                           "Removed as leader",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Slighted — trait"
+                        "tipTitle": "Slighted trait"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
+                      },
+                      {
+                        "text": "Your character becomes governor of your city"
                       }
                     ],
                     "weight": null
@@ -14369,7 +14487,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Affable — trait"
+                        "tipTitle": "Affable trait"
                       }
                     ],
                     "weight": null
@@ -14525,7 +14643,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Frugal — trait"
+                        "tipTitle": "Frugal trait"
                       },
                       {
                         "text": "Leader relationship: Vengeful Against"
@@ -14591,6 +14709,9 @@
                         "text": "Leader relationship: Influenced By"
                       },
                       {
+                        "text": "Archetype becomes Zealot"
+                      },
+                      {
                         "text": "Converts to the target religion"
                       }
                     ],
@@ -14645,7 +14766,7 @@
                           "+1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Pious — trait"
+                        "tipTitle": "Pious trait"
                       },
                       {
                         "text": "Converts to the target religion"
@@ -14787,6 +14908,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Endeared To"
+                      },
+                      {
+                        "text": "Your leader gains the trait"
                       }
                     ],
                     "weight": null
@@ -14971,7 +15095,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       }
                     ],
                     "weight": null
@@ -15007,10 +15131,10 @@
                         "text": "Leader relationship: Assassinated By"
                       },
                       {
-                        "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                        "text": "Steam achievement (if the target is an heir): Future Regicide"
                       },
                       {
-                        "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                        "text": "Steam achievement (if the target leads a rival nation): Regicide"
                       },
                       {
                         "memory": "MEMORYPLAYER_ASSASSINATION_EXPOSED",
@@ -15207,7 +15331,11 @@
             "conditions": [
               "Adult"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "The rival nation acquires the tech"
+              }
+            ],
             "id": "EVENTSTORY_TECH_INFLUENCE_OF_IDEAS",
             "minTurns": null,
             "name": "Influential Ideas",
@@ -15225,7 +15353,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       }
                     ],
                     "weight": null
@@ -15262,7 +15390,7 @@
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Fugitive — trait"
+                        "tipTitle": "Fugitive trait"
                       }
                     ],
                     "weight": null
@@ -15837,6 +15965,9 @@
                         "per": -35,
                         "text": "-100 Food (-35/city)",
                         "yield": "food"
+                      },
+                      {
+                        "text": "Archetype becomes Diplomat"
                       }
                     ],
                     "weight": null
@@ -16082,7 +16213,14 @@
               "Non Successor",
               "Religion"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "Your leader's child: In Love With the character"
+              },
+              {
+                "text": "The character: In Love With your leader's child"
+              }
+            ],
             "id": "EVENTSTORY_INTERCESSION_ELOPEMENT",
             "minTurns": null,
             "name": "Intercessional Elopement",
@@ -16100,7 +16238,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "text": "Leader relationship: Vengeful Against"
@@ -16204,7 +16342,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Strict — trait"
+                        "tipTitle": "Strict trait"
                       }
                     ],
                     "weight": null
@@ -16259,6 +16397,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "Peace with the rival nation"
                       },
                       {
                         "memory": "MEMORYFAMILY_ACCEPTED_TRUCE",
@@ -16441,7 +16583,7 @@
                           "+1 Courage",
                           "-40 base opinion of this character"
                         ],
-                        "tipTitle": "Proud — trait"
+                        "tipTitle": "Proud trait"
                       }
                     ],
                     "weight": null
@@ -16498,16 +16640,19 @@
                         "text": "Leader relationship: Influenced By"
                       },
                       {
+                        "text": "The character becomes head of the religion"
+                      },
+                      {
                         "text": "The character is killed"
                       },
                       {
                         "text": "Leader relationship: Assassinated By"
                       },
                       {
-                        "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                        "text": "Steam achievement (if the target is an heir): Future Regicide"
                       },
                       {
-                        "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                        "text": "Steam achievement (if the target leads a rival nation): Regicide"
                       },
                       {
                         "memory": "MEMORYPLAYER_ASSASSINATION_EXPOSED",
@@ -16615,7 +16760,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on the character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -16844,6 +16993,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Interceded For"
+                      },
+                      {
+                        "text": "+1 Disciples of the religion"
                       }
                     ],
                     "weight": null
@@ -18001,7 +18153,7 @@
                         "text": "Leader relationship: Disappointed With"
                       },
                       {
-                        "text": "Progress ambition: Tyranny"
+                        "text": "Progress ambition: Enact Tyranny"
                       },
                       {
                         "memory": "MEMORYPLAYER_RECENT_AMBITION",
@@ -18189,7 +18341,7 @@
                 "tip": [
                   "Removed as leader"
                 ],
-                "tipTitle": "Wounded — trait"
+                "tipTitle": "Wounded trait"
               }
             ],
             "id": "EVENTSTORY_INTERCESSION_DUEL",
@@ -18252,7 +18404,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Exiled — trait"
+                        "tipTitle": "Exiled trait"
                       },
                       {
                         "memory": "MEMORYFAMILY_DUEL_EXILE",
@@ -18663,7 +18815,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Exiled — trait"
+                        "tipTitle": "Exiled trait"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
@@ -18845,7 +18997,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your leader: In Love With your family head"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -19091,7 +19247,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Strict — trait"
+                        "tipTitle": "Strict trait"
                       }
                     ],
                     "weight": null
@@ -19178,7 +19334,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Gracious — trait"
+                        "tipTitle": "Gracious trait"
                       }
                     ],
                     "weight": null
@@ -19233,6 +19389,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Influenced By"
+                      },
+                      {
+                        "text": "Carries out Assassinate on your family head"
                       }
                     ],
                     "weight": null
@@ -19317,7 +19476,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
@@ -19966,7 +20125,7 @@
                           "+1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Pious — trait"
+                        "tipTitle": "Pious trait"
                       },
                       {
                         "text": "Leader relationship: Disappointed With"
@@ -20256,7 +20415,7 @@
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Ascetic — trait"
+                        "tipTitle": "Ascetic trait"
                       }
                     ],
                     "weight": null
@@ -21286,6 +21445,9 @@
                         "per": -15,
                         "text": "-60 Civics (-15/city)",
                         "yield": "civics"
+                      },
+                      {
+                        "text": "The religion spreads to your city"
                       }
                     ],
                     "weight": null
@@ -21354,7 +21516,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "The religion spreads to your city"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -21925,6 +22091,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "The religion spreads to your city"
+                      },
+                      {
                         "base": -160,
                         "per": -40,
                         "text": "-160 Money (-40/city)",
@@ -22251,7 +22420,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Archetype becomes Zealot"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -22285,7 +22458,7 @@
                           "+1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Pious — trait"
+                        "tipTitle": "Pious trait"
                       }
                     ],
                     "weight": null
@@ -22319,7 +22492,7 @@
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Ascetic — trait"
+                        "tipTitle": "Ascetic trait"
                       }
                     ],
                     "weight": null
@@ -22544,7 +22717,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cruel — trait"
+                        "tipTitle": "Cruel trait"
                       }
                     ],
                     "weight": 1000
@@ -22561,7 +22734,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Intolerant — trait"
+                        "tipTitle": "Intolerant trait"
                       }
                     ],
                     "weight": 1000
@@ -22578,7 +22751,7 @@
                           "-1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Slothful — trait"
+                        "tipTitle": "Slothful trait"
                       }
                     ],
                     "weight": 1000
@@ -22595,7 +22768,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Uncouth — trait"
+                        "tipTitle": "Uncouth trait"
                       }
                     ],
                     "weight": 1000
@@ -22612,7 +22785,7 @@
                           "-1 Wisdom",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Foolish — trait"
+                        "tipTitle": "Foolish trait"
                       }
                     ],
                     "weight": 1000
@@ -22629,7 +22802,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Extravagant — trait"
+                        "tipTitle": "Extravagant trait"
                       }
                     ],
                     "weight": 1000
@@ -22646,7 +22819,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Debauched — trait"
+                        "tipTitle": "Debauched trait"
                       }
                     ],
                     "weight": 1000
@@ -22747,7 +22920,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Free theology: the event's theology"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -23097,7 +23274,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Archetype becomes Zealot"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -23123,7 +23304,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Archetype becomes Judge"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -23251,7 +23436,7 @@
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Ascetic — trait"
+                        "tipTitle": "Ascetic trait"
                       },
                       {
                         "memory": "MEMORYRELIGION_ENCOURAGED_RELIGIOUS_PRACTICE",
@@ -23860,7 +24045,7 @@
                         "text": "Remembered: Accepted my ambition (+40 opinion for 80 turns)"
                       },
                       {
-                        "text": "Progress ambition: Establish Theology"
+                        "text": "Progress ambition: Establish a Theology"
                       },
                       {
                         "memory": "MEMORYPLAYER_RECENT_AMBITION",
@@ -23908,7 +24093,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Educated — trait"
+                        "tipTitle": "Educated trait"
                       }
                     ],
                     "weight": null
@@ -24305,6 +24490,9 @@
                     "rewards": [
                       {
                         "text": "-1 Legitimacy"
+                      },
+                      {
+                        "text": "Your character is renamed Shadowlightning, Foe of the Unworthy"
                       }
                     ],
                     "weight": null
@@ -24550,7 +24738,7 @@
                 "tip": [
                   "+40 base opinion of this character"
                 ],
-                "tipTitle": "Legitimized — trait"
+                "tipTitle": "Legitimized trait"
               },
               {
                 "text": "Loses trait: Bastard"
@@ -24577,6 +24765,9 @@
                         "memory": "MEMORYCHARACTER_GP_PROMOTION",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Promoted to a higher title (+40 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "Your leader's spouse is granted the title Overseer"
                       }
                     ],
                     "weight": null
@@ -24625,6 +24816,9 @@
                         "memory": "MEMORYCHARACTER_GP_PROMOTION",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Promoted to a higher title (+40 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "Your leader's spouse is granted the title Venerated"
                       }
                     ],
                     "weight": null
@@ -24669,6 +24863,9 @@
                         "memory": "MEMORYCHARACTER_GP_PROMOTION",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Promoted to a higher title (+40 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "Your leader's spouse is granted the title Steward"
                       }
                     ],
                     "weight": null
@@ -24718,7 +24915,7 @@
                 "tip": [
                   "+40 base opinion of this character"
                 ],
-                "tipTitle": "Legitimized — trait"
+                "tipTitle": "Legitimized trait"
               },
               {
                 "text": "Loses trait: Bastard"
@@ -24744,7 +24941,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Romantic — trait"
+                        "tipTitle": "Romantic trait"
                       },
                       {
                         "text": "Arranges a marriage"
@@ -24834,7 +25031,7 @@
                 "tip": [
                   "+40 base opinion of this character"
                 ],
-                "tipTitle": "Legitimized — trait"
+                "tipTitle": "Legitimized trait"
               },
               {
                 "text": "Loses trait: Bastard"
@@ -24983,6 +25180,9 @@
             "guaranteed": [
               {
                 "text": "The character is killed"
+              },
+              {
+                "text": "A new character joins your nation"
               }
             ],
             "id": "EVENTSTORY_LEGITIMIZE_BASTARDS_BODY",
@@ -25019,7 +25219,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "50% chance next turn: becomes Foolish"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -25060,10 +25264,10 @@
                         "text": "Leader relationship: Assassinated By"
                       },
                       {
-                        "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                        "text": "Steam achievement (if the target is an heir): Future Regicide"
                       },
                       {
-                        "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                        "text": "Steam achievement (if the target leads a rival nation): Regicide"
                       },
                       {
                         "memory": "MEMORYPLAYER_ASSASSINATION_EXPOSED",
@@ -25196,7 +25400,7 @@
                 "tip": [
                   "Cannot hold a job"
                 ],
-                "tipTitle": "Ascetic — trait"
+                "tipTitle": "Ascetic trait"
               }
             ],
             "id": "EVENTSTORY_CHOSEN_HEIR_NO_THANKS",
@@ -25212,6 +25416,9 @@
                     "rewards": [
                       {
                         "text": "+1 Wisdom"
+                      },
+                      {
+                        "text": "25% chance next turn: becomes Miserable"
                       }
                     ],
                     "weight": null
@@ -25247,7 +25454,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "text": "Gain trait: Strict",
@@ -25257,7 +25464,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Strict — trait"
+                        "tipTitle": "Strict trait"
                       }
                     ],
                     "weight": null
@@ -25305,7 +25512,7 @@
                   "+1 Courage",
                   "+20 opinion with same-trait characters"
                 ],
-                "tipTitle": "Bold — trait"
+                "tipTitle": "Bold trait"
               }
             ],
             "id": "EVENTSTORY_CHOSEN_HEIR_PLAYING_CORONATION_CHICKEN",
@@ -25348,7 +25555,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Abdicate Throne (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -25398,7 +25609,7 @@
                         "tip": [
                           "As leader: -10% Orders"
                         ],
-                        "tipTitle": "Mourning — trait"
+                        "tipTitle": "Mourning trait"
                       }
                     ],
                     "weight": null
@@ -25516,6 +25727,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Your leader marries your character"
+                      },
                       {
                         "text": "Leader relationship: Influenced By"
                       }
@@ -25728,7 +25942,7 @@
                 "tip": [
                   "Cannot hold a job"
                 ],
-                "tipTitle": "Fugitive — trait"
+                "tipTitle": "Fugitive trait"
               },
               {
                 "text": "The marriage is dissolved"
@@ -25738,7 +25952,7 @@
                 "tip": [
                   "Cannot hold a job"
                 ],
-                "tipTitle": "Fugitive — trait"
+                "tipTitle": "Fugitive trait"
               }
             ],
             "id": "EVENTSTORY_DIVORCE_FLIGHT_FROM_NATION",
@@ -25823,6 +26037,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "You declare war on the rival nation"
                       }
                     ],
                     "weight": null
@@ -25882,6 +26100,9 @@
                     "rewards": [
                       {
                         "text": "The marriage is dissolved"
+                      },
+                      {
+                        "text": "Has an Illegitimate Child"
                       }
                     ],
                     "weight": null
@@ -26029,6 +26250,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Lover Of"
+                      },
+                      {
+                        "text": "The character marries your leader"
                       }
                     ],
                     "weight": null
@@ -26151,6 +26375,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Lover Of"
+                      },
+                      {
+                        "text": "The character marries your leader"
                       }
                     ],
                     "weight": null
@@ -26359,7 +26586,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your character marries your leader"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -26491,7 +26722,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "text": "Leader relationship: Estranged From"
@@ -26742,7 +26973,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -26802,11 +27037,15 @@
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Fugitive — trait"
+                        "tipTitle": "Fugitive trait"
                       },
                       {
                         "memory": "MEMORYTRIBE_OFFER",
                         "text": "Remembered: Tribe Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The tribe invade"
                       }
                     ],
                     "weight": null
@@ -26870,7 +27109,7 @@
                           "+1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ruthless — trait"
+                        "tipTitle": "Ruthless trait"
                       },
                       {
                         "text": "The character is killed"
@@ -26879,10 +27118,10 @@
                         "text": "Leader relationship: Assassinated By"
                       },
                       {
-                        "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                        "text": "Steam achievement (if the target is an heir): Future Regicide"
                       },
                       {
-                        "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                        "text": "Steam achievement (if the target leads a rival nation): Regicide"
                       },
                       {
                         "memory": "MEMORYPLAYER_ASSASSINATION_EXPOSED",
@@ -26936,7 +27175,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Bloodthirsty — trait"
+                        "tipTitle": "Bloodthirsty trait"
                       }
                     ],
                     "weight": null
@@ -26971,7 +27210,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Romantic — trait"
+                        "tipTitle": "Romantic trait"
                       },
                       {
                         "text": "Gain trait: Miserable",
@@ -26979,7 +27218,7 @@
                           "As leader: -20% Orders",
                           "-40 base opinion of this character"
                         ],
-                        "tipTitle": "Miserable — trait"
+                        "tipTitle": "Miserable trait"
                       },
                       {
                         "text": "Gain trait: Exiled",
@@ -26987,7 +27226,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Exiled — trait"
+                        "tipTitle": "Exiled trait"
                       }
                     ],
                     "weight": null
@@ -27030,7 +27269,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Gracious — trait"
+                        "tipTitle": "Gracious trait"
                       },
                       {
                         "text": "Leader relationship: Plotting Against"
@@ -27193,7 +27432,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Compassionate — trait"
+                        "tipTitle": "Compassionate trait"
                       }
                     ],
                     "weight": null
@@ -27237,7 +27476,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       }
                     ],
                     "weight": null
@@ -27508,7 +27747,11 @@
               "Low Wisdom",
               "Player Very Close"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "+8 border tiles"
+              }
+            ],
             "id": "EVENTSTORY_INFILTRATION_DOUBLE_AGENT",
             "minTurns": null,
             "name": "Double Agent",
@@ -27567,6 +27810,9 @@
                     "rewards": [
                       {
                         "text": "Reveals the target player's territory"
+                      },
+                      {
+                        "text": "+3 border tiles"
                       }
                     ],
                     "weight": null
@@ -27779,7 +28025,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Gracious — trait"
+                        "tipTitle": "Gracious trait"
                       }
                     ],
                     "weight": null
@@ -27889,7 +28135,7 @@
     "turns": 3,
     "turnsScaled": false,
     "variantNotes": [
-      "An internal any-character variant (MISSION_INFILTRATE_ANY) rolls the same outcome dice — it differs only in who may run it."
+      "An internal any-character variant (MISSION_INFILTRATE_ANY) rolls the same outcome dice, and it differs only in who may run it."
     ]
   },
   {
@@ -27901,7 +28147,7 @@
       }
     ],
     "dedicated": false,
-    "description": "Slander a Nation to decrease other Nations' Opinion Player of them",
+    "description": "Slander a Nation to decrease other Nations' Opinion of them",
     "dlc": null,
     "eventGroups": [
       {
@@ -28087,7 +28333,7 @@
                         "tip": [
                           "Removed as leader"
                         ],
-                        "tipTitle": "Poisoned — trait"
+                        "tipTitle": "Poisoned trait"
                       }
                     ],
                     "weight": null
@@ -28207,7 +28453,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "memory": "MEMORYFAMILY_IMPRISONED_SPYMASTER",
@@ -28399,7 +28645,7 @@
                           "Removed as leader",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Slighted — trait"
+                        "tipTitle": "Slighted trait"
                       }
                     ],
                     "weight": null
@@ -28509,7 +28755,7 @@
     "turns": 3,
     "turnsScaled": false,
     "variantNotes": [
-      "An internal any-character variant (MISSION_SLANDER_ANY) rolls the same outcome dice — it differs only in who may run it."
+      "An internal any-character variant (MISSION_SLANDER_ANY) rolls the same outcome dice, and it differs only in who may run it."
     ]
   },
   {
@@ -28587,7 +28833,7 @@
                         "tip": [
                           "Removed as leader"
                         ],
-                        "tipTitle": "Poisoned — trait"
+                        "tipTitle": "Poisoned trait"
                       },
                       {
                         "text": "The character is killed"
@@ -28780,7 +29026,7 @@
                 "tip": [
                   "Removed as leader"
                 ],
-                "tipTitle": "Poisoned — trait"
+                "tipTitle": "Poisoned trait"
               }
             ],
             "id": "EVENTSTORY_ASSASSINATE_BACKFIRED_POISONED",
@@ -28823,7 +29069,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Imprison on your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -28853,6 +29103,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Owes Favor To"
+                      },
+                      {
+                        "text": "Your leader: no longer Plotting Against your character"
                       }
                     ],
                     "weight": null
@@ -28909,7 +29162,7 @@
                   "-100 base opinion of this character",
                   "Cannot hold a job"
                 ],
-                "tipTitle": "Exiled — trait"
+                "tipTitle": "Exiled trait"
               }
             ],
             "id": "EVENTSTORY_LAST_KISS",
@@ -28974,7 +29227,7 @@
                           "-1 Wisdom",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Foolish — trait"
+                        "tipTitle": "Foolish trait"
                       },
                       {
                         "base": 12,
@@ -29039,10 +29292,10 @@
                 "text": "Leader relationship: Assassinated By"
               },
               {
-                "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                "text": "Steam achievement (if the target is an heir): Future Regicide"
               },
               {
-                "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                "text": "Steam achievement (if the target leads a rival nation): Regicide"
               }
             ],
             "id": "EVENTSTORY_WHAT_LENGTHS",
@@ -29062,7 +29315,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Compassionate — trait"
+                        "tipTitle": "Compassionate trait"
                       },
                       {
                         "text": "Gain a random trait"
@@ -29219,7 +29472,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Compassionate — trait"
+                        "tipTitle": "Compassionate trait"
                       },
                       {
                         "base": -120,
@@ -29342,7 +29595,7 @@
                         "tip": [
                           "As leader: -10% Orders"
                         ],
-                        "tipTitle": "Mourning — trait"
+                        "tipTitle": "Mourning trait"
                       }
                     ],
                     "weight": null
@@ -29374,7 +29627,7 @@
             "conditions": [],
             "guaranteed": [
               {
-                "text": "Steam achievement: Assassinated Another Leader"
+                "text": "Steam achievement: Regicide"
               }
             ],
             "id": "EVENTSTORY_ACHIEVEMENT_ASSASSINATED_ANOTHER_LEADER",
@@ -29408,7 +29661,7 @@
             "conditions": [],
             "guaranteed": [
               {
-                "text": "Steam achievement: Assassinated Heir"
+                "text": "Steam achievement: Future Regicide"
               }
             ],
             "id": "EVENTSTORY_ACHIEVEMENT_ASSASSINATED_HEIR",
@@ -29498,7 +29751,7 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Begin project: Festival 2"
+                        "text": "Begin project: Festival II"
                       }
                     ],
                     "weight": null
@@ -29624,7 +29877,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       }
                     ],
                     "weight": null
@@ -29661,6 +29914,10 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "kind": "nationwide",
+                        "text": "Your leader abdicates the throne"
+                      },
                       {
                         "text": "+40 XP to the character"
                       }
@@ -29702,10 +29959,10 @@
                       {
                         "text": "Gain trait: Infamous",
                         "tip": [
-                          "As leader: -40 Opinion Family",
+                          "As leader: -40 Family Opinions",
                           "-1 Charisma"
                         ],
-                        "tipTitle": "Infamous — trait"
+                        "tipTitle": "Infamous trait"
                       }
                     ],
                     "weight": null
@@ -29756,10 +30013,10 @@
                         "text": "Leader relationship: Assassinated By"
                       },
                       {
-                        "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                        "text": "Steam achievement (if the target is an heir): Future Regicide"
                       },
                       {
-                        "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                        "text": "Steam achievement (if the target leads a rival nation): Regicide"
                       },
                       {
                         "base": -160,
@@ -29816,10 +30073,10 @@
                         "text": "Leader relationship: Assassinated By"
                       },
                       {
-                        "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                        "text": "Steam achievement (if the target is an heir): Future Regicide"
                       },
                       {
-                        "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                        "text": "Steam achievement (if the target leads a rival nation): Regicide"
                       }
                     ],
                     "weight": null
@@ -29862,7 +30119,7 @@
                   "+1 Courage",
                   "+20 opinion with same-trait characters"
                 ],
-                "tipTitle": "Robust — trait"
+                "tipTitle": "Robust trait"
               }
             ],
             "id": "EVENTSTORY_FAILED_ASSASSINATION",
@@ -29884,7 +30141,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       },
                       {
                         "base": -120,
@@ -30002,7 +30259,7 @@
                 "tip": [
                   "Removed as leader"
                 ],
-                "tipTitle": "Severely Wounded — trait"
+                "tipTitle": "Severely Wounded trait"
               }
             ],
             "id": "EVENTSTORY_FALLEN_SPYMASTER",
@@ -30180,10 +30437,10 @@
                 "text": "Leader relationship: Assassinated By"
               },
               {
-                "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                "text": "Steam achievement (if the target is an heir): Future Regicide"
               },
               {
-                "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                "text": "Steam achievement (if the target leads a rival nation): Regicide"
               }
             ],
             "id": "EVENTSTORY_FAMILIAL_REVENGE",
@@ -30377,7 +30634,7 @@
                         "tip": [
                           "As leader: -10% Orders"
                         ],
-                        "tipTitle": "Mourning — trait"
+                        "tipTitle": "Mourning trait"
                       },
                       {
                         "text": "The character is killed"
@@ -30539,7 +30796,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Tribute to the rival nation: 500 Money, 100 Money per our city"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -30573,6 +30834,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The rival nation declares war on you"
                       }
                     ],
                     "weight": null
@@ -30614,10 +30879,10 @@
                 "text": "Leader relationship: Assassinated By"
               },
               {
-                "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                "text": "Steam achievement (if the target is an heir): Future Regicide"
               },
               {
-                "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                "text": "Steam achievement (if the target leads a rival nation): Regicide"
               }
             ],
             "id": "EVENTSTORY_ASSASSINATE_WITH_MONKEY",
@@ -30720,7 +30985,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on your character (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -30811,10 +31080,10 @@
                 "text": "Leader relationship: Assassinated By"
               },
               {
-                "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                "text": "Steam achievement (if the target is an heir): Future Regicide"
               },
               {
-                "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                "text": "Steam achievement (if the target leads a rival nation): Regicide"
               },
               {
                 "text": "Leader relationship: Plotting Against"
@@ -30838,10 +31107,10 @@
                         "text": "Leader relationship: Assassinated By"
                       },
                       {
-                        "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                        "text": "Steam achievement (if the target is an heir): Future Regicide"
                       },
                       {
-                        "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                        "text": "Steam achievement (if the target leads a rival nation): Regicide"
                       },
                       {
                         "base": -4,
@@ -31094,6 +31363,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Your leader: no longer Suspicious Of your character"
+                      },
+                      {
                         "text": "Gain trait: Cunning",
                         "tip": [
                           "As leader: +20 Foreign/Tribal Leader Opinions",
@@ -31101,7 +31373,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       }
                     ],
                     "weight": null
@@ -31156,10 +31428,10 @@
                 "text": "Leader relationship: Assassinated By"
               },
               {
-                "text": "Steam achievement (if the target is an heir): Assassinated Heir"
+                "text": "Steam achievement (if the target is an heir): Future Regicide"
               },
               {
-                "text": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader"
+                "text": "Steam achievement (if the target leads a rival nation): Regicide"
               },
               {
                 "text": "Leader relationship: Vengeful Against"
@@ -31169,7 +31441,7 @@
                 "tip": [
                   "Removed as leader"
                 ],
-                "tipTitle": "Wounded — trait"
+                "tipTitle": "Wounded trait"
               }
             ],
             "id": "EVENTSTORY_THE_CYCLE_CONTINUES",
@@ -31252,6 +31524,9 @@
                         "memory": "MEMORYFAMILY_THE_LUTE_PLAYER",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Sent your condolences (+20 opinion for 20 turns)"
+                      },
+                      {
+                        "text": "Send the resource to your family as a luxury"
                       }
                     ],
                     "weight": null
@@ -31307,7 +31582,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Assassinate on the character (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -31491,12 +31770,12 @@
             "value": null
           },
           {
-            "label": "Steam achievement (if the target is an heir): Assassinated Heir",
+            "label": "Steam achievement (if the target is an heir): Future Regicide",
             "scope": "Special",
             "value": null
           },
           {
-            "label": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "label": "Steam achievement (if the target leads a rival nation): Regicide",
             "scope": "Special",
             "value": null
           }
@@ -31526,12 +31805,12 @@
             "value": null
           },
           {
-            "label": "Steam achievement (if the target is an heir): Assassinated Heir",
+            "label": "Steam achievement (if the target is an heir): Future Regicide",
             "scope": "Special",
             "value": null
           },
           {
-            "label": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "label": "Steam achievement (if the target leads a rival nation): Regicide",
             "scope": "Special",
             "value": null
           },
@@ -31597,7 +31876,7 @@
     "turns": 2,
     "turnsScaled": false,
     "variantNotes": [
-      "The internal any-character variant (MISSION_ASSASSINATE_ANY) rolls 4 outcomes instead of 5: the undetected-failure outcome is dropped and exposed failure takes its weight (2/6)."
+      "The internal any-character variant (MISSION_ASSASSINATE_ANY) rolls 4 outcomes instead of 5, because the undetected failure outcome is dropped and exposed failure takes its weight (2/6)."
     ]
   },
   {
@@ -31845,6 +32124,9 @@
                         "memory": "MEMORYPLAYER_SWAYED_OUR_AGENT",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Swayed our agent (-80 opinion for 20 turns)"
+                      },
+                      {
+                        "text": "Their character joins the nation of your leader"
                       }
                     ],
                     "weight": null
@@ -31895,7 +32177,7 @@
                           "+1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ruthless — trait"
+                        "tipTitle": "Ruthless trait"
                       }
                     ],
                     "weight": null
@@ -32173,6 +32455,9 @@
                       },
                       {
                         "text": "The character is killed"
+                      },
+                      {
+                        "text": "Their character: Assassinated By your agent"
                       },
                       {
                         "text": "Leader relationship: Suspicious Of"
@@ -32532,7 +32817,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your character becomes agent in their city"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -32624,7 +32913,10 @@
                           "Removed as leader",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Slighted — trait"
+                        "tipTitle": "Slighted trait"
+                      },
+                      {
+                        "text": "Resign as Council"
                       }
                     ],
                     "weight": null
@@ -32654,7 +32946,11 @@
           {
             "cmEligible": null,
             "conditions": [],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "Leave role of Agent in City"
+              }
+            ],
             "id": "EVENTSTORY_TREACHERY_STEAL_AWAY",
             "minTurns": null,
             "name": "Steal Away",
@@ -32677,7 +32973,7 @@
                           "+1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ruthless — trait"
+                        "tipTitle": "Ruthless trait"
                       }
                     ],
                     "weight": null
@@ -32760,6 +33056,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Estranged From"
+                      },
+                      {
+                        "text": "Archetype becomes Diplomat"
                       }
                     ],
                     "weight": null
@@ -32923,6 +33222,9 @@
                     "rewards": [
                       {
                         "text": "+60 XP to the character"
+                      },
+                      {
+                        "text": "Carries out Assassinate on their character"
                       }
                     ],
                     "weight": null
@@ -32966,7 +33268,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Rally Troops (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -33014,7 +33320,7 @@
                         "tip": [
                           "Removed as leader"
                         ],
-                        "tipTitle": "Wounded — trait"
+                        "tipTitle": "Wounded trait"
                       },
                       {
                         "text": "Leader relationship: Suspicious Of"
@@ -33163,7 +33469,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Their character joins the nation of you"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -33195,6 +33505,9 @@
                         "per": 10,
                         "text": "+40 Science (+10/city)",
                         "yield": "science"
+                      },
+                      {
+                        "text": "Their character joins the nation of you"
                       }
                     ],
                     "weight": null
@@ -33441,7 +33754,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Slander Nation on the rival nation"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -33551,7 +33868,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "1 improvement destroyed"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -33599,7 +33920,7 @@
       {
         "description": "[character] has successfully weakened the City's defenses.",
         "id": "MISSIONRESULT_TREACHERY_SUCCESS",
-        "name": "Missionresult Treachery Success",
+        "name": "Treachery (Success)",
         "probability": 0.25,
         "ratingModifier": [
           {
@@ -33620,7 +33941,7 @@
       {
         "description": "[character] has stirred up local resentment but was exposed in the process.",
         "id": "MISSIONRESULT_TREACHERY_EXPOSED",
-        "name": "Missionresult Treachery Exposed",
+        "name": "Treachery (Exposed)",
         "probability": 0.25,
         "ratingModifier": [],
         "rewards": [
@@ -33640,7 +33961,7 @@
       {
         "description": "[character] has failed to weaken the City's defenses.",
         "id": "MISSIONRESULT_TREACHERY_FAILURE",
-        "name": "Missionresult Treachery Failure",
+        "name": "Treachery (Failure)",
         "probability": 0.25,
         "ratingModifier": [],
         "rewards": [
@@ -33899,7 +34220,7 @@
                     "probability": 0.5,
                     "rewards": [
                       {
-                        "text": "Progress ambition: Six Agents"
+                        "text": "Progress ambition: Control Six Agents"
                       },
                       {
                         "memory": "MEMORYPLAYER_RECENT_AMBITION",
@@ -33916,7 +34237,7 @@
                     "probability": 0.5,
                     "rewards": [
                       {
-                        "text": "Progress ambition: Four Agent Networks"
+                        "text": "Progress ambition: Control Four Agent Networks"
                       },
                       {
                         "memory": "MEMORYPLAYER_RECENT_AMBITION",
@@ -33979,6 +34300,9 @@
                         "eachCity": 60,
                         "text": "+60 Discontent (city)",
                         "yield": "discontent"
+                      },
+                      {
+                        "text": "Your character joins the nation of the rival nation"
                       }
                     ],
                     "weight": null
@@ -34058,7 +34382,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Their character joins the nation of you"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -34091,7 +34419,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Loyal — trait"
+                        "tipTitle": "Loyal trait"
                       }
                     ],
                     "weight": null
@@ -34172,6 +34500,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Their character joins the nation of you"
+                      },
+                      {
                         "text": "The character is killed"
                       }
                     ],
@@ -34209,6 +34540,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Their character joins the nation of you"
+                      },
                       {
                         "text": "Leader relationship: Terrified Of"
                       }
@@ -34379,7 +34713,7 @@
                   ]
                 },
                 "requirements": [],
-                "text": "Send additional Agent to support both options."
+                "text": "Send additional Agents to support both options."
               }
             ],
             "prob": null,
@@ -34501,7 +34835,7 @@
       {
         "description": "[character] has successfully started a local uprising.",
         "id": "MISSIONRESULT_INSURRECTION_REVOLT",
-        "name": "Missionresult Insurrection Revolt",
+        "name": "Insurrection (Revolt)",
         "probability": 0.25,
         "ratingModifier": [
           {
@@ -34522,7 +34856,7 @@
       {
         "description": "[character] has stirred up local resentment but was exposed in the process.",
         "id": "MISSIONRESULT_INSURRECTION_EXPOSED",
-        "name": "Missionresult Insurrection Exposed",
+        "name": "Insurrection (Exposed)",
         "probability": 0.25,
         "ratingModifier": [],
         "rewards": [
@@ -34542,7 +34876,7 @@
       {
         "description": "[character] has failed to start a local uprising.",
         "id": "MISSIONRESULT_INSURRECTION_FAILURE",
-        "name": "Missionresult Insurrection Failure",
+        "name": "Insurrection (Failure)",
         "probability": 0.25,
         "ratingModifier": [],
         "rewards": [
@@ -34602,7 +34936,7 @@
                 "tip": [
                   "Removed as leader"
                 ],
-                "tipTitle": "Wounded — trait"
+                "tipTitle": "Wounded trait"
               }
             ],
             "id": "EVENTSTORY_A_NARROW_ESCAPE",
@@ -34706,7 +35040,14 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Leave role of Agent in City"
+                      },
+                      {
+                        "text": "Add Agent Network"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -34958,7 +35299,10 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Gain trait: Hero Armour"
+                        "text": "Leave role of Agent in City"
+                      },
+                      {
+                        "text": "Gain trait: Armor of the Hero"
                       }
                     ],
                     "weight": null
@@ -35058,6 +35402,9 @@
                         "memory": "MEMORYPLAYER_GIFTED_TECH",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Gave us new technology (+40 opinion for 40 turns)"
+                      },
+                      {
+                        "text": "The rival nation acquires the tech"
                       }
                     ],
                     "weight": null
@@ -35261,7 +35608,7 @@
       }
     ],
     "dedicated": false,
-    "description": "Meet with religious leaders to improve the Religion's Opinion Religion",
+    "description": "Meet with religious leaders to improve the Religion's Opinion",
     "dlc": null,
     "eventGroups": [
       {
@@ -35304,7 +35651,7 @@
                   "gates": []
                 },
                 "requirements": [],
-                "text": "We will consider sending Disciple to convert the [tribe] to [religion]."
+                "text": "We will consider sending Disciples to convert the [tribe] to [religion]."
               }
             ],
             "prob": null,
@@ -35510,10 +35857,10 @@
                         "text": "Remembered: Stood up to rebellious clergy (+80 opinion for 40 turns)"
                       },
                       {
-                        "text": "Begin project: Dissent Zoroastrianism"
+                        "text": "Begin project: Zoroastrian Dissent"
                       },
                       {
-                        "text": "Begin project: Dissent Zoroastrianism"
+                        "text": "Begin project: Zoroastrian Dissent"
                       }
                     ],
                     "weight": 1000
@@ -35528,10 +35875,10 @@
                         "text": "Remembered: Stood up to rebellious clergy (+80 opinion for 40 turns)"
                       },
                       {
-                        "text": "Begin project: Dissent Judaism"
+                        "text": "Begin project: Jewish Dissent"
                       },
                       {
-                        "text": "Begin project: Dissent Judaism"
+                        "text": "Begin project: Jewish Dissent"
                       }
                     ],
                     "weight": 1000
@@ -35546,10 +35893,10 @@
                         "text": "Remembered: Stood up to rebellious clergy (+80 opinion for 40 turns)"
                       },
                       {
-                        "text": "Begin project: Dissent Christianity"
+                        "text": "Begin project: Christian Dissent"
                       },
                       {
-                        "text": "Begin project: Dissent Christianity"
+                        "text": "Begin project: Christian Dissent"
                       }
                     ],
                     "weight": 1000
@@ -35564,10 +35911,10 @@
                         "text": "Remembered: Stood up to rebellious clergy (+80 opinion for 40 turns)"
                       },
                       {
-                        "text": "Begin project: Dissent Manichaeism"
+                        "text": "Begin project: Manichaean Dissent"
                       },
                       {
-                        "text": "Begin project: Dissent Manichaeism"
+                        "text": "Begin project: Manichaean Dissent"
                       }
                     ],
                     "weight": 1000
@@ -35683,7 +36030,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Free theology: the event's theology"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -35733,6 +36084,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Starts ambition: Control Four Temples"
+                      },
                       {
                         "text": "Leader relationship: Influenced By"
                       }
@@ -35870,7 +36224,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Exiled — trait"
+                        "tipTitle": "Exiled trait"
                       },
                       {
                         "text": "Leader relationship: Endeared To"
@@ -35976,7 +36330,10 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Exiled — trait"
+                        "tipTitle": "Exiled trait"
+                      },
+                      {
+                        "text": "Your character becomes head of your state religion"
                       }
                     ],
                     "weight": null
@@ -36185,7 +36542,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cruel — trait"
+                        "tipTitle": "Cruel trait"
                       }
                     ],
                     "weight": null
@@ -36316,7 +36673,12 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "kind": "nationwide",
+                        "text": "Adopts the event's religion as state religion"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -36546,7 +36908,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cruel — trait"
+                        "tipTitle": "Cruel trait"
                       }
                     ],
                     "weight": null
@@ -36596,7 +36958,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "+1 Disciples of the religion"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -36625,6 +36991,9 @@
                     "rewards": [
                       {
                         "text": "Leader relationship: Endeared To"
+                      },
+                      {
+                        "text": "Starts ambition: Spread Religion (x8)"
                       }
                     ],
                     "weight": null
@@ -36680,6 +37049,9 @@
                         "memory": "MEMORYRELIGION_RELIGION_OPINION_GOOD",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Honored our beliefs (+40 opinion for 40 turns)"
+                      },
+                      {
+                        "text": "Carries out National Peace on the rival nation"
                       }
                     ],
                     "weight": null
@@ -36767,6 +37139,9 @@
                         "memory": "MEMORYRELIGION_CONDEMNED_CADAVER",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Condemned the cadaver (+20 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "The late character is granted the title False Leader"
                       }
                     ],
                     "weight": null
@@ -37118,7 +37493,7 @@
       }
     ],
     "dedicated": false,
-    "description": "Bribe the Family with gifts to improve their Opinion Family",
+    "description": "Bribe the Family with gifts to improve their Opinion",
     "dlc": null,
     "eventGroups": [
       {
@@ -37145,7 +37520,7 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Begin project: Give Perfume"
+                        "text": "Begin project: Perfume"
                       },
                       {
                         "base": -240,
@@ -37309,7 +37684,7 @@
                           "Removed as leader",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Slighted — trait"
+                        "tipTitle": "Slighted trait"
                       }
                     ],
                     "weight": null
@@ -37445,7 +37820,7 @@
                           "-1 Charisma",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Uncouth — trait"
+                        "tipTitle": "Uncouth trait"
                       },
                       {
                         "base": 75,
@@ -37490,7 +37865,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Deceitful — trait"
+                        "tipTitle": "Deceitful trait"
                       }
                     ],
                     "weight": null
@@ -37594,6 +37969,9 @@
                         "memory": "MEMORYFAMILY_GAVE_AWAY_CITY",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Gave away our City (-80 opinion for 80 turns)"
+                      },
+                      {
+                        "text": "Your family gains your city"
                       }
                     ],
                     "weight": null
@@ -37730,6 +38108,9 @@
                         "memory": "MEMORYFAMILY_RECEIVED_GIFT",
                         "note": "no event currently keys off this",
                         "text": "Remembered: Received gift from ruler (+20 opinion for 40 turns)"
+                      },
+                      {
+                        "text": "Send the resource to your family as a luxury"
                       }
                     ],
                     "weight": null
@@ -37944,7 +38325,10 @@
                           "Removed as leader",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Slighted — trait"
+                        "tipTitle": "Slighted trait"
+                      },
+                      {
+                        "text": "Resign as Council"
                       },
                       {
                         "text": "Gain trait: Strict",
@@ -37954,7 +38338,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Strict — trait"
+                        "tipTitle": "Strict trait"
                       }
                     ],
                     "weight": null
@@ -38204,7 +38588,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Humble — trait"
+                        "tipTitle": "Humble trait"
                       }
                     ],
                     "weight": null
@@ -38638,7 +39022,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Compassionate — trait"
+                        "tipTitle": "Compassionate trait"
                       },
                       {
                         "text": "+40 XP to the character"
@@ -38859,7 +39243,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       }
                     ],
                     "weight": null
@@ -38922,6 +39306,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "Your leader: no longer Plotting Against your character"
+                      },
                       {
                         "eachCity": 60,
                         "text": "+60 Happiness (city)",
@@ -38998,7 +39385,14 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Free theology: the event's theology"
+                      },
+                      {
+                        "text": "Free Agent Network in all Holy Cities"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -39329,6 +39723,9 @@
                         "eachCity": 120,
                         "text": "+120 Happiness (city)",
                         "yield": "happiness"
+                      },
+                      {
+                        "text": "Leave Governorship of City"
                       }
                     ],
                     "weight": null
@@ -39374,7 +39771,7 @@
                           "+1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Ruthless — trait"
+                        "tipTitle": "Ruthless trait"
                       }
                     ],
                     "weight": null
@@ -39634,6 +40031,9 @@
                         "eachCity": 80,
                         "text": "+80 Happiness (city)",
                         "yield": "happiness"
+                      },
+                      {
+                        "text": "Your character becomes governor of your city"
                       }
                     ],
                     "weight": null
@@ -39676,7 +40076,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Humble — trait"
+                        "tipTitle": "Humble trait"
                       },
                       {
                         "text": "+40 XP to the character"
@@ -39717,7 +40117,7 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Begin project: Forum 1"
+                        "text": "Begin project: Forum I"
                       },
                       {
                         "eachCity": 80,
@@ -39794,7 +40194,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "memory": "MEMORYFAMILY_CURRY_FAVOR",
@@ -39894,7 +40294,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Humble — trait"
+                        "tipTitle": "Humble trait"
                       }
                     ],
                     "weight": null
@@ -40073,7 +40473,7 @@
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Fugitive — trait"
+                        "tipTitle": "Fugitive trait"
                       },
                       {
                         "text": "Leader relationship: Plotting Against"
@@ -40127,7 +40527,7 @@
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Fugitive — trait"
+                        "tipTitle": "Fugitive trait"
                       }
                     ],
                     "weight": null
@@ -40180,7 +40580,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Corrupt — trait"
+                        "tipTitle": "Corrupt trait"
                       },
                       {
                         "base": 240,
@@ -40222,7 +40622,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "text": "Leader relationship: Vengeful Against"
@@ -40235,7 +40635,7 @@
                           "+1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Righteous — trait"
+                        "tipTitle": "Righteous trait"
                       }
                     ],
                     "weight": null
@@ -40279,7 +40679,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "text": "Leader relationship: Plotting Against"
@@ -40354,6 +40754,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Your character joins the nation of the rival nation"
+                      },
+                      {
                         "text": "-4 Legitimacy"
                       }
                     ],
@@ -40400,12 +40803,16 @@
                         "text": "Remembered: Player Offer (5 turns)"
                       },
                       {
+                        "kind": "nationwide",
+                        "text": "You declare war on the rival nation"
+                      },
+                      {
                         "text": "Gain trait: Imprisoned",
                         "tip": [
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       }
                     ],
                     "weight": null
@@ -40502,7 +40909,7 @@
                           "-100 base opinion of this character",
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "Imprisoned — trait"
+                        "tipTitle": "Imprisoned trait"
                       },
                       {
                         "eachCity": 40,
@@ -40871,7 +41278,7 @@
             ],
             "guaranteed": [
               {
-                "text": "Steam achievement: Sacred Profane Tutor Hypatia"
+                "text": "Steam achievement: Hypatia the Teacher"
               }
             ],
             "id": "EVENTSTORY_ACHIEVEMENT_SACRED_PROFANE_TUTOR_HYPATIA_WISDOM",
@@ -40917,7 +41324,7 @@
             ],
             "guaranteed": [
               {
-                "text": "Steam achievement: Sacred Profane Tutor Hypatia"
+                "text": "Steam achievement: Hypatia the Teacher"
               }
             ],
             "id": "EVENTSTORY_ACHIEVEMENT_SACRED_PROFANE_TUTOR_HYPATIA_CHARISMA",
@@ -40963,7 +41370,7 @@
             ],
             "guaranteed": [
               {
-                "text": "Steam achievement: Sacred Profane Tutor Hypatia"
+                "text": "Steam achievement: Hypatia the Teacher"
               }
             ],
             "id": "EVENTSTORY_ACHIEVEMENT_SACRED_PROFANE_TUTOR_HYPATIA_COURAGE",
@@ -41009,7 +41416,7 @@
             ],
             "guaranteed": [
               {
-                "text": "Steam achievement: Sacred Profane Tutor Hypatia"
+                "text": "Steam achievement: Hypatia the Teacher"
               }
             ],
             "id": "EVENTSTORY_ACHIEVEMENT_SACRED_PROFANE_TUTOR_HYPATIA_DISCIPLINE",
@@ -41154,7 +41561,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cultivator — trait"
+                        "tipTitle": "Cultivator trait"
                       }
                     ],
                     "weight": null
@@ -41223,7 +41630,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cultivator — trait"
+                        "tipTitle": "Cultivator trait"
                       },
                       {
                         "text": "Leader relationship: Endeared To"
@@ -41291,14 +41698,14 @@
                 "tip": [
                   "Cannot hold a job"
                 ],
-                "tipTitle": "Missing — trait"
+                "tipTitle": "Missing trait"
               },
               {
                 "text": "Gain trait: Fugitive",
                 "tip": [
                   "Cannot hold a job"
                 ],
-                "tipTitle": "Fugitive — trait"
+                "tipTitle": "Fugitive trait"
               }
             ],
             "id": "EVENTSTORY_TUTOR_BETRAYED",
@@ -41596,6 +42003,9 @@
             "guaranteed": [
               {
                 "text": "+60 XP to the character"
+              },
+              {
+                "text": "Your character: Estranged From your heir"
               }
             ],
             "id": "EVENTSTORY_TUTOR_UNTEACHABLE",
@@ -41749,7 +42159,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Gracious — trait"
+                        "tipTitle": "Gracious trait"
                       }
                     ],
                     "weight": null
@@ -41874,7 +42284,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Loyal — trait"
+                        "tipTitle": "Loyal trait"
                       },
                       {
                         "text": "+2 Legitimacy"
@@ -41920,7 +42330,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Humble — trait"
+                        "tipTitle": "Humble trait"
                       },
                       {
                         "base": 60,
@@ -41963,7 +42373,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Add Improvement: Courthouse"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -42012,7 +42426,7 @@
                           "-1 Courage",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Timid — trait"
+                        "tipTitle": "Timid trait"
                       },
                       {
                         "text": "+1 Wisdom"
@@ -42053,7 +42467,7 @@
                           "-1 Wisdom",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Foolish — trait"
+                        "tipTitle": "Foolish trait"
                       },
                       {
                         "text": "+1 Courage"
@@ -42091,7 +42505,7 @@
             ],
             "guaranteed": [
               {
-                "text": "Steam achievement: Sacred Profane Tutor Hypatia"
+                "text": "Steam achievement: Hypatia the Teacher"
               }
             ],
             "id": "EVENTSTORY_ACHIEVEMENT_SACRED_PROFANE_TUTOR_HYPATIA_EVENT",
@@ -42150,7 +42564,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Humble — trait"
+                        "tipTitle": "Humble trait"
                       }
                     ],
                     "weight": null
@@ -42185,7 +42599,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Compassionate — trait"
+                        "tipTitle": "Compassionate trait"
                       }
                     ],
                     "weight": null
@@ -42237,7 +42651,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Inspiring — trait"
+                        "tipTitle": "Inspiring trait"
                       }
                     ],
                     "weight": null
@@ -42272,7 +42686,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Bold — trait"
+                        "tipTitle": "Bold trait"
                       }
                     ],
                     "weight": null
@@ -42307,7 +42721,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Educated — trait"
+                        "tipTitle": "Educated trait"
                       }
                     ],
                     "weight": null
@@ -42570,7 +42984,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Tough — trait"
+                        "tipTitle": "Tough trait"
                       }
                     ],
                     "weight": null
@@ -42605,7 +43019,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Vigilant — trait"
+                        "tipTitle": "Vigilant trait"
                       }
                     ],
                     "weight": null
@@ -42688,7 +43102,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Your character: Endeared To your character"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -42723,7 +43141,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cunning — trait"
+                        "tipTitle": "Cunning trait"
                       }
                     ],
                     "weight": null
@@ -42779,7 +43197,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Cultivator — trait"
+                        "tipTitle": "Cultivator trait"
                       }
                     ],
                     "weight": null
@@ -42818,7 +43236,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Delver — trait"
+                        "tipTitle": "Delver trait"
                       }
                     ],
                     "weight": null
@@ -42857,7 +43275,7 @@
                           "+1 Wisdom",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Naturalist — trait"
+                        "tipTitle": "Naturalist trait"
                       }
                     ],
                     "weight": null
@@ -42911,7 +43329,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Brave — trait"
+                        "tipTitle": "Brave trait"
                       }
                     ],
                     "weight": null
@@ -42948,7 +43366,7 @@
                           "+1 Courage",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Shieldbearer — trait"
+                        "tipTitle": "Shieldbearer trait"
                       }
                     ],
                     "weight": null
@@ -43175,7 +43593,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Tracker — trait"
+                        "tipTitle": "Tracker trait"
                       }
                     ],
                     "weight": null
@@ -43212,7 +43630,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Equestrian — trait"
+                        "tipTitle": "Equestrian trait"
                       }
                     ],
                     "weight": null
@@ -43271,7 +43689,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Prosperous — trait"
+                        "tipTitle": "Prosperous trait"
                       },
                       {
                         "text": "+1 Discipline"
@@ -43310,7 +43728,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Gracious — trait"
+                        "tipTitle": "Gracious trait"
                       }
                     ],
                     "weight": null
@@ -43463,7 +43881,7 @@
     "turns": 2,
     "turnsScaled": true,
     "variantNotes": [
-      "MISSION_TUTOR_SCHOLAR — the same mission run by a Scholar-archetype leader instead of a Tutor — rolls the same outcome dice and skips the opinion-scaled Money cost."
+      "MISSION_TUTOR_SCHOLAR is the same mission run by a leader of the Scholar archetype instead of a Tutor. It rolls the same outcome dice and skips the Money cost that scales with opinion."
     ]
   },
   {
@@ -43481,7 +43899,7 @@
     ],
     "dedicated": false,
     "description": "Relieve Mental Strain",
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "eventGroups": [
       {
         "events": [
@@ -43490,7 +43908,21 @@
             "conditions": [
               "Debauched"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "href": "occurrences#era-of-decadence",
+                "kind": "occurrence",
+                "occurrence": "OCCURRENCE_ERA_OF_DECADENCE",
+                "occurrenceVerb": "starts",
+                "text": "Starts Era of Decadence for you",
+                "tip": [
+                  "Characters: 2% chance/turn to become Debauched",
+                  "Characters: 3% chance/turn to become Drunk",
+                  "Chance to end grows by 2% each turn"
+                ],
+                "tipTitle": "Era of Decadence"
+              }
+            ],
             "id": "EVENTSTORY_ERA_OF_DECADENCE",
             "minTurns": null,
             "name": "Era of Decadence",
@@ -43508,10 +43940,10 @@
                       {
                         "text": "Gain trait: Infamous",
                         "tip": [
-                          "As leader: -40 Opinion Family",
+                          "As leader: -40 Family Opinions",
                           "-1 Charisma"
                         ],
-                        "tipTitle": "Infamous — trait"
+                        "tipTitle": "Infamous trait"
                       }
                     ],
                     "weight": null
@@ -43569,7 +44001,7 @@
                           "-1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Impulsive — trait"
+                        "tipTitle": "Impulsive trait"
                       },
                       {
                         "text": "Leader relationship: Lover Of"
@@ -43580,6 +44012,10 @@
                       {
                         "memory": "MEMORYTRIBE_OFFER",
                         "text": "Remembered: Tribe Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "Alliance with the tribe"
                       }
                     ],
                     "weight": null
@@ -43702,7 +44138,7 @@
                           "+1 Charisma",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Heckler — trait"
+                        "tipTitle": "Heckler trait"
                       },
                       {
                         "text": "Leader relationship: Vengeful Against"
@@ -43761,6 +44197,9 @@
                         "text": "Loses trait: Stressed"
                       },
                       {
+                        "text": "Archetype becomes Zealot"
+                      },
+                      {
                         "text": "Gain a Court Minister"
                       }
                     ],
@@ -43807,7 +44246,7 @@
                           "As leader: -20% Orders",
                           "-40 base opinion of this character"
                         ],
-                        "tipTitle": "Miserable — trait"
+                        "tipTitle": "Miserable trait"
                       }
                     ],
                     "weight": null
@@ -43915,7 +44354,11 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "text": "Carries out Divorce Spouse on your character (free)"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -44126,6 +44569,10 @@
                     "rewards": [
                       {
                         "text": "Loses trait: Stressed"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "Your leader abdicates the throne"
                       }
                     ],
                     "weight": null
@@ -44186,7 +44633,11 @@
                 "text": "Remembered: Player Offer (5 turns)"
               },
               {
-                "text": "Steam achievement: Behind The Throne Whats The Worst That Happens"
+                "kind": "nationwide",
+                "text": "You declare war on the rival nation"
+              },
+              {
+                "text": "Steam achievement: What's the Worst That Happens?"
               }
             ],
             "id": "EVENTSTORY_REVELRY_I_DID_WHAT",
@@ -44254,7 +44705,7 @@
                 "tip": [
                   "As general: -1 Fatigue Limit"
                 ],
-                "tipTitle": "Crippled — trait"
+                "tipTitle": "Crippled trait"
               }
             ],
             "id": "EVENTSTORY_REVELRY_IF_STAIRS_COULD_KILL",
@@ -44452,7 +44903,7 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Begin project: Lavish Lifestyle"
+                        "text": "Begin project: Opulence"
                       }
                     ],
                     "weight": null
@@ -44616,7 +45067,7 @@
     ],
     "dedicated": false,
     "description": "Take preemptive action against Powerful Rivals",
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "eventGroups": [
       {
         "events": [
@@ -44636,11 +45087,26 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Gain trait: The Uncrowned",
+                        "href": "occurrences#civil-war",
+                        "kind": "occurrence",
+                        "occurrence": "OCCURRENCE_CIVIL_WAR",
+                        "occurrenceVerb": "starts",
+                        "text": "Starts Civil War for you",
+                        "tip": [
+                          "-1 Vision Range",
+                          "+10% Rebel Chance",
+                          "5% chance to pillage each improvement on affected tiles",
+                          "Characters: 5% chance/turn to become Ambushed By Rebels",
+                          "Does not end on its own"
+                        ],
+                        "tipTitle": "Civil War"
+                      },
+                      {
+                        "text": "Gain trait: The Uncrowned King",
                         "tip": [
                           "Cannot hold a job"
                         ],
-                        "tipTitle": "The Uncrowned — trait"
+                        "tipTitle": "The Uncrowned King trait"
                       }
                     ],
                     "weight": null
@@ -44696,7 +45162,7 @@
                           "As leader: -2 Civics/City",
                           "As leader: [Capital] +10 City HP"
                         ],
-                        "tipTitle": "Paranoid — trait"
+                        "tipTitle": "Paranoid trait"
                       }
                     ],
                     "weight": null
@@ -44728,7 +45194,14 @@
             "conditions": [
               "Player Max Near"
             ],
-            "guaranteed": [],
+            "guaranteed": [
+              {
+                "text": "The rival nation gains your city"
+              },
+              {
+                "text": "Your character joins the nation of the rival nation"
+              }
+            ],
             "id": "EVENTSTORY_NEXT_BEST_THING",
             "minTurns": null,
             "name": "[rival] Interference",
@@ -44746,6 +45219,10 @@
                       {
                         "memory": "MEMORYPLAYER_OFFER",
                         "text": "Remembered: Player Offer (5 turns)"
+                      },
+                      {
+                        "kind": "nationwide",
+                        "text": "The rival nation declares war on you"
                       }
                     ],
                     "weight": null
@@ -44839,7 +45316,12 @@
                   {
                     "label": null,
                     "probability": 1.0,
-                    "rewards": [],
+                    "rewards": [
+                      {
+                        "kind": "nationwide",
+                        "text": "Your leader abdicates the throne"
+                      }
+                    ],
                     "weight": null
                   }
                 ],
@@ -44945,12 +45427,12 @@
             "value": null
           },
           {
-            "label": "Steam achievement (if the target is an heir): Assassinated Heir",
+            "label": "Steam achievement (if the target is an heir): Future Regicide",
             "scope": "Special",
             "value": null
           },
           {
-            "label": "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "label": "Steam achievement (if the target leads a rival nation): Regicide",
             "scope": "Special",
             "value": null
           },
@@ -44960,7 +45442,7 @@
             "value": null
           },
           {
-            "label": "Steam achievement: Behind The Throne Thats My Queue",
+            "label": "Steam achievement: That's My Queue!",
             "scope": "Special",
             "value": null
           }
@@ -44991,7 +45473,7 @@
             "value": null
           },
           {
-            "label": "Steam achievement: Behind The Throne Thats My Queue",
+            "label": "Steam achievement: That's My Queue!",
             "scope": "Special",
             "value": null
           }
@@ -45034,7 +45516,7 @@
     ],
     "dedicated": false,
     "description": "",
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "eventGroups": [
       {
         "events": [
@@ -45055,6 +45537,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "50% chance next turn: becomes Blessed"
+                      },
                       {
                         "text": "Converts to the target religion"
                       }
@@ -45126,14 +45611,17 @@
                       {
                         "text": "Loses trait: Unpopular",
                         "tip": [
-                          "As leader: -20 Opinion Family",
+                          "As leader: -20 Family Opinions",
                           "As leader: +5% Rebel Chance"
                         ],
-                        "tipTitle": "Unpopular — trait"
+                        "tipTitle": "Unpopular trait"
                       },
                       {
                         "memory": "MEMORYCHARACTER_GRAND_VIZIER",
                         "text": "Remembered: Grand Vizier (88 turns)"
+                      },
+                      {
+                        "text": "The character joins the council as Grand Vizier"
                       }
                     ],
                     "weight": null
@@ -45204,6 +45692,9 @@
                     "probability": 1.0,
                     "rewards": [
                       {
+                        "text": "Add Improvement: Estates"
+                      },
+                      {
                         "text": "Begin project: Bucolic Reputation"
                       },
                       {
@@ -45221,10 +45712,10 @@
                       {
                         "text": "Loses trait: Unpopular",
                         "tip": [
-                          "As leader: -20 Opinion Family",
+                          "As leader: -20 Family Opinions",
                           "As leader: +5% Rebel Chance"
                         ],
-                        "tipTitle": "Unpopular — trait"
+                        "tipTitle": "Unpopular trait"
                       }
                     ],
                     "weight": null
@@ -45277,7 +45768,7 @@
                           "+1 Discipline",
                           "+20 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Frugal — trait"
+                        "tipTitle": "Frugal trait"
                       }
                     ],
                     "weight": null
@@ -45474,7 +45965,7 @@
     ],
     "dedicated": false,
     "description": "",
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "eventGroups": [
       {
         "events": [
@@ -45539,7 +46030,7 @@
                   "+1 Courage",
                   "+20 opinion with same-trait characters"
                 ],
-                "tipTitle": "Bold — trait"
+                "tipTitle": "Bold trait"
               }
             ],
             "id": "EVENTSTORY_CAUGHT_IN_A_BIND",
@@ -45553,6 +46044,9 @@
                     "label": null,
                     "probability": 1.0,
                     "rewards": [
+                      {
+                        "text": "25% chance next turn: becomes Affable"
+                      },
                       {
                         "text": "Leader relationship: Owes Favor To"
                       }
@@ -45599,7 +46093,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Corrupt — trait"
+                        "tipTitle": "Corrupt trait"
                       },
                       {
                         "text": "Leader relationship: Blackmailed By"
@@ -45657,7 +46151,7 @@
             "conditions": [],
             "guaranteed": [
               {
-                "text": "Steam achievement: Behind The Throne Jackpot"
+                "text": "Steam achievement: Jackpot"
               },
               {
                 "base": 320,
@@ -45751,7 +46245,7 @@
             "conditions": [],
             "guaranteed": [
               {
-                "text": "Begin project: Den Of Vice"
+                "text": "Begin project: Den of Vice"
               }
             ],
             "id": "EVENTSTORY_SETTING_AN_EXAMPLE",
@@ -45853,7 +46347,7 @@
                           "-1 Discipline",
                           "+40 opinion with same-trait characters"
                         ],
-                        "tipTitle": "Corrupt — trait"
+                        "tipTitle": "Corrupt trait"
                       },
                       {
                         "base": 160,
@@ -45974,7 +46468,7 @@
             "yield": "money"
           },
           {
-            "label": "Steam achievement: Behind The Throne Jackpot",
+            "label": "Steam achievement: Jackpot",
             "scope": "Special",
             "value": null
           }
@@ -46163,7 +46657,7 @@
     ],
     "dedicated": false,
     "description": "",
-    "dlc": "Aksum",
+    "dlc": "Wrath of Gods",
     "eventGroups": [],
     "foldedIds": [],
     "id": "MISSION_INTIMIDATE",
@@ -46227,7 +46721,7 @@
     ],
     "dedicated": false,
     "description": "",
-    "dlc": "Aksum",
+    "dlc": "Wrath of Gods",
     "eventGroups": [],
     "foldedIds": [],
     "id": "MISSION_LEAD_DELEGATION",
@@ -46269,6 +46763,11 @@
             "label": "Remembered: Led a delegation to confer with me (+40 opinion for 20 turns) (no event currently keys off this)",
             "scope": "Special",
             "value": null
+          },
+          {
+            "label": "Gain from the target: +50 Science",
+            "scope": "Special",
+            "value": null
           }
         ],
         "weight": 1
@@ -46306,6 +46805,11 @@
           },
           {
             "label": "Remembered: Led a delegation to confer with me (+40 opinion for 20 turns) (no event currently keys off this)",
+            "scope": "Special",
+            "value": null
+          },
+          {
+            "label": "Gain from the target: +50 Civics",
             "scope": "Special",
             "value": null
           }
@@ -46347,6 +46851,11 @@
             "label": "Remembered: Led a delegation to confer with me (+40 opinion for 20 turns) (no event currently keys off this)",
             "scope": "Special",
             "value": null
+          },
+          {
+            "label": "Gain from the target: +200 Money",
+            "scope": "Special",
+            "value": null
           }
         ],
         "weight": 1
@@ -46354,7 +46863,7 @@
     ],
     "path": "missions/lead-delegation",
     "scaling": null,
-    "scalingNote": "Each delegation outcome pays a base amount plus a per-city amount for both your cities and the rival's (e.g. Science: 40 + 10 per your city + 50 + 20 per rival city), then turn-scales like other mission rewards. The single-axis calculator can't chart two city counts, so it is omitted — the outcome cards above carry the exact values.",
+    "scalingNote": "Each delegation outcome pays a base amount plus a per-city amount for both your cities and the rival's (e.g. Science: 40 + 10 per your city + 50 + 20 per rival city), then turn-scales like other mission rewards. The calculator charts one axis and cannot chart two city counts, so it is omitted, and the outcome cards above carry the exact values.",
     "slug": "lead-delegation",
     "subject": "Envoy",
     "techPrereq": null,
@@ -46373,7 +46882,7 @@
     ],
     "dedicated": false,
     "description": "Make offerings to increase Happiness in a City",
-    "dlc": "Religion Event Pack",
+    "dlc": "The Sacred and the Profane",
     "eventGroups": [
       {
         "events": [
@@ -46494,8 +47003,8 @@
       }
     ],
     "dedicated": false,
-    "description": "Impart the wisdom of the land upon another, teaching them to become a Steward Of The Land.",
-    "dlc": "Calamities",
+    "description": "Impart the wisdom of the land upon another, teaching them to become a Steward of the Land.",
+    "dlc": "Wrath of Gods",
     "eventGroups": [],
     "foldedIds": [],
     "id": "MISSION_IMPART_STEWARDSHIP",
@@ -46503,14 +47012,14 @@
     "opinionCost": [],
     "outcomes": [
       {
-        "description": "[character] has learned much from [character] and is now a Steward Of The Land",
+        "description": "[character] has learned much from [character] and is now a Steward of the Land",
         "id": "MISSIONRESULT_MAKE_STEWARD_OF_THE_LAND",
-        "name": "Target becomes a Steward Of The Land",
+        "name": "Target becomes a Steward of the Land",
         "probability": 0.75,
         "ratingModifier": [],
         "rewards": [
           {
-            "label": "Gain trait: Steward Of The Land",
+            "label": "Gain trait: Steward of the Land",
             "scope": "Special",
             "value": null
           }
@@ -46518,7 +47027,7 @@
         "weight": 3
       },
       {
-        "description": "Though [character] gleaned some wisdom from [character], it was not enough to earn the title of Steward Of The Land",
+        "description": "Though [character] gleaned some wisdom from [character], it was not enough to earn the title of Steward of the Land",
         "id": "MISSIONRESULT_MAKE_STEWARD_OF_THE_LAND_FAILED",
         "name": "Impart Stewardship Failed",
         "probability": 0.25,

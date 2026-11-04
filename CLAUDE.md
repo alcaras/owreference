@@ -443,7 +443,16 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   siblings through `with_dlc()` (`text-unit.xml` + `text-unit-hittite.xml`). Title-
   casing tokens looked right while zTypes matched names, then shipped "Hittite
   Chariot 1" for the Heavy Chariot and "Library 3" for University. The game calls
-  NATION_HITTITE **Hatti**; "Hittite" stays an alias.
+  NATION_HITTITE **Hatti**; "Hittite" stays an alias. Mohawk ships a patch's new
+  strings in `text-new.xml` and rewrites old ones in `text-change.xml` /
+  `text-locked-change.xml`: `with_dlc()` and `text_files()` load those LAST, so every
+  text loader must let a later file win (no `setdefault` / `k not in out`).
+- **Patch-notes baseline = old XML through the CURRENT pipeline.** The previous
+  build's snapshot holds whatever the pipeline produced back then, so site fixes
+  made between patches show up as "patch changes". After `make sync`, rebuild the
+  old snapshot from HEAD's `reference/XML` with today's scripts (a scratch
+  `git worktree`, plus the old `reference/Source`) before `make changelog`.
+  `sync_patch.sh` syncs `reference/Source` too now; it used to skip it.
 - **Mods folder (`reference/XML/Mods/`) is excluded from the repo** to keep size down. The pipeline only reads from `reference/XML/Infos/`.
 - **`reference/Graphics/` and `reference/Source/`** are excluded too (binary game assets, Unity controllers).
 - **Cognomen tracker OCR — the OCR is reliable; don't blame Tesseract.** On a real F5 capture Tesseract.js read **every digit correctly** (17/17 scoring stats, zero number errors). What looks "garbled" is *gutter noise*, not bad text: bullet glyphs (●) become `e`/`eo`/`®`/`¢`, the left UI rail bleeds in as `J{`/`U`/`|` prefixes, and right-edge game-world text appends junk like `54 C`, `5 in`, `1 Is`. The fix was always in the **parser**, never the image. Don't add OpenCV.js / heavier preprocessing on a hunch — diagnose against a real screenshot first.
@@ -467,7 +476,10 @@ Add new fields to the humanizer as you encounter them. Always test against the s
   getBestBuild`, with buying off for humans (`shouldBuyYields` needs `isAIAutoPlay`).
   Since 1.0.84658 `BuildValue.bLowPriority` sorts emergency units (`canDamage ∧
   ¬bRegular` — Militia, Conscripts) and over-target military *behind every* ordinary
-  candidate regardless of value, and `isBuildUnitValid`'s land cap is asymmetric:
+  candidate regardless of value (1.0.85345 moved it into `PlayerAI.isLowPriorityUnit`:
+  any land military unit once ALL land military > target; before, every non-latest
+  unit, workers and settlers too, went low priority on that count), and
+  `isBuildUnitValid`'s land cap is asymmetric:
   up-to-date regulars compare the latest-upgrade count to 1.5× the target, while
   obsolete and emergency units compare ALL land military — emergency against the
   plain target, with no 1.5× headroom.

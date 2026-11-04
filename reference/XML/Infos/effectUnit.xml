@@ -65,8 +65,8 @@
 		<bEndRout/>
 		<bPush/>
 		<bPushWater/>
-		<bStun/>
-		<bImmobilize/>
+		<bStunned/>
+		<bImmobile/>
 		<bLastStand/>
 		<bIgnoresDistance/>
 		<bCriticalImmune/>
@@ -759,7 +759,10 @@
 		<zType>EFFECTUNIT_GRAPPLER</zType>
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_GRAPPLER</GenderedName>
 		<zIconName>EFFECTUNIT_GRAPPLER</zIconName>
-		<bImmobilize>1</bImmobilize>
+		<AttackApplyEffectUnitTurns>
+			<First>EFFECTUNIT_IMMOBILE</First>
+			<Second>2</Second>
+		</AttackApplyEffectUnitTurns>
 		<abUnitTraitValid>
 			<Pair>
 				<zIndex>UNITTRAIT_SHIP</zIndex>
@@ -1260,7 +1263,10 @@
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_TACTICIAN_LEADER</GenderedName>
 		<zIconName>EFFECTUNIT_TACTICIAN_LEADER</zIconName>
 		<bSkipIcon>1</bSkipIcon>
-		<bStun>1</bStun>
+		<AttackApplyEffectUnitTurns>
+			<First>EFFECTUNIT_STUNNED</First>
+			<Second>2</Second>
+		</AttackApplyEffectUnitTurns>
 	</Entry>
 	<Entry>
 		<zType>EFFECTUNIT_ZEALOT</zType>
@@ -1341,12 +1347,12 @@
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_SWORD_OF_THE_GODS</GenderedName>
 		<zIconName>EFFECTUNIT_EVENT</zIconName>
 		<bCriticalImmune>1</bCriticalImmune>
-		<aiUnitTraitModifier>
+		<aiUnitTraitModifierAttack>
 			<Pair>
 				<zIndex>UNITTRAIT_INFANTRY</zIndex>
 				<iValue>50</iValue>
 			</Pair>
-		</aiUnitTraitModifier>
+		</aiUnitTraitModifierAttack>
 	</Entry>
 	<Entry>
 		<zType>EFFECTUNIT_GENERAL_HOPPING</zType>
@@ -1803,8 +1809,23 @@
 	<Entry>
 		<zType>EFFECTUNIT_DISARMED</zType>
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_DISARMED</GenderedName>
-		<zIconName>UNITEFFECT_DISARMED</zIconName>
+		<zIconName>COOLDOWN_ATTACKED</zIconName>
 		<iStrengthModifier>-20</iStrengthModifier>
+	</Entry>
+	<Entry>
+		<zType>EFFECTUNIT_IMMOBILE</zType>
+		<GenderedName>GENDERED_TEXT_EFFECTUNIT_IMMOBILE</GenderedName>
+		<zIconName>COOLDOWN_IMMOBILE</zIconName>
+		<bImmobile>1</bImmobile>
+	</Entry>
+	<Entry>
+		<zType>EFFECTUNIT_STUNNED</zType>
+		<GenderedName>GENDERED_TEXT_EFFECTUNIT_STUNNED</GenderedName>
+		<zIconName>COOLDOWN_STUNNED</zIconName>
+		<bStunned>1</bStunned>
+		<aeEffectUnitImmune>
+			<zValue>EFFECTUNIT_STUNNED</zValue>
+		</aeEffectUnitImmune>
 	</Entry>
 	<Entry>
 		<zType>EFFECTUNIT_SHIP_FORMATION</zType>
@@ -2000,7 +2021,7 @@
 	<Entry>
 		<zType>EFFECTUNIT_PLAGUE_1</zType>
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_PLAGUE_1</GenderedName>
-		<zIconName>EFFECTUNIT_PLAGUED</zIconName>
+		<zIconName>COOLDOWN_PLAGUE</zIconName>
 		<TileAsset>ASSET_TILEVISUALEFFECT_PLAGUE_FLIES</TileAsset>
 		<iDamageAlways>1</iDamageAlways>
 		<aeEffectUnitInvalid>
@@ -2012,7 +2033,7 @@
 	<Entry>
 		<zType>EFFECTUNIT_PLAGUE_2</zType>
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_PLAGUE_2</GenderedName>
-		<zIconName>EFFECTUNIT_PLAGUED</zIconName>
+		<zIconName>COOLDOWN_PLAGUE</zIconName>
 		<TileAsset>ASSET_TILEVISUALEFFECT_PLAGUE_FLIES</TileAsset>
 		<iFatigueExtra>-1</iFatigueExtra>
 		<iDamageAlways>2</iDamageAlways>
@@ -2038,7 +2059,7 @@
 	<Entry>
 		<zType>EFFECTUNIT_PLAGUE_3</zType>
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_PLAGUE_3</GenderedName>
-		<zIconName>EFFECTUNIT_PLAGUED</zIconName>
+		<zIconName>COOLDOWN_PLAGUE</zIconName>
 		<TileAsset>ASSET_TILEVISUALEFFECT_PLAGUE_FLIES</TileAsset>
 		<iFatigueExtra>-1</iFatigueExtra>
 		<iDamageAlways>3</iDamageAlways>
@@ -2064,7 +2085,7 @@
 	<Entry>
 		<zType>EFFECTUNIT_PLAGUE_4</zType>
 		<GenderedName>GENDERED_TEXT_EFFECTUNIT_PLAGUE_4</GenderedName>
-		<zIconName>EFFECTUNIT_PLAGUED</zIconName>
+		<zIconName>COOLDOWN_PLAGUE</zIconName>
 		<TileAsset>ASSET_TILEVISUALEFFECT_PLAGUE_FLIES</TileAsset>
 		<iFatigueExtra>-2</iFatigueExtra>
 		<iDamageAlways>4</iDamageAlways>
@@ -2116,9 +2137,10 @@
 		<iMovementExtra>1</iMovementExtra>
 		<aeEffectUnitImmune>
 			<zValue>EFFECTUNIT_PANIC</zValue>
-			<zValue>EFFECTUNIT_TACTICIAN_LEADER</zValue>
+			<zValue>EFFECTUNIT_STUNNED</zValue>
 			<zValue>EFFECTUNIT_DISARMED</zValue>
-			<zValue>EFFECTUNIT_GRAPPLER</zValue>
+			<zValue>EFFECTUNIT_IMMOBILE</zValue>
+			<zValue>EFFECTUNIT_FIRESHIP</zValue>
 		</aeEffectUnitImmune>
 	</Entry>
 	<Entry>
@@ -2128,9 +2150,9 @@
 		<iMovementExtra>1</iMovementExtra>
 		<aeEffectUnitImmune>
 			<zValue>EFFECTUNIT_PANIC</zValue>
-			<zValue>EFFECTUNIT_TACTICIAN_LEADER</zValue>
+			<zValue>EFFECTUNIT_STUNNED</zValue>
 			<zValue>EFFECTUNIT_DISARMED</zValue>
-			<zValue>EFFECTUNIT_GRAPPLER</zValue>
+			<zValue>EFFECTUNIT_IMMOBILE</zValue>
 		</aeEffectUnitImmune>
 	</Entry>
 	<!-- EOTI -->

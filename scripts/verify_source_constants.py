@@ -111,8 +111,11 @@ WATCHED = [
      "combat.ts counterBonus: which vs-trait arrays apply on attack (vs/attack/melee-if-attacker-melee)"),
     ("Base/Game/GameCore/Unit.cs", "defendUnitStrength", 90,
      "combat.ts counterBonus: which vs-trait arrays apply on defense (vs/defense/melee-if-attacker-melee)"),
-    ("Base/Game/GameCore/Unit.cs", "counterAttackMelee", 15,
-     "unit-counters page: only Melee/Ship defenders counterattack (iMeleeCounter)"),
+    ("Base/Game/GameCore/Unit.cs", "getCounterAttackDamage", 45,
+     "unit-counters page: counterattack = % of attack or Σ effect iMeleeCounter (counterAttackMelee "
+     "became the cached getMeleeCounter in 1.0.85345)"),
+    ("Base/Game/GameCore/Unit.cs", "canCounterattack", 31,
+     "unit-counters page: who may counterattack (not stunned, unlimbered siege, not flanked)"),
     ("Base/Game/GameCore/Unit.cs", "getEffectUnits", 30,
      "build_unit_damage.py unit_effect_ids(): units carry own aeEffectUnit + one EffectUnit per UnitTrait"),
     # Forced city autobuild (grand-vizier / autonomous-rule pages, build_autobuild.py)
@@ -121,6 +124,8 @@ WATCHED = [
     ("Base/Game/GameCore/PlayerAI.cs", "getBestBuild", 110,
      "autobuild candidate pools: projects / specialists (skipped in danger) / units; danger re-run; "
      "BuildValue.bLowPriority sorts emergency + over-target military behind everything else"),
+    ("Base/Game/GameCore/PlayerAI.cs", "isLowPriorityUnit", 16,
+     "grand-vizier page: low priority = emergency unit, or land military once ALL land military > target"),
     ("Base/Game/GameCore/PlayerAI.cs", "isBuildProjectValid", 15,
      "autobuild: only defensive projects when in danger or border city with a defensive option"),
     ("Base/Game/GameCore/PlayerAI.cs", "isBuildUnitValid", 140,

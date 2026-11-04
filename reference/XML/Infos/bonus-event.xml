@@ -14,12 +14,32 @@
 		<bTeamAlliance>1</bTeamAlliance>
 	</Entry>
 	<Entry>
+		<zType>BONUS_EVENTOPTION_ALLIANCE_PROPOSAL_HUMAN_NO</zType>
+		<Notification>TEXT_BONUS_EVENTOPTION_ALLIANCE_PROPOSAL_HUMAN_NO</Notification>
+	</Entry>
+	<Entry>
 		<zType>BONUS_EVENTOPTION_PEACE_PROPOSAL_HUMAN_YES</zType>
 		<DiplomacyPlayerFrom>DIPLOMACY_PEACE</DiplomacyPlayerFrom>
 	</Entry>
 	<Entry>
+		<zType>BONUS_EVENTOPTION_PEACE_PROPOSAL_HUMAN_NO</zType>
+		<Notification>TEXT_BONUS_EVENTOPTION_PEACE_PROPOSAL_HUMAN_NO</Notification>
+	</Entry>
+	<Entry>
 		<zType>BONUS_EVENTOPTION_TRUCE_PROPOSAL_HUMAN_YES</zType>
 		<DiplomacyPlayerFrom>DIPLOMACY_TRUCE</DiplomacyPlayerFrom>
+	</Entry>
+	<Entry>
+		<zType>BONUS_EVENTOPTION_TRUCE_PROPOSAL_HUMAN_NO</zType>
+		<Notification>TEXT_BONUS_EVENTOPTION_TRUCE_PROPOSAL_HUMAN_NO</Notification>
+	</Entry>
+	<Entry>
+		<zType>BONUS_EVENTOPTION_EXCHANGE_MAPS_HUMAN_YES</zType>
+		<bExchangeRevealed>1</bExchangeRevealed>
+	</Entry>
+	<Entry>
+		<zType>BONUS_EVENTOPTION_EXCHANGE_MAPS_HUMAN_NO</zType>
+		<Notification>TEXT_BONUS_EVENTOPTION_EXCHANGE_MAPS_HUMAN_NO</Notification>
 	</Entry>
 	<Entry>
 		<zType>BONUS_EVENTOPTION_TRIBE_PLAYER_WAR_MEMORY</zType>
@@ -772,29 +792,17 @@
 	</Entry>
 	<Entry>
 		<zType>BONUS_MAYBE_CURSED_OR_AFFABLE</zType>
-		<aiTraitProbDelay>
-			<Pair>
-				<zIndex>TRAIT_CURSED</zIndex>
-				<iValue>50</iValue>
-			</Pair>
-			<Pair>
-				<zIndex>TRAIT_AFFABLE</zIndex>
-				<iValue>50</iValue>
-			</Pair>
-		</aiTraitProbDelay>
+		<aeRandomTraitDelay>
+			<zValue>TRAIT_CURSED</zValue>
+			<zValue>TRAIT_AFFABLE</zValue>
+		</aeRandomTraitDelay>
 	</Entry>
 	<Entry>
 		<zType>BONUS_MAYBE_PIOUS_OR_FOOLISH</zType>
-		<aiTraitProbDelay>
-			<Pair>
-				<zIndex>TRAIT_PIOUS</zIndex>
-				<iValue>50</iValue>
-			</Pair>
-			<Pair>
-				<zIndex>TRAIT_FOOLISH</zIndex>
-				<iValue>50</iValue>
-			</Pair>
-		</aiTraitProbDelay>
+		<aeRandomTraitDelay>
+			<zValue>TRAIT_PIOUS</zValue>
+			<zValue>TRAIT_FOOLISH</zValue>
+		</aeRandomTraitDelay>
 	</Entry>
 	<Entry>
 		<zType>BONUS_EVENTOPTION_RUINS_CHOSEN_CHILD_REJECT_CHARACTER_LONG_TERM</zType>
@@ -889,7 +897,7 @@
 	<Entry>
 		<zType>BONUS_SPYMASTER_AND_INFLUENCE</zType>
 		<aeBonuses>
-			<zValue>BONUS_MAKE_AMBASSADOR</zValue>
+			<zValue>BONUS_MAKE_SPYMASTER</zValue>
 			<zValue>BONUS_LEADER_INFLUENCED_BY</zValue>
 		</aeBonuses>
 	</Entry>
@@ -13997,13 +14005,6 @@
 		</aeAddTraits>
 	</Entry>
 	<Entry>
-		<zType>BONUS_EVENTOPTION_CHARACTER_BIRTHRIGHT_OPTION_1_CHARACTER_1</zType>
-		<iRebelUnits>2</iRebelUnits>
-		<aeAddTraits>
-			<zValue>TRAIT_ROBUST</zValue>
-		</aeAddTraits>
-	</Entry>
-	<Entry>
 		<zType>BONUS_EVENTOPTION_CHARACTER_BIRTHRIGHT_OPTION_2_CHARACTER_1</zType>
 		<aeBonuses>
 			<zValue>BONUS_HAPPINESS_GAIN_SMALL</zValue>
@@ -20314,7 +20315,7 @@
 		<zType>BONUS_ORTHODOXY_AND_INTOLERANT</zType>
 		<Name>TEXT_BONUS_EVENTOPTION_CULTURE_TEMPLE_HYMNS_OPTION_2_CHARACTER</Name>
 		<FreeLaw>LAW_ORTHODOXY</FreeLaw>
-		<iLegitimacy>2</iLegitimacy>
+		<iLegitimacy>4</iLegitimacy>
 		<aeBonuses>
 			<zValue>BONUS_GIVE_TRAIT_INTOLERANT</zValue>
 		</aeBonuses>
@@ -22448,18 +22449,6 @@
 	<Entry>
 		<zType>BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_SHRINES</zType>
 		<AmbitionFamily>GOAL_EIGHT_SHRINES</AmbitionFamily>
-	</Entry>
-	<Entry>
-		<zType>BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_MONASTERIES</zType>
-		<AmbitionFamily>GOAL_FOUR_MONASTERY</AmbitionFamily>
-	</Entry>
-	<Entry>
-		<zType>BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_TEMPLES</zType>
-		<AmbitionFamily>GOAL_FOUR_TEMPLE</AmbitionFamily>
-	</Entry>
-	<Entry>
-		<zType>BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_CATHEDRALS</zType>
-		<AmbitionFamily>GOAL_THREE_CATHEDRAL</AmbitionFamily>
 	</Entry>
 	<Entry>
 		<zType>BONUS_EVENTOPTION_RESTLESS_OLIGARCHS_CHAMPIONS_6_TRIBES</zType>

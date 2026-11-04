@@ -114,7 +114,7 @@ def load_text(*filenames: str) -> dict[str, str]:
         for e in ET.parse(p).getroot().findall("Entry"):
             k = e.findtext("zType") or ""
             en = (e.findtext("en-US") or "").split("~")[0].strip()
-            if k and k not in out:
+            if k:
                 out[k] = clean(en)
     return out
 

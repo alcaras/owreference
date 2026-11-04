@@ -21,6 +21,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from link_names import text_files
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "reference" / "Source" / "Base" / "Game" / "GameCore"
@@ -52,10 +53,10 @@ def member_to_xml() -> dict[str, str]:
 
 def load_text() -> dict[str, str]:
     out: dict[str, str] = {}
-    for p in sorted(XML_DIR.glob("text-*.xml")):
+    for p in text_files():
         for e in ET.parse(p).getroot().findall("Entry"):
             k = e.findtext("zType") or ""
-            if k and k not in out:
+            if k:
                 out[k] = e.findtext("en-US") or ""
     return out
 

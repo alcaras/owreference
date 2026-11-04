@@ -15,6 +15,7 @@ event-search index are skipped — they re-derive from the primary datasets.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 ID_KEYS = ("id", "key", "slug", "label", "name")
@@ -22,6 +23,12 @@ SKIP = {
     "entities.json", "backlinks.json", "event-search.json", "event-chains.json",
     "patchnotes.json", "continent-maps.json",
 }
+
+# Game-source citations ("Unit.cs:5683") shift with every patch and are
+# pipeline grounding, not player-facing data (CLAUDE.md writing rule 8); the
+# prose audit fails any page that shows one. "_meta"-style keys are builder
+# bookkeeping (e.g. turn_order's unlabeled-call audit).
+CITATION_RE = re.compile(r"\b\w+\.cs:\d+")
 
 
 def _label(item) -> str:
@@ -58,7 +65,7 @@ def _diff_entity(file: str, entity: str, p: dict, c: dict, out: list) -> None:
     """Field-level diff of one entity dict → records."""
     for k in sorted(set(p) | set(c)):
         pv, cv = p.get(k), c.get(k)
-        if pv == cv:
+        if pv == cv or str(k).startswith("_"):
             continue
         if isinstance(pv, list) and isinstance(cv, list):
             added = [x for x in cv if x not in pv]
@@ -84,7 +91,9 @@ def _diff_entity(file: str, entity: str, p: dict, c: dict, out: list) -> None:
             out.append(_rec(file, entity, "changed", f"{k}: {_short(pv)} → {_short(cv)}"))
 
 
-def _rec(file: str, entity: str, kind: str, detail: str) -> dict:
+def _rec(file: str, entity: str, kind: str, detail: str) -> dict | None:
+    if CITATION_RE.search(f"{entity} {detail}"):
+        return None
     text = f"{file} {entity} {detail}".lower()
     return {"file": file, "entity": entity, "kind": kind, "detail": detail, "text": text}
 
@@ -123,7 +132,7 @@ def diff_dirs(before: Path, after: Path) -> list[dict]:
         if prev == cur:
             continue
         _diff_value(path.stem, path.stem, prev, cur, out)
-    return out
+    return [r for r in out if r]
 
 
 if __name__ == "__main__":

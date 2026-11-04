@@ -5693,6 +5693,39 @@
 		<bHidden>1</bHidden>
 	</Entry>
 	<Entry>
+		<zType>EVENTSTORY_END_WINE_GOAL_IMPRISONED_HIDDEN</zType>
+		<GameContentRequired>EVENTPACK_SCANDAL</GameContentRequired>
+		<zAuthor>Jeri Roys</zAuthor>
+		<aeSubjects>
+			<zValue>SUBJECT_LEADER_US</zValue>
+			<zValue>SUBJECT_SPOUSE_OF_LEADER_US</zValue>
+			<zValue>SUBJECT_PLAYER_US</zValue>
+		</aeSubjects>
+		<SubjectExtras>
+			<Pair>
+				<First>1</First>
+				<Second>SUBJECT_IMPRISONED</Second>
+			</Pair>
+		</SubjectExtras>
+		<aeBonuses>
+			<zValue/>
+			<zValue/>
+			<zValue>BONUS_FAIL_GOAL_HARVEST_WINE</zValue>
+		</aeBonuses>
+		<aeOptions>
+			<zValue>EVENTOPTION_PLAYING_WITH_FIRE_SETUP</zValue>
+		</aeOptions>
+		<Trigger>EVENTTRIGGER_NEW_TURN</Trigger>
+		<EventLinkPrereq>EVENTLINK_THIRST</EventLinkPrereq>
+		<aiEventLinkSubjects>
+			<iValue>0</iValue>
+			<iValue>1</iValue>
+		</aiEventLinkSubjects>
+		<iWeight>1</iWeight>
+		<iRepeatTurns>-1</iRepeatTurns>
+		<bHidden>1</bHidden>
+	</Entry>
+	<Entry>
 		<zType>EVENTSTORY_END_WINE_GOAL_DEAD_HIDDEN</zType>
 		<GameContentRequired>EVENTPACK_SCANDAL</GameContentRequired>
 		<zAuthor>Jeri Roys</zAuthor>
@@ -6024,14 +6057,14 @@
 			</Pair>
 			<Pair>
 				<First>0</First>
-				<Second>SUBJECT_PLAYER_MAX_CAUTIOUS</Second>
+				<Second>SUBJECT_PLAYER_MAX_UPSET</Second>
 			</Pair>
 		</SubjectExtras>
 		<SubjectNotExtras>
 			<Pair>
 				<First>0</First>
 				<Second>SUBJECT_PLAYER_ALLIANCE</Second>
-			</Pair>
+			</Pair>			
 		</SubjectNotExtras>
 		<aeBonuses>
 			<zValue>BONUS_DECLARE_WAR_PLAYER</zValue>
@@ -7672,6 +7705,10 @@
 		<iWeight>1</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bIgnoreTriggerProb>1</bIgnoreTriggerProb>
+		<aeEventStoryRepeatTurns>
+	        <zValue>EVENTSTORY_COALITION_FAMILY_RISING</zValue>
+			<zValue>EVENTSTORY_RISING_EXPERIENCE</zValue>
+	    </aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_RISING_IMPATIENCE_PROMOTION_FALLBACK</zType>
@@ -11294,6 +11331,9 @@
 		<iWeight>2</iWeight>
 		<iRepeatTurns>-1</iRepeatTurns>
 		<bIgnoreTriggerProb>1</bIgnoreTriggerProb>
+		<aeEventStoryRepeatTurns>
+	        <zValue>EVENTSTORY_COALITION_FAMILY_RISING</zValue>
+	    </aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_PLAYER_DECLARE_WAR_SPOUSE</zType>

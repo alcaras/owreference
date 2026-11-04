@@ -60,6 +60,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from dlc import dlc_by_content  # noqa: E402
+from link_names import text_files
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -86,10 +87,10 @@ def parse(name: str) -> ET.Element:
 
 def load_text() -> dict[str, str]:
     out: dict[str, str] = {}
-    for p in sorted(XML_DIR.glob("text-*.xml")):
+    for p in text_files():
         for e in ET.parse(p).getroot().findall("Entry"):
             k = e.findtext("zType") or ""
-            if k and k not in out:
+            if k:
                 out[k] = e.findtext("en-US") or ""
     return out
 

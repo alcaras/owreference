@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from link_names import text_files
 
 PREFIX = "TERRAIN_TARGET_"
 
@@ -47,7 +48,7 @@ def _first_form(raw: str | None) -> str:
 
 def load_text(xml_dir: Path) -> dict[str, str]:
     out: dict[str, str] = {}
-    for p in sorted(xml_dir.glob("text-*.xml")):
+    for p in text_files(xml_dir):
         try:
             root = ET.parse(p).getroot()
         except ET.ParseError:
@@ -56,7 +57,7 @@ def load_text(xml_dir: Path) -> dict[str, str]:
             k = entry.findtext("zType") or ""
             en = _first_form(entry.findtext("en-US"))
             if k and en:
-                out.setdefault(k, en)
+                out[k] = en
     return out
 
 

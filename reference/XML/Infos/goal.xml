@@ -4359,7 +4359,7 @@
 		<iAmbitionClass>28</iAmbitionClass>
 		<iMinTier>3</iMinTier>
 		<iMaxTier>4</iMaxTier>
-		<iSubjectWeight>1200</iSubjectWeight>
+		<iSubjectWeight>0</iSubjectWeight>
 		<TechPrereq>TECH_MONASTICISM</TechPrereq>
 		<aiImprovementClassCount>
 			<Pair>
@@ -4370,6 +4370,45 @@
 		<aeFamilyClass>
 			<zValue>FAMILYCLASS_CLERICS</zValue>
 		</aeFamilyClass>
+	</Entry>
+	<Entry>
+		<zType>GOAL_FOUR_TEMPLE</zType>
+		<Name>TEXT_GOAL_FOUR_TEMPLE</Name>
+		<iAmbitionClass>28</iAmbitionClass>
+		<iMinTier>5</iMinTier>
+		<iMaxTier>6</iMaxTier>
+		<iSubjectWeight>0</iSubjectWeight>
+		<TechPrereq>TECH_DOCTRINE</TechPrereq>
+		<aiImprovementClassCount>
+			<Pair>
+				<zIndex>IMPROVEMENTCLASS_TEMPLE</zIndex>
+				<iValue>4</iValue>
+			</Pair>
+		</aiImprovementClassCount>
+		<aeFamilyClass>
+			<zValue>FAMILYCLASS_CLERICS</zValue>
+		</aeFamilyClass>
+	</Entry>
+	<Entry>
+		<zType>GOAL_THREE_CATHEDRAL</zType>
+		<Name>TEXT_GOAL_THREE_CATHEDRAL</Name>
+		<iAmbitionClass>28</iAmbitionClass>
+		<iMinTier>7</iMinTier>
+		<iMaxTier>8</iMaxTier>
+		<iSubjectWeight>0</iSubjectWeight>
+		<TechPrereq>TECH_VAULTING</TechPrereq>
+		<aiImprovementClassCount>
+			<Pair>
+				<zIndex>IMPROVEMENTCLASS_CATHEDRAL</zIndex>
+				<iValue>3</iValue>
+			</Pair>
+		</aiImprovementClassCount>
+		<aeFamilyClass>
+			<zValue>FAMILYCLASS_CLERICS</zValue>
+		</aeFamilyClass>
+		<aeInvalidGameOptions>
+			<zValue>GAMEOPTION_ONE_CITY_CHALLENGE</zValue>
+		</aeInvalidGameOptions>
 	</Entry>
 	<Entry>
 		<zType>GOAL_EIGHT_SHRINES</zType>
@@ -4390,45 +4429,6 @@
 			<Pair>
 				<zIndex>IMPROVEMENTCLASS_SHRINE</zIndex>
 				<iValue>8</iValue>
-			</Pair>
-		</aiImprovementClassCount>
-		<aeFamilyClass>
-			<zValue>FAMILYCLASS_CLERICS</zValue>
-		</aeFamilyClass>
-		<aeInvalidGameOptions>
-			<zValue>GAMEOPTION_ONE_CITY_CHALLENGE</zValue>
-		</aeInvalidGameOptions>
-	</Entry>
-	<Entry>
-		<zType>GOAL_FOUR_TEMPLE</zType>
-		<Name>TEXT_GOAL_FOUR_TEMPLE</Name>
-		<iAmbitionClass>28</iAmbitionClass>
-		<iMinTier>5</iMinTier>
-		<iMaxTier>6</iMaxTier>
-		<iSubjectWeight>1500</iSubjectWeight>
-		<TechPrereq>TECH_DOCTRINE</TechPrereq>
-		<aiImprovementClassCount>
-			<Pair>
-				<zIndex>IMPROVEMENTCLASS_TEMPLE</zIndex>
-				<iValue>4</iValue>
-			</Pair>
-		</aiImprovementClassCount>
-		<aeFamilyClass>
-			<zValue>FAMILYCLASS_CLERICS</zValue>
-		</aeFamilyClass>
-	</Entry>
-	<Entry>
-		<zType>GOAL_THREE_CATHEDRAL</zType>
-		<Name>TEXT_GOAL_THREE_CATHEDRAL</Name>
-		<iAmbitionClass>28</iAmbitionClass>
-		<iMinTier>7</iMinTier>
-		<iMaxTier>8</iMaxTier>
-		<iSubjectWeight>1500</iSubjectWeight>
-		<TechPrereq>TECH_VAULTING</TechPrereq>
-		<aiImprovementClassCount>
-			<Pair>
-				<zIndex>IMPROVEMENTCLASS_CATHEDRAL</zIndex>
-				<iValue>3</iValue>
 			</Pair>
 		</aiImprovementClassCount>
 		<aeFamilyClass>
@@ -5937,6 +5937,12 @@
 				<iValue>6</iValue>
 			</Pair>
 		</aiImprovementCount>
+		<aeReligion>
+			<zValue>RELIGION_HINDUISM</zValue>
+		</aeReligion>
+		<aeInvalidGameOptions>
+			<zValue>GAMEOPTION_ONE_CITY_CHALLENGE</zValue>
+		</aeInvalidGameOptions>
 	</Entry>
 	<Entry>
 		<zType>GOAL_SIX_TEMPLES_BUDDHISM</zType>
@@ -5953,6 +5959,12 @@
 				<iValue>6</iValue>
 			</Pair>
 		</aiImprovementCount>
+		<aeReligion>
+			<zValue>RELIGION_BUDDHISM</zValue>
+		</aeReligion>
+		<aeInvalidGameOptions>
+			<zValue>GAMEOPTION_ONE_CITY_CHALLENGE</zValue>
+		</aeInvalidGameOptions>
 	</Entry>
 	<Entry>
 		<zType>GOAL_THREE_CATHEDRALS_HINDUISM</zType>
@@ -5969,6 +5981,12 @@
 				<iValue>3</iValue>
 			</Pair>
 		</aiImprovementCount>
+		<aeReligion>
+			<zValue>RELIGION_HINDUISM</zValue>
+		</aeReligion>
+		<aeInvalidGameOptions>
+			<zValue>GAMEOPTION_ONE_CITY_CHALLENGE</zValue>
+		</aeInvalidGameOptions>
 	</Entry>
 	<Entry>
 		<zType>GOAL_THREE_CATHEDRALS_BUDDHISM</zType>
@@ -5985,6 +6003,12 @@
 				<iValue>3</iValue>
 			</Pair>
 		</aiImprovementCount>
+		<aeReligion>
+			<zValue>RELIGION_BUDDHISM</zValue>
+		</aeReligion>
+		<aeInvalidGameOptions>
+			<zValue>GAMEOPTION_ONE_CITY_CHALLENGE</zValue>
+		</aeInvalidGameOptions>
 	</Entry>
 	<Entry>
 		<zType>GOAL_HOLY_SITE_BUDDHISM</zType>
@@ -6000,16 +6024,21 @@
 				<iValue>1</iValue>
 			</Pair>
 		</aiImprovementCount>
+		<aeReligion>
+			<zValue>RELIGION_BUDDHISM</zValue>
+		</aeReligion>
 	</Entry>
 	<Entry>
 		<zType>GOAL_RELIGIOUS_COUNCIL_HINDUISM</zType>
 		<GameContentRequired>EMPIRES_OF_THE_INDUS</GameContentRequired>
 		<Name>TEXT_GOAL_RELIGIOUS_COUNCIL_HINDUISM</Name>
-		<iAmbitionClass>28</iAmbitionClass>
 		<iMinTier>5</iMinTier>
 		<iMaxTier>6</iMaxTier>
 		<iSubjectWeight>1000</iSubjectWeight>
 		<bCouncilAllReligionData>1</bCouncilAllReligionData>
+		<aeReligion>
+			<zValue>RELIGION_HINDUISM</zValue>
+		</aeReligion>
 	</Entry>
 	<Entry>
 		<zType>GOAL_RELIGIOUS_COUNCIL_BUDDHISM</zType>
@@ -6019,6 +6048,9 @@
 		<iMaxTier>6</iMaxTier>
 		<iSubjectWeight>1000</iSubjectWeight>
 		<bCouncilAllReligionData>1</bCouncilAllReligionData>
+		<aeReligion>
+			<zValue>RELIGION_BUDDHISM</zValue>
+		</aeReligion>
 	</Entry>
 	<Entry>
 		<zType>GOAL_HOLY_CITY_HINDUISM</zType>
@@ -6028,6 +6060,9 @@
 		<iMaxTier>6</iMaxTier>
 		<iSubjectWeight>1000</iSubjectWeight>
 		<bCityControlled>1</bCityControlled>
+		<aeReligion>
+			<zValue>RELIGION_HINDUISM</zValue>
+		</aeReligion>
 	</Entry>
 	<Entry>
 		<zType>GOAL_HOLY_CITY_BUDDHISM</zType>
@@ -6037,6 +6072,9 @@
 		<iMaxTier>6</iMaxTier>
 		<iSubjectWeight>1000</iSubjectWeight>
 		<bCityControlled>1</bCityControlled>
+		<aeReligion>
+			<zValue>RELIGION_BUDDHISM</zValue>
+		</aeReligion>
 	</Entry>
 	<Entry>
 		<zType>GOAL_SIX_KUSHITE_PYRAMIDS</zType>

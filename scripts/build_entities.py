@@ -42,7 +42,7 @@ def text_lookup(filenames: list[str]) -> dict[str, str]:
             z = entry.findtext("zType") or ""
             en = first_form(entry.findtext("en-US"))
             if z and en:
-                out.setdefault(z, en)
+                out[z] = en
     return out
 
 

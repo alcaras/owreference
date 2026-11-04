@@ -203,6 +203,9 @@
 	<Entry>
 		<zType>EVENTOPTION_ALLIANCE_PROPOSAL_HUMAN_NO</zType>
 		<Text>TEXT_EVENTOPTION_PROPOSAL_NO</Text>
+		<aeBonuses>
+			<zValue>BONUS_EVENTOPTION_ALLIANCE_PROPOSAL_HUMAN_NO</zValue>
+		</aeBonuses>
 	</Entry>
 	<Entry>
 		<zType>EVENTOPTION_PEACE_PROPOSAL_HUMAN_YES</zType>
@@ -215,6 +218,23 @@
 	<Entry>
 		<zType>EVENTOPTION_PEACE_PROPOSAL_HUMAN_NO</zType>
 		<Text>TEXT_EVENTOPTION_PROPOSAL_NO</Text>
+		<aeBonuses>
+			<zValue>BONUS_EVENTOPTION_PEACE_PROPOSAL_HUMAN_NO</zValue>
+		</aeBonuses>
+	</Entry>
+	<Entry>
+		<zType>EVENTOPTION_EXCHANGE_MAPS_PROPOSAL_HUMAN_YES</zType>
+		<Text>TEXT_EVENTOPTION_PROPOSAL_YES</Text>
+		<aeBonuses>
+			<zValue>BONUS_EVENTOPTION_EXCHANGE_MAPS_HUMAN_YES</zValue>
+		</aeBonuses>
+	</Entry>
+	<Entry>
+		<zType>EVENTOPTION_EXCHANGE_MAPS_PROPOSAL_HUMAN_NO</zType>
+		<Text>TEXT_EVENTOPTION_PROPOSAL_NO</Text>
+		<aeBonuses>
+			<zValue>BONUS_EVENTOPTION_EXCHANGE_MAPS_HUMAN_NO</zValue>
+		</aeBonuses>
 	</Entry>
 	<Entry>
 		<zType>EVENTOPTION_TRUCE_PROPOSAL_HUMAN_YES</zType>
@@ -227,6 +247,9 @@
 	<Entry>
 		<zType>EVENTOPTION_TRUCE_PROPOSAL_HUMAN_NO</zType>
 		<Text>TEXT_EVENTOPTION_PROPOSAL_NO</Text>
+		<aeBonuses>
+			<zValue>BONUS_EVENTOPTION_TRUCE_PROPOSAL_HUMAN_NO</zValue>
+		</aeBonuses>
 	</Entry>
 	<Entry>
 		<zType>EVENTOPTION_TRIBE_PLAYER_WAR_MONEY</zType>
@@ -18827,6 +18850,7 @@
 		<Text>TEXT_EVENTOPTION_BATTLEFIELD_PROMOTION_TRIUMPH</Text>
 		<aeBonuses>
 			<zValue/>
+			<zValue/>
 			<zValue>BONUS_EVENTOPTION_BATTLEFIELD_PROMOTION_TRIUMPH</zValue>
 		</aeBonuses>
 	</Entry>
@@ -20028,10 +20052,35 @@
 	</Entry>
 	<Entry>
 		<zType>EVENTOPTION_SPOLIA_OPIMA_VICTORY_OPTION_0</zType>
+		<aiEventOptionProb>
+			<Pair>
+				<zIndex>EVENTOPTION_SPOLIA_OPIMA_VICTORY_OPTION_0_MAIN</zIndex>
+				<iValue>5000</iValue>
+			</Pair>
+			<Pair>
+				<zIndex>EVENTOPTION_SPOLIA_OPIMA_VICTORY_OPTION_0_FALLBACK</zIndex>
+				<iValue>1</iValue>
+			</Pair>
+		</aiEventOptionProb>
+	</Entry>
+	<Entry>
+		<zType>EVENTOPTION_SPOLIA_OPIMA_VICTORY_OPTION_0_MAIN</zType>
 		<Text>TEXT_EVENTOPTION_SPOLIA_OPIMA_VICTORY_OPTION_0</Text>
 		<zIcon>icon(DIPLOMACY_TRUCE)</zIcon>
 		<aeBonuses>
 			<zValue>BONUS_GIVE_TRAIT_MYSTERIOUS_SWORD</zValue>
+			<zValue/>
+			<zValue/>
+			<zValue/>
+			<zValue>BONUS_PLAYER_TRUCE</zValue>
+		</aeBonuses>
+	</Entry>
+	<Entry>
+		<zType>EVENTOPTION_SPOLIA_OPIMA_VICTORY_OPTION_0_FALLBACK</zType>
+		<Text>TEXT_EVENTOPTION_SPOLIA_OPIMA_VICTORY_OPTION_0</Text>
+		<zIcon>icon(DIPLOMACY_TRUCE)</zIcon>
+		<aeBonuses>
+			<zValue>BONUS_GIVE_TRAIT_BULWARK_ARMOR</zValue>
 			<zValue/>
 			<zValue/>
 			<zValue/>
@@ -40527,8 +40576,8 @@
 		<zType>EVENTOPTION_GLADIATOR_GAMES_YES</zType>
 		<Text>TEXT_EVENTOPTION_GLADIATOR_GAMES_YES</Text>
 		<aeBonuses>
-			<zValue>BONUS_EVENTOPTION_GLADIATOR_GAMES_YES</zValue>
 			<zValue/>
+			<zValue>BONUS_EVENTOPTION_GLADIATOR_GAMES_YES</zValue>
 			<zValue/>
 			<zValue/>
 		</aeBonuses>
@@ -40537,18 +40586,18 @@
 		<zType>EVENTOPTION_GLADIATOR_GAMES_NO</zType>
 		<Text>TEXT_EVENTOPTION_GLADIATOR_GAMES_NO</Text>
 		<aeBonuses>
+			<zValue>BONUS_GIVE_TRAIT_COMPASSIONATE</zValue>
 			<zValue/>
 			<zValue/>
 			<zValue>BONUS_LEADER_DISAPPOINTED_WITH</zValue>
-			<zValue>BONUS_GIVE_TRAIT_COMPASSIONATE</zValue>
 		</aeBonuses>
 	</Entry>
 	<Entry>
 		<zType>EVENTOPTION_GLADIATOR_GAMES_SOLDIER</zType>
 		<Text>TEXT_EVENTOPTION_GLADIATOR_GAMES_SOLDIER</Text>
 		<aeBonuses>
-			<zValue>BONUS_EVENTOPTION_GLADIATOR_GAMES_SOLDIER</zValue>
 			<zValue/>
+			<zValue>BONUS_EVENTOPTION_GLADIATOR_GAMES_SOLDIER</zValue>
 			<zValue/>
 			<zValue/>
 		</aeBonuses>
@@ -62587,10 +62636,6 @@
 				<iValue>1000</iValue>
 			</Pair>
 			<Pair>
-				<zIndex>EVENTOPTION_NEW_AMBITION_THREE_CATHEDRAL</zIndex>
-				<iValue>1000</iValue>
-			</Pair>
-			<Pair>
 				<zIndex>EVENTOPTION_NEW_AMBITION_THREE_LEGENDARY</zIndex>
 				<iValue>1000</iValue>
 			</Pair>
@@ -62712,13 +62757,6 @@
 		<Text>TEXT_EVENTOPTION_NEW_AMBITION_THREE_GARRISON_3</Text>
 		<aeBonuses>
 			<zValue>BONUS_AMBITION_THREE_GARRISON_3</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>EVENTOPTION_NEW_AMBITION_THREE_CATHEDRAL</zType>
-		<Text>TEXT_EVENTOPTION_NEW_AMBITION_THREE_CATHEDRAL</Text>
-		<aeBonuses>
-			<zValue>BONUS_AMBITION_THREE_CATHEDRAL</zValue>
 		</aeBonuses>
 	</Entry>
 	<Entry>
@@ -67407,10 +67445,6 @@
 				<zIndex>EVENTOPTION_AMBITION_FINISHED_MONOTHEISM_OPTION_ICONOGRAPHY</zIndex>
 				<iValue>100</iValue>
 			</Pair>
-			<Pair>
-				<zIndex>EVENTOPTION_AMBITION_FINISHED_MONOTHEISM_OPTION_MONASTERY</zIndex>
-				<iValue>100</iValue>
-			</Pair>
 		</aiEventOptionProb>
 	</Entry>
 	<Entry>
@@ -67481,14 +67515,6 @@
 		<Text>TEXT_EVENTOPTION_AMBITION_FINISHED_MONOTHEISM_OPTION_ICONOGRAPHY</Text>
 		<aeBonuses>
 			<zValue>BONUS_AMBITION_LAW_ICONOGRAPHY</zValue>
-			<zValue/>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>EVENTOPTION_AMBITION_FINISHED_MONOTHEISM_OPTION_MONASTERY</zType>
-		<Text>TEXT_EVENTOPTION_AMBITION_FINISHED_MONOTHEISM_OPTION_MONASTERY</Text>
-		<aeBonuses>
-			<zValue>BONUS_AMBITION_FOUR_MONASTERY</zValue>
 			<zValue/>
 		</aeBonuses>
 	</Entry>
@@ -67726,14 +67752,6 @@
 				<zIndex>EVENTOPTION_AMBITION_FINISHED_DIVINE_RULE_OPTION_GOAL_EIGHT_SHRINES</zIndex>
 				<iValue>1000</iValue>
 			</Pair>
-			<Pair>
-				<zIndex>EVENTOPTION_AMBITION_FINISHED_DIVINE_RULE_OPTION_GOAL_FOUR_MONASTERY</zIndex>
-				<iValue>100</iValue>
-			</Pair>
-			<Pair>
-				<zIndex>EVENTOPTION_AMBITION_FINISHED_DIVINE_RULE_OPTION_GOAL_FOUR_TEMPLE</zIndex>
-				<iValue>10</iValue>
-			</Pair>
 		</aiEventOptionProb>
 	</Entry>
 	<Entry>
@@ -67790,20 +67808,6 @@
 		<Text>TEXT_EVENTOPTION_AMBITION_FINISHED_DIVINE_RULE_OPTION_GOAL_EIGHT_SHRINES</Text>
 		<aeBonuses>
 			<zValue>BONUS_AMBITION_EIGHT_SHRINES</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>EVENTOPTION_AMBITION_FINISHED_DIVINE_RULE_OPTION_GOAL_FOUR_MONASTERY</zType>
-		<Text>TEXT_EVENTOPTION_AMBITION_FINISHED_DIVINE_RULE_OPTION_GOAL_FOUR_MONASTERY</Text>
-		<aeBonuses>
-			<zValue>BONUS_AMBITION_FOUR_MONASTERY</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>EVENTOPTION_AMBITION_FINISHED_DIVINE_RULE_OPTION_GOAL_FOUR_TEMPLE</zType>
-		<Text>TEXT_EVENTOPTION_AMBITION_FINISHED_DIVINE_RULE_OPTION_GOAL_FOUR_TEMPLE</Text>
-		<aeBonuses>
-			<zValue>BONUS_AMBITION_FOUR_TEMPLE</zValue>
 		</aeBonuses>
 	</Entry>
 	<Entry>
@@ -68038,10 +68042,6 @@
 				<zIndex>EVENTOPTION_AMBITION_FINISHED_ORTHODOXY_OPTION_GOAL_EIGHT_RELIGION_SPREAD</zIndex>
 				<iValue>100</iValue>
 			</Pair>
-			<Pair>
-				<zIndex>EVENTOPTION_AMBITION_FINISHED_ORTHODOXY_OPTION_GOAL_FOUR_TEMPLE</zIndex>
-				<iValue>10</iValue>
-			</Pair>
 		</aiEventOptionProb>
 	</Entry>
 	<Entry>
@@ -68098,14 +68098,6 @@
 		<Text>TEXT_EVENTOPTION_AMBITION_FINISHED_ORTHODOXY_OPTION_GOAL_EIGHT_RELIGION_SPREAD</Text>
 		<aeBonuses>
 			<zValue>BONUS_AMBITION_EIGHT_RELIGION_SPREAD</zValue>
-			<zValue/>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>EVENTOPTION_AMBITION_FINISHED_ORTHODOXY_OPTION_GOAL_FOUR_TEMPLE</zType>
-		<Text>TEXT_EVENTOPTION_AMBITION_FINISHED_ORTHODOXY_OPTION_GOAL_FOUR_TEMPLE</Text>
-		<aeBonuses>
-			<zValue>BONUS_AMBITION_FOUR_TEMPLE</zValue>
 			<zValue/>
 		</aeBonuses>
 	</Entry>
@@ -69988,18 +69980,6 @@
 				<zIndex>EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_SHRINES</zIndex>
 				<iValue>1000</iValue>
 			</Pair>
-			<Pair>
-				<zIndex>EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_MONASTERIES</zIndex>
-				<iValue>1000</iValue>
-			</Pair>
-			<Pair>
-				<zIndex>EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_TEMPLES</zIndex>
-				<iValue>1000</iValue>
-			</Pair>
-			<Pair>
-				<zIndex>EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_CATHEDRALS</zIndex>
-				<iValue>1000</iValue>
-			</Pair>
 		</aiEventOptionProb>
 	</Entry>
 	<Entry>
@@ -70057,30 +70037,6 @@
 		<aeBonuses>
 			<zValue/>
 			<zValue>BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_SHRINES</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_MONASTERIES</zType>
-		<Text>TEXT_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_MONASTERIES</Text>
-		<aeBonuses>
-			<zValue/>
-			<zValue>BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_MONASTERIES</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_TEMPLES</zType>
-		<Text>TEXT_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_TEMPLES</Text>
-		<aeBonuses>
-			<zValue/>
-			<zValue>BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_TEMPLES</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_CATHEDRALS</zType>
-		<Text>TEXT_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_CATHEDRALS</Text>
-		<aeBonuses>
-			<zValue/>
-			<zValue>BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_CATHEDRALS</zValue>
 		</aeBonuses>
 	</Entry>
 	<Entry>
@@ -71294,7 +71250,8 @@
 		<aeBonuses>
 			<zValue/>
 			<zValue/>
-			<zValue>BONUS_AMBITION_FOUR_MONASTERY</zValue>
+			<zValue/>
+            <zValue>BONUS_RELIGION_AMBITION_S1</zValue>
 		</aeBonuses>
 	</Entry>
 	<Entry>
@@ -82354,7 +82311,9 @@
 		<aeBonuses>
 			<zValue/>
 			<zValue/>
-			<zValue>BONUS_EVENTOPTION_CHARACTER_BIRTHRIGHT_OPTION_1_CHARACTER_1</zValue>
+			<zValue>BONUS_GIVE_TRAIT_ROBUST</zValue>
+			<zValue/>
+			<zValue>BONUS_REBEL_UNITS_2</zValue>
 		</aeBonuses>
 	</Entry>
 	<Entry>

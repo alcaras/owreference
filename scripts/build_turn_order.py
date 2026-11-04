@@ -39,18 +39,32 @@ OUT_PATH = os.path.join(ROOT, 'src', 'data', 'turn_order.json')
 # ---------------------------------------------------------------------------
 
 SEQUENCES = {
-    'game':           ('Game.cs',      r'protected virtual void doTurn\(\)',          12738),
-    'player':         ('Player.cs',    r'public virtual void doTurn\(\)',             16972),
-    'player_process': ('Player.cs',    r'protected virtual void processTurn\(\)',     16611),
-    'tile':           ('Tile.cs',      r'public virtual void doTurn\(\)',             10905),
-    'tile_player':    ('Tile.cs',      r'public virtual void doPlayerTurn\(\)',       11530),
-    'tribe':          ('Tribe.cs',     r'public virtual void doTurn\(\)',               289),
-    'city':           ('City.cs',      r'public virtual void doPlayerTurn\(',          8217),
-    'city_tribe':     ('City.cs',      r'public virtual void doTribeTurn\(\)',         8112),
-    'unit':           ('Unit.cs',      r'public virtual void doTurn\(\)',              5576),
-    'character':      ('Character.cs', r'public virtual void doTurn\(\)',              7447),
-    'character_year': ('Character.cs', r'protected virtual void doTurnYear\(\)',       8306),
+    'game':              ('Game.cs',      r'protected virtual void doTurn\(\)',          12942),
+    'player':            ('Player.cs',    r'public virtual void doTurn\(\)',             17203),
+    'player_process':    ('Player.cs',    r'protected virtual void processTurn\(\)',     16824),
+    'player_yields':     ('Player.cs',    r'protected virtual void processYields\(\)',   17014),
+    'player_units':      ('Player.cs',    r'protected virtual void doUnitsTurn\(\)',     17004),
+    'player_characters': ('Player.cs',    r'protected virtual void doCharactersTurn\(\)', 17125),
+    'tile':              ('Tile.cs',      r'public virtual void doTurn\(\)',             11046),
+    'tile_player':       ('Tile.cs',      r'public virtual void doPlayerTurn\(\)',       11597),
+    'tribe':             ('Tribe.cs',     r'public virtual void doTurn\(\)',               291),
+    'city':              ('City.cs',      r'public virtual void doPlayerTurn\(',          8251),
+    'city_tribe':        ('City.cs',      r'public virtual void doTribeTurn\(\)',         8146),
+    'unit':              ('Unit.cs',      r'public virtual void doTurn\(\)',              6874),
+    'character':         ('Character.cs', r'public virtual void doTurn\(\)',              7573),
+    'character_year':    ('Character.cs', r'protected virtual void doTurnYear\(\)',       8387),
 }
+
+# processTurn's body was split into helpers (patch 26433529): yields, units and
+# characters each moved into their own function. They are spliced back into
+# player_process in call order, and their steps keep the player_process labels
+# and nesting rules, so the page reads as one sequence as before.
+INLINE = {
+    ('player_process', 'processYields'):    'player_yields',
+    ('player_process', 'doUnitsTurn'):      'player_units',
+    ('player_process', 'doCharactersTurn'): 'player_characters',
+}
+LABEL_SEQ = {child: parent for (parent, _), child in INLINE.items()}
 
 # Calls that, when seen inside a sequence, embed another sequence's steps as
 # children: (seq, call name, receiver regex) -> child sequence key.
@@ -82,6 +96,7 @@ SKIP_CALLS = {
     'pushLogData', 'addTurnSummary', 'pushNextPopupText', 'addTileText',
     'sendTileTexts', 'sendAnalytics', 'TEXT', 'Log', 'Assert', 'buildCommaList',
     'ProfiledToString', 'LanguageSwitchScoped', 'StringBuilder', 'TileText',
+    'notify', 'notifyTraitGain', 'notifyTraitLoss',
     # collections / iteration plumbing
     'Add', 'Remove', 'RemoveAt', 'Clear', 'Reverse', 'Shuffle', 'PeekFront',
     'GetListScoped', 'GetDictionaryScoped', 'GetHashSetScoped',
@@ -106,36 +121,34 @@ SKIP_CALLS = {
     'checkDeathTrait', 'modify',
 }
 
-# Specific (file, line) statements to drop: duplicates of an adjacent labeled
-# step, or alternate branches already covered by its description.
-SKIP_LINES = {
-    ('Player.cs', 16536),  # incrementLeaderStat YEARS_REGENT — covered by 16533
-    ('Player.cs', 16567),  # changeMoney      — else-branch of the Orders sale
-    ('Player.cs', 16568),  # changeYieldStockpileWhole — same
-    ('Player.cs', 16585),  # setYieldStockpile — pre-found Orders top-up (setup)
-    ('Player.cs', 16656),  # processYield(Orders)  — covered by 16654
-    ('Player.cs', 16676),  # processYield(Science) — covered by 16674
-    ('Player.cs', 16811),  # incrementLeaderStat AMBITION — part of doBonus step
-    ('Tile.cs',   10919),  # clearImprovement — covered by pillage-tick step
-    ('Tile.cs',   10946),  # setTradeOutpostTime decrement — part of outpost step
-    ('Tile.cs',   10962),  # setCitySite(NONE)  — part of foundCity step
-    ('Tile.cs',   10968),  # setTradeOutpostTime reset — same
-    ('Tile.cs',   10991),  # resetImprovementUnitTurns — part of spawn step
-    ('City.cs',    8233),  # verifyBuildProjects(bonusOnly) — covered by 8288
-    ('City.cs',    8268),  # player().changeYieldTotal — stat tracking
-    ('City.cs',    8289),  # verifyBuildSpecialists — folded into 8288 desc
-    ('City.cs',    8290),  # verifyBuildUnits       — folded into 8288 desc
-    ('Unit.cs',    5696),  # act() — part of the worker-construction step
-    ('Unit.cs',    5697),  # incrementLeaderStat WORKER_TURNS — same
-    ('Unit.cs',    5729),  # setFortifyTurns(0) in city — covered by 5733 desc
-    ('Unit.cs',    5735),  # act() — part of fortify step
-    ('Unit.cs',    5743),  # setFormationTurns(0) — covered by 5747 desc
-    ('Unit.cs',    5749),  # act() — part of formation step
-    ('Unit.cs',    5870),  # height damage — folded into terrain-damage step
-    ('Unit.cs',    5910),  # convert(barbarians) — part of stopRaid step
-    ('Player.cs', 16768),  # doAchievement royal couple — achievement plumbing
-    ('Unit.cs',    5845),  # wake() on full heal — folded into the healing step
-}
+# Statements to drop: duplicates of an adjacent labeled step, or alternate
+# branches already covered by its description. Keyed (seq, call, regex on the
+# statement text), never by line number: the line-keyed version went stale on
+# the first patch after it was written and silently mislabeled steps.
+SKIP_STMTS = [
+    ('player_process', 'incrementLeaderStat', r'YEARS_REGENT_STAT'),    # covered by Years Reigned
+    ('player_process', 'changeMoney', r''),                             # else-branch of the Orders sale
+    ('player_process', 'changeYieldStockpileWhole', r'ORDERS_YIELD'),   # same
+    ('player_process', 'setYieldStockpile', r'ORDERS_YIELD'),           # pre-found Orders top-up (setup)
+    ('player_process', 'incrementLeaderStat', r'AMBITION_ACHIEVED'),    # part of the doBonus step
+    ('player_yields', 'processYield', r'ORDERS_YIELD, iOrders'),        # covered by Training → Orders
+    ('player_yields', 'processYield', r'SCIENCE_YIELD, iScience'),      # covered by Civics → Science
+    ('tile', 'clearImprovement', r''),                 # covered by the pillage-tick step
+    ('tile', 'setTradeOutpostTime', r''),              # part of the outpost step
+    ('tile', 'setCitySite', r''),                      # part of the foundCity step
+    ('tile', 'resetImprovementUnitTurns', r''),        # part of the spawn step
+    ('city', 'verifyBuildProjects', r'bBonusOnly: true'),  # covered by the full verify
+    ('city', 'changeYieldTotal', r''),                 # stat tracking
+    ('city', 'verifyBuildSpecialists', r''),           # folded into verifyBuildProjects desc
+    ('city', 'verifyBuildUnits', r''),                 # same
+    ('unit', 'act', r''),                              # part of the worker/fortify/formation steps
+    ('unit', 'incrementLeaderStat', r'WORKER_TURNS'),  # part of the worker step
+    ('unit', 'setFortifyTurns', r''),                  # covered by the fortify desc
+    ('unit', 'setFormationTurns', r''),                # covered by the formation desc
+    ('unit', 'changeDamageText', r'height\(\)'),       # folded into terrain attrition
+    ('unit', 'convert', r'BARBARIANS'),                # part of the stopRaid step
+    ('unit', 'wake', r''),                             # folded into the healing step
+]
 
 # Pure-query prefixes: a statement-call starting with one of these is skipped
 # unless it has an explicit label (assignments to queries are not steps).
@@ -143,7 +156,8 @@ QUERY_PREFIXES = ('get', 'is', 'has', 'can', 'count', 'calculate', 'find')
 
 # ---------------------------------------------------------------------------
 # Curated labels: key -> (title, desc, group)
-# Lookup order: LINE_LABELS[(file, line)] → LABELS["seq:call"] → LABELS[call].
+# Lookup order: STMT_LABELS[(seq, call, regex)] → LABELS["seq:call"] → LABELS[call].
+# Steps of an INLINE'd helper look up their parent's "seq:call" too.
 # ---------------------------------------------------------------------------
 
 LABELS = {
@@ -399,6 +413,10 @@ LABELS = {
         'Stale decisions pruned',
         'Pending decisions that are no longer valid are removed.',
         'events'),
+    'player_process:updateLastPlayerData': (
+        'Rival power and knowledge re-rated',
+        'Each player\'s Power and Knowledge rank is recomputed; a change for a rival you have met appears in your game log.',
+        'diplomacy'),
     'player_process:updatePings': (
         'Map pings expire',
         'Old map pins and reminders are cleared or re-announced.',
@@ -557,7 +575,7 @@ LABELS = {
         'units'),
     'unit:reduceCooldown': (
         'Cooldown ticks down',
-        'An active cooldown (attacked, stunned, trade…) decreases by one.',
+        'An active cooldown (attacked, capturing, trade…) decreases by one.',
         'units'),
     'unit:changeFortifyTurns': (
         'Fortification deepens',
@@ -645,75 +663,76 @@ LABELS = {
         'characters'),
 }
 
-# (file, line)-specific labels for calls that repeat with different meanings.
-LINE_LABELS = {
-    ('Player.cs', 16654): (
+# Labels for calls that repeat with different meanings, keyed like SKIP_STMTS:
+# (seq, call, regex on the statement text). None folds the step into a neighbour.
+STMT_LABELS = {
+    ('player_yields', 'processYield', r'TRAINING_YIELD, -iExtra'): (
         'Training above the cap → Orders',
         'Excess Training converts into Orders at the TRAINING_PER_ORDER rate.',
         'economy'),
-    ('Player.cs', 16674): (
+    ('player_yields', 'processYield', r'CIVICS_YIELD, -iExtra'): (
         'Civics above the cap → Science',
         'Excess Civics converts into Science at the CIVICS_PER_SCIENCE rate.',
         'economy'),
-    ('Player.cs', 16757): (
+    ('player_characters', 'doTurn', r'pLoopCharacter\.'): (
         'Non-leader characters take their turns',
         'Every living character except the leader runs the per-character sequence below.',
         'characters'),
-    ('Player.cs', 16775): (
+    ('player_characters', 'doTurn', r'pLeader\.'): (
         'The leader goes last',
         'The leader\'s character turn runs after everyone else "so that other characters don\'t have life events that would invalidate the leader\'s events" (source comment).',
         'characters'),
-    ('Player.cs', 16898): (
+    ('player', 'doEnemyPlayers', r''): (
         'AI advisor caches refresh',
         'For human players: enemy lists, attack-target suggestions and new-city-site hints update for the UI.',
         'bookkeeping'),
-    ('Player.cs', 16899): None,   # doAttackTargets — folded into 16898
-    ('Player.cs', 16900): None,   # checkNewCitySites — folded into 16898
-    ('Tile.cs',   11034): (
+    ('player', 'doAttackTargets', r''): None,   # doAttackTargets — folded into doEnemyPlayers
+    ('player', 'checkNewCitySites', r''): None,   # checkNewCitySites — folded into doEnemyPlayers
+    ('tile', 'setVegetation', r'meVegetationGrow'): (
         'Vegetation grows',
         'Regrowing vegetation rolls to advance a stage (faster the longer it has been regrowing; city regrowth modifiers apply).',
         'world'),
-    ('Tile.cs',   11056): (
+    ('tile', 'setVegetation', r'meVegetationSpread'): (
         'Vegetation spreads',
         'An empty tile can catch vegetation from an adjacent tile via that vegetation\'s spread roll.',
         'world'),
-    ('Unit.cs',   5792): (
+    ('unit', 'increaseXP', r'general\(\)'): (
         'General grants XP',
         'A promotable unit led by a general gains XP from the general\'s ratings.',
         'units'),
-    ('Unit.cs',   5800): (
+    ('unit', 'increaseXP', r'explorer\(\)'): (
         'Explorer grants XP',
         'A promotable unit led by an explorer gains XP from the explorer\'s ratings.',
         'units'),
-    ('Unit.cs',   5838): (
+    ('unit', 'changeDamageText', r'iHeal'): (
         'Healing applies',
         'Effect heal/damage plus idle healing (only if the unit took no action and can heal on this tile); a fully-healed sleeper wakes.',
         'units'),
-    ('Unit.cs',   5865): (
+    ('unit', 'changeDamageText', r'terrain\(\)'): (
         'Terrain attrition',
         'Damaging terrain and heights hurt the unit standing there.',
         'units'),
-    ('Unit.cs',   5894): (
+    ('unit', 'increaseXP', r'^increaseXP\(iXP'): (
         'Player-effect XP',
         'Per-turn XP (plus idle XP) from player-wide effects applies to promotable units.',
         'units'),
-    ('Character.cs', 8317): (
+    ('character_year', 'addTrait', r'DOOMED_TRAIT'): (
         'Death roll → leaders gain Doomed',
         'If a death trait fires for a leader, they gain Doomed instead of dying instantly, which is a warning one year ahead.',
         'characters'),
-    ('Character.cs', 8326): (
+    ('character_year', 'makeDead', r''): (
         'Death roll resolves',
         'For anyone else (or an already-Doomed leader), a fired death trait kills the character now.',
         'characters'),
-    ('Character.cs', 8336): (
+    ('character_year', 'addTrait', r'RETIRED_GENERAL_TRAIT'): (
         'Old generals retire',
         'A general at retirement age (who is not the leader) gains the Retired General trait and leaves the unit.',
         'characters'),
-    ('Character.cs', 8367): (
+    ('character_year', 'doEventTrigger', r'eClass'): (
         'Character event-class rolls',
         'Each event class with a per-character probability may fire an event starring this character.',
         'events'),
-    ('Character.cs', 8372): (
+    ('character_year', 'doEventTrigger', r'NEW_TURN_CHARACTER'): (
         'New-turn character event',
         'The generic new-turn character event trigger runs for this character.',
         'events'),
@@ -725,7 +744,7 @@ EXTRA_STEPS = {
     'character': [
         {
             'call': 'doEventTrigger',
-            'line': 7538,
+            'anchor': r'ADULTHOOD_EVENTTRIGGER',
             'loop': None,
             'cond': 'on the turn the character becomes an adult',
             'title': 'Coming of age',
@@ -1054,6 +1073,15 @@ def extract_sequence(seq_key, sources, unlabeled):
     b0, b1 = body_range(clean_lines, sig_line)
 
     steps = []
+    label_keys = [seq_key] + ([LABEL_SEQ[seq_key]] if seq_key in LABEL_SEQ else [])
+
+    def stmt_match(rules, name, stmt):
+        for key in rules:
+            s, n, rx = key
+            if s in label_keys and n == name and re.search(rx, stmt):
+                return key
+        return None
+
     stack = []          # block headers: {'kind','text'}
     cur = ''
     cur_line = None
@@ -1103,9 +1131,11 @@ def extract_sequence(seq_key, sources, unlabeled):
             return
         if recv and SKIP_RECEIVERS.search(recv):
             return
-        if (file_rel, line) in SKIP_LINES:
+        if stmt_match(SKIP_STMTS, name, stmt):
             return
-        in_labels = (f'{seq_key}:{name}' in LABELS or (file_rel, line) in LINE_LABELS)
+        stmt_label = stmt_match(STMT_LABELS, name, stmt)
+        label_key = next((k for k in label_keys if f'{k}:{name}' in LABELS), seq_key)
+        in_labels = f'{label_key}:{name}' in LABELS or stmt_label is not None
         if not in_labels and name.startswith(QUERY_PREFIXES):
             return
 
@@ -1117,14 +1147,15 @@ def extract_sequence(seq_key, sources, unlabeled):
             e = conds[-1]
             cond = 'otherwise' if e['kind'] == 'else' else cond_desc(header_inner(e['text']))
 
-        label = LINE_LABELS.get((file_rel, line), '__miss__')
+        label = STMT_LABELS[stmt_label] if stmt_label else '__miss__'
         if label is None:
             return  # explicitly folded into a neighbor
         if label == '__miss__':
-            label = LABELS.get(f'{seq_key}:{name}')
+            label = LABELS.get(f'{label_key}:{name}')
         if label is None:
             title, desc, group = prettify(name), '', 'misc'
-            unlabeled.add(f'{seq_key}:{name} ({file_rel}:{line})')
+            if (seq_key, name) not in INLINE:
+                unlabeled.add(f'{seq_key}:{name} ({file_rel}:{line})')
         else:
             title, desc, group = label
 
@@ -1140,7 +1171,7 @@ def extract_sequence(seq_key, sources, unlabeled):
             'group': group,
         }
         for (s, n, rx, child) in NEST_RULES:
-            if s == seq_key and n == name and re.search(rx, recv or ''):
+            if s in label_keys and n == name and re.search(rx, recv or ''):
                 step['child'] = child
                 break
         steps.append(step)
@@ -1178,7 +1209,11 @@ def extract_sequence(seq_key, sources, unlabeled):
     # splice curated extra steps (gameplay hidden in `if` conditions)
     for extra in EXTRA_STEPS.get(seq_key, []):
         e = dict(extra)
-        e.update({'call': extra['call'], 'recv': None, 'file': file_rel})
+        anchor = re.compile(e.pop('anchor'))
+        line = next((ln for ln in range(b0, b1 + 1) if anchor.search(clean_lines[ln - 1])), None)
+        if line is None:
+            raise SystemExit(f'[turn_order] extra-step anchor not found in {seq_key}: {anchor.pattern}')
+        e.update({'call': extra['call'], 'recv': None, 'file': file_rel, 'line': line})
         pos = len(steps)
         for i, s in enumerate(steps):
             if s['line'] > e['line']:
@@ -1207,21 +1242,19 @@ def main():
     unlabeled = set()
     seqs = {k: extract_sequence(k, sources, unlabeled) for k in SEQUENCES}
 
-    # sanity: the anchor steps we present as facts must exist
-    def has_call(seq, call, line=None):
-        return any(s['call'] == call and (line is None or s['line'] == line)
-                   for s in seqs[seq]['steps'])
-    for seq, call in [('game', 'doOccurrences'), ('game', 'doBorderFill'),
-                      ('player_process', 'doResearch'), ('player_process', 'doAmbitions'),
-                      ('player_process', 'doEventTriggers'), ('city', 'finishBuild'),
-                      ('unit', 'doCaravanMission'), ('character', 'doTurnYear')]:
-        if not has_call(seq, call):
-            raise SystemExit(f'[turn_order] expected step missing: {seq}:{call}')
-
     # resolve nesting (embed copies; player gets processTurn inlined)
     def resolve(seq_key, depth=0):
         out = []
         for s in seqs[seq_key]['steps']:
+            inline = INLINE.get((seq_key, s['call']))
+            if inline:
+                # the call site's guard (e.g. "skipped on the first turn")
+                # still applies to every step the helper runs
+                for t in resolve(inline, depth):
+                    t['cond'] = t['cond'] or s['cond']
+                    t['loop'] = t['loop'] or s['loop']
+                    out.append(t)
+                continue
             t = dict(s)
             child = t.pop('child', None)
             if child and depth < 3:
@@ -1230,6 +1263,17 @@ def main():
                 t['childFn'] = seqs[child]['fn']
             out.append(t)
         return out
+
+    # sanity: the anchor steps we present as facts must exist
+    def has_call(seq, call, line=None):
+        return any(s['call'] == call and (line is None or s['line'] == line)
+                   for s in resolve(seq))
+    for seq, call in [('game', 'doOccurrences'), ('game', 'doBorderFill'),
+                      ('player_process', 'doResearch'), ('player_process', 'doAmbitions'),
+                      ('player_process', 'doEventTriggers'), ('city', 'finishBuild'),
+                      ('unit', 'doCaravanMission'), ('character', 'doTurnYear')]:
+        if not has_call(seq, call):
+            raise SystemExit(f'[turn_order] expected step missing: {seq}:{call}')
 
     game_steps = resolve('game')
 

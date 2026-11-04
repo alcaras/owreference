@@ -15,12 +15,15 @@ if [[ ! -d "$REF_SRC" ]]; then
   exit 1
 fi
 
-echo "→ syncing $REF_SRC/{XML,Graphics} → $REF_DST/"
+# Source/ is gitignored but read by verify_source_constants.py and every
+# "grep the game source" check, so it has to track the patch too.
+echo "→ syncing $REF_SRC/{XML,Graphics,Source} → $REF_DST/"
 mkdir -p "$REF_DST"
 rsync -a --delete \
   --exclude '.DS_Store' \
   --include 'XML/***' \
   --include 'Graphics/***' \
+  --include 'Source/***' \
   --exclude '*' \
   "$REF_SRC/" "$REF_DST/"
 

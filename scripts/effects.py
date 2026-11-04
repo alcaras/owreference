@@ -21,7 +21,9 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from link_names import resolve_links
+from functools import lru_cache
+
+from link_names import XML_DIR, game_name, resolve_links
 
 _REG_PATH = Path(__file__).resolve().parent / "data" / "helptext_registry.json"
 REGISTRY: dict = json.loads(_REG_PATH.read_text()) if _REG_PATH.exists() else {}
@@ -109,7 +111,9 @@ def resolve_token(token: str, indexes: dict | None) -> str:
         nice = text_idx.get(f"TEXT_{token}", "")
         if nice:
             return _clean_text(nice)
-    return _title_token(token)
+    nice = game_name(token)
+    # some names are templates filled at runtime ("{UNIT-RELIGION,1} Disciple")
+    return nice if nice and "{" not in nice else _title_token(token)
 
 
 _CAMEL_RE = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
@@ -139,6 +143,95 @@ def _is_pct(field: str, spec: dict) -> bool:
         return True
     tpl = spec.get("template") or ""
     return "%" in tpl
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# Bare (First, Second) tuples
+# ────────────────────────────────────────────────────────────────────────────
+
+# effectUnit fields stored as a bare <First>/<Second> tuple with no <Pair>
+# wrapper. _render_field never saw them (no Pair, no text), so they rendered
+# nothing; that hid the Tactician's stun and the Grappler's immobilize once
+# patch 26433529 moved both from bStun/bImmobilize into AttackApplyEffectUnitTurns.
+TUPLE_FIELDS = frozenset({
+    "AttackApplyEffectUnitTurns", "AttackerApplyEffectUnitTurns",
+    "RemoveApplyEffectUnitTurns", "SelfApplyEffectUnitTurns",
+    "UnitTraitFormation", "bApplyEffectUnitAdjacentOnly",
+})
+
+
+def _turns(n: int) -> str:
+    return f"{n} Turn" if n == 1 else f"{n} Turns"
+
+
+def _tuple_lines(entry: ET.Element, exclude, indexes: dict | None) -> list[str]:
+    """The game's lines for the tuple fields, as HelpText.Unit.cs builds them
+    (buildEffectUnitHelp). Attacked units get turns−1: the count includes the
+    turn the effect lands, and the help names only the turns after it."""
+    def tup(field):
+        el = entry.find(field)
+        if el is None or field in exclude:
+            return None, 0
+        return (el.findtext("First") or "").strip(), int(el.findtext("Second") or 0)
+
+    me = entry.findtext("zType") or ""
+    adj = "adjacent " if (entry.findtext("bApplyEffectUnitAdjacentOnly") or "0") == "1" else ""
+    name = lambda tok: resolve_token(tok, indexes)
+    out: list[str] = []
+
+    def timed(who, eff, n, minus_one=True):
+        base = f"Applies {name(eff)} to {adj}{who}"
+        if n == 0 or eff == me:
+            return base
+        if n == 1:
+            return f"{base} until the start of their own turn"
+        return f"{base} for {_turns(n - 1 if minus_one else n)}"
+
+    eff, n = tup("AttackApplyEffectUnitTurns")
+    eff_a, n_a = tup("AttackerApplyEffectUnitTurns")
+    if eff:
+        if eff == eff_a and n == n_a:
+            out.append(timed("Units during combat", eff, n))
+        else:
+            out.append(timed("attacked Units", eff, n))
+    elif eff_a:
+        # the game passes the attacker's count through unreduced
+        out.append(timed("attacking Units", eff_a, n_a, minus_one=False))
+
+    eff, n = tup("RemoveApplyEffectUnitTurns")
+    if n > 0:
+        out.append(f"Replace with {name(eff)} after {_turns(n)}" if eff
+                   else f"Removed after {_turns(n)}")
+
+    eff, _ = tup("SelfApplyEffectUnitTurns")
+    if eff:
+        out.append(f"Can apply {name(eff)}")
+
+    trait, _ = tup("UnitTraitFormation")
+    if trait:
+        out.append(f"Can {name(me)} against {name(trait)} Units.")
+    return out
+
+
+@lru_cache(maxsize=None)
+def _tech_prereqs(filename: str) -> dict[str, str]:
+    root = ET.parse(XML_DIR / filename).getroot()
+    return {e.findtext("zType"): e.findtext("TechPrereq") for e in root.findall("Entry")
+            if e.findtext("zType") and e.findtext("TechPrereq")}
+
+
+# aeVoidTechPrereq* lists name what may be built early; the game's line adds
+# the tech being skipped, and drops entries that have no tech to skip.
+VOID_TECH_FIELDS = {
+    "aeVoidTechPrereqImprovementClass": "improvementClass.xml",
+    "aeVoidTechPrereqProject": "project.xml",
+}
+
+
+def _void_tech_lines(el: ET.Element, field: str, indexes: dict | None) -> list[str]:
+    techs = _tech_prereqs(VOID_TECH_FIELDS[field])
+    return [f"Can build {resolve_token(z.text, indexes)} without {resolve_token(techs[z.text], indexes)}"
+            for z in el.findall("zValue") if z.text in techs]
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -264,6 +357,9 @@ def extra_lines(
         return []
     seen_fields: set[str] = set()
     out: list[str] = []
+    if section == "effectUnit":
+        out.extend(_tuple_lines(entry, set(exclude) | SKIP_FIELDS.get(section, set()), indexes))
+        seen_fields |= TUPLE_FIELDS
     for key in sorted(reg):
         spec = reg[key]
         field = spec.get("xmlField") or key
@@ -291,6 +387,10 @@ def extra_lines(
                 nice = indexes.get("__text__", {}).get(key, "")
                 if nice:
                     out.append(_clean_text(nice))
+            continue
+        if field in VOID_TECH_FIELDS:
+            lines = _void_tech_lines(el, field, indexes)
+            out.extend(lines)
             continue
         lines = _render_field(el, field, spec, indexes)
         if lines:

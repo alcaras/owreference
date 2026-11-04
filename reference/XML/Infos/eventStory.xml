@@ -12460,6 +12460,26 @@
 		<bNoCharacters>1</bNoCharacters>
 	</Entry>
 	<Entry>
+		<zType>EVENTSTORY_EXCHANGE_MAPS_PROPOSAL_HUMAN</zType>
+		<Name>TEXT_EVENTSTORY_EXCHANGE_MAPS_PROPOSAL_HUMAN_TITLE</Name>
+		<Text>TEXT_EVENTSTORY_EXCHANGE_MAPS_PROPOSAL_HUMAN</Text>
+		<zAuthor>Soren Johnson</zAuthor>
+		<aeSubjects>
+			<zValue>SUBJECT_PLAYER_PEACE_OR_TRUCE_HUMAN</zValue>
+		</aeSubjects>
+		<aeOptions>
+			<zValue>EVENTOPTION_EXCHANGE_MAPS_PROPOSAL_HUMAN_YES</zValue>
+			<zValue>EVENTOPTION_EXCHANGE_MAPS_PROPOSAL_HUMAN_NO</zValue>
+		</aeOptions>
+		<Trigger>EVENTTRIGGER_MISSION_FINISHED</Trigger>
+		<TriggerData>MISSIONRESULT_EXCHANGE_MAPS_HUMAN_EVENT</TriggerData>
+		<iTriggerSubject>0</iTriggerSubject>
+		<iWeight>1</iWeight>
+		<iRepeatTurns>0</iRepeatTurns>
+		<bHidePrereqs>1</bHidePrereqs>
+		<bNoCharacters>1</bNoCharacters>
+	</Entry>
+	<Entry>
 		<zType>EVENTSTORY_TRUCE_PROPOSAL_HUMAN</zType>
 		<Name>TEXT_EVENTSTORY_TRUCE_PROPOSAL_TITLE</Name>
 		<Text>TEXT_EVENTSTORY_TRUCE_PROPOSAL_HUMAN</Text>
@@ -38219,6 +38239,7 @@
 			<zValue>SUBJECT_CHARACTER_FAMILY_US</zValue>
 			<zValue>SUBJECT_FAMILY_US</zValue>
 			<zValue>SUBJECT_LEADER_US</zValue>
+			<zValue>SUBJECT_CHARACTER_US</zValue>
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
@@ -38250,6 +38271,7 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_MARRIAGE</Trigger>
 		<iTriggerSubject>1</iTriggerSubject>
+		<iTriggerExtra>4</iTriggerExtra>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>100</iRepeatTurns>
 		<bIgnoreTriggerProb>1</bIgnoreTriggerProb>
@@ -45933,6 +45955,7 @@
 			<zValue>SUBJECT_TRIBE_REBELS</zValue>
 			<zValue>SUBJECT_UNIT_US</zValue>
 			<zValue>SUBJECT_CAPITAL_US</zValue>
+			<zValue>SUBJECT_TILE</zValue>
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
@@ -45952,6 +45975,12 @@
 				<Second>SUBJECT_UNIT_NEEDS_GENERAL</Second>
 			</Pair>
 		</SubjectExtras>
+		<SubjectNotExtras>
+			<Pair>
+				<First>5</First>
+				<Second>SUBJECT_TILE_URBAN</Second>
+			</Pair>
+		</SubjectNotExtras>
 		<SubjectRelations>
 			<Triple>
 				<First>1</First>
@@ -45962,6 +45991,11 @@
 				<First>3</First>
 				<Second>SUBJECTRELATION_FAMILY_SAME</Second>
 				<Third>0</Third>
+			</Triple>
+			<Triple>
+				<First>3</First>
+				<Second>SUBJECTRELATION_TILE_SAME</Second>
+				<Third>5</Third>
 			</Triple>
 		</SubjectRelations>
 		<aeOptions>
@@ -49004,7 +49038,7 @@
 			<zValue>SUBJECT_RESOURCE_FISH</zValue>
 			<zValue>SUBJECT_CHARACTER_US</zValue>
 			<zValue>SUBJECT_PLAYER_US</zValue>
-			<zValue>SUBJECT_TILE_CLAIMED</zValue>
+			<zValue>SUBJECT_TILE_CLAIMED_US</zValue>
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
@@ -49022,6 +49056,7 @@
 				<Second>SUBJECTRELATION_TILE_RESOURCE</Second>
 				<Third>0</Third>
 			</Triple>
+
 		</SubjectRelations>
 		<aeOptions>
 			<zValue>EVENTOPTION_HARVEST_CAPSIZED_OPTION_0</zValue>
@@ -57588,6 +57623,7 @@
 		<aeSubjects>
 			<zValue>SUBJECT_CHARACTER_US</zValue>
 			<zValue>SUBJECT_UNIT_US</zValue>
+			<zValue>SUBJECT_CAPITAL_US</zValue>
 		</aeSubjects>
 		<SubjectRelations>
 			<Triple>
@@ -92440,6 +92476,10 @@
 				<First>1</First>
 				<Second>SUBJECT_HEALTHY</Second>
 			</Pair>
+			<Pair>
+				<First>0</First>
+				<Second>SUBJECT_CITY_MAX_DEVELOPING</Second>
+			</Pair>
 		</SubjectExtras>
 		<SubjectRelations>
 			<Triple>
@@ -93236,6 +93276,7 @@
 		<Text>TEXT_EVENTSTORY_CULTURE_TEMPLE_HYMNS</Text>
 		<zBackgroundName>poetess</zBackgroundName>
 		<zEventURL>https://en.wikipedia.org/wiki/Enheduanna</zEventURL>
+		<zAudioTrigger>AUDIO_UI_EVENT_RITUAL_SPLENDOR</zAudioTrigger>
 		<zAuthor>Andy Auseon</zAuthor>
 		<aeSubjects>
 			<zValue>SUBJECT_CITY_US</zValue>
@@ -93779,14 +93820,14 @@
 		<zAudioTrigger>AUDIO_UI_EVENT_FESTIVITIES</zAudioTrigger>
 		<zAuthor>Bob Thomas</zAuthor>
 		<aeSubjects>
+			<zValue>SUBJECT_LEADER_US</zValue>
 			<zValue>SUBJECT_CITY_US</zValue>
 			<zValue>SUBJECT_FAMILY_US</zValue>
 			<zValue>SUBJECT_FAMILY_HEAD_US</zValue>
-			<zValue>SUBJECT_LEADER_US</zValue>
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
-				<First>1</First>
+				<First>2</First>
 				<Second>SUBJECT_FAMILY_CHAMPIONS</Second>
 			</Pair>
 		</SubjectExtras>
@@ -93794,10 +93835,10 @@
 			<Triple>
 				<First>1</First>
 				<Second>SUBJECTRELATION_FAMILY_SAME</Second>
-				<Third>0</Third>
+				<Third>2</Third>
 			</Triple>
 			<Triple>
-				<First>2</First>
+				<First>3</First>
 				<Second>SUBJECTRELATION_FAMILY_SAME</Second>
 				<Third>1</Third>
 			</Triple>
@@ -93809,8 +93850,8 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_IMPROVEMENT_FINISHED</Trigger>
 		<TriggerData>IMPROVEMENT_THEATER_3</TriggerData>
-		<iTriggerSubject>0</iTriggerSubject>
-		<iLookAtSubject>0</iLookAtSubject>
+		<iTriggerSubject>1</iTriggerSubject>
+		<iLookAtSubject>1</iLookAtSubject>
 		<iWeight>1</iWeight>
 		<iProb>25</iProb>
 		<iRepeatTurns>-1</iRepeatTurns>
@@ -109193,6 +109234,7 @@
 		<Trigger>EVENTTRIGGER_PRODUCTION_UNIT</Trigger>
 		<TriggerData>UNIT_SCOUT</TriggerData>
 		<iTriggerSubject>0</iTriggerSubject>
+		<iImageSubject>1</iImageSubject>
 		<iWeight>2</iWeight>
 		<iRepeatTurns>40</iRepeatTurns>
 		<aeLawInvalid>
@@ -119224,6 +119266,7 @@
 			<zValue>SUBJECT_LEADER_US</zValue>
 			<zValue>SUBJECT_RELIGION</zValue>
 			<zValue>SUBJECT_CITY_US</zValue>
+			<zValue>SUBJECT_AMBITION_CLASS_28</zValue>
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
@@ -119244,6 +119287,11 @@
 				<First>1</First>
 				<Second>SUBJECTRELATION_RELIGION_SAME</Second>
 				<Third>2</Third>
+			</Triple>
+			<Triple>
+				<First>1</First>
+				<Second>SUBJECTRELATION_RELIGION_AMBITION</Second>
+				<Third>3</Third>
 			</Triple>
 		</SubjectRelations>
 		<aeOptions>
@@ -143336,6 +143384,9 @@
 		<iProb>50</iProb>
 		<iRepeatTurns>80</iRepeatTurns>
 		<bAllOptions>1</bAllOptions>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_SILVER_JUBILEE</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_SILVER_JUBILEE</zType>
@@ -145644,7 +145695,16 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_NEW_TURN</Trigger>
 		<iWeight>4</iWeight>
-		<iRepeatTurns>40</iRepeatTurns>
+		<iRepeatTurns>1</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_MORE_VICTIMS</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_JUST_IN_TIME</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_BLINDSIDED</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_CAUGHT_RED_HANDED</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_TERROR</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_DARKEST_HOUR</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_KILLER_LOOSE</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_KILLED_IN_COLD_WATER_THE_MENACE_ELIMINATED_LOWPROB</zType>
@@ -145666,7 +145726,16 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_NEW_TURN</Trigger>
 		<iWeight>1</iWeight>
-		<iRepeatTurns>40</iRepeatTurns>
+		<iRepeatTurns>1</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_MORE_VICTIMS</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_JUST_IN_TIME</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_BLINDSIDED</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_CAUGHT_RED_HANDED</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_TERROR</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_DARKEST_HOUR</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_KILLER_LOOSE</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_KILLED_IN_COLD_WATER_A_FIERY_END_HIGHPROB</zType>
@@ -145687,7 +145756,16 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_NEW_TURN</Trigger>
 		<iWeight>2</iWeight>
-		<iRepeatTurns>40</iRepeatTurns>
+		<iRepeatTurns>1</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_MORE_VICTIMS</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_JUST_IN_TIME</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_BLINDSIDED</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_CAUGHT_RED_HANDED</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_TERROR</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_DARKEST_HOUR</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_KILLER_LOOSE</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_KILLED_IN_COLD_WATER_A_FIERY_END_LOWPROB</zType>
@@ -145708,7 +145786,16 @@
 		</aeOptions>
 		<Trigger>EVENTTRIGGER_NEW_TURN</Trigger>
 		<iWeight>1</iWeight>
-		<iRepeatTurns>40</iRepeatTurns>
+		<iRepeatTurns>1</iRepeatTurns>
+		<aeEventStoryRepeatTurns>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_MORE_VICTIMS</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_JUST_IN_TIME</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_BLINDSIDED</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_SUSPICION_CAUGHT_RED_HANDED</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_TERROR</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_DARKEST_HOUR</zValue>
+			<zValue>EVENTSTORY_KILLED_IN_COLD_WATER_NO_SUSPICION_KILLER_LOOSE</zValue>
+		</aeEventStoryRepeatTurns>
 	</Entry>
 	<Entry>
 		<zType>EVENTSTORY_A_GREEN_DEDICATION</zType>

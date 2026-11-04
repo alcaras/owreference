@@ -7234,7 +7234,7 @@
                         "tipTitle": "Ruthless trait"
                       },
                       {
-                        "text": "Your character joins the council as Ambassador"
+                        "text": "Your character joins the council as Spymaster"
                       },
                       {
                         "text": "Leader relationship: Influenced By"
@@ -7258,7 +7258,7 @@
                     },
                     {
                       "fields": [
-                        "aeBonuses: BONUS_MAKE_AMBASSADOR, BONUS_LEADER_INFLUENCED_BY"
+                        "aeBonuses: BONUS_MAKE_SPYMASTER, BONUS_LEADER_INFLUENCED_BY"
                       ],
                       "id": "BONUS_SPYMASTER_AND_INFLUENCE",
                       "pct": null,
@@ -36070,7 +36070,8 @@
           {
             "cmEligible": null,
             "conditions": [
-              "Religion Min Cautious"
+              "Religion Min Cautious",
+              "Ambition Class 28"
             ],
             "guaranteed": [],
             "id": "EVENTSTORY_DEMANDS_OF_THE_SYNOD",
@@ -36085,10 +36086,13 @@
                     "probability": 1.0,
                     "rewards": [
                       {
-                        "text": "Starts ambition: Control Four Temples"
+                        "text": "Leader relationship: Influenced By"
                       },
                       {
-                        "text": "Leader relationship: Influenced By"
+                        "text": "Starts an ambition for your state religion"
+                      },
+                      {
+                        "text": "Starts the event's ambition"
                       }
                     ],
                     "weight": null
@@ -36098,17 +36102,18 @@
                   "bonuses": [
                     {
                       "fields": [
-                        "AmbitionReligion GOAL_FOUR_TEMPLE"
+                        "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
                       ],
-                      "id": "BONUS_EVENTOPTION_DEMANDS_OF_THE_SYNOD_YES_RELIGION",
+                      "id": "BONUS_LEADER_INFLUENCED_BY",
                       "pct": null,
                       "weight": null
                     },
                     {
                       "fields": [
-                        "AddLeaderRelationship RELATIONSHIP_INFLUENCED_BY"
+                        "iAmbitionReligionSubject 0",
+                        "bAddAmbition 1"
                       ],
-                      "id": "BONUS_LEADER_INFLUENCED_BY",
+                      "id": "BONUS_RELIGION_AMBITION_S0",
                       "pct": null,
                       "weight": null
                     }
@@ -44621,7 +44626,7 @@
             "cmEligible": null,
             "conditions": [
               "Player Max Near",
-              "Player Max Cautious"
+              "Player Max Upset"
             ],
             "guaranteed": [
               {

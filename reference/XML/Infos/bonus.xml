@@ -8,6 +8,7 @@
 		<CharacterName comment="Rename a Character"/>
 		<CityName comment="Rename a City"/>
 		<UnitName comment="Rename a Unit"/>
+		<Notification comment="Turn log notification text"/>
 		<Victory comment="Player achieves this Victory type"/>
 		<Achievement comment="Player gets this Achievement"/>
 		<AchievementIfHeir comment="Player gets this Achievement if target subject is Heir"/>
@@ -125,6 +126,7 @@
 		<bMissionFree comment="The Mission will not have Yield costs"/>
 		<bMercenaryUnit comment="The Units created will not be processed through a City (so, no Family, for example)"/>
 		<bRevealTerritory comment="Will reveal all the territory of this Player"/>
+		<bExchangeRevealed comment="Will exchange maps with this Player"/>
 		<bHolyCityAgents comment="Adds an Agent in all Holy Cities"/>
 		<bCancelTrade comment="Will cancel trade with this Player"/>
 		<bCancelTribute comment="Will cancel tribute to this Player"/>
@@ -6111,27 +6113,6 @@
 		</aeBonuses>
 	</Entry>
 	<Entry>
-		<zType>BONUS_AMBITION_FOUR_MONASTERY</zType>
-		<Ambition>GOAL_FOUR_MONASTERY</Ambition>
-		<aeBonuses>
-			<zValue>BONUS_RECENT_AMBITION</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>BONUS_AMBITION_FOUR_TEMPLE</zType>
-		<Ambition>GOAL_FOUR_TEMPLE</Ambition>
-		<aeBonuses>
-			<zValue>BONUS_RECENT_AMBITION</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
-		<zType>BONUS_AMBITION_THREE_CATHEDRAL</zType>
-		<Ambition>GOAL_THREE_CATHEDRAL</Ambition>
-		<aeBonuses>
-			<zValue>BONUS_RECENT_AMBITION</zValue>
-		</aeBonuses>
-	</Entry>
-	<Entry>
 		<zType>BONUS_AMBITION_TWO_HOLY_SITE_SIX_CATHEDRAL</zType>
 		<Ambition>GOAL_TWO_HOLY_SITE_SIX_CATHEDRAL</Ambition>
 		<aeBonuses>
@@ -7366,7 +7347,7 @@
 		<aiGlobalYields>
 			<Pair>
 				<zIndex>YIELD_TRAINING</zIndex>
-				<iValue>50</iValue>
+				<iValue>100</iValue>
 			</Pair>
 		</aiGlobalYields>
 	</Entry>
@@ -7375,7 +7356,7 @@
 		<aiGlobalYields>
 			<Pair>
 				<zIndex>YIELD_TRAINING</zIndex>
-				<iValue>100</iValue>
+				<iValue>200</iValue>
 			</Pair>
 		</aiGlobalYields>
 	</Entry>
@@ -7384,7 +7365,7 @@
 		<aiGlobalYields>
 			<Pair>
 				<zIndex>YIELD_TRAINING</zIndex>
-				<iValue>150</iValue>
+				<iValue>300</iValue>
 			</Pair>
 		</aiGlobalYields>
 	</Entry>
@@ -7393,7 +7374,7 @@
 		<aiGlobalYields>
 			<Pair>
 				<zIndex>YIELD_TRAINING</zIndex>
-				<iValue>200</iValue>
+				<iValue>400</iValue>
 			</Pair>
 		</aiGlobalYields>
 	</Entry>
@@ -7754,12 +7735,6 @@
 				<Second/>
 			</Pair>
 		</AddCourtier>
-	</Entry>
-	<Entry>
-		<zType>BONUS_FAMILYCLASS_SAGES</zType>
-		<aeAddProjects>
-			<zValue>PROJECT_ARCHIVE_1</zValue>
-		</aeAddProjects>
 	</Entry>
 	<Entry>
 		<zType>BONUS_FAMILYCLASS_SAGES_SEAT</zType>
@@ -9143,6 +9118,11 @@
 	<Entry>
 		<zType>BONUS_FAMILY_AMBITION_S3</zType>
 		<iAmbitionFamilySubject>3</iAmbitionFamilySubject>
+		<bAddAmbition>1</bAddAmbition>
+	</Entry>
+	<Entry>
+		<zType>BONUS_FAMILY_AMBITION_S5</zType>
+		<iAmbitionFamilySubject>5</iAmbitionFamilySubject>
 		<bAddAmbition>1</bAddAmbition>
 	</Entry>
 	<Entry>

@@ -19,6 +19,7 @@ import json
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from link_names import text_files
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -42,14 +43,14 @@ def parse(name: str) -> ET.Element:
 
 def load_text() -> dict[str, str]:
     out: dict[str, str] = {}
-    for p in sorted(XML_DIR.glob("text-*.xml")):
+    for p in text_files():
         try:
             root = ET.parse(p).getroot()
         except ET.ParseError:
             continue
         for e in root.findall("Entry"):
             k, v = e.findtext("zType"), e.findtext("en-US")
-            if k and v and k not in out:
+            if k and v:
                 v = re.sub(r"\{[^}]*\}", "", v.split("~")[0])
                 out[k] = re.sub(r"\s{2,}", " ", v).strip()
     return out

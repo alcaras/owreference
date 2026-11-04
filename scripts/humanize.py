@@ -17,7 +17,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Callable
 
-from link_names import resolve_links, with_dlc
+from link_names import resolve_links, with_dlc, text_files
 
 # Registry-driven completeness backstop: fields the game's own help system
 # renders but the curated renderers below don't cover yet get a generic
@@ -61,13 +61,13 @@ def load_xml_indexes(xml_dir: Path) -> dict[str, dict[str, ET.Element]]:
 
     # Build a flat text lookup for Name fields across all text-*.xml files
     text_idx: dict[str, str] = {}
-    for p in xml_dir.glob("text-*.xml"):
+    for p in text_files(xml_dir):
         try:
             for entry in ET.parse(p).getroot().findall("Entry"):
                 k = entry.findtext("zType") or ""
                 en = _first_form(entry.findtext("en-US"))
                 if k and en:
-                    text_idx.setdefault(k, en)
+                    text_idx[k] = en
         except ET.ParseError:
             continue
     out["__text__"] = text_idx  # type: ignore[assignment]

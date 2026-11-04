@@ -870,6 +870,16 @@
       "valueScale": 1,
       "xmlField": "bEndLaw"
     },
+    "mbExchangeRevealed": {
+      "args": [],
+      "notes": "added by extract_bonus_help_fields.py from buildBonusHelp (HelpText.Bonus.cs:1654)",
+      "perEntry": "none",
+      "renderer": "buildBonusHelp",
+      "template": "Exchange Maps with {0_player}",
+      "textKey": "TEXT_HELPTEXT_BONUS_EXCHANGE_REVEALED",
+      "valueScale": 1,
+      "xmlField": "bExchangeRevealed"
+    },
     "mbExposeAgentNetwork": {
       "args": [],
       "notes": "",
@@ -2951,6 +2961,18 @@
       "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_VOID_TECH_PREREQ_IMPROVEMENTCLASS",
       "valueScale": 1,
       "xmlField": "aeVoidTechPrereqImprovementClass"
+    },
+    "maeVoidTechPrereqProject": {
+      "args": [
+        "projectLink",
+        "techLink"
+      ],
+      "notes": "patch 26433529 (HelpText.Effect.cs buildEffectCityHelp); reuses the improvement-class key; skipped when the project has no TechPrereq",
+      "perEntry": "project",
+      "template": "Can build {0,2_improvementclass} without {1_tech}",
+      "textKey": "TEXT_HELPTEXT_EFFECT_CITY_HELP_VOID_TECH_PREREQ_IMPROVEMENTCLASS",
+      "valueScale": 1,
+      "xmlField": "aeVoidTechPrereqProject"
     },
     "maiImprovementClassCostModifier": {
       "args": [
@@ -5284,6 +5306,15 @@
       "valueScale": 1,
       "xmlField": "bIgnoresDistance"
     },
+    "mbImmobile": {
+      "args": [],
+      "notes": "patch 26433529: the state effect EFFECTUNIT_IMMOBILE (replaces COOLDOWN_IMMOBILE)",
+      "perEntry": "none",
+      "template": "Cannot move, but can perform any other type of action.",
+      "textKey": "TEXT_HELPTEXT_LINK_HELP_IMMOBILE",
+      "valueScale": 1,
+      "xmlField": "bImmobile"
+    },
     "mbImmobilize": {
       "args": [],
       "notes": "",
@@ -5402,6 +5433,15 @@
       "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_STUN",
       "valueScale": 1,
       "xmlField": "bStun"
+    },
+    "mbStunned": {
+      "args": [],
+      "notes": "patch 26433529: the state effect EFFECTUNIT_STUNNED (replaces COOLDOWN_STUNNED)",
+      "perEntry": "none",
+      "template": "Cannot take any actions",
+      "textKey": "TEXT_HELPTEXT_EFFECT_UNIT_HELP_STUNNED",
+      "valueScale": 1,
+      "xmlField": "bStunned"
     },
     "mbTheology": {
       "args": [],

@@ -22558,15 +22558,15 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Leader relationship: Disappointed With"
-                  },
-                  {
                     "text": "Gain trait: Compassionate",
                     "tip": [
                       "+1 Charisma",
                       "+20 opinion with same-trait characters"
                     ],
                     "tipTitle": "Compassionate trait"
+                  },
+                  {
+                    "text": "Leader relationship: Disappointed With"
                   }
                 ],
                 "weight": null
@@ -22576,17 +22576,17 @@
               "bonuses": [
                 {
                   "fields": [
-                    "AddLeaderRelationship RELATIONSHIP_DISAPPOINTED_WITH"
+                    "aeAddTraits: TRAIT_COMPASSIONATE"
                   ],
-                  "id": "BONUS_LEADER_DISAPPOINTED_WITH",
+                  "id": "BONUS_GIVE_TRAIT_COMPASSIONATE",
                   "pct": null,
                   "weight": null
                 },
                 {
                   "fields": [
-                    "aeAddTraits: TRAIT_COMPASSIONATE"
+                    "AddLeaderRelationship RELATIONSHIP_DISAPPOINTED_WITH"
                   ],
-                  "id": "BONUS_GIVE_TRAIT_COMPASSIONATE",
+                  "id": "BONUS_LEADER_DISAPPOINTED_WITH",
                   "pct": null,
                   "weight": null
                 }
@@ -30407,15 +30407,15 @@
                 "probability": 1.0,
                 "rewards": [
                   {
-                    "text": "Leader relationship: Disappointed With"
-                  },
-                  {
                     "text": "Gain trait: Compassionate",
                     "tip": [
                       "+1 Charisma",
                       "+20 opinion with same-trait characters"
                     ],
                     "tipTitle": "Compassionate trait"
+                  },
+                  {
+                    "text": "Leader relationship: Disappointed With"
                   }
                 ],
                 "weight": null
@@ -30425,17 +30425,17 @@
               "bonuses": [
                 {
                   "fields": [
-                    "AddLeaderRelationship RELATIONSHIP_DISAPPOINTED_WITH"
+                    "aeAddTraits: TRAIT_COMPASSIONATE"
                   ],
-                  "id": "BONUS_LEADER_DISAPPOINTED_WITH",
+                  "id": "BONUS_GIVE_TRAIT_COMPASSIONATE",
                   "pct": null,
                   "weight": null
                 },
                 {
                   "fields": [
-                    "aeAddTraits: TRAIT_COMPASSIONATE"
+                    "AddLeaderRelationship RELATIONSHIP_DISAPPOINTED_WITH"
                   ],
-                  "id": "BONUS_GIVE_TRAIT_COMPASSIONATE",
+                  "id": "BONUS_LEADER_DISAPPOINTED_WITH",
                   "pct": null,
                   "weight": null
                 }
@@ -32203,40 +32203,10 @@
             "outcomes": [
               {
                 "label": "Wisdom Of The Oligarchs Clerics Shrines",
-                "probability": 0.25,
+                "probability": 1.0,
                 "rewards": [
                   {
                     "text": "Starts ambition: Control Eight Shrines"
-                  }
-                ],
-                "weight": 1000
-              },
-              {
-                "label": "Wisdom Of The Oligarchs Clerics Monasteries",
-                "probability": 0.25,
-                "rewards": [
-                  {
-                    "text": "Starts ambition: Control Four Monasteries"
-                  }
-                ],
-                "weight": 1000
-              },
-              {
-                "label": "Wisdom Of The Oligarchs Clerics Temples",
-                "probability": 0.25,
-                "rewards": [
-                  {
-                    "text": "Starts ambition: Control Four Temples"
-                  }
-                ],
-                "weight": 1000
-              },
-              {
-                "label": "Wisdom Of The Oligarchs Clerics Cathedrals",
-                "probability": 0.25,
-                "rewards": [
-                  {
-                    "text": "Starts ambition: Control Three Cathedrals"
                   }
                 ],
                 "weight": 1000
@@ -32249,31 +32219,7 @@
                     "AmbitionFamily GOAL_EIGHT_SHRINES"
                   ],
                   "id": "BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_SHRINES",
-                  "pct": 0.25,
-                  "weight": 1000
-                },
-                {
-                  "fields": [
-                    "AmbitionFamily GOAL_FOUR_MONASTERY"
-                  ],
-                  "id": "BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_MONASTERIES",
-                  "pct": 0.25,
-                  "weight": 1000
-                },
-                {
-                  "fields": [
-                    "AmbitionFamily GOAL_FOUR_TEMPLE"
-                  ],
-                  "id": "BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_TEMPLES",
-                  "pct": 0.25,
-                  "weight": 1000
-                },
-                {
-                  "fields": [
-                    "AmbitionFamily GOAL_THREE_CATHEDRAL"
-                  ],
-                  "id": "BONUS_EVENTOPTION_WISDOM_OF_THE_OLIGARCHS_CLERICS_CATHEDRALS",
-                  "pct": 0.25,
+                  "pct": 1.0,
                   "weight": 1000
                 }
               ],

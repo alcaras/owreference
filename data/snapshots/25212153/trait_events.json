@@ -82,6 +82,7 @@
           "o": "EVENTOPTION_HOSTILE_NEIGHBORS_OPTION_4",
           "r": [
             "Remembered (leader of you): Persuaded us to trade with you (+40 opinion for 40 turns)",
+            "Trade with the target: +200 Money, -40 Food",
             "+2 Legitimacy"
           ],
           "s": "EVENTSTORY_HOSTILE_NEIGHBORS",
@@ -135,7 +136,8 @@
           "hid": false,
           "o": "EVENTOPTION_PLAYER_TRUCE_WAR_AMONG_FRIENDS_OPTION_PEACE",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation"
           ],
           "s": "EVENTSTORY_PLAYER_TRUCE_WAR_AMONG_FRIENDS",
           "t": "Let’s never fight again.",
@@ -195,7 +197,10 @@
         {
           "hid": false,
           "o": "EVENTOPTION_HOSTILE_PLAYER_PLAYER_WAR_CUNNING",
-          "r": [],
+          "r": [
+            "Send to the target: +240 Money, +60 Money per our city",
+            "The rival nation goes to war with the target"
+          ],
           "s": "EVENTSTORY_HOSTILE_PLAYER_PLAYER_WAR",
           "t": "[character] owes me a favor...",
           "who": "leader"
@@ -204,7 +209,8 @@
           "hid": false,
           "o": "EVENTOPTION_PLAYER_WAR_OFFER_ENEMY_TRAIT_DIPLOMAT_DEFIED",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation"
           ],
           "s": "EVENTSTORY_PLAYER_WAR_OFFER_ENEMY_TRAIT_DIPLOMAT",
           "t": "Come now, it’s always worth talking!",
@@ -214,7 +220,8 @@
           "hid": false,
           "o": "EVENTOPTION_PLAYER_WAR_OFFER_ENEMY_TRAIT_DIPLOMAT_DEFIED",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation"
           ],
           "s": "EVENTSTORY_PLAYER_WAR_OFFER_ENEMY_TRAIT_DIPLOMAT_MILD",
           "t": "Come now, it’s always worth talking!",
@@ -326,6 +333,7 @@
           "hid": false,
           "o": "EVENTOPTION_CHARACTER_THE_OLD_GUARD_OPTION_2",
           "r": [
+            "The target: Conspiring with the target",
             "+20 XP to the character"
           ],
           "s": "EVENTSTORY_CHARACTER_THE_OLD_GUARD",
@@ -346,7 +354,8 @@
           "hid": false,
           "o": "EVENTOPTION_CAMPAIGN_PLANNING_DEFENSE",
           "r": [
-            "+30 Growth (city)"
+            "+30 Growth (city)",
+            "Carries out Trade Mission on the target (free)"
           ],
           "s": "EVENTSTORY_CAMPAIGN_PLANNING",
           "t": "Send the generals to defend the roads and trade routes.",
@@ -409,7 +418,7 @@
             "Remembered: Invited to tribal feast (+20 opinion for 20 turns)"
           ],
           "s": "EVENTSTORY_TRIBE_FEAST",
-          "t": "Forestall any rivalries by inviting both Family.",
+          "t": "Forestall any rivalries by inviting both Families.",
           "who": "leader"
         },
         {
@@ -459,7 +468,8 @@
           "hid": false,
           "o": "EVENTOPTION_TRAIT_UNDER_SUSPICION_OPTION_2",
           "r": [
-            "Remembered (leader of you): Better trade terms (+40 opinion for 20 turns)"
+            "Remembered (leader of you): Better trade terms (+40 opinion for 20 turns)",
+            "Free law: the event's law"
           ],
           "s": "EVENTSTORY_TRAIT_UNDER_SUSPICION",
           "t": "Offer better trade terms to ease tensions.",
@@ -490,7 +500,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_RELATIONSHIP_ALLIES_OF_CONVENIENCE_OPTION_0",
-          "r": [],
+          "r": [
+            "Your leader: no longer Jealous about the target"
+          ],
           "s": "EVENTSTORY_RELATIONSHIP_ALLIES_OF_CONVENIENCE",
           "t": "Win back [character] with promises of affection.",
           "who": "leader"
@@ -499,7 +511,8 @@
           "hid": false,
           "o": "EVENTOPTION_TENSE_MEETING_OPTION_0",
           "r": [
-            "+1 Charisma"
+            "+1 Charisma",
+            "Your leader: no longer Plotting against the target"
           ],
           "s": "EVENTSTORY_TENSE_MEETING",
           "t": "Convince him that you can work together.",
@@ -882,6 +895,7 @@
           "hid": false,
           "o": "EVENTOPTION_TECH_BARDING_A_FRIENDLY_REQUEST_OPTION_3",
           "r": [
+            "Acquire random Technology",
             "Gain tech: Barding"
           ],
           "s": "EVENTSTORY_TECH_BARDING_A_FRIENDLY_REQUEST",
@@ -892,6 +906,7 @@
           "hid": false,
           "o": "EVENTOPTION_SEDITIOUS_MEETINGS_OPTION_1",
           "r": [
+            "Your leader: no longer Plotting against the target",
             "+60 Happiness (city)"
           ],
           "s": "EVENTSTORY_SEDITIOUS_MEETINGS",
@@ -944,7 +959,8 @@
           "hid": false,
           "o": "EVENTOPTION_TREACHERY_THEM_AGENT_CAUGHT_CHARM",
           "r": [
-            "+40 Science (+10/city)"
+            "+40 Science (+10/city)",
+            "The target joins the nation of the target"
           ],
           "s": "EVENTSTORY_TREACHERY_THEM_AGENT_CAUGHT",
           "t": "Convince him to share the secrets of those who left him to rot.",
@@ -954,7 +970,8 @@
           "hid": false,
           "o": "EVENTOPTION_WAYWARD_SON_2",
           "r": [
-            "Remembered: Returned wayward son (+40 opinion for 40 turns)"
+            "Remembered: Returned wayward son (+40 opinion for 40 turns)",
+            "Trade with the target: +40 Science"
           ],
           "s": "EVENTSTORY_WAYWARD_SON",
           "t": "Convince him to return to his homeland and heal the divide between our nations.",
@@ -1060,7 +1077,10 @@
         {
           "hid": false,
           "o": "EVENTOPTION_THE_WAR_DRAGS_ON_OFFER_A_BETTER_DEAL",
-          "r": [],
+          "r": [
+            "40% chance next turn: becomes Doomed",
+            "Tribute to the target: 100 Civics, 10 Civics per our city"
+          ],
           "s": "EVENTSTORY_THE_USURPERS_ALLY",
           "t": "Arrange a secret accord with [rival].",
           "who": "leader"
@@ -1100,6 +1120,7 @@
           "o": "EVENTOPTION_CALAMITIES_TRUCE_PEACE",
           "r": [
             "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
             "+2 Legitimacy"
           ],
           "s": "EVENTSTORY_CALAMITIES_TRUCE",
@@ -1131,7 +1152,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_DROUGHT_FUTURE_TRADE",
-          "r": [],
+          "r": [
+            "Trade with the target: +200 Food, -400 Money"
+          ],
           "s": "EVENTSTORY_CALAMITIES_DROUGHT_FUTURE",
           "t": "Establish trade with our nearest neighbors.",
           "who": "leader"
@@ -1401,6 +1424,7 @@
           "hid": false,
           "o": "EVENTOPTION_RUINS_WRATH_OF_THE_WATCHERS_OPTION_2",
           "r": [
+            "The target abdicates the throne",
             "+2 Wisdom"
           ],
           "s": "EVENTSTORY_RUINS_WRATH_OF_THE_WATCHERS",
@@ -1410,7 +1434,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_RUINS_THE_DIVINER_OPTION_2",
-          "r": [],
+          "r": [
+            "Acquire random Technology"
+          ],
           "s": "EVENTSTORY_RUINS_THE_DIVINER",
           "t": "Demand a message from the gods.",
           "who": "leader"
@@ -1431,7 +1457,8 @@
           "o": "EVENTOPTION_TRIBE_CONTACT_MYSTICAL_TRIBE_DANCE",
           "r": [
             "-1 Legitimacy",
-            "Remembered: Tribe Offer (5 turns)"
+            "Remembered: Tribe Offer (5 turns)",
+            "Peace with the rival nation"
           ],
           "s": "EVENTSTORY_TRIBE_CONTACT_MYSTICAL_TRIBE",
           "t": "The Spirits call us to dance together as one!",
@@ -1443,6 +1470,7 @@
           "r": [
             "+6 Legitimacy",
             "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you",
             "Gain a Court Soldier"
           ],
           "s": "EVENTSTORY_PLAYER_WAR_OFFER_ENEMY_TRAIT_ZEALOT",
@@ -1455,6 +1483,7 @@
           "r": [
             "+6 Legitimacy",
             "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you",
             "Gain a Court Soldier"
           ],
           "s": "EVENTSTORY_PLAYER_WAR_OFFER_ENEMY_TRAIT_ZEALOT_MILD",
@@ -1740,7 +1769,8 @@
           "o": "EVENTOPTION_ERA_OF_EXPLORATION_OPTION_1",
           "r": [
             "Free law: Divine Rule",
-            "+1 Happiness level (every city)"
+            "+1 Happiness level (every city)",
+            "+6 border tiles (every city)"
           ],
           "s": "EVENTSTORY_ERA_OF_EXPLORATION",
           "t": "This would offend the gods, and bring destruction upon our heads.",
@@ -1762,7 +1792,8 @@
           "hid": false,
           "o": "EVENTOPTION_TECH_LATEEN_ADRIFT_OPTION_2",
           "r": [
-            "Gain trait: Compassionate"
+            "Gain trait: Compassionate",
+            "The religion spreads to the target"
           ],
           "s": "EVENTSTORY_TECH_LATEEN_ADRIFT",
           "t": "Aid them in their voyage to a new land.",
@@ -1772,6 +1803,7 @@
           "hid": false,
           "o": "EVENTOPTION_RELATIONSHIP_PERSECUTION_IN_CITY_OPTION_2",
           "r": [
+            "Your leader: no longer Vengeful against the target",
             "Converts to the target religion"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_PERSECUTION_IN_CITY",
@@ -1783,7 +1815,8 @@
           "o": "EVENTOPTION_RELIGION_BOW_BEFORE_US_OPTION_3",
           "r": [
             "Remembered: Would not convert (-20 opinion for 20 turns)",
-            "Remembered: Spread our true faith (+20 opinion for 20 turns)"
+            "Remembered: Spread our true faith (+20 opinion for 20 turns)",
+            "The religion spreads to the target"
           ],
           "s": "EVENTSTORY_RELIGION_BOW_BEFORE_US",
           "t": "[rival] should try [religion].",
@@ -1793,7 +1826,8 @@
           "hid": false,
           "o": "EVENTOPTION_RELIGION_THE_TWENTY_SAINTS_OPTION_0",
           "r": [
-            "Remembered: Built a shrine to martyrs (+40 opinion for 40 turns)"
+            "Remembered: Built a shrine to martyrs (+40 opinion for 40 turns)",
+            "Add Improvement: Christian Temple"
           ],
           "s": "EVENTSTORY_RELIGION_THE_TWENTY_SAINTS",
           "t": "We will raise a monument to their sacrifice.",
@@ -1813,7 +1847,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_INFLUENCE_DISTASTEFUL_OPTION_2",
-          "r": [],
+          "r": [
+            "Free theology: the event's theology"
+          ],
           "s": "EVENTSTORY_INFLUENCE_DISTASTEFUL",
           "t": "I will pray with [character] for guidance.",
           "who": "leader"
@@ -1842,6 +1878,7 @@
           "hid": false,
           "o": "EVENTOPTION_BLINDED_BY_THE_LIGHT_OPTION_2",
           "r": [
+            "Adopts the event's religion as state religion",
             "Begin project: Protection Edicts"
           ],
           "s": "EVENTSTORY_BLINDED_BY_THE_LIGHT",
@@ -2040,7 +2077,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_MIRACLE_WORKER_OPTION_0",
-          "r": [],
+          "r": [
+            "Adopts the event's religion as state religion"
+          ],
           "s": "EVENTSTORY_MIRACLE_WORKER",
           "t": "Claim that's power is undeniable and should be supported throughout [rival].",
           "who": "leader"
@@ -2048,7 +2087,10 @@
         {
           "hid": false,
           "o": "EVENTOPTION_MIRACLE_WORKER_OPTION_0_PAGAN",
-          "r": [],
+          "r": [
+            "Adopts the event's religion as state religion",
+            "Free law: the event's law"
+          ],
           "s": "EVENTSTORY_MIRACLE_WORKER_PAGAN",
           "t": "Claim that's power is undeniable and should be supported throughout [rival].",
           "who": "leader"
@@ -2108,6 +2150,7 @@
           "hid": true,
           "o": "EVENTOPTION_CALAMITIES_SANDSTORM_AD_DEVOUT",
           "r": [
+            "The religion spreads to the target",
             "Leader relationship: Endeared To",
             "-2 Orders"
           ],
@@ -2120,7 +2163,7 @@
           "o": "EVENTOPTION_CALAMITIES_TSUNAMI_MISSING_MONASTERY",
           "r": [
             "+3 Orders",
-            "Progress ambition: Four Monastery",
+            "Progress ambition: Control Four Monasteries",
             "Remembered: Recent Ambition (7 turns)"
           ],
           "s": "EVENTSTORY_CALAMITIES_TSUNAMI_MISSING",
@@ -2132,7 +2175,7 @@
           "o": "EVENTOPTION_CALAMITIES_TSUNAMI_MISSING_TEMPLE",
           "r": [
             "+3 Orders",
-            "Progress ambition: Four Temple",
+            "Progress ambition: Control Four Temples",
             "Remembered: Recent Ambition (7 turns)"
           ],
           "s": "EVENTSTORY_CALAMITIES_TSUNAMI_MISSING",
@@ -2144,7 +2187,7 @@
           "o": "EVENTOPTION_CALAMITIES_TSUNAMI_MISSING_CATHEDRAL",
           "r": [
             "+3 Orders",
-            "Progress ambition: Three Cathedral",
+            "Progress ambition: Control Three Cathedrals",
             "Remembered: Recent Ambition (7 turns)"
           ],
           "s": "EVENTSTORY_CALAMITIES_TSUNAMI_MISSING",
@@ -2435,7 +2478,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_WAR_OFFER_ALREADY_FIGHTING_CUNNING",
-          "r": [],
+          "r": [
+            "The rival nation goes to war with the target"
+          ],
           "s": "EVENTSTORY_WAR_OFFER_ALREADY_FIGHTING",
           "t": "Perhaps I can fool [rival] into confronting [rival] instead.",
           "who": "leader"
@@ -2592,7 +2637,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_POISONED_TIPS_OPTION_3",
-          "r": [],
+          "r": [
+            "The unit gains Strike I"
+          ],
           "s": "EVENTSTORY_POISONED_TIPS",
           "t": "The [unit] should adapt the poison for their own weapons.",
           "who": "leader"
@@ -2606,8 +2653,8 @@
             "+20 Happiness (city)",
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)",
             "Remembered: Murdered bloodline (-40 opinion for 40 turns)"
           ],
@@ -2697,8 +2744,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)",
             "Remembered: Honored our beliefs (+40 opinion for 40 turns)"
           ],
@@ -2732,7 +2779,8 @@
           "hid": false,
           "o": "EVENTOPTION_ASSASSINATE_BACKFIRED_POISONED_OPTION_2",
           "r": [
-            "Leader relationship: Owes Favor To"
+            "Leader relationship: Owes Favor To",
+            "Your leader: no longer Plotting against the target"
           ],
           "s": "EVENTSTORY_ASSASSINATE_BACKFIRED_POISONED",
           "t": "No. I don't know who it could be.",
@@ -2781,6 +2829,7 @@
           "hid": false,
           "o": "EVENTOPTION_RELATIONSHIP_GIVE_AN_INCH_OPTION_2",
           "r": [
+            "Your leader: no longer Disappointed with the target",
             "Remembered: Blamed for harsh laws (-20 opinion for 20 turns)"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_GIVE_AN_INCH",
@@ -2803,6 +2852,7 @@
           "hid": false,
           "o": "EVENTOPTION_SUSPICIONS_CONFIRMED_OPTION_2",
           "r": [
+            "Your leader: no longer Suspicious of the target",
             "Gain trait: Cunning"
           ],
           "s": "EVENTSTORY_SUSPICIONS_CONFIRMED",
@@ -2822,7 +2872,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_DIVORCE_DOWRY_DEMAND_OPTION_2",
-          "r": [],
+          "r": [
+            "Carries out Assassinate on the target"
+          ],
           "s": "EVENTSTORY_DIVORCE_DOWRY_DEMAND",
           "t": "I will rid myself of [character] one way or another.",
           "who": "leader"
@@ -2843,7 +2895,8 @@
           "hid": false,
           "o": "EVENTOPTION_TREACHERY_PLAYER_PLOTTERS_OPTION_1",
           "r": [
-            "+60 XP to the character"
+            "+60 XP to the character",
+            "Carries out Assassinate on the target"
           ],
           "s": "EVENTSTORY_TREACHERY_PLAYER_PLOTTERS",
           "t": "Befriend them, and lead them into a trap.",
@@ -2852,7 +2905,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_TREACHERY_THEM_AGENT_DISCOVERED_SUBTERFUGE",
-          "r": [],
+          "r": [
+            "The target becomes agent in the target"
+          ],
           "s": "EVENTSTORY_TREACHERY_THEM_AGENT_DISCOVERED",
           "t": "Have [character] make contact, pretending to be a traitor.",
           "who": "leader"
@@ -2861,7 +2916,8 @@
           "hid": false,
           "o": "EVENTOPTION_END_OF_A_SIEGE_GOOD_OPTION_2",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Truce with the rival nation"
           ],
           "s": "EVENTSTORY_END_OF_A_SIEGE_GOOD",
           "t": "I knew that already; we are heating the oil to pour on them as we speak!",
@@ -2871,10 +2927,11 @@
           "hid": false,
           "o": "EVENTOPTION_RETURN_OF_THE_PROPHET_OPTION_2",
           "r": [
+            "The rival nation goes to war with the target",
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_RETURN_OF_THE_PROPHET",
@@ -2884,7 +2941,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_FIFTH_COLUMN_TRICK",
-          "r": [],
+          "r": [
+            "+100% HP to the city"
+          ],
           "s": "EVENTSTORY_FIFTH_COLUMN",
           "t": "If [rival] troops encounter a [family] patrol, that would buy time for repairs.",
           "who": "leader"
@@ -2893,7 +2952,8 @@
           "hid": false,
           "o": "EVENTOPTION_KEEPING_UP_APPEARANCES_ASSASSINATE",
           "r": [
-            "Leader relationship: Endeared To"
+            "Leader relationship: Endeared To",
+            "Carries out Assassinate on the target"
           ],
           "s": "EVENTSTORY_KEEPING_UP_APPEARANCES",
           "t": "That would disappoint [character]. But not if he is dead.",
@@ -2927,8 +2987,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)",
             "Leader relationship: Lover Of"
           ],
@@ -2951,6 +3011,7 @@
           "hid": false,
           "o": "EVENTOPTION_THE_BENEVOLENT_OPTION_2",
           "r": [
+            "50% chance next turn: becomes Infamous",
             "+20 XP to the character"
           ],
           "s": "EVENTSTORY_THE_BENEVOLENT",
@@ -2972,7 +3033,8 @@
           "o": "EVENTOPTION_A_DELICATE_MATTER_OPTION_2",
           "r": [
             "The character is killed",
-            "Leader relationship: Owes Favor To"
+            "Leader relationship: Owes Favor To",
+            "The target seizes the target's throne"
           ],
           "s": "EVENTSTORY_A_DELICATE_MATTER",
           "t": "I sense [character] may have some reluctance to return the throne to [character].",
@@ -2992,7 +3054,9 @@
           "hid": false,
           "o": "EVENTOPTION_THE_WAR_DRAGS_ON_FALSE_PRETENSE",
           "r": [
-            "-10 Legitimacy"
+            "-10 Legitimacy",
+            "75% chance next turn: becomes Doomed",
+            "5% chance next turn: becomes Doomed"
           ],
           "s": "EVENTSTORY_THE_WAR_DRAGS_ON",
           "t": "Tell [character] the time has come to negotiate. Then ready the knives.",
@@ -3001,7 +3065,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_THE_VIZIER_SUPPORT_OR_SCHEME_OPTION_2",
-          "r": [],
+          "r": [
+            "Carries out Scheme Against a Rival on the target (free)"
+          ],
           "s": "EVENTSTORY_THE_VIZIER_SUPPORT_OR_SCHEME",
           "t": "[character] power must be... curtailed.",
           "who": "leader"
@@ -3020,7 +3086,8 @@
           "hid": false,
           "o": "EVENTOPTION_CONTENDER_OPTION_2",
           "r": [
-            "Leader relationship: Vengeful Against"
+            "Leader relationship: Vengeful Against",
+            "The target becomes clergy of their religion"
           ],
           "s": "EVENTSTORY_CONTENDER",
           "t": "Force [character] into the clergy.",
@@ -3467,6 +3534,7 @@
           "r": [
             "Remembered: Declared War on us (-80 opinion for 40 turns)",
             "Remembered: Player Offer (5 turns)",
+            "You declare war on the rival nation",
             "Remembered: You chose us over another empire (+40 opinion for 20 turns)",
             "+60 XP to the character"
           ],
@@ -3573,8 +3641,8 @@
             "Gain trait: Bloodthirsty",
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_DUNGEONS_AND_INSANITY",
@@ -3587,7 +3655,7 @@
           "r": [
             "Remembered: Threatened our Cities (-40 opinion for 40 turns)",
             "+80 Training (+20/city)",
-            "Progress ambition: Two Capture Cities",
+            "Progress ambition: Capture Two Foreign Cities",
             "Remembered: Recent Ambition (7 turns)"
           ],
           "s": "EVENTSTORY_RIVALS1_CLOSE_ENCOUNTERS",
@@ -3647,7 +3715,8 @@
           "o": "EVENTOPTION_THEY_MUST_DIE_OPTION_1",
           "r": [
             "+6 Legitimacy",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you"
           ],
           "s": "EVENTSTORY_THEY_MUST_DIE",
           "t": "My sword has never failed me. With my armies I shall claim vengeance.",
@@ -3657,6 +3726,7 @@
           "hid": false,
           "o": "EVENTOPTION_CIVIL_WAR_OPTION_2",
           "r": [
+            "2 rebel units appear (every family's cities)",
             "+2 Courage"
           ],
           "s": "EVENTSTORY_CIVIL_WAR",
@@ -3854,6 +3924,7 @@
           "r": [
             "+6 Legitimacy",
             "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you",
             "+160 Training (+40/city)"
           ],
           "s": "EVENTSTORY_PLAYER_WAR_OFFER_ENEMY_TRAIT_HERO",
@@ -3866,6 +3937,7 @@
           "r": [
             "+6 Legitimacy",
             "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you",
             "+160 Training (+40/city)"
           ],
           "s": "EVENTSTORY_PLAYER_WAR_OFFER_ENEMY_TRAIT_HERO_MILD",
@@ -3908,7 +3980,10 @@
         {
           "hid": false,
           "o": "EVENTOPTION_TRIBAL_HERO_OPTION_2",
-          "r": [],
+          "r": [
+            "-4 HP to the unit",
+            "The unit gains Steadfast"
+          ],
           "s": "EVENTSTORY_TRIBAL_HERO",
           "t": "Punish the soldiers that let him escape.",
           "who": "leader"
@@ -3947,7 +4022,8 @@
           "hid": false,
           "o": "EVENTOPTION_TENSE_MEETING_OPTION_2",
           "r": [
-            "Leader relationship: Terrified Of"
+            "Leader relationship: Terrified Of",
+            "Your leader: no longer Plotting against the target"
           ],
           "s": "EVENTSTORY_TENSE_MEETING",
           "t": "Describe the reckoning that will come if he continues.",
@@ -4008,7 +4084,8 @@
           "hid": false,
           "o": "EVENTOPTION_RIVALS1_TRIBAL_COMPETITION_THREATS",
           "r": [
-            "Remembered: Tribe Offer (5 turns)"
+            "Remembered: Tribe Offer (5 turns)",
+            "Peace with the rival nation"
           ],
           "s": "EVENTSTORY_RIVALS1_TRIBAL_COMPETITION",
           "t": "The diplomats use the fear of your name to make the [rival] back off.",
@@ -4018,7 +4095,8 @@
           "hid": false,
           "o": "EVENTOPTION_RIVALS3_LET_THE_LAND_BURN_RAZE",
           "r": [
-            "Leader relationship: Terrified Of"
+            "Leader relationship: Terrified Of",
+            "The city is razed"
           ],
           "s": "EVENTSTORY_RIVALS3_LET_THE_LAND_BURN",
           "t": "Raze the city until nothing stands.",
@@ -4050,6 +4128,7 @@
           "hid": false,
           "o": "EVENTOPTION_SECRET_RITUALS_OPTION_3",
           "r": [
+            "Carries out Assassinate on the target",
             "Gain trait: Doomed"
           ],
           "s": "EVENTSTORY_SECRET_RITUALS",
@@ -4137,8 +4216,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_BURDENS",
@@ -4162,8 +4241,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_THE_UPPER_HAND",
@@ -4376,6 +4455,7 @@
           "hid": false,
           "o": "EVENTOPTION_DEMAND_TRIBUTE_DENOUNCED_3",
           "r": [
+            "Tribute from the target: +100 Stone, +20 Stone per their city",
             "Leader relationship: Terrified Of"
           ],
           "s": "EVENTSTORY_DEMAND_TRIBUTE_DENOUNCED",
@@ -4386,7 +4466,8 @@
           "hid": false,
           "o": "EVENTOPTION_SPOUSE_FAVORED_SPOUSE_SPOUSICIDE_PRACTICAL",
           "r": [
-            "+2 Discipline"
+            "+2 Discipline",
+            "The target forgets: Spurned spouse"
           ],
           "s": "EVENTSTORY_SPOUSE_FAVORED_SPOUSE_SPOUSICIDE",
           "t": "There’s no point losing another husband.",
@@ -4419,6 +4500,7 @@
           "o": "EVENTOPTION_CHILDHOOD_FIGHT_0",
           "r": [
             "Gain trait: Cruel",
+            "The target: Terrified of the target",
             "Gain trait: Imprisoned"
           ],
           "s": "EVENTSTORY_CHILDHOOD_FIGHT",
@@ -4484,7 +4566,8 @@
           "hid": false,
           "o": "EVENTOPTION_FREEDOM_OF_DIVORCE_OPTION_1",
           "r": [
-            "Leader relationship: Conspiring With"
+            "Leader relationship: Conspiring With",
+            "Carries out Assassinate on the target (free)"
           ],
           "s": "EVENTSTORY_FREEDOM_OF_DIVORCE_EXILED",
           "t": "Perhaps a more permanent solution is in order…",
@@ -4494,7 +4577,8 @@
           "hid": false,
           "o": "EVENTOPTION_FREEDOM_OF_DIVORCE_OPTION_1",
           "r": [
-            "Leader relationship: Conspiring With"
+            "Leader relationship: Conspiring With",
+            "Carries out Assassinate on the target (free)"
           ],
           "s": "EVENTSTORY_FREEDOM_OF_DIVORCE_FUGITIVE",
           "t": "Perhaps a more permanent solution is in order…",
@@ -4517,7 +4601,8 @@
           "hid": false,
           "o": "EVENTOPTION_TECH_WINDLASS_ROPE_AND_WINCH_OPTION_3",
           "r": [
-            "Leader relationship: Conspiring With"
+            "Leader relationship: Conspiring With",
+            "Add Agent Network"
           ],
           "s": "EVENTSTORY_TECH_WINDLASS_ROPE_AND_WINCH",
           "t": "Perhaps [character] would let me watch.",
@@ -4767,7 +4852,8 @@
           "hid": false,
           "o": "EVENTOPTION_HEIR_TO_HEIR_OPTION_3",
           "r": [
-            "Gain trait: Cunning"
+            "Gain trait: Cunning",
+            "Acquire random Technology"
           ],
           "s": "EVENTSTORY_HEIR_TO_HEIR",
           "t": "Openly discuss the latest scientific developments.",
@@ -4817,7 +4903,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_HIDDEN_LABORATORY_OPTION_0",
-          "r": [],
+          "r": [
+            "Acquire random Technology"
+          ],
           "s": "EVENTSTORY_HIDDEN_LABORATORY",
           "t": "Search for the most valuable research.",
           "who": "leader"
@@ -4837,7 +4925,8 @@
           "hid": false,
           "o": "EVENTOPTION_A_SCHOLAR_DENOUNCED_ARGUE",
           "r": [
-            "Leader relationship: Endeared To"
+            "Leader relationship: Endeared To",
+            "Acquire random Technology"
           ],
           "s": "EVENTSTORY_A_SCHOLAR_DENOUNCED",
           "t": "Explain that the findings actually compliment [religion].",
@@ -4877,7 +4966,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_STUDY_UNCANNY_OPTION_2",
-          "r": [],
+          "r": [
+            "Acquire random Technology"
+          ],
           "s": "EVENTSTORY_STUDY_UNCANNY",
           "t": "I will speak with him about his discoveries.",
           "who": "leader"
@@ -5128,7 +5219,9 @@
           "o": "EVENTOPTION_NEIGHBORS_HUMBLE_WELCOME_PERSIA_OPTION_1",
           "r": [
             "Remembered (leader of you): We admire your culture's humility (+40 opinion, permanent)",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
+            "Trade with the target: +200 Money, -40 Food"
           ],
           "s": "EVENTSTORY_NEIGHBORS_HUMBLE_WELCOME_PERSIA",
           "t": "We welcome peace and trade.",
@@ -5137,7 +5230,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_NEIGHBORS_FRIENDLY_ROME_DECLINE_OPTION_1",
-          "r": [],
+          "r": [
+            "Trade with the target: +200 Money, -40 Food"
+          ],
           "s": "EVENTSTORY_NEIGHBORS_FRIENDLY_ROME_DECLINE",
           "t": "Apologize. Next time, we will act the gracious host.",
           "who": "leader"
@@ -5170,7 +5265,8 @@
           "r": [
             "Leader relationship: Endeared To",
             "-1 Legitimacy",
-            "Remembered: Tribe Offer (5 turns)"
+            "Remembered: Tribe Offer (5 turns)",
+            "Peace with the rival nation"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_CARAVAN_ATTACK",
           "t": "It was a terrible mistake and will not happen again.",
@@ -5422,7 +5518,9 @@
           "o": "EVENTOPTION_PLAYER_TRUCE_FOREIGN_RULE_OPTION_REGAL",
           "r": [
             "Remembered: Player Offer (5 turns)",
-            "-2 Legitimacy"
+            "Truce with the rival nation",
+            "-2 Legitimacy",
+            "The rival nation gains a new courtier: Court Minister"
           ],
           "s": "EVENTSTORY_PLAYER_TRUCE_FOREIGN_RULE",
           "t": "We will instead invite a member of the [rival] nobility to join our court.",
@@ -5443,6 +5541,7 @@
           "hid": false,
           "o": "EVENTOPTION_WALL_OF_BATTLE_OPTION_2",
           "r": [
+            "Leaves Court",
             "Gain trait: Inspiring",
             "Begin project: Public Mural"
           ],
@@ -5784,6 +5883,8 @@
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_DROUGHT_FOOD_RATIONS_FESTIVAL",
           "r": [
+            "Starts the festival that matches the city's culture level",
+            "Remove Food Rations",
             "-30 Food (-10/city)"
           ],
           "s": "EVENTSTORY_CALAMITIES_DROUGHT_FOOD_RATIONS",
@@ -5793,7 +5894,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_DROUGHT_END_ARID_PARTY",
-          "r": [],
+          "r": [
+            "Starts the festival that matches the city's culture level"
+          ],
           "s": "EVENTSTORY_CALAMITIES_DROUGHT_END_ARID",
           "t": "Well, this seems as good a reason as any to celebrate!",
           "who": "leader"
@@ -5920,7 +6023,9 @@
           "o": "EVENTOPTION_TRIBE_CONTACT_DELIGHTED_EMISSARY_WAR",
           "r": [
             "+6 Legitimacy",
-            "Remembered: Tribe Offer (5 turns)"
+            "Remembered: Tribe Offer (5 turns)",
+            "The rival nation declare war on you",
+            "Truce with the rival nation"
           ],
           "s": "EVENTSTORY_TRIBE_CONTACT_DELIGHTED_EMISSARY",
           "t": "We are surrounded by enemies.",
@@ -5952,7 +6057,8 @@
           "o": "EVENTOPTION_HOSTILE_PLAYER_TRIBE_WAR_BOLD",
           "r": [
             "-30 Iron (-10/city)",
-            "-30 Wood (-10/city)"
+            "-30 Wood (-10/city)",
+            "The rival nation goes to war with the target"
           ],
           "s": "EVENTSTORY_HOSTILE_PLAYER_TRIBE_WAR",
           "t": "I will meet with the [tribe] myself and dissuade them.",
@@ -5962,6 +6068,7 @@
           "hid": false,
           "o": "EVENTOPTION_THE_HARVEST_FESTIVAL_ATTEND_PERSONAL_PROWESS",
           "r": [
+            "Archetype becomes Hero",
             "-3 Orders"
           ],
           "s": "EVENTSTORY_THE_HARVEST_FESTIVAL",
@@ -5990,6 +6097,7 @@
           "hid": false,
           "o": "EVENTOPTION_BARRACKS_HEIR_2",
           "r": [
+            "+40 XP to the unit",
             "+40 XP to the character"
           ],
           "s": "EVENTSTORY_BARRACKS_HEIR",
@@ -6508,7 +6616,8 @@
           "o": "EVENTOPTION_CALAMITIES_DROUGHT_SNAKES_LEADER",
           "r": [
             "-1 Charisma",
-            "+1 Courage"
+            "+1 Courage",
+            "The target is granted the title Snake King"
           ],
           "s": "EVENTSTORY_CALAMITIES_DROUGHT_SNAKES",
           "t": "It is clear that the snakes worship me as their King!",
@@ -6707,7 +6816,8 @@
           "r": [
             "+2 Charisma",
             "+1 Culture level for the city",
-            "Free law: Freedom"
+            "Free law: Freedom",
+            "End law: Slavery"
           ],
           "s": "EVENTSTORY_REIGN_BY_WHIPS_AND_CHAINS",
           "t": "We must end this abhorrent practice.",
@@ -6742,7 +6852,8 @@
           "hid": false,
           "o": "EVENTOPTION_COMPANIONS_AND_CAPTIVES_OPTION_2",
           "r": [
-            "Remembered: Celebrated the survival of our citizens (+40 opinion for 40 turns)"
+            "Remembered: Celebrated the survival of our citizens (+40 opinion for 40 turns)",
+            "The target becomes general of the target"
           ],
           "s": "EVENTSTORY_COMPANIONS_AND_CAPTIVES",
           "t": "Nonsense. I'm sure we can manage both!",
@@ -6932,7 +7043,8 @@
           "hid": false,
           "o": "EVENTOPTION_PLAYER_TRUCE_RESPONSE_FESTERING_VENGEANCE_OPTION_THOUGHTFUL",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Truce with the rival nation"
           ],
           "s": "EVENTSTORY_PLAYER_TRUCE_RESPONSE_FESTERING_VENGEANCE",
           "t": "Surely there must be some way to reason with [character].",
@@ -6942,7 +7054,8 @@
           "hid": false,
           "o": "EVENTOPTION_PLAYER_TRUCE_RESPONSE_FESTERING_VENGEANCE_OPTION_THOUGHTFUL",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Truce with the rival nation"
           ],
           "s": "EVENTSTORY_PLAYER_TRUCE_RESPONSE_FESTERING_VENGEANCE_OFFER",
           "t": "Surely there must be some way to reason with [character].",
@@ -6952,7 +7065,8 @@
           "hid": false,
           "o": "EVENTOPTION_PLAYER_TRUCE_RESPONSE_FESTERING_VENGEANCE_OPTION_THOUGHTFUL",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Truce with the rival nation"
           ],
           "s": "EVENTSTORY_PLAYER_TRUCE_RESPONSE_FESTERING_VENGEANCE_DEMAND",
           "t": "Surely there must be some way to reason with [character].",
@@ -6962,7 +7076,8 @@
           "hid": false,
           "o": "EVENTOPTION_EXCHANGE_OF_IDEAS_OPTION_1",
           "r": [
-            "Gain tech: Scholarship"
+            "Gain tech: Scholarship",
+            "The target acquires the target"
           ],
           "s": "EVENTSTORY_EXCHANGE_OF_IDEAS",
           "t": "Science is meant to be shared.",
@@ -6993,7 +7108,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_PLAYING_POLITICS_OPTION_3",
-          "r": [],
+          "r": [
+            "The target abdicates the throne"
+          ],
           "s": "EVENTSTORY_PLAYING_POLITICS",
           "t": "With that kind of ambition, he will find a way to the throne, sooner rather than later.",
           "who": "leader"
@@ -7001,7 +7118,9 @@
         {
           "hid": false,
           "o": "EVENTOPTION_EASTER_OPTION_0",
-          "r": [],
+          "r": [
+            "Carries out High Synod on the target (free)"
+          ],
           "s": "EVENTSTORY_EASTER",
           "t": "Convene a Synod to decide on a date.",
           "who": "leader"
@@ -7112,6 +7231,8 @@
           "r": [
             "Remembered (leader of you): We admire your strength and your negotiating skill (+40 opinion, permanent)",
             "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
+            "Trade with the target: +300 Money, -40 Food, -40 Wood",
             "+50 XP to the character",
             "Gain trait: Cunning"
           ],
@@ -7157,7 +7278,8 @@
           "hid": false,
           "o": "EVENTOPTION_TENSE_MEETING_OPTION_1",
           "r": [
-            "Leader relationship: Influenced By"
+            "Leader relationship: Influenced By",
+            "Your leader: no longer Plotting against the target"
           ],
           "s": "EVENTSTORY_TENSE_MEETING",
           "t": "Flatter him with promises of royal influence.",
@@ -7342,7 +7464,9 @@
           "o": "EVENTOPTION_NEIGHBORS_PRIDEFUL_CARTHAGE_OPTION_1",
           "r": [
             "Remembered (leader of you): We admire your strength and your negotiating skill (+40 opinion, permanent)",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
+            "Trade with the target: +300 Money, -60 Food"
           ],
           "s": "EVENTSTORY_NEIGHBORS_PRIDEFUL_CARTHAGE",
           "t": "Accept peace, and discuss trading seafood and dyes.",
@@ -7353,7 +7477,9 @@
           "o": "EVENTOPTION_NEIGHBORS_PRIDEFUL_CARTHAGE_OPTION_2",
           "r": [
             "Remembered (leader of you): We admire your strength and your negotiating skill (+40 opinion, permanent)",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
+            "Trade with the target: +100 Food, -500 Money"
           ],
           "s": "EVENTSTORY_NEIGHBORS_PRIDEFUL_CARTHAGE",
           "t": "Accept peace, and discuss trading livestock.",
@@ -7364,7 +7490,9 @@
           "o": "EVENTOPTION_NEIGHBORS_PRIDEFUL_BRAG_CARTHAGE_OPTION_1",
           "r": [
             "Remembered (leader of you): We admire your strength and your negotiating skill (+40 opinion, permanent)",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
+            "Trade with the target: +300 Money, -60 Food"
           ],
           "s": "EVENTSTORY_NEIGHBORS_PRIDEFUL_BRAG_CARTHAGE",
           "t": "Accept peace, and trade grains and crops.",
@@ -7375,7 +7503,9 @@
           "o": "EVENTOPTION_NEIGHBORS_PRIDEFUL_BRAG_CARTHAGE_OPTION_2",
           "r": [
             "Remembered (leader of you): We admire your strength and your negotiating skill (+40 opinion, permanent)",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
+            "Trade with the target: +300 Money, -60 Iron"
           ],
           "s": "EVENTSTORY_NEIGHBORS_PRIDEFUL_BRAG_CARTHAGE",
           "t": "Accept peace, and trade metals and ores.",
@@ -7436,7 +7566,8 @@
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_DROUGHT_END_TREES_UNIT",
           "r": [
-            "-80 Training (-20/city)"
+            "-80 Training (-20/city)",
+            "The unit gains Ranger"
           ],
           "s": "EVENTSTORY_CALAMITIES_DROUGHT_END_TREES",
           "t": "Train the nearby [unit] unit to help.",
@@ -7585,7 +7716,8 @@
           "o": "EVENTOPTION_FACE_IN_GOLD_OPTION_3",
           "r": [
             "Gain tech: Coinage",
-            "Gain trait: Engineer"
+            "Gain trait: Engineer",
+            "Acquire random Technology"
           ],
           "s": "EVENTSTORY_FACE_IN_GOLD",
           "t": "I have always held your cities in high esteem.",
@@ -7828,8 +7960,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)",
             "Leader relationship: Vengeful Against"
           ],
@@ -7991,6 +8123,7 @@
           "r": [
             "+6 Legitimacy",
             "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you",
             "+160 Training (+40/city)"
           ],
           "s": "EVENTSTORY_PLAYER_WAR_OFFER_ENEMY_TRAIT_TACTICIAN",
@@ -8003,6 +8136,7 @@
           "r": [
             "+6 Legitimacy",
             "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you",
             "+160 Training (+40/city)"
           ],
           "s": "EVENTSTORY_PLAYER_WAR_OFFER_ENEMY_TRAIT_TACTICIAN_MILD",
@@ -8140,6 +8274,7 @@
           "hid": false,
           "o": "EVENTOPTION_RUINS_THREE_DAYS_OF_SOLACE_OPTION_TRAIN",
           "r": [
+            "+20 XP to the unit",
             "-2 Orders"
           ],
           "s": "EVENTSTORY_RUINS_THREE_DAYS_OF_SOLACE",
@@ -8152,6 +8287,7 @@
           "r": [
             "+6 Legitimacy",
             "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you",
             "+8 Orders",
             "+120 Training (+30/city)"
           ],
@@ -8165,6 +8301,7 @@
           "r": [
             "+6 Legitimacy",
             "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you",
             "+8 Orders",
             "+120 Training (+30/city)"
           ],
@@ -9102,12 +9239,12 @@
         },
         {
           "id": "TRAIT_CLERGY_HINDUISM",
-          "name": "Clergy Hinduism",
+          "name": "Hotar",
           "slug": "clergy_hinduism"
         },
         {
           "id": "TRAIT_CLERGY_BUDDHISM",
-          "name": "Clergy Buddhism",
+          "name": "Bhikkhu",
           "slug": "clergy_buddhism"
         }
       ],
@@ -9452,12 +9589,12 @@
         },
         {
           "id": "TRAIT_CLERGY_HINDUISM",
-          "name": "Clergy Hinduism",
+          "name": "Hotar",
           "slug": "clergy_hinduism"
         },
         {
           "id": "TRAIT_CLERGY_BUDDHISM",
-          "name": "Clergy Buddhism",
+          "name": "Bhikkhu",
           "slug": "clergy_buddhism"
         }
       ],
@@ -21537,7 +21674,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_acropolis",
-      "n": "Inspired by Acropolis of [city]",
+      "n": "Inspired by The Acropolis of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21545,7 +21682,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_apadana",
-      "n": "Inspired by Apadana of [city]",
+      "n": "Inspired by The Apadana of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21561,7 +21698,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_christian_holy_site",
-      "n": "Inspired by Holy Site Christianity of [city]",
+      "n": "Inspired by The Church of the Holy Sepulchre of [city]",
       "trg": "Study Event",
       "w": 10
     },
@@ -21569,7 +21706,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_circus_maximus",
-      "n": "Inspired by Circus Maximus of [city]",
+      "n": "Inspired by The Circus Maximus of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21577,7 +21714,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_colossus",
-      "n": "Inspired by Colossus of [city]",
+      "n": "Inspired by The Colossus of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21585,7 +21722,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_great_ziggurat",
-      "n": "Inspired by Great Ziggurat of [city]",
+      "n": "Inspired by The Ziggurat of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21593,7 +21730,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_hagia_sophia",
-      "n": "Inspired by Hagia Sophia of [city]",
+      "n": "Inspired by The Hagia Sophia of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21601,7 +21738,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_hanging_gardens",
-      "n": "Inspired by Hanging Gardens of [city]",
+      "n": "Inspired by The Hanging Gardens of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21609,7 +21746,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_ishtar_gate",
-      "n": "Inspired by Ishtar Gate of [city]",
+      "n": "Inspired by The Ishtar Gate of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21617,7 +21754,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_judaism_holy_site",
-      "n": "Inspired by Holy Site Judaism of [city]",
+      "n": "Inspired by The Temple of Solomon of [city]",
       "trg": "Study Event",
       "w": 10
     },
@@ -21625,7 +21762,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_lighthouse",
-      "n": "Inspired by Lighthouse of [city]",
+      "n": "Inspired by The Lighthouse of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21633,7 +21770,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_manichaean_holy_site",
-      "n": "Inspired by Holy Site Manichaeism of [city]",
+      "n": "Inspired by The Cao'an of [city]",
       "trg": "Study Event",
       "w": 10
     },
@@ -21641,7 +21778,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_mausoleum",
-      "n": "Inspired by Mausoleum of [city]",
+      "n": "Inspired by The Mausoleum of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21649,7 +21786,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_musaeum",
-      "n": "Inspired by Musaeum of [city]",
+      "n": "Inspired by The Musaeum of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21657,7 +21794,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_necropolis",
-      "n": "Inspired by Necropolis of [city]",
+      "n": "Inspired by The Necropolis of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21665,7 +21802,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_oracle",
-      "n": "Inspired by Oracle of [city]",
+      "n": "Inspired by The Oracle of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21673,7 +21810,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_pantheon",
-      "n": "Inspired by Pantheon of [city]",
+      "n": "Inspired by The Pantheon of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21681,7 +21818,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_pyramids",
-      "n": "Inspired by Pyramids of [city]",
+      "n": "Inspired by The Pyramids of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21689,7 +21826,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_via_recta_souk",
-      "n": "Inspired by Via Recta Souk of [city]",
+      "n": "Inspired by The Via Recta Souk of [city]",
       "trg": "Study Event",
       "w": 1
     },
@@ -21697,7 +21834,7 @@
       "cm": 1,
       "dlc": "",
       "h": "study-events#inspired_zoroastrian_holy_site",
-      "n": "Inspired by Holy Site Zoroastrianism of [city]",
+      "n": "Inspired by The Adur Burzen-Mihr of [city]",
       "trg": "Study Event",
       "w": 10
     },
@@ -24801,7 +24938,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_BUILDER",
-      "n": "Tutorial: Builder Archetype Archetype",
+      "n": "Tutorial: Builder Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24809,7 +24946,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_COMMANDER",
-      "n": "Tutorial: Commander Archetype Archetype",
+      "n": "Tutorial: Commander Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24817,7 +24954,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_DIPLOMAT",
-      "n": "Tutorial: Diplomat Archetype Archetype",
+      "n": "Tutorial: Diplomat Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24825,7 +24962,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_HERO",
-      "n": "Tutorial: Hero Archetype Archetype",
+      "n": "Tutorial: Hero Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24833,7 +24970,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_JUDGE",
-      "n": "Tutorial: Judge Archetype Archetype",
+      "n": "Tutorial: Judge Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24841,7 +24978,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_ORATOR",
-      "n": "Tutorial: Orator Archetype Archetype",
+      "n": "Tutorial: Orator Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24849,7 +24986,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_SCHEMER",
-      "n": "Tutorial: Schemer Archetype Archetype",
+      "n": "Tutorial: Schemer Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24857,7 +24994,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_SCHOLAR",
-      "n": "Tutorial: Scholar Archetype Archetype",
+      "n": "Tutorial: Scholar Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24865,7 +25002,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_TACTICIAN",
-      "n": "Tutorial: Tactician Archetype Archetype",
+      "n": "Tutorial: Tactician Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24873,7 +25010,7 @@
       "cm": 1,
       "dlc": "",
       "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_ARCHETYPE_ZEALOT",
-      "n": "Tutorial: Zealot Archetype Archetype",
+      "n": "Tutorial: Zealot Archetype",
       "trg": "New Turn",
       "w": 1
     },
@@ -24920,8 +25057,8 @@
     "EVENTSTORY_TUTORIAL_RISING_STAR": {
       "cm": 1,
       "dlc": "EVENTPACK_SCANDAL",
-      "h": "events/on-new-turn-2#EVENTSTORY_TUTORIAL_RISING_STAR",
-      "n": "Rising Star",
+      "h": "events/on-new-turn-1#EVENTSTORY_TUTORIAL_RISING_STAR",
+      "n": "A Rising Star",
       "trg": "New Turn",
       "w": 1
     },
@@ -26205,7 +26342,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_DIVORCE_UNVIABLE_OPTION_2",
-          "r": [],
+          "r": [
+            "Carries out Assassinate on the target"
+          ],
           "s": "EVENTSTORY_DIVORCE_UNVIABLE",
           "t": "Tell [character] to remove this thorn from my side.",
           "via": "SUBJECT_BITTER",
@@ -26503,6 +26642,7 @@
           "hid": false,
           "o": "EVENTOPTION_SEDITIOUS_MEETINGS_OPTION_1",
           "r": [
+            "Your leader: no longer Plotting against the target",
             "+60 Happiness (city)"
           ],
           "s": "EVENTSTORY_SEDITIOUS_MEETINGS",
@@ -26646,8 +26786,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_INFLUENCE_OF_WINE",
@@ -26662,8 +26802,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_PROTECTION_OF_A_PROPHET",
@@ -26675,7 +26815,9 @@
           "extra": [],
           "hid": true,
           "o": "EVENTOPTION_NOT_SO_EASY_DIE",
-          "r": [],
+          "r": [
+            "Carries out Assassinate on the target"
+          ],
           "s": "EVENTSTORY_NOT_SO_EASY",
           "t": "You really do seem to have trouble taking a hint.",
           "via": "SUBJECT_BLOODTHIRSTY",
@@ -26858,7 +27000,8 @@
           "hid": false,
           "o": "EVENTOPTION_CASHING_IN_OPTION_2",
           "r": [
-            "Leader relationship: Blackmailed By"
+            "Leader relationship: Blackmailed By",
+            "The target: no longer Blackmailed by the target"
           ],
           "s": "EVENTSTORY_CASHING_IN",
           "t": "Cute. He truly has no idea who he's dealing with.",
@@ -27179,7 +27322,8 @@
           "hid": false,
           "o": "EVENTOPTION_TECH_VAULTING_NEW_OBSESSION_OPTION_2",
           "r": [
-            "Progress ambition: Hagia Sophia",
+            "+6 border tiles",
+            "Progress ambition: Build The Hagia Sophia",
             "Remembered: Supported my Ambition (+40 opinion for 20 turns)"
           ],
           "s": "EVENTSTORY_TECH_VAULTING_NEW_OBSESSION",
@@ -27192,7 +27336,8 @@
           "hid": false,
           "o": "EVENTOPTION_RELATIONSHIP_PROOF_OF_FRIENDSHIP_OPTION_2",
           "r": [
-            "Leader relationship: Influenced By"
+            "Leader relationship: Influenced By",
+            "+2 border tiles"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_PROOF_OF_FRIENDSHIP",
           "t": "Cede [rival] some recently acquired territory.",
@@ -27203,7 +27348,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_A_WORLD_MADE_SMALL_OPTION_0",
-          "r": [],
+          "r": [
+            "Add Improvement: Zoroastrian Cathedral"
+          ],
           "s": "EVENTSTOALL",
           "t": "Add your expertise to [character] to plan the building of this grand temple.",
           "via": "SUBJECT_BUILDER",
@@ -27523,7 +27670,7 @@
         }
       ],
       "id": "TRAIT_CLERGY_BUDDHISM",
-      "name": "Clergy Buddhism",
+      "name": "Bhikkhu",
       "options": [],
       "slug": "clergy_buddhism"
     },
@@ -27559,7 +27706,7 @@
         }
       ],
       "id": "TRAIT_CLERGY_HINDUISM",
-      "name": "Clergy Hinduism",
+      "name": "Hotar",
       "options": [],
       "slug": "clergy_hinduism"
     },
@@ -27893,6 +28040,7 @@
             "+1 Ranged Infantry unit",
             "+4 Orders",
             "Remembered: Tribe Offer (5 turns)",
+            "The rival nation declare war on you",
             "Remembered: Took our advice and attacked barbarians (+40 opinion for 20 turns)"
           ],
           "s": "EVENTSTORY_TRAIT_RISKY_EXPEDITION",
@@ -27917,7 +28065,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_TECH_BODKIN_THE_COURTS_MEN_OPTION_3",
-          "r": [],
+          "r": [
+            "The unit gains Sentinel, Marksman, Eagle Eye"
+          ],
           "s": "EVENTSTORY_TECH_BODKIN_THE_COURTS_MEN",
           "t": "They are worthy of every promotion.",
           "via": "SUBJECT_COMMANDER",
@@ -27967,6 +28117,8 @@
           "hid": true,
           "o": "EVENTOPTION_CALAMITIES_HURRICANE_END_CHAMPIONS_COURTIER",
           "r": [
+            "The unit gains Amphibious",
+            "The unit is renamed Champions of the Storm",
             "Gain a Court Soldier",
             "-40 Civics (-10/city)"
           ],
@@ -28118,7 +28270,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_CHILD_THE_BAD_SEED_OPTION_1",
-          "r": [],
+          "r": [
+            "50% chance next turn: becomes Compassionate"
+          ],
           "s": "EVENTSTORY_CHILD_THE_BAD_SEED",
           "t": "This can be solved with the proper treatment.",
           "via": "SUBJECT_COMPASSIONATE",
@@ -28750,7 +28904,8 @@
           "r": [
             "Leader relationship: Vengeful Against",
             "+6 Legitimacy",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_SHARED_INTERESTS",
           "t": "Burn the texts and send them back to [rival].",
@@ -28833,6 +28988,7 @@
           "o": "EVENTOPTION_A_WORTHY_CROWN_HARVEST",
           "r": [
             "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
             "Gain trait: Harvest Crown",
             "+80 Growth (city) (every city)"
           ],
@@ -29073,7 +29229,8 @@
           "o": "EVENTOPTION_TECH_TRADE_OFF_2",
           "r": [
             "Remembered: Pleased with ruler (+20 opinion for 40 turns)",
-            "-240 Money (-60/city)"
+            "-240 Money (-60/city)",
+            "The target acquires the target"
           ],
           "s": "EVENTSTORY_TECH_TRADE_OFF",
           "t": "Offer to pay for the technology instead.",
@@ -29096,7 +29253,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_RELATIONSHIP_URGING_CAUTION_OPTION_2",
-          "r": [],
+          "r": [
+            "Your leader: no longer Disappointed with the target"
+          ],
           "s": "EVENTSTORY_RELATIONSHIP_URGING_CAUTION",
           "t": "Reassure him of our peaceful intentions.",
           "via": "SUBJECT_CUNNING",
@@ -29109,8 +29268,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_UNDETERRED",
@@ -29371,7 +29530,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_WILDFIRE_UNTOUCHED_CURSED",
-          "r": [],
+          "r": [
+            "1 improvement destroyed"
+          ],
           "s": "EVENTSTORY_CALAMITIES_WILDFIRE_UNTOUCHED_ZOROASTRIANISM",
           "t": "Though our forests are untouched, a fire has broken out in [city]!",
           "via": "SUBJECT_CURSED",
@@ -29381,7 +29542,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_WILDFIRE_UNTOUCHED_CURSED",
-          "r": [],
+          "r": [
+            "1 improvement destroyed"
+          ],
           "s": "EVENTSTORY_CALAMITIES_WILDFIRE_UNTOUCHED_JUDAISM",
           "t": "Though our forests are untouched, a fire has broken out in [city]!",
           "via": "SUBJECT_CURSED",
@@ -29391,7 +29554,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_WILDFIRE_UNTOUCHED_CURSED",
-          "r": [],
+          "r": [
+            "1 improvement destroyed"
+          ],
           "s": "EVENTSTORY_CALAMITIES_WILDFIRE_UNTOUCHED_CHRISTIANITY",
           "t": "Though our forests are untouched, a fire has broken out in [city]!",
           "via": "SUBJECT_CURSED",
@@ -29401,7 +29566,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_WILDFIRE_UNTOUCHED_CURSED",
-          "r": [],
+          "r": [
+            "1 improvement destroyed"
+          ],
           "s": "EVENTSTORY_CALAMITIES_WILDFIRE_UNTOUCHED_MANICHAEISM",
           "t": "Though our forests are untouched, a fire has broken out in [city]!",
           "via": "SUBJECT_CURSED",
@@ -29538,7 +29705,8 @@
           "hid": false,
           "o": "EVENTOPTION_FOREIGN_RELATIONS_OPTION_2",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Alliance with the rival nation"
           ],
           "s": "EVENTSTORY_FOREIGN_RELATIONS",
           "t": "[character], you didn't tell me we had guests. I shall fetch the drinks.",
@@ -29609,7 +29777,8 @@
           "hid": false,
           "o": "EVENTOPTION_TECH_LURE_OF_KNOWLEDGE_2",
           "r": [
-            "Remembered: We have been deceived! (-80 opinion for 40 turns)"
+            "Remembered: We have been deceived! (-80 opinion for 40 turns)",
+            "The target acquires the target"
           ],
           "s": "EVENTSTORY_TECH_LURE_OF_KNOWLEDGE",
           "t": "Lie and promise your aid to get your hands on the technology.",
@@ -29623,8 +29792,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)",
             "+120 Money (+30/city)"
           ],
@@ -29925,6 +30094,7 @@
           "r": [
             "Remembered (leader of you): How did we end up at peace with you? (-20 opinion for 20 turns)",
             "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
             "+4 Legitimacy",
             "+1 Charisma"
           ],
@@ -29939,6 +30109,7 @@
           "o": "EVENTOPTION_PLAYER_WAR_OFFER_TRAIT_JUDGE_ARCHETYPE_CAUTIOUS_OPTION_1",
           "r": [
             "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
             "+4 Legitimacy",
             "-5 Orders",
             "-50 Food (-15/city)"
@@ -29979,7 +30150,8 @@
           "hid": false,
           "o": "EVENTOPTION_RELATIONSHIP_A_CALL_FOR_HELP_OPTION_2",
           "r": [
-            "+4 Legitimacy"
+            "+4 Legitimacy",
+            "Truce between the rival nation and the target"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_A_CALL_FOR_HELP",
           "t": "Arrange a truce between [rival] and [rival].",
@@ -29991,7 +30163,9 @@
           "hid": false,
           "o": "EVENTOPTION_THE_PRICE_OF_A_CITY_ALLIANCE",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Alliance with the rival nation",
+            "The target gains the target"
           ],
           "s": "EVENTSTORY_THE_PRICE_OF_A_CITY",
           "t": "Agree to trade [city] for an alliance.",
@@ -30019,6 +30193,7 @@
           "r": [
             "-2 Legitimacy",
             "Remembered: Tribe Offer (5 turns)",
+            "Alliance with the rival nation",
             "Remembered (all families): Allied with barbarian leader (-40 opinion for 40 turns)",
             "Leader relationship: Vengeful Against"
           ],
@@ -30033,7 +30208,8 @@
           "o": "EVENTOPTION_LOOK_UPON_MY_ARMIES_AND_DESPAIR_0",
           "r": [
             "-2 Legitimacy",
-            "Remembered: Tribe Offer (5 turns)"
+            "Remembered: Tribe Offer (5 turns)",
+            "Alliance with the rival nation"
           ],
           "s": "EVENTSTORY_LOOK_UPON_MY_ARMIES_AND_DESPAIR",
           "t": "Force them into an alliance so that we may begin making plans to settle their lands.",
@@ -30180,7 +30356,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_JUDICIAL_OVERREACH_COMPENSATE",
-          "r": [],
+          "r": [
+            "Send to the target: +40 Money, +10 Money per our city"
+          ],
           "s": "EVENTSTORY_JUDICIAL_OVERREACH",
           "t": "Generous compensation to [rival] should settle the issue.",
           "via": "SUBJECT_DIPLOMAT",
@@ -30202,7 +30380,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_OUR_PANTHEON_SPREADS_OPTION_0",
-          "r": [],
+          "r": [
+            "Trade with the target: -20 Civics, +200 Money"
+          ],
           "s": "EVENTSTORY_OUR_PANTHEON_SPREADS",
           "t": "Organize a long-term deal with official trade routes.",
           "via": "SUBJECT_DIPLOMAT",
@@ -30969,7 +31149,8 @@
           "hid": false,
           "o": "EVENTOPTION_RELATIONSHIP_GIFT_OF_LAND_OPTION_2",
           "r": [
-            "+1 Citizen"
+            "+1 Citizen",
+            "+8 border tiles"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_GIFT_OF_LAND",
           "t": "Survey the land to determine its true potential.",
@@ -31128,6 +31309,8 @@
           "hid": false,
           "o": "EVENTOPTION_CAVALRY_CULT_OPTION_2",
           "r": [
+            "Leader stat Cult Shrines: +1",
+            "Add Improvement: Cavalry Cult",
             "+60 XP to the character"
           ],
           "s": "EVENTSTORY_CAVALRY_CULT",
@@ -32132,6 +32315,7 @@
           "r": [
             "-2 Legitimacy",
             "Remembered: Tribe Offer (5 turns)",
+            "Alliance with the rival nation",
             "Gain trait: Inspiring"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_BROTHERS_IN_ARMS",
@@ -32412,7 +32596,8 @@
           "r": [
             "Leader relationship: Vengeful Against",
             "+6 Legitimacy",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_SHARED_INTERESTS",
           "t": "Burn the texts and send them back to [rival].",
@@ -32996,7 +33181,8 @@
           "hid": false,
           "o": "EVENTOPTION_TECH_UNDER_THE_TABLE_2",
           "r": [
-            "Leader relationship: Endeared To"
+            "Leader relationship: Endeared To",
+            "The target acquires the target"
           ],
           "s": "EVENTSTORY_TECH_UNDER_THE_TABLE",
           "t": "Share freely with your allies, offering to tell them as much as they need to know.",
@@ -33430,6 +33616,7 @@
           "hid": false,
           "o": "EVENTOPTION_RELATIONSHIP_AT_DEATHS_DOOR_OPTION_3",
           "r": [
+            "Your leader: no longer Estranged from the target",
             "Gain trait: Compassionate"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_AT_DEATHS_DOOR",
@@ -33494,8 +33681,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_MEDICAL_AID",
@@ -33521,6 +33708,7 @@
           "o": "EVENTOPTION_A_WORTHY_CROWN_HARVEST",
           "r": [
             "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
             "Gain trait: Harvest Crown",
             "+80 Growth (city) (every city)"
           ],
@@ -34451,7 +34639,8 @@
           "r": [
             "Remembered: Declared War on us (-80 opinion for 40 turns)",
             "Remembered: Player Offer (5 turns)",
-            "Steam achievement: Behind The Throne Whats The Worst That Happens"
+            "You declare war on the rival nation",
+            "Steam achievement: What's the Worst That Happens?"
           ],
           "s": "EVENTSTORY_PLAYER_DECLARE_WAR_IMPULSIVE",
           "t": "Proceed with war preparations!",
@@ -34864,8 +35053,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_LEGITIMIZE_BASTARDS_BODY",
@@ -34892,7 +35081,8 @@
           "r": [
             "Leader relationship: Vengeful Against",
             "+6 Legitimacy",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_SHARED_INTERESTS",
           "t": "Burn the texts and send them back to [rival].",
@@ -35065,6 +35255,7 @@
           "hid": false,
           "o": "EVENTOPTION_SEDITIOUS_MEETINGS_OPTION_1",
           "r": [
+            "Your leader: no longer Plotting against the target",
             "+60 Happiness (city)"
           ],
           "s": "EVENTSTORY_SEDITIOUS_MEETINGS",
@@ -36947,6 +37138,7 @@
           "r": [
             "-2 Legitimacy",
             "Remembered: Tribe Offer (5 turns)",
+            "Alliance with the rival nation",
             "Gain trait: Inspiring"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_BROTHERS_IN_ARMS",
@@ -37268,6 +37460,7 @@
           "hid": false,
           "o": "EVENTOPTION_TRAIT_MONSOON_OPTION_2",
           "r": [
+            "The target abdicates the throne",
             "Gain trait: Exploring",
             "Remembered: Started Explore Recently (2 turns)"
           ],
@@ -37568,7 +37761,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_THE_PATH_TO_REDEMPTION_PLOT_REDEMPTION",
-          "r": [],
+          "r": [
+            "Your leader: no longer Plotting against the target"
+          ],
           "s": "EVENTSTORY_THE_PATH_TO_REDEMPTION_PLOT",
           "t": "Invite [character] to dine with you as a friend.",
           "via": "SUBJECT_PIOUS",
@@ -38028,7 +38223,8 @@
           "hid": false,
           "o": "EVENTOPTION_CAMPAIGN_PLANNING_DEFENSE",
           "r": [
-            "+30 Growth (city)"
+            "+30 Growth (city)",
+            "Carries out Trade Mission on the target (free)"
           ],
           "s": "EVENTSTORY_CAMPAIGN_PLANNING",
           "t": "Send the generals to defend the roads and trade routes.",
@@ -38258,6 +38454,7 @@
           "hid": false,
           "o": "EVENTOPTION_TRAIT_MONSOON_OPTION_2",
           "r": [
+            "The target abdicates the throne",
             "Gain trait: Exploring",
             "Remembered: Started Explore Recently (2 turns)"
           ],
@@ -39694,7 +39891,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_ESCAPED_THE_GRAVE_OPTION_2",
-          "r": [],
+          "r": [
+            "Your leader: no longer Plotting against the target"
+          ],
           "s": "EVENTSTORY_ESCAPED_THE_GRAVE",
           "t": "Send the cook's head to [character] on a platter.",
           "via": "SUBJECT_RUTHLESS",
@@ -39707,8 +39906,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)",
             "+4 Legitimacy"
           ],
@@ -39735,7 +39934,8 @@
           "hid": false,
           "o": "EVENTOPTION_ROGUE_NATION_OPTION_2",
           "r": [
-            "+60 Discontent (city)"
+            "+60 Discontent (city)",
+            "Carries out Assassinate on the target"
           ],
           "s": "EVENTSTORY_ROGUE_NATION",
           "t": "Pay local ruffians to rid us of this \"problem.\"",
@@ -39749,8 +39949,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_PROTECTION_OF_A_PROPHET",
@@ -39765,8 +39965,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)",
             "+120 Money (+30/city)"
           ],
@@ -39779,7 +39979,9 @@
           "extra": [],
           "hid": true,
           "o": "EVENTOPTION_NOT_SO_EASY_DIE",
-          "r": [],
+          "r": [
+            "Carries out Assassinate on the target"
+          ],
           "s": "EVENTSTORY_NOT_SO_EASY",
           "t": "You really do seem to have trouble taking a hint.",
           "via": "SUBJECT_RUTHLESS",
@@ -40529,6 +40731,7 @@
           "r": [
             "Remembered (leader of you): How did we end up at peace with you? (-20 opinion for 20 turns)",
             "Remembered: Player Offer (5 turns)",
+            "Peace with the rival nation",
             "+60 XP to the character"
           ],
           "s": "EVENTSTORY_NEIGHBORS_PRIDEFUL_PERSIA_RESPECT",
@@ -40542,7 +40745,9 @@
           "o": "EVENTOPTION_RELATIONSHIP_A_CALL_FOR_HELP_OPTION_3",
           "r": [
             "Leader relationship: Vengeful Against",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Alliance with the rival nation ends",
+            "Alliance with the rival nation"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_A_CALL_FOR_HELP",
           "t": "Promise support to [rival]... but give it to [rival].",
@@ -40592,7 +40797,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_STUDY_KINDRED_SPIRITS_OPTION_2",
-          "r": [],
+          "r": [
+            "Carries out Assassinate on the target (free)"
+          ],
           "s": "EVENTSTORY_STUDY_KINDRED_SPIRITS",
           "t": "Arrange to have this \"kindred spirit\" removed.",
           "via": "SUBJECT_SCHEMER",
@@ -40603,7 +40810,8 @@
           "hid": false,
           "o": "EVENTOPTION_ROGUE_NATION_OPTION_2",
           "r": [
-            "+60 Discontent (city)"
+            "+60 Discontent (city)",
+            "Carries out Assassinate on the target"
           ],
           "s": "EVENTSTORY_ROGUE_NATION",
           "t": "Pay local ruffians to rid us of this \"problem.\"",
@@ -40667,8 +40875,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Assassinated By",
-            "Steam achievement (if the target is an heir): Assassinated Heir",
-            "Steam achievement (if the target leads a rival nation): Assassinated Another Leader",
+            "Steam achievement (if the target is an heir): Future Regicide",
+            "Steam achievement (if the target leads a rival nation): Regicide",
             "Remembered: Assassination exposed (-80 opinion for 40 turns)"
           ],
           "s": "EVENTSTORY_PROTECTION_OF_A_PROPHET",
@@ -40681,7 +40889,8 @@
           "hid": false,
           "o": "EVENTOPTION_FOREIGN_RELATIONS_OPTION_2",
           "r": [
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "Alliance with the rival nation"
           ],
           "s": "EVENTSTORY_FOREIGN_RELATIONS",
           "t": "[character], you didn't tell me we had guests. I shall fetch the drinks.",
@@ -40693,7 +40902,8 @@
           "hid": false,
           "o": "EVENTOPTION_ROYAL_PREROGATIVE_OPTION_1",
           "r": [
-            "-40 Civics (-10/city)"
+            "-40 Civics (-10/city)",
+            "The target becomes head of the target"
           ],
           "s": "EVENTSTORY_ROYAL_PREROGATIVE",
           "t": "A few words to the right [family] elders could sideline [character] and turn this to our advantage.",
@@ -40745,7 +40955,8 @@
           "r": [
             "The character is killed",
             "Leader relationship: Conspiring With",
-            "Steam achievement: Sacred Profane Depose Tribe"
+            "The target seizes the target's throne",
+            "Steam achievement: Deposed Tribe"
           ],
           "s": "EVENTSTORY_UPSTART_DRUID",
           "t": "Send your agents to ensure a smooth transition of power.",
@@ -41557,7 +41768,8 @@
           "r": [
             "Leader relationship: Vengeful Against",
             "+6 Legitimacy",
-            "Remembered: Player Offer (5 turns)"
+            "Remembered: Player Offer (5 turns)",
+            "The rival nation declares war on you"
           ],
           "s": "EVENTSTORY_RELATIONSHIP_SHARED_INTERESTS",
           "t": "Burn the texts and send them back to [rival].",
@@ -41711,7 +41923,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_CALAMITIES_FLOOD_START_SHEEP_STEWARD",
-          "r": [],
+          "r": [
+            "Set Resource: Sheep"
+          ],
           "s": "EVENTSTORY_CALAMITIES_FLOOD_START_SHEEP",
           "t": "Spread out the herd so as not to overwork the land.",
           "via": "SUBJECT_CHARACTER_STEWARD_OF_THE_LAND",
@@ -41990,6 +42204,7 @@
           "hid": false,
           "o": "EVENTOPTION_LOVER_CONFRONTED_2",
           "r": [
+            "Your leader: no longer Lover of the target",
             "Leader relationship: Divorced By"
           ],
           "s": "EVENTSTORY_LOVER_CONFRONTED",
@@ -43643,7 +43858,9 @@
           "extra": [],
           "hid": false,
           "o": "EVENTOPTION_TRAIT_FIGHTING_FOR_NATION_OPTION_2",
-          "r": [],
+          "r": [
+            "Carries out Assassinate on the target"
+          ],
           "s": "EVENTSTORY_TRAIT_FIGHTING_FOR_NATION",
           "t": "Employ your military connections to find and target [character].",
           "via": "SUBJECT_TACTICIAN",
@@ -44322,7 +44539,7 @@
             "-3 Orders"
           ],
           "s": "EVENTSTORY_INSURRECTION_EAGER_PLAYER",
-          "t": "Send additional Agent to support both options.",
+          "t": "Send additional Agents to support both options.",
           "via": "SUBJECT_VIGILANT",
           "who": "leader"
         }
@@ -44636,6 +44853,7 @@
           "hid": false,
           "o": "EVENTOPTION_RAID_EARLY_WARNING_3",
           "r": [
+            "A distant tribe raids",
             "+6 Orders"
           ],
           "s": "EVENTSTORY_RAID_EARLY_WARNING",
@@ -44913,6 +45131,7 @@
           "o": "EVENTOPTION_INFLUENCE_OF_RELIGION_0",
           "r": [
             "Leader relationship: Influenced By",
+            "Archetype becomes Zealot",
             "Converts to the target religion"
           ],
           "s": "EVENTSTORY_INFLUENCE_OF_RELIGION",

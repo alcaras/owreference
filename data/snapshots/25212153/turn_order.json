@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "note": "Step order mirrors source order exactly — do not sort.",
+    "note": "Step order mirrors source order exactly, so do not sort.",
     "source": "reference/Source/Base/Game/GameCore",
     "unlabeled": [
       "city:changeYieldTotal (City.cs:8271)",
@@ -156,7 +156,7 @@
             {
               "call": "doTribeTurn",
               "cond": null,
-              "desc": "A camp may launch a raid at a nearby city (raid-prob roll, blockable by the tribe-raid event), or — for non-diplomacy tribes — convert to a neighboring tribe.",
+              "desc": "A camp may launch a raid at a nearby city, from a raid probability roll that the tribe-raid event can block. A camp of a tribe without diplomacy may instead convert to a neighboring tribe.",
               "file": "Tile.cs",
               "group": "tribes",
               "id": "g4.8",
@@ -263,7 +263,7 @@
             }
           ],
           "cond": null,
-          "desc": "Pillage timers, abandoned construction, resource regrowth, vegetation growth and spread, tribal camp raids — the per-tile sequence below.",
+          "desc": "Pillage timers, abandoned construction, resource regrowth, vegetation growth and spread, and tribal camp raids, in the per-tile sequence below.",
           "file": "Game.cs",
           "group": "world",
           "id": "g4",
@@ -327,7 +327,7 @@
             }
           ],
           "cond": "tribe is alive",
-          "desc": "Pillage timers, abandoned construction, resource regrowth, vegetation growth and spread, tribal camp raids — the per-tile sequence below.",
+          "desc": "Pillage timers, abandoned construction, resource regrowth, vegetation growth and spread, and tribal camp raids, in the per-tile sequence below.",
           "file": "Game.cs",
           "group": "world",
           "id": "g6",
@@ -691,7 +691,7 @@
             }
           ],
           "cond": "skipped on the player's very first turn",
-          "desc": "Tribal cities you finished capturing last turn now transfer (or raze) — see City Capture Mechanics; the per-city capture sequence below.",
+          "desc": "Tribal cities you finished capturing last turn now transfer, or are razed, as covered on City Capture Mechanics. The per-city capture sequence is below.",
           "file": "Player.cs",
           "group": "cities",
           "id": "p14",
@@ -844,7 +844,7 @@
             {
               "call": "finishBuild",
               "cond": "cost met",
-              "desc": "If the current build's cost is now met, it finishes — the unit spawns / building, project or specialist takes effect immediately.",
+              "desc": "If the current build's cost is now met, it finishes, so the unit spawns, or the building, project or specialist takes effect immediately.",
               "file": "City.cs",
               "group": "cities",
               "id": "p18.9",
@@ -916,7 +916,7 @@
         {
           "call": "processYield",
           "cond": "skipped on the player's very first turn",
-          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) reach the stockpiles, and Science goes straight into the current tech, which can complete it here.",
           "file": "Player.cs",
           "group": "tech",
           "id": "p19",
@@ -929,7 +929,7 @@
         {
           "call": "processYield",
           "cond": "over the cap",
-          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) reach the stockpiles, and Science goes straight into the current tech, which can complete it here.",
           "file": "Player.cs",
           "group": "tech",
           "id": "p20",
@@ -942,7 +942,7 @@
         {
           "call": "processYield",
           "cond": "over the cap",
-          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) reach the stockpiles, and Science goes straight into the current tech, which can complete it here.",
           "file": "Player.cs",
           "group": "tech",
           "id": "p21",
@@ -955,7 +955,7 @@
         {
           "call": "processYield",
           "cond": "over the cap",
-          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) reach the stockpiles, and Science goes straight into the current tech, which can complete it here.",
           "file": "Player.cs",
           "group": "tech",
           "id": "p22",
@@ -968,7 +968,7 @@
         {
           "call": "processYield",
           "cond": "over the cap",
-          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) hit the stockpiles — Science goes straight into the current tech and can complete it here.",
+          "desc": "Non-city income plus every city's global yields (Money, Science, Civics, Training, Orders) reach the stockpiles, and Science goes straight into the current tech, which can complete it here.",
           "file": "Player.cs",
           "group": "tech",
           "id": "p23",
@@ -1033,7 +1033,7 @@
         {
           "call": "doBounceUnits",
           "cond": null,
-          "desc": "Units standing where they can no longer be (e.g. lost territory) are pushed to a valid tile — or killed if there is none.",
+          "desc": "Units standing where they can no longer be, such as on territory you have lost, are pushed to a valid tile, or killed when there is none.",
           "file": "Player.cs",
           "group": "units",
           "id": "p28",
@@ -1362,7 +1362,7 @@
             }
           ],
           "cond": null,
-          "desc": "Each of your units takes its upkeep turn (wake checks, timers, work, healing, XP) — the per-unit sequence below.",
+          "desc": "Each of your units takes its upkeep turn, covering wake checks, timers, work, healing and XP, in the per-unit sequence below.",
           "file": "Player.cs",
           "group": "units",
           "id": "p29",
@@ -1544,7 +1544,7 @@
                 }
               ],
               "cond": "on the character's year turn",
-              "desc": "Runs only when turn % year-divisions matches the character's ID: aging, death rolls and life events — the sequence below.",
+              "desc": "Runs only when turn % year-divisions matches the character's ID, and covers aging, death rolls and life events, in the sequence below.",
               "file": "Character.cs",
               "group": "characters",
               "id": "p34.1",
@@ -1603,7 +1603,7 @@
             }
           ],
           "cond": "otherwise",
-          "desc": "Each of your units takes its upkeep turn (wake checks, timers, work, healing, XP) — the per-unit sequence below.",
+          "desc": "Each of your units takes its upkeep turn, covering wake checks, timers, work, healing and XP, in the per-unit sequence below.",
           "file": "Player.cs",
           "group": "units",
           "id": "p34",
@@ -1733,7 +1733,7 @@
                 }
               ],
               "cond": "on the character's year turn",
-              "desc": "Runs only when turn % year-divisions matches the character's ID: aging, death rolls and life events — the sequence below.",
+              "desc": "Runs only when turn % year-divisions matches the character's ID, and covers aging, death rolls and life events, in the sequence below.",
               "file": "Character.cs",
               "group": "characters",
               "id": "p35.1",
@@ -1792,7 +1792,7 @@
             }
           ],
           "cond": "the leader, after everyone else",
-          "desc": "Each of your units takes its upkeep turn (wake checks, timers, work, healing, XP) — the per-unit sequence below.",
+          "desc": "Each of your units takes its upkeep turn, covering wake checks, timers, work, healing and XP, in the per-unit sequence below.",
           "file": "Player.cs",
           "group": "units",
           "id": "p35",
@@ -1883,7 +1883,7 @@
         {
           "call": "doPlayerDiplomacy",
           "cond": "skipped on the player's very first turn",
-          "desc": "AI players (only) evaluate diplomacy toward every other player — humans are considered first.",
+          "desc": "AI players, and only AI players, evaluate diplomacy toward every other player, and humans are considered first.",
           "file": "Player.cs",
           "group": "diplomacy",
           "id": "p42",
@@ -1948,7 +1948,7 @@
         {
           "call": "doMissionTurn",
           "cond": null,
-          "desc": "Missions whose duration has elapsed resolve — deliberately after character turns, so mid-event state changes (e.g. a suitor marrying) invalidate cleanly.",
+          "desc": "Missions whose duration has elapsed resolve, deliberately after character turns, so that a state change during an event, such as a suitor marrying, invalidates cleanly.",
           "file": "Player.cs",
           "group": "court",
           "id": "p47",

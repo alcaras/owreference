@@ -24,6 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_missions import clean_text  # noqa: E402  shared game-text cleaner
 import build_events as bev  # noqa: E402  cm_ineligible + class-folded timing
+from link_names import text_files
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -76,12 +77,12 @@ def parse(name: str) -> ET.Element:
 def load_text_all() -> dict[str, str]:
     """Merge every text-*.xml file into a single zType → en-US (first form) map."""
     out: dict[str, str] = {}
-    for p in XML_DIR.glob("text-*.xml"):
+    for p in text_files():
         try:
             for e in ET.parse(p).getroot().findall("Entry"):
                 k = e.findtext("zType") or ""
                 en = (e.findtext("en-US") or "").split("~")[0].strip()
-                if k and en and k not in out:
+                if k and en:
                     out[k] = en
         except ET.ParseError:
             continue

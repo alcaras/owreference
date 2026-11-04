@@ -22,13 +22,22 @@ XML_DIR = Path(__file__).resolve().parent.parent / "reference" / "XML" / "Infos"
 LINK_RE = re.compile(r"\{?(lowercase:)?link\(([A-Z][A-Z0-9_]*)(?:\s*,\s*(\d+))?\)\}?")
 ICON_RE = re.compile(r"\{?icon\([A-Z0-9_]+(?:,\d+)?\)\}?")
 
+# Text the game layers over every other file, loaded last so it wins:
+# text-new.xml holds strings added since the last full localisation pass (new
+# events, missions and help lines; it never repeats a key), and the two
+# *-change files are post-lock rewrites of existing keys ("Disable Organized
+# Tribes", the Stun rule). A loader that skipped them showed the event "Proposal
+# to Exchange Maps" as "Exchange Maps Proposal Human".
+OVERRIDE_TEXT = ("text-new.xml", "text-change.xml", "text-locked-change.xml")
+
 
 @lru_cache(maxsize=1)
 def _indexes() -> tuple[dict[str, list[str]], dict[str, str]]:
     """(TEXT key → en-US forms, zType → Name key) across every Infos file."""
     forms: dict[str, list[str]] = {}
     name_key: dict[str, str] = {}
-    for p in sorted(XML_DIR.glob("*.xml")):
+    paths = sorted(XML_DIR.glob("*.xml"), key=lambda p: (p.name in OVERRIDE_TEXT, p.name))  # text_files() order
+    for p in paths:
         try:
             root = ET.parse(p).getroot()
         except ET.ParseError:
@@ -40,7 +49,7 @@ def _indexes() -> tuple[dict[str, list[str]], dict[str, str]]:
                 continue
             if is_text:
                 en = e.findtext("en-US")
-                if en and z not in forms:
+                if en:
                     forms[z] = [f.strip() for f in en.split("~")]
             else:
                 n = e.findtext("Name") or ""
@@ -80,18 +89,30 @@ def resolve_links(s: str, _depth: int = 0) -> str:
 
 
 def with_dlc(filenames) -> list[str]:
-    """Text files plus their DLC siblings: text-unit.xml → text-unit.xml,
-    text-unit-hittite.xml. The Hittite units, nation and families are named
+    """Text files plus their DLC siblings, then OVERRIDE_TEXT: text-unit.xml →
+    text-unit.xml, text-unit-hittite.xml, …, text-new.xml, text-change.xml,
+    text-locked-change.xml. The Hittite units, nation and families are named
     only in the siblings, so a loader reading the base file alone fell back to
     the zType ("Hittite Chariot 1" for the Heavy Chariot). No sibling redefines
-    a base key, so the order doesn't change any name."""
+    a base key; the override files do, so loaders must let a later file win."""
     out: list[str] = []
     for fn in filenames:
+        if fn in OVERRIDE_TEXT:
+            continue
         stem = fn.removesuffix(".xml")
-        for name in [fn, *sorted(p.name for p in XML_DIR.glob(f"{stem}-*.xml"))]:
-            if name not in out:
+        siblings = sorted(p.name for p in XML_DIR.glob(f"{stem}-*.xml"))
+        for name in [fn, *siblings]:
+            if name not in out and name not in OVERRIDE_TEXT:
                 out.append(name)
+    if any(fn.startswith("text-") for fn in filenames):
+        out += [fn for fn in OVERRIDE_TEXT if (XML_DIR / fn).exists()]
     return out
+
+
+def text_files(xml_dir: Path = XML_DIR) -> list[Path]:
+    """Every text-*.xml, OVERRIDE_TEXT last. Read them with the last file
+    winning; plain sorted() puts text-change.xml before the files it rewrites."""
+    return sorted(xml_dir.glob("text-*.xml"), key=lambda p: (p.name in OVERRIDE_TEXT, p.name))
 
 
 def game_name(token: str) -> str:

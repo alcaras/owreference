@@ -29,7 +29,7 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from link_names import game_name, resolve_links
+from link_names import game_name, resolve_links, text_files
 
 ROOT = Path(__file__).resolve().parent.parent
 XML_DIR = ROOT / "reference" / "XML" / "Infos"
@@ -78,10 +78,10 @@ def all_text() -> dict[str, str]:
     global _ALL_TEXT
     if _ALL_TEXT is None:
         _ALL_TEXT = {}
-        for p in sorted(XML_DIR.glob("text-*.xml")):
+        for p in text_files():
             for e in ET.parse(p).getroot().findall("Entry"):
                 k = e.findtext("zType")
-                if k and k not in _ALL_TEXT:
+                if k:
                     _ALL_TEXT[k] = e.findtext("en-US") or ""
     return _ALL_TEXT
 

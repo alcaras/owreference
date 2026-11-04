@@ -1,0 +1,1027 @@
+{
+  "buildings": {
+    "citizen": {
+      "orders": 0.1
+    },
+    "garrison": {
+      "orders": 0.5,
+      "tech": ""
+    },
+    "legitimacyPerOrder": 0.1,
+    "pyramidsWonder": {
+      "orders": 1.0
+    },
+    "revelationTemple": {
+      "orders": 0.5
+    },
+    "sunShrine": {
+      "examples": [
+        "Shrine of Hvar Khshaita",
+        "Shrine of Melul",
+        "Shrine of Ra",
+        "Shrine of Shamash",
+        "Shrine of Surya"
+      ],
+      "orders": 0.5,
+      "tech": "TECH_DIVINATION"
+    },
+    "templeWorldReligion": {
+      "orders": 0.5
+    }
+  },
+  "classes": {
+    "FAMILYCLASS_ARTISANS": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_ARTISANS",
+      "name": "Artisans",
+      "perCity": 0.0,
+      "seat": 0.0,
+      "templeModifier": 0,
+      "unlocksDecree": false
+    },
+    "FAMILYCLASS_CHAMPIONS": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_CHAMPIONS",
+      "name": "Champions",
+      "perCity": 0.0,
+      "seat": 0.0,
+      "templeModifier": 0,
+      "unlocksDecree": false
+    },
+    "FAMILYCLASS_CLERICS": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_CLERICS",
+      "name": "Clerics",
+      "perCity": 0.0,
+      "seat": 0.0,
+      "templeModifier": 100,
+      "unlocksDecree": false
+    },
+    "FAMILYCLASS_HUNTERS": {
+      "campModifier": 100,
+      "id": "FAMILYCLASS_HUNTERS",
+      "name": "Hunters",
+      "perCity": 0.0,
+      "seat": 0.0,
+      "templeModifier": 0,
+      "unlocksDecree": false
+    },
+    "FAMILYCLASS_LANDOWNERS": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_LANDOWNERS",
+      "name": "Landowners",
+      "perCity": 0.0,
+      "seat": 0.0,
+      "templeModifier": 0,
+      "unlocksDecree": false
+    },
+    "FAMILYCLASS_PATRONS": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_PATRONS",
+      "name": "Patrons",
+      "perCity": 0.0,
+      "seat": 0.0,
+      "templeModifier": 0,
+      "unlocksDecree": false
+    },
+    "FAMILYCLASS_RIDERS": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_RIDERS",
+      "name": "Riders",
+      "perCity": 0.0,
+      "seat": 2.0,
+      "templeModifier": 0,
+      "unlocksDecree": false
+    },
+    "FAMILYCLASS_SAGES": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_SAGES",
+      "name": "Sages",
+      "perCity": 0.0,
+      "seat": 0.0,
+      "templeModifier": 0,
+      "unlocksDecree": false
+    },
+    "FAMILYCLASS_STATESMEN": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_STATESMEN",
+      "name": "Statesmen",
+      "perCity": 1.0,
+      "seat": 0.0,
+      "templeModifier": 0,
+      "unlocksDecree": true
+    },
+    "FAMILYCLASS_TRADERS": {
+      "campModifier": 0,
+      "id": "FAMILYCLASS_TRADERS",
+      "name": "Traders",
+      "perCity": 0.0,
+      "seat": 0.0,
+      "templeModifier": 0,
+      "unlocksDecree": false
+    }
+  },
+  "convertLegitimacy": {
+    "flatCost": 2,
+    "orders": 10
+  },
+  "decree": [
+    {
+      "civics": 40,
+      "culture": "Weak",
+      "id": "PROJECT_DECREE_1",
+      "name": "Decree I",
+      "orders": 3
+    },
+    {
+      "civics": 60,
+      "culture": "Developing",
+      "id": "PROJECT_DECREE_2",
+      "name": "Decree II",
+      "orders": 6
+    },
+    {
+      "civics": 80,
+      "culture": "Strong",
+      "id": "PROJECT_DECREE_3",
+      "name": "Decree III",
+      "orders": 9
+    },
+    {
+      "civics": 100,
+      "culture": "Legendary",
+      "id": "PROJECT_DECREE_4",
+      "name": "Decree IV",
+      "orders": 12
+    }
+  ],
+  "legitimacy": {
+    "aksumMintCoin": [
+      {
+        "culture": "Weak",
+        "id": "PROJECT_MINT_COIN_1",
+        "legitimacy": 5
+      },
+      {
+        "culture": "Developing",
+        "id": "PROJECT_MINT_COIN_2",
+        "legitimacy": 10
+      },
+      {
+        "culture": "Strong",
+        "id": "PROJECT_MINT_COIN_3",
+        "legitimacy": 20
+      },
+      {
+        "culture": "Legendary",
+        "id": "PROJECT_MINT_COIN_4",
+        "legitimacy": 40
+      }
+    ],
+    "kushitePyramid": {
+      "name": "Kushite Pyramids",
+      "perCity": 4
+    }
+  },
+  "maxFamilies": 3,
+  "nations": [
+    {
+      "classes": [
+        "FAMILYCLASS_CHAMPIONS",
+        "FAMILYCLASS_CLERICS",
+        "FAMILYCLASS_PATRONS",
+        "FAMILYCLASS_TRADERS"
+      ],
+      "dlc": "AKSUM",
+      "families": [
+        {
+          "class": "FAMILYCLASS_CHAMPIONS",
+          "id": "FAMILY_AKSUM_AGAW",
+          "name": "Agaw"
+        },
+        {
+          "class": "FAMILYCLASS_TRADERS",
+          "id": "FAMILY_AKSUM_AGAZI",
+          "name": "Agazi"
+        },
+        {
+          "class": "FAMILYCLASS_PATRONS",
+          "id": "FAMILY_AKSUM_BARYA",
+          "name": "Barya"
+        },
+        {
+          "class": "FAMILYCLASS_CLERICS",
+          "id": "FAMILY_AKSUM_TIGRAYAN",
+          "name": "Tigrayan"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_AKSUM",
+      "name": "Aksum",
+      "ordersShrine": null,
+      "ordersShrines": [],
+      "shrineModifier": 0,
+      "slug": "aksum",
+      "specials": [],
+      "startingTechNames": [
+        "Trapping",
+        "Labor Force",
+        "Administration"
+      ],
+      "startingTechs": [
+        "TECH_TRAPPING",
+        "TECH_LABOR_FORCE",
+        "TECH_ADMINISTRATION"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_CHAMPIONS",
+        "FAMILYCLASS_CLERICS",
+        "FAMILYCLASS_HUNTERS",
+        "FAMILYCLASS_PATRONS"
+      ],
+      "dlc": "",
+      "families": [
+        {
+          "class": "FAMILYCLASS_PATRONS",
+          "id": "FAMILY_ADASI",
+          "name": "Adasi"
+        },
+        {
+          "class": "FAMILYCLASS_CLERICS",
+          "id": "FAMILY_ERISHUM",
+          "name": "Erishum"
+        },
+        {
+          "class": "FAMILYCLASS_CHAMPIONS",
+          "id": "FAMILY_SARGONID",
+          "name": "Sargonid"
+        },
+        {
+          "class": "FAMILYCLASS_HUNTERS",
+          "id": "FAMILY_TUDIYA",
+          "name": "Tudiya"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_ASSYRIA",
+      "name": "Assyria",
+      "ordersShrine": {
+        "id": "IMPROVEMENT_SHRINE_SHAMASH",
+        "name": "Shrine of Shamash",
+        "orders": 0.5,
+        "per": "flat",
+        "type": "Sun"
+      },
+      "ordersShrines": [
+        {
+          "id": "IMPROVEMENT_SHRINE_SHAMASH",
+          "name": "Shrine of Shamash",
+          "orders": 0.5,
+          "per": "flat",
+          "type": "Sun"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_ASHUR",
+          "name": "Shrine of Ashur",
+          "orders": 1.0,
+          "per": "wonder",
+          "type": "Kingship"
+        }
+      ],
+      "shrineModifier": 0,
+      "slug": "assyria",
+      "specials": [
+        {
+          "kind": "perKill",
+          "label": "+2 Orders per military kill (event-driven)",
+          "value": 2
+        }
+      ],
+      "startingTechNames": [
+        "Trapping",
+        "Administration",
+        "Military Drill"
+      ],
+      "startingTechs": [
+        "TECH_TRAPPING",
+        "TECH_ADMINISTRATION",
+        "TECH_MILITARY_DRILL"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_ARTISANS",
+        "FAMILYCLASS_HUNTERS",
+        "FAMILYCLASS_SAGES",
+        "FAMILYCLASS_TRADERS"
+      ],
+      "dlc": "",
+      "families": [
+        {
+          "class": "FAMILYCLASS_SAGES",
+          "id": "FAMILY_AMORITE",
+          "name": "Amorite"
+        },
+        {
+          "class": "FAMILYCLASS_ARTISANS",
+          "id": "FAMILY_CHALDEAN",
+          "name": "Chaldean"
+        },
+        {
+          "class": "FAMILYCLASS_TRADERS",
+          "id": "FAMILY_ISIN",
+          "name": "Isin"
+        },
+        {
+          "class": "FAMILYCLASS_HUNTERS",
+          "id": "FAMILY_KASSITE",
+          "name": "Kassite"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_BABYLONIA",
+      "name": "Babylonia",
+      "ordersShrine": {
+        "id": "IMPROVEMENT_SHRINE_MARDUK",
+        "name": "Shrine of Marduk",
+        "orders": 1.0,
+        "per": "wonder",
+        "type": "Kingship"
+      },
+      "ordersShrines": [
+        {
+          "id": "IMPROVEMENT_SHRINE_MARDUK",
+          "name": "Shrine of Marduk",
+          "orders": 1.0,
+          "per": "wonder",
+          "type": "Kingship"
+        }
+      ],
+      "shrineModifier": 0,
+      "slug": "babylonia",
+      "specials": [],
+      "startingTechNames": [
+        "Trapping",
+        "Administration",
+        "Rhetoric"
+      ],
+      "startingTechs": [
+        "TECH_TRAPPING",
+        "TECH_ADMINISTRATION",
+        "TECH_RHETORIC"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_ARTISANS",
+        "FAMILYCLASS_RIDERS",
+        "FAMILYCLASS_STATESMEN",
+        "FAMILYCLASS_TRADERS"
+      ],
+      "dlc": "",
+      "families": [
+        {
+          "class": "FAMILYCLASS_RIDERS",
+          "id": "FAMILY_BARCID",
+          "name": "Barcid"
+        },
+        {
+          "class": "FAMILYCLASS_STATESMEN",
+          "id": "FAMILY_DIDONIAN",
+          "name": "Didonian"
+        },
+        {
+          "class": "FAMILYCLASS_TRADERS",
+          "id": "FAMILY_HANNONID",
+          "name": "Hannonid"
+        },
+        {
+          "class": "FAMILYCLASS_ARTISANS",
+          "id": "FAMILY_MAGONID",
+          "name": "Magonid"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_CARTHAGE",
+      "name": "Carthage",
+      "ordersShrine": null,
+      "ordersShrines": [],
+      "shrineModifier": 0,
+      "slug": "carthage",
+      "specials": [],
+      "startingTechNames": [
+        "Trapping",
+        "Divination",
+        "Aristocracy"
+      ],
+      "startingTechs": [
+        "TECH_TRAPPING",
+        "TECH_DIVINATION",
+        "TECH_ARISTOCRACY"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_CLERICS",
+        "FAMILYCLASS_LANDOWNERS",
+        "FAMILYCLASS_RIDERS",
+        "FAMILYCLASS_SAGES"
+      ],
+      "dlc": "",
+      "families": [
+        {
+          "class": "FAMILYCLASS_CLERICS",
+          "id": "FAMILY_AMARNA",
+          "name": "Amarna"
+        },
+        {
+          "class": "FAMILYCLASS_RIDERS",
+          "id": "FAMILY_RAMESSIDE",
+          "name": "Ramesside"
+        },
+        {
+          "class": "FAMILYCLASS_LANDOWNERS",
+          "id": "FAMILY_SAITE",
+          "name": "Saite"
+        },
+        {
+          "class": "FAMILYCLASS_SAGES",
+          "id": "FAMILY_THUTMOSID",
+          "name": "Thutmosid"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_EGYPT",
+      "name": "Egypt",
+      "ordersShrine": {
+        "id": "IMPROVEMENT_SHRINE_RA",
+        "name": "Shrine of Ra",
+        "orders": 0.5,
+        "per": "flat",
+        "type": "Sun"
+      },
+      "ordersShrines": [
+        {
+          "id": "IMPROVEMENT_SHRINE_RA",
+          "name": "Shrine of Ra",
+          "orders": 0.5,
+          "per": "flat",
+          "type": "Sun"
+        }
+      ],
+      "shrineModifier": 0,
+      "slug": "egypt",
+      "specials": [],
+      "startingTechNames": [
+        "Ironworking",
+        "Stonecutting",
+        "Labor Force"
+      ],
+      "startingTechs": [
+        "TECH_IRONWORKING",
+        "TECH_STONECUTTING",
+        "TECH_LABOR_FORCE"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_ARTISANS",
+        "FAMILYCLASS_CHAMPIONS",
+        "FAMILYCLASS_PATRONS",
+        "FAMILYCLASS_SAGES"
+      ],
+      "dlc": "",
+      "families": [
+        {
+          "class": "FAMILYCLASS_SAGES",
+          "id": "FAMILY_ALCMAEONID",
+          "name": "Alcmaeonid"
+        },
+        {
+          "class": "FAMILYCLASS_CHAMPIONS",
+          "id": "FAMILY_ARGEAD",
+          "name": "Argead"
+        },
+        {
+          "class": "FAMILYCLASS_ARTISANS",
+          "id": "FAMILY_CYPSELID",
+          "name": "Cypselid"
+        },
+        {
+          "class": "FAMILYCLASS_PATRONS",
+          "id": "FAMILY_SELEUCID",
+          "name": "Seleucid"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_GREECE",
+      "name": "Greece",
+      "ordersShrine": {
+        "id": "IMPROVEMENT_SHRINE_ZEUS",
+        "name": "Shrine of Zeus",
+        "orders": 1.0,
+        "per": "wonder",
+        "type": "Kingship"
+      },
+      "ordersShrines": [
+        {
+          "id": "IMPROVEMENT_SHRINE_ZEUS",
+          "name": "Shrine of Zeus",
+          "orders": 1.0,
+          "per": "wonder",
+          "type": "Kingship"
+        }
+      ],
+      "shrineModifier": 0,
+      "slug": "greece",
+      "specials": [],
+      "startingTechNames": [
+        "Ironworking",
+        "Stonecutting",
+        "Drama"
+      ],
+      "startingTechs": [
+        "TECH_IRONWORKING",
+        "TECH_STONECUTTING",
+        "TECH_DRAMA"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_LANDOWNERS",
+        "FAMILYCLASS_PATRONS",
+        "FAMILYCLASS_RIDERS",
+        "FAMILYCLASS_TRADERS"
+      ],
+      "dlc": "NATION_HITTITES",
+      "families": [
+        {
+          "class": "FAMILYCLASS_TRADERS",
+          "id": "FAMILY_HATTUSAN",
+          "name": "Hattusan"
+        },
+        {
+          "class": "FAMILYCLASS_RIDERS",
+          "id": "FAMILY_KUSSARAN",
+          "name": "Kussaran"
+        },
+        {
+          "class": "FAMILYCLASS_LANDOWNERS",
+          "id": "FAMILY_NENASSAN",
+          "name": "Nenassan"
+        },
+        {
+          "class": "FAMILYCLASS_PATRONS",
+          "id": "FAMILY_ZALPUWAN",
+          "name": "Zalpuwan"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_HITTITE",
+      "name": "Hittite",
+      "ordersShrine": null,
+      "ordersShrines": [],
+      "shrineModifier": 0,
+      "slug": "hittite",
+      "specials": [],
+      "startingTechNames": [
+        "Ironworking",
+        "Husbandry",
+        "Administration"
+      ],
+      "startingTechs": [
+        "TECH_IRONWORKING",
+        "TECH_HUSBANDRY",
+        "TECH_ADMINISTRATION"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_ARTISANS",
+        "FAMILYCLASS_HUNTERS",
+        "FAMILYCLASS_LANDOWNERS",
+        "FAMILYCLASS_TRADERS"
+      ],
+      "dlc": "PHARAOHS",
+      "families": [
+        {
+          "class": "FAMILYCLASS_ARTISANS",
+          "id": "FAMILY_IRTJET",
+          "name": "Irtjet"
+        },
+        {
+          "class": "FAMILYCLASS_LANDOWNERS",
+          "id": "FAMILY_SETJU",
+          "name": "Setju"
+        },
+        {
+          "class": "FAMILYCLASS_TRADERS",
+          "id": "FAMILY_WAWAT",
+          "name": "Wawat"
+        },
+        {
+          "class": "FAMILYCLASS_HUNTERS",
+          "id": "FAMILY_YAM",
+          "name": "Yam"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_KUSH",
+      "name": "Kush",
+      "ordersShrine": {
+        "id": "IMPROVEMENT_SHRINE_MANDULIS",
+        "name": "Shrine of Melul",
+        "orders": 0.5,
+        "per": "flat",
+        "type": "Sun"
+      },
+      "ordersShrines": [
+        {
+          "id": "IMPROVEMENT_SHRINE_MANDULIS",
+          "name": "Shrine of Melul",
+          "orders": 0.5,
+          "per": "flat",
+          "type": "Sun"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_AMUN",
+          "name": "Shrine of Amani",
+          "orders": 1.0,
+          "per": "wonder",
+          "type": "Kingship"
+        }
+      ],
+      "shrineModifier": 50,
+      "slug": "kush",
+      "specials": [],
+      "startingTechNames": [
+        "Trapping",
+        "Stonecutting",
+        "Divination"
+      ],
+      "startingTechs": [
+        "TECH_TRAPPING",
+        "TECH_STONECUTTING",
+        "TECH_DIVINATION"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_CHAMPIONS",
+        "FAMILYCLASS_HUNTERS",
+        "FAMILYCLASS_PATRONS",
+        "FAMILYCLASS_RIDERS",
+        "FAMILYCLASS_SAGES",
+        "FAMILYCLASS_STATESMEN"
+      ],
+      "dlc": "EMPIRES_OF_THE_INDUS",
+      "families": [
+        {
+          "class": "FAMILYCLASS_SAGES",
+          "id": "FAMILY_AVANTI",
+          "name": "Avanti"
+        },
+        {
+          "class": "FAMILYCLASS_HUNTERS",
+          "id": "FAMILY_GANDHARA",
+          "name": "Gandhara"
+        },
+        {
+          "class": "FAMILYCLASS_RIDERS",
+          "id": "FAMILY_KAMBOJA",
+          "name": "Kamboja"
+        },
+        {
+          "class": "FAMILYCLASS_STATESMEN",
+          "id": "FAMILY_KOSALA",
+          "name": "Kosala"
+        },
+        {
+          "class": "FAMILYCLASS_CHAMPIONS",
+          "id": "FAMILY_MAGADHA",
+          "name": "Magadha"
+        },
+        {
+          "class": "FAMILYCLASS_PATRONS",
+          "id": "FAMILY_VATSA",
+          "name": "Vatsa"
+        }
+      ],
+      "familyCount": 6,
+      "id": "NATION_MAURYA",
+      "name": "Maurya",
+      "ordersShrine": {
+        "id": "IMPROVEMENT_SHRINE_SURYA",
+        "name": "Shrine of Surya",
+        "orders": 0.5,
+        "per": "flat",
+        "type": "Sun"
+      },
+      "ordersShrines": [
+        {
+          "id": "IMPROVEMENT_SHRINE_SURYA",
+          "name": "Shrine of Surya",
+          "orders": 0.5,
+          "per": "flat",
+          "type": "Sun"
+        },
+        {
+          "id": "IMPROVEMENT_SHRINE_YAMA",
+          "name": "Shrine of Yama",
+          "orders": 1.0,
+          "per": "wonder",
+          "type": "Kingship"
+        }
+      ],
+      "shrineModifier": 0,
+      "slug": "maurya",
+      "specials": [],
+      "startingTechNames": [
+        "Ironworking",
+        "Stonecutting",
+        "Administration"
+      ],
+      "startingTechs": [
+        "TECH_IRONWORKING",
+        "TECH_STONECUTTING",
+        "TECH_ADMINISTRATION"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_CLERICS",
+        "FAMILYCLASS_HUNTERS",
+        "FAMILYCLASS_RIDERS",
+        "FAMILYCLASS_STATESMEN"
+      ],
+      "dlc": "",
+      "families": [
+        {
+          "class": "FAMILYCLASS_STATESMEN",
+          "id": "FAMILY_ACHAEMENID",
+          "name": "Achaemenid"
+        },
+        {
+          "class": "FAMILYCLASS_RIDERS",
+          "id": "FAMILY_ARSACID",
+          "name": "Arsacid"
+        },
+        {
+          "class": "FAMILYCLASS_HUNTERS",
+          "id": "FAMILY_MIHRANID",
+          "name": "Mihranid"
+        },
+        {
+          "class": "FAMILYCLASS_CLERICS",
+          "id": "FAMILY_SASANID",
+          "name": "Sasanid"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_PERSIA",
+      "name": "Persia",
+      "ordersShrine": {
+        "id": "IMPROVEMENT_SHRINE_HVAR_KHSHAITA",
+        "name": "Shrine of Hvar Khshaita",
+        "orders": 0.5,
+        "per": "flat",
+        "type": "Sun"
+      },
+      "ordersShrines": [
+        {
+          "id": "IMPROVEMENT_SHRINE_HVAR_KHSHAITA",
+          "name": "Shrine of Hvar Khshaita",
+          "orders": 0.5,
+          "per": "flat",
+          "type": "Sun"
+        }
+      ],
+      "shrineModifier": 0,
+      "slug": "persia",
+      "specials": [
+        {
+          "kind": "pastureBonus",
+          "label": "+0.5 Orders on every Pasture (any resource)",
+          "value": 0.5
+        }
+      ],
+      "startingTechNames": [
+        "Ironworking",
+        "Trapping",
+        "Husbandry"
+      ],
+      "startingTechs": [
+        "TECH_IRONWORKING",
+        "TECH_TRAPPING",
+        "TECH_HUSBANDRY"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_CHAMPIONS",
+        "FAMILYCLASS_LANDOWNERS",
+        "FAMILYCLASS_PATRONS",
+        "FAMILYCLASS_STATESMEN"
+      ],
+      "dlc": "",
+      "families": [
+        {
+          "class": "FAMILYCLASS_LANDOWNERS",
+          "id": "FAMILY_CLAUDIUS",
+          "name": "Claudius"
+        },
+        {
+          "class": "FAMILYCLASS_CHAMPIONS",
+          "id": "FAMILY_FABIUS",
+          "name": "Fabius"
+        },
+        {
+          "class": "FAMILYCLASS_STATESMEN",
+          "id": "FAMILY_JULIUS",
+          "name": "Julius"
+        },
+        {
+          "class": "FAMILYCLASS_PATRONS",
+          "id": "FAMILY_VALERIUS",
+          "name": "Valerius"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_ROME",
+      "name": "Rome",
+      "ordersShrine": null,
+      "ordersShrines": [],
+      "shrineModifier": 0,
+      "slug": "rome",
+      "specials": [],
+      "startingTechNames": [
+        "Ironworking",
+        "Stonecutting",
+        "Polis"
+      ],
+      "startingTechs": [
+        "TECH_IRONWORKING",
+        "TECH_STONECUTTING",
+        "TECH_POLIS"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_ARTISANS",
+        "FAMILYCLASS_LANDOWNERS",
+        "FAMILYCLASS_TRADERS"
+      ],
+      "dlc": "EMPIRES_OF_THE_INDUS",
+      "families": [
+        {
+          "class": "FAMILYCLASS_LANDOWNERS",
+          "id": "FAMILY_CHERA",
+          "name": "Chera"
+        },
+        {
+          "class": "FAMILYCLASS_ARTISANS",
+          "id": "FAMILY_CHOLA",
+          "name": "Chola"
+        },
+        {
+          "class": "FAMILYCLASS_TRADERS",
+          "id": "FAMILY_PANDYA",
+          "name": "Pandya"
+        }
+      ],
+      "familyCount": 3,
+      "id": "NATION_TAMIL",
+      "name": "Tamil",
+      "ordersShrine": null,
+      "ordersShrines": [],
+      "shrineModifier": 0,
+      "slug": "tamil",
+      "specials": [
+        {
+          "kind": "harbor",
+          "label": "+1.0 Orders per Harbor",
+          "value": 1.0
+        }
+      ],
+      "startingTechNames": [
+        "Divination",
+        "Trapping",
+        "Ironworking"
+      ],
+      "startingTechs": [
+        "TECH_DIVINATION",
+        "TECH_TRAPPING",
+        "TECH_IRONWORKING"
+      ]
+    },
+    {
+      "classes": [
+        "FAMILYCLASS_CHAMPIONS",
+        "FAMILYCLASS_CLERICS",
+        "FAMILYCLASS_RIDERS",
+        "FAMILYCLASS_TRADERS"
+      ],
+      "dlc": "EMPIRES_OF_THE_INDUS",
+      "families": [
+        {
+          "class": "FAMILYCLASS_TRADERS",
+          "id": "FAMILY_DUMI",
+          "name": "Dumi"
+        },
+        {
+          "class": "FAMILYCLASS_CHAMPIONS",
+          "id": "FAMILY_SHUANGMI",
+          "name": "Shuangmi"
+        },
+        {
+          "class": "FAMILYCLASS_CLERICS",
+          "id": "FAMILY_XIDUN",
+          "name": "Xidun"
+        },
+        {
+          "class": "FAMILYCLASS_RIDERS",
+          "id": "FAMILY_XIUMI",
+          "name": "Xiumi"
+        }
+      ],
+      "familyCount": 4,
+      "id": "NATION_YUEZHI",
+      "name": "Yuezhi",
+      "ordersShrine": null,
+      "ordersShrines": [],
+      "shrineModifier": 0,
+      "slug": "yuezhi",
+      "specials": [
+        {
+          "kind": "foundHorse",
+          "label": "+1 Horse resource in every city founded",
+          "value": 1
+        }
+      ],
+      "startingTechNames": [
+        "Military Drill",
+        "Husbandry"
+      ],
+      "startingTechs": [
+        "TECH_MILITARY_DRILL",
+        "TECH_HUSBANDRY"
+      ]
+    }
+  ],
+  "techs": {
+    "TECH_CARTOGRAPHY": {
+      "cost": 700,
+      "name": "Cartography",
+      "prereqs": [
+        "TECH_NAVIGATION",
+        "TECH_METAPHYSICS"
+      ],
+      "tier": 5
+    },
+    "TECH_DIVINATION": {
+      "cost": 100,
+      "name": "Divination",
+      "prereqs": [],
+      "tier": 1
+    },
+    "TECH_HUSBANDRY": {
+      "cost": 160,
+      "name": "Husbandry",
+      "prereqs": [
+        "TECH_IRONWORKING"
+      ],
+      "tier": 2
+    },
+    "TECH_IRONWORKING": {
+      "cost": 100,
+      "name": "Ironworking",
+      "prereqs": [],
+      "tier": 1
+    },
+    "TECH_TRAPPING": {
+      "cost": 100,
+      "name": "Trapping",
+      "prereqs": [],
+      "tier": 1
+    }
+  },
+  "tiles": {
+    "camp": {
+      "byResource": {
+        "Camel": 0.5,
+        "Elephant": 0.5
+      },
+      "tech": "TECH_TRAPPING",
+      "techName": "Trapping"
+    },
+    "pasture": {
+      "byResource": {
+        "Horse": 0.5
+      },
+      "tech": "TECH_HUSBANDRY",
+      "techName": "Husbandry"
+    }
+  }
+}

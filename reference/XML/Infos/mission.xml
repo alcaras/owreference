@@ -35,6 +35,7 @@
 		<SubjectCharacterBonus comment="Bonus that the subject character gets when the mission completes"/>
 		<MissionRoot comment="Prerequisite mission that must be valid for this mission to also be valid."/>
 		<GameOptionPrereq comment="The game must have this option enabled for the mission to appear."/>
+		<GameOptionDisabled comment="The game must have this option disabled for the mission to appear."/>
 		<TechPrereq comment="Tech required by the player to enable the mission."/>
 		<OccurrencePrereq comment="Occurrence must be active for the mission to be enabled."/>
 		<Diplomacy comment="The mission offers this type of diplomacy with the target (requires SubjectTarget to be a player)."/>
@@ -270,6 +271,30 @@
 		<aiResultDie>
 			<Pair>
 				<zIndex>MISSIONRESULT_PLAYER_PEACE_HUMAN_EVENT</zIndex>
+				<iValue>1</iValue>
+			</Pair>
+		</aiResultDie>
+		<aiYieldCost>
+			<Pair>
+				<zIndex>YIELD_ORDERS</zIndex>
+				<iValue>2</iValue>
+			</Pair>
+		</aiYieldCost>
+		<aeSubjectTargetDisabled>
+			<zValue>SUBJECT_PLAYER_HUMAN_DIPLOMACY_FOUND</zValue>
+		</aeSubjectTargetDisabled>
+	</Entry>
+	<Entry>
+		<zType>MISSION_EXCHANGE_MAPS_HUMAN</zType>
+		<Name>TEXT_MISSION_EXCHANGE_MAPS</Name>
+		<zIcon>MISSION_AMBASSADOR</zIcon>
+		<bVisibleTarget>1</bVisibleTarget>
+		<bRequireContact>1</bRequireContact>
+		<GameOptionDisabled>GAMEOPTION_NO_FOG_OF_WAR</GameOptionDisabled>
+		<SubjectTarget>SUBJECT_PLAYER_PEACE_OR_TRUCE_HUMAN</SubjectTarget>
+		<aiResultDie>
+			<Pair>
+				<zIndex>MISSIONRESULT_EXCHANGE_MAPS_HUMAN_EVENT</zIndex>
 				<iValue>1</iValue>
 			</Pair>
 		</aiResultDie>

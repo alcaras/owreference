@@ -2060,11 +2060,16 @@
 			<zValue>SUBJECT_RELIGION_STATE</zValue>
 			<zValue>SUBJECT_LEADER_US</zValue>
 			<zValue>SUBJECT_CHARACTER_US_OR_THEM</zValue>
+            <zValue>SUBJECT_AMBITION</zValue>
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
 				<First>0</First>
 				<Second>SUBJECT_RELIGION_MIN_CAUTIOUS</Second>
+			</Pair>
+			<Pair>
+				<First>3</First>
+				<Second>SUBJECT_AMBITION_CLASS_28</Second>
 			</Pair>
 		</SubjectExtras>
 		<SubjectRelations>
@@ -7797,10 +7802,6 @@
 				<First>0</First>
 				<Second>SUBJECT_CITY_DISSENT_JUDAISM</Second>
 			</Pair>
-			<Pair>
-				<First>1</First>
-				<Second>SUBJECT_RELIGION_MAX_UPSET</Second>
-			</Pair>
 		</SubjectExtras>
 		<SubjectNotExtras>
 			<Pair>
@@ -7844,6 +7845,7 @@
 			<zValue>SUBJECT_RELIGION_WORLD</zValue>
 			<zValue>SUBJECT_CITY_US</zValue>
 			<zValue>SUBJECT_PLAYER_US</zValue>
+			<zValue>SUBJECT_AMBITION</zValue>
 		</aeSubjects>
 		<SubjectExtras>
 			<Pair>
@@ -7859,6 +7861,32 @@
 				<Second>SUBJECT_HIGH_CHARISMA</Second>
 			</Pair>
 		</SubjectExtras>
+		<SubjectAny>
+			<Pair>
+				<First>4</First>
+				<Second>SUBJECT_GOAL_SIX_MONASTERY_ZOROASTRIANISM</Second>
+			</Pair>
+			<Pair>
+				<First>4</First>
+				<Second>SUBJECT_GOAL_SIX_MONASTERY_JUDAISM</Second>
+			</Pair>
+			<Pair>
+				<First>4</First>
+				<Second>SUBJECT_GOAL_SIX_MONASTERY_CHRISTIANITY</Second>
+			</Pair>
+			<Pair>
+				<First>4</First>
+				<Second>SUBJECT_GOAL_SIX_MONASTERY_MANICHAEISM</Second>
+			</Pair>
+			<Pair>
+				<First>4</First>
+				<Second>SUBJECT_GOAL_SIX_MONASTERY_HINDUISM</Second>
+			</Pair>
+			<Pair>
+				<First>4</First>
+				<Second>SUBJECT_GOAL_SIX_MONASTERY_BUDDHISM</Second>
+			</Pair>
+		</SubjectAny>
 		<SubjectRelations>
 			<Triple>
 				<First>0</First>
@@ -7869,6 +7897,11 @@
 				<First>1</First>
 				<Second>SUBJECTRELATION_RELIGION_CITY</Second>
 				<Third>2</Third>
+			</Triple>
+			<Triple>
+				<First>1</First>
+				<Second>SUBJECTRELATION_RELIGION_AMBITION</Second>
+				<Third>4</Third>
 			</Triple>
 		</SubjectRelations>
 		<aeOptions>
@@ -12843,6 +12876,11 @@
 		</SubjectExtras>
 		<SubjectRelations>
 			<Triple>
+				<First>1</First>
+				<Second>SUBJECTRELATION_RELIGION_SAME</Second>
+				<Third>2</Third>
+			</Triple>
+			<Triple>
 				<First>2</First>
 				<Second>SUBJECTRELATION_RELIGION_SAME</Second>
 				<Third>3</Third>
@@ -12896,6 +12934,11 @@
 			</Pair>
 		</SubjectExtras>
 		<SubjectRelations>
+			<Triple>
+				<First>1</First>
+				<Second>SUBJECTRELATION_RELIGION_SAME</Second>
+				<Third>2</Third>
+			</Triple>
 			<Triple>
 				<First>2</First>
 				<Second>SUBJECTRELATION_RELIGION_SAME</Second>
@@ -12951,6 +12994,11 @@
 		</SubjectExtras>
 		<SubjectRelations>
 			<Triple>
+				<First>1</First>
+				<Second>SUBJECTRELATION_RELIGION_SAME</Second>
+				<Third>2</Third>
+			</Triple>
+			<Triple>
 				<First>2</First>
 				<Second>SUBJECTRELATION_RELIGION_SAME</Second>
 				<Third>3</Third>
@@ -13004,6 +13052,11 @@
 			</Pair>
 		</SubjectExtras>
 		<SubjectRelations>
+			<Triple>
+				<First>1</First>
+				<Second>SUBJECTRELATION_RELIGION_SAME</Second>
+				<Third>2</Third>
+			</Triple>
 			<Triple>
 				<First>2</First>
 				<Second>SUBJECTRELATION_RELIGION_SAME</Second>

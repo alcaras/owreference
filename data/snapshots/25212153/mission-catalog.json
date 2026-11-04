@@ -108,47 +108,6 @@
     "cooldown": 0,
     "cost": [
       {
-        "label": "Civics",
-        "value": 400,
-        "yield": "civics"
-      },
-      {
-        "label": "Orders",
-        "value": 2,
-        "yield": "orders"
-      }
-    ],
-    "description": "",
-    "diplomacy": null,
-    "dlc": null,
-    "encyclopedia": true,
-    "gameOption": null,
-    "id": "MISSION_TEAM_ALLIANCE",
-    "internal": false,
-    "name": "Alliance Player",
-    "opinionCost": [],
-    "outcomeCount": 1,
-    "outcomes": [
-      "Alliance Player Event"
-    ],
-    "performer": "Leader",
-    "roleReq": {
-      "icon": "icons/traits/diplomat",
-      "kind": "archetype",
-      "label": "Diplomat"
-    },
-    "slug": "team-alliance",
-    "target": "Player Can Alliance",
-    "techPrereq": null,
-    "turns": 2,
-    "turnsScaled": false,
-    "who": "Leader (Diplomat)",
-    "whoId": "SUBJECT_LEADER_DIPLOMAT"
-  },
-  {
-    "cooldown": 0,
-    "cost": [
-      {
         "label": "Training",
         "value": 200,
         "yield": "training"
@@ -481,7 +440,7 @@
     "opinionCost": [],
     "outcomeCount": 1,
     "outcomes": [
-      "End Alliance Player"
+      "End National Alliance"
     ],
     "performer": "Leader",
     "roleReq": null,
@@ -507,7 +466,7 @@
     "opinionCost": [],
     "outcomeCount": 1,
     "outcomes": [
-      "End Alliance Player"
+      "End National Alliance"
     ],
     "performer": "Leader",
     "roleReq": null,
@@ -533,7 +492,7 @@
     "opinionCost": [],
     "outcomeCount": 1,
     "outcomes": [
-      "End Alliance Tribe"
+      "End Tribal Alliance"
     ],
     "performer": "Leader",
     "roleReq": null,
@@ -561,7 +520,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_GAMBLE",
@@ -643,7 +602,7 @@
     ],
     "description": "Relieve Mental Strain",
     "diplomacy": null,
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_REVEL",
@@ -817,6 +776,47 @@
     "cooldown": 0,
     "cost": [
       {
+        "label": "Civics",
+        "value": 400,
+        "yield": "civics"
+      },
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": true,
+    "gameOption": null,
+    "id": "MISSION_TEAM_ALLIANCE",
+    "internal": false,
+    "name": "National Alliance",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "National Alliance Event"
+    ],
+    "performer": "Leader",
+    "roleReq": {
+      "icon": "icons/traits/diplomat",
+      "kind": "archetype",
+      "label": "Diplomat"
+    },
+    "slug": "team-alliance",
+    "target": "Player Can Alliance",
+    "techPrereq": null,
+    "turns": 2,
+    "turnsScaled": false,
+    "who": "Leader (Diplomat)",
+    "whoId": "SUBJECT_LEADER_DIPLOMAT"
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
         "label": "Training",
         "value": 200,
         "yield": "training"
@@ -873,7 +873,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_PROSCRIPTION",
@@ -952,7 +952,7 @@
     ],
     "description": "Take preemptive action against Powerful Rivals",
     "diplomacy": null,
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_SCHEME_AGAINST_RIVAL",
@@ -1030,7 +1030,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_SEEK_POLITICAL_ALLIES",
@@ -1064,7 +1064,7 @@
     ],
     "description": "Laugh in the face of their pitiful excuse for a civilization.",
     "diplomacy": null,
-    "dlc": "Scandal Event Pack",
+    "dlc": "Behind the Throne",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_TAUNT",
@@ -1180,7 +1180,7 @@
         "yield": "orders"
       }
     ],
-    "description": "Force a weaker Tribe into a Alliance Tribe.",
+    "description": "Force a weaker Tribe into a Tribal Alliance.",
     "diplomacy": null,
     "dlc": "Empires of the Indus",
     "encyclopedia": true,
@@ -1338,7 +1338,7 @@
         "yield": "orders"
       }
     ],
-    "description": "Meet with religious leaders to improve the Religion's Opinion Religion",
+    "description": "Meet with religious leaders to improve the Religion's Opinion",
     "diplomacy": null,
     "dlc": null,
     "encyclopedia": true,
@@ -1626,7 +1626,7 @@
         "yield": "orders"
       }
     ],
-    "description": "Bribe the Family with gifts to improve their Opinion Family",
+    "description": "Bribe the Family with gifts to improve their Opinion",
     "diplomacy": null,
     "dlc": null,
     "encyclopedia": true,
@@ -1765,7 +1765,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Religion Event Pack",
+    "dlc": "The Sacred and the Profane",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_MAKE_CLERGY",
@@ -1943,7 +1943,7 @@
         "yield": "orders"
       }
     ],
-    "description": "Slander a Nation to decrease other Nations' Opinion Player of them",
+    "description": "Slander a Nation to decrease other Nations' Opinion of them",
     "diplomacy": null,
     "dlc": null,
     "encyclopedia": true,
@@ -2052,9 +2052,9 @@
     ],
     "outcomeCount": 4,
     "outcomes": [
-      "Missionresult Insurrection Revolt",
-      "Missionresult Insurrection Exposed",
-      "Missionresult Insurrection Failure",
+      "Insurrection (Revolt)",
+      "Insurrection (Exposed)",
+      "Insurrection (Failure)",
       "Insurrection Event"
     ],
     "performer": "Agent",
@@ -2141,9 +2141,9 @@
     ],
     "outcomeCount": 4,
     "outcomes": [
-      "Missionresult Treachery Success",
-      "Missionresult Treachery Exposed",
-      "Missionresult Treachery Failure",
+      "Treachery (Success)",
+      "Treachery (Exposed)",
+      "Treachery (Failure)",
       "Treachery Event"
     ],
     "performer": "Agent",
@@ -2286,12 +2286,12 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Religion Event Pack",
+    "dlc": "The Sacred and the Profane",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_QUELL_DISSENT_CHRISTIANITY",
     "internal": false,
-    "name": "Quell Christianity Dissent",
+    "name": "Quell Christian Dissent",
     "opinionCost": [
       {
         "label": "Civics",
@@ -2307,7 +2307,7 @@
     "roleReq": {
       "icon": "icons/religions/christianity",
       "kind": "faith",
-      "label": "Clergy Christian"
+      "label": "Presbyter"
     },
     "slug": "quell-dissent-christianity",
     "target": "City Us",
@@ -2412,12 +2412,12 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Religion Event Pack",
+    "dlc": "The Sacred and the Profane",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_QUELL_DISSENT_JUDAISM",
     "internal": false,
-    "name": "Quell Judaism Dissent",
+    "name": "Quell Jewish Dissent",
     "opinionCost": [
       {
         "label": "Civics",
@@ -2433,7 +2433,7 @@
     "roleReq": {
       "icon": "icons/religions/judaism",
       "kind": "faith",
-      "label": "Clergy Jewish"
+      "label": "Kohen"
     },
     "slug": "quell-dissent-judaism",
     "target": "City Us",
@@ -2454,12 +2454,12 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Religion Event Pack",
+    "dlc": "The Sacred and the Profane",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_QUELL_DISSENT_MANICHAEISM",
     "internal": false,
-    "name": "Quell Manichaeism Dissent",
+    "name": "Quell Manichaean Dissent",
     "opinionCost": [
       {
         "label": "Civics",
@@ -2475,7 +2475,7 @@
     "roleReq": {
       "icon": "icons/religions/manichaeism",
       "kind": "faith",
-      "label": "Clergy Manichaean"
+      "label": "Elect"
     },
     "slug": "quell-dissent-manichaeism",
     "target": "City Us",
@@ -2496,12 +2496,12 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Religion Event Pack",
+    "dlc": "The Sacred and the Profane",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_QUELL_DISSENT_ZOROASTRIANISM",
     "internal": false,
-    "name": "Quell Zoroastrianism Dissent",
+    "name": "Quell Zoroastrian Dissent",
     "opinionCost": [
       {
         "label": "Civics",
@@ -2517,7 +2517,7 @@
     "roleReq": {
       "icon": "icons/religions/zoroastrianism",
       "kind": "faith",
-      "label": "Clergy Zoroastrian"
+      "label": "Magus"
     },
     "slug": "quell-dissent-zoroastrianism",
     "target": "City Us",
@@ -2538,7 +2538,7 @@
     ],
     "description": "Make offerings to increase Happiness in a City",
     "diplomacy": null,
-    "dlc": "Religion Event Pack",
+    "dlc": "The Sacred and the Profane",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_PAGAN_SACRIFICES",
@@ -2739,7 +2739,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Aksum",
+    "dlc": "Wrath of Gods",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_LEAD_DELEGATION",
@@ -2975,7 +2975,7 @@
   {
     "cooldown": 0,
     "cost": [],
-    "description": "Slander a Nation to decrease other Nations' Opinion Player of them",
+    "description": "Slander a Nation to decrease other Nations' Opinion of them",
     "diplomacy": null,
     "dlc": null,
     "encyclopedia": false,
@@ -3136,9 +3136,9 @@
         "yield": "orders"
       }
     ],
-    "description": "Impart the wisdom of the land upon another, teaching them to become a Steward Of The Land.",
+    "description": "Impart the wisdom of the land upon another, teaching them to become a Steward of the Land.",
     "diplomacy": null,
-    "dlc": "Calamities",
+    "dlc": "Wrath of Gods",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_IMPART_STEWARDSHIP",
@@ -3147,14 +3147,14 @@
     "opinionCost": [],
     "outcomeCount": 2,
     "outcomes": [
-      "Target becomes a Steward Of The Land",
+      "Target becomes a Steward of the Land",
       "Impart Stewardship Failed"
     ],
     "performer": "Situational",
     "roleReq": {
       "icon": null,
       "kind": "archetype",
-      "label": "Steward Of The Land"
+      "label": "Steward of the Land"
     },
     "slug": "impart-stewardship",
     "target": "Character Us",
@@ -3180,7 +3180,7 @@
     ],
     "description": "Incubate an Infected Character during a Plague, protecting them from further infection.",
     "diplomacy": null,
-    "dlc": "Calamities",
+    "dlc": "Wrath of Gods",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_INCUBATE",
@@ -3337,7 +3337,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": false,
     "gameOption": null,
     "id": "MISSION_ADOPT_AS_HEIR",
@@ -3374,7 +3374,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_BOOST_LEGITIMACY_BARDIYA",
@@ -3411,7 +3411,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_COURT_OF_THE_DIVINE_KING",
@@ -3443,9 +3443,9 @@
         "yield": "orders"
       }
     ],
-    "description": "Bribe the Family with gifts to improve their Opinion Family",
+    "description": "Bribe the Family with gifts to improve their Opinion",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": false,
     "gameOption": null,
     "id": "MISSION_FAMILY_GIFT_MENTUHOTEP_II",
@@ -3485,7 +3485,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": false,
     "gameOption": null,
     "id": "MISSION_IMPRISON_MENTUHOTEP_II",
@@ -3569,7 +3569,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Aksum",
+    "dlc": "Wrath of Gods",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_INTIMIDATE",
@@ -3607,7 +3607,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": false,
     "gameOption": null,
     "id": "MISSION_LAND_GRANTS_HANNO_II",
@@ -3639,7 +3639,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": false,
     "gameOption": null,
     "id": "MISSION_LEGENDARY_FOUNDER_TO_HERO",
@@ -3675,7 +3675,7 @@
     ],
     "description": "Attempt to increase Happiness in a City",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": false,
     "gameOption": null,
     "id": "MISSION_PACIFY_CITY_MENTUHOTEP_II",
@@ -3715,7 +3715,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": false,
     "gameOption": null,
     "id": "MISSION_REAL_HERO_TO_BUILDER",
@@ -3798,7 +3798,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": true,
     "gameOption": null,
     "id": "MISSION_SPAWN_MILITIA_STATEIRA",
@@ -3835,7 +3835,7 @@
     ],
     "description": "",
     "diplomacy": null,
-    "dlc": "Wonders & Dynasties",
+    "dlc": "Wonders and Dynasties",
     "encyclopedia": false,
     "gameOption": null,
     "id": "MISSION_TRIBE_ALLIANCE_HANNO_NAVIGATOR",
@@ -3855,38 +3855,6 @@
     "turnsScaled": false,
     "who": "Hanno the Navigator",
     "whoId": "SUBJECT_LEADER_HANNO_NAVIGATOR"
-  },
-  {
-    "cooldown": 0,
-    "cost": [
-      {
-        "label": "Orders",
-        "value": 2,
-        "yield": "orders"
-      }
-    ],
-    "description": "",
-    "diplomacy": null,
-    "dlc": null,
-    "encyclopedia": false,
-    "gameOption": null,
-    "id": "MISSION_TEAM_ALLIANCE_HUMAN",
-    "internal": true,
-    "name": "Alliance Player",
-    "opinionCost": [],
-    "outcomeCount": 1,
-    "outcomes": [
-      "Alliance Player Event"
-    ],
-    "performer": "Other",
-    "roleReq": null,
-    "slug": "team-alliance-human",
-    "target": "Player Can Alliance Human",
-    "techPrereq": null,
-    "turns": 0,
-    "turnsScaled": false,
-    "who": "—",
-    "whoId": ""
   },
   {
     "cooldown": 0,
@@ -4038,6 +4006,38 @@
     "roleReq": null,
     "slug": "tribe-end-alliance-no-characters",
     "target": "Tribe Alliance",
+    "techPrereq": null,
+    "turns": 0,
+    "turnsScaled": false,
+    "who": "—",
+    "whoId": ""
+  },
+  {
+    "cooldown": 0,
+    "cost": [
+      {
+        "label": "Orders",
+        "value": 2,
+        "yield": "orders"
+      }
+    ],
+    "description": "",
+    "diplomacy": null,
+    "dlc": null,
+    "encyclopedia": false,
+    "gameOption": null,
+    "id": "MISSION_TEAM_ALLIANCE_HUMAN",
+    "internal": true,
+    "name": "National Alliance",
+    "opinionCost": [],
+    "outcomeCount": 1,
+    "outcomes": [
+      "National Alliance Event"
+    ],
+    "performer": "Other",
+    "roleReq": null,
+    "slug": "team-alliance-human",
+    "target": "Player Can Alliance Human",
     "techPrereq": null,
     "turns": 0,
     "turnsScaled": false,

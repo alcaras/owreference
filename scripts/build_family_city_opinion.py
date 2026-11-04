@@ -73,7 +73,7 @@ def load_text(*filenames: str) -> tuple[dict[str, str], dict[str, list[str]]]:
         for e in ET.parse(p).getroot().findall("Entry"):
             k = e.findtext("zType") or ""
             en = (e.findtext("en-US") or "").strip()
-            if k and k not in first:
+            if k:
                 parts = [f.strip() for f in en.split("~")]
                 first[k] = parts[0]
                 forms[k] = parts
